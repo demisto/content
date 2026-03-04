@@ -4,195 +4,195 @@ commonfields:
   id: ServiceNow Event Collector
   version: -1
 sectionorder:
-- Connect
-- Collect
+  - Connect
+  - Collect
 configuration:
-- display: ServiceNow URL, in the format https://company.service-now.com/
-  name: url
-  required: true
-  type: 0
-  section: Connect
-- display: Username
-  name: credentials
-  type: 9
-  required: true
-  section: Connect
-- display: Client ID
-  displaypassword: Client Secret
-  name: client_credentials
-  type: 9
-  required: false
-  section: Connect
-- display: ServiceNow API Version (e.g., 'v1')
-  name: api_version
-  type: 0
-  required: false
-  section: Connect
-- additionalinfo: Select this checkbox to use OAuth 2.0 authentication.
-  display: Use OAuth Login
-  name: use_oauth
-  type: 8
-  required: false
-  section: Connect
-- display: Event Types To Fetch
-  section: Collect
-  name: event_types_to_fetch
-  type: 16
-  required: false
-  additionalinfo: Event types to fetch. Defaults to 'Audit' if no type is specified.
-  defaultvalue: 'Audit'
-  options:
-  - Audit
-  - Syslog Transactions
-  - Case
-  - Outbound HTTP Log
-- additionalinfo: Maximum number of audit events per fetch.
-  defaultvalue: '10000'
-  display: Maximum audit events to fetch
-  name: max_fetch
-  type: 0
-  required: false
-  section: Collect
-- additionalinfo: Maximum number of syslog transactions events per fetch.
-  defaultvalue: '10000'
-  display: Maximum syslog transactions events to fetch
-  name: max_fetch_syslog_transactions
-  type: 0
-  required: false
-  section: Collect
-- additionalinfo: Maximum number of case events per fetch.
-  defaultvalue: '10000'
-  display: Maximum case events to fetch
-  name: max_fetch_case
-  type: 0
-  required: false
-  section: Collect
-- display: Maximum outbound HTTP log events to fetch
-  additionalinfo: Maximum number of outbound HTTP log events per fetch.
-  defaultvalue: '10000'
-  name: max_fetch_outbound_http
-  type: 0
-  required: false
-  section: Collect
-- defaultvalue: 1
-  display: Events Fetch Interval
-  name: eventFetchInterval
-  type: 19
-  section: Collect
-  advanced: true
-  required: false
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-  section: Connect
-  advanced: true
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-  section: Connect
-  advanced: true
+  - display: ServiceNow URL, in the format https://company.service-now.com/
+    name: url
+    required: true
+    type: 0
+    section: Connect
+  - display: Username
+    name: credentials
+    type: 9
+    required: true
+    section: Connect
+  - display: Client ID
+    displaypassword: Client Secret
+    name: client_credentials
+    type: 9
+    required: false
+    section: Connect
+  - display: ServiceNow API Version (e.g., 'v1')
+    name: api_version
+    type: 0
+    required: false
+    section: Connect
+  - additionalinfo: Select this checkbox to use OAuth 2.0 authentication.
+    display: Use OAuth Login
+    name: use_oauth
+    type: 8
+    required: false
+    section: Connect
+  - display: Event Types To Fetch
+    section: Collect
+    name: event_types_to_fetch
+    type: 16
+    required: false
+    additionalinfo: Event types to fetch. Defaults to 'Audit' if no type is specified.
+    defaultvalue: 'Audit'
+    options:
+      - Audit
+      - Syslog Transactions
+      - Case
+      - Outbound HTTP Log
+  - additionalinfo: Maximum number of audit events per fetch.
+    defaultvalue: '10000'
+    display: Maximum audit events to fetch
+    name: max_fetch
+    type: 0
+    required: false
+    section: Collect
+  - additionalinfo: Maximum number of syslog transactions events per fetch.
+    defaultvalue: '10000'
+    display: Maximum syslog transactions events to fetch
+    name: max_fetch_syslog_transactions
+    type: 0
+    required: false
+    section: Collect
+  - additionalinfo: Maximum number of case events per fetch.
+    defaultvalue: '10000'
+    display: Maximum case events to fetch
+    name: max_fetch_case
+    type: 0
+    required: false
+    section: Collect
+  - display: Maximum outbound HTTP log events to fetch
+    additionalinfo: Maximum number of outbound HTTP log events per fetch.
+    defaultvalue: '10000'
+    name: max_fetch_outbound_http
+    type: 0
+    required: false
+    section: Collect
+  - defaultvalue: 1
+    display: Events Fetch Interval
+    name: eventFetchInterval
+    type: 19
+    section: Collect
+    advanced: true
+    required: false
+  - display: Trust any certificate (not secure)
+    name: insecure
+    required: false
+    type: 8
+    section: Connect
+    advanced: true
+  - display: Use system proxy settings
+    name: proxy
+    required: false
+    type: 8
+    section: Connect
+    advanced: true
 description: Use this integration to fetch audits, syslog transactions, cases, and outbound HTTP logs from ServiceNow as Cortex XSIAM events.
 display: ServiceNow Event Collector
 name: ServiceNow Event Collector
 script:
   commands:
-  - name: service-now-get-audit-logs
-    description: Returns events extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
-    arguments:
-    - auto: PREDEFINED
-      defaultValue: "False"
-      description: Set this argument to True in order to create events, otherwise the command will only display them.
-      name: should_push_events
-      predefined:
-      - "True"
-      - "False"
-      required: true
-    - description: Maximum audit events to fetch. Default is 1000.
-      name: limit
-    - name: from_date
-      description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
-      required: false
-      isArray: false
-      defaultValue: ""
-    - name: offset
-      description: Starting record index from which to begin retrieving records.
-      required: false
-      isArray: false
-      defaultValue: ""
-  - name: service-now-get-syslog-transactions
-    description: Returns syslog transactions events extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
-    arguments:
-    - auto: PREDEFINED
-      defaultValue: "False"
-      description: Set this argument to True in order to create events, otherwise the command will only display them.
-      name: should_push_events
-      predefined:
-      - "True"
-      - "False"
-      required: true
-    - description: Maximum syslog transactions events to fetch. Default is 1000.
-      name: limit
-    - name: from_date
-      description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
-      required: false
-      isArray: false
-      defaultValue: ""
-    - name: offset
-      description: Starting record index from which to begin retrieving records.
-      required: false
-      isArray: false
-      defaultValue: ""
-  - name: service-now-get-case-logs
-    description: Returns cases extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
-    arguments:
-    - auto: PREDEFINED
-      defaultValue: "False"
-      description: Set this argument to True in order to create events, otherwise the command will only display them.
-      name: should_push_events
-      predefined:
-      - "True"
-      - "False"
-      required: true
-    - description: Maximum case events to fetch. Default is 1000.
-      name: limit
-    - name: from_date
-      description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
-      required: false
-      isArray: false
-      defaultValue: ""
-    - name: offset
-      description: Starting record index from which to begin retrieving records.
-      required: false
-      isArray: false
-      defaultValue: ""
-  - name: service-now-get-outbound-http-logs
-    description: Returns outbound HTTP log events extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
-    arguments:
-    - auto: PREDEFINED
-      defaultValue: "False"
-      description: Set this argument to True in order to create events, otherwise the command will only display them.
-      name: should_push_events
-      predefined:
-      - "True"
-      - "False"
-      required: true
-    - description: Maximum outbound HTTP log events to fetch. Default is 1000.
-      name: limit
-    - name: from_date
-      description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
-      required: false
-      isArray: false
-      defaultValue: ""
-    - name: offset
-      description: Starting record index from which to begin retrieving records.
-      required: false
-      isArray: false
-      defaultValue: ""
-  - name: service-now-oauth-login
-    description: Generate a refresh token using your existing credentials. Use this command if you encounter access_denied or other errors related to your access token when using OAuth 2.0.
-    outputs: []
+    - name: service-now-get-audit-logs
+      description: Returns events extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
+      arguments:
+        - auto: PREDEFINED
+          defaultValue: "False"
+          description: Set this argument to True in order to create events, otherwise the command will only display them.
+          name: should_push_events
+          predefined:
+            - "True"
+            - "False"
+          required: true
+        - description: Maximum audit events to fetch. Default is 1000.
+          name: limit
+        - name: from_date
+          description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
+          required: false
+          isArray: false
+          defaultValue: ""
+        - name: offset
+          description: Starting record index from which to begin retrieving records.
+          required: false
+          isArray: false
+          defaultValue: ""
+    - name: service-now-get-syslog-transactions
+      description: Returns syslog transactions events extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
+      arguments:
+        - auto: PREDEFINED
+          defaultValue: "False"
+          description: Set this argument to True in order to create events, otherwise the command will only display them.
+          name: should_push_events
+          predefined:
+            - "True"
+            - "False"
+          required: true
+        - description: Maximum syslog transactions events to fetch. Default is 1000.
+          name: limit
+        - name: from_date
+          description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
+          required: false
+          isArray: false
+          defaultValue: ""
+        - name: offset
+          description: Starting record index from which to begin retrieving records.
+          required: false
+          isArray: false
+          defaultValue: ""
+    - name: service-now-get-case-logs
+      description: Returns cases extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
+      arguments:
+        - auto: PREDEFINED
+          defaultValue: "False"
+          description: Set this argument to True in order to create events, otherwise the command will only display them.
+          name: should_push_events
+          predefined:
+            - "True"
+            - "False"
+          required: true
+        - description: Maximum case events to fetch. Default is 1000.
+          name: limit
+        - name: from_date
+          description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
+          required: false
+          isArray: false
+          defaultValue: ""
+        - name: offset
+          description: Starting record index from which to begin retrieving records.
+          required: false
+          isArray: false
+          defaultValue: ""
+    - name: service-now-get-outbound-http-logs
+      description: Returns outbound HTTP log events extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
+      arguments:
+        - auto: PREDEFINED
+          defaultValue: "False"
+          description: Set this argument to True in order to create events, otherwise the command will only display them.
+          name: should_push_events
+          predefined:
+            - "True"
+            - "False"
+          required: true
+        - description: Maximum outbound HTTP log events to fetch. Default is 1000.
+          name: limit
+        - name: from_date
+          description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
+          required: false
+          isArray: false
+          defaultValue: ""
+        - name: offset
+          description: Starting record index from which to begin retrieving records.
+          required: false
+          isArray: false
+          defaultValue: ""
+    - name: service-now-oauth-login
+      description: Generate a refresh token using your existing credentials. Use this command if you encounter access_denied or other errors related to your access token when using OAuth 2.0.
+      outputs: []
   dockerimage: demisto/auth-utils:1.0.0.6111183
   isfetchevents: true
   runonce: false
@@ -201,17 +201,10 @@ script:
   type: python
 fromversion: 8.4.0
 marketplaces:
-- marketplacev2
-- platform
+  - marketplacev2
+  - platform
 tests:
-- No tests
+  - No tests
 supportedModules:
-- xsiam
-- agentix
-- C1
-- C3
-- X0
-- X1
-- X3
-- X5
-- ENT_PLUS
+  - xsiam
+  - agentix

@@ -18,7 +18,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     separatecontext: false
     view: |-
       {
@@ -45,7 +45,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       Users:
         simple: ${inputs.username}
@@ -78,29 +78,29 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "1"
+        - "1"
       "yes":
-      - "6"
+        - "6"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: inList
-          left:
-            value:
-              simple: inputs.username
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: VIPUsers
-                transformers:
-                - operator: splitAndTrim
-                  args:
-                    delimiter:
-                      value:
-                        simple: ','
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: inList
+                left:
+                  value:
+                    simple: inputs.username
+                  iscontext: true
+                right:
+                  value:
+                    complex:
+                      root: VIPUsers
+                      transformers:
+                        - operator: splitAndTrim
+                          args:
+                            delimiter:
+                              value:
+                                simple: ','
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -125,9 +125,9 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "9"
+        - "9"
       "yes":
-      - "1"
+        - "1"
     separatecontext: false
     sla:
       hours: 1
@@ -184,9 +184,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "1"
+        - "1"
       "yes":
-      - "11"
+        - "11"
     scriptarguments:
       listName:
         simple: ${inputs.VIPListName}
@@ -216,7 +216,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     scriptarguments:
       extend-context:
         simple: VIPUsers=.
@@ -246,26 +246,22 @@ view: |-
     }
   }
 inputs:
-- key: tagname
-  value: {}
-  required: true
-  description: ""
-- key: username
-  value: {}
-  required: true
-  description: ""
-- key: VIPListName
-  value:
-    simple: VIP_Users
-  required: false
-  description: Name of the list that contains VIP users who can only be blocked after manager approval.
+  - key: tagname
+    value: {}
+    required: true
+    description: ""
+  - key: username
+    value: {}
+    required: true
+    description: ""
+  - key: VIPListName
+    value:
+      simple: VIP_Users
+    required: false
+    description: Name of the list that contains VIP users who can only be blocked after manager approval.
 outputs: []
 tests:
-- No test
+  - No test
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "37"
+        - "37"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -48,7 +48,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "46"
+        - "46"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -79,43 +79,43 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "18"
+        - "18"
       "yes":
-      - "9"
-      - "33"
-      - "38"
-      - "41"
+        - "9"
+        - "33"
+        - "38"
+        - "41"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Okta v2
-                    ignorecase: true
-                accessor: state
-            iscontext: true
-          right:
-            value:
-              simple: active
-          ignorecase: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.UserEmail
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Okta v2
+                              ignorecase: true
+                      accessor: state
+                  iscontext: true
+                right:
+                  value:
+                    simple: active
+                ignorecase: true
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.UserEmail
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -145,35 +145,35 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+        - "5"
       "yes":
-      - "6"
+        - "6"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: in
-          left:
-            value:
-              complex:
-                root: inputs.LoginCountry
-                transformers:
-                - operator: ConvertCountryCodeCountryName
-                  args:
-                    country_code:
-                      value:
-                        simple: inputs.LoginCountry
-                      iscontext: true
-                    country_name: {}
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: LogonCountries
-                transformers:
-                - operator: uniq
-            iscontext: true
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: in
+                left:
+                  value:
+                    complex:
+                      root: inputs.LoginCountry
+                      transformers:
+                        - operator: ConvertCountryCodeCountryName
+                          args:
+                            country_code:
+                              value:
+                                simple: inputs.LoginCountry
+                              iscontext: true
+                            country_name: {}
+                  iscontext: true
+                right:
+                  value:
+                    complex:
+                      root: LogonCountries
+                      transformers:
+                        - operator: uniq
+                  iscontext: true
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -204,7 +204,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+        - "18"
     scriptarguments:
       key:
         simple: PermanentCountry
@@ -241,7 +241,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+        - "18"
     scriptarguments:
       key:
         simple: PermanentCountry
@@ -277,8 +277,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "12"
-      - "15"
+        - "12"
+        - "15"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -312,7 +312,7 @@ tasks:
       brand: Okta v2
     nexttasks:
       '#none#':
-      - "13"
+        - "13"
     scriptarguments:
       extend-context:
         simple: OktaSuspiciousActivities=
@@ -328,12 +328,12 @@ tasks:
         complex:
           root: TimeLast1DayTimeNow
           transformers:
-          - operator: LastArrayElement
+            - operator: LastArrayElement
       until:
         complex:
           root: CurrentTimeTimeNow
           transformers:
-          - operator: LastArrayElement
+            - operator: LastArrayElement
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -365,22 +365,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "18"
+        - "18"
       "yes":
-      - "14"
+        - "14"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: OktaSuspiciousActivities
-                accessor: displayMessage
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: OktaSuspiciousActivities
+                      accessor: displayMessage
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -411,7 +411,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "32"
+        - "32"
     scriptarguments:
       array:
         complex:
@@ -452,7 +452,7 @@ tasks:
       brand: Okta v2
     nexttasks:
       '#none#':
-      - "16"
+        - "16"
     scriptarguments:
       extend-context:
         simple: OktaUserAgentLogs=
@@ -470,12 +470,12 @@ tasks:
         complex:
           root: TimeLast1DayTimeNow
           transformers:
-          - operator: LastArrayElement
+            - operator: LastArrayElement
       until:
         complex:
           root: CurrentTimeTimeNow
           transformers:
-          - operator: LastArrayElement
+            - operator: LastArrayElement
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -507,22 +507,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "18"
+        - "18"
       "yes":
-      - "17"
+        - "17"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: OktaUserAgentLogs
-                accessor: displayMessage
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: OktaUserAgentLogs
+                      accessor: displayMessage
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -553,7 +553,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "31"
+        - "31"
     scriptarguments:
       array:
         complex:
@@ -621,7 +621,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "26"
+        - "26"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -654,7 +654,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+        - "22"
     scriptarguments:
       contextKey:
         simple: CurrentTime
@@ -692,7 +692,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "23"
+        - "23"
     scriptarguments:
       contextKey:
         simple: TimeLast1Day
@@ -732,7 +732,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "24"
+        - "24"
     scriptarguments:
       contextKey:
         simple: TimeLast1Week
@@ -770,7 +770,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -802,7 +802,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+        - "18"
     scriptarguments:
       key:
         simple: UserDevices
@@ -811,7 +811,7 @@ tasks:
           root: LogonLogs.client
           accessor: device
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -842,7 +842,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "30"
+        - "30"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -874,7 +874,7 @@ tasks:
       brand: Okta v2
     nexttasks:
       '#none#':
-      - "29"
+        - "29"
     scriptarguments:
       extend-context:
         simple: LogonLogs=
@@ -890,12 +890,12 @@ tasks:
         complex:
           root: TimeLast1WeekTimeNow
           transformers:
-          - operator: LastArrayElement
+            - operator: LastArrayElement
       until:
         complex:
           root: TimeLast1DayTimeNow
           transformers:
-          - operator: LastArrayElement
+            - operator: LastArrayElement
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -927,24 +927,24 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "18"
+        - "18"
       "yes":
-      - "27"
-      - "1"
-      - "19"
+        - "27"
+        - "1"
+        - "19"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: LogonLogs
-                accessor: displayMessage
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: LogonLogs
+                      accessor: displayMessage
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -975,7 +975,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+        - "18"
     scriptarguments:
       key:
         simple: UserApplication
@@ -983,18 +983,18 @@ tasks:
         complex:
           root: LogonLogs.target
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: LogonLogs.target.type
-                iscontext: true
-              right:
-                value:
-                  simple: AppInstance
-              ignorecase: true
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: LogonLogs.target.type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: AppInstance
+                  ignorecase: true
           accessor: displayName
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1026,7 +1026,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+        - "18"
     scriptarguments:
       key:
         simple: ' SuspiciousUserAgent'
@@ -1035,7 +1035,7 @@ tasks:
           root: OktaUserAgentLogs.client.userAgent
           accessor: rawUserAgent
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1067,7 +1067,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+        - "18"
     scriptarguments:
       key:
         simple: ' SuspiciousUserActivities'
@@ -1076,7 +1076,7 @@ tasks:
           root: OktaSuspiciousActivities
           accessor: displayMessage
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1107,7 +1107,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "34"
+        - "34"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1139,7 +1139,7 @@ tasks:
       brand: Okta v2
     nexttasks:
       '#none#':
-      - "36"
+        - "36"
     scriptarguments:
       extend-context:
         simple: OktaFailedLogonLogs=
@@ -1155,12 +1155,12 @@ tasks:
         complex:
           root: TimeLast1DayTimeNow
           transformers:
-          - operator: LastArrayElement
+            - operator: LastArrayElement
       until:
         complex:
           root: CurrentTimeTimeNow
           transformers:
-          - operator: LastArrayElement
+            - operator: LastArrayElement
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -1193,7 +1193,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+        - "18"
     scriptarguments:
       array:
         complex:
@@ -1233,22 +1233,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "40"
+        - "40"
       "yes":
-      - "35"
+        - "35"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: OktaFailedLogonLogs
-                accessor: displayMessage
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: OktaFailedLogonLogs
+                      accessor: displayMessage
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -1278,7 +1278,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "21"
+        - "21"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1309,7 +1309,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "28"
+        - "28"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1340,32 +1340,32 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "18"
+        - "18"
       "yes":
-      - "4"
+        - "4"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.LoginCountry
-            iscontext: true
-          right:
-            value: {}
-          ignorecase: true
-      - - operator: isNotEqualString
-          left:
-            value:
-              complex:
-                root: inputs.LoginCountry
-            iscontext: true
-          right:
-            value:
-              simple: Unknown
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.LoginCountry
+                  iscontext: true
+                right:
+                  value: {}
+                ignorecase: true
+          -   - operator: isNotEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.LoginCountry
+                  iscontext: true
+                right:
+                  value:
+                    simple: Unknown
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1396,7 +1396,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+        - "18"
     scriptarguments:
       key:
         simple: NumOfOktaFailedLogon
@@ -1432,7 +1432,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "45"
+        - "45"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1464,7 +1464,7 @@ tasks:
       brand: Okta v2
     nexttasks:
       '#none#':
-      - "44"
+        - "44"
     scriptarguments:
       extend-context:
         simple: ASNfailedlogs=
@@ -1480,12 +1480,12 @@ tasks:
         complex:
           root: TimeLast1DayTimeNow
           transformers:
-          - operator: LastArrayElement
+            - operator: LastArrayElement
       until:
         complex:
           root: CurrentTimeTimeNow
           transformers:
-          - operator: LastArrayElement
+            - operator: LastArrayElement
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -1518,7 +1518,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+        - "18"
     scriptarguments:
       array:
         complex:
@@ -1555,22 +1555,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "18"
+        - "18"
       "yes":
-      - "43"
+        - "43"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: ASNfailedlogs
-                accessor: displayMessage
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: ASNfailedlogs
+                      accessor: displayMessage
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -1600,19 +1600,19 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "18"
+        - "18"
       "yes":
-      - "42"
+        - "42"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.ASN
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.ASN
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -1643,7 +1643,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
+        - "39"
     scriptarguments:
       key:
         simple: LogonCountries
@@ -1652,7 +1652,7 @@ tasks:
           root: LogonLogs.client.geographicalContext
           accessor: country
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1697,65 +1697,61 @@ view: |-
     }
   }
 inputs:
-- key: UserEmail
-  value: {}
-  required: false
-  description: The user email to search Okta logs.
-  playbookInputQuery:
-- key: LoginCountry
-  value: {}
-  required: false
-  description: |-
-    The Country code from which the user logged in.
-    Country Code Alpha 2 (Example: US)
-  playbookInputQuery:
-- key: ASN
-  value: {}
-  required: false
-  description: The ASN from which the user logged in.
-  playbookInputQuery:
+  - key: UserEmail
+    value: {}
+    required: false
+    description: The user email to search Okta logs.
+    playbookInputQuery:
+  - key: LoginCountry
+    value: {}
+    required: false
+    description: |-
+      The Country code from which the user logged in.
+      Country Code Alpha 2 (Example: US)
+    playbookInputQuery:
+  - key: ASN
+    value: {}
+    required: false
+    description: The ASN from which the user logged in.
+    playbookInputQuery:
 outputs:
-- contextPath: PermanentCountry
-  description: True if the user work from a permanent country. False if else.
-  type: unknown
-- contextPath: UserDevices
-  description: Devices used by the user.
-  type: unknown
-- contextPath: NumOfOktaSuspiciousActivities
-  description: Number of Suspicious Activities for the user.
-  type: unknown
-- contextPath: ' SuspiciousUserActivities'
-  description: Suspicious Activities for the user.
-  type: unknown
-- contextPath: NumOfOktaSuspiciousUserAgent
-  description: Number of Suspicious User Agent.
-  type: unknown
-- contextPath: SuspiciousUserAgent
-  description: Suspicious User Agent.
-  type: unknown
-- contextPath: UserApplication
-  description: ' Applications used by the user.'
-  type: unknown
-- contextPath: NumOfOktaFailedLogon
-  description: Number of failed login.
-  type: unknown
-- contextPath: NumOfFailedLogonASN
-  description: Number of failed login from ASN by all users.
-  type: unknown
-- contextPath: LogonCountries
-  description: The countries from which the user logged in.
-  type: unknown
+  - contextPath: PermanentCountry
+    description: True if the user work from a permanent country. False if else.
+    type: unknown
+  - contextPath: UserDevices
+    description: Devices used by the user.
+    type: unknown
+  - contextPath: NumOfOktaSuspiciousActivities
+    description: Number of Suspicious Activities for the user.
+    type: unknown
+  - contextPath: ' SuspiciousUserActivities'
+    description: Suspicious Activities for the user.
+    type: unknown
+  - contextPath: NumOfOktaSuspiciousUserAgent
+    description: Number of Suspicious User Agent.
+    type: unknown
+  - contextPath: SuspiciousUserAgent
+    description: Suspicious User Agent.
+    type: unknown
+  - contextPath: UserApplication
+    description: ' Applications used by the user.'
+    type: unknown
+  - contextPath: NumOfOktaFailedLogon
+    description: Number of failed login.
+    type: unknown
+  - contextPath: NumOfFailedLogonASN
+    description: Number of failed login from ASN by all users.
+    type: unknown
+  - contextPath: LogonCountries
+    description: The countries from which the user logged in.
+    type: unknown
 quiet: true
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 6.5.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
-- edr
-- cloud
-- cloud_runtime_security
+  - agentix
+  - xsiam
+  - edr
+  - cloud
+  - cloud_runtime_security

@@ -18,7 +18,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -49,37 +49,37 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+        - "5"
       "yes":
-      - "2"
+        - "2"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Panorama
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Panorama
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                      accessor: brand
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -110,7 +110,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -149,20 +149,20 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       Ids:
         complex:
           root: Panorama
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Panorama.Commit.Status
-                iscontext: true
-              right:
-                value:
-                  simple: Pending
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: Panorama.Commit.Status
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Pending
           accessor: Commit.JobID
       Interval:
         simple: "1"
@@ -238,7 +238,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+        - "11"
     scriptarguments:
       device-group:
         simple: ${inputs.device-group}
@@ -280,20 +280,20 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       Ids:
         complex:
           root: Panorama
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Panorama.Push.Status
-                iscontext: true
-              right:
-                value:
-                  simple: Pending
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: Panorama.Push.Status
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Pending
           accessor: Push.JobID
       Interval:
         simple: "1"
@@ -341,7 +341,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     scriptarguments:
       job_id:
         complex:
@@ -378,7 +378,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+        - "15"
     scriptarguments:
       job_id:
         complex:
@@ -414,18 +414,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+        - "5"
       "yes":
-      - "3"
+        - "3"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Panorama.Commit(val.Status != 'Completed' && val.Status != 'Failed').JobID
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    simple: Panorama.Commit(val.Status != 'Completed' && val.Status != 'Failed').JobID
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -455,18 +455,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+        - "5"
       "yes":
-      - "7"
+        - "7"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Panorama.Push(val.Status != 'Completed' && val.Status != 'Failed').JobID
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    simple: Panorama.Push(val.Status != 'Completed' && val.Status != 'Failed').JobID
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -497,7 +497,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - "13"
+        - "13"
     scriptarguments:
       cmd:
         simple: <show><system><info></info></system></show>
@@ -535,21 +535,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+        - "5"
       Panorama:
-      - "6"
+        - "6"
     separatecontext: false
     conditions:
-    - label: Panorama
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: panorama.model
-            iscontext: true
-          right:
-            value:
-              simple: Panorama
+      - label: Panorama
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: panorama.model
+                  iscontext: true
+                right:
+                  value:
+                    simple: Panorama
     continueonerrortype: ""
     view: |-
       {
@@ -579,21 +579,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "16"
+        - "16"
       "yes":
-      - "12"
+        - "12"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Panorama.Commit.Status
-            iscontext: true
-          right:
-            value:
-              simple: Completed
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: Panorama.Commit.Status
+                  iscontext: true
+                right:
+                  value:
+                    simple: Completed
     continueonerrortype: ""
     view: |-
       {
@@ -623,21 +623,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "17"
+        - "17"
       "yes":
-      - "5"
+        - "5"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Panorama.Push.Status
-            iscontext: true
-          right:
-            value:
-              simple: Completed
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: Panorama.Push.Status
+                  iscontext: true
+                right:
+                  value:
+                    simple: Completed
     continueonerrortype: ""
     view: |-
       {
@@ -668,7 +668,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+        - "18"
     scriptarguments:
       message:
         simple: Panorama Commit Failed
@@ -704,7 +704,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+        - "19"
     scriptarguments:
       message:
         simple: Panorama Commit Failed
@@ -739,7 +739,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+        - "12"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -770,7 +770,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -811,24 +811,20 @@ view: |-
     }
   }
 inputs:
-- key: device-group
-  value: {}
-  required: false
-  description: ""
-  playbookInputQuery:
+  - key: device-group
+    value: {}
+    required: false
+    description: ""
+    playbookInputQuery:
 outputs:
-- contextPath: Panorama.Commit.Warnings
-  description: Job ID warnings.
-  type: string
-- contextPath: Panorama.Push.Warnings
-  description: Job ID warnings.
+  - contextPath: Panorama.Commit.Warnings
+    description: Job ID warnings.
+    type: string
+  - contextPath: Panorama.Push.Warnings
+    description: Job ID warnings.
 tests:
-- No tests (deprecated)
+  - No tests (deprecated)
 deprecated: true
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

@@ -5,10 +5,5 @@ rules: ''
 samples: ''
 tags: []
 supportedModules:
-- xsiam
-- agentix
-- C1
-- X1
-- X3
-- X5
-- ENT_PLUS
+  - xsiam
+  - agentix

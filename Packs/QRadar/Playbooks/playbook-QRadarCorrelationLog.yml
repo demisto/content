@@ -18,8 +18,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '3'
-      - '4'
+        - '3'
+        - '4'
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
     note: false
@@ -42,7 +42,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '8'
+        - '8'
     scriptarguments:
       headers: {}
       interval:
@@ -97,19 +97,19 @@ tasks:
       description: ''
     nexttasks:
       'yes':
-      - '1'
+        - '1'
     separatecontext: false
     conditions:
-    - label: 'yes'
-      condition:
-      - - operator: inList
-          left:
-            value:
-              simple: inputs.GetOnlyCREEvents
-            iscontext: true
-          right:
-            value:
-              simple: OnlyNotCRE,All
+      - label: 'yes'
+        condition:
+          -   - operator: inList
+                left:
+                  value:
+                    simple: inputs.GetOnlyCREEvents
+                  iscontext: true
+                right:
+                  value:
+                    simple: OnlyNotCRE,All
     view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 195\n  }\n}"
     note: false
     timertriggers: []
@@ -130,19 +130,19 @@ tasks:
       description: ''
     nexttasks:
       'yes':
-      - '5'
+        - '5'
     separatecontext: false
     conditions:
-    - label: 'yes'
-      condition:
-      - - operator: inList
-          left:
-            value:
-              simple: inputs.GetOnlyCREEvents
-            iscontext: true
-          right:
-            value:
-              simple: OnlyCRE,All
+      - label: 'yes'
+        condition:
+          -   - operator: inList
+                left:
+                  value:
+                    simple: inputs.GetOnlyCREEvents
+                  iscontext: true
+                right:
+                  value:
+                    simple: OnlyCRE,All
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
     note: false
     timertriggers: []
@@ -164,7 +164,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '8'
+        - '8'
     scriptarguments:
       headers: {}
       interval:
@@ -201,7 +201,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '2'
+        - '2'
     scriptarguments:
       capitalize:
         simple: 'False'
@@ -222,49 +222,45 @@ tasks:
     quietmode: 0
 view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 735,\n      \"width\": 810,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"
 inputs:
-- key: QID
-  value: {}
-  required: true
-  description: The correlation QID.
-  playbookInputQuery:
-- key: OffenseStartTime
-  value: {}
-  required: true
-  description: The offense start time.
-  playbookInputQuery:
-- key: OffenseID
-  value: {}
-  required: true
-  description: The offense ID.
-  playbookInputQuery:
-- key: additionalQueryFields
-  value: {}
-  required: false
-  description: Add more fields for basic query (a list with comma separators)
-  playbookInputQuery:
-- key: GetOnlyCREEvents
-  value:
-    simple: OnlyCRE
-  required: false
-  description: "If value \"OnlyCRE\" get only events made by CRE.\nValues can be \"OnlyCRE\", \"OnlyNotCRE\", \"All\"."
-  playbookInputQuery:
-- key: MaxLogsCount
-  value:
-    simple: '20'
-  required: false
-  description: 'Maximum number of log entires to query from QRadar (default: 20)'
-  playbookInputQuery:
+  - key: QID
+    value: {}
+    required: true
+    description: The correlation QID.
+    playbookInputQuery:
+  - key: OffenseStartTime
+    value: {}
+    required: true
+    description: The offense start time.
+    playbookInputQuery:
+  - key: OffenseID
+    value: {}
+    required: true
+    description: The offense ID.
+    playbookInputQuery:
+  - key: additionalQueryFields
+    value: {}
+    required: false
+    description: Add more fields for basic query (a list with comma separators)
+    playbookInputQuery:
+  - key: GetOnlyCREEvents
+    value:
+      simple: OnlyCRE
+    required: false
+    description: "If value \"OnlyCRE\" get only events made by CRE.\nValues can be \"OnlyCRE\", \"OnlyNotCRE\", \"All\"."
+    playbookInputQuery:
+  - key: MaxLogsCount
+    value:
+      simple: '20'
+    required: false
+    description: 'Maximum number of log entires to query from QRadar (default: 20)'
+    playbookInputQuery:
 outputs:
-- contextPath: QRadar.Log
-  description: Logs of QRadar correlations
-  type: unknown
+  - contextPath: QRadar.Log
+    description: Logs of QRadar correlations
+    type: unknown
 fromversion: 5.0.0
 tests:
-- No test
+  - No test
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

@@ -16,7 +16,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     separatecontext: false
     view: |-
       {
@@ -80,7 +80,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     scriptarguments:
       target:
         complex:
@@ -114,14 +114,10 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 5.0.0
 description: Find if there is signature coverage for a specific CVE.
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
-- cloud_posture
+  - agentix
+  - xsiam
+  - cloud_posture

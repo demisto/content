@@ -53,7 +53,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '3'
+        - '3'
     separatecontext: false
     view: |-
       {
@@ -84,33 +84,33 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '33'
+        - '33'
       True Positive:
-      - "81"
+        - "81"
     separatecontext: false
     conditions:
-    - label: True Positive
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: FileVerdict
-            iscontext: true
-          right:
-            value:
-              simple: Suspicious
-          ignorecase: true
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Core.AnalyticsPrevalence.Hash
-                accessor: value
-            iscontext: true
-          right:
-            value:
-              simple: "false"
-          ignorecase: true
+      - label: True Positive
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: FileVerdict
+                  iscontext: true
+                right:
+                  value:
+                    simple: Suspicious
+                ignorecase: true
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: Core.AnalyticsPrevalence.Hash
+                      accessor: value
+                  iscontext: true
+                right:
+                  value:
+                    simple: "false"
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -140,7 +140,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '61'
+        - '61'
     separatecontext: false
     view: |-
       {
@@ -171,24 +171,24 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '57'
+        - '57'
       Blocked:
-      - '35'
+        - '35'
     separatecontext: false
     conditions:
-    - label: Blocked
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: alert
-                accessor: action
-            iscontext: true
-          right:
-            value:
-              simple: BLOCKED
-          ignorecase: true
+      - label: Blocked
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: alert
+                      accessor: action
+                  iscontext: true
+                right:
+                  value:
+                    simple: BLOCKED
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -218,43 +218,43 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - "39"
+        - "39"
       Benign:
-      - "85"
+        - "85"
       Greyware:
-      - "86"
+        - "86"
     separatecontext: false
     conditions:
-    - label: Benign
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: WildFire.Verdicts
-                accessor: Verdict
-            iscontext: true
-          right:
-            value:
-              simple: "0"
-    - label: Greyware
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: WildFire.Verdicts.Verdict
-            iscontext: true
-          right:
-            value:
-              simple: "2"
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.GraywareAsMalware
-            iscontext: true
-          right:
-            value:
-              simple: "False"
+      - label: Benign
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: WildFire.Verdicts
+                      accessor: Verdict
+                  iscontext: true
+                right:
+                  value:
+                    simple: "0"
+      - label: Greyware
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: WildFire.Verdicts.Verdict
+                  iscontext: true
+                right:
+                  value:
+                    simple: "2"
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.GraywareAsMalware
+                  iscontext: true
+                right:
+                  value:
+                    simple: "False"
     continueonerrortype: ""
     view: |-
       {
@@ -284,7 +284,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "75"
+        - "75"
     separatecontext: false
     view: |-
       {
@@ -320,9 +320,9 @@ tasks:
       brand: ''
     nexttasks:
       No:
-      - '39'
+        - '39'
       "Yes":
-      - "67"
+        - "67"
     separatecontext: false
     view: |-
       {
@@ -353,7 +353,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '14'
+        - '14'
     separatecontext: false
     view: |-
       {
@@ -384,7 +384,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '63'
+        - '63'
     separatecontext: false
     view: |-
       {
@@ -415,8 +415,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '64'
-      - '65'
+        - '64'
+        - '65'
     separatecontext: false
     view: |-
       {
@@ -447,21 +447,21 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - "47"
+        - "47"
       yes:
-      - '41'
-      - "76"
+        - '41'
+        - "76"
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FoundIncidents
-            iscontext: true
-          right:
-            value: {}
+      - label: yes
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: FoundIncidents
+                  iscontext: true
+                right:
+                  value: {}
     view: |-
       {
         "position": {
@@ -492,7 +492,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '51'
+        - '51'
     separatecontext: false
     view: |-
       {
@@ -523,23 +523,23 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '47'
+        - '47'
       yes:
-      - '66'
+        - '66'
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoRecovery
-            iscontext: true
-          right:
-            value:
-              simple: 'True'
-          ignorecase: true
+      - label: yes
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.AutoRecovery
+                  iscontext: true
+                right:
+                  value:
+                    simple: 'True'
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -569,23 +569,23 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '48'
+        - '48'
       yes:
-      - '45'
+        - '45'
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoCloseAlert
-            iscontext: true
-          right:
-            value:
-              simple: 'True'
-          ignorecase: true
+      - label: yes
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.AutoCloseAlert
+                  iscontext: true
+                right:
+                  value:
+                    simple: 'True'
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -615,7 +615,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '45'
+        - '45'
     separatecontext: false
     view: |-
       {
@@ -646,7 +646,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '46'
+        - '46'
     separatecontext: false
     view: |-
       {
@@ -705,7 +705,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '58'
+        - '58'
     separatecontext: false
     view: |-
       {
@@ -736,25 +736,25 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '35'
+        - '35'
       24H:
-      - '54'
+        - '54'
     separatecontext: false
     conditions:
-    - label: 24H
-      condition:
-      - - operator: greaterThanOrEqual
-          left:
-            value:
-              complex:
-                root: alert
-                accessor: autime
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: LastDayTimeNowUnix
-            iscontext: true
+      - label: 24H
+        condition:
+          -   - operator: greaterThanOrEqual
+                left:
+                  value:
+                    complex:
+                      root: alert
+                      accessor: autime
+                  iscontext: true
+                right:
+                  value:
+                    complex:
+                      root: LastDayTimeNowUnix
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -786,7 +786,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '55'
+        - '55'
     scriptarguments:
       contextKey:
         simple: LastDay
@@ -822,24 +822,24 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '35'
+        - '35'
       yes:
-      - '62'
+        - '62'
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoContainment
-                transformers:
-                - operator: toLowerCase
-            iscontext: true
-          right:
-            value:
-              simple: 'true'
+      - label: yes
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.AutoContainment
+                      transformers:
+                        - operator: toLowerCase
+                  iscontext: true
+                right:
+                  value:
+                    simple: 'true'
     view: |-
       {
         "position": {
@@ -870,7 +870,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '60'
+        - '60'
     scriptarguments:
       endpoint_ids:
         complex:
@@ -910,7 +910,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '68'
+        - '68'
     scriptarguments:
       action_id:
         complex:
@@ -947,7 +947,7 @@ tasks:
       description: 'This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then returns the information needed to establish the alert''s verdict.'
     nexttasks:
       '#none#':
-      - "79"
+        - "79"
     scriptarguments:
       CloseReason:
         simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue
@@ -1011,18 +1011,18 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '35'
+        - '35'
     scriptarguments:
       AutoContainment:
         complex:
           root: inputs.AutoContainment
           transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: 'true'
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: 'true'
       BlockIndicators:
         simple: 'True'
       ClearUserSessions:
@@ -1052,7 +1052,7 @@ tasks:
           root: alert
           accessor: username
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     loop:
       iscommand: false
@@ -1089,7 +1089,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '44'
+        - '44'
     scriptarguments:
       HuntCnCTechniques:
         simple: 'True'
@@ -1153,18 +1153,18 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '50'
+        - '50'
     scriptarguments:
       AutoContainment:
         complex:
           root: inputs.AutoContainment
           transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: 'false'
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: 'false'
       BlockIndicators:
         simple: 'True'
       ClearUserSessions:
@@ -1179,62 +1179,62 @@ tasks:
         complex:
           root: alert
           transformers:
-          - operator: If-Then-Else
-            args:
-              condition:
-                value:
-                  simple: lhs!=rhs
-              conditionB: {}
-              conditionInBetween: {}
-              else:
-                value:
-                  simple: foundIncidents.CustomFields.initiatorsha256
-                iscontext: true
-              equals: {}
-              lhs:
-                value:
-                  simple: alert.filesha256
-                iscontext: true
-              lhsB: {}
-              options: {}
-              optionsB: {}
-              rhs: {}
-              rhsB: {}
-              then:
-                value:
-                  simple: foundIncidents.CustomFields.filesha256
-                iscontext: true
-          - operator: uniq
+            - operator: If-Then-Else
+              args:
+                condition:
+                  value:
+                    simple: lhs!=rhs
+                conditionB: {}
+                conditionInBetween: {}
+                else:
+                  value:
+                    simple: foundIncidents.CustomFields.initiatorsha256
+                  iscontext: true
+                equals: {}
+                lhs:
+                  value:
+                    simple: alert.filesha256
+                  iscontext: true
+                lhsB: {}
+                options: {}
+                optionsB: {}
+                rhs: {}
+                rhsB: {}
+                then:
+                  value:
+                    simple: foundIncidents.CustomFields.filesha256
+                  iscontext: true
+            - operator: uniq
       FilePath:
         complex:
           root: alert
           transformers:
-          - operator: If-Then-Else
-            args:
-              condition:
-                value:
-                  simple: lhs!=rhs
-              conditionB: {}
-              conditionInBetween: {}
-              else:
-                value:
-                  simple: foundIncidents.CustomFields.initiatorpath
-                iscontext: true
-              equals: {}
-              lhs:
-                value:
-                  simple: alert.filesha256
-                iscontext: true
-              lhsB: {}
-              options: {}
-              optionsB: {}
-              rhs: {}
-              rhsB: {}
-              then:
-                value:
-                  simple: foundIncidents.CustomFields.filepath
-                iscontext: true
-          - operator: uniq
+            - operator: If-Then-Else
+              args:
+                condition:
+                  value:
+                    simple: lhs!=rhs
+                conditionB: {}
+                conditionInBetween: {}
+                else:
+                  value:
+                    simple: foundIncidents.CustomFields.initiatorpath
+                  iscontext: true
+                equals: {}
+                lhs:
+                  value:
+                    simple: alert.filesha256
+                  iscontext: true
+                lhsB: {}
+                options: {}
+                optionsB: {}
+                rhs: {}
+                rhsB: {}
+                then:
+                  value:
+                    simple: foundIncidents.CustomFields.filepath
+                  iscontext: true
+            - operator: uniq
       FileRemediation:
         complex:
           root: inputs.FileRemediation
@@ -1284,7 +1284,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '50'
+        - '50'
     scriptarguments:
       AutoEradicate:
         complex:
@@ -1297,31 +1297,31 @@ tasks:
         complex:
           root: alert
           transformers:
-          - operator: If-Then-Else
-            args:
-              condition:
-                value:
-                  simple: lhs!=rhs
-              conditionB: {}
-              conditionInBetween: {}
-              else:
-                value:
-                  simple: foundIncidents.CustomFields.initiatorpath
-                iscontext: true
-              equals: {}
-              lhs:
-                value:
-                  simple: alert.filesha256
-                iscontext: true
-              lhsB: {}
-              options: {}
-              optionsB: {}
-              rhs: {}
-              rhsB: {}
-              then:
-                value:
-                  simple: foundIncidents.CustomFields.filepath
-                iscontext: true
+            - operator: If-Then-Else
+              args:
+                condition:
+                  value:
+                    simple: lhs!=rhs
+                conditionB: {}
+                conditionInBetween: {}
+                else:
+                  value:
+                    simple: foundIncidents.CustomFields.initiatorpath
+                  iscontext: true
+                equals: {}
+                lhs:
+                  value:
+                    simple: alert.filesha256
+                  iscontext: true
+                lhsB: {}
+                options: {}
+                optionsB: {}
+                rhs: {}
+                rhsB: {}
+                then:
+                  value:
+                    simple: foundIncidents.CustomFields.filepath
+                  iscontext: true
       FileRemediation:
         complex:
           root: inputs.FileRemediation
@@ -1370,7 +1370,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '47'
+        - '47'
     scriptarguments:
       FileHash:
         complex:
@@ -1421,7 +1421,7 @@ tasks:
         It creates an alert exclusion or alert exception, or adds a file to an allow list based on the alert fields and playbook inputs.
     nexttasks:
       '#none#':
-      - '51'
+        - '51'
     scriptarguments:
       FileSHA256:
         complex:
@@ -1481,7 +1481,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '69'
+        - '69'
     scriptarguments:
       lastZipFileInWarroom:
         simple: yes
@@ -1517,30 +1517,30 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - "39"
+        - "39"
     scriptarguments:
       File:
         complex:
           root: File
           filters:
-          - - operator: isNotEqualString
-              left:
-                value:
-                  simple: File.Name
-                iscontext: true
-              right:
-                value:
-                  simple: manifest.json
-              ignorecase: true
-          - - operator: in
-              left:
-                value:
-                  simple: File.Name
-                iscontext: true
-              right:
-                value:
-                  simple: ExtractedFiles
-                iscontext: true
+            -   - operator: isNotEqualString
+                  left:
+                    value:
+                      simple: File.Name
+                    iscontext: true
+                  right:
+                    value:
+                      simple: manifest.json
+                  ignorecase: true
+            -   - operator: in
+                  left:
+                    value:
+                      simple: File.Name
+                    iscontext: true
+                  right:
+                    value:
+                      simple: ExtractedFiles
+                    iscontext: true
     separatecontext: true
     loop:
       iscommand: false
@@ -1549,24 +1549,24 @@ tasks:
           complex:
             root: File
             filters:
-            - - operator: isNotEqualString
-                left:
-                  value:
-                    simple: File.Name
-                  iscontext: true
-                right:
-                  value:
-                    simple: manifest.json
-                ignorecase: true
-            - - operator: in
-                left:
-                  value:
-                    simple: File.Name
-                  iscontext: true
-                right:
-                  value:
-                    simple: ExtractedFiles
-                  iscontext: true
+              -   - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: manifest.json
+                    ignorecase: true
+              -   - operator: in
+                    left:
+                      value:
+                        simple: File.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ExtractedFiles
+                      iscontext: true
       exitCondition: ''
       wait: 1
       max: 100
@@ -1599,23 +1599,23 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - "50"
+        - "50"
       Benign:
-      - '71'
+        - '71'
     separatecontext: false
     conditions:
-    - label: Benign
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: WildFire.Verdicts
-                accessor: Verdict
-            iscontext: true
-          right:
-            value:
-              simple: '0'
+      - label: Benign
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: WildFire.Verdicts
+                      accessor: Verdict
+                  iscontext: true
+                right:
+                  value:
+                    simple: '0'
     view: |-
       {
         "position": {
@@ -1646,7 +1646,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - "46"
+        - "46"
     scriptarguments:
       file_hash:
         complex:
@@ -1686,23 +1686,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "67"
+        - "67"
       "yes":
-      - "34"
+        - "34"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.ShouldManualReviewFP
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.ShouldManualReviewFP
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -1732,7 +1732,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "70"
+        - "70"
     separatecontext: false
     view: |-
       {
@@ -1764,7 +1764,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "78"
+        - "78"
     scriptarguments:
       sha256:
         complex:
@@ -1799,32 +1799,32 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "59"
+        - "59"
       "no":
-      - "39"
+        - "39"
     separatecontext: false
     conditions:
-    - label: "no"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: WildFire.Report
-                accessor: Status
-            iscontext: true
-          right:
-            value:
-              simple: Success
-        - operator: isEqualString
-          left:
-            value:
-              simple: inputs.ShouldRescanBenign
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "no"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: WildFire.Report
+                      accessor: Status
+                  iscontext: true
+                right:
+                  value:
+                    simple: Success
+              - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.ShouldRescanBenign
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -1854,7 +1854,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "80"
+        - "80"
     separatecontext: false
     view: |-
       {
@@ -1885,24 +1885,24 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+        - "2"
       True Positive:
-      - "81"
+        - "81"
     separatecontext: false
     conditions:
-    - label: True Positive
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: DBotScore
-                accessor: Score
-            iscontext: true
-          right:
-            value:
-              simple: "3"
-          ignorecase: true
+      - label: True Positive
+        condition:
+          -   - operator: containsGeneral
+                left:
+                  value:
+                    complex:
+                      root: DBotScore
+                      accessor: Score
+                  iscontext: true
+                right:
+                  value:
+                    simple: "3"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1933,7 +1933,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "83"
+        - "83"
     scriptarguments:
       manual_severity:
         simple: high
@@ -1967,23 +1967,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "6"
+        - "6"
       "yes":
-      - "84"
+        - "84"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.ShouldOpenTicket
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.ShouldOpenTicket
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -2014,7 +2014,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+        - "6"
     scriptarguments:
       CommentToAdd:
         complex:
@@ -2105,7 +2105,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "77"
+        - "77"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2136,7 +2136,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "77"
+        - "77"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2187,288 +2187,284 @@ view: |-
     }
   }
 inputs:
-- key: GraywareAsMalware
-  value:
-    simple: 'False'
-  required: false
-  description: 'Whether to treat Grayware verdict as Malware. '
-  playbookInputQuery:
-- key: AutoContainment
-  value:
-    simple: 'True'
-  required: false
-  description: |-
-    Setting this input will impact both Containment Plan sub-playbooks. Without setting this input, the default values are True for the first occurrence and False for the second.
-    Whether to execute automatically or manually the containment plan tasks:
-    * Isolate endpoint
-    * Block indicators
-    * Quarantine file
-    * Disable user
-  playbookInputQuery:
-- key: AutoEradication
-  value:
-    simple: 'False'
-  required: false
-  description: |-
-    Whether to execute automatically or manually the eradication plan tasks:
-    * Terminate process
-    * Delete file
-    * Reset the user's password
-  playbookInputQuery:
-- key: FileRemediation
-  value:
-    simple: Quarantine
-  required: false
-  description: Should be either 'Quarantine' or 'Delete'.
-  playbookInputQuery:
-- key: AutoRecovery
-  value:
-    simple: 'False'
-  required: false
-  description: Whether to execute the Recovery playbook.
-  playbookInputQuery:
-- key: AutoCloseAlert
-  value:
-    simple: 'False'
-  required: false
-  description: Whether to close the alert automatically or manually, after an analyst's review.
-  playbookInputQuery:
-- key: ShouldRescanBenign
-  value:
-    simple: 'True'
-  required: false
-  description: Whether to rescan (Using WildFire detonate file) benign files.
-  playbookInputQuery:
-- key: ShouldManualReviewFP
-  value:
-    simple: "False"
-  required: false
-  description: Whether to ask for a manual review before false positive handling. Should be True or False
-  playbookInputQuery:
-- key: SHA256
-  value:
-    complex:
-      root: alert
-      transformers:
-      - operator: DT
-        args:
-          dt:
-            value:
-              simple: .=pickvalue(val);function pickvalue(x){if(x.filesha256){return x.filesha256} else {return x.initiatorsha256}}
-  required: false
-  description: The SHA256 hash of the file to respond to. Decided by the DT expression wether it's the initiator or the target file SHA256.
-  playbookInputQuery:
-- key: Path
-  value:
-    complex:
-      root: alert
-      transformers:
-      - operator: DT
-        args:
-          dt:
-            value:
-              simple: .=pickvalue(val);function pickvalue(x){if(x.filepath){return x.filepath} else {return x.initiatorpath}}
-  required: false
-  description: The path of the file to respond to. Decided by the DT expression wether it's the initiator or the target file path.
-  playbookInputQuery:
-- key: Query
-  value:
-    complex:
-      root: alert
-      transformers:
-      - operator: If-Then-Else
-        args:
-          condition:
-            value:
-              simple: lhs!=rhs
-          conditionB: {}
-          conditionInBetween: {}
-          else:
-            value:
-              simple: ${alert= '(initiatorsha256:"' + val.initiatorsha256 + '" or agentid:"' + val.agentid + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
-          equals: {}
-          lhs:
-            value:
-              simple: alert.filesha256
-            iscontext: true
-          lhsB: {}
-          options: {}
-          optionsB: {}
-          rhs: {}
-          rhsB: {}
-          then:
-            value:
-              simple: ${alert= '(filesha256:"' + val.filesha256 + '" or agentid:"' + val.agentid + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
-  required: false
-  description: The query for searching previous alerts based on the file we want to respond to. Decided by the If-Then-Else expression wether it's the initiator or the target file.
-  playbookInputQuery:
-- key: ShouldOpenTicket
-  value:
-    simple: "False"
-  required: false
-  description: Whether to open a ticket automatically in a ticketing system. (True/False).
-  playbookInputQuery:
-- key: serviceNowShortDescription
-  value:
-    simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
-  required: false
-  description: A short description of the ticket.
-  playbookInputQuery:
-- key: serviceNowImpact
-  value: {}
-  required: false
-  description: The impact for the new ticket. Leave empty for ServiceNow default impact.
-  playbookInputQuery:
-- key: serviceNowUrgency
-  value: {}
-  required: false
-  description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
-  playbookInputQuery:
-- key: serviceNowSeverity
-  value: {}
-  required: false
-  description: The severity of the new ticket. Leave empty for ServiceNow default severity.
-  playbookInputQuery:
-- key: serviceNowTicketType
-  value: {}
-  required: false
-  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
-  playbookInputQuery:
-- key: serviceNowCategory
-  value: {}
-  required: false
-  description: The category of the ServiceNow ticket.
-  playbookInputQuery:
-- key: serviceNowAssignmentGroup
-  value: {}
-  required: false
-  description: The group to which to assign the new ticket.
-  playbookInputQuery:
-- key: ZendeskPriority
-  value: {}
-  required: false
-  description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
-  playbookInputQuery:
-- key: ZendeskRequester
-  value: {}
-  required: false
-  description: The user who requested this ticket.
-  playbookInputQuery:
-- key: ZendeskStatus
-  value: {}
-  required: false
-  description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
-  playbookInputQuery:
-- key: ZendeskSubject
-  value:
-    simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
-  required: false
-  description: The value of the subject field for this ticket.
-  playbookInputQuery:
-- key: ZendeskTags
-  value: {}
-  required: false
-  description: The array of tags applied to this ticket.
-  playbookInputQuery:
-- key: ZendeskType
-  value: {}
-  required: false
-  description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
-  playbookInputQuery:
-- key: ZendeskAssigne
-  value: {}
-  required: false
-  description: The agent currently assigned to the ticket.
-  playbookInputQuery:
-- key: ZendeskCollaborators
-  value: {}
-  required: false
-  description: The users currently CC'ed on the ticket.
-  playbookInputQuery:
-- key: description
-  value:
-    simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
-  required: false
-  description: The ticket description.
-  playbookInputQuery:
-- key: addCommentPerEndpoint
-  value: {}
-  required: false
-  description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
-  playbookInputQuery:
-- key: CommentToAdd
-  value:
-    simple: '${alert.name}. Alert ID: ${alert.id}'
-  required: false
-  description: Comment for the ticket.
-  playbookInputQuery:
+  - key: GraywareAsMalware
+    value:
+      simple: 'False'
+    required: false
+    description: 'Whether to treat Grayware verdict as Malware. '
+    playbookInputQuery:
+  - key: AutoContainment
+    value:
+      simple: 'True'
+    required: false
+    description: |-
+      Setting this input will impact both Containment Plan sub-playbooks. Without setting this input, the default values are True for the first occurrence and False for the second.
+      Whether to execute automatically or manually the containment plan tasks:
+      * Isolate endpoint
+      * Block indicators
+      * Quarantine file
+      * Disable user
+    playbookInputQuery:
+  - key: AutoEradication
+    value:
+      simple: 'False'
+    required: false
+    description: |-
+      Whether to execute automatically or manually the eradication plan tasks:
+      * Terminate process
+      * Delete file
+      * Reset the user's password
+    playbookInputQuery:
+  - key: FileRemediation
+    value:
+      simple: Quarantine
+    required: false
+    description: Should be either 'Quarantine' or 'Delete'.
+    playbookInputQuery:
+  - key: AutoRecovery
+    value:
+      simple: 'False'
+    required: false
+    description: Whether to execute the Recovery playbook.
+    playbookInputQuery:
+  - key: AutoCloseAlert
+    value:
+      simple: 'False'
+    required: false
+    description: Whether to close the alert automatically or manually, after an analyst's review.
+    playbookInputQuery:
+  - key: ShouldRescanBenign
+    value:
+      simple: 'True'
+    required: false
+    description: Whether to rescan (Using WildFire detonate file) benign files.
+    playbookInputQuery:
+  - key: ShouldManualReviewFP
+    value:
+      simple: "False"
+    required: false
+    description: Whether to ask for a manual review before false positive handling. Should be True or False
+    playbookInputQuery:
+  - key: SHA256
+    value:
+      complex:
+        root: alert
+        transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .=pickvalue(val);function pickvalue(x){if(x.filesha256){return x.filesha256} else {return x.initiatorsha256}}
+    required: false
+    description: The SHA256 hash of the file to respond to. Decided by the DT expression wether it's the initiator or the target file SHA256.
+    playbookInputQuery:
+  - key: Path
+    value:
+      complex:
+        root: alert
+        transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .=pickvalue(val);function pickvalue(x){if(x.filepath){return x.filepath} else {return x.initiatorpath}}
+    required: false
+    description: The path of the file to respond to. Decided by the DT expression wether it's the initiator or the target file path.
+    playbookInputQuery:
+  - key: Query
+    value:
+      complex:
+        root: alert
+        transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs!=rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: ${alert= '(initiatorsha256:"' + val.initiatorsha256 + '" or agentid:"' + val.agentid + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
+              equals: {}
+              lhs:
+                value:
+                  simple: alert.filesha256
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs: {}
+              rhsB: {}
+              then:
+                value:
+                  simple: ${alert= '(filesha256:"' + val.filesha256 + '" or agentid:"' + val.agentid + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
+    required: false
+    description: The query for searching previous alerts based on the file we want to respond to. Decided by the If-Then-Else expression wether it's the initiator or the target file.
+    playbookInputQuery:
+  - key: ShouldOpenTicket
+    value:
+      simple: "False"
+    required: false
+    description: Whether to open a ticket automatically in a ticketing system. (True/False).
+    playbookInputQuery:
+  - key: serviceNowShortDescription
+    value:
+      simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+    required: false
+    description: A short description of the ticket.
+    playbookInputQuery:
+  - key: serviceNowImpact
+    value: {}
+    required: false
+    description: The impact for the new ticket. Leave empty for ServiceNow default impact.
+    playbookInputQuery:
+  - key: serviceNowUrgency
+    value: {}
+    required: false
+    description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
+    playbookInputQuery:
+  - key: serviceNowSeverity
+    value: {}
+    required: false
+    description: The severity of the new ticket. Leave empty for ServiceNow default severity.
+    playbookInputQuery:
+  - key: serviceNowTicketType
+    value: {}
+    required: false
+    description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+    playbookInputQuery:
+  - key: serviceNowCategory
+    value: {}
+    required: false
+    description: The category of the ServiceNow ticket.
+    playbookInputQuery:
+  - key: serviceNowAssignmentGroup
+    value: {}
+    required: false
+    description: The group to which to assign the new ticket.
+    playbookInputQuery:
+  - key: ZendeskPriority
+    value: {}
+    required: false
+    description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
+    playbookInputQuery:
+  - key: ZendeskRequester
+    value: {}
+    required: false
+    description: The user who requested this ticket.
+    playbookInputQuery:
+  - key: ZendeskStatus
+    value: {}
+    required: false
+    description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
+    playbookInputQuery:
+  - key: ZendeskSubject
+    value:
+      simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+    required: false
+    description: The value of the subject field for this ticket.
+    playbookInputQuery:
+  - key: ZendeskTags
+    value: {}
+    required: false
+    description: The array of tags applied to this ticket.
+    playbookInputQuery:
+  - key: ZendeskType
+    value: {}
+    required: false
+    description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
+    playbookInputQuery:
+  - key: ZendeskAssigne
+    value: {}
+    required: false
+    description: The agent currently assigned to the ticket.
+    playbookInputQuery:
+  - key: ZendeskCollaborators
+    value: {}
+    required: false
+    description: The users currently CC'ed on the ticket.
+    playbookInputQuery:
+  - key: description
+    value:
+      simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
+    required: false
+    description: The ticket description.
+    playbookInputQuery:
+  - key: addCommentPerEndpoint
+    value: {}
+    required: false
+    description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
+    playbookInputQuery:
+  - key: CommentToAdd
+    value:
+      simple: '${alert.name}. Alert ID: ${alert.id}'
+    required: false
+    description: Comment for the ticket.
+    playbookInputQuery:
 inputSections:
-- inputs:
-  - AutoCloseAlert
-  - ShouldManualReviewFP
-  name: Alert Management
-  description: Alert management settings and data, including escalation processes, and user engagements.
-- inputs:
-  - Query
-  - SHA256
-  - Path
-  name: Enrichment
-  description: Enrichment settings and data, including assets and indicators enrichment using third-party enrichers.
-- inputs:
-  - GraywareAsMalware
-  - ShouldRescanBenign
-  name: Investigation
-  description: Investigation settings and data, including any deep dive alert investigation and verdict determination.
-- inputs:
-  - AutoEradication
-  - AutoContainment
-  - FileRemediation
-  - AutoRecovery
-  name: Remediation
-  description: Remediation settings and data, including containment, eradication, and recovery.
-- inputs:
-  - ShouldOpenTicket
-  - serviceNowShortDescription
-  - serviceNowImpact
-  - serviceNowUrgency
-  - serviceNowSeverity
-  - serviceNowTicketType
-  - serviceNowCategory
-  - serviceNowAssignmentGroup
-  - ZendeskPriority
-  - ZendeskRequester
-  - ZendeskStatus
-  - ZendeskSubject
-  - ZendeskTags
-  - ZendeskType
-  - ZendeskAssigne
-  - ZendeskCollaborators
-  - description
-  - addCommentPerEndpoint
-  - CommentToAdd
-  name: Ticket Management
-  description: Ticket management settings and data.
+  - inputs:
+      - AutoCloseAlert
+      - ShouldManualReviewFP
+    name: Alert Management
+    description: Alert management settings and data, including escalation processes, and user engagements.
+  - inputs:
+      - Query
+      - SHA256
+      - Path
+    name: Enrichment
+    description: Enrichment settings and data, including assets and indicators enrichment using third-party enrichers.
+  - inputs:
+      - GraywareAsMalware
+      - ShouldRescanBenign
+    name: Investigation
+    description: Investigation settings and data, including any deep dive alert investigation and verdict determination.
+  - inputs:
+      - AutoEradication
+      - AutoContainment
+      - FileRemediation
+      - AutoRecovery
+    name: Remediation
+    description: Remediation settings and data, including containment, eradication, and recovery.
+  - inputs:
+      - ShouldOpenTicket
+      - serviceNowShortDescription
+      - serviceNowImpact
+      - serviceNowUrgency
+      - serviceNowSeverity
+      - serviceNowTicketType
+      - serviceNowCategory
+      - serviceNowAssignmentGroup
+      - ZendeskPriority
+      - ZendeskRequester
+      - ZendeskStatus
+      - ZendeskSubject
+      - ZendeskTags
+      - ZendeskType
+      - ZendeskAssigne
+      - ZendeskCollaborators
+      - description
+      - addCommentPerEndpoint
+      - CommentToAdd
+    name: Ticket Management
+    description: Ticket management settings and data.
 outputSections:
-- outputs: []
-  name: General (Outputs group)
-  description: Generic group for outputs
+  - outputs: []
+    name: General (Outputs group)
+    description: Generic group for outputs
 outputs: []
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 6.6.0
 marketplaces:
-- platform
-- marketplacev2
+  - platform
+  - marketplacev2
 
 
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- cloud
-- cloud_posture
-- cloud_runtime_security
-- edr
-- xsiam
+  - agentix
+  - cloud
+  - cloud_posture
+  - cloud_runtime_security
+  - edr
+  - xsiam

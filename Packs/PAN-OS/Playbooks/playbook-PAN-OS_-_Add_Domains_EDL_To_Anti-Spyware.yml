@@ -19,7 +19,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -50,23 +50,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "7"
+        - "7"
       "Yes":
-      - "15"
+        - "15"
     separatecontext: false
     conditions:
-    - label: "Yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.Add_To_Existing_PAN-OS_EDL
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
+      - label: "Yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.Add_To_Existing_PAN-OS_EDL
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -97,7 +97,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+        - "12"
     scriptarguments:
       device-group:
         complex:
@@ -142,7 +142,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+        - "12"
     scriptarguments:
       certificate_profile:
         complex:
@@ -191,7 +191,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+        - "11"
     scriptarguments:
       action:
         simple: block
@@ -232,7 +232,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -268,7 +268,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -299,23 +299,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "13"
+        - "13"
       "yes":
-      - "9"
+        - "9"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.Use_Existing_AntiSpyware_Profile
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.Use_Existing_AntiSpyware_Profile
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -346,7 +346,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       profile_name:
         complex:
@@ -410,7 +410,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     scriptarguments:
       name:
         complex:
@@ -444,51 +444,47 @@ view: |-
     }
   }
 inputs:
-- key: EDL_URL
-  value: {}
-  required: true
-  description: The URL from which to pull the EDL.
-  playbookInputQuery:
-- key: Add_To_Existing_PAN-OS_EDL
-  value: {}
-  required: false
-  description: Set to "true" to use the existing PAN-OS EDL.
-  playbookInputQuery:
-- key: PAN-OS_EDL_Name
-  value: {}
-  required: true
-  description: PAN-OS EDL name to create/edit if it exists (depending on the value in Add_To_Existing_PAN-OS_EDL).
-  playbookInputQuery:
-- key: Device_Group
-  value: {}
-  required: false
-  description: |
-    The device group for which to return addresses for the EDL (Panorama instances).
-  playbookInputQuery:
-- key: Certificate_Profile
-  value: {}
-  required: false
-  description: |
-    The certificate profile name for the URL that was previously uploaded to PAN OS.
-  playbookInputQuery:
-- key: Anti_Spyware_Profile
-  value: {}
-  required: true
-  description: Name of the anti-spyware profile to create OR to edit if it exists (depending on the value in Use_Existing_AntiSpyware_Profile).
-  playbookInputQuery:
-- key: Use_Existing_AntiSpyware_Profile
-  value: {}
-  required: false
-  description: Set to "true" to create a new anti-spyware profile.
-  playbookInputQuery:
+  - key: EDL_URL
+    value: {}
+    required: true
+    description: The URL from which to pull the EDL.
+    playbookInputQuery:
+  - key: Add_To_Existing_PAN-OS_EDL
+    value: {}
+    required: false
+    description: Set to "true" to use the existing PAN-OS EDL.
+    playbookInputQuery:
+  - key: PAN-OS_EDL_Name
+    value: {}
+    required: true
+    description: PAN-OS EDL name to create/edit if it exists (depending on the value in Add_To_Existing_PAN-OS_EDL).
+    playbookInputQuery:
+  - key: Device_Group
+    value: {}
+    required: false
+    description: |
+      The device group for which to return addresses for the EDL (Panorama instances).
+    playbookInputQuery:
+  - key: Certificate_Profile
+    value: {}
+    required: false
+    description: |
+      The certificate profile name for the URL that was previously uploaded to PAN OS.
+    playbookInputQuery:
+  - key: Anti_Spyware_Profile
+    value: {}
+    required: true
+    description: Name of the anti-spyware profile to create OR to edit if it exists (depending on the value in Use_Existing_AntiSpyware_Profile).
+    playbookInputQuery:
+  - key: Use_Existing_AntiSpyware_Profile
+    value: {}
+    required: false
+    description: Set to "true" to create a new anti-spyware profile.
+    playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 6.5.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

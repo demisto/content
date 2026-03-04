@@ -10,10 +10,10 @@ description: |-
 
   Note: This playbook has inputs from both the "From context data" tab and the "From indicators" tab.
 tags:
-- Job
-- PAN-OS
-- Sinkhole
-- TIM
+  - Job
+  - PAN-OS
+  - Sinkhole
+  - TIM
 starttaskid: "0"
 tasks:
   "0":
@@ -29,7 +29,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "30"
+        - "30"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -60,33 +60,33 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "14"
+        - "14"
       "yes":
-      - "23"
+        - "23"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.EnrichUnknownDomains
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.EnrichSuspiciousDomains
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.EnrichUnknownDomains
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
+              - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.EnrichSuspiciousDomains
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -116,7 +116,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "26"
+        - "26"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -148,7 +148,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "29"
+        - "29"
     scriptarguments:
       field:
         simple: tags
@@ -159,27 +159,27 @@ tasks:
         complex:
           root: DomainsRelatedToMaliciousIPs
           transformers:
-          - operator: AppendIfNotEmpty
-            args:
-              item:
-                value:
-                  simple: DomainsRelatedToCampaigns
-                iscontext: true
-              raw: {}
-          - operator: AppendIfNotEmpty
-            args:
-              item:
-                value:
-                  simple: DomainsRelatedToThreatActors
-                iscontext: true
-              raw: {}
-          - operator: AppendIfNotEmpty
-            args:
-              item:
-                value:
-                  simple: DomainsWithMaliciousTags
-                iscontext: true
-              raw: {}
+            - operator: AppendIfNotEmpty
+              args:
+                item:
+                  value:
+                    simple: DomainsRelatedToCampaigns
+                  iscontext: true
+                raw: {}
+            - operator: AppendIfNotEmpty
+              args:
+                item:
+                  value:
+                    simple: DomainsRelatedToThreatActors
+                  iscontext: true
+                raw: {}
+            - operator: AppendIfNotEmpty
+              args:
+                item:
+                  value:
+                    simple: DomainsWithMaliciousTags
+                  iscontext: true
+                raw: {}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -211,7 +211,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       key:
         simple: DomainsWithMaliciousTags
@@ -219,66 +219,66 @@ tasks:
         complex:
           root: playbookQuery
           filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: c2
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: c&c
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: command and control
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: malicious-activity
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: malware
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.score
-                iscontext: true
-              right:
-                value:
-                  simple: "2"
-            - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
+            -   - operator: containsGeneral
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: c2
+                  ignorecase: true
+                - operator: containsGeneral
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: c&c
+                  ignorecase: true
+                - operator: containsGeneral
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: command and control
+                  ignorecase: true
+                - operator: containsGeneral
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: malicious-activity
+                  ignorecase: true
+                - operator: containsGeneral
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: malware
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "2"
+                - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "3"
           accessor: value
     separatecontext: false
     continueonerrortype: ""
@@ -310,9 +310,9 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "42"
-      - "45"
-      - "44"
+        - "42"
+        - "45"
+        - "44"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -343,31 +343,31 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "14"
+        - "14"
       "yes":
-      - "24"
+        - "24"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: playbookQuery
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: playbookQuery.score
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "2"
-                accessor: value
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: playbookQuery
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: playbookQuery.score
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: "2"
+                      accessor: value
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -397,31 +397,31 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "14"
+        - "14"
       "yes":
-      - "18"
+        - "18"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: playbookQuery
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: playbookQuery.score
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "0"
-                accessor: value
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: playbookQuery
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: playbookQuery.score
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: "0"
+                      accessor: value
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -451,23 +451,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "14"
+        - "14"
       "yes":
-      - "19"
+        - "19"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.EnrichUnknownDomains
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.EnrichUnknownDomains
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -498,23 +498,23 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     scriptarguments:
       indicatorsValues:
         complex:
           root: playbookQuery
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.score
-                iscontext: true
-              right:
-                value:
-                  simple: "0"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "0"
           accessor: value
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -546,23 +546,23 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     scriptarguments:
       indicatorsValues:
         complex:
           root: playbookQuery
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.score
-                iscontext: true
-              right:
-                value:
-                  simple: "2"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "2"
           accessor: value
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -593,8 +593,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "17"
-      - "15"
+        - "17"
+        - "15"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -625,23 +625,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "14"
+        - "14"
       "yes":
-      - "20"
+        - "20"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.EnrichSuspiciousDomains
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.EnrichSuspiciousDomains
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -671,35 +671,35 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "29"
+        - "29"
       "yes":
-      - "9"
+        - "9"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DomainsRelatedToMaliciousIPs
-            iscontext: true
-          right:
-            value: {}
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: DomainsRelatedToCampaigns
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: DomainsRelatedToThreatActors
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: DomainsWithMaliciousTags
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: DomainsRelatedToMaliciousIPs
+                  iscontext: true
+                right:
+                  value: {}
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: DomainsRelatedToCampaigns
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: DomainsRelatedToThreatActors
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: DomainsWithMaliciousTags
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -757,22 +757,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "31"
+        - "31"
       "yes":
-      - "4"
+        - "4"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: playbookQuery
-                accessor: value
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: playbookQuery
+                      accessor: value
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -802,7 +802,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "29"
+        - "29"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -834,7 +834,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+        - "35"
     scriptarguments:
       entities:
         complex:
@@ -876,20 +876,20 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+        - "8"
       "yes":
-      - "36"
+        - "36"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: RelationshipsWithIPs.EntityB
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: RelationshipsWithIPs.EntityB
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -920,14 +920,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "37"
+        - "37"
     scriptarguments:
       value:
         complex:
           root: RelationshipsWithIPs
           accessor: EntityB
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -958,31 +958,31 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+        - "8"
       "yes":
-      - "41"
+        - "41"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: DBotScoreCache
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DBotScoreCache.Score
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "3"
-                accessor: Indicator
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: DBotScoreCache
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: DBotScoreCache.Score
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: "3"
+                      accessor: Indicator
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -1013,7 +1013,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       key:
         simple: DomainsRelatedToMaliciousIPs
@@ -1021,15 +1021,15 @@ tasks:
         complex:
           root: RelationshipsWithIPs
           filters:
-          - - operator: in
-              left:
-                value:
-                  simple: RelationshipsWithIPs.EntityB
-                iscontext: true
-              right:
-                value:
-                  simple: MaliciousIPs
-                iscontext: true
+            -   - operator: in
+                  left:
+                    value:
+                      simple: RelationshipsWithIPs.EntityB
+                    iscontext: true
+                  right:
+                    value:
+                      simple: MaliciousIPs
+                    iscontext: true
           accessor: EntityA
     separatecontext: false
     continueonerrortype: ""
@@ -1062,7 +1062,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "40"
+        - "40"
     scriptarguments:
       key:
         simple: MaliciousIPs
@@ -1070,17 +1070,17 @@ tasks:
         complex:
           root: DBotScoreCache
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScoreCache.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScoreCache.Score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "3"
           accessor: Indicator
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1111,7 +1111,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "34"
+        - "34"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1143,8 +1143,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "46"
-      - "49"
+        - "46"
+        - "49"
     scriptarguments:
       entities:
         complex:
@@ -1186,7 +1186,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1217,7 +1217,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "43"
+        - "43"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1248,32 +1248,32 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+        - "8"
       "yes":
-      - "48"
+        - "48"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: RelationshipsWithCampaigns
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: RelationshipsWithCampaigns.EntityBType
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Campaign
-                    ignorecase: true
-                accessor: EntityB
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: RelationshipsWithCampaigns
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: RelationshipsWithCampaigns.EntityBType
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Campaign
+                              ignorecase: true
+                      accessor: EntityB
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -1304,7 +1304,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       key:
         simple: DomainsRelatedToCampaigns
@@ -1312,15 +1312,15 @@ tasks:
         complex:
           root: RelationshipsWithCampaigns
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: RelationshipsWithCampaigns.EntityBType
-                iscontext: true
-              right:
-                value:
-                  simple: Campaign
-              ignorecase: true
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: RelationshipsWithCampaigns.EntityBType
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Campaign
+                  ignorecase: true
           accessor: EntityA
     separatecontext: false
     continueonerrortype: ""
@@ -1352,32 +1352,32 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+        - "8"
       "yes":
-      - "50"
+        - "50"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: RelationshipsWithCampaigns
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: RelationshipsWithCampaigns.EntityBType
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Threat Actor
-                    ignorecase: true
-                accessor: EntityB
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: RelationshipsWithCampaigns
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: RelationshipsWithCampaigns.EntityBType
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Threat Actor
+                              ignorecase: true
+                      accessor: EntityB
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -1408,7 +1408,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       key:
         simple: DomainsRelatedToThreatActors
@@ -1416,15 +1416,15 @@ tasks:
         complex:
           root: RelationshipsWithCampaigns
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: RelationshipsWithCampaigns.EntityBType
-                iscontext: true
-              right:
-                value:
-                  simple: Threat Actor
-              ignorecase: true
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: RelationshipsWithCampaigns.EntityBType
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Threat Actor
+                  ignorecase: true
           accessor: EntityA
     separatecontext: false
     continueonerrortype: ""
@@ -1475,58 +1475,54 @@ view: |-
     }
   }
 inputs:
-- key: ""
-  value: {}
-  required: false
-  description: All domain indicators. In the playbook, the domains will be filtered by those used for malicious communication, and tagged to be sinkholed.
-  playbookInputQuery:
-    query: type:Domain
-    queryEntity: indicators
-    results:
-    daterange:
-      fromdate: 0001-01-01T00:00:00Z
-      todate: 0001-01-01T00:00:00Z
-      period:
-        by: ""
-        byto: ""
-        byfrom: ""
-        tovalue:
-        fromvalue:
-        field: ""
-      fromdatelicenseval: 0001-01-01T00:00:00Z
-    runFromLastJobTime: true
-- key: SinkholeTagForEDL
-  value:
-    simple: to_sinkhole
-  required: true
-  description: The tag that should be applied to the domain so that it will be exported to the EDL using the Generic Export Indicators Service integration in Cortex XSOAR.
-  playbookInputQuery:
-- key: EnrichUnknownDomains
-  value:
-    simple: "False"
-  required: false
-  description: |-
-    Whether to enrich unknown domains. Enriching domains can be useful to gain additional information regarding reputation for domains from your feed which will help identify domains used in C2 communication, but may consume more API quota from your threat intelligence integrations.
-    Can be True or False.
-  playbookInputQuery:
-- key: EnrichSuspiciousDomains
-  value:
-    simple: "False"
-  required: false
-  description: |-
-    Whether to enrich suspicious domains. Enriching domains can be useful to gain additional information regarding reputation for domains from your feed which will help identify domains used in C2 communication, but may consume more API quota from your threat intelligence integrations.
-    Can be True or False.
-  playbookInputQuery:
+  - key: ""
+    value: {}
+    required: false
+    description: All domain indicators. In the playbook, the domains will be filtered by those used for malicious communication, and tagged to be sinkholed.
+    playbookInputQuery:
+      query: type:Domain
+      queryEntity: indicators
+      results:
+      daterange:
+        fromdate: 0001-01-01T00:00:00Z
+        todate: 0001-01-01T00:00:00Z
+        period:
+          by: ""
+          byto: ""
+          byfrom: ""
+          tovalue:
+          fromvalue:
+          field: ""
+        fromdatelicenseval: 0001-01-01T00:00:00Z
+      runFromLastJobTime: true
+  - key: SinkholeTagForEDL
+    value:
+      simple: to_sinkhole
+    required: true
+    description: The tag that should be applied to the domain so that it will be exported to the EDL using the Generic Export Indicators Service integration in Cortex XSOAR.
+    playbookInputQuery:
+  - key: EnrichUnknownDomains
+    value:
+      simple: "False"
+    required: false
+    description: |-
+      Whether to enrich unknown domains. Enriching domains can be useful to gain additional information regarding reputation for domains from your feed which will help identify domains used in C2 communication, but may consume more API quota from your threat intelligence integrations.
+      Can be True or False.
+    playbookInputQuery:
+  - key: EnrichSuspiciousDomains
+    value:
+      simple: "False"
+    required: false
+    description: |-
+      Whether to enrich suspicious domains. Enriching domains can be useful to gain additional information regarding reputation for domains from your feed which will help identify domains used in C2 communication, but may consume more API quota from your threat intelligence integrations.
+      Can be True or False.
+    playbookInputQuery:
 outputs: []
 quiet: true
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 6.9.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
-- cloud_posture
+  - agentix
+  - xsiam
+  - cloud_posture

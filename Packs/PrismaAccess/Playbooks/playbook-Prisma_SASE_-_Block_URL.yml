@@ -22,7 +22,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -53,20 +53,20 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "6"
+        - "6"
       "Yes":
-      - "2"
+        - "2"
     separatecontext: false
     conditions:
-    - label: "Yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.CategoryName
-            iscontext: true
-          right:
-            value: {}
+      - label: "Yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.CategoryName
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -96,7 +96,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -128,7 +128,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       folder:
         complex:
@@ -169,20 +169,20 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+        - "5"
       "yes":
-      - "1"
+        - "1"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.URL
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.URL
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -240,7 +240,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -271,22 +271,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+        - "9"
       "yes":
-      - "5"
+        - "5"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: in
-          left:
-            value:
-              simple: inputs.URL
-            iscontext: true
-          right:
-            value:
-              simple: PrismaSase.CustomURLCategory.list
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: in
+                left:
+                  value:
+                    simple: inputs.URL
+                  iscontext: true
+                right:
+                  value:
+                    simple: PrismaSase.CustomURLCategory.list
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -317,7 +317,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+        - "15"
     scriptarguments:
       description:
         simple: List of Blocked URL - XSOAR
@@ -335,7 +335,7 @@ tasks:
         complex:
           root: inputs.URL
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -367,7 +367,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+        - "13"
     scriptarguments:
       id:
         complex:
@@ -382,17 +382,17 @@ tasks:
         complex:
           root: inputs.URL
           filters:
-          - - operator: notIn
-              left:
-                value:
-                  simple: inputs.URL
-                iscontext: true
-              right:
-                value:
-                  simple: PrismaSase.CustomURLCategory.list
-                iscontext: true
+            -   - operator: notIn
+                  left:
+                    value:
+                      simple: inputs.URL
+                    iscontext: true
+                  right:
+                    value:
+                      simple: PrismaSase.CustomURLCategory.list
+                    iscontext: true
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -424,7 +424,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     scriptarguments:
       folders:
         complex:
@@ -462,34 +462,34 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+        - "5"
       Auto Commit:
-      - "12"
+        - "12"
       Manual:
-      - "16"
+        - "16"
     separatecontext: false
     conditions:
-    - label: Auto Commit
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.AutoCommit
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    - label: Manual
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.AutoCommit
-            iscontext: true
-          right:
-            value:
-              simple: "False"
+      - label: Auto Commit
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.AutoCommit
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
+      - label: Manual
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.AutoCommit
+                  iscontext: true
+                right:
+                  value:
+                    simple: "False"
     continueonerrortype: ""
     view: |-
       {
@@ -520,7 +520,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+        - "13"
     scriptarguments:
       Action:
         simple: drop
@@ -585,9 +585,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+        - "5"
       Push:
-      - "12"
+        - "12"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -615,8 +615,8 @@ tasks:
         completeafterv2: true
         completeaftersla: false
       replyOptions:
-      - Push
-      - "No"
+        - Push
+        - "No"
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -638,112 +638,108 @@ view: |-
     }
   }
 inputs:
-- key: URL
-  value: {}
-  required: false
-  description: List of URLs that are needed to be blocked.
-  playbookInputQuery:
-- key: CategoryName
-  value: {}
-  required: false
-  description: The name of the predefined custom URL category.
-  playbookInputQuery:
-- key: Folder
-  value:
-    simple: Shared
-  required: false
-  description: |-
-    Specify the scope for a newly created security rule to be applied.
-    Remember, this input will only be used when there is no input to the CategoryName.
-    Default: Shared
-  playbookInputQuery:
-- key: TSGID
-  value: {}
-  required: false
-  description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
-  playbookInputQuery:
-- key: AutoCommit
-  value: {}
-  required: false
-  description: |-
-    Possible Values:
-    True -> Will Commit and Push Configuration
-    False -> Manual Push will be required.
-    Else --> Will ignore the push section and continue the playbook.
-  playbookInputQuery:
+  - key: URL
+    value: {}
+    required: false
+    description: List of URLs that are needed to be blocked.
+    playbookInputQuery:
+  - key: CategoryName
+    value: {}
+    required: false
+    description: The name of the predefined custom URL category.
+    playbookInputQuery:
+  - key: Folder
+    value:
+      simple: Shared
+    required: false
+    description: |-
+      Specify the scope for a newly created security rule to be applied.
+      Remember, this input will only be used when there is no input to the CategoryName.
+      Default: Shared
+    playbookInputQuery:
+  - key: TSGID
+    value: {}
+    required: false
+    description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+    playbookInputQuery:
+  - key: AutoCommit
+    value: {}
+    required: false
+    description: |-
+      Possible Values:
+      True -> Will Commit and Push Configuration
+      False -> Manual Push will be required.
+      Else --> Will ignore the push section and continue the playbook.
+    playbookInputQuery:
 outputs:
-- contextPath: PrismaSase
-  description: The root context key for Prisma SASE integration output.
-  type: unknown
-- contextPath: PrismaSase.SecurityRule
-  description: Created security rule.
-- contextPath: PrismaSase.SecurityRule.action
-  description: Security rule action.
-- contextPath: PrismaSase.SecurityRule.application
-  description: Security rule application.
-- contextPath: PrismaSase.SecurityRule.category
-  description: Security rule category.
-- contextPath: PrismaSase.SecurityRule.description
-  description: Security rule description.
-- contextPath: PrismaSase.SecurityRule.destination
-  description: Security rule destination.
-- contextPath: PrismaSase.SecurityRule.folder
-  description: Security rule folder.
-- contextPath: PrismaSase.SecurityRule.from
-  description: Security rule from field (source zone(s)).
-- contextPath: PrismaSase.SecurityRule.id
-  description: Security rule ID.
-- contextPath: PrismaSase.SecurityRule.name
-  description: Security rule name.
-- contextPath: PrismaSase.SecurityRule.position
-  description: Security rule position.
-- contextPath: PrismaSase.SecurityRule.service
-  description: Security rule service.
-- contextPath: PrismaSase.SecurityRule.source
-  description: Security rule source.
-- contextPath: PrismaSase.SecurityRule.source_user
-  description: Security rule source user.
-- contextPath: PrismaSase.SecurityRule.to
-  description: Security rule to field (destination zone(s)).
-- contextPath: PrismaSase.SecurityRule.profile_setting
-  description: The Security rule group object in the rule.
-  type: unknown
-- contextPath: PrismaSase.SecurityRule.profile_setting.group
-  description: Security rule group.
-- contextPath: PrismaSase.CandidateConfig
-  description: Configuration job object.
-  type: unknown
-- contextPath: PrismaSase.CandidateConfig.job_id
-  description: Configuration job ID.
-- contextPath: PrismaSase.CandidateConfig.result
-  description: The configuration push result, e.g. OK, FAIL.
-- contextPath: PrismaSase.CandidateConfig.details
-  description: The configuration push details.
-- contextPath: PrismaSase.CustomURLCategory
-  description: The custom URL category object.
-  type: unknown
-- contextPath: PrismaSase.CustomURLCategory.id
-  description: The URL category ID.
-- contextPath: PrismaSase.CustomURLCategory.name
-  description: The URL category name.
-- contextPath: PrismaSase.CustomURLCategory.folder
-  description: The URL category folder.
-- contextPath: PrismaSase.CustomURLCategory.type
-  description: The URL category type.
-- contextPath: PrismaSase.CustomURLCategory.list
-  description: The URL category match list.
-- contextPath: PrismaSase.CustomURLCategory.description
-  description: The URL category description.
+  - contextPath: PrismaSase
+    description: The root context key for Prisma SASE integration output.
+    type: unknown
+  - contextPath: PrismaSase.SecurityRule
+    description: Created security rule.
+  - contextPath: PrismaSase.SecurityRule.action
+    description: Security rule action.
+  - contextPath: PrismaSase.SecurityRule.application
+    description: Security rule application.
+  - contextPath: PrismaSase.SecurityRule.category
+    description: Security rule category.
+  - contextPath: PrismaSase.SecurityRule.description
+    description: Security rule description.
+  - contextPath: PrismaSase.SecurityRule.destination
+    description: Security rule destination.
+  - contextPath: PrismaSase.SecurityRule.folder
+    description: Security rule folder.
+  - contextPath: PrismaSase.SecurityRule.from
+    description: Security rule from field (source zone(s)).
+  - contextPath: PrismaSase.SecurityRule.id
+    description: Security rule ID.
+  - contextPath: PrismaSase.SecurityRule.name
+    description: Security rule name.
+  - contextPath: PrismaSase.SecurityRule.position
+    description: Security rule position.
+  - contextPath: PrismaSase.SecurityRule.service
+    description: Security rule service.
+  - contextPath: PrismaSase.SecurityRule.source
+    description: Security rule source.
+  - contextPath: PrismaSase.SecurityRule.source_user
+    description: Security rule source user.
+  - contextPath: PrismaSase.SecurityRule.to
+    description: Security rule to field (destination zone(s)).
+  - contextPath: PrismaSase.SecurityRule.profile_setting
+    description: The Security rule group object in the rule.
+    type: unknown
+  - contextPath: PrismaSase.SecurityRule.profile_setting.group
+    description: Security rule group.
+  - contextPath: PrismaSase.CandidateConfig
+    description: Configuration job object.
+    type: unknown
+  - contextPath: PrismaSase.CandidateConfig.job_id
+    description: Configuration job ID.
+  - contextPath: PrismaSase.CandidateConfig.result
+    description: The configuration push result, e.g. OK, FAIL.
+  - contextPath: PrismaSase.CandidateConfig.details
+    description: The configuration push details.
+  - contextPath: PrismaSase.CustomURLCategory
+    description: The custom URL category object.
+    type: unknown
+  - contextPath: PrismaSase.CustomURLCategory.id
+    description: The URL category ID.
+  - contextPath: PrismaSase.CustomURLCategory.name
+    description: The URL category name.
+  - contextPath: PrismaSase.CustomURLCategory.folder
+    description: The URL category folder.
+  - contextPath: PrismaSase.CustomURLCategory.type
+    description: The URL category type.
+  - contextPath: PrismaSase.CustomURLCategory.list
+    description: The URL category match list.
+  - contextPath: PrismaSase.CustomURLCategory.description
+    description: The URL category description.
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 6.8.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
-- edr
-- cloud
-- cloud_runtime_security
+  - agentix
+  - xsiam
+  - edr
+  - cloud
+  - cloud_runtime_security

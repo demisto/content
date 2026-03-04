@@ -19,7 +19,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -50,37 +50,37 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+        - "5"
       "yes":
-      - "2"
+        - "2"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Panorama
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Panorama
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                      accessor: brand
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -111,7 +111,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -142,25 +142,25 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "6"
+        - "6"
       "yes":
-      - "4"
+        - "4"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: inList
-          left:
-            value:
-              simple: inputs.tag_name
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: Panorama
-                accessor: AddressGroups.Match
-            iscontext: true
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: inList
+                left:
+                  value:
+                    simple: inputs.tag_name
+                  iscontext: true
+                right:
+                  value:
+                    complex:
+                      root: Panorama
+                      accessor: AddressGroups.Match
+                  iscontext: true
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -191,7 +191,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     scriptarguments:
       IPs:
         simple: ${inputs.ip_list}
@@ -256,7 +256,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+        - "21"
     scriptarguments:
       match:
         simple: ${inputs.tag_name}
@@ -294,7 +294,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -326,16 +326,16 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "15"
+        - "15"
       "yes":
-      - "22"
+        - "22"
     scriptarguments:
       left:
         simple: ${inputs.auto_commit}
       right:
         simple: "Yes"
     results:
-    - AreValuesEqual
+      - AreValuesEqual
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -367,7 +367,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "17"
+        - "17"
     scriptarguments:
       action-type:
         complex:
@@ -432,7 +432,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     separatecontext: true
     continueonerrortype: ""
     view: |-
@@ -467,89 +467,84 @@ view: |-
     }
   }
 inputs:
-- key: tag_name
-  value: {}
-  required: true
-  description: The name of the tag to add to PAN-OS. This can be a single tag.
-  playbookInputQuery:
-- key: ip_list
-  value: {}
-  required: true
-  description: The list of the IP addresses to block.
-  playbookInputQuery:
-- key: address_group_name
-  value: {}
-  required: true
-  description: The name of the group that will be created if the tag does not exist.
-  playbookInputQuery:
-- key: rule_name
-  value: {}
-  required: false
-  description: The name of the rule to update, or the name of the rule that will be created.
-  playbookInputQuery:
-- key: auto_commit
-  value: {}
-  required: false
-  description: Whether the rule will be committed automatically.
-  playbookInputQuery:
-- key: log-forwarding-object-name
-  value: {}
-  required: false
-  description: The server address to which to forward logs.
-  playbookInputQuery:
-- key: rule-position
-  value: {}
-  required: false
-  description: |-
-    The position of the rule in the ruleset. Valid values are:
-      * Top
-      * Bottom
-      * Before
-      * After
+  - key: tag_name
+    value: {}
+    required: true
+    description: The name of the tag to add to PAN-OS. This can be a single tag.
+    playbookInputQuery:
+  - key: ip_list
+    value: {}
+    required: true
+    description: The list of the IP addresses to block.
+    playbookInputQuery:
+  - key: address_group_name
+    value: {}
+    required: true
+    description: The name of the group that will be created if the tag does not exist.
+    playbookInputQuery:
+  - key: rule_name
+    value: {}
+    required: false
+    description: The name of the rule to update, or the name of the rule that will be created.
+    playbookInputQuery:
+  - key: auto_commit
+    value: {}
+    required: false
+    description: Whether the rule will be committed automatically.
+    playbookInputQuery:
+  - key: log-forwarding-object-name
+    value: {}
+    required: false
+    description: The server address to which to forward logs.
+    playbookInputQuery:
+  - key: rule-position
+    value: {}
+    required: false
+    description: |-
+      The position of the rule in the ruleset. Valid values are:
+        * Top
+        * Bottom
+        * Before
+        * After
 
-    The default position is 'Top'
-  playbookInputQuery:
-- key: relative-rule-name
-  value: {}
-  required: false
-  description: If the rule-position that is chosen is before or after, specify the rule name to which it is related.
-  playbookInputQuery:
-- key: inbound-or-outbound-rule
-  value: {}
-  required: false
-  description: Determines if the rule is inbound or outbound.
-  playbookInputQuery:
-- key: action-type
-  value: {}
-  required: false
-  description: |-
-    The action that will be defined in the rule. Valid values are:
-    * allow
-    * deny
-    * drop
-  playbookInputQuery:
-- key: pre-post-rulebase
-  value: {}
-  required: true
-  description: Determines whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure. Exists only in panorama!
-  playbookInputQuery:
-- key: device-group
-  value: {}
-  required: false
-  description: the device group for which to return results. for panorama only!
-  playbookInputQuery:
+      The default position is 'Top'
+    playbookInputQuery:
+  - key: relative-rule-name
+    value: {}
+    required: false
+    description: If the rule-position that is chosen is before or after, specify the rule name to which it is related.
+    playbookInputQuery:
+  - key: inbound-or-outbound-rule
+    value: {}
+    required: false
+    description: Determines if the rule is inbound or outbound.
+    playbookInputQuery:
+  - key: action-type
+    value: {}
+    required: false
+    description: |-
+      The action that will be defined in the rule. Valid values are:
+      * allow
+      * deny
+      * drop
+    playbookInputQuery:
+  - key: pre-post-rulebase
+    value: {}
+    required: true
+    description: Determines whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure. Exists only in panorama!
+    playbookInputQuery:
+  - key: device-group
+    value: {}
+    required: false
+    description: the device group for which to return results. for panorama only!
+    playbookInputQuery:
 outputs: []
 tests:
-- PAN-OS DAG Configuration Test
+  - PAN-OS DAG Configuration Test
 fromversion: 6.10.0
 supportedModules:
-- X0
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
-- edr
-- cloud
-- cloud_runtime_security
+  - agentix
+  - xsiam
+  - edr
+  - cloud
+  - cloud_runtime_security

@@ -19,7 +19,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     separatecontext: false
     view: |-
       {
@@ -50,7 +50,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     scriptarguments:
       headers:
         simple: ${inputs.headers}
@@ -86,7 +86,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+        - "6"
     scriptarguments:
       headers:
         simple: ${inputs.headers}
@@ -122,7 +122,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       Ids:
         simple: ${QRadar.Search.ID}
@@ -166,14 +166,14 @@ tasks:
       name: Get QRadar search results
       description: executes qradar-get-search-results to get the search results
       tags:
-      - SIEMResults
+        - SIEMResults
       script: '|||qradar-get-search-results'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     scriptarguments:
       headers:
         simple: ${inputs.headers}
@@ -241,21 +241,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+        - "3"
       "yes":
-      - "4"
+        - "4"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: QRadar.Search.Status
-            iscontext: true
-          right:
-            value:
-              simple: COMPLETED
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: QRadar.Search.Status
+                  iscontext: true
+                right:
+                  value:
+                    simple: COMPLETED
     view: |-
       {
         "position": {
@@ -284,36 +284,36 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+        - "5"
       "yes":
-      - "1"
+        - "1"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: inList
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: QRadar,QRadar_v2,QRadar v3
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: inList
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: QRadar,QRadar_v2,QRadar v3
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -342,21 +342,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+        - "4"
       "yes":
-      - "9"
+        - "9"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: QRadar.Search.Status
-            iscontext: true
-          right:
-            value:
-              simple: CANCELED
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: QRadar.Search.Status
+                  iscontext: true
+                right:
+                  value:
+                    simple: CANCELED
     view: |-
       {
         "position": {
@@ -418,47 +418,43 @@ view: |-
     }
   }
 inputs:
-- key: timeout
-  value:
-    simple: "600"
-  required: false
-  description: How much time to wait before a timeout occurs (minutes)
-  playbookInputQuery:
-- key: interval
-  value:
-    simple: "1"
-  required: false
-  description: Polling frequency - how often the polling command should run (minutes)
-  playbookInputQuery:
-- key: query_expression
-  value: {}
-  required: true
-  description: The query expressions in AQL
-  playbookInputQuery:
-- key: range
-  value: {}
-  required: false
-  description: Range of results to return (e.g. 0-20)
-  playbookInputQuery:
-- key: headers
-  value: {}
-  required: false
-  description: Table headers
-  playbookInputQuery:
+  - key: timeout
+    value:
+      simple: "600"
+    required: false
+    description: How much time to wait before a timeout occurs (minutes)
+    playbookInputQuery:
+  - key: interval
+    value:
+      simple: "1"
+    required: false
+    description: Polling frequency - how often the polling command should run (minutes)
+    playbookInputQuery:
+  - key: query_expression
+    value: {}
+    required: true
+    description: The query expressions in AQL
+    playbookInputQuery:
+  - key: range
+    value: {}
+    required: false
+    description: Range of results to return (e.g. 0-20)
+    playbookInputQuery:
+  - key: headers
+    value: {}
+    required: false
+    description: Table headers
+    playbookInputQuery:
 outputs:
-- contextPath: QRadar.Search.Result
-  description: The result of the search
+  - contextPath: QRadar.Search.Result
+    description: The result of the search
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 5.0.0
 deprecated: true
 contentitemexportablefields:
   contentitemfields: {}
 system: true
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

@@ -2,8 +2,7 @@ id: NetOps - Firewall Version and Content Upgrade
 version: -1
 fromversion: 5.0.0
 name: NetOps - Firewall Version and Content Upgrade
-description: Network operations playbook that updates the version and content of
-  the firewall. You must have Superuser permissions to update the PAN-OS version.
+description: Network operations playbook that updates the version and content of the firewall. You must have Superuser permissions to update the PAN-OS version.
 starttaskid: "0"
 tasks:
   "0":
@@ -19,7 +18,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     view: |-
       {
@@ -46,7 +45,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     scriptarguments:
       target: {}
     reputationcalc: 2
@@ -76,7 +75,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - "11"
+        - "11"
     scriptarguments:
       job_id:
         complex:
@@ -110,7 +109,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     scriptarguments:
       target: {}
     reputationcalc: 2
@@ -140,7 +139,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - "13"
+        - "13"
     scriptarguments:
       job_id:
         complex:
@@ -174,7 +173,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - "6"
+        - "6"
     scriptarguments:
       target: {}
     separatecontext: false
@@ -203,7 +202,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     scriptarguments:
       target: {}
       target_version:
@@ -235,7 +234,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       target: {}
       target_version:
@@ -267,7 +266,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - "16"
+        - "16"
     scriptarguments:
       job_id:
         complex:
@@ -333,7 +332,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
@@ -388,7 +387,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     scriptarguments:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
@@ -405,8 +404,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: Panorama.Content.Install(val.Status !== 'Completed' && val.Status
-          !== 'Failed').JobID
+        simple: Panorama.Content.Install(val.Status !== 'Completed' && val.Status !== 'Failed').JobID
     separatecontext: true
     loop:
       iscommand: false
@@ -437,7 +435,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - "15"
+        - "15"
     scriptarguments:
       job_id:
         complex:
@@ -477,7 +475,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
@@ -494,8 +492,7 @@ tasks:
       Timeout:
         simple: "20"
       dt:
-        simple: Panorama.PANOS.Download(val.Status !== 'Completed' && val.Status !==
-          'Failed').JobID
+        simple: Panorama.PANOS.Download(val.Status !== 'Completed' && val.Status !== 'Failed').JobID
     separatecontext: true
     loop:
       iscommand: false
@@ -533,7 +530,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
@@ -550,8 +547,7 @@ tasks:
       Timeout:
         simple: "20"
       dt:
-        simple: Panorama.PANOS.Install(val.Status !== 'Completed' && val.Status !==
-          'Failed').JobID
+        simple: Panorama.PANOS.Install(val.Status !== 'Completed' && val.Status !== 'Failed').JobID
     separatecontext: true
     loop:
       iscommand: false
@@ -580,21 +576,17 @@ view: |-
     }
   }
 inputs:
-- key: target_version
-  value:
-    complex:
-      root: incident
-      accessor: targetfirewallversion
-  required: false
-  description: Target PAN-OS version to which to upgrade.
+  - key: target_version
+    value:
+      complex:
+        root: incident
+        accessor: targetfirewallversion
+    required: false
+    description: Target PAN-OS version to which to upgrade.
 outputs: []
 tests:
-- No Tests
+  - No Tests
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
-- cloud_posture
+  - agentix
+  - xsiam
+  - cloud_posture

@@ -25,7 +25,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -57,7 +57,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     scriptarguments:
       format:
         complex:
@@ -124,39 +124,39 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+        - "5"
       "yes":
-      - "10"
+        - "10"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: WildFire-v2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: WildFire-v2
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                      accessor: brand
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -186,8 +186,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
-      - "14"
+        - "15"
+        - "14"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -226,7 +226,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+        - "16"
     scriptarguments:
       append:
         simple: "true"
@@ -236,15 +236,15 @@ tasks:
         complex:
           root: inputs.File
           filters:
-          - - operator: inList
-              left:
-                value:
-                  simple: inputs.File.Extension
-                iscontext: true
-              right:
-                value:
-                  simple: js,hta,vbs,ps1,pl,sh,py
-              ignorecase: true
+            -   - operator: inList
+                  left:
+                    value:
+                      simple: inputs.File.Extension
+                    iscontext: true
+                  right:
+                    value:
+                      simple: js,hta,vbs,ps1,pl,sh,py
+                  ignorecase: true
           accessor: EntryID
     separatecontext: false
     continueonerrortype: ""
@@ -284,7 +284,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+        - "16"
     scriptarguments:
       append:
         simple: "true"
@@ -294,24 +294,24 @@ tasks:
         complex:
           root: inputs.File
           filters:
-          - - operator: inList
-              left:
-                value:
-                  simple: inputs.File.Extension
-                iscontext: true
-              right:
-                value:
-                  simple: APK,JAR,DOC,DOCX,XLS,XLSX,PPT,PPTX,OOXML,PE32,PE,PDF,DMG,PKG,RAR,7Z,ELF,DLL,MSI,RTF,LNK
-              ignorecase: true
-          - - operator: notContainsString
-              left:
-                value:
-                  simple: inputs.File.Type
-                iscontext: true
-              right:
-                value:
-                  simple: ASCII text
-              ignorecase: true
+            -   - operator: inList
+                  left:
+                    value:
+                      simple: inputs.File.Extension
+                    iscontext: true
+                  right:
+                    value:
+                      simple: APK,JAR,DOC,DOCX,XLS,XLSX,PPT,PPTX,OOXML,PE32,PE,PDF,DMG,PKG,RAR,7Z,ELF,DLL,MSI,RTF,LNK
+                  ignorecase: true
+            -   - operator: notContainsString
+                  left:
+                    value:
+                      simple: inputs.File.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: ASCII text
+                  ignorecase: true
           accessor: EntryID
     separatecontext: false
     continueonerrortype: ""
@@ -343,19 +343,19 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+        - "5"
       "yes":
-      - "17"
+        - "17"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: SupportedFilesToUpload
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: SupportedFilesToUpload
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -386,7 +386,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       interval_in_seconds:
         complex:
@@ -400,7 +400,7 @@ tasks:
         complex:
           root: SupportedFilesToUpload
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -433,128 +433,124 @@ view: |-
     }
   }
 inputs:
-- key: File
-  value:
-    complex:
-      root: File
-      transformers:
-      - operator: uniq
-  required: false
-  description: File object of the file to detonate. The file is taken from the context.
-  playbookInputQuery:
-- key: Interval
-  value:
-    simple: "60"
-  required: false
-  description: The duration for executing the polling (in seconds).
-  playbookInputQuery:
-- key: Timeout
-  value:
-    simple: "480"
-  required: false
-  description: The duration after which to stop polling and to resume the playbook. (in seconds)
-  playbookInputQuery:
-- key: ReportFileType
-  value: {}
-  required: false
-  description: The resource type to download.
-  playbookInputQuery:
+  - key: File
+    value:
+      complex:
+        root: File
+        transformers:
+          - operator: uniq
+    required: false
+    description: File object of the file to detonate. The file is taken from the context.
+    playbookInputQuery:
+  - key: Interval
+    value:
+      simple: "60"
+    required: false
+    description: The duration for executing the polling (in seconds).
+    playbookInputQuery:
+  - key: Timeout
+    value:
+      simple: "480"
+    required: false
+    description: The duration after which to stop polling and to resume the playbook. (in seconds)
+    playbookInputQuery:
+  - key: ReportFileType
+    value: {}
+    required: false
+    description: The resource type to download.
+    playbookInputQuery:
 outputs:
-- contextPath: DBotScore.Score
-  description: The actual score.
-  type: string
-- contextPath: DBotScore.Type
-  description: The type of the indicator.
-  type: string
-- contextPath: File.Type
-  description: The file type, e.g. "PE".
-  type: string
-- contextPath: File.Size
-  description: The file size.
-  type: number
-- contextPath: File.MD5
-  description: The MD5 hash of the file.
-  type: string
-- contextPath: File.Name
-  description: The filename.
-  type: string
-- contextPath: File.SHA1
-  description: The SHA1 hash of the file.
-  type: string
-- contextPath: File
-  description: The file object.
-  type: unknown
-- contextPath: File.SHA256
-  description: TheSHA256 hash of the file.
-  type: string
-- contextPath: File.Malicious
-  description: The malicious object.
-  type: unknown
-- contextPath: File.Malicious.Vendor
-  description: The vendor that made the decision that the file is malicious.
-  type: string
-- contextPath: DBotScore
-  description: The DBot object.
-  type: unknown
-- contextPath: DBotScore.Indicator
-  description: The indicator that was tested.
-  type: string
-- contextPath: DBotScore.Vendor
-  description: The vendor used to calculate the score.
-  type: string
-- contextPath: WildFire.Report
-  description: The submission object.
-  type: unknown
-- contextPath: WildFire.Report.Status
-  description: The status of the submission.
-  type: string
-- contextPath: WildFire.Report.SHA256
-  description: The SHA256 hash of the submission.
-  type: string
-- contextPath: InfoFile
-  description: The report file object.
-  type: unknown
-- contextPath: InfoFile.EntryID
-  description: The EntryID of the report file.
-  type: string
-- contextPath: InfoFile.Extension
-  description: The extension of the report file.
-  type: string
-- contextPath: InfoFile.Name
-  description: The name of the report file.
-  type: string
-- contextPath: InfoFile.Info
-  description: The info of the report file.
-  type: string
-- contextPath: InfoFile.Size
-  description: The size of the report file.
-  type: number
-- contextPath: InfoFile.Type
-  description: The type of the report file.
-  type: string
-- contextPath: WildFire.Report.MD5
-  description: The MD5 hash of the submission.
-  type: string
-- contextPath: WildFire.Report.FileType
-  description: The type of the submission.
-  type: string
-- contextPath: WildFire.Report.Size
-  description: The size of the submission.
-  type: number
-- contextPath: WildFire.Report.detection_reasons.description
-  description: Reason for the detection verdict.
-  type: string
+  - contextPath: DBotScore.Score
+    description: The actual score.
+    type: string
+  - contextPath: DBotScore.Type
+    description: The type of the indicator.
+    type: string
+  - contextPath: File.Type
+    description: The file type, e.g. "PE".
+    type: string
+  - contextPath: File.Size
+    description: The file size.
+    type: number
+  - contextPath: File.MD5
+    description: The MD5 hash of the file.
+    type: string
+  - contextPath: File.Name
+    description: The filename.
+    type: string
+  - contextPath: File.SHA1
+    description: The SHA1 hash of the file.
+    type: string
+  - contextPath: File
+    description: The file object.
+    type: unknown
+  - contextPath: File.SHA256
+    description: TheSHA256 hash of the file.
+    type: string
+  - contextPath: File.Malicious
+    description: The malicious object.
+    type: unknown
+  - contextPath: File.Malicious.Vendor
+    description: The vendor that made the decision that the file is malicious.
+    type: string
+  - contextPath: DBotScore
+    description: The DBot object.
+    type: unknown
+  - contextPath: DBotScore.Indicator
+    description: The indicator that was tested.
+    type: string
+  - contextPath: DBotScore.Vendor
+    description: The vendor used to calculate the score.
+    type: string
+  - contextPath: WildFire.Report
+    description: The submission object.
+    type: unknown
+  - contextPath: WildFire.Report.Status
+    description: The status of the submission.
+    type: string
+  - contextPath: WildFire.Report.SHA256
+    description: The SHA256 hash of the submission.
+    type: string
+  - contextPath: InfoFile
+    description: The report file object.
+    type: unknown
+  - contextPath: InfoFile.EntryID
+    description: The EntryID of the report file.
+    type: string
+  - contextPath: InfoFile.Extension
+    description: The extension of the report file.
+    type: string
+  - contextPath: InfoFile.Name
+    description: The name of the report file.
+    type: string
+  - contextPath: InfoFile.Info
+    description: The info of the report file.
+    type: string
+  - contextPath: InfoFile.Size
+    description: The size of the report file.
+    type: number
+  - contextPath: InfoFile.Type
+    description: The type of the report file.
+    type: string
+  - contextPath: WildFire.Report.MD5
+    description: The MD5 hash of the submission.
+    type: string
+  - contextPath: WildFire.Report.FileType
+    description: The type of the submission.
+    type: string
+  - contextPath: WildFire.Report.Size
+    description: The size of the submission.
+    type: number
+  - contextPath: WildFire.Report.detection_reasons.description
+    description: Reason for the detection verdict.
+    type: string
 tests:
-- Wildfire Test With Polling
-- Wildfire Test
+  - Wildfire Test With Polling
+  - Wildfire Test
 fromversion: 6.10.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
-- edr
-- cloud
-- cloud_runtime_security
+  - agentix
+  - xsiam
+  - edr
+  - cloud
+  - cloud_runtime_security

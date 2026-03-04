@@ -26,7 +26,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "33"
+        - "33"
     separatecontext: false
     view: |-
       {
@@ -56,18 +56,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+        - "9"
       "yes":
-      - "22"
+        - "22"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: O365.SecurityAndCompliance.ContentSearch.Search.SuccessResults
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: O365.SecurityAndCompliance.ContentSearch.Search.SuccessResults
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -124,7 +124,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+        - "6"
     scriptarguments:
       retry-count:
         simple: "10"
@@ -161,7 +161,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       retry-count:
         simple: "10"
@@ -206,7 +206,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     scriptarguments:
       ' exchange_location_exclusion':
         complex:
@@ -270,49 +270,49 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "30"
+        - "30"
       Manual step - Preview:
-      - "23"
+        - "23"
       Preview:
-      - "24"
+        - "24"
       Skip:
-      - "25"
+        - "25"
     separatecontext: false
     conditions:
-    - label: Preview
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.preview
-                transformers:
-                - operator: toUpperCase
-            iscontext: true
-          right:
-            value:
-              simple: "TRUE"
-    - label: Manual step - Preview
-      condition:
-      - - operator: isEmpty
-          left:
-            value:
-              complex:
-                root: inputs.force
-            iscontext: true
-    - label: Skip
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.preview
-                transformers:
-                - operator: toUpperCase
-            iscontext: true
-          right:
-            value:
-              simple: "FALSE"
+      - label: Preview
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.preview
+                      transformers:
+                        - operator: toUpperCase
+                  iscontext: true
+                right:
+                  value:
+                    simple: "TRUE"
+      - label: Manual step - Preview
+        condition:
+          -   - operator: isEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.force
+                  iscontext: true
+      - label: Skip
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.preview
+                      transformers:
+                        - operator: toUpperCase
+                  iscontext: true
+                right:
+                  value:
+                    simple: "FALSE"
     view: |-
       {
         "position": {
@@ -339,9 +339,9 @@ tasks:
       brand: ""
     nexttasks:
       Preview:
-      - "24"
+        - "24"
       Skip:
-      - "25"
+        - "25"
     separatecontext: false
     defaultassigneecomplex:
       simple: admin
@@ -376,7 +376,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "25"
+        - "25"
     scriptarguments:
       polling_interval:
         simple: ${inputs.search_action_polling_interval}
@@ -418,49 +418,49 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "31"
+        - "31"
       Hard:
-      - "29"
+        - "29"
       Manual step - delete:
-      - "27"
+        - "27"
       soft:
-      - "28"
+        - "28"
     separatecontext: false
     conditions:
-    - label: Manual step - delete
-      condition:
-      - - operator: isEmpty
-          left:
-            value:
-              complex:
-                root: inputs.delete_type
-            iscontext: true
-    - label: soft
-      condition:
-      - - operator: inList
-          left:
-            value:
-              complex:
-                root: inputs.delete_type
-                transformers:
-                - operator: toUpperCase
-            iscontext: true
-          right:
-            value:
-              simple: SOFT
-    - label: Hard
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.delete_type
-                transformers:
-                - operator: toUpperCase
-            iscontext: true
-          right:
-            value:
-              simple: HARD
+      - label: Manual step - delete
+        condition:
+          -   - operator: isEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.delete_type
+                  iscontext: true
+      - label: soft
+        condition:
+          -   - operator: inList
+                left:
+                  value:
+                    complex:
+                      root: inputs.delete_type
+                      transformers:
+                        - operator: toUpperCase
+                  iscontext: true
+                right:
+                  value:
+                    simple: SOFT
+      - label: Hard
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.delete_type
+                      transformers:
+                        - operator: toUpperCase
+                  iscontext: true
+                right:
+                  value:
+                    simple: HARD
     view: |-
       {
         "position": {
@@ -487,11 +487,11 @@ tasks:
       brand: ""
     nexttasks:
       Hard:
-      - "29"
+        - "29"
       Skip:
-      - "32"
+        - "32"
       Soft:
-      - "28"
+        - "28"
     separatecontext: false
     defaultassigneecomplex:
       simple: admin
@@ -526,7 +526,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+        - "16"
     scriptarguments:
       delete_type:
         simple: Soft
@@ -575,7 +575,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+        - "16"
     scriptarguments:
       delete_type:
         simple: Hard
@@ -678,7 +678,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+        - "6"
     scriptarguments:
       retry-count:
         simple: "10"
@@ -713,19 +713,19 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "35"
+        - "35"
       User Input:
-      - "36"
+        - "36"
     separatecontext: false
     conditions:
-    - label: User Input
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.exchange_location
-            iscontext: true
+      - label: User Input
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.exchange_location
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -753,7 +753,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+        - "21"
     scriptarguments:
       key:
         simple: ExchangeLocation
@@ -787,7 +787,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+        - "21"
     scriptarguments:
       key:
         simple: ExchangeLocation
@@ -834,82 +834,78 @@ view: |-
     }
   }
 inputs:
-- key: search_name
-  value: {}
-  required: false
-  description: The name of the compliance search.
-  playbookInputQuery:
-- key: case
-  value: {}
-  required: false
-  description: The name of a Core eDiscovery case to associate with the new compliance search.
-  playbookInputQuery:
-- key: kql
-  value: {}
-  required: true
-  description: Text search string or a query that is formatted using the Keyword Query Language (KQL).
-  playbookInputQuery:
-- key: description
-  value: {}
-  required: false
-  description: Description of the compliance search.
-  playbookInputQuery:
-- key: allow_not_found_exchange_locations
-  value:
-    simple: "true"
-  required: false
-  description: Whether to include mailboxes other than regular user mailboxes in the compliance search. Default is "false".
-  playbookInputQuery:
-- key: exchange_location
-  value: {}
-  required: false
-  description: Comma-separated list of mailboxes/distribution groups to include, or use the value "All" to include all.
-  playbookInputQuery:
-- key: exchange_location_exclusion
-  value: {}
-  required: false
-  description: Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter.
-  playbookInputQuery:
-- key: force
-  value:
-    simple: "false"
-  required: true
-  description: Whether to replace the existing search. If "true", the existing search will be removed and a new search will be created. If "false", the existing search will be used and any new search configurations will be ignored.
-  playbookInputQuery:
-- key: preview
-  value:
-    simple: "true"
-  required: true
-  description: 'Whether to preview the results using the search action "Preview". Possible values are: "true" and "false" or leave empty to select manually.'
-  playbookInputQuery:
-- key: delete_type
-  value: {}
-  required: false
-  description: Specify the delete type to perform on the search results. Possible values are Hard and Soft or leave empty to select manually. (Hard = Unrecoverable, Soft=Recoverable)
-  playbookInputQuery:
-- key: search_action_polling_timeout
-  value:
-    simple: "45"
-  required: false
-  description: Amount of time to poll before declaring a timeout for the search action and resuming the playbook (in minutes).
-  playbookInputQuery:
-- key: search_action_polling_interval
-  value:
-    simple: "3"
-  required: false
-  description: The frequency that the polling command will run for the search action that was chosen.
-  playbookInputQuery:
+  - key: search_name
+    value: {}
+    required: false
+    description: The name of the compliance search.
+    playbookInputQuery:
+  - key: case
+    value: {}
+    required: false
+    description: The name of a Core eDiscovery case to associate with the new compliance search.
+    playbookInputQuery:
+  - key: kql
+    value: {}
+    required: true
+    description: Text search string or a query that is formatted using the Keyword Query Language (KQL).
+    playbookInputQuery:
+  - key: description
+    value: {}
+    required: false
+    description: Description of the compliance search.
+    playbookInputQuery:
+  - key: allow_not_found_exchange_locations
+    value:
+      simple: "true"
+    required: false
+    description: Whether to include mailboxes other than regular user mailboxes in the compliance search. Default is "false".
+    playbookInputQuery:
+  - key: exchange_location
+    value: {}
+    required: false
+    description: Comma-separated list of mailboxes/distribution groups to include, or use the value "All" to include all.
+    playbookInputQuery:
+  - key: exchange_location_exclusion
+    value: {}
+    required: false
+    description: Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter.
+    playbookInputQuery:
+  - key: force
+    value:
+      simple: "false"
+    required: true
+    description: Whether to replace the existing search. If "true", the existing search will be removed and a new search will be created. If "false", the existing search will be used and any new search configurations will be ignored.
+    playbookInputQuery:
+  - key: preview
+    value:
+      simple: "true"
+    required: true
+    description: 'Whether to preview the results using the search action "Preview". Possible values are: "true" and "false" or leave empty to select manually.'
+    playbookInputQuery:
+  - key: delete_type
+    value: {}
+    required: false
+    description: Specify the delete type to perform on the search results. Possible values are Hard and Soft or leave empty to select manually. (Hard = Unrecoverable, Soft=Recoverable)
+    playbookInputQuery:
+  - key: search_action_polling_timeout
+    value:
+      simple: "45"
+    required: false
+    description: Amount of time to poll before declaring a timeout for the search action and resuming the playbook (in minutes).
+    playbookInputQuery:
+  - key: search_action_polling_interval
+    value:
+      simple: "3"
+    required: false
+    description: The frequency that the polling command will run for the search action that was chosen.
+    playbookInputQuery:
 outputs: []
 tests:
-- O365-SecurityAndCompliance-Test
+  - O365-SecurityAndCompliance-Test
 fromversion: 5.5.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- cloud
-- xsiam
-- edr
-- cloud_runtime_security
+  - agentix
+  - cloud
+  - xsiam
+  - edr
+  - cloud_runtime_security

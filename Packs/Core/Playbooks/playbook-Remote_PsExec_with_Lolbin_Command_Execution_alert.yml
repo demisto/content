@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -48,8 +48,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "38"
-      - "40"
+        - "38"
+        - "40"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -80,26 +80,26 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "11"
+        - "11"
       "Yes":
-      - "1"
+        - "1"
     separatecontext: false
     conditions:
-    - label: "Yes"
-      condition:
-      - - operator: containsString
-          left:
-            value:
-              complex:
-                root: alert
-                accessor: action
-                transformers:
-                - operator: uniq
-            iscontext: true
-          right:
-            value:
-              simple: Prevented
-          ignorecase: true
+      - label: "Yes"
+        condition:
+          -   - operator: containsString
+                left:
+                  value:
+                    complex:
+                      root: alert
+                      accessor: action
+                      transformers:
+                        - operator: uniq
+                  iscontext: true
+                right:
+                  value:
+                    simple: Prevented
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -129,23 +129,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "1"
+        - "1"
       "yes":
-      - "41"
+        - "41"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoRemediation
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.AutoRemediation
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -176,14 +176,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "37"
+        - "37"
     scriptarguments:
       Commandline:
         complex:
           root: alert
           accessor: targetprocesscmd
           transformers:
-          - operator: uniq
+            - operator: uniq
       StringSimilarityThreshold:
         simple: "0.5"
     separatecontext: true
@@ -222,7 +222,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "16"
+        - "16"
     scriptarguments:
       severity:
         simple: High
@@ -256,7 +256,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "17"
+        - "17"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -287,23 +287,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "36"
+        - "36"
       "yes":
-      - "28"
+        - "28"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoRemediation
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.AutoRemediation
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -361,8 +361,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "13"
-      - "42"
+        - "13"
+        - "42"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -403,7 +403,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+        - "22"
     scriptarguments:
       AutoBlockIndicators:
         simple: "True"
@@ -417,26 +417,26 @@ tasks:
         complex:
           root: DBotScore
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: ip
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: ip
+                  ignorecase: true
+            -   - operator: greaterThanOrEqual
+                  left:
+                    value:
+                      simple: DBotScore.Score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "3"
           accessor: Indicator
           transformers:
-          - operator: uniq
+            - operator: uniq
       InputEnrichment:
         simple: "False"
       RuleDirection:
@@ -447,49 +447,49 @@ tasks:
         complex:
           root: DBotScore
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: url
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: url
+                  ignorecase: true
+            -   - operator: greaterThanOrEqual
+                  left:
+                    value:
+                      simple: DBotScore.Score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "3"
           accessor: Indicator
           transformers:
-          - operator: uniq
+            - operator: uniq
       UserVerification:
         simple: "True"
       Username:
         complex:
           root: DBotScore
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: username
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: username
+                  ignorecase: true
+            -   - operator: greaterThanOrEqual
+                  left:
+                    value:
+                      simple: DBotScore.Score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "3"
           accessor: Indicator
     separatecontext: true
     continueonerrortype: ""
@@ -526,21 +526,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "22"
+        - "22"
       Malicious:
-      - "15"
+        - "15"
     separatecontext: false
     conditions:
-    - label: Malicious
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: CommandlineVerdict
-            iscontext: true
-          right:
-            value: {}
+      - label: Malicious
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: CommandlineVerdict
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -571,20 +571,20 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "29"
+        - "29"
     scriptarguments:
       IPAddress:
         complex:
           root: ExtractedIndicators
           accessor: IP
           transformers:
-          - operator: uniq
+            - operator: uniq
       MD5:
         complex:
           root: File
           accessor: MD5
           transformers:
-          - operator: uniq
+            - operator: uniq
       QRadarTimeFrame:
         simple: LAST 7 DAYS
       SHA1:
@@ -592,13 +592,13 @@ tasks:
           root: File
           accessor: SHA1
           transformers:
-          - operator: uniq
+            - operator: uniq
       SHA256:
         complex:
           root: File
           accessor: SHA256
           transformers:
-          - operator: uniq
+            - operator: uniq
       SplunkEarliestTime:
         simple: -7d@d
       SplunkLatestTime:
@@ -639,24 +639,24 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     scriptarguments:
       commands:
         complex:
           root: alert
           accessor: initiatorpid
           transformers:
-          - operator: ConcatFormat
-            args:
-              ctx_data: {}
-              ctx_inc: {}
-              ctx_inputs: {}
-              keep_symbol_to_null: {}
-              prefix:
-                value:
-                  simple: 'taskkill /F /PID '
-              suffix: {}
-              variable_markers: {}
+            - operator: ConcatFormat
+              args:
+                ctx_data: {}
+                ctx_inc: {}
+                ctx_inputs: {}
+                keep_symbol_to_null: {}
+                prefix:
+                  value:
+                    simple: 'taskkill /F /PID '
+                suffix: {}
+                variable_markers: {}
       endpoint_ids:
         simple: ${Core.Endpoint.endpoint_id}
     separatecontext: false
@@ -694,7 +694,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+        - "22"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -726,7 +726,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "29"
+        - "29"
     scriptarguments:
       commandline:
         complex:
@@ -765,7 +765,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "23"
+        - "23"
     scriptarguments:
       CloseReason:
         simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue
@@ -835,13 +835,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "23"
+        - "23"
     scriptarguments:
       EntityID:
         complex:
           root: inputs.EndpointIDs
           transformers:
-          - operator: uniq
+            - operator: uniq
       EntityType:
         simple: IP
       HuntCnCTechniques:
@@ -908,14 +908,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+        - "35"
     scriptarguments:
       ip_list:
         complex:
           root: alert
           accessor: hostip
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -947,7 +947,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "33"
+        - "33"
     scriptarguments:
       text:
         simple: ${alert.details}
@@ -986,47 +986,43 @@ view: |-
     }
   }
 inputs:
-- key: alerts_ids
-  value:
-    simple: ${alert.id}
-  required: false
-  description: The ID's of the relevant alerts
-  playbookInputQuery:
-- key: AutoRemediation
-  value:
-    simple: "false"
-  required: false
-  description: Whether remediation will be run automatically or manually. If set to "True" - remediation will be automatic.
-  playbookInputQuery:
-- key: LOLBASFeedLimit
-  value:
-    simple: "100"
-  required: false
-  description: LOLBAS Feed results limit
-  playbookInputQuery:
-- key: EndpointIDs
-  value:
-    simple: ${alert.hostip}
-  required: false
-  description: The IDs of the victim endpoint
-  playbookInputQuery:
+  - key: alerts_ids
+    value:
+      simple: ${alert.id}
+    required: false
+    description: The ID's of the relevant alerts
+    playbookInputQuery:
+  - key: AutoRemediation
+    value:
+      simple: "false"
+    required: false
+    description: Whether remediation will be run automatically or manually. If set to "True" - remediation will be automatic.
+    playbookInputQuery:
+  - key: LOLBASFeedLimit
+    value:
+      simple: "100"
+    required: false
+    description: LOLBAS Feed results limit
+    playbookInputQuery:
+  - key: EndpointIDs
+    value:
+      simple: ${alert.hostip}
+    required: false
+    description: The IDs of the victim endpoint
+    playbookInputQuery:
 outputs: []
 tests:
-- No tests
+  - No tests
 fromversion: 6.10.0
 marketplaces:
-- marketplacev2
-- platform
+  - marketplacev2
+  - platform
 
 
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- cloud
-- cloud_posture
-- cloud_runtime_security
-- edr
-- xsiam
+  - agentix
+  - cloud
+  - cloud_posture
+  - cloud_runtime_security
+  - edr
+  - xsiam

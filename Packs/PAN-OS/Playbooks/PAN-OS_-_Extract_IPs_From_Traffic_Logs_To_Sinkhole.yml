@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "77"
+        - "77"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -48,7 +48,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "79"
+        - "79"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -80,7 +80,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "73"
+        - "73"
     scriptarguments:
       action:
         simple: deny
@@ -94,13 +94,13 @@ tasks:
         complex:
           root: inputs.RuleNameToDenyToSinkhole
           transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: RuleNameToDenyToSinkhole
-                iscontext: true
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: RuleNameToDenyToSinkhole
+                  iscontext: true
       timeout:
         simple: "180"
     separatecontext: false
@@ -133,22 +133,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "74"
+        - "74"
       "yes":
-      - "60"
+        - "60"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.OutputLogsForDetectedIPs
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.OutputLogsForDetectedIPs
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -179,7 +179,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "42"
+        - "42"
     scriptarguments:
       seconds:
         complex:
@@ -243,7 +243,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "73"
+        - "73"
     scriptarguments:
       action:
         simple: deny
@@ -261,13 +261,13 @@ tasks:
         complex:
           root: inputs.RuleNameToDenyToSinkhole
           transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: RuleNameToDenyToSinkhole
-                iscontext: true
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: RuleNameToDenyToSinkhole
+                  iscontext: true
       timeout:
         simple: "180"
     separatecontext: false
@@ -301,14 +301,14 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "73"
+        - "73"
       "yes":
-      - "85"
+        - "85"
     scriptarguments:
       brandname:
         simple: Panorama
     results:
-    - brandInstances
+      - brandInstances
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -340,24 +340,24 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "80"
+        - "80"
     scriptarguments:
       query:
         complex:
           root: SinkholeAddressObjectName
           transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: (destination/member eq '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ''')'
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: (destination/member eq '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ''')'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -388,21 +388,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "78"
+        - "78"
       "yes":
-      - "64"
+        - "64"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.RuleNameToDenyToSinkhole
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.RuleNameToDenyToSinkhole
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -432,20 +432,20 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "84"
+        - "84"
       "yes":
-      - "64"
+        - "64"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Panorama.SecurityRule
-                accessor: Name
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: Panorama.SecurityRule
+                      accessor: Name
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -476,7 +476,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "82"
+        - "82"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -507,31 +507,31 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "84"
+        - "84"
       "yes":
-      - "83"
+        - "83"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Panorama.Addresses
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Panorama.Addresses.FQDN
-                      iscontext: true
-                    right:
-                      value:
-                        simple: sinkhole.paloaltonetworks.com
-                    ignorecase: true
-                accessor: Name
-            iscontext: true
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: Panorama.Addresses
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: Panorama.Addresses.FQDN
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: sinkhole.paloaltonetworks.com
+                              ignorecase: true
+                      accessor: Name
+                  iscontext: true
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -562,7 +562,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "72"
+        - "72"
     scriptarguments:
       key:
         simple: SinkholeAddressObjectName
@@ -570,15 +570,15 @@ tasks:
         complex:
           root: Panorama.Addresses
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Panorama.Addresses.FQDN
-                iscontext: true
-              right:
-                value:
-                  simple: sinkhole.paloaltonetworks.com
-              ignorecase: true
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: Panorama.Addresses.FQDN
+                    iscontext: true
+                  right:
+                    value:
+                      simple: sinkhole.paloaltonetworks.com
+                  ignorecase: true
           accessor: Name
     separatecontext: false
     continueonerrortype: ""
@@ -610,7 +610,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "86"
+        - "86"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -641,7 +641,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "81"
+        - "81"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -672,23 +672,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "73"
+        - "73"
       "yes":
-      - "87"
+        - "87"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.ReturnErrorForIncompleteConfig
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.ReturnErrorForIncompleteConfig
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -719,7 +719,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "73"
+        - "73"
     scriptarguments:
       message:
         simple: |-
@@ -760,170 +760,166 @@ view: |-
     }
   }
 inputs:
-- key: OutputLogsForDetectedIPs
-  value:
-    simple: "False"
-  required: true
-  description: |-
-    Whether to output full traffic logs for the infected IPs.
+  - key: OutputLogsForDetectedIPs
+    value:
+      simple: "False"
+    required: true
+    description: |-
+      Whether to output full traffic logs for the infected IPs.
 
-    If set to True, this will output the logs containing the traffic from the compromised IPs to the sinkhole address. It includes data that can be used for remediation or for deeper investigation by examining what traffic the hosts are creating.
+      If set to True, this will output the logs containing the traffic from the compromised IPs to the sinkhole address. It includes data that can be used for remediation or for deeper investigation by examining what traffic the hosts are creating.
 
-    If set to False, data from the logs will not be outputted.
+      If set to False, data from the logs will not be outputted.
 
-    Note: The IP addresses of the systems creating traffic to the sinkhole address will be outputted regardless of playbook input configurations.
-  playbookInputQuery:
-- key: RuleNameToDenyToSinkhole
-  value: {}
-  required: false
-  description: |-
-    The name of the rule that will be created  to deny traffic to the sinkhole address. This is required so that traffic logs will reveal the endpoints attempting to connect to their C&C (which by the end of this playbook will be sinkholed).
-    If a rule with the specified name does not exist, one will be created. The new rule will be placed before rules that allow DNS traffic, as recommended by the PAN-OS best practices.
-  playbookInputQuery:
-- key: TimeToWaitForTraffic
-  value:
-    simple: "300"
-  required: true
-  description: |-
-    The time in seconds that the playbook will wait for hosts to generate traffic to the sinkhole address.
-    Waiting for long periods of time will increase your chances of finding additional infected systems. However, if enough time passed since your DNS sinkhole was first configure, it may not be needed to wait at all, as systems are already generating traffic to the sinkhole address.
-    By default, the playbook will wait for 5 minutes (300 seconds).
-    If you do not wish to wait at all, do not delete the value of this input. Instead, you can set the value to 0.
-  playbookInputQuery:
-- key: ReturnErrorForIncompleteConfig
-  value:
-    simple: "False"
-  required: true
-  description: |-
-    Whether to return errors if the configuration for the sinkhole is incomplete.
-    Incomplete configuration will result in no logs being returned from this playbook.
-  playbookInputQuery:
+      Note: The IP addresses of the systems creating traffic to the sinkhole address will be outputted regardless of playbook input configurations.
+    playbookInputQuery:
+  - key: RuleNameToDenyToSinkhole
+    value: {}
+    required: false
+    description: |-
+      The name of the rule that will be created  to deny traffic to the sinkhole address. This is required so that traffic logs will reveal the endpoints attempting to connect to their C&C (which by the end of this playbook will be sinkholed).
+      If a rule with the specified name does not exist, one will be created. The new rule will be placed before rules that allow DNS traffic, as recommended by the PAN-OS best practices.
+    playbookInputQuery:
+  - key: TimeToWaitForTraffic
+    value:
+      simple: "300"
+    required: true
+    description: |-
+      The time in seconds that the playbook will wait for hosts to generate traffic to the sinkhole address.
+      Waiting for long periods of time will increase your chances of finding additional infected systems. However, if enough time passed since your DNS sinkhole was first configure, it may not be needed to wait at all, as systems are already generating traffic to the sinkhole address.
+      By default, the playbook will wait for 5 minutes (300 seconds).
+      If you do not wish to wait at all, do not delete the value of this input. Instead, you can set the value to 0.
+    playbookInputQuery:
+  - key: ReturnErrorForIncompleteConfig
+    value:
+      simple: "False"
+    required: true
+    description: |-
+      Whether to return errors if the configuration for the sinkhole is incomplete.
+      Incomplete configuration will result in no logs being returned from this playbook.
+    playbookInputQuery:
 outputs:
-- contextPath: DetectedIPsFromSinkhole
-  description: The IP addresses of the hosts that attempted to connect to the sinkhole address. If your EDL contained C2C domains, then this would be a list of IP addresses of compromised hosts.
-  type: unknown
-- contextPath: Panorama.Monitor.Logs
-  description: The Traffic logs generated by the rule that denies traffic to the sinkhole address. After the sinkhole is created - these logs should be generated by the infected systems.
-  type: unknown
-- contextPath: Panorama.Monitor.Logs.Action
-  description: The action taken for the session. Can be "alert", "allow", "deny", "drop", "drop-all-packets", "reset-client", "reset-server", "reset-both", or "block-url".
-- contextPath: Panorama.Monitor.Logs.Application
-  description: The application associated with the session.
-- contextPath: Panorama.Monitor.Logs.Category
-  description: The URL category of the URL subtype. For WildFire subtype, it is the verdict on the file, and can be either "malicious", "phishing", "grayware", or "benign". For other subtypes, the value is "any".
-- contextPath: Panorama.Monitor.Logs.DeviceName
-  description: The hostname of the firewall on which the session was logged.
-- contextPath: Panorama.Monitor.Logs.DestinationAddress
-  description: The original session destination IP address.
-- contextPath: Panorama.Monitor.Logs.DestinationUser
-  description: The username of the user to which the session was destined.
-- contextPath: Panorama.Monitor.Logs.DestinationCountry
-  description: The destination country or internal region for private addresses. Maximum length is 32 bytes.
-- contextPath: Panorama.Monitor.Logs.DestinationPort
-  description: The destination port utilized by the session.
-- contextPath: Panorama.Monitor.Logs.FileDigest
-  description: Only for the WildFire subtype, all other types do not use this field. The filedigest string shows the binary hash of the file sent to be analyzed by the WildFire service.
-- contextPath: Panorama.Monitor.Logs.FileName
-  description: |-
-    File name or file type when the subtype is file.
-    File name when the subtype is virus.
-    File name when the subtype is wildfire-virus.
-    File name when the subtype is wildfire.
-- contextPath: Panorama.Monitor.Logs.FileType
-  description: |-
-    Only for the WildFire subtype, all other types do not use this field.
-    Specifies the type of file that the firewall forwarded for WildFire analysis.
-- contextPath: Panorama.Monitor.Logs.FromZone
-  description: The zone from which the session was sourced.
-- contextPath: Panorama.Monitor.Logs.URLOrFilename
-  description: |-
-    The actual URL when the subtype is url.
-    The file name or file type when the subtype is file.
-    The file name when the subtype is virus.
-    The file name when the subtype is wildfire-virus.
-    The file name when the subtype is wildfire.
-    The URL or file name when the subtype is vulnerability (if applicable).
-- contextPath: Panorama.Monitor.Logs.NATDestinationIP
-  description: The post-NAT destination IP address if destination NAT was performed.
-- contextPath: Panorama.Monitor.Logs.NATDestinationPort
-  description: The post-NAT destination port.
-- contextPath: Panorama.Monitor.Logs.NATSourceIP
-  description: The post-NAT source IP address if source NAT was performed.
-- contextPath: Panorama.Monitor.Logs.NATSourcePort
-  description: The post-NAT source port.
-- contextPath: Panorama.Monitor.Logs.PCAPid
-  description: |-
-    The packet capture (pcap) ID is a 64 bit unsigned integral denoting
-    an ID to correlate threat pcap files with extended pcaps taken as a part of
-    that flow. All threat logs will contain either a pcap_id of 0 (no associated
-    pcap), or an ID referencing the extended pcap file.
-- contextPath: Panorama.Monitor.Logs.IPProtocol
-  description: The IP protocol associated with the session.
-- contextPath: Panorama.Monitor.Logs.Recipient
-  description: |-
-    Only for the WildFire subtype, all other types do not use this field.
-    Specifies the name of the receiver of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
-- contextPath: Panorama.Monitor.Logs.Rule
-  description: The name of the rule that the session matched.
-- contextPath: Panorama.Monitor.Logs.RuleID
-  description: The ID of the rule that the session matched.
-- contextPath: Panorama.Monitor.Logs.ReceiveTime
-  description: The time the log was received at the management plane.
-- contextPath: Panorama.Monitor.Logs.Sender
-  description: |-
-    Only for the WildFire subtype; all other types do not use this field.
-    Specifies the name of the sender of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
-- contextPath: Panorama.Monitor.Logs.SessionID
-  description: An internal numerical identifier applied to each session.
-- contextPath: Panorama.Monitor.Logs.DeviceSN
-  description: The serial number of the firewall on which the session was logged.
-- contextPath: Panorama.Monitor.Logs.Severity
-  description: |-
-    The severity associated with the threat. Can be "informational", "low",
-    "medium", "high", or "critical".
-- contextPath: Panorama.Monitor.Logs.SourceAddress
-  description: The original session source IP address.
-- contextPath: Panorama.Monitor.Logs.SourceCountry
-  description: |-
-    The source country or internal region for private addresses. Maximum
-    length is 32 bytes.
-- contextPath: Panorama.Monitor.Logs.SourceUser
-  description: The username of the user who initiated the session.
-- contextPath: Panorama.Monitor.Logs.SourcePort
-  description: The source port utilized by the session.
-- contextPath: Panorama.Monitor.Logs.ThreatCategory
-  description: |-
-    The threat categories used to classify different types of
-    threat signatures.
-- contextPath: Panorama.Monitor.Logs.Name
-  description: |-
-    The Palo Alto Networks identifier for the threat. A description
-    string followed by a 64-bit numerical identifier.
-- contextPath: Panorama.Monitor.Logs.ID
-  description: The Palo Alto Networks ID for the threat.
-- contextPath: Panorama.Monitor.Logs.ToZone
-  description: The zone to which the session was destined.
-- contextPath: Panorama.Monitor.Logs.TimeGenerated
-  description: The time the log was generated on the data plane.
-- contextPath: Panorama.Monitor.Logs.URLCategoryList
-  description: |-
-    A list of the URL filtering categories the firewall used to
-    enforce the policy.
-- contextPath: Panorama.Monitor.Logs.Bytes
-  description: The total log bytes.
-- contextPath: Panorama.Monitor.Logs.BytesReceived
-  description: The log bytes received.
-- contextPath: Panorama.Monitor.Logs.BytesSent
-  description: The log bytes sent.
-- contextPath: Panorama.Monitor.Logs.Vsys
-  description: The VSYS on the firewall that generated the log.
+  - contextPath: DetectedIPsFromSinkhole
+    description: The IP addresses of the hosts that attempted to connect to the sinkhole address. If your EDL contained C2C domains, then this would be a list of IP addresses of compromised hosts.
+    type: unknown
+  - contextPath: Panorama.Monitor.Logs
+    description: The Traffic logs generated by the rule that denies traffic to the sinkhole address. After the sinkhole is created - these logs should be generated by the infected systems.
+    type: unknown
+  - contextPath: Panorama.Monitor.Logs.Action
+    description: The action taken for the session. Can be "alert", "allow", "deny", "drop", "drop-all-packets", "reset-client", "reset-server", "reset-both", or "block-url".
+  - contextPath: Panorama.Monitor.Logs.Application
+    description: The application associated with the session.
+  - contextPath: Panorama.Monitor.Logs.Category
+    description: The URL category of the URL subtype. For WildFire subtype, it is the verdict on the file, and can be either "malicious", "phishing", "grayware", or "benign". For other subtypes, the value is "any".
+  - contextPath: Panorama.Monitor.Logs.DeviceName
+    description: The hostname of the firewall on which the session was logged.
+  - contextPath: Panorama.Monitor.Logs.DestinationAddress
+    description: The original session destination IP address.
+  - contextPath: Panorama.Monitor.Logs.DestinationUser
+    description: The username of the user to which the session was destined.
+  - contextPath: Panorama.Monitor.Logs.DestinationCountry
+    description: The destination country or internal region for private addresses. Maximum length is 32 bytes.
+  - contextPath: Panorama.Monitor.Logs.DestinationPort
+    description: The destination port utilized by the session.
+  - contextPath: Panorama.Monitor.Logs.FileDigest
+    description: Only for the WildFire subtype, all other types do not use this field. The filedigest string shows the binary hash of the file sent to be analyzed by the WildFire service.
+  - contextPath: Panorama.Monitor.Logs.FileName
+    description: |-
+      File name or file type when the subtype is file.
+      File name when the subtype is virus.
+      File name when the subtype is wildfire-virus.
+      File name when the subtype is wildfire.
+  - contextPath: Panorama.Monitor.Logs.FileType
+    description: |-
+      Only for the WildFire subtype, all other types do not use this field.
+      Specifies the type of file that the firewall forwarded for WildFire analysis.
+  - contextPath: Panorama.Monitor.Logs.FromZone
+    description: The zone from which the session was sourced.
+  - contextPath: Panorama.Monitor.Logs.URLOrFilename
+    description: |-
+      The actual URL when the subtype is url.
+      The file name or file type when the subtype is file.
+      The file name when the subtype is virus.
+      The file name when the subtype is wildfire-virus.
+      The file name when the subtype is wildfire.
+      The URL or file name when the subtype is vulnerability (if applicable).
+  - contextPath: Panorama.Monitor.Logs.NATDestinationIP
+    description: The post-NAT destination IP address if destination NAT was performed.
+  - contextPath: Panorama.Monitor.Logs.NATDestinationPort
+    description: The post-NAT destination port.
+  - contextPath: Panorama.Monitor.Logs.NATSourceIP
+    description: The post-NAT source IP address if source NAT was performed.
+  - contextPath: Panorama.Monitor.Logs.NATSourcePort
+    description: The post-NAT source port.
+  - contextPath: Panorama.Monitor.Logs.PCAPid
+    description: |-
+      The packet capture (pcap) ID is a 64 bit unsigned integral denoting
+      an ID to correlate threat pcap files with extended pcaps taken as a part of
+      that flow. All threat logs will contain either a pcap_id of 0 (no associated
+      pcap), or an ID referencing the extended pcap file.
+  - contextPath: Panorama.Monitor.Logs.IPProtocol
+    description: The IP protocol associated with the session.
+  - contextPath: Panorama.Monitor.Logs.Recipient
+    description: |-
+      Only for the WildFire subtype, all other types do not use this field.
+      Specifies the name of the receiver of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
+  - contextPath: Panorama.Monitor.Logs.Rule
+    description: The name of the rule that the session matched.
+  - contextPath: Panorama.Monitor.Logs.RuleID
+    description: The ID of the rule that the session matched.
+  - contextPath: Panorama.Monitor.Logs.ReceiveTime
+    description: The time the log was received at the management plane.
+  - contextPath: Panorama.Monitor.Logs.Sender
+    description: |-
+      Only for the WildFire subtype; all other types do not use this field.
+      Specifies the name of the sender of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
+  - contextPath: Panorama.Monitor.Logs.SessionID
+    description: An internal numerical identifier applied to each session.
+  - contextPath: Panorama.Monitor.Logs.DeviceSN
+    description: The serial number of the firewall on which the session was logged.
+  - contextPath: Panorama.Monitor.Logs.Severity
+    description: |-
+      The severity associated with the threat. Can be "informational", "low",
+      "medium", "high", or "critical".
+  - contextPath: Panorama.Monitor.Logs.SourceAddress
+    description: The original session source IP address.
+  - contextPath: Panorama.Monitor.Logs.SourceCountry
+    description: |-
+      The source country or internal region for private addresses. Maximum
+      length is 32 bytes.
+  - contextPath: Panorama.Monitor.Logs.SourceUser
+    description: The username of the user who initiated the session.
+  - contextPath: Panorama.Monitor.Logs.SourcePort
+    description: The source port utilized by the session.
+  - contextPath: Panorama.Monitor.Logs.ThreatCategory
+    description: |-
+      The threat categories used to classify different types of
+      threat signatures.
+  - contextPath: Panorama.Monitor.Logs.Name
+    description: |-
+      The Palo Alto Networks identifier for the threat. A description
+      string followed by a 64-bit numerical identifier.
+  - contextPath: Panorama.Monitor.Logs.ID
+    description: The Palo Alto Networks ID for the threat.
+  - contextPath: Panorama.Monitor.Logs.ToZone
+    description: The zone to which the session was destined.
+  - contextPath: Panorama.Monitor.Logs.TimeGenerated
+    description: The time the log was generated on the data plane.
+  - contextPath: Panorama.Monitor.Logs.URLCategoryList
+    description: |-
+      A list of the URL filtering categories the firewall used to
+      enforce the policy.
+  - contextPath: Panorama.Monitor.Logs.Bytes
+    description: The total log bytes.
+  - contextPath: Panorama.Monitor.Logs.BytesReceived
+    description: The log bytes received.
+  - contextPath: Panorama.Monitor.Logs.BytesSent
+    description: The log bytes sent.
+  - contextPath: Panorama.Monitor.Logs.Vsys
+    description: The VSYS on the firewall that generated the log.
 tests:
-- No tests
+  - No tests
 fromversion: 6.9.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

@@ -19,7 +19,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "16"
+        - "16"
     separatecontext: false
     view: |-
       {
@@ -51,7 +51,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+        - "15"
     scriptarguments:
       description:
         complex:
@@ -128,35 +128,35 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+        - "8"
       Mirror:
-      - "13"
+        - "13"
       State Polling:
-      - "14"
+        - "14"
     separatecontext: false
     conditions:
-    - label: Mirror
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.SyncTicket
-            iscontext: true
-          right:
-            value:
-              simple: Mirror
-    - label: State Polling
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.SyncTicket
-            iscontext: true
-          right:
-            value:
-              simple: StatePolling
+      - label: Mirror
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.SyncTicket
+                  iscontext: true
+                right:
+                  value:
+                    simple: Mirror
+      - label: State Polling
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.SyncTicket
+                  iscontext: true
+                right:
+                  value:
+                    simple: StatePolling
     view: |-
       {
         "position": {
@@ -187,7 +187,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       'FieldPolling ':
         complex:
@@ -249,7 +249,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       AdditionalPollingCommandName:
         complex:
@@ -303,7 +303,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       issueId:
         complex:
@@ -323,65 +323,65 @@ tasks:
     timertriggers: []
     ignoreworker: false
     fieldMapping:
-    - incidentfield: Jira Status
-      output:
-        complex:
-          root: Ticket
-          accessor: Status
-    - incidentfield: Jira Summary
-      output:
-        complex:
-          root: Ticket
-          accessor: Summary
-    - incidentfield: Jira Reporter Name
-      output:
-        complex:
-          root: Ticket
-          accessor: Creator
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: (
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
-    - incidentfield: Jira Reporter Email
-      output:
-        complex:
-          root: Ticket
-          accessor: Creator
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: (
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "1"
-          - operator: replace
-            args:
-              limit: {}
-              replaceWith: {}
-              toReplace:
-                value:
-                  simple: )
-    - incidentfield: Jira ID
-      output:
-        complex:
-          root: Ticket
-          accessor: Id
-    - incidentfield: Jira Issue Key
-      output:
-        complex:
-          root: Ticket
-          accessor: Key
+      - incidentfield: Jira Status
+        output:
+          complex:
+            root: Ticket
+            accessor: Status
+      - incidentfield: Jira Summary
+        output:
+          complex:
+            root: Ticket
+            accessor: Summary
+      - incidentfield: Jira Reporter Name
+        output:
+          complex:
+            root: Ticket
+            accessor: Creator
+            transformers:
+              - operator: split
+                args:
+                  delimiter:
+                    value:
+                      simple: (
+              - operator: atIndex
+                args:
+                  index:
+                    value:
+                      simple: "0"
+      - incidentfield: Jira Reporter Email
+        output:
+          complex:
+            root: Ticket
+            accessor: Creator
+            transformers:
+              - operator: split
+                args:
+                  delimiter:
+                    value:
+                      simple: (
+              - operator: atIndex
+                args:
+                  index:
+                    value:
+                      simple: "1"
+              - operator: replace
+                args:
+                  limit: {}
+                  replaceWith: {}
+                  toReplace:
+                    value:
+                      simple: )
+      - incidentfield: Jira ID
+        output:
+          complex:
+            root: Ticket
+            accessor: Id
+      - incidentfield: Jira Issue Key
+        output:
+          complex:
+            root: Ticket
+            accessor: Key
     skipunavailable: false
     quietmode: 0
     continueonerrortype: ""
@@ -402,14 +402,14 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "17"
+        - "17"
       "yes":
-      - "3"
+        - "3"
     scriptarguments:
       brandname:
         simple: jira-v2
     results:
-    - brandInstances
+      - brandInstances
     separatecontext: false
     view: |-
       {
@@ -441,14 +441,14 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "8"
+        - "8"
       "yes":
-      - "3"
+        - "3"
     scriptarguments:
       brandname:
         simple: Jira V3
     results:
-    - brandInstances
+      - brandInstances
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -484,90 +484,86 @@ view: |-
     }
   }
 inputs:
-- key: Summary
-  value: {}
-  required: true
-  description: Set the summary of the ticket.
-  playbookInputQuery:
-- key: Description
-  value: {}
-  required: false
-  description: Set the description of the ticket.
-  playbookInputQuery:
-- key: ProjectKey
-  value: {}
-  required: true
-  description: Jira Project Key
-  playbookInputQuery:
-- key: IssueTypeName
-  value: {}
-  required: true
-  description: TaskName
-  playbookInputQuery:
-- key: SyncTicket
-  value: {}
-  required: false
-  description: "Set the value of the desired sync method with Jira Issue. you can choose one of three options:\n1. StatePolling\n2. Mirror \n3. Blank for none \n\nGenericPolling polls for the state of the ticket and runs until the ticket state is either resolved or closed. \n\nMirror - You can use the Mirror option to perform a full sync with the Jira Ticket. The ticket data is synced automatically between Jira and Cortex xSOAR with the Jira mirror feature.\nIf this option is selected, FieldPolling is true by default. "
-  playbookInputQuery:
-- key: PollingInterval
-  value: {}
-  required: false
-  description: |-
-    Set interval time for the polling to run
-    (In minutes)
-  playbookInputQuery:
-- key: PollingTimeout
-  value: {}
-  required: false
-  description: |-
-    Set the amount of time to poll the status of the ticket before declaring a timeout and resuming the playbook.
-    (In minutes)
-  playbookInputQuery:
-- key: AdditionalPollingCommandName
-  value: {}
-  required: false
-  description: "In this use case, Additional polling commands are relevant when using StatePolling, and there is more than one Jira instance. It will specify the polling command to use a specific instance to run on. \nIf so, please add \"Using\" to the value. \nThe playbook will then take the instance name as the instance to use. "
-  playbookInputQuery:
-- key: InstanceName
-  value: {}
-  required: false
-  description: |
-    Set the Jira Instance that will be used for mirroring/running polling commands.
-  playbookInputQuery:
-- key: MirrorDirection
-  value:
-    simple: Both
-  required: false
-  description: "Set the mirror direction, should be one of the following: \n1. In\n2. Out\n3. Both"
-  playbookInputQuery:
-- key: MirrorTags
-  value:
-    simple: comment,attachment
-  required: false
-  description: "Set tags for mirror comments and files to Jira.\nAs defined in the instance settings, by default it will be comment for comments mirroring and attachment for attachments mirroring. "
-  playbookInputQuery:
-- key: FieldPolling
-  value: {}
-  required: false
-  description: |-
-    Set the value to true or false to determine if the playbook will execute the FieldPolling sub playbook.
-    This is useful when a playbook needs to wait for the Jira ticket to be resolved before continuing the parent playbook.
-    FieldPolling will run until the ticket state is either resolved or closed
-  playbookInputQuery:
-- key: IssueLabel
-  value: {}
-  required: false
-  description: |
-    Add labels to the issue.
-  playbookInputQuery:
+  - key: Summary
+    value: {}
+    required: true
+    description: Set the summary of the ticket.
+    playbookInputQuery:
+  - key: Description
+    value: {}
+    required: false
+    description: Set the description of the ticket.
+    playbookInputQuery:
+  - key: ProjectKey
+    value: {}
+    required: true
+    description: Jira Project Key
+    playbookInputQuery:
+  - key: IssueTypeName
+    value: {}
+    required: true
+    description: TaskName
+    playbookInputQuery:
+  - key: SyncTicket
+    value: {}
+    required: false
+    description: "Set the value of the desired sync method with Jira Issue. you can choose one of three options:\n1. StatePolling\n2. Mirror \n3. Blank for none \n\nGenericPolling polls for the state of the ticket and runs until the ticket state is either resolved or closed. \n\nMirror - You can use the Mirror option to perform a full sync with the Jira Ticket. The ticket data is synced automatically between Jira and Cortex xSOAR with the Jira mirror feature.\nIf this option is selected, FieldPolling is true by default. "
+    playbookInputQuery:
+  - key: PollingInterval
+    value: {}
+    required: false
+    description: |-
+      Set interval time for the polling to run
+      (In minutes)
+    playbookInputQuery:
+  - key: PollingTimeout
+    value: {}
+    required: false
+    description: |-
+      Set the amount of time to poll the status of the ticket before declaring a timeout and resuming the playbook.
+      (In minutes)
+    playbookInputQuery:
+  - key: AdditionalPollingCommandName
+    value: {}
+    required: false
+    description: "In this use case, Additional polling commands are relevant when using StatePolling, and there is more than one Jira instance. It will specify the polling command to use a specific instance to run on. \nIf so, please add \"Using\" to the value. \nThe playbook will then take the instance name as the instance to use. "
+    playbookInputQuery:
+  - key: InstanceName
+    value: {}
+    required: false
+    description: |
+      Set the Jira Instance that will be used for mirroring/running polling commands.
+    playbookInputQuery:
+  - key: MirrorDirection
+    value:
+      simple: Both
+    required: false
+    description: "Set the mirror direction, should be one of the following: \n1. In\n2. Out\n3. Both"
+    playbookInputQuery:
+  - key: MirrorTags
+    value:
+      simple: comment,attachment
+    required: false
+    description: "Set tags for mirror comments and files to Jira.\nAs defined in the instance settings, by default it will be comment for comments mirroring and attachment for attachments mirroring. "
+    playbookInputQuery:
+  - key: FieldPolling
+    value: {}
+    required: false
+    description: |-
+      Set the value to true or false to determine if the playbook will execute the FieldPolling sub playbook.
+      This is useful when a playbook needs to wait for the Jira ticket to be resolved before continuing the parent playbook.
+      FieldPolling will run until the ticket state is either resolved or closed
+    playbookInputQuery:
+  - key: IssueLabel
+    value: {}
+    required: false
+    description: |
+      Add labels to the issue.
+    playbookInputQuery:
 outputs: []
 tests:
-- No test.
+  - No test.
 fromversion: 6.0.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

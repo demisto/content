@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -84,7 +84,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     scriptarguments:
       all:
         simple: "yes"
@@ -121,7 +121,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       after:
         complex:
@@ -173,14 +173,14 @@ tasks:
     loop:
       iscommand: false
       builtincondition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Stop
-            iscontext: true
-          right:
-            value:
-              simple: "true"
+        -   - operator: isEqualString
+              left:
+                value:
+                  simple: Stop
+                iscontext: true
+              right:
+                value:
+                  simple: "true"
       exitCondition: ""
       wait: 5
       max: 100
@@ -211,100 +211,96 @@ view: |-
     }
   }
 inputs:
-- key: after
-  value: {}
-  required: false
-  description: Search for messages sent after a specific date. For example, 2018/05/06
-  playbookInputQuery:
-- key: before
-  value: {}
-  required: false
-  description: Search for messages sent before a specific date. For example, 2018/05/09
-  playbookInputQuery:
-- key: fields
-  value: {}
-  required: false
-  description: Enables partial responses to be retrieved in a comma-separated list. For more information, see https://developers.google.com/gdata/docs/2.0/basics#PartialResponse.
-  playbookInputQuery:
-- key: filename
-  value: {}
-  required: false
-  description: Attachments with a certain name or file type. For example, "pdf" or "report.pdf"
-  playbookInputQuery:
-- key: from
-  value: {}
-  required: false
-  description: Specifies the sender. For example, "john"
-  playbookInputQuery:
-- key: to
-  value: {}
-  required: false
-  description: Specifies the receiver. For example, "john"
-  playbookInputQuery:
-- key: has-attachments
-  value: {}
-  required: false
-  description: Whether to search for messages sent with attachments.
-  playbookInputQuery:
-- key: in
-  value: {}
-  required: false
-  description: Messages in any folder, including Spam and Trash. For example, shopping
-  playbookInputQuery:
-- key: include-spam-trash
-  value: {}
-  required: false
-  description: 'Includes messages from SPAM and TRASH in the results. (Default: false)'
-  playbookInputQuery:
-- key: labels-ids
-  value: {}
-  required: false
-  description: Returns messages with labels that match all of the specified label IDs in a comma-separated list.
-  playbookInputQuery:
-- key: subject
-  value: {}
-  required: false
-  description: Words in the subject line. For example, "alert"
-  playbookInputQuery:
-- key: query
-  value: {}
-  required: false
-  description: 'Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en"'
-  playbookInputQuery:
+  - key: after
+    value: {}
+    required: false
+    description: Search for messages sent after a specific date. For example, 2018/05/06
+    playbookInputQuery:
+  - key: before
+    value: {}
+    required: false
+    description: Search for messages sent before a specific date. For example, 2018/05/09
+    playbookInputQuery:
+  - key: fields
+    value: {}
+    required: false
+    description: Enables partial responses to be retrieved in a comma-separated list. For more information, see https://developers.google.com/gdata/docs/2.0/basics#PartialResponse.
+    playbookInputQuery:
+  - key: filename
+    value: {}
+    required: false
+    description: Attachments with a certain name or file type. For example, "pdf" or "report.pdf"
+    playbookInputQuery:
+  - key: from
+    value: {}
+    required: false
+    description: Specifies the sender. For example, "john"
+    playbookInputQuery:
+  - key: to
+    value: {}
+    required: false
+    description: Specifies the receiver. For example, "john"
+    playbookInputQuery:
+  - key: has-attachments
+    value: {}
+    required: false
+    description: Whether to search for messages sent with attachments.
+    playbookInputQuery:
+  - key: in
+    value: {}
+    required: false
+    description: Messages in any folder, including Spam and Trash. For example, shopping
+    playbookInputQuery:
+  - key: include-spam-trash
+    value: {}
+    required: false
+    description: 'Includes messages from SPAM and TRASH in the results. (Default: false)'
+    playbookInputQuery:
+  - key: labels-ids
+    value: {}
+    required: false
+    description: Returns messages with labels that match all of the specified label IDs in a comma-separated list.
+    playbookInputQuery:
+  - key: subject
+    value: {}
+    required: false
+    description: Words in the subject line. For example, "alert"
+    playbookInputQuery:
+  - key: query
+    value: {}
+    required: false
+    description: 'Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en"'
+    playbookInputQuery:
 outputs:
-- contextPath: Gmail.Mailboxes
-  description: The Gmail mailbox.
-- contextPath: Gmail.ID
-  description: The inner ID of the Gmail message.
-- contextPath: Gmail.ThreadId
-  description: The thread ID.
-- contextPath: Gmail.Format
-  description: The MIME type of the email.
-- contextPath: Gmail.Labels
-  description: The labels of a specific email.
-- contextPath: Gmail.To
-  description: The email address of the receiver.
-- contextPath: Gmail.From
-  description: The email address of the sender.
-- contextPath: Gmail.Cc
-  description: The additional recipient email address (CC).
-- contextPath: Gmail.Bcc
-  description: The additional recipient email address (BCC).
-- contextPath: Gmail.Subject
-  description: The subject of the specific email.
-- contextPath: Gmail.Body
-  description: The content of the email.
-- contextPath: Gmail.Attachments
-  description: The attachments of the email. IDs are separated by commas.
-- contextPath: Gmail.Headers
-  description: All headers of a specific mail (list).
+  - contextPath: Gmail.Mailboxes
+    description: The Gmail mailbox.
+  - contextPath: Gmail.ID
+    description: The inner ID of the Gmail message.
+  - contextPath: Gmail.ThreadId
+    description: The thread ID.
+  - contextPath: Gmail.Format
+    description: The MIME type of the email.
+  - contextPath: Gmail.Labels
+    description: The labels of a specific email.
+  - contextPath: Gmail.To
+    description: The email address of the receiver.
+  - contextPath: Gmail.From
+    description: The email address of the sender.
+  - contextPath: Gmail.Cc
+    description: The additional recipient email address (CC).
+  - contextPath: Gmail.Bcc
+    description: The additional recipient email address (BCC).
+  - contextPath: Gmail.Subject
+    description: The subject of the specific email.
+  - contextPath: Gmail.Body
+    description: The content of the email.
+  - contextPath: Gmail.Attachments
+    description: The attachments of the email. IDs are separated by commas.
+  - contextPath: Gmail.Headers
+    description: All headers of a specific mail (list).
 tests:
-- No tests
+  - No tests
 fromversion: 6.5.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

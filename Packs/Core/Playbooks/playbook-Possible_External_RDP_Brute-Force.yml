@@ -19,7 +19,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -50,9 +50,9 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "160"
-      - "161"
-      - "162"
+        - "160"
+        - "161"
+        - "162"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -64,8 +64,8 @@ tasks:
       }
     note: false
     timertriggers:
-    - fieldname: triagesla
-      action: start
+      - fieldname: triagesla
+        action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -85,7 +85,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "111"
+        - "111"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -116,64 +116,64 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "20"
+        - "20"
       "yes":
-      - "13"
+        - "13"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
-            value:
-              complex:
-                root: inputs.UserEngagementThreshold
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: Suspicious_Elements
-                transformers:
-                - operator: count
-            iscontext: true
-    - label: "no"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.UserEngagementThreshold
-            iscontext: true
-          right:
-            value:
-              simple: "false"
-          ignorecase: true
-        - operator: lessThan
-          left:
-            value:
-              complex:
-                root: inputs.UserEngagementThreshold
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: Suspicious_Elements
-                transformers:
-                - operator: count
-            iscontext: true
-        - operator: greaterThan
-          left:
-            value:
-              complex:
-                root: inputs.UserEngagementThreshold
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: Suspicious_Elements
-                transformers:
-                - operator: count
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualNumber
+                left:
+                  value:
+                    complex:
+                      root: inputs.UserEngagementThreshold
+                  iscontext: true
+                right:
+                  value:
+                    complex:
+                      root: Suspicious_Elements
+                      transformers:
+                        - operator: count
+                  iscontext: true
+      - label: "no"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.UserEngagementThreshold
+                  iscontext: true
+                right:
+                  value:
+                    simple: "false"
+                ignorecase: true
+              - operator: lessThan
+                left:
+                  value:
+                    complex:
+                      root: inputs.UserEngagementThreshold
+                  iscontext: true
+                right:
+                  value:
+                    complex:
+                      root: Suspicious_Elements
+                      transformers:
+                        - operator: count
+                  iscontext: true
+              - operator: greaterThan
+                left:
+                  value:
+                    complex:
+                      root: inputs.UserEngagementThreshold
+                  iscontext: true
+                right:
+                  value:
+                    complex:
+                      root: Suspicious_Elements
+                      transformers:
+                        - operator: count
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -203,7 +203,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+        - "35"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -222,18 +222,18 @@ tasks:
           root: ActiveDirectory.Users
           accessor: mail
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: UserManagerEmail
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: inputs.SOCEmailAddress
-                iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: UserManagerEmail
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: inputs.SOCEmailAddress
+                  iscontext: true
       subject:
         simple: Was the following action performed by you?
       body:
@@ -245,7 +245,7 @@ tasks:
 
           Was this action performed by you and can be considered as authorized?
       methods:
-      - email
+        - email
       format: ""
       bcc:
       cc: {}
@@ -257,22 +257,22 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Was the following action performed by you?
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - simple: Authorized
-        - simple: Unauthorized
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
+        - id: "0"
+          label: ""
+          labelarg:
+            simple: Was the following action performed by you?
+          required: false
+          gridcolumns: []
+          defaultrows: []
+          type: singleSelect
+          options: []
+          optionsarg:
+            - simple: Authorized
+            - simple: Unauthorized
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: ""
+          readonly: false
       title: Was the following action performed by you?
       description: ""
       sender: ""
@@ -296,26 +296,26 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "22"
+        - "22"
       "yes":
-      - "21"
+        - "21"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: greaterThanOrEqual
-          left:
-            value:
-              complex:
-                root: Suspicious_Elements
-                transformers:
-                - operator: count
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: inputs.FinalThreshold
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: greaterThanOrEqual
+                left:
+                  value:
+                    complex:
+                      root: Suspicious_Elements
+                      transformers:
+                        - operator: count
+                  iscontext: true
+                right:
+                  value:
+                    complex:
+                      root: inputs.FinalThreshold
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -345,7 +345,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "79"
+        - "79"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -357,8 +357,8 @@ tasks:
       }
     note: false
     timertriggers:
-    - fieldname: remediationsla
-      action: start
+      - fieldname: remediationsla
+        action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -378,7 +378,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "32"
+        - "32"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -410,7 +410,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "105"
+        - "105"
     scriptarguments:
       username:
         complex:
@@ -473,24 +473,24 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "21"
+        - "21"
       "yes":
-      - "22"
+        - "22"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Was the following action performed by you?.Answers
-                accessor: "0"
-            iscontext: true
-          right:
-            value:
-              simple: authorized
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: Was the following action performed by you?.Answers
+                      accessor: "0"
+                  iscontext: true
+                right:
+                  value:
+                    simple: authorized
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -520,39 +520,39 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "6"
+        - "6"
       "yes":
-      - "54"
+        - "54"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: RelatedFiles
-            iscontext: true
-          right:
-            value: {}
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: RelatedDomains
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: RelatedIPs
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: RelatedURLs
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: RelatedFiles
+                  iscontext: true
+                right:
+                  value: {}
+              - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: RelatedDomains
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: RelatedIPs
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: RelatedURLs
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -583,7 +583,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "112"
+        - "112"
     scriptarguments:
       IPAddress:
         complex:
@@ -635,30 +635,30 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "11"
+        - "11"
       "yes":
-      - "21"
+        - "21"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: in
-          left:
-            value:
-              complex:
-                root: inputs.CriticalElement
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: Suspicious_Elements
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.CriticalElement
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: in
+                left:
+                  value:
+                    complex:
+                      root: inputs.CriticalElement
+                  iscontext: true
+                right:
+                  value:
+                    complex:
+                      root: Suspicious_Elements
+                  iscontext: true
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.CriticalElement
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -688,7 +688,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "53"
+        - "53"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -719,10 +719,10 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "110"
-      - "116"
-      - "157"
-      - "158"
+        - "110"
+        - "116"
+        - "157"
+        - "158"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -753,38 +753,38 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "72"
+        - "72"
       "yes":
-      - "153"
+        - "153"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: DBotScore
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DBotScore.Type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: IP
-                    ignorecase: true
-                - - operator: greaterThanOrEqual
-                    left:
-                      value:
-                        simple: DBotScore.Score
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "3"
-                accessor: Score
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: DBotScore
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: DBotScore.Type
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: IP
+                              ignorecase: true
+                        -   - operator: greaterThanOrEqual
+                              left:
+                                value:
+                                  simple: DBotScore.Score
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: "3"
+                      accessor: Score
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -814,7 +814,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "140"
+        - "140"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -826,8 +826,8 @@ tasks:
       }
     note: false
     timertriggers:
-    - fieldname: containmentsla
-      action: start
+      - fieldname: containmentsla
+        action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -847,32 +847,32 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "126"
+        - "126"
       "yes":
-      - "86"
+        - "86"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: IPBlockStatus
-            iscontext: true
-          right:
-            value:
-              simple: Executed
-          ignorecase: true
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: UserBlockStatus
-            iscontext: true
-          right:
-            value:
-              simple: Executed
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: IPBlockStatus
+                  iscontext: true
+                right:
+                  value:
+                    simple: Executed
+                ignorecase: true
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: UserBlockStatus
+                  iscontext: true
+                right:
+                  value:
+                    simple: Executed
     continueonerrortype: ""
     view: |-
       {
@@ -902,7 +902,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "72"
+        - "72"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -914,8 +914,8 @@ tasks:
       }
     note: false
     timertriggers:
-    - fieldname: containmentsla
-      action: stop
+      - fieldname: containmentsla
+        action: stop
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -935,7 +935,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "87"
+        - "87"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -966,23 +966,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "163"
+        - "163"
       "yes":
-      - "156"
+        - "156"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.IsolateEndpoint
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.IsolateEndpoint
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1012,7 +1012,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "32"
+        - "32"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1024,8 +1024,8 @@ tasks:
       }
     note: false
     timertriggers:
-    - fieldname: remediationsla
-      action: stop
+      - fieldname: remediationsla
+        action: stop
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -1052,7 +1052,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "66"
+        - "66"
     scriptarguments:
       Indicator:
         complex:
@@ -1095,7 +1095,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "56"
+        - "56"
     scriptarguments:
       HuntResults:
         complex:
@@ -1104,15 +1104,15 @@ tasks:
         complex:
           root: DBotScore
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.ExternalIP
-                iscontext: true
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Indicator
+                    iscontext: true
+                  right:
+                    value:
+                      simple: inputs.ExternalIP
+                    iscontext: true
           accessor: Score
       RelatedAlerts:
         complex:
@@ -1159,39 +1159,39 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "6"
+        - "6"
       "yes":
-      - "113"
+        - "113"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Splunk
-            iscontext: true
-          right:
-            value: {}
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: PANWHunting
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: QRadar
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Microsoft365Defender
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: Splunk
+                  iscontext: true
+                right:
+                  value: {}
+              - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: PANWHunting
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: QRadar
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: Microsoft365Defender
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -1222,7 +1222,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+        - "6"
     scriptarguments:
       key:
         simple: HasHuntResults
@@ -1241,10 +1241,10 @@ tasks:
     timertriggers: []
     ignoreworker: false
     fieldMapping:
-    - incidentfield: Hunt Results Count
-      output:
-        complex:
-          root: HasHuntResults
+      - incidentfield: Hunt Results Count
+        output:
+          complex:
+            root: HasHuntResults
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -1264,7 +1264,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "66"
+        - "66"
     scriptarguments:
       AzureSearchTime:
         simple: ago(1d)
@@ -1325,7 +1325,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "141"
+        - "141"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1356,7 +1356,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "137"
+        - "137"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1388,14 +1388,14 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "105"
+        - "105"
       "yes":
-      - "31"
+        - "31"
     scriptarguments:
       brandname:
         simple: Active Directory Query v2
     results:
-    - brandInstances
+      - brandInstances
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1436,8 +1436,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "142"
-      - "143"
+        - "142"
+        - "143"
     scriptarguments:
       AutoBlockIndicators:
         complex:
@@ -1507,8 +1507,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "146"
-      - "147"
+        - "146"
+        - "147"
     scriptarguments:
       AutoBlockIndicators:
         complex:
@@ -1568,24 +1568,24 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "82"
+        - "82"
       "yes":
-      - "145"
+        - "145"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: in
-          left:
-            value:
-              complex:
-                root: inputs.ExternalIP
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: IndicatorsToBlock
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: in
+                left:
+                  value:
+                    complex:
+                      root: inputs.ExternalIP
+                  iscontext: true
+                right:
+                  value:
+                    complex:
+                      root: IndicatorsToBlock
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -1615,24 +1615,24 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "82"
+        - "82"
       "yes":
-      - "144"
+        - "144"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: in
-          left:
-            value:
-              complex:
-                root: inputs.Username
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: IndicatorsToBlock
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: in
+                left:
+                  value:
+                    complex:
+                      root: inputs.Username
+                  iscontext: true
+                right:
+                  value:
+                    complex:
+                      root: IndicatorsToBlock
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -1663,7 +1663,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "82"
+        - "82"
     scriptarguments:
       key:
         simple: UserBlockStatus
@@ -1700,7 +1700,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "82"
+        - "82"
     scriptarguments:
       key:
         simple: IPBlockStatus
@@ -1736,24 +1736,24 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "86"
+        - "86"
       "yes":
-      - "148"
+        - "148"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: in
-          left:
-            value:
-              complex:
-                root: inputs.ExternalIP
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: IndicatorsToBlock
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: in
+                left:
+                  value:
+                    complex:
+                      root: inputs.ExternalIP
+                  iscontext: true
+                right:
+                  value:
+                    complex:
+                      root: IndicatorsToBlock
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -1783,24 +1783,24 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "86"
+        - "86"
       "yes":
-      - "149"
+        - "149"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: in
-          left:
-            value:
-              complex:
-                root: inputs.Username
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: IndicatorsToBlock
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: in
+                left:
+                  value:
+                    complex:
+                      root: inputs.Username
+                  iscontext: true
+                right:
+                  value:
+                    complex:
+                      root: IndicatorsToBlock
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -1831,7 +1831,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "86"
+        - "86"
     scriptarguments:
       ipblockedstatus:
         simple: Executed
@@ -1866,7 +1866,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "86"
+        - "86"
     scriptarguments:
       userblockstatus:
         simple: Executed
@@ -1900,23 +1900,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "72"
+        - "72"
       "yes":
-      - "74"
+        - "74"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.EarlyContainment
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.EarlyContainment
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1946,7 +1946,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "73"
+        - "73"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1958,8 +1958,8 @@ tasks:
       }
     note: false
     timertriggers:
-    - fieldname: triagesla
-      action: stop
+      - fieldname: triagesla
+        action: stop
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -1980,7 +1980,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "136"
+        - "136"
     scriptarguments:
       endpoint_id:
         complex:
@@ -2018,21 +2018,21 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "66"
+        - "66"
     scriptarguments:
       EntityID:
         complex:
           root: inputs.Username
           transformers:
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: \
-              fields:
-                value:
-                  simple: "2"
-          - operator: LastArrayElement
+            - operator: Cut
+              args:
+                delimiter:
+                  value:
+                    simple: \
+                fields:
+                  value:
+                    simple: "2"
+            - operator: LastArrayElement
       EntityType:
         simple: username
       HuntCnCTechniques:
@@ -2089,7 +2089,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "66"
+        - "66"
     scriptarguments:
       EntityID:
         complex:
@@ -2148,7 +2148,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "154"
+        - "154"
     scriptarguments:
       ip:
         complex:
@@ -2184,29 +2184,29 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "154"
+        - "154"
     scriptarguments:
       Domain:
         complex:
           root: inputs.Username
           filters:
-          - - operator: containsString
-              left:
-                value:
-                  simple: inputs.Username
-                iscontext: true
-              right:
-                value:
-                  simple: \
+            -   - operator: containsString
+                  left:
+                    value:
+                      simple: inputs.Username
+                    iscontext: true
+                  right:
+                    value:
+                      simple: \
           transformers:
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: \
-              fields:
-                value:
-                  simple: "2"
+            - operator: Cut
+              args:
+                delimiter:
+                  value:
+                    simple: \
+                fields:
+                  value:
+                    simple: "2"
       Username:
         complex:
           root: inputs.Username
@@ -2246,13 +2246,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "154"
+        - "154"
     scriptarguments:
       Hostname:
         complex:
           root: inputs.Hostname
           transformers:
-          - operator: uniq
+            - operator: uniq
       UseReputationCommand:
         simple: "False"
     separatecontext: true
@@ -2290,40 +2290,40 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "136"
+        - "136"
       "yes":
-      - "164"
+        - "164"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Core.RiskyHost.id
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Core.RiskyHost.risk_level
-                      iscontext: true
-                    right:
-                      value:
-                        simple: HIGH
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Core.RiskyHost.id
-                      iscontext: true
-                    right:
-                      value:
-                        simple: |2-
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: Core.RiskyHost.id
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: Core.RiskyHost.risk_level
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: HIGH
+                              ignorecase: true
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: Core.RiskyHost.id
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: |2-
 
-                          inputs.EndpointID
-                      iscontext: true
-            iscontext: true
+                                    inputs.EndpointID
+                                iscontext: true
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -2358,9 +2358,9 @@ tasks:
       brand: ""
     nexttasks:
       Do Not Isolate:
-      - "136"
+        - "136"
       Isolate:
-      - "156"
+        - "156"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2412,150 +2412,146 @@ view: |-
     }
   }
 inputs:
-- key: Username
-  value:
-    complex:
-      root: alert
-      accessor: username
-      transformers:
-      - operator: uniq
-  required: false
-  description: RDP connection username.
-  playbookInputQuery:
-- key: ExternalIP
-  value:
-    complex:
-      root: alert
-      accessor: localip
-      transformers:
-      - operator: uniq
-  required: false
-  description: Source external IP address.
-  playbookInputQuery:
-- key: AutoRemediation
-  value:
-    simple: "false"
-  required: false
-  description: Set this value to "true" to enable auto remediation (IP Block and User Block).
-  playbookInputQuery:
-- key: FinalThreshold
-  value:
-    simple: "2"
-  required: false
-  description: The threshold number of suspicious elements required to determine a 'True Positive' verdict.
-  playbookInputQuery:
-- key: CriticalElement
-  value: {}
-  required: false
-  description: |-
-    You can select a specific element that, if identified as suspicious, will automatically set the final verdict as true positive. The following options are available:
-    IP Reputation
-    Related Campaign
-    Hunting Results
-    Related Alerts
-    Unusual Country
-    Risky User
-    Risky Host
+  - key: Username
+    value:
+      complex:
+        root: alert
+        accessor: username
+        transformers:
+          - operator: uniq
+    required: false
+    description: RDP connection username.
+    playbookInputQuery:
+  - key: ExternalIP
+    value:
+      complex:
+        root: alert
+        accessor: localip
+        transformers:
+          - operator: uniq
+    required: false
+    description: Source external IP address.
+    playbookInputQuery:
+  - key: AutoRemediation
+    value:
+      simple: "false"
+    required: false
+    description: Set this value to "true" to enable auto remediation (IP Block and User Block).
+    playbookInputQuery:
+  - key: FinalThreshold
+    value:
+      simple: "2"
+    required: false
+    description: The threshold number of suspicious elements required to determine a 'True Positive' verdict.
+    playbookInputQuery:
+  - key: CriticalElement
+    value: {}
+    required: false
+    description: |-
+      You can select a specific element that, if identified as suspicious, will automatically set the final verdict as true positive. The following options are available:
+      IP Reputation
+      Related Campaign
+      Hunting Results
+      Related Alerts
+      Unusual Country
+      Risky User
+      Risky Host
 
-    NOTE: You can read about the meaning of every element in the playbook description.
-  playbookInputQuery:
-- key: UserEngagementThreshold
-  value:
-    simple: "1"
-  required: false
-  description: |-
-    The threshold number of suspicious elements that will trigger a user engagement. Set 0 to disable user engagement.
+      NOTE: You can read about the meaning of every element in the playbook description.
+    playbookInputQuery:
+  - key: UserEngagementThreshold
+    value:
+      simple: "1"
+    required: false
+    description: |-
+      The threshold number of suspicious elements that will trigger a user engagement. Set 0 to disable user engagement.
 
-    NOTICE: If this threshold is equal to or higher than "FinalThreshold", the final verdict will be deemed by the user response and not by the FinalThreshold calculation.
-  playbookInputQuery:
-- key: Hostname
-  value:
-    complex:
-      root: alert
-      accessor: hostname
-  required: false
-  description: RDP connection destination hostname.
-  playbookInputQuery:
-- key: EndpointID
-  value:
-    complex:
-      root: alert
-      accessor: agentid
-  required: false
-  description: RDP connection destination endpoint ID.
-  playbookInputQuery:
-- key: Country
-  value:
-    complex:
-      root: alert
-      accessor: country
-  required: false
-  description: Source external IP country.
-  playbookInputQuery:
-- key: IsolateEndpoint
-  value:
-    simple: "false"
-  required: false
-  description: Set this value to "true" to enable endpoint isolation in case of a true positive.
-  playbookInputQuery:
-- key: SOCEmailAddress
-  value: {}
-  required: false
-  description: The SOC email address to use for the user engagement section.
-  playbookInputQuery:
-- key: EarlyContainment
-  value:
-    simple: "true"
-  required: false
-  description: Set this value to "true" to allow early containment when the IP is known malicious
-  playbookInputQuery:
+      NOTICE: If this threshold is equal to or higher than "FinalThreshold", the final verdict will be deemed by the user response and not by the FinalThreshold calculation.
+    playbookInputQuery:
+  - key: Hostname
+    value:
+      complex:
+        root: alert
+        accessor: hostname
+    required: false
+    description: RDP connection destination hostname.
+    playbookInputQuery:
+  - key: EndpointID
+    value:
+      complex:
+        root: alert
+        accessor: agentid
+    required: false
+    description: RDP connection destination endpoint ID.
+    playbookInputQuery:
+  - key: Country
+    value:
+      complex:
+        root: alert
+        accessor: country
+    required: false
+    description: Source external IP country.
+    playbookInputQuery:
+  - key: IsolateEndpoint
+    value:
+      simple: "false"
+    required: false
+    description: Set this value to "true" to enable endpoint isolation in case of a true positive.
+    playbookInputQuery:
+  - key: SOCEmailAddress
+    value: {}
+    required: false
+    description: The SOC email address to use for the user engagement section.
+    playbookInputQuery:
+  - key: EarlyContainment
+    value:
+      simple: "true"
+    required: false
+    description: Set this value to "true" to allow early containment when the IP is known malicious
+    playbookInputQuery:
 inputSections:
-- inputs:
-  - SOCEmailAddress
-  - UserEngagementThreshold
-  - EndpointID
-  - Country
-  name: Alert Management
-  description: Alert management settings and data, including escalation processes, and user engagements.
-- inputs:
-  - ExternalIP
-  - Hostname
-  - Username
-  name: Enrichment
-  description: Enrichment settings and data, including assets and indicators enrichment using third-party enrichers.
-- inputs:
-  - FinalThreshold
-  - CriticalElement
-  name: Investigation
-  description: Investigation settings and data, including any deep dive alert investigation and verdict determination.
-- inputs:
-  - EarlyContainment
-  - AutoRemediation
-  - IsolateEndpoint
-  name: Remediation
-  description: Remediation settings and data, including containment, eradication, and recovery.
+  - inputs:
+      - SOCEmailAddress
+      - UserEngagementThreshold
+      - EndpointID
+      - Country
+    name: Alert Management
+    description: Alert management settings and data, including escalation processes, and user engagements.
+  - inputs:
+      - ExternalIP
+      - Hostname
+      - Username
+    name: Enrichment
+    description: Enrichment settings and data, including assets and indicators enrichment using third-party enrichers.
+  - inputs:
+      - FinalThreshold
+      - CriticalElement
+    name: Investigation
+    description: Investigation settings and data, including any deep dive alert investigation and verdict determination.
+  - inputs:
+      - EarlyContainment
+      - AutoRemediation
+      - IsolateEndpoint
+    name: Remediation
+    description: Remediation settings and data, including containment, eradication, and recovery.
 outputSections:
-- outputs: []
-  name: General (Outputs group)
-  description: Generic group for outputs
+  - outputs: []
+    name: General (Outputs group)
+    description: Generic group for outputs
 outputs: []
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 marketplaces:
-- marketplacev2
-- platform
+  - marketplacev2
+  - platform
 fromversion: 6.8.0
 system: true
 
 
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- cloud
-- cloud_posture
-- cloud_runtime_security
-- edr
-- xsiam
+  - agentix
+  - cloud
+  - cloud_posture
+  - cloud_runtime_security
+  - edr
+  - xsiam

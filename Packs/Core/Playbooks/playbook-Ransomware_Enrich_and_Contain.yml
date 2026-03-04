@@ -26,7 +26,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -57,7 +57,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -88,20 +88,20 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "26"
+        - "26"
       "yes":
-      - "34"
+        - "34"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: alert.remoteip
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: alert.remoteip
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -131,23 +131,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "26"
+        - "26"
       "yes":
-      - "37"
+        - "37"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.isolateRemoteAttacker
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.isolateRemoteAttacker
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -178,7 +178,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+        - "19"
     scriptarguments:
       fromdate:
         simple: 2 hours ago
@@ -214,21 +214,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "24"
+        - "24"
       "yes":
-      - "22"
+        - "22"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: foundIncidents
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: foundIncidents
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -259,44 +259,44 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "39"
+        - "39"
     scriptarguments:
       text:
         complex:
           root: WildFire.Report.NetworkInfo.URL
           accessor: Host
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: WildFire.Report.NetworkInfo.UDP.IP
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: WildFire.Report.NetworkInfo.TCP.IP
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: WildFire.Report.NetworkInfo.DNS.Query
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: WildFire.Report.NetworkInfo.DNS.Response
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: WildFire.Report.SHA256
-                iscontext: true
-          - operator: uniq
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: WildFire.Report.NetworkInfo.UDP.IP
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: WildFire.Report.NetworkInfo.TCP.IP
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: WildFire.Report.NetworkInfo.DNS.Query
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: WildFire.Report.NetworkInfo.DNS.Response
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: WildFire.Report.SHA256
+                  iscontext: true
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -327,23 +327,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "24"
+        - "24"
       "yes":
-      - "23"
+        - "23"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.isolateSimilarEndpoints
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.isolateSimilarEndpoints
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -383,7 +383,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "24"
+        - "24"
     scriptarguments:
       AutoContainment:
         simple: "True"
@@ -481,7 +481,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "30"
+        - "30"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -513,7 +513,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "33"
+        - "33"
     scriptarguments:
       endpoint_ids:
         complex:
@@ -553,23 +553,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "21"
+        - "21"
       "yes":
-      - "44"
+        - "44"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.detonateRansomFile
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.detonateRansomFile
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -600,7 +600,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "31"
+        - "31"
     scriptarguments:
       extended_data:
         simple: "true"
@@ -643,22 +643,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "27"
+        - "27"
       "yes":
-      - "21"
+        - "21"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: WildFire
-                accessor: Report
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: WildFire
+                      accessor: Report
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -689,7 +689,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "28"
+        - "28"
     scriptarguments:
       action_id:
         complex:
@@ -726,7 +726,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       ip_list:
         complex:
@@ -762,9 +762,9 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "26"
+        - "26"
       "yes":
-      - "36"
+        - "36"
     scriptarguments:
       entryId:
         simple: ${lastCompletedTaskEntries}
@@ -799,7 +799,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "26"
+        - "26"
     separatecontext: false
     view: |-
       {
@@ -830,7 +830,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+        - "35"
     scriptarguments:
       endpoint_id:
         complex:
@@ -867,7 +867,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "18"
+        - "18"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -898,10 +898,10 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "40"
-      - "41"
-      - "42"
-      - "43"
+        - "40"
+        - "41"
+        - "42"
+        - "43"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -933,7 +933,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "38"
+        - "38"
     scriptarguments:
       ip:
         complex:
@@ -972,7 +972,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "38"
+        - "38"
     scriptarguments:
       domain:
         complex:
@@ -1011,7 +1011,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "38"
+        - "38"
     scriptarguments:
       url:
         complex:
@@ -1050,7 +1050,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "38"
+        - "38"
     scriptarguments:
       file:
         complex:
@@ -1095,13 +1095,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+        - "21"
     scriptarguments:
       File:
         complex:
           root: inputs.detonateRansomFile
           transformers:
-          - operator: uniq
+            - operator: uniq
       Interval:
         simple: "1"
       Timeout:
@@ -1148,49 +1148,45 @@ view: |-
     }
   }
 inputs:
-- key: isolateRemoteAttacker
-  value:
-    simple: "true"
-  required: false
-  description: Whether to isolate the remote attacker host.
-  playbookInputQuery:
-- key: isolateSimilarEndpoints
-  value:
-    simple: "false"
-  required: false
-  description: Whether to isolate endpoints which has been detected with the alert IoCs.
-  playbookInputQuery:
-- key: FileSHA256
-  value:
-    complex:
-      root: alert
-      accessor: initiatorsha256
-  required: false
-  description: The ransomware file SHA256.
-  playbookInputQuery:
-- key: detonateRansomFile
-  value:
-    simple: "True"
-  required: false
-  description: |-
-    Whether to detonate the ransomware file in sandbox, Set to True to enable file detonation and False to disable it.
-    By default is set to True
-  playbookInputQuery:
+  - key: isolateRemoteAttacker
+    value:
+      simple: "true"
+    required: false
+    description: Whether to isolate the remote attacker host.
+    playbookInputQuery:
+  - key: isolateSimilarEndpoints
+    value:
+      simple: "false"
+    required: false
+    description: Whether to isolate endpoints which has been detected with the alert IoCs.
+    playbookInputQuery:
+  - key: FileSHA256
+    value:
+      complex:
+        root: alert
+        accessor: initiatorsha256
+    required: false
+    description: The ransomware file SHA256.
+    playbookInputQuery:
+  - key: detonateRansomFile
+    value:
+      simple: "True"
+    required: false
+    description: |-
+      Whether to detonate the ransomware file in sandbox, Set to True to enable file detonation and False to disable it.
+      By default is set to True
+    playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 marketplaces: ["marketplacev2", "platform"]
 fromversion: 6.6.0
 
 
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- cloud
-- cloud_posture
-- cloud_runtime_security
-- edr
-- xsiam
+  - agentix
+  - cloud
+  - cloud_posture
+  - cloud_runtime_security
+  - edr
+  - xsiam

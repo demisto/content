@@ -18,7 +18,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     view: |-
       {
@@ -45,7 +45,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     scriptarguments:
       device-group:
         complex:
@@ -79,22 +79,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+        - "4"
       "yes":
-      - "3"
+        - "3"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Panorama.SecurityRule.Name
-            iscontext: true
-          right:
-            value:
-              simple: inputs.rule_name
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: Panorama.SecurityRule.Name
+                  iscontext: true
+                right:
+                  value:
+                    simple: inputs.rule_name
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -119,31 +119,31 @@ tasks:
       brand: ""
     nexttasks:
       Inbound:
-      - "5"
+        - "5"
       Outbound:
-      - "6"
+        - "6"
     separatecontext: false
     conditions:
-    - label: Inbound
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.inbound-or-outbound-rule
-            iscontext: true
-          right:
-            value:
-              simple: inbound
-    - label: Outbound
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.inbound-or-outbound-rule
-            iscontext: true
-          right:
-            value:
-              simple: outbound
+      - label: Inbound
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.inbound-or-outbound-rule
+                  iscontext: true
+                right:
+                  value:
+                    simple: inbound
+      - label: Outbound
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.inbound-or-outbound-rule
+                  iscontext: true
+                right:
+                  value:
+                    simple: outbound
     view: |-
       {
         "position": {
@@ -168,31 +168,31 @@ tasks:
       brand: ""
     nexttasks:
       Inbound:
-      - "11"
+        - "11"
       Outbound:
-      - "8"
+        - "8"
     separatecontext: false
     conditions:
-    - label: Inbound
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.inbound-or-outbound-rule
-            iscontext: true
-          right:
-            value:
-              simple: inbound
-    - label: Outbound
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.inbound-or-outbound-rule
-            iscontext: true
-          right:
-            value:
-              simple: outbound
+      - label: Inbound
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.inbound-or-outbound-rule
+                  iscontext: true
+                right:
+                  value:
+                    simple: inbound
+      - label: Outbound
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.inbound-or-outbound-rule
+                  iscontext: true
+                right:
+                  value:
+                    simple: outbound
     view: |-
       {
         "position": {
@@ -218,7 +218,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       element_to_change:
         simple: source
@@ -257,7 +257,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       element_to_change:
         simple: destination
@@ -296,7 +296,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       action:
         complex:
@@ -352,7 +352,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     scriptarguments:
       device-group:
         complex:
@@ -418,7 +418,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       action:
         complex:
@@ -477,62 +477,57 @@ view: |-
     }
   }
 inputs:
-- key: device-group
-  value: {}
-  required: false
-  description: The device group to work on. Exists only in panorama!
-- key: rule_name
-  value: {}
-  required: true
-  description: The name of the rule to update, or the name of the rule that will be created.
-- key: log-forwarding-object-name
-  value: {}
-  required: false
-  description: The server address to which to forward logs.
-- key: rule-position
-  value: {}
-  required: false
-  description: |-
-    The position of the rule in the ruleset. Valid values are:
-      * Top
-      * Bottom
-      * Before
-      * After
+  - key: device-group
+    value: {}
+    required: false
+    description: The device group to work on. Exists only in panorama!
+  - key: rule_name
+    value: {}
+    required: true
+    description: The name of the rule to update, or the name of the rule that will be created.
+  - key: log-forwarding-object-name
+    value: {}
+    required: false
+    description: The server address to which to forward logs.
+  - key: rule-position
+    value: {}
+    required: false
+    description: |-
+      The position of the rule in the ruleset. Valid values are:
+        * Top
+        * Bottom
+        * Before
+        * After
 
-    The default is 'Bottom'
-- key: relative-rule-name
-  value: {}
-  required: false
-  description: If the rule-position that is chosen is before or after, specify the rule name to which it is related.
-- key: inbound-or-outbound-rule
-  value: {}
-  required: false
-  description: Determines if the rule is inbound or outbound.
-- key: element-to-add
-  value: {}
-  required: true
-  description: the element to add to the rule
-- key: action-type
-  value: {}
-  required: true
-  description: |-
-    The action that will be defined in the rule. Valid values are:
-    * allow
-    * deny
-    * drop
-- key: pre-post-rulebase
-  value: {}
-  required: false
-  description: Determines whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure. Exists only in panorama!
+      The default is 'Bottom'
+  - key: relative-rule-name
+    value: {}
+    required: false
+    description: If the rule-position that is chosen is before or after, specify the rule name to which it is related.
+  - key: inbound-or-outbound-rule
+    value: {}
+    required: false
+    description: Determines if the rule is inbound or outbound.
+  - key: element-to-add
+    value: {}
+    required: true
+    description: the element to add to the rule
+  - key: action-type
+    value: {}
+    required: true
+    description: |-
+      The action that will be defined in the rule. Valid values are:
+      * allow
+      * deny
+      * drop
+  - key: pre-post-rulebase
+    value: {}
+    required: false
+    description: Determines whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure. Exists only in panorama!
 outputs: []
 tests:
-- no test
+  - no test
 sourceplaybookid: PAN-OS - Create Or Edit Rule
 supportedModules:
-- X0
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

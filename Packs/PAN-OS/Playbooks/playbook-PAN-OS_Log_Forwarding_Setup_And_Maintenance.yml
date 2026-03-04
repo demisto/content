@@ -21,7 +21,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     separatecontext: false
     view: |-
       {
@@ -71,7 +71,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       device-group:
         simple: ${inputs.device-group}
@@ -104,7 +104,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     scriptarguments:
       element_to_change:
         simple: log-forwarding
@@ -142,16 +142,16 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "6"
+        - "6"
       "yes":
-      - "7"
+        - "7"
     scriptarguments:
       left:
         simple: ${inputs.auto_commit}
       right:
         simple: "yes"
     results:
-    - AreValuesEqual
+      - AreValuesEqual
     separatecontext: false
     view: |-
       {
@@ -177,7 +177,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     view: |-
       {
@@ -204,7 +204,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: true
     view: |-
       {
@@ -230,21 +230,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "11"
+        - "11"
       "yes":
-      - "3"
+        - "3"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.override-existing-profiles
-            iscontext: true
-          right:
-            value:
-              simple: "True"
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.override-existing-profiles
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
     view: |-
       {
         "position": {
@@ -270,7 +270,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     scriptarguments:
       element_to_change:
         simple: log-forwarding
@@ -282,11 +282,11 @@ tasks:
         complex:
           root: PanoramaSecurityRule
           filters:
-          - - operator: isNotExists
-              left:
-                value:
-                  simple: PanoramaSecurityRule.LogForwardingProfile
-                iscontext: true
+            -   - operator: isNotExists
+                  left:
+                    value:
+                      simple: PanoramaSecurityRule.LogForwardingProfile
+                    iscontext: true
           accessor: Name
     separatecontext: false
     view: |-
@@ -314,7 +314,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+        - "12"
     scriptarguments:
       append: {}
       key:
@@ -346,26 +346,26 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "1"
+        - "1"
       "yes":
-      - "10"
+        - "10"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: PanoramaSecurityRule
-                filters:
-                - - operator: isNotExists
-                    left:
-                      value:
-                        simple: PanoramaSecurityRule.LogForwardingProfile
-                      iscontext: true
-                accessor: Name
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: PanoramaSecurityRule
+                      filters:
+                        -   - operator: isNotExists
+                              left:
+                                value:
+                                  simple: PanoramaSecurityRule.LogForwardingProfile
+                                iscontext: true
+                      accessor: Name
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -393,37 +393,33 @@ view: |-
     }
   }
 inputs:
-- key: log-forwarding-name
-  value:
-    simple: log_forwarding_101
-  required: true
-  description: The name of the log-forwarding object that will be attached to all of the rules.
-- key: auto_commit
-  value:
-    simple: "yes"
-  required: false
-  description: Should the rule be committed automatically or manually?
-- key: pre-post-rulebase
-  value:
-    simple: pre-rulebase
-  required: true
-  description: Either the pre-rulebase or post-rulebase, depending on the rule structure.
-- key: device-group
-  value: {}
-  required: false
-  description: The device group to work on.
-- key: override-existing-profiles
-  value:
-    simple: "False"
-  required: false
-  description: Should we override log-forwarding profiles that were already defined.
+  - key: log-forwarding-name
+    value:
+      simple: log_forwarding_101
+    required: true
+    description: The name of the log-forwarding object that will be attached to all of the rules.
+  - key: auto_commit
+    value:
+      simple: "yes"
+    required: false
+    description: Should the rule be committed automatically or manually?
+  - key: pre-post-rulebase
+    value:
+      simple: pre-rulebase
+    required: true
+    description: Either the pre-rulebase or post-rulebase, depending on the rule structure.
+  - key: device-group
+    value: {}
+    required: false
+    description: The device group to work on.
+  - key: override-existing-profiles
+    value:
+      simple: "False"
+    required: false
+    description: Should we override log-forwarding profiles that were already defined.
 outputs: []
 tests:
-- No Tests
+  - No Tests
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

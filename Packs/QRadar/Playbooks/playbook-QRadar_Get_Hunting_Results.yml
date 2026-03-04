@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '10'
+        - '10'
     separatecontext: false
     view: |-
       {
@@ -47,7 +47,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '3'
+        - '3'
     separatecontext: false
     view: |-
       {
@@ -78,7 +78,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '11'
+        - '11'
     scriptarguments:
       append:
         simple: 'true'
@@ -88,17 +88,17 @@ tasks:
         complex:
           root: IP
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: IP.InRange
-                iscontext: true
-              right:
-                value:
-                  simple: no
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: IP.InRange
+                    iscontext: true
+                  right:
+                    value:
+                      simple: no
           accessor: Address
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -128,18 +128,18 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - '11'
+        - '11'
       yes:
-      - '4'
+        - '4'
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: QRadar.DetectedIPs
-            iscontext: true
+      - label: yes
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: QRadar.DetectedIPs
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -169,7 +169,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '5'
+        - '5'
     scriptarguments:
       ip:
         simple: ${QRadar.DetectedIPs}
@@ -205,7 +205,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '2'
+        - '2'
     scriptarguments:
       append:
         simple: 'true'
@@ -215,17 +215,17 @@ tasks:
         complex:
           root: IP
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: IP.InRange
-                iscontext: true
-              right:
-                value:
-                  simple: yes
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: IP.InRange
+                    iscontext: true
+                  right:
+                    value:
+                      simple: yes
           accessor: Address
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -256,8 +256,8 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '11'
-      - '15'
+        - '11'
+        - '15'
     scriptarguments:
       append:
         simple: 'true'
@@ -268,16 +268,16 @@ tasks:
           root: ${
           accessor: =[]}
           transformers:
-          - operator: GetValuesOfMultipleFields
-            args:
-              key:
-                value:
-                  simple: QRadar.Search.Result.events
-                iscontext: true
-              list:
-                value:
-                  simple: inputs.InvestigationIPFields
-                iscontext: true
+            - operator: GetValuesOfMultipleFields
+              args:
+                key:
+                  value:
+                    simple: QRadar.Search.Result.events
+                  iscontext: true
+                list:
+                  value:
+                    simple: inputs.InvestigationIPFields
+                  iscontext: true
     separatecontext: false
     view: |-
       {
@@ -308,7 +308,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '17'
+        - '17'
     scriptarguments:
       append:
         simple: 'true'
@@ -319,16 +319,16 @@ tasks:
           root: ${
           accessor: =[]}
           transformers:
-          - operator: GetValuesOfMultipleFields
-            args:
-              key:
-                value:
-                  simple: QRadar.Search.Result.events
-                iscontext: true
-              list:
-                value:
-                  simple: inputs.InvestigationUserFields
-                iscontext: true
+            - operator: GetValuesOfMultipleFields
+              args:
+                key:
+                  value:
+                    simple: QRadar.Search.Result.events
+                  iscontext: true
+                list:
+                  value:
+                    simple: inputs.InvestigationUserFields
+                  iscontext: true
     separatecontext: false
     view: |-
       {
@@ -359,26 +359,26 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '9'
+        - '9'
     scriptarguments:
       filter:
         complex:
           root: ${QRadar
           accessor: DetectedIPs}
           transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: interfaces contains ip_addresses contains value= "
-              suffix:
-                value:
-                  simple: '"'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: interfaces contains ip_addresses contains value= "
+                suffix:
+                  value:
+                    simple: '"'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
     continueonerror: true
     separatecontext: false
     view: |-
@@ -410,7 +410,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '1'
+        - '1'
     scriptarguments:
       append:
         simple: 'true'
@@ -421,7 +421,7 @@ tasks:
           root: ${QRadar
           accessor: Asset.Name.Value}
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -451,18 +451,18 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '11'
+        - '11'
       yes:
-      - '16'
+        - '16'
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.SearchResults
-            iscontext: true
+      - label: yes
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.SearchResults
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -518,8 +518,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '13'
-      - '14'
+        - '13'
+        - '14'
     separatecontext: false
     view: |-
       {
@@ -549,18 +549,18 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - '11'
+        - '11'
       yes:
-      - '6'
+        - '6'
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.InvestigationIPFields
-            iscontext: true
+      - label: yes
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.InvestigationIPFields
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -589,18 +589,18 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - '17'
+        - '17'
       yes:
-      - '7'
+        - '7'
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.InvestigationUserFields
-            iscontext: true
+      - label: yes
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.InvestigationUserFields
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -629,18 +629,18 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - '11'
+        - '11'
       yes:
-      - '8'
+        - '8'
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: QRadar.DetectedIPs
-            iscontext: true
+      - label: yes
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: QRadar.DetectedIPs
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -670,7 +670,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '12'
+        - '12'
     scriptarguments:
       key:
         simple: QRadar.Search.Result
@@ -705,7 +705,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '11'
+        - '11'
     separatecontext: false
     view: |-
       {
@@ -735,70 +735,66 @@ view: |-
     }
   }
 inputs:
-- key: InternalRange
-  value:
-    complex:
-      root: lists
-      accessor: PrivateIPs
-      transformers:
-      - operator: RegexExtractAll
-        args:
-          error_if_no_match: {}
-          ignore_case: {}
-          multi_line: {}
-          period_matches_newline: {}
-          regex:
-            value:
-              simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
-          unpack_matches: {}
-      - operator: join
-        args:
-          separator:
-            value:
-              simple: ','
-  required: false
-  description: 'A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).'
-  playbookInputQuery:
-- key: InvestigationIPFields
-  value:
-    simple: sourceip,destinationip
-  required: false
-  description: The values of these QRadar fields will be used for the playbook IP addresses outputs.
-  playbookInputQuery:
-- key: InvestigationUserFields
-  value:
-    simple: username
-  required: false
-  description: The values of these QRadar fields will be used for the playbook user name outputs.
-  playbookInputQuery:
-- key: SearchResults
-  value: {}
-  required: false
-  description: The search results of an AQL search.
-  playbookInputQuery:
+  - key: InternalRange
+    value:
+      complex:
+        root: lists
+        accessor: PrivateIPs
+        transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
+              unpack_matches: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    required: false
+    description: 'A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).'
+    playbookInputQuery:
+  - key: InvestigationIPFields
+    value:
+      simple: sourceip,destinationip
+    required: false
+    description: The values of these QRadar fields will be used for the playbook IP addresses outputs.
+    playbookInputQuery:
+  - key: InvestigationUserFields
+    value:
+      simple: username
+    required: false
+    description: The values of these QRadar fields will be used for the playbook user name outputs.
+    playbookInputQuery:
+  - key: SearchResults
+    value: {}
+    required: false
+    description: The search results of an AQL search.
+    playbookInputQuery:
 outputs:
-- contextPath: QRadar.DetectedUsers
-  description: Users detected based on the username field in your search.
-  type: string
-- contextPath: QRadar.DetectedInternalIPs
-  description: Internal IP addresses detected based on fields and inputs in your search.
-  type: string
-- contextPath: QRadar.DetectedExternalIPs
-  description: External IP addresses detected based on fields and inputs in your search.
-  type: string
-- contextPath: QRadar.DetectedInternalHosts
-  description: Internal host names detected based on hosts in your assets table. Note that the data accuracy depends on how the asset mapping is configured in QRadar.
-  type: string
-- contextPath: QRadar.DetectedExternalHosts
-  description: External host names detected based on hosts in your assets table. Note that the data accuracy depends on how the asset mapping is configured in QRadar.
-  type: string
+  - contextPath: QRadar.DetectedUsers
+    description: Users detected based on the username field in your search.
+    type: string
+  - contextPath: QRadar.DetectedInternalIPs
+    description: Internal IP addresses detected based on fields and inputs in your search.
+    type: string
+  - contextPath: QRadar.DetectedExternalIPs
+    description: External IP addresses detected based on fields and inputs in your search.
+    type: string
+  - contextPath: QRadar.DetectedInternalHosts
+    description: Internal host names detected based on hosts in your assets table. Note that the data accuracy depends on how the asset mapping is configured in QRadar.
+    type: string
+  - contextPath: QRadar.DetectedExternalHosts
+    description: External host names detected based on hosts in your assets table. Note that the data accuracy depends on how the asset mapping is configured in QRadar.
+    type: string
 tests:
-- no test
+  - no test
 fromversion: 6.2.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

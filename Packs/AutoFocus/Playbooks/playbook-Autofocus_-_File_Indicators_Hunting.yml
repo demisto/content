@@ -20,7 +20,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "216"
+        - "216"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -79,21 +79,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "153"
+        - "153"
       "yes":
-      - "221"
+        - "221"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.FileHash
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.FileHash
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -123,7 +123,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "227"
+        - "227"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -159,8 +159,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "233"
-      - "234"
+        - "233"
+        - "234"
     scriptarguments:
       Commodity:
         complex:
@@ -169,13 +169,13 @@ tasks:
         complex:
           root: inputs.FileHash
           transformers:
-          - operator: toUpperCase
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
+            - operator: toUpperCase
+            - operator: split
+              args:
+                delimiter:
+                  value:
+                    simple: ','
+            - operator: uniq
       Sample first seen:
         complex:
           root: inputs.Sample first seen
@@ -186,101 +186,101 @@ tasks:
         complex:
           root: inputs
           filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.SampleQuery
-                iscontext: true
+            -   - operator: isNotEmpty
+                  left:
+                    value:
+                      simple: inputs.SampleQuery
+                    iscontext: true
           accessor: SampleQuery
       Scope:
         complex:
           root: inputs.Scope
           filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.Scope
-                iscontext: true
-              right:
-                value:
-                  simple: industry
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.Scope
-                iscontext: true
-              right:
-                value:
-                  simple: organization
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.Scope
-                iscontext: true
-              right:
-                value:
-                  simple: global
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.Scope
-                iscontext: true
-              right:
-                value:
-                  simple: all
-              ignorecase: true
+            -   - operator: containsGeneral
+                  left:
+                    value:
+                      simple: inputs.Scope
+                    iscontext: true
+                  right:
+                    value:
+                      simple: industry
+                  ignorecase: true
+                - operator: containsGeneral
+                  left:
+                    value:
+                      simple: inputs.Scope
+                    iscontext: true
+                  right:
+                    value:
+                      simple: organization
+                  ignorecase: true
+                - operator: containsGeneral
+                  left:
+                    value:
+                      simple: inputs.Scope
+                    iscontext: true
+                  right:
+                    value:
+                      simple: global
+                  ignorecase: true
+                - operator: containsGeneral
+                  left:
+                    value:
+                      simple: inputs.Scope
+                    iscontext: true
+                  right:
+                    value:
+                      simple: all
+                  ignorecase: true
       Search Type:
         complex:
           root: inputs.Search Type
           filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.Search Type
-                iscontext: true
-              right:
-                value:
-                  simple: session
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.Search Type
-                iscontext: true
-              right:
-                value:
-                  simple: sample
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.Search Type
-                iscontext: true
-              right:
-                value:
-                  simple: tag
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.Search Type
-                iscontext: true
-              right:
-                value:
-                  simple: all
-              ignorecase: true
+            -   - operator: containsGeneral
+                  left:
+                    value:
+                      simple: inputs.Search Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: session
+                  ignorecase: true
+                - operator: containsGeneral
+                  left:
+                    value:
+                      simple: inputs.Search Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: sample
+                  ignorecase: true
+                - operator: containsGeneral
+                  left:
+                    value:
+                      simple: inputs.Search Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: tag
+                  ignorecase: true
+                - operator: containsGeneral
+                  left:
+                    value:
+                      simple: inputs.Search Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: all
+                  ignorecase: true
       SessionQuery:
         complex:
           root: inputs.SessionQuery
           filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.SessionQuery
-                iscontext: true
+            -   - operator: isNotEmpty
+                  left:
+                    value:
+                      simple: inputs.SessionQuery
+                    iscontext: true
       Sessions time after:
         complex:
           root: inputs.Sessions time after
@@ -291,51 +291,51 @@ tasks:
         complex:
           root: inputs.Tags class
           filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.Tags class
-                iscontext: true
-              right:
-                value:
-                  simple: Actor
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.Tags class
-                iscontext: true
-              right:
-                value:
-                  simple: Campaign
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.Tags class
-                iscontext: true
-              right:
-                value:
-                  simple: Exploit
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.Tags class
-                iscontext: true
-              right:
-                value:
-                  simple: Malicious Behavior
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.Tags class
-                iscontext: true
-              right:
-                value:
-                  simple: Malware Family
-              ignorecase: true
+            -   - operator: containsGeneral
+                  left:
+                    value:
+                      simple: inputs.Tags class
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Actor
+                  ignorecase: true
+                - operator: containsGeneral
+                  left:
+                    value:
+                      simple: inputs.Tags class
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Campaign
+                  ignorecase: true
+                - operator: containsGeneral
+                  left:
+                    value:
+                      simple: inputs.Tags class
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Exploit
+                  ignorecase: true
+                - operator: containsGeneral
+                  left:
+                    value:
+                      simple: inputs.Tags class
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Malicious Behavior
+                  ignorecase: true
+                - operator: containsGeneral
+                  left:
+                    value:
+                      simple: inputs.Tags class
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Malware Family
+                  ignorecase: true
       Tags private:
         complex:
           root: inputs.Tags private
@@ -346,42 +346,42 @@ tasks:
         complex:
           root: inputs.Tags scope
           filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.Tags scope
-                iscontext: true
-              right:
-                value:
-                  simple: industry
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.Tags scope
-                iscontext: true
-              right:
-                value:
-                  simple: organization
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.Tags scope
-                iscontext: true
-              right:
-                value:
-                  simple: global
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.Tags scope
-                iscontext: true
-              right:
-                value:
-                  simple: all
-              ignorecase: true
+            -   - operator: containsGeneral
+                  left:
+                    value:
+                      simple: inputs.Tags scope
+                    iscontext: true
+                  right:
+                    value:
+                      simple: industry
+                  ignorecase: true
+                - operator: containsGeneral
+                  left:
+                    value:
+                      simple: inputs.Tags scope
+                    iscontext: true
+                  right:
+                    value:
+                      simple: organization
+                  ignorecase: true
+                - operator: containsGeneral
+                  left:
+                    value:
+                      simple: inputs.Tags scope
+                    iscontext: true
+                  right:
+                    value:
+                      simple: global
+                  ignorecase: true
+                - operator: containsGeneral
+                  left:
+                    value:
+                      simple: inputs.Tags scope
+                    iscontext: true
+                  right:
+                    value:
+                      simple: all
+                  ignorecase: true
       Unit 42:
         complex:
           root: inputs.Unit 42
@@ -389,47 +389,47 @@ tasks:
         complex:
           root: inputs.wildfire_verdict
           filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.wildfire_verdict
-                iscontext: true
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.wildfire_verdict
-                iscontext: true
-              right:
-                value:
-                  simple: Malware
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.wildfire_verdict
-                iscontext: true
-              right:
-                value:
-                  simple: Grayware
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.wildfire_verdict
-                iscontext: true
-              right:
-                value:
-                  simple: Benign
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: inputs.wildfire_verdict
-                iscontext: true
-              right:
-                value:
-                  simple: Phishing
-              ignorecase: true
+            -   - operator: isNotEmpty
+                  left:
+                    value:
+                      simple: inputs.wildfire_verdict
+                    iscontext: true
+            -   - operator: containsGeneral
+                  left:
+                    value:
+                      simple: inputs.wildfire_verdict
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Malware
+                  ignorecase: true
+                - operator: containsGeneral
+                  left:
+                    value:
+                      simple: inputs.wildfire_verdict
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Grayware
+                  ignorecase: true
+                - operator: containsGeneral
+                  left:
+                    value:
+                      simple: inputs.wildfire_verdict
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Benign
+                  ignorecase: true
+                - operator: isEqualString
+                  left:
+                    value:
+                      simple: inputs.wildfire_verdict
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Phishing
+                  ignorecase: true
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -473,7 +473,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "153"
+        - "153"
     scriptarguments:
       append:
         simple: "true"
@@ -483,21 +483,21 @@ tasks:
         complex:
           root: AutoFocus.SessionsResults
           filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: AutoFocus.SessionsResults.SHA256
-                iscontext: true
-          - - operator: notInList
-              left:
-                value:
-                  simple: AutoFocus.SessionsResults.SHA256
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.SHA256
-                iscontext: true
-              ignorecase: true
+            -   - operator: isNotEmpty
+                  left:
+                    value:
+                      simple: AutoFocus.SessionsResults.SHA256
+                    iscontext: true
+            -   - operator: notInList
+                  left:
+                    value:
+                      simple: AutoFocus.SessionsResults.SHA256
+                    iscontext: true
+                  right:
+                    value:
+                      simple: inputs.SHA256
+                    iscontext: true
+                  ignorecase: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -536,7 +536,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "153"
+        - "153"
     scriptarguments:
       append:
         simple: "true"
@@ -546,31 +546,31 @@ tasks:
         complex:
           root: AutoFocus.SamplesResults
           filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: AutoFocus.SamplesResults.MD5
-                iscontext: true
-            - operator: isNotEmpty
-              left:
-                value:
-                  simple: AutoFocus.SamplesResults.SHA1
-                iscontext: true
-            - operator: isNotEmpty
-              left:
-                value:
-                  simple: AutoFocus.SamplesResults.SHA256
-                iscontext: true
-          - - operator: notInList
-              left:
-                value:
-                  simple: AutoFocus.SamplesResults.SHA256
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.SHA256
-                iscontext: true
-              ignorecase: true
+            -   - operator: isNotEmpty
+                  left:
+                    value:
+                      simple: AutoFocus.SamplesResults.MD5
+                    iscontext: true
+                - operator: isNotEmpty
+                  left:
+                    value:
+                      simple: AutoFocus.SamplesResults.SHA1
+                    iscontext: true
+                - operator: isNotEmpty
+                  left:
+                    value:
+                      simple: AutoFocus.SamplesResults.SHA256
+                    iscontext: true
+            -   - operator: notInList
+                  left:
+                    value:
+                      simple: AutoFocus.SamplesResults.SHA256
+                    iscontext: true
+                  right:
+                    value:
+                      simple: inputs.SHA256
+                    iscontext: true
+                  ignorecase: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -600,190 +600,186 @@ view: |-
     }
   }
 inputs:
-- key: FileHash
-  value: {}
-  required: false
-  description: "One or more file hashes to search for in Autofocus simple mode search. Supports MD5, SHA1, and SHA256 file hashes. \n\nSeparate multiple search values by commas only (without spaces or any special characters)."
-  playbookInputQuery:
-- key: Search Type
-  value: {}
-  required: true
-  description: "Which Autofocus search types should be executed. \n\nPossible values are session, sample, tag, or all. Session and sample are the recommended search types for this playbook. \n\nSample-based search detects threat indicators or identifiers within samples sent to WildFire for analysis. \n\nSession-based search detects threat indicators or identifiers within various context details and session data provided by samples during sample submission. \n\nTag-based search identifies the most popular tags."
-  playbookInputQuery:
-- key: Scope
-  value: {}
-  required: true
-  description: Search scope for sample and session. Possible values are industry, organization, global, or all.
-  playbookInputQuery:
-- key: SampleQuery
-  value: {}
-  required: false
-  description: |-
-    Use the Autofocus advanced search mode to leverage a variety of query options in a sample search. Advanced search requires you to specify all field names, parameters, and operators.
+  - key: FileHash
+    value: {}
+    required: false
+    description: "One or more file hashes to search for in Autofocus simple mode search. Supports MD5, SHA1, and SHA256 file hashes. \n\nSeparate multiple search values by commas only (without spaces or any special characters)."
+    playbookInputQuery:
+  - key: Search Type
+    value: {}
+    required: true
+    description: "Which Autofocus search types should be executed. \n\nPossible values are session, sample, tag, or all. Session and sample are the recommended search types for this playbook. \n\nSample-based search detects threat indicators or identifiers within samples sent to WildFire for analysis. \n\nSession-based search detects threat indicators or identifiers within various context details and session data provided by samples during sample submission. \n\nTag-based search identifies the most popular tags."
+    playbookInputQuery:
+  - key: Scope
+    value: {}
+    required: true
+    description: Search scope for sample and session. Possible values are industry, organization, global, or all.
+    playbookInputQuery:
+  - key: SampleQuery
+    value: {}
+    required: false
+    description: |-
+      Use the Autofocus advanced search mode to leverage a variety of query options in a sample search. Advanced search requires you to specify all field names, parameters, and operators.
 
-    The query currently supports only JSON format which can be extracted from the Autofocus web console API radio button.
-  playbookInputQuery:
-- key: Sample first seen
-  value: {}
-  required: false
-  description: |-
-    Narrow down a sample-based search by specifying the timestamp samples were first uploaded to WildFire for analysis (indicators will be searched within samples after this timestamp).
+      The query currently supports only JSON format which can be extracted from the Autofocus web console API radio button.
+    playbookInputQuery:
+  - key: Sample first seen
+    value: {}
+    required: false
+    description: |-
+      Narrow down a sample-based search by specifying the timestamp samples were first uploaded to WildFire for analysis (indicators will be searched within samples after this timestamp).
 
-    Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
-  playbookInputQuery:
-- key: Sample last modified
-  value: {}
-  required: false
-  description: |-
-    Narrow down a sample-based search by specifying the timestamp samples were last modified (indicators will be searched within samples after this timestamp).
+      Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
+    playbookInputQuery:
+  - key: Sample last modified
+    value: {}
+    required: false
+    description: |-
+      Narrow down a sample-based search by specifying the timestamp samples were last modified (indicators will be searched within samples after this timestamp).
 
-    Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
-  playbookInputQuery:
-- key: SessionQuery
-  value: {}
-  required: false
-  description: |-
-    Use the Autofocus advanced search mode to leverage a variety of query options in a session search. Advanced search requires you to specify all field names, parameters, and operators.
+      Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
+    playbookInputQuery:
+  - key: SessionQuery
+    value: {}
+    required: false
+    description: |-
+      Use the Autofocus advanced search mode to leverage a variety of query options in a session search. Advanced search requires you to specify all field names, parameters, and operators.
 
-    The query currently supports only JSON format which can be extracted from the Autofocus web console API radio button.
-  playbookInputQuery:
-- key: Sessions time before
-  value: {}
-  required: false
-  description: |-
-    Narrow down a session-based search by specifying the query end timestamp (indicators will be searched within sessions before this timestamp).
+      The query currently supports only JSON format which can be extracted from the Autofocus web console API radio button.
+    playbookInputQuery:
+  - key: Sessions time before
+    value: {}
+    required: false
+    description: |-
+      Narrow down a session-based search by specifying the query end timestamp (indicators will be searched within sessions before this timestamp).
 
-    Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
-  playbookInputQuery:
-- key: Sessions time after
-  value: {}
-  required: false
-  description: |-
-    Narrow down a session-based search by specifying the query start timestamp (indicators will be searched within sessions after this timestamp).
+      Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
+    playbookInputQuery:
+  - key: Sessions time after
+    value: {}
+    required: false
+    description: |-
+      Narrow down a session-based search by specifying the query start timestamp (indicators will be searched within sessions after this timestamp).
 
-    Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
-  playbookInputQuery:
-- key: Wildfire Verdict
-  value: {}
-  required: false
-  description: "Filter results by WildFire classification assigned to samples based on properties, behaviors, and activities observed for files or email links during static and dynamic analysis.\n\nPossible values are malware, benign, phishing, and greyware. "
-  playbookInputQuery:
+      Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
+    playbookInputQuery:
+  - key: Wildfire Verdict
+    value: {}
+    required: false
+    description: "Filter results by WildFire classification assigned to samples based on properties, behaviors, and activities observed for files or email links during static and dynamic analysis.\n\nPossible values are malware, benign, phishing, and greyware. "
+    playbookInputQuery:
 outputs:
-- contextPath: Autofocus.Samples.HuntingResults
-  description: Sample objects containing relevant fields.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.Created
-  description: The date the file was created.
-  type: date
-- contextPath: Autofocus.Samples.HuntingResults.Finished
-  description: The date the file was finished.
-  type: date
-- contextPath: Autofocus.Samples.HuntingResults.FileName
-  description: The name of the file.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.FileType
-  description: The file type.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.SHA1
-  description: The SHA1 hash of the file.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.SHA256
-  description: The SHA256 hash of the file.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.MD5
-  description: The MD5 hash of the file.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.Region
-  description: The region of the sample.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.Tags
-  description: The tags attached to the sample.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.TagGroups
-  description: The groups of relevant tags.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.Verdict
-  description: The verdict of the sample.
-  type: number
-- contextPath: Autofocus.Samples.HuntingResults.Artifact.confidence
-  description: The decision confidence.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.Artifact.indicator
-  description: The indicator that was tested.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.Artifact.indicator_type
-  description: 'The indicator type, for example: Mutex, User agent, IPv4, Domain.'
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.Artifact.b
-  description: How many set the artifact as benign.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.Artifact.g
-  description: How many set the artifact as grayware.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.Artifact.m
-  description: How many set the artifact as malicious.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults
-  description: Session objects containing relevant fields.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.Seen
-  description: The seen date.
-  type: date
-- contextPath: Autofocus.Sessions.HuntingResults.UploadSource
-  description: The source of the uploaded sample.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.ID
-  description: The ID of the session. Used to get session details.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.FileName
-  description: The name of the file.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.FileURL
-  description: The URL of the file.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.SHA256
-  description: The SHA256 hash of the file.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.Industry
-  description: The related industry.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.Region
-  description: The regions of the sessions.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.Tags
-  description: The relevant tags.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.app
-  description: The associated application name.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.dst_ip
-  description: The associated destination IP.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.src_ip
-  description: The associated source IP.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.dst_countrycode
-  description: The associated destination country code.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.src_countrycode
-  description: The associated source country code.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.dst_port
-  description: The associated destination port number.
-  type: number
-- contextPath: Autofocus.Sessions.HuntingResults.src_port
-  description: The associated source port number.
-  type: number
-- contextPath: Autofocus.Sessions.HuntingResults.user_id
-  description: The recipient user ID.
-  type: string
+  - contextPath: Autofocus.Samples.HuntingResults
+    description: Sample objects containing relevant fields.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.Created
+    description: The date the file was created.
+    type: date
+  - contextPath: Autofocus.Samples.HuntingResults.Finished
+    description: The date the file was finished.
+    type: date
+  - contextPath: Autofocus.Samples.HuntingResults.FileName
+    description: The name of the file.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.FileType
+    description: The file type.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.SHA1
+    description: The SHA1 hash of the file.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.SHA256
+    description: The SHA256 hash of the file.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.MD5
+    description: The MD5 hash of the file.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.Region
+    description: The region of the sample.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.Tags
+    description: The tags attached to the sample.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.TagGroups
+    description: The groups of relevant tags.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.Verdict
+    description: The verdict of the sample.
+    type: number
+  - contextPath: Autofocus.Samples.HuntingResults.Artifact.confidence
+    description: The decision confidence.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.Artifact.indicator
+    description: The indicator that was tested.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.Artifact.indicator_type
+    description: 'The indicator type, for example: Mutex, User agent, IPv4, Domain.'
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.Artifact.b
+    description: How many set the artifact as benign.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.Artifact.g
+    description: How many set the artifact as grayware.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.Artifact.m
+    description: How many set the artifact as malicious.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults
+    description: Session objects containing relevant fields.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.Seen
+    description: The seen date.
+    type: date
+  - contextPath: Autofocus.Sessions.HuntingResults.UploadSource
+    description: The source of the uploaded sample.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.ID
+    description: The ID of the session. Used to get session details.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.FileName
+    description: The name of the file.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.FileURL
+    description: The URL of the file.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.SHA256
+    description: The SHA256 hash of the file.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.Industry
+    description: The related industry.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.Region
+    description: The regions of the sessions.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.Tags
+    description: The relevant tags.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.app
+    description: The associated application name.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.dst_ip
+    description: The associated destination IP.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.src_ip
+    description: The associated source IP.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.dst_countrycode
+    description: The associated destination country code.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.src_countrycode
+    description: The associated source country code.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.dst_port
+    description: The associated destination port number.
+    type: number
+  - contextPath: Autofocus.Sessions.HuntingResults.src_port
+    description: The associated source port number.
+    type: number
+  - contextPath: Autofocus.Sessions.HuntingResults.user_id
+    description: The recipient user ID.
+    type: string
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 6.5.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

@@ -2,19 +2,19 @@ commonfields:
   id: GetCaseExtraData
   version: -1
 name: GetCaseExtraData
-isInternal: true  
+isInternal: true
 script: '-'
 type: python
 comment: Retrieves extra data fields of a specific case, including issues and key artifacts.
 enabled: true
 args:
-- description: A comma separated list of case IDs.
-  isArray: true
-  name: case_id
-  required: true
-- defaultValue: '1000'
-  description: Maximum number of issues to return per case. The maximum is 1000.
-  name: issues_limit
+  - description: A comma separated list of case IDs.
+    isArray: true
+    name: case_id
+    required: true
+  - defaultValue: '1000'
+    description: Maximum number of issues to return per case. The maximum is 1000.
+    name: issues_limit
 outputs:
   - contextPath: Core.CaseExtraData.case_id
     description: The unique identifier for the case.
@@ -174,25 +174,18 @@ outputs:
     type: String
 dependson:
   must:
-  - core-get-case-extra-data
+    - core-get-case-extra-data
 subtype: python3
 dockerimage: demisto/python3:3.12.12.7090913
 fromversion: 6.6.0
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 marketplaces:
-- platform
+  - platform
 supportedModules:
-- "C1"
-- "C3"
-- "X0"
-- "X1"
-- "X3"
-- "X5"
-- "ENT_PLUS"
-- xsiam
-- agentix
-- cloud
-- cloud_posture
-- cloud_runtime_security
-- edr
+  - xsiam
+  - agentix
+  - cloud
+  - cloud_posture
+  - cloud_runtime_security
+  - edr

@@ -21,7 +21,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     view: |-
       {
@@ -51,37 +51,37 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+        - "5"
       "yes":
-      - "2"
+        - "2"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Panorama
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Panorama
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                      accessor: brand
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -110,19 +110,19 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+        - "5"
       "yes":
-      - "9"
+        - "9"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.URL
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: inputs.URL
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -152,7 +152,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+        - "15"
     scriptarguments:
       categories:
         complex:
@@ -169,11 +169,11 @@ tasks:
         complex:
           root: inputs.URL
           transformers:
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ','
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ','
       type:
         complex:
           root: inputs.type
@@ -207,7 +207,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+        - "21"
     scriptarguments:
       device-group:
         complex:
@@ -216,11 +216,11 @@ tasks:
         complex:
           root: inputs.LogForwarding
           filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.LogForwarding
-                iscontext: true
+            -   - operator: isNotEmpty
+                  left:
+                    value:
+                      simple: inputs.LogForwarding
+                    iscontext: true
       object_type:
         simple: url-category
       object_value:
@@ -288,7 +288,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+        - "11"
     scriptarguments:
       device-group:
         complex:
@@ -326,22 +326,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "12"
+        - "12"
       "yes":
-      - "5"
+        - "5"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: Panorama.CustomURLCategory.Sites
-            iscontext: true
-          right:
-            value:
-              simple: inputs.URL
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: containsGeneral
+                left:
+                  value:
+                    simple: Panorama.CustomURLCategory.Sites
+                  iscontext: true
+                right:
+                  value:
+                    simple: inputs.URL
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -370,18 +370,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+        - "3"
       "yes":
-      - "10"
+        - "10"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Panorama.CustomURLCategory.Name
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    simple: Panorama.CustomURLCategory.Name
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -411,7 +411,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+        - "17"
     scriptarguments:
       action:
         simple: add
@@ -425,11 +425,11 @@ tasks:
         complex:
           root: inputs.URL
           transformers:
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ','
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ','
     separatecontext: false
     view: |-
       {
@@ -460,7 +460,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     separatecontext: true
     view: |-
       {
@@ -491,7 +491,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     separatecontext: true
     view: |-
       {
@@ -521,22 +521,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "16"
+        - "16"
       "yes":
-      - "13"
+        - "13"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoCommit
-            iscontext: true
-          right:
-            value:
-              simple: "Yes"
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.AutoCommit
+                  iscontext: true
+                right:
+                  value:
+                    simple: "Yes"
     view: |-
       {
         "position": {
@@ -565,7 +565,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+        - "19"
     separatecontext: false
     view: |-
       {
@@ -595,22 +595,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "18"
+        - "18"
       "yes":
-      - "14"
+        - "14"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoCommit
-            iscontext: true
-          right:
-            value:
-              simple: "Yes"
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.AutoCommit
+                  iscontext: true
+                right:
+                  value:
+                    simple: "Yes"
     view: |-
       {
         "position": {
@@ -639,7 +639,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     separatecontext: false
     view: |-
       {
@@ -670,7 +670,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+        - "20"
     scriptarguments:
       device-group:
         complex:
@@ -679,11 +679,11 @@ tasks:
         complex:
           root: inputs.LogForwarding
           filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.LogForwarding
-                iscontext: true
+            -   - operator: isNotEmpty
+                  left:
+                    value:
+                      simple: inputs.LogForwarding
+                    iscontext: true
       object_type:
         simple: url-category
       object_value:
@@ -723,7 +723,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     separatecontext: false
     view: |-
       {
@@ -754,7 +754,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     separatecontext: true
     view: |-
       {
@@ -788,76 +788,71 @@ view: |-
     }
   }
 inputs:
-- key: URL
-  value:
-    complex:
-      root: URL
-      filters:
-      - - operator: isExists
-          left:
-            value:
-              simple: URL.Malicious
-            iscontext: true
-      accessor: Data
-      transformers:
-      - operator: uniq
-  required: false
-  description: URL to block
-  playbookInputQuery:
-- key: CustomURLCategory
-  value:
-    simple: Demisto Remediation - Malicious URLs
-  required: false
-  description: Custom URL Category name
-  playbookInputQuery:
-- key: LogForwarding
-  value: {}
-  required: false
-  description: Panorama log forwarding object name
-  playbookInputQuery:
-- key: AutoCommit
-  value:
-    simple: "No"
-  required: false
-  description: |-
-    This input establishes whether to commit the configuration automatically.
-    Yes - Commit automatically.
-    No - Commit manually.
-  playbookInputQuery:
-- key: type
-  value: {}
-  required: false
-  description: Custom URL category type. Insert "URL List"/ "Category Match".
-  playbookInputQuery:
-- key: device-group
-  value: {}
-  required: false
-  description: Device group for the Custom URL Category (Panorama instances).
-  playbookInputQuery:
-- key: categories
-  value: {}
-  required: false
-  description: The list of categories. Relevant from PAN-OS v9.x.
-  playbookInputQuery:
-- key: pre-post
-  value:
-    simple: pre-rulebase
-  required: false
-  description: Specify pre-rulebase or post-rulebase. (Panorama instances).
-  playbookInputQuery:
+  - key: URL
+    value:
+      complex:
+        root: URL
+        filters:
+          -   - operator: isExists
+                left:
+                  value:
+                    simple: URL.Malicious
+                  iscontext: true
+        accessor: Data
+        transformers:
+          - operator: uniq
+    required: false
+    description: URL to block
+    playbookInputQuery:
+  - key: CustomURLCategory
+    value:
+      simple: Demisto Remediation - Malicious URLs
+    required: false
+    description: Custom URL Category name
+    playbookInputQuery:
+  - key: LogForwarding
+    value: {}
+    required: false
+    description: Panorama log forwarding object name
+    playbookInputQuery:
+  - key: AutoCommit
+    value:
+      simple: "No"
+    required: false
+    description: |-
+      This input establishes whether to commit the configuration automatically.
+      Yes - Commit automatically.
+      No - Commit manually.
+    playbookInputQuery:
+  - key: type
+    value: {}
+    required: false
+    description: Custom URL category type. Insert "URL List"/ "Category Match".
+    playbookInputQuery:
+  - key: device-group
+    value: {}
+    required: false
+    description: Device group for the Custom URL Category (Panorama instances).
+    playbookInputQuery:
+  - key: categories
+    value: {}
+    required: false
+    description: The list of categories. Relevant from PAN-OS v9.x.
+    playbookInputQuery:
+  - key: pre-post
+    value:
+      simple: pre-rulebase
+    required: false
+    description: Specify pre-rulebase or post-rulebase. (Panorama instances).
+    playbookInputQuery:
 outputs: []
 tests:
-- PAN-OS - Block URL - Custom URL Category Test
+  - PAN-OS - Block URL - Custom URL Category Test
 contentitemexportablefields:
   contentitemfields: {}
 supportedModules:
-- X0
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
-- edr
-- cloud
-- cloud_runtime_security
+  - agentix
+  - xsiam
+  - edr
+  - cloud
+  - cloud_runtime_security

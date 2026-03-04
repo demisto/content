@@ -19,7 +19,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "33"
+        - "33"
     separatecontext: false
     view: |-
       {
@@ -50,23 +50,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+        - "2"
       "yes":
-      - "3"
+        - "3"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.Enrich
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.Enrich
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -96,7 +96,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "28"
+        - "28"
     separatecontext: false
     view: |-
       {
@@ -107,8 +107,8 @@ tasks:
       }
     note: false
     timertriggers:
-    - fieldname: remediationsla
-      action: start
+      - fieldname: remediationsla
+        action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -129,7 +129,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     separatecontext: false
     view: |-
       {
@@ -160,7 +160,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+        - "20"
     separatecontext: false
     view: |-
       {
@@ -188,20 +188,20 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Investigation Notes
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: longText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
+        - id: "0"
+          label: ""
+          labelarg:
+            simple: Investigation Notes
+          required: false
+          gridcolumns: []
+          defaultrows: []
+          type: longText
+          options: []
+          optionsarg: []
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: ""
+          readonly: false
       title: Investigation Notes
       description: Provide notes regarding the investigation.
       sender: ""
@@ -227,7 +227,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "12"
+        - "12"
     scriptarguments:
       closeNotes:
         simple: |-
@@ -265,7 +265,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "53"
+        - "53"
     scriptarguments:
       text:
         complex:
@@ -330,44 +330,44 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       attachIDs:
         complex:
           root: InfoFile
           filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: InfoFile.Name
-                iscontext: true
-              right:
-                value:
-                  simple: report_Investigation_Summary
+            -   - operator: containsGeneral
+                  left:
+                    value:
+                      simple: InfoFile.Name
+                    iscontext: true
+                  right:
+                    value:
+                      simple: report_Investigation_Summary
           accessor: EntryID
       body:
         complex:
           root: ${demistoUrls
           accessor: investigation}
           transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: |
-                    Link to the incident
-              suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: |
+                      Link to the incident
+                suffix: {}
       subject:
         complex:
           root: inputs.SocMailSubject
           transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: incident.id
-                iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: incident.id
+                  iscontext: true
       to:
         simple: ${inputs.SocEmailAddress}
     separatecontext: false
@@ -400,9 +400,9 @@ tasks:
       brand: ""
     nexttasks:
       False Positive:
-      - "29"
+        - "29"
       True Positive:
-      - "45"
+        - "45"
     separatecontext: false
     view: |-
       {
@@ -429,8 +429,8 @@ tasks:
         completeafterv2: false
         completeaftersla: false
       replyOptions:
-      - "Yes"
-      - "No"
+        - "Yes"
+        - "No"
     skipunavailable: false
     quietmode: 0
     continueonerrortype: ""
@@ -453,7 +453,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+        - "17"
     scriptarguments:
       incidentId:
         complex:
@@ -489,21 +489,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+        - "2"
       "yes":
-      - "32"
+        - "32"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.UseCalculateSeverity
-            iscontext: true
-          right:
-            value:
-              simple: "true"
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.UseCalculateSeverity
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
     view: |-
       {
         "position": {
@@ -533,18 +533,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+        - "8"
       "yes":
-      - "31"
+        - "31"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.SocEmailAddress
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.SocEmailAddress
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -574,18 +574,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "15"
+        - "15"
       "yes":
-      - "30"
+        - "30"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.SiemAdminEmailAddress
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.SiemAdminEmailAddress
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -616,7 +616,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       assignBy:
         simple: random
@@ -653,7 +653,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "39"
+        - "39"
     separatecontext: false
     view: |-
       {
@@ -684,7 +684,7 @@ tasks:
       description: 'Provide data to adjust the rule in order to avoid similar false positives in the future.'
     nexttasks:
       '#none#':
-      - "18"
+        - "18"
     separatecontext: false
     view: |-
       {
@@ -712,70 +712,70 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Which rules need to be adjusted?
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: multiSelect
-        options: []
-        optionsarg:
-        - {}
-        - simple: ${incident.listofrulesoffense}
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
-      - id: "1"
-        label: ""
-        labelarg:
-          simple: Which indicators need to be excluded in QRadar?
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: multiSelect
-        options: []
-        optionsarg:
-        - {}
-        - complex:
-            root: ExtractedIndicators
-            transformers:
-            - operator: getField
-              args:
-                field:
-                  value:
-                    simple: Domain
-            - operator: append
-              args:
-                item:
-                  value:
-                    simple: ExtractedIndicators.IP
-                  iscontext: true
-            - operator: append
-              args:
-                item:
-                  value:
-                    simple: ExtractedIndicators.URL
-                  iscontext: true
-            - operator: append
-              args:
-                item:
-                  value:
-                    simple: ExtractedIndicators.Email
-                  iscontext: true
-            - operator: append
-              args:
-                item:
-                  value:
-                    simple: ExtractedIndicators.File
-                  iscontext: true
-            - operator: uniq
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
+        - id: "0"
+          label: ""
+          labelarg:
+            simple: Which rules need to be adjusted?
+          required: false
+          gridcolumns: []
+          defaultrows: []
+          type: multiSelect
+          options: []
+          optionsarg:
+            - {}
+            - simple: ${incident.listofrulesoffense}
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: ""
+          readonly: false
+        - id: "1"
+          label: ""
+          labelarg:
+            simple: Which indicators need to be excluded in QRadar?
+          required: false
+          gridcolumns: []
+          defaultrows: []
+          type: multiSelect
+          options: []
+          optionsarg:
+            - {}
+            - complex:
+                root: ExtractedIndicators
+                transformers:
+                  - operator: getField
+                    args:
+                      field:
+                        value:
+                          simple: Domain
+                  - operator: append
+                    args:
+                      item:
+                        value:
+                          simple: ExtractedIndicators.IP
+                        iscontext: true
+                  - operator: append
+                    args:
+                      item:
+                        value:
+                          simple: ExtractedIndicators.URL
+                        iscontext: true
+                  - operator: append
+                    args:
+                      item:
+                        value:
+                          simple: ExtractedIndicators.Email
+                        iscontext: true
+                  - operator: append
+                    args:
+                      item:
+                        value:
+                          simple: ExtractedIndicators.File
+                        iscontext: true
+                  - operator: uniq
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: ""
+          readonly: false
       title: Data for rule adjustment by the SIEM admin
       description: Provide what should be adjusted in the rule
       sender: ""
@@ -801,21 +801,21 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "34"
+        - "34"
     scriptarguments:
       severity:
         complex:
           root: inputs.FieldToSetSeverityFrom
           transformers:
-          - operator: MapValuesTransformer
-            args:
-              input_values:
-                value:
-                  simple: 1,2,3,4,5,6,7,8,9,10
-              mapped_values:
-                value:
-                  simple: inputs.ScaleToSetSeverityFrom
-                iscontext: true
+            - operator: MapValuesTransformer
+              args:
+                input_values:
+                  value:
+                    simple: 1,2,3,4,5,6,7,8,9,10
+                mapped_values:
+                  value:
+                    simple: inputs.ScaleToSetSeverityFrom
+                  iscontext: true
     separatecontext: false
     view: |-
       {
@@ -846,7 +846,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "19"
+        - "19"
     separatecontext: false
     view: |-
       {
@@ -878,7 +878,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "22"
+        - "22"
     scriptarguments:
       closeReason:
         simple: False Positive
@@ -912,8 +912,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "15"
-      - "52"
+        - "15"
+        - "52"
     separatecontext: false
     view: |-
       {
@@ -944,8 +944,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "13"
-      - "8"
+        - "13"
+        - "8"
     separatecontext: false
     view: |-
       {
@@ -977,7 +977,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     separatecontext: true
     view: |-
       {
@@ -1008,21 +1008,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "34"
+        - "34"
       use custom:
-      - "25"
+        - "25"
     separatecontext: false
     conditions:
-    - label: use custom
-      condition:
-      - - operator: isNotEqualString
-          left:
-            value:
-              simple: inputs.UseCustomSeveritySettings
-            iscontext: true
-          right:
-            value:
-              simple: "false"
+      - label: use custom
+        condition:
+          -   - operator: isNotEqualString
+                left:
+                  value:
+                    simple: inputs.UseCustomSeveritySettings
+                  iscontext: true
+                right:
+                  value:
+                    simple: "false"
     view: |-
       {
         "position": {
@@ -1052,31 +1052,31 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "1"
+        - "1"
       "yes":
-      - "35"
+        - "35"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.RunAdditionalSeach
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: incident.starttime
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: incident.idoffense
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.RunAdditionalSeach
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: incident.starttime
+                  iscontext: true
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: incident.idoffense
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -1107,7 +1107,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     scriptarguments:
       Fields:
         simple: ${inputs.Fields}
@@ -1162,25 +1162,25 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "15"
+        - "15"
       "yes":
-      - "38"
+        - "38"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: greaterThan
-          left:
-            value:
-              complex:
-                root: Provide closing reason and tag indicators.Answers
-                accessor: "0"
-                transformers:
-                - operator: count
-            iscontext: true
-          right:
-            value:
-              simple: "0"
+      - label: "yes"
+        condition:
+          -   - operator: greaterThan
+                left:
+                  value:
+                    complex:
+                      root: Provide closing reason and tag indicators.Answers
+                      accessor: "0"
+                      transformers:
+                        - operator: count
+                  iscontext: true
+                right:
+                  value:
+                    simple: "0"
     view: |-
       {
         "position": {
@@ -1211,7 +1211,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "15"
+        - "15"
     scriptarguments:
       tags:
         simple: ${inputs.IndicatorTag}
@@ -1247,21 +1247,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "42"
+        - "42"
       "yes":
-      - "44"
+        - "44"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEqualString
-          left:
-            value:
-              simple: inputs.ExcludeIndicatorsInXSOAR
-            iscontext: true
-          right:
-            value:
-              simple: "false"
+      - label: "yes"
+        condition:
+          -   - operator: isNotEqualString
+                left:
+                  value:
+                    simple: inputs.ExcludeIndicatorsInXSOAR
+                  iscontext: true
+                right:
+                  value:
+                    simple: "false"
     view: |-
       {
         "position": {
@@ -1291,25 +1291,25 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "42"
+        - "42"
       "yes":
-      - "43"
+        - "43"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: greaterThan
-          left:
-            value:
-              complex:
-                root: Indicators to exclude in XSOAR.Answers
-                accessor: "0"
-                transformers:
-                - operator: count
-            iscontext: true
-          right:
-            value:
-              simple: "0"
+      - label: "yes"
+        condition:
+          -   - operator: greaterThan
+                left:
+                  value:
+                    complex:
+                      root: Indicators to exclude in XSOAR.Answers
+                      accessor: "0"
+                      transformers:
+                        - operator: count
+                  iscontext: true
+                right:
+                  value:
+                    simple: "0"
     view: |-
       {
         "position": {
@@ -1339,7 +1339,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     separatecontext: false
     view: |-
       {
@@ -1371,7 +1371,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "42"
+        - "42"
     scriptarguments:
       indicatorsValues:
         simple: ${Indicators to exclude in XSOAR.Answers.0}
@@ -1405,7 +1405,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "41"
+        - "41"
     separatecontext: false
     view: |-
       {
@@ -1433,54 +1433,54 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Which indicators need to be excluded in XSOAR?
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: multiSelect
-        options: []
-        optionsarg:
-        - {}
-        - complex:
-            root: ExtractedIndicators
-            transformers:
-            - operator: getField
-              args:
-                field:
-                  value:
-                    simple: Domain
-            - operator: append
-              args:
-                item:
-                  value:
-                    simple: ExtractedIndicators.IP
-                  iscontext: true
-            - operator: append
-              args:
-                item:
-                  value:
-                    simple: ExtractedIndicators.URL
-                  iscontext: true
-            - operator: append
-              args:
-                item:
-                  value:
-                    simple: ExtractedIndicators.Email
-                  iscontext: true
-            - operator: append
-              args:
-                item:
-                  value:
-                    simple: ExtractedIndicators.File
-                  iscontext: true
-            - operator: uniq
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
+        - id: "0"
+          label: ""
+          labelarg:
+            simple: Which indicators need to be excluded in XSOAR?
+          required: false
+          gridcolumns: []
+          defaultrows: []
+          type: multiSelect
+          options: []
+          optionsarg:
+            - {}
+            - complex:
+                root: ExtractedIndicators
+                transformers:
+                  - operator: getField
+                    args:
+                      field:
+                        value:
+                          simple: Domain
+                  - operator: append
+                    args:
+                      item:
+                        value:
+                          simple: ExtractedIndicators.IP
+                        iscontext: true
+                  - operator: append
+                    args:
+                      item:
+                        value:
+                          simple: ExtractedIndicators.URL
+                        iscontext: true
+                  - operator: append
+                    args:
+                      item:
+                        value:
+                          simple: ExtractedIndicators.Email
+                        iscontext: true
+                  - operator: append
+                    args:
+                      item:
+                        value:
+                          simple: ExtractedIndicators.File
+                        iscontext: true
+                  - operator: uniq
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: ""
+          readonly: false
       title: Indicators to exclude in XSOAR
       description: Provide what should be adjusted in the rule
       sender: ""
@@ -1505,7 +1505,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "50"
+        - "50"
     separatecontext: false
     view: |-
       {
@@ -1533,68 +1533,68 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: 'Which indicators need to be tagged? '
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: multiSelect
-        options: []
-        optionsarg:
-        - {}
-        - complex:
-            root: ExtractedIndicators
-            transformers:
-            - operator: getField
-              args:
-                field:
-                  value:
-                    simple: Domain
-            - operator: append
-              args:
-                item:
-                  value:
-                    simple: ExtractedIndicators.IP
-                  iscontext: true
-            - operator: append
-              args:
-                item:
-                  value:
-                    simple: ExtractedIndicators.URL
-                  iscontext: true
-            - operator: append
-              args:
-                item:
-                  value:
-                    simple: ExtractedIndicators.Email
-                  iscontext: true
-            - operator: append
-              args:
-                item:
-                  value:
-                    simple: ExtractedIndicators.File
-                  iscontext: true
-            - operator: uniq
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
-      - id: "1"
-        label: ""
-        labelarg:
-          simple: What is the closing reason?
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
+        - id: "0"
+          label: ""
+          labelarg:
+            simple: 'Which indicators need to be tagged? '
+          required: false
+          gridcolumns: []
+          defaultrows: []
+          type: multiSelect
+          options: []
+          optionsarg:
+            - {}
+            - complex:
+                root: ExtractedIndicators
+                transformers:
+                  - operator: getField
+                    args:
+                      field:
+                        value:
+                          simple: Domain
+                  - operator: append
+                    args:
+                      item:
+                        value:
+                          simple: ExtractedIndicators.IP
+                        iscontext: true
+                  - operator: append
+                    args:
+                      item:
+                        value:
+                          simple: ExtractedIndicators.URL
+                        iscontext: true
+                  - operator: append
+                    args:
+                      item:
+                        value:
+                          simple: ExtractedIndicators.Email
+                        iscontext: true
+                  - operator: append
+                    args:
+                      item:
+                        value:
+                          simple: ExtractedIndicators.File
+                        iscontext: true
+                  - operator: uniq
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: ""
+          readonly: false
+        - id: "1"
+          label: ""
+          labelarg:
+            simple: What is the closing reason?
+          required: false
+          gridcolumns: []
+          defaultrows: []
+          type: shortText
+          options: []
+          optionsarg: []
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: ""
+          readonly: false
       title: Provide closing reason and tag indicators
       description: Provide what should be adjusted in the rule
       sender: ""
@@ -1620,7 +1620,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "37"
+        - "37"
     scriptarguments:
       closeReason:
         simple: ${Provide closing reason and tag indicators.Answers.1}
@@ -1654,67 +1654,67 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+        - "15"
     scriptarguments:
       body:
         complex:
           root: Data for rule adjustment by the SIEM admin
           accessor: Answers
           transformers:
-          - operator: Stringify
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: (.*)
-              replaceWith:
-                value:
-                  simple: |
-                    Link to offense
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: incident.linktooffense
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: "\nRules to adjust - "
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: Data for rule adjustment by the SIEM admin.Answers.0
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: "\nValues to exclude - "
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: Data for rule adjustment by the SIEM admin.Answers.1
-                iscontext: true
+            - operator: Stringify
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: (.*)
+                replaceWith:
+                  value:
+                    simple: |
+                      Link to offense
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: incident.linktooffense
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: "\nRules to adjust - "
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: Data for rule adjustment by the SIEM admin.Answers.0
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: "\nValues to exclude - "
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: Data for rule adjustment by the SIEM admin.Answers.1
+                  iscontext: true
       subject:
         complex:
           root: inputs.SiemAdminMailSubject
           transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: incident.idoffense
-                iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: incident.idoffense
+                  iscontext: true
       to:
         simple: ${inputs.SiemAdminEmailAddress}
     separatecontext: false
@@ -1735,13 +1735,13 @@ tasks:
         complex:
           root: inputs.SiemAdminMailSubject
           transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: incident.idoffense
-                iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: incident.idoffense
+                  iscontext: true
       body:
         simple: |
           Dear ${inputs.SocEmailAddress}
@@ -1751,7 +1751,7 @@ tasks:
           And the following indicators
           ${Data for rule adjustment by the SIEM admin.Answers.1}
       methods:
-      - email
+        - email
       format: ""
       bcc:
       cc:
@@ -1763,40 +1763,40 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Were the rules adjusted?
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - {}
-        - simple: "Yes"
-        - simple: "No"
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
-      - id: "1"
-        label: ""
-        labelarg:
-          simple: Were the indicators adjusted?
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - {}
-        - simple: "Yes"
-        - simple: "No"
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
+        - id: "0"
+          label: ""
+          labelarg:
+            simple: Were the rules adjusted?
+          required: false
+          gridcolumns: []
+          defaultrows: []
+          type: singleSelect
+          options: []
+          optionsarg:
+            - {}
+            - simple: "Yes"
+            - simple: "No"
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: ""
+          readonly: false
+        - id: "1"
+          label: ""
+          labelarg:
+            simple: Were the indicators adjusted?
+          required: false
+          gridcolumns: []
+          defaultrows: []
+          type: singleSelect
+          options: []
+          optionsarg:
+            - {}
+            - simple: "Yes"
+            - simple: "No"
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: ""
+          readonly: false
       title: Adjustments to SIEM
       description: ""
       sender: ""
@@ -1822,7 +1822,7 @@ tasks:
       description: 'Enrich entities using one or more integrations.'
     nexttasks:
       '#none#':
-      - "16"
+        - "16"
     scriptarguments:
       CVE:
         complex:
@@ -1833,31 +1833,31 @@ tasks:
           root: Domain
           accessor: Name
           transformers:
-          - operator: uniq
+            - operator: uniq
       Email:
         complex:
           root: Account
           accessor: Email.Address
           transformers:
-          - operator: uniq
+            - operator: uniq
       Hostname:
         complex:
           root: Endpoint
           accessor: Hostname
           transformers:
-          - operator: uniq
+            - operator: uniq
       IP:
         complex:
           root: IP
           accessor: Address
           transformers:
-          - operator: uniq
+            - operator: uniq
       MD5:
         complex:
           root: File
           accessor: MD5
           transformers:
-          - operator: uniq
+            - operator: uniq
       ResolveIP:
         simple: "False"
       SHA1:
@@ -1865,37 +1865,37 @@ tasks:
           root: File
           accessor: SHA1
           transformers:
-          - operator: uniq
+            - operator: uniq
       SHA256:
         complex:
           root: File
           accessor: SHA256
           transformers:
-          - operator: uniq
+            - operator: uniq
       URL:
         complex:
           root: URL
           accessor: Data
           transformers:
-          - operator: uniq
+            - operator: uniq
       Username:
         complex:
           root: QRadar.Username
           transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: Account.Username
-                iscontext: true
-          - operator: uniq
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: Account.Username
+                  iscontext: true
+            - operator: uniq
           filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: QRadar.Username
-                iscontext: true
+            -   - operator: isNotEmpty
+                  left:
+                    value:
+                      simple: QRadar.Username
+                    iscontext: true
       URLSSLVerification:
         simple: "False"
       UseReputationCommand:
@@ -1939,113 +1939,109 @@ view: |-
     }
   }
 inputs:
-- key: Enrich
-  value:
-    simple: "true"
-  required: false
-  description: Determines whether to enrich all indicators in the incident.
-  playbookInputQuery:
-- key: OnCall
-  value:
-    simple: "false"
-  required: false
-  description: Set to true to assign only the user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
-  playbookInputQuery:
-- key: SocEmailAddress
-  value: {}
-  required: false
-  description: The SOC team's email address.
-  playbookInputQuery:
-- key: SocMailSubject
-  value:
-    simple: 'XSOAR Summary report, ID - '
-  required: false
-  description: The subject of the email to send to the SOC.
-  playbookInputQuery:
-- key: SiemAdminEmailAddress
-  value: {}
-  required: false
-  description: The SIEM admin's email address.
-  playbookInputQuery:
-- key: UseCalculateSeverity
-  value:
-    simple: "true"
-  required: false
-  description: Determines whether to use the Calculate Severity playbook to calculate the incident severity. If the playbook isn't used, the severity is determined by the QRadar magnitude value.
-  playbookInputQuery:
-- key: SiemAdminMailSubject
-  value:
-    simple: 'Adjustment/Exclusion for offense '
-  required: false
-  description: The subject of the email to send to the SIEM admin.
-  playbookInputQuery:
-- key: UseCustomSeveritySettings
-  value:
-    simple: "false"
-  required: false
-  description: Determines whether to use the default mapping in the QRadar generic mapper to set the XSOAR incident severity, or set the severity using the FieldToSetSeverityFrom and ScaleToSetSeverityFrom playbook inputs. Any value other than false is considered as true and causes the playbook inputs to be used.
-  playbookInputQuery:
-- key: FieldToSetSeverityFrom
-  value:
-    complex:
-      root: incident
-      accessor: magnitudeoffense
-  required: false
-  description: |
-    Specifies the field to use for calculating the incident severity, for example the severity field.
-  playbookInputQuery:
-- key: ScaleToSetSeverityFrom
-  value:
-    simple: 1,1,1,2,2,2,2,3,3,3
-  required: false
-  description: "The range of values of FieldToSetSeverityFrom is 1-10. The XSOAR incident severity field value range is 0-4 where\n0 - Informational\n1 - Low\n2 - Medium\n3 - High\n4 - Critical\n\nThe scale translates the value of FieldToSetSeverityFrom to a valid incident severity value. The default scale is 1,1,1,2,2,2,2,3,3,3 \nThis means that values 1-3 of FieldToSetSeverityFrom are translated to low severity (positions 1-3 in the scale), values 4-7 are translated to medium severity (positions 4-7 in the scale) and values 8-10 are translated to high severity (positions 8-10 in the scale)."
-  playbookInputQuery:
-- key: RunAdditionalSeach
-  value:
-    simple: "true"
-  required: false
-  description: By default the incident fetches the events defined in the integration instance settings (default is 20 events). To fetch additional events, change this setting to true.
-  playbookInputQuery:
-- key: MaxLogsCount
-  value:
-    simple: "50"
-  required: false
-  description: 'Maximum number of log entires to query from QRadar. Used for the QRadar - Get Offense Logs subplaybook.'
-  playbookInputQuery:
-- key: GetOnlyCREEvents
-  value:
-    simple: All
-  required: false
-  description: |
-    If this value is "OnlyCRE", get only events made by CRE. Values can be "OnlyCRE", "OnlyNotCRE", "All". Used for the QRadar - Get Offense Logs subplaybook.
-  playbookInputQuery:
-- key: Fields
-  value:
-    simple: QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime
-  required: false
-  description: |
-    A comma-separated list of extra fields to get from each event. You can use different fields or rename the existing fields. Used for the QRadar - Get Offense Logs subplaybook.
-  playbookInputQuery:
-- key: IndicatorTag
-  value:
-    simple: block
-  required: false
-  description: The tag to provide for true positive indicators, for example to use the indicators in an EDL (External Dynamic List).
-  playbookInputQuery:
-- key: ExcludeIndicatorsInXSOAR
-  value:
-    simple: "false"
-  required: false
-  description: If this value is not false, add indicators to the XSOAR exclude list. The excluded indicators won't be created in XSOAR anymore.
-  playbookInputQuery:
+  - key: Enrich
+    value:
+      simple: "true"
+    required: false
+    description: Determines whether to enrich all indicators in the incident.
+    playbookInputQuery:
+  - key: OnCall
+    value:
+      simple: "false"
+    required: false
+    description: Set to true to assign only the user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
+    playbookInputQuery:
+  - key: SocEmailAddress
+    value: {}
+    required: false
+    description: The SOC team's email address.
+    playbookInputQuery:
+  - key: SocMailSubject
+    value:
+      simple: 'XSOAR Summary report, ID - '
+    required: false
+    description: The subject of the email to send to the SOC.
+    playbookInputQuery:
+  - key: SiemAdminEmailAddress
+    value: {}
+    required: false
+    description: The SIEM admin's email address.
+    playbookInputQuery:
+  - key: UseCalculateSeverity
+    value:
+      simple: "true"
+    required: false
+    description: Determines whether to use the Calculate Severity playbook to calculate the incident severity. If the playbook isn't used, the severity is determined by the QRadar magnitude value.
+    playbookInputQuery:
+  - key: SiemAdminMailSubject
+    value:
+      simple: 'Adjustment/Exclusion for offense '
+    required: false
+    description: The subject of the email to send to the SIEM admin.
+    playbookInputQuery:
+  - key: UseCustomSeveritySettings
+    value:
+      simple: "false"
+    required: false
+    description: Determines whether to use the default mapping in the QRadar generic mapper to set the XSOAR incident severity, or set the severity using the FieldToSetSeverityFrom and ScaleToSetSeverityFrom playbook inputs. Any value other than false is considered as true and causes the playbook inputs to be used.
+    playbookInputQuery:
+  - key: FieldToSetSeverityFrom
+    value:
+      complex:
+        root: incident
+        accessor: magnitudeoffense
+    required: false
+    description: |
+      Specifies the field to use for calculating the incident severity, for example the severity field.
+    playbookInputQuery:
+  - key: ScaleToSetSeverityFrom
+    value:
+      simple: 1,1,1,2,2,2,2,3,3,3
+    required: false
+    description: "The range of values of FieldToSetSeverityFrom is 1-10. The XSOAR incident severity field value range is 0-4 where\n0 - Informational\n1 - Low\n2 - Medium\n3 - High\n4 - Critical\n\nThe scale translates the value of FieldToSetSeverityFrom to a valid incident severity value. The default scale is 1,1,1,2,2,2,2,3,3,3 \nThis means that values 1-3 of FieldToSetSeverityFrom are translated to low severity (positions 1-3 in the scale), values 4-7 are translated to medium severity (positions 4-7 in the scale) and values 8-10 are translated to high severity (positions 8-10 in the scale)."
+    playbookInputQuery:
+  - key: RunAdditionalSeach
+    value:
+      simple: "true"
+    required: false
+    description: By default the incident fetches the events defined in the integration instance settings (default is 20 events). To fetch additional events, change this setting to true.
+    playbookInputQuery:
+  - key: MaxLogsCount
+    value:
+      simple: "50"
+    required: false
+    description: 'Maximum number of log entires to query from QRadar. Used for the QRadar - Get Offense Logs subplaybook.'
+    playbookInputQuery:
+  - key: GetOnlyCREEvents
+    value:
+      simple: All
+    required: false
+    description: |
+      If this value is "OnlyCRE", get only events made by CRE. Values can be "OnlyCRE", "OnlyNotCRE", "All". Used for the QRadar - Get Offense Logs subplaybook.
+    playbookInputQuery:
+  - key: Fields
+    value:
+      simple: QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime
+    required: false
+    description: |
+      A comma-separated list of extra fields to get from each event. You can use different fields or rename the existing fields. Used for the QRadar - Get Offense Logs subplaybook.
+    playbookInputQuery:
+  - key: IndicatorTag
+    value:
+      simple: block
+    required: false
+    description: The tag to provide for true positive indicators, for example to use the indicators in an EDL (External Dynamic List).
+    playbookInputQuery:
+  - key: ExcludeIndicatorsInXSOAR
+    value:
+      simple: "false"
+    required: false
+    description: If this value is not false, add indicators to the XSOAR exclude list. The excluded indicators won't be created in XSOAR anymore.
+    playbookInputQuery:
 outputs: []
 tests:
-- No test
+  - No test
 fromversion: 6.0.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

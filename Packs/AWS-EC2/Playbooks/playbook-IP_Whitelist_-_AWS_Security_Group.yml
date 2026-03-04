@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     separatecontext: false
     view: |-
       {
@@ -45,7 +45,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "28"
+        - "28"
     separatecontext: false
     view: |-
       {
@@ -74,7 +74,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "34"
+        - "34"
     scriptarguments:
       a: {}
       actor: {}
@@ -180,14 +180,14 @@ tasks:
           root: ${ListCompare
           accessor: LeftOnly}
           transformers:
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: /
-              fields:
-                value:
-                  simple: "-1"
+            - operator: Cut
+              args:
+                delimiter:
+                  value:
+                    simple: /
+                fields:
+                  value:
+                    simple: "-1"
     separatecontext: false
     view: |-
       {
@@ -216,7 +216,7 @@ tasks:
       brand: AWS - EC2
     nexttasks:
       '#none#':
-      - "35"
+        - "35"
     scriptarguments:
       filters: {}
       groupIds: {}
@@ -254,7 +254,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       IpPermissionsIpProtocol: {}
       IpPermissionsToPort: {}
@@ -280,11 +280,11 @@ tasks:
           root: AWS
           accessor: EC2.SecurityGroups.GroupId
           transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
+            - operator: atIndex
+              args:
+                index:
+                  value:
+                    simple: "0"
       ipProtocol:
         simple: "-1"
       region: {}
@@ -321,7 +321,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "38"
+        - "38"
     scriptarguments:
       append: {}
       key:
@@ -332,12 +332,12 @@ tasks:
           root: ${inputs
           accessor: IP}
           transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: /32
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: /32
     separatecontext: false
     view: |-
       {
@@ -366,7 +366,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "25"
+        - "25"
     scriptarguments:
       cidrIp:
         simple: ${ListCompare.RightOnly}
@@ -376,11 +376,11 @@ tasks:
           root: AWS
           accessor: EC2.SecurityGroups.GroupId
           transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
+            - operator: atIndex
+              args:
+                index:
+                  value:
+                    simple: "0"
       ipProtocol:
         simple: "-1"
       region: {}
@@ -417,7 +417,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "34"
+        - "34"
     scriptarguments:
       field:
         simple: tags
@@ -428,14 +428,14 @@ tasks:
           root: ${ListCompare
           accessor: RightOnly}
           transformers:
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: /
-              fields:
-                value:
-                  simple: "-1"
+            - operator: Cut
+              args:
+                delimiter:
+                  value:
+                    simple: /
+                fields:
+                  value:
+                    simple: "-1"
     separatecontext: false
     view: |-
       {
@@ -464,8 +464,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "33"
-      - "32"
+        - "33"
+        - "32"
     scriptarguments:
       left:
         simple: ${AllowedCIDRs}
@@ -498,40 +498,40 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "34"
+        - "34"
       "yes":
-      - "14"
+        - "14"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: AWS - EC2
-                accessor: brand
-            iscontext: true
-          right:
-            value:
-              simple: AWS - EC2
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: AWS - EC2
+                      accessor: brand
+                  iscontext: true
+                right:
+                  value:
+                    simple: AWS - EC2
     view: |-
       {
         "position": {
@@ -558,18 +558,18 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "34"
+        - "34"
       "yes":
-      - "19"
+        - "19"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ListCompare.LeftOnly
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: ListCompare.LeftOnly
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -596,18 +596,18 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "34"
+        - "34"
       "yes":
-      - "21"
+        - "21"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ListCompare.RightOnly
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: ListCompare.RightOnly
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -659,18 +659,18 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "36"
+        - "36"
       "yes":
-      - "20"
+        - "20"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: AWS.EC2.SecurityGroups.GroupName
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    simple: AWS.EC2.SecurityGroups.GroupName
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -697,7 +697,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "37"
+        - "37"
     separatecontext: false
     view: |-
       {
@@ -750,18 +750,18 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "26"
+        - "26"
       "yes":
-      - "39"
+        - "39"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEmpty
-          left:
-            value:
-              simple: AWS.EC2.SecurityGroups.IpPermissions.[0].IpRanges.CidrIp
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isEmpty
+                left:
+                  value:
+                    simple: AWS.EC2.SecurityGroups.IpPermissions.[0].IpRanges.CidrIp
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -789,7 +789,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "32"
+        - "32"
     scriptarguments:
       append: {}
       key:
@@ -832,56 +832,52 @@ view: |-
     }
   }
 inputs:
-- key: ""
-  value: {}
-  required: false
-  description: ""
-  playbookInputQuery:
-    query: ""
-    queryEntity: indicators
-    results:
-    daterange:
-      fromdate: 0001-01-01T00:00:00Z
-      todate: 0001-01-01T00:00:00Z
-      period:
-        by: ""
-        byto: ""
-        byfrom: ""
-        tovalue:
-        fromvalue:
-        field: ""
-      fromdatelicenseval: 0001-01-01T00:00:00Z
-    runFromLastJobTime: false
-- key: IP
-  value: {}
-  required: true
-  playbookInputQuery:
-  description: IP addresses to set in the allow list
-- key: SecurityGroupName
-  value: {}
-  required: true
-  description: Name of the AWS Security Group to update
-  playbookInputQuery:
-- key: IndicatorTagName
-  value:
-    simple: AWS_IP_Whitelist
-  required: true
-  playbookInputQuery:
-  description: Name of the Indicator Tag to apply to any IPs allowed by this playbook.
+  - key: ""
+    value: {}
+    required: false
+    description: ""
+    playbookInputQuery:
+      query: ""
+      queryEntity: indicators
+      results:
+      daterange:
+        fromdate: 0001-01-01T00:00:00Z
+        todate: 0001-01-01T00:00:00Z
+        period:
+          by: ""
+          byto: ""
+          byfrom: ""
+          tovalue:
+          fromvalue:
+          field: ""
+        fromdatelicenseval: 0001-01-01T00:00:00Z
+      runFromLastJobTime: false
+  - key: IP
+    value: {}
+    required: true
+    playbookInputQuery:
+    description: IP addresses to set in the allow list
+  - key: SecurityGroupName
+    value: {}
+    required: true
+    description: Name of the AWS Security Group to update
+    playbookInputQuery:
+  - key: IndicatorTagName
+    value:
+      simple: AWS_IP_Whitelist
+    required: true
+    playbookInputQuery:
+    description: Name of the Indicator Tag to apply to any IPs allowed by this playbook.
 outputs: []
 fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 marketplaces:
-- xsoar
-- marketplacev2
-- platform
+  - xsoar
+  - marketplacev2
+  - platform
 supportedModules:
-- agentix
-- xsiam
-- X1
-- X3
-- X5
-- ENT_PLUS
-- asm
-- exposure_management
+  - agentix
+  - xsiam
+  - asm
+  - exposure_management

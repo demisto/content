@@ -18,7 +18,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     separatecontext: false
     view: |-
       {
@@ -50,7 +50,7 @@ tasks:
       brand: ServiceNow CMDB
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       class:
         simple: ${inputs.SearchCIClass}
@@ -87,7 +87,7 @@ tasks:
       brand: ServiceNow CMDB
     nexttasks:
       '#none#':
-      - "16"
+        - "16"
     scriptarguments:
       class:
         simple: ${inputs.SearchCIClass}
@@ -126,7 +126,7 @@ tasks:
       brand: ServiceNow CMDB
     nexttasks:
       '#none#':
-      - "13"
+        - "13"
     scriptarguments:
       class:
         simple: cmdb_ci
@@ -193,9 +193,9 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "15"
+        - "15"
       "yes":
-      - "5"
+        - "5"
     scriptarguments:
       value:
         simple: ${ServiceNowCMDB.Records}
@@ -229,9 +229,9 @@ tasks:
       description: "Determines if you should add the asset into CMDB (manual task)."
     nexttasks:
       "No":
-      - "7"
+        - "7"
       "Yes":
-      - "10"
+        - "10"
     separatecontext: false
     view: |-
       {
@@ -260,8 +260,8 @@ tasks:
         completeafterv2: false
         completeaftersla: false
       replyOptions:
-      - "No"
-      - "Yes"
+        - "No"
+        - "Yes"
     skipunavailable: false
     quietmode: 0
     continueonerrortype: ""
@@ -281,7 +281,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     separatecontext: false
     view: |-
       {
@@ -313,7 +313,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       columns:
         simple: name,sys_class_name,sys_id,asset.display_value,asset.link,asset.value
@@ -355,38 +355,38 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "7"
+        - "7"
       "yes":
-      - "4"
+        - "4"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: ServiceNow CMDB
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: ServiceNow CMDB
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -416,22 +416,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+        - "9"
       "yes":
-      - "7"
+        - "7"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.BypassAddRecord
-            iscontext: true
-          right:
-            value:
-              simple: "true"
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.BypassAddRecord
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
     continueonerrortype: ""
     view: |-
       {
@@ -461,23 +461,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "13"
+        - "13"
       "yes":
-      - "17"
+        - "17"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: ServiceNowCMDB.Record.Attributes
-                accessor: sys_class_name
-            iscontext: true
-          right:
-            value:
-              simple: cmdb_ci_network_adapter
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: ServiceNowCMDB.Record.Attributes
+                      accessor: sys_class_name
+                  iscontext: true
+                right:
+                  value:
+                    simple: cmdb_ci_network_adapter
     continueonerrortype: ""
     view: |-
       {
@@ -508,7 +508,7 @@ tasks:
       brand: ServiceNow CMDB
     nexttasks:
       '#none#':
-      - "6"
+        - "6"
     scriptarguments:
       class:
         simple: cmdb_ci_network_adapter
@@ -548,46 +548,42 @@ view: |-
     }
   }
 inputs:
-- key: SearchCIClass
-  value:
-    simple: cmdb_ci
-  required: false
-  description: The CMDB CI class to perform the search on (Defaults to cmdb_ci).
-  playbookInputQuery:
-- key: SearchQueryField
-  value:
-    simple: ip_address
-  required: false
-  description: The CI field used to perform the query (Defaults to ip_address).
-  playbookInputQuery:
-- key: SearchQueryValue
-  value: {}
-  required: true
-  description: The value used to perform the query.
-  playbookInputQuery:
-- key: BypassAddRecord
-  value:
-    simple: "false"
-  required: false
-  description: Value to determine if the "add asset to CMDB" branch should be skipped in order to prevent direction to manual task.  By default this is set to "false" but a "true" value will bypass.
-  playbookInputQuery:
+  - key: SearchCIClass
+    value:
+      simple: cmdb_ci
+    required: false
+    description: The CMDB CI class to perform the search on (Defaults to cmdb_ci).
+    playbookInputQuery:
+  - key: SearchQueryField
+    value:
+      simple: ip_address
+    required: false
+    description: The CI field used to perform the query (Defaults to ip_address).
+    playbookInputQuery:
+  - key: SearchQueryValue
+    value: {}
+    required: true
+    description: The value used to perform the query.
+    playbookInputQuery:
+  - key: BypassAddRecord
+    value:
+      simple: "false"
+    required: false
+    description: Value to determine if the "add asset to CMDB" branch should be skipped in order to prevent direction to manual task.  By default this is set to "false" but a "true" value will bypass.
+    playbookInputQuery:
 outputs:
-- contextPath: ServiceNowCMDB.Record
-  description: Discovered CI records
-  type: unknown
-- contextPath: ServiceNowCMDB.Records
-  description: A list of all the records that were found in the CMDB table.
+  - contextPath: ServiceNowCMDB.Record
+    description: Discovered CI records
+    type: unknown
+  - contextPath: ServiceNowCMDB.Records
+    description: A list of all the records that were found in the CMDB table.
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 6.0.0
 contentitemexportablefields:
   contentitemfields: {}
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- asm
-- exposure_management
-- agentix
-- xsiam
+  - asm
+  - exposure_management
+  - agentix
+  - xsiam

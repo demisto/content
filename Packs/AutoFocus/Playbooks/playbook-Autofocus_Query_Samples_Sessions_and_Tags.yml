@@ -22,7 +22,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     separatecontext: false
     view: |-
       {
@@ -54,7 +54,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+        - "15"
     scriptarguments:
       domain:
         complex:
@@ -133,39 +133,39 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+        - "4"
       "yes":
-      - "7"
-      - "8"
-      - "11"
+        - "7"
+        - "8"
+        - "11"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: AutoFocus V2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: AutoFocus V2
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                      accessor: brand
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -204,7 +204,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     scriptarguments:
       Ids:
         complex:
@@ -255,33 +255,33 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+        - "4"
       "yes":
-      - "1"
+        - "1"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: inputs.Search Type
-            iscontext: true
-          right:
-            value:
-              simple: sample
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.Search Type
-            iscontext: true
-          right:
-            value:
-              simple: all
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: containsGeneral
+                left:
+                  value:
+                    complex:
+                      root: inputs.Search Type
+                  iscontext: true
+                right:
+                  value:
+                    simple: sample
+                ignorecase: true
+              - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.Search Type
+                  iscontext: true
+                right:
+                  value:
+                    simple: all
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -311,33 +311,33 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+        - "4"
       "yes":
-      - "9"
+        - "9"
     separatecontext: false
     conditions:
-    - label: "Yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: inputs.Search Type
-            iscontext: true
-          right:
-            value:
-              simple: session
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.Search Type
-            iscontext: true
-          right:
-            value:
-              simple: all
-          ignorecase: true
+      - label: "Yes"
+        condition:
+          -   - operator: containsGeneral
+                left:
+                  value:
+                    complex:
+                      root: inputs.Search Type
+                  iscontext: true
+                right:
+                  value:
+                    simple: session
+                ignorecase: true
+              - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.Search Type
+                  iscontext: true
+                right:
+                  value:
+                    simple: all
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -368,7 +368,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     scriptarguments:
       domain:
         complex:
@@ -425,7 +425,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     scriptarguments:
       Ids:
         complex:
@@ -476,33 +476,33 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+        - "4"
       "yes":
-      - "12"
+        - "12"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: inputs.Search Type
-            iscontext: true
-          right:
-            value:
-              simple: tag
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.Search Type
-            iscontext: true
-          right:
-            value:
-              simple: all
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: containsGeneral
+                left:
+                  value:
+                    complex:
+                      root: inputs.Search Type
+                  iscontext: true
+                right:
+                  value:
+                    simple: tag
+                ignorecase: true
+              - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.Search Type
+                  iscontext: true
+                right:
+                  value:
+                    simple: all
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -533,7 +533,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+        - "16"
     scriptarguments:
       class:
         complex:
@@ -593,7 +593,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     scriptarguments:
       Ids:
         complex:
@@ -644,28 +644,28 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+        - "4"
       "yes":
-      - "10"
+        - "10"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: AutoFocus
-                filters:
-                - - operator: isExists
-                    left:
-                      value:
-                        simple: AutoFocus.SessionsSearch.AFCookie
-                      iscontext: true
-                accessor: SessionsSearch
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: AutoFocus
+                      filters:
+                        -   - operator: isExists
+                              left:
+                                value:
+                                  simple: AutoFocus.SessionsSearch.AFCookie
+                                iscontext: true
+                      accessor: SessionsSearch
+                  iscontext: true
+                right:
+                  value: {}
     view: |-
       {
         "position": {
@@ -695,28 +695,28 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+        - "4"
       "yes":
-      - "6"
+        - "6"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: AutoFocus
-                filters:
-                - - operator: isExists
-                    left:
-                      value:
-                        simple: AutoFocus.SamplesSearch.AFCookie
-                      iscontext: true
-                accessor: SamplesSearch
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: AutoFocus
+                      filters:
+                        -   - operator: isExists
+                              left:
+                                value:
+                                  simple: AutoFocus.SamplesSearch.AFCookie
+                                iscontext: true
+                      accessor: SamplesSearch
+                  iscontext: true
+                right:
+                  value: {}
     view: |-
       {
         "position": {
@@ -746,28 +746,28 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+        - "4"
       "yes":
-      - "13"
+        - "13"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: AutoFocus
-                filters:
-                - - operator: isExists
-                    left:
-                      value:
-                        simple: AutoFocus.TopTagsSearch.AFCookie
-                      iscontext: true
-                accessor: TopTagsSearch
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: AutoFocus
+                      filters:
+                        -   - operator: isExists
+                              left:
+                                value:
+                                  simple: AutoFocus.TopTagsSearch.AFCookie
+                                iscontext: true
+                      accessor: TopTagsSearch
+                  iscontext: true
+                right:
+                  value: {}
     view: |-
       {
         "position": {
@@ -810,152 +810,148 @@ view: |-
     }
   }
 inputs:
-- key: Scope
-  value: {}
-  required: false
-  description: |-
-    Scope can be
-    Private
-    Public
-    Global
-  playbookInputQuery:
-- key: SampleQuery
-  value: {}
-  required: false
-  description: |
-    Query needs to be provided in order to determine what to search for. Query is currently only in JSON format which can be extracted from the Autofocus web console API radio button.
+  - key: Scope
+    value: {}
+    required: false
+    description: |-
+      Scope can be
+      Private
+      Public
+      Global
+    playbookInputQuery:
+  - key: SampleQuery
+    value: {}
+    required: false
+    description: |
+      Query needs to be provided in order to determine what to search for. Query is currently only in JSON format which can be extracted from the Autofocus web console API radio button.
 
-    Query example for searching hashes can be
+      Query example for searching hashes can be
 
-    {"operator":"any","children":[{"field":"sample.sha256","operator":"is","value":"4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0"},{"field":"sample.sha256","operator":"is","value":"7e93723c0c34ef98444e5ce9013fef220975b96291a79053fd4c9b3d3550aeb3"}]}
+      {"operator":"any","children":[{"field":"sample.sha256","operator":"is","value":"4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0"},{"field":"sample.sha256","operator":"is","value":"7e93723c0c34ef98444e5ce9013fef220975b96291a79053fd4c9b3d3550aeb3"}]}
 
-    Another example for searching for an IP
-    {"operator":"any","children":[{"field":"sample.src_ip","operator":"is","value":"1.1.1.1"},{"field":"sample.dst_ip","operator":"is","value":"1.1.1.1"},{"field":"sample.src_ip","operator":"is","value":"2.2.2.2"},{"field":"sample.dst_ip","operator":"is","value":"2.2.2.2"}]}
-  playbookInputQuery:
-- key: SessionQuery
-  value: {}
-  required: false
-  description: |
-    Query needs to be provided in order to determine what to search for. Query is currently only in JSON format which can be extracted from the Autofocus web console API radio button.
+      Another example for searching for an IP
+      {"operator":"any","children":[{"field":"sample.src_ip","operator":"is","value":"1.1.1.1"},{"field":"sample.dst_ip","operator":"is","value":"1.1.1.1"},{"field":"sample.src_ip","operator":"is","value":"2.2.2.2"},{"field":"sample.dst_ip","operator":"is","value":"2.2.2.2"}]}
+    playbookInputQuery:
+  - key: SessionQuery
+    value: {}
+    required: false
+    description: |
+      Query needs to be provided in order to determine what to search for. Query is currently only in JSON format which can be extracted from the Autofocus web console API radio button.
 
-    Query example for searching hashes can be
+      Query example for searching hashes can be
 
-    {"operator":"any","children":[{"field":"session.sha256","operator":"is","value":"4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0"},{"field":"session.sha256","operator":"is","value":"7e93723c0c34ef98444e5ce9013fef220975b96291a79053fd4c9b3d3550aeb3"}]}
+      {"operator":"any","children":[{"field":"session.sha256","operator":"is","value":"4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0"},{"field":"session.sha256","operator":"is","value":"7e93723c0c34ef98444e5ce9013fef220975b96291a79053fd4c9b3d3550aeb3"}]}
 
-    Another example for searching for an IP
-    {"operator":"any","children":[{"field":"session.src_ip","operator":"is","value":"1.1.1.1"},{"field":"session.dst_ip","operator":"is","value":"1.1.1.1"},{"field":"session.src_ip","operator":"is","value":"2.2.2.2"},{"field":"session.dst_ip","operator":"is","value":"2.2.2.2"}]}
-  playbookInputQuery:
-- key: IP
-  value: {}
-  required: false
-  description: IP to query
-  playbookInputQuery:
-- key: Hash
-  value: {}
-  required: false
-  description: Hash to query
-  playbookInputQuery:
-- key: URL
-  value: {}
-  required: false
-  description: URL to query
-  playbookInputQuery:
-- key: Domain
-  value: {}
-  required: false
-  description: Domain to query
-  playbookInputQuery:
-- key: Search Type
-  value: {}
-  required: true
-  description: |
-    Values can be session, sample, tag,all
-  playbookInputQuery:
-- key: Wildfire Verdict
-  value: {}
-  required: false
-  description: Values can be Malware,Benign,Phishing,Greyware
-  playbookInputQuery:
-- key: Sessions time before
-  value: {}
-  required: false
-  description: |-
-    Timestamp in the following format
-    2019-09-12T00:00:00
-    This parameter checks for sessions prior to this timestamp
-  playbookInputQuery:
-- key: Sessions time after
-  value: {}
-  required: false
-  description: |-
-    Timestamp in the following format
-    2019-09-12T00:00:00
-    This parameter checks for sessions after this timestamp
-  playbookInputQuery:
-- key: Sample first seen
-  value: {}
-  required: false
-  description: |-
-    Timestamp in the following format
-    2019-09-12T00:00:00
-    This parameter checks for when the sample was first seen after this date.
-  playbookInputQuery:
-- key: Sample last modified
-  value: {}
-  required: false
-  description: |-
-    Timestamp in the following format
-    2019-09-12T00:00:00
-    This parameter checks for when the sample was last modified after this date.
-  playbookInputQuery:
-- key: Tags scope
-  value: {}
-  required: false
-  description: Values can be industry, organization, all, global.
-  playbookInputQuery:
-- key: Tags class
-  value: {}
-  required: false
-  description: Values can be Actor, Campaign, Exploit, Malicious Behavior, Malware Family
-  playbookInputQuery:
-- key: Tags private
-  value: {}
-  required: false
-  description: Values can be True, False. If true the search will only focus on private (non public) objects. Default is false
-  playbookInputQuery:
-- key: Tags public
-  value: {}
-  required: false
-  description: Values can be True, False. If true the search will only focus on public (non private) objects. Default is false.
-  playbookInputQuery:
-- key: Commodity
-  value: {}
-  required: false
-  description: Values can be True, False. Default is false.
-  playbookInputQuery:
-- key: Unit 42
-  value: {}
-  required: false
-  description: Values can be True, False. Default is false objects that have been analyzed by Palo Alto's Unit 42 global threat intelligence team.
-  playbookInputQuery:
+      Another example for searching for an IP
+      {"operator":"any","children":[{"field":"session.src_ip","operator":"is","value":"1.1.1.1"},{"field":"session.dst_ip","operator":"is","value":"1.1.1.1"},{"field":"session.src_ip","operator":"is","value":"2.2.2.2"},{"field":"session.dst_ip","operator":"is","value":"2.2.2.2"}]}
+    playbookInputQuery:
+  - key: IP
+    value: {}
+    required: false
+    description: IP to query
+    playbookInputQuery:
+  - key: Hash
+    value: {}
+    required: false
+    description: Hash to query
+    playbookInputQuery:
+  - key: URL
+    value: {}
+    required: false
+    description: URL to query
+    playbookInputQuery:
+  - key: Domain
+    value: {}
+    required: false
+    description: Domain to query
+    playbookInputQuery:
+  - key: Search Type
+    value: {}
+    required: true
+    description: |
+      Values can be session, sample, tag,all
+    playbookInputQuery:
+  - key: Wildfire Verdict
+    value: {}
+    required: false
+    description: Values can be Malware,Benign,Phishing,Greyware
+    playbookInputQuery:
+  - key: Sessions time before
+    value: {}
+    required: false
+    description: |-
+      Timestamp in the following format
+      2019-09-12T00:00:00
+      This parameter checks for sessions prior to this timestamp
+    playbookInputQuery:
+  - key: Sessions time after
+    value: {}
+    required: false
+    description: |-
+      Timestamp in the following format
+      2019-09-12T00:00:00
+      This parameter checks for sessions after this timestamp
+    playbookInputQuery:
+  - key: Sample first seen
+    value: {}
+    required: false
+    description: |-
+      Timestamp in the following format
+      2019-09-12T00:00:00
+      This parameter checks for when the sample was first seen after this date.
+    playbookInputQuery:
+  - key: Sample last modified
+    value: {}
+    required: false
+    description: |-
+      Timestamp in the following format
+      2019-09-12T00:00:00
+      This parameter checks for when the sample was last modified after this date.
+    playbookInputQuery:
+  - key: Tags scope
+    value: {}
+    required: false
+    description: Values can be industry, organization, all, global.
+    playbookInputQuery:
+  - key: Tags class
+    value: {}
+    required: false
+    description: Values can be Actor, Campaign, Exploit, Malicious Behavior, Malware Family
+    playbookInputQuery:
+  - key: Tags private
+    value: {}
+    required: false
+    description: Values can be True, False. If true the search will only focus on private (non public) objects. Default is false
+    playbookInputQuery:
+  - key: Tags public
+    value: {}
+    required: false
+    description: Values can be True, False. If true the search will only focus on public (non private) objects. Default is false.
+    playbookInputQuery:
+  - key: Commodity
+    value: {}
+    required: false
+    description: Values can be True, False. Default is false.
+    playbookInputQuery:
+  - key: Unit 42
+    value: {}
+    required: false
+    description: Values can be True, False. Default is false objects that have been analyzed by Palo Alto's Unit 42 global threat intelligence team.
+    playbookInputQuery:
 outputs:
-- contextPath: AutoFocus.SessionsResults
-  description: Results of Autofocus sessions search.
-  type: string
-- contextPath: AutoFocus.SamplesResults
-  description: Results of Autofocus samples search.
-  type: string
-- contextPath: AutoFocus.TopTagResults
-  description: Results of Autofocus tags search.
-  type: string
+  - contextPath: AutoFocus.SessionsResults
+    description: Results of Autofocus sessions search.
+    type: string
+  - contextPath: AutoFocus.SamplesResults
+    description: Results of Autofocus samples search.
+    type: string
+  - contextPath: AutoFocus.TopTagResults
+    description: Results of Autofocus tags search.
+    type: string
 tests:
-- Autofocus Query Samples, Sessions and Tags Test Playbook
+  - Autofocus Query Samples, Sessions and Tags Test Playbook
 contentitemexportablefields:
   contentitemfields: {}
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

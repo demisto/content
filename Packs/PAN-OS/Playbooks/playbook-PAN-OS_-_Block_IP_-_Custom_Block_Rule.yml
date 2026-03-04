@@ -20,7 +20,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     view: |-
       {
@@ -46,37 +46,37 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+        - "4"
       "yes":
-      - "5"
+        - "5"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Panorama
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Panorama
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                      accessor: brand
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -102,7 +102,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     scriptarguments:
       device-group: {}
       direction: {}
@@ -110,11 +110,11 @@ tasks:
         complex:
           root: inputs.LogForwarding
           filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.LogForwarding
-                iscontext: true
+            -   - operator: isNotEmpty
+                  left:
+                    value:
+                      simple: inputs.LogForwarding
+                    iscontext: true
       object_type:
         simple: ip
       object_value:
@@ -173,19 +173,19 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+        - "4"
       "yes":
-      - "7"
+        - "7"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.IP
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: inputs.IP
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -211,7 +211,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+        - "11"
     scriptarguments:
       description: {}
       device-group: {}
@@ -248,7 +248,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     separatecontext: true
     view: |-
       {
@@ -275,7 +275,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     separatecontext: true
     view: |-
       {
@@ -301,22 +301,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "12"
+        - "12"
       "yes":
-      - "9"
+        - "9"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoCommit
-            iscontext: true
-          right:
-            value:
-              simple: "Yes"
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.AutoCommit
+                  iscontext: true
+                right:
+                  value:
+                    simple: "Yes"
     view: |-
       {
         "position": {
@@ -341,7 +341,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+        - "13"
     separatecontext: false
     view: |-
       {
@@ -368,7 +368,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     scriptarguments:
       device-group: {}
       direction: {}
@@ -376,11 +376,11 @@ tasks:
         complex:
           root: inputs.LogForwarding
           filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.LogForwarding
-                iscontext: true
+            -   - operator: isNotEmpty
+                  left:
+                    value:
+                      simple: inputs.LogForwarding
+                    iscontext: true
       object_type:
         simple: ip
       object_value:
@@ -416,7 +416,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     separatecontext: false
     view: |-
       {
@@ -444,43 +444,39 @@ view: |-
     }
   }
 inputs:
-- key: LogForwarding
-  value: {}
-  required: false
-  description: Panorama log forwarding object name
-- key: IP
-  value:
-    complex:
-      root: IP
-      filters:
-      - - operator: isExists
-          left:
-            value:
-              simple: IP.Malicious
-            iscontext: true
-      accessor: Address
-      transformers:
-      - operator: uniq
-  required: false
-  description: IP address to block
-- key: AutoCommit
-  value:
-    simple: "No"
-  required: false
-  description: |-
-    This input establishes whether to commit the configuration automatically.
-    Yes - Commit automatically.
-    No - Commit manually.
+  - key: LogForwarding
+    value: {}
+    required: false
+    description: Panorama log forwarding object name
+  - key: IP
+    value:
+      complex:
+        root: IP
+        filters:
+          -   - operator: isExists
+                left:
+                  value:
+                    simple: IP.Malicious
+                  iscontext: true
+        accessor: Address
+        transformers:
+          - operator: uniq
+    required: false
+    description: IP address to block
+  - key: AutoCommit
+    value:
+      simple: "No"
+    required: false
+    description: |-
+      This input establishes whether to commit the configuration automatically.
+      Yes - Commit automatically.
+      No - Commit manually.
 outputs: []
 tests:
-- PAN-OS - Block IP - Custom Block Rule Test
+  - PAN-OS - Block IP - Custom Block Rule Test
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
-- edr
-- cloud
-- cloud_runtime_security
+  - agentix
+  - xsiam
+  - edr
+  - cloud
+  - cloud_runtime_security

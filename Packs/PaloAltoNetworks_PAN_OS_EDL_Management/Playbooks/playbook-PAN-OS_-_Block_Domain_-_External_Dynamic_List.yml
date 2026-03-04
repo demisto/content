@@ -20,7 +20,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     separatecontext: false
     view: |-
       {
@@ -46,7 +46,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+        - "11"
     separatecontext: false
     view: |-
       {
@@ -73,7 +73,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+        - "16"
     scriptarguments:
       add_or_remove:
         simple: add
@@ -81,21 +81,21 @@ tasks:
         complex:
           root: inputs.DomainListName
           transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: .txt
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: .txt
       list_items:
         complex:
           root: inputs.Domain
           transformers:
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ','
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ','
       list_name:
         complex:
           root: inputs.DomainListName
@@ -126,7 +126,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       device-group: {}
       name:
@@ -180,19 +180,19 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+        - "9"
       "yes":
-      - "12"
+        - "12"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.Domain
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.Domain
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -218,7 +218,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       action-type:
         simple: drop
@@ -236,11 +236,11 @@ tasks:
         complex:
           root: inputs.LogForwarding
           filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.LogForwarding
-                iscontext: true
+            -   - operator: isNotEmpty
+                  left:
+                    value:
+                      simple: inputs.LogForwarding
+                    iscontext: true
       pre-post-rulebase:
         complex:
           root: inputs.pre-post-rulebase
@@ -281,37 +281,37 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+        - "9"
       "yes":
-      - "5"
+        - "5"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: palo_alto_networks_pan_os_edl_management
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: palo_alto_networks_pan_os_edl_management
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                      accessor: brand
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -336,21 +336,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+        - "8"
       "yes":
-      - "9"
+        - "9"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: panorama.model
-            iscontext: true
-          right:
-            value:
-              simple: Panorama
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: panorama.model
+                  iscontext: true
+                right:
+                  value:
+                    simple: Panorama
     view: |-
       {
         "position": {
@@ -376,7 +376,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+        - "15"
     scriptarguments:
       action: {}
       category: {}
@@ -431,63 +431,59 @@ view: |-
     }
   }
 inputs:
-- key: Domain
-  value:
-    complex:
-      root: Domain
-      filters:
-      - - operator: isExists
-          left:
-            value:
-              simple: Domain.Malicious
-            iscontext: true
-      accessor: Name
-      transformers:
-      - operator: uniq
-  required: false
-  description: Domain to block
-- key: DomainListName
-  value:
-    simple: Demisto Remediation - Domain EDL
-  required: false
-  description: Domain list from the instance context with which to override the remote file.
-- key: LogForwarding
-  value: {}
-  required: false
-  description: Log Forwarding object name.
-- key: EDLServerIP
-  value: {}
-  required: false
-  description: EDL server IP address.
-- key: AutoCommit
-  value:
-    simple: "No"
-  required: false
-  description: |-
-    This input establishes whether to commit the configuration automatically.
-    Yes - Commit automatically.
-    No - Commit manually.
-- key: pre-post-rulebase
-  value:
-    simple: pre-rulebase
-  required: false
-  description: Enter pre-rulebase or post-rulebase, according to the rule structure.
-- key: rule-position
-  value: {}
-  required: false
-  description: |-
-    The position of the rule in the ruleset. Valid values are:
-      * Top
-      * Bottom
-      * Before
-      * After
+  - key: Domain
+    value:
+      complex:
+        root: Domain
+        filters:
+          -   - operator: isExists
+                left:
+                  value:
+                    simple: Domain.Malicious
+                  iscontext: true
+        accessor: Name
+        transformers:
+          - operator: uniq
+    required: false
+    description: Domain to block
+  - key: DomainListName
+    value:
+      simple: Demisto Remediation - Domain EDL
+    required: false
+    description: Domain list from the instance context with which to override the remote file.
+  - key: LogForwarding
+    value: {}
+    required: false
+    description: Log Forwarding object name.
+  - key: EDLServerIP
+    value: {}
+    required: false
+    description: EDL server IP address.
+  - key: AutoCommit
+    value:
+      simple: "No"
+    required: false
+    description: |-
+      This input establishes whether to commit the configuration automatically.
+      Yes - Commit automatically.
+      No - Commit manually.
+  - key: pre-post-rulebase
+    value:
+      simple: pre-rulebase
+    required: false
+    description: Enter pre-rulebase or post-rulebase, according to the rule structure.
+  - key: rule-position
+    value: {}
+    required: false
+    description: |-
+      The position of the rule in the ruleset. Valid values are:
+        * Top
+        * Bottom
+        * Before
+        * After
 outputs: []
 tests:
-- No test
+  - No test
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

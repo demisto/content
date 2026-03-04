@@ -19,8 +19,6 @@
         "platform"
     ],
     "supportedModules": [
-        "X3",
-        "X5",
         "agentix",
         "xsiam"
     ],

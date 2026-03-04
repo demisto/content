@@ -18,7 +18,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "31"
+        - "31"
     separatecontext: false
     view: |-
       {
@@ -67,24 +67,24 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "29"
+        - "29"
       "yes":
-      - "32"
+        - "32"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoCommit
-                transformers:
-                - operator: toLowerCase
-            iscontext: true
-          right:
-            value:
-              simple: "yes"
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.AutoCommit
+                      transformers:
+                        - operator: toLowerCase
+                  iscontext: true
+                right:
+                  value:
+                    simple: "yes"
     view: |-
       {
         "position": {
@@ -109,23 +109,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "7"
+        - "7"
       "yes":
-      - "30"
+        - "30"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.route_name
-            iscontext: true
-          right:
-            value:
-              simple: Panorama.StaticRoutes.Name
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.route_name
+                  iscontext: true
+                right:
+                  value:
+                    simple: Panorama.StaticRoutes.Name
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -152,7 +152,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     separatecontext: false
     view: |-
       {
@@ -179,7 +179,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+        - "11"
     scriptarguments:
       route_name:
         complex:
@@ -214,7 +214,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "27"
+        - "27"
     scriptarguments:
       show_uncommitted:
         simple: "true"
@@ -250,7 +250,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     separatecontext: true
     view: |-
       {
@@ -281,26 +281,22 @@ view: |-
     }
   }
 inputs:
-- key: virtual_router_name
-  value: {}
-  required: true
-  description: Name of the virtual router to configure the static routes for.
-- key: route_name
-  value: {}
-  required: true
-  description: Enter a name to identify the static route (up to 31 characters). The name is case-sensitive and must be unique. Use only letters, numbers, spaces, hyphens, and underscores.
-- key: AutoCommit
-  value:
-    simple: "No"
-  required: false
-  description: This input established whether to auto-commit the configuration to PAN-OS. Specify Yes/No.
+  - key: virtual_router_name
+    value: {}
+    required: true
+    description: Name of the virtual router to configure the static routes for.
+  - key: route_name
+    value: {}
+    required: true
+    description: Enter a name to identify the static route (up to 31 characters). The name is case-sensitive and must be unique. Use only letters, numbers, spaces, hyphens, and underscores.
+  - key: AutoCommit
+    value:
+      simple: "No"
+    required: false
+    description: This input established whether to auto-commit the configuration to PAN-OS. Specify Yes/No.
 outputs: []
 tests:
-- No test
+  - No test
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

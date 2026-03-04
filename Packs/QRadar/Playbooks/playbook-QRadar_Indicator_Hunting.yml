@@ -18,7 +18,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '55'
+        - '55'
     separatecontext: false
     view: |-
       {
@@ -44,7 +44,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '8'
+        - '8'
     separatecontext: false
     view: |-
       {
@@ -71,7 +71,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '89'
+        - '89'
     scriptarguments:
       headers: {}
       interval:
@@ -80,53 +80,53 @@ tasks:
         complex:
           root: .
           transformers:
-          - operator: DT
-            args:
-              dt:
-                value:
-                  simple: '.=function(val){var fields = Array.isArray(val.DomainURLFields) ? val.DomainURLFields : [val.DomainURLFields]; var domainurls = Array.isArray(val.DomainURL) ? val.DomainURL : [val.DomainURL]; return fields.map(field => domainurls.map(domainurl => "\"" + field + "\" ILIKE " + "''%" + domainurl + "%''").join('' OR ''))}(val)'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
+            - operator: DT
+              args:
+                dt:
+                  value:
+                    simple: '.=function(val){var fields = Array.isArray(val.DomainURLFields) ? val.DomainURLFields : [val.DomainURLFields]; var domainurls = Array.isArray(val.DomainURL) ? val.DomainURL : [val.DomainURL]; return fields.map(field => domainurls.map(domainurl => "\"" + field + "\" ILIKE " + "''%" + domainurl + "%''").join('' OR ''))}(val)'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.SelectFields
+                  iscontext: true
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
       range: {}
       timeout:
         simple: '600'
@@ -159,7 +159,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '7'
+        - '7'
     separatecontext: false
     view: |-
       {
@@ -185,7 +185,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '9'
+        - '9'
     separatecontext: false
     view: |-
       {
@@ -211,18 +211,18 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '48'
+        - '48'
       'yes':
-      - '49'
+        - '49'
     separatecontext: false
     conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.IPAddress
-            iscontext: true
+      - label: 'yes'
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.IPAddress
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -247,30 +247,30 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '25'
+        - '25'
       'yes':
-      - '26'
-      - '27'
-      - '38'
+        - '26'
+        - '27'
+        - '38'
     separatecontext: false
     conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.MD5
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.SHA1
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.SHA256
-            iscontext: true
+      - label: 'yes'
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.MD5
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.SHA1
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.SHA256
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -295,18 +295,18 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '10'
+        - '10'
       'yes':
-      - '15'
+        - '15'
     separatecontext: false
     conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.URLDomain
-            iscontext: true
+      - label: 'yes'
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.URLDomain
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -354,18 +354,18 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '56'
+        - '56'
       'yes':
-      - '57'
+        - '57'
     separatecontext: false
     conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.URLDomainField
-            iscontext: true
+      - label: 'yes'
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.URLDomainField
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -391,7 +391,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '11'
+        - '11'
     scriptarguments:
       append:
         simple: 'true'
@@ -401,11 +401,11 @@ tasks:
         complex:
           root: inputs.URLDomain
           transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
+            - operator: split
+              args:
+                delimiter:
+                  value:
+                    simple: ','
     separatecontext: false
     view: |-
       {
@@ -432,7 +432,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '3'
+        - '3'
     scriptarguments:
       append:
         simple: 'true'
@@ -442,11 +442,11 @@ tasks:
         complex:
           root: inputs.URLDomainField
           transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
+            - operator: split
+              args:
+                delimiter:
+                  value:
+                    simple: ','
     separatecontext: false
     view: |-
       {
@@ -473,7 +473,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '89'
+        - '89'
     scriptarguments:
       headers: {}
       interval:
@@ -482,56 +482,56 @@ tasks:
         complex:
           root: DomainURL
           transformers:
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: (.*)
-              replaceWith:
-                value:
-                  simple: UTF8(payload) ILIKE  '%$1%'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: (.*)
+                replaceWith:
+                  value:
+                    simple: UTF8(payload) ILIKE  '%$1%'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.SelectFields
+                  iscontext: true
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
       range: {}
       timeout:
         simple: '600'
@@ -565,7 +565,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '21'
+        - '21'
     scriptarguments:
       append:
         simple: 'true'
@@ -575,11 +575,11 @@ tasks:
         complex:
           root: inputs.MD5
           transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
+            - operator: split
+              args:
+                delimiter:
+                  value:
+                    simple: ','
     separatecontext: false
     view: |-
       {
@@ -605,18 +605,18 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '64'
+        - '64'
       'yes':
-      - '65'
+        - '65'
     separatecontext: false
     conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.QradarMD5Field
-            iscontext: true
+      - label: 'yes'
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.QradarMD5Field
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -641,18 +641,18 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '25'
+        - '25'
       'yes':
-      - '20'
+        - '20'
     separatecontext: false
     conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.MD5
-            iscontext: true
+      - label: 'yes'
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.MD5
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -678,7 +678,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '93'
+        - '93'
     scriptarguments:
       headers: {}
       interval:
@@ -688,56 +688,56 @@ tasks:
           root: File
           accessor: MD5
           transformers:
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: (.*)
-              replaceWith:
-                value:
-                  simple: UTF8(payload) LIKE  '$1'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: (.*)
+                replaceWith:
+                  value:
+                    simple: UTF8(payload) LIKE  '$1'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.SelectFields
+                  iscontext: true
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
       range: {}
       timeout:
         simple: '600'
@@ -793,7 +793,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '22'
+        - '22'
     separatecontext: false
     view: |-
       {
@@ -819,7 +819,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '29'
+        - '29'
     separatecontext: false
     view: |-
       {
@@ -845,18 +845,18 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '25'
+        - '25'
       'yes':
-      - '30'
+        - '30'
     separatecontext: false
     conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.SHA1
-            iscontext: true
+      - label: 'yes'
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.SHA1
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -882,7 +882,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '31'
+        - '31'
     scriptarguments:
       append:
         simple: 'true'
@@ -892,11 +892,11 @@ tasks:
         complex:
           root: inputs.SHA1
           transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
+            - operator: split
+              args:
+                delimiter:
+                  value:
+                    simple: ','
     separatecontext: false
     view: |-
       {
@@ -922,19 +922,19 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '62'
+        - '62'
       'yes':
-      - '63'
+        - '63'
     separatecontext: false
     conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.QradarSHA1Field
-            iscontext: true
+      - label: 'yes'
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.QradarSHA1Field
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -960,7 +960,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '91'
+        - '91'
     scriptarguments:
       headers: {}
       interval:
@@ -969,53 +969,53 @@ tasks:
         complex:
           root: .
           transformers:
-          - operator: DT
-            args:
-              dt:
-                value:
-                  simple: '.=function(val){var fields = Array.isArray(val.SHA1Fields) ? val.SHA1Fields : [val.SHA1Fields]; var sha1s = Array.isArray(val.File.SHA1) ? val.File.SHA1 : [val.File.SHA1]; return fields.map(field => sha1s.map(sha1 => "\"" + field + "\"  = " + "''" + sha1 + "''").join('' OR ''))}(val)'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
+            - operator: DT
+              args:
+                dt:
+                  value:
+                    simple: '.=function(val){var fields = Array.isArray(val.SHA1Fields) ? val.SHA1Fields : [val.SHA1Fields]; var sha1s = Array.isArray(val.File.SHA1) ? val.File.SHA1 : [val.File.SHA1]; return fields.map(field => sha1s.map(sha1 => "\"" + field + "\"  = " + "''" + sha1 + "''").join('' OR ''))}(val)'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.SelectFields
+                  iscontext: true
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
       range: {}
       timeout:
         simple: '600'
@@ -1049,7 +1049,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '91'
+        - '91'
     scriptarguments:
       headers: {}
       interval:
@@ -1059,56 +1059,56 @@ tasks:
           root: File
           accessor: SHA1
           transformers:
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: (.*)
-              replaceWith:
-                value:
-                  simple: UTF8(payload) LIKE  '$1'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: (.*)
+                replaceWith:
+                  value:
+                    simple: UTF8(payload) LIKE  '$1'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.SelectFields
+                  iscontext: true
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
       range: {}
       timeout:
         simple: '600'
@@ -1142,7 +1142,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '37'
+        - '37'
     scriptarguments:
       append:
         simple: 'true'
@@ -1152,11 +1152,11 @@ tasks:
         complex:
           root: inputs.QradarMD5Field
           transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
+            - operator: split
+              args:
+                delimiter:
+                  value:
+                    simple: ','
     separatecontext: false
     view: |-
       {
@@ -1183,7 +1183,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '93'
+        - '93'
     scriptarguments:
       headers: {}
       interval:
@@ -1192,53 +1192,53 @@ tasks:
         complex:
           root: .
           transformers:
-          - operator: DT
-            args:
-              dt:
-                value:
-                  simple: '.=function(val){var fields = Array.isArray(val.MD5Fields) ? val.MD5Fields : [val.MD5Fields]; var md5s = Array.isArray(val.File.MD5) ? val.File.MD5 : [val.File.MD5]; return fields.map(field => md5s.map(md5 => "\"" + field + "\"  = " + "''" + md5 + "''").join('' OR ''))}(val)'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
+            - operator: DT
+              args:
+                dt:
+                  value:
+                    simple: '.=function(val){var fields = Array.isArray(val.MD5Fields) ? val.MD5Fields : [val.MD5Fields]; var md5s = Array.isArray(val.File.MD5) ? val.File.MD5 : [val.File.MD5]; return fields.map(field => md5s.map(md5 => "\"" + field + "\"  = " + "''" + md5 + "''").join('' OR ''))}(val)'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.SelectFields
+                  iscontext: true
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
       range: {}
       timeout:
         simple: '600'
@@ -1271,7 +1271,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '39'
+        - '39'
     separatecontext: false
     view: |-
       {
@@ -1297,18 +1297,18 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '25'
+        - '25'
       'yes':
-      - '40'
+        - '40'
     separatecontext: false
     conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.SHA256
-            iscontext: true
+      - label: 'yes'
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.SHA256
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -1334,7 +1334,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '41'
+        - '41'
     scriptarguments:
       append:
         simple: 'true'
@@ -1344,11 +1344,11 @@ tasks:
         complex:
           root: inputs.SHA256
           transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
+            - operator: split
+              args:
+                delimiter:
+                  value:
+                    simple: ','
     separatecontext: false
     view: |-
       {
@@ -1374,19 +1374,19 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '60'
+        - '60'
       'yes':
-      - '61'
+        - '61'
     separatecontext: false
     conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.QradarSHA256Field
-            iscontext: true
+      - label: 'yes'
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.QradarSHA256Field
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -1412,7 +1412,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '34'
+        - '34'
     scriptarguments:
       append:
         simple: 'true'
@@ -1422,11 +1422,11 @@ tasks:
         complex:
           root: inputs.QradarSHA1Field
           transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
+            - operator: split
+              args:
+                delimiter:
+                  value:
+                    simple: ','
     separatecontext: false
     view: |-
       {
@@ -1453,7 +1453,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '46'
+        - '46'
     scriptarguments:
       append:
         simple: 'true'
@@ -1463,11 +1463,11 @@ tasks:
         complex:
           root: inputs.QradarSHA256Field
           transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
+            - operator: split
+              args:
+                delimiter:
+                  value:
+                    simple: ','
     separatecontext: false
     view: |-
       {
@@ -1494,7 +1494,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '90'
+        - '90'
     scriptarguments:
       headers: {}
       interval:
@@ -1503,53 +1503,53 @@ tasks:
         complex:
           root: .
           transformers:
-          - operator: DT
-            args:
-              dt:
-                value:
-                  simple: '.=function(val){var fields = Array.isArray(val.SHA256Fields) ? val.SHA256Fields : [val.SHA256Fields]; var sha256s = Array.isArray(val.File.SHA256) ? val.File.SHA256 : [val.File.SHA256]; return fields.map(field => sha256s.map(sha256 => "\"" + field + "\" = " + "''" + sha256 + "''").join('' OR ''))}(val)'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
+            - operator: DT
+              args:
+                dt:
+                  value:
+                    simple: '.=function(val){var fields = Array.isArray(val.SHA256Fields) ? val.SHA256Fields : [val.SHA256Fields]; var sha256s = Array.isArray(val.File.SHA256) ? val.File.SHA256 : [val.File.SHA256]; return fields.map(field => sha256s.map(sha256 => "\"" + field + "\" = " + "''" + sha256 + "''").join('' OR ''))}(val)'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.SelectFields
+                  iscontext: true
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
       range: {}
       timeout:
         simple: '600'
@@ -1583,7 +1583,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '90'
+        - '90'
     scriptarguments:
       headers: {}
       interval:
@@ -1593,56 +1593,56 @@ tasks:
           root: File
           accessor: SHA256
           transformers:
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: (.*)
-              replaceWith:
-                value:
-                  simple: UTF8(payload) ILIKE  '$1'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: (.*)
+                replaceWith:
+                  value:
+                    simple: UTF8(payload) ILIKE  '$1'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.SelectFields
+                  iscontext: true
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
       range: {}
       timeout:
         simple: '600'
@@ -1699,7 +1699,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '50'
+        - '50'
     scriptarguments:
       append:
         simple: 'true'
@@ -1709,11 +1709,11 @@ tasks:
         complex:
           root: inputs.IPAddress
           transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
+            - operator: split
+              args:
+                delimiter:
+                  value:
+                    simple: ','
     separatecontext: false
     view: |-
       {
@@ -1739,19 +1739,19 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '59'
+        - '59'
       'yes':
-      - '58'
+        - '58'
     separatecontext: false
     conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.QradarIPfield
-            iscontext: true
+      - label: 'yes'
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.QradarIPfield
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -1777,7 +1777,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '52'
+        - '52'
     scriptarguments:
       append:
         simple: 'true'
@@ -1787,11 +1787,11 @@ tasks:
         complex:
           root: inputs.QradarIPfield
           transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
+            - operator: split
+              args:
+                delimiter:
+                  value:
+                    simple: ','
     separatecontext: false
     view: |-
       {
@@ -1818,7 +1818,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '88'
+        - '88'
     scriptarguments:
       headers: {}
       interval:
@@ -1827,53 +1827,53 @@ tasks:
         complex:
           root: .
           transformers:
-          - operator: DT
-            args:
-              dt:
-                value:
-                  simple: '.=function(val){var fields = Array.isArray(val.IPFields) ? val.IPFields : [val.IPFields]; var ips = Array.isArray(val.IP) ? val.IP : [val.IP]; return fields.map(field => ips.map(ip => "\"" + field + "\" = " + "''" + ip + "''").join('' OR ''))}(val)'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
+            - operator: DT
+              args:
+                dt:
+                  value:
+                    simple: '.=function(val){var fields = Array.isArray(val.IPFields) ? val.IPFields : [val.IPFields]; var ips = Array.isArray(val.IP) ? val.IP : [val.IP]; return fields.map(field => ips.map(ip => "\"" + field + "\" = " + "''" + ip + "''").join('' OR ''))}(val)'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.SelectFields
+                  iscontext: true
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
       range: {}
       timeout:
         simple: '600'
@@ -1907,7 +1907,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '88'
+        - '88'
     scriptarguments:
       headers: {}
       interval:
@@ -1916,56 +1916,56 @@ tasks:
         complex:
           root: IP
           transformers:
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: (.*)
-              replaceWith:
-                value:
-                  simple: UTF8(payload) LIKE  '$1'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: (.*)
+                replaceWith:
+                  value:
+                    simple: UTF8(payload) LIKE  '$1'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.SelectFields
+                  iscontext: true
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
       range: {}
       timeout:
         simple: '600'
@@ -1998,36 +1998,36 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '48'
+        - '48'
       'yes':
-      - '2'
-      - '5'
-      - '6'
+        - '2'
+        - '5'
+        - '6'
     separatecontext: false
     conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-          right:
-            value:
-              simple: QRadar
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.state
-            iscontext: true
-          right:
-            value:
-              simple: active
+      - label: 'yes'
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    simple: modules.brand
+                  iscontext: true
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.brand
+                  iscontext: true
+                right:
+                  value:
+                    simple: QRadar
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.state
+                  iscontext: true
+                right:
+                  value:
+                    simple: active
     view: |-
       {
         "position": {
@@ -2052,7 +2052,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '17'
+        - '17'
     separatecontext: false
     view: |-
       {
@@ -2078,7 +2078,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '16'
+        - '16'
     separatecontext: false
     view: |-
       {
@@ -2104,7 +2104,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '51'
+        - '51'
     separatecontext: false
     view: |-
       {
@@ -2130,7 +2130,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '53'
+        - '53'
     separatecontext: false
     view: |-
       {
@@ -2156,7 +2156,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '47'
+        - '47'
     separatecontext: false
     view: |-
       {
@@ -2182,7 +2182,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '45'
+        - '45'
     separatecontext: false
     view: |-
       {
@@ -2208,7 +2208,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '35'
+        - '35'
     separatecontext: false
     view: |-
       {
@@ -2234,7 +2234,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '44'
+        - '44'
     separatecontext: false
     view: |-
       {
@@ -2260,7 +2260,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '23'
+        - '23'
     separatecontext: false
     view: |-
       {
@@ -2286,7 +2286,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '36'
+        - '36'
     separatecontext: false
     view: |-
       {
@@ -2313,7 +2313,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '67'
+        - '67'
     scriptarguments:
       append:
         simple: 'true'
@@ -2324,13 +2324,13 @@ tasks:
           root: ${QRadar
           accessor: Search.Result.events.sourceip}
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: ${QRadar.Search.Result.events.destinationip}
-                iscontext: true
-          - operator: uniq
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: ${QRadar.Search.Result.events.destinationip}
+                  iscontext: true
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2357,7 +2357,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '68'
+        - '68'
     scriptarguments:
       append:
         simple: 'true'
@@ -2368,7 +2368,7 @@ tasks:
           root: ${QRadar
           accessor: Search.Result.events.username}
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2395,7 +2395,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '70'
+        - '70'
     scriptarguments:
       fields: {}
       filter:
@@ -2403,19 +2403,19 @@ tasks:
           root: ${QRadar
           accessor: DetectedIPs}
           transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: interfaces contains ip_addresses contains value= "
-              suffix:
-                value:
-                  simple: '"'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: interfaces contains ip_addresses contains value= "
+                suffix:
+                  value:
+                    simple: '"'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
       headers: {}
       range: {}
     separatecontext: false
@@ -2444,7 +2444,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '48'
+        - '48'
     scriptarguments:
       append:
         simple: 'true'
@@ -2455,7 +2455,7 @@ tasks:
           root: ${QRadar
           accessor: Asset.Name.Value}
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2482,7 +2482,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '72'
+        - '72'
     scriptarguments:
       append:
         simple: 'true'
@@ -2493,13 +2493,13 @@ tasks:
           root: ${QRadar
           accessor: Search.Result.events.sourceip}
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: ${QRadar.Search.Result.events.destinationip}
-                iscontext: true
-          - operator: uniq
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: ${QRadar.Search.Result.events.destinationip}
+                  iscontext: true
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2526,7 +2526,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '73'
+        - '73'
     scriptarguments:
       append:
         simple: 'true'
@@ -2537,7 +2537,7 @@ tasks:
           root: ${QRadar
           accessor: Search.Result.events.username}
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2564,7 +2564,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '74'
+        - '74'
     scriptarguments:
       fields: {}
       filter:
@@ -2572,19 +2572,19 @@ tasks:
           root: ${QRadar
           accessor: DetectedIPs}
           transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: interfaces contains ip_addresses contains value= "
-              suffix:
-                value:
-                  simple: '"'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: interfaces contains ip_addresses contains value= "
+                suffix:
+                  value:
+                    simple: '"'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
       headers: {}
       range: {}
     separatecontext: false
@@ -2613,7 +2613,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '10'
+        - '10'
     scriptarguments:
       append:
         simple: 'true'
@@ -2624,7 +2624,7 @@ tasks:
           root: ${QRadar
           accessor: Asset.Name.Value}
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2651,7 +2651,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '77'
+        - '77'
     scriptarguments:
       append:
         simple: 'true'
@@ -2662,7 +2662,7 @@ tasks:
           root: ${QRadar
           accessor: Search.Result.events.username}
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2689,7 +2689,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '78'
+        - '78'
     scriptarguments:
       fields: {}
       filter:
@@ -2697,19 +2697,19 @@ tasks:
           root: ${QRadar
           accessor: DetectedIPs}
           transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: interfaces contains ip_addresses contains value= "
-              suffix:
-                value:
-                  simple: '"'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: interfaces contains ip_addresses contains value= "
+                suffix:
+                  value:
+                    simple: '"'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
       headers: {}
       range: {}
     separatecontext: false
@@ -2738,7 +2738,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '25'
+        - '25'
     scriptarguments:
       append:
         simple: 'true'
@@ -2749,7 +2749,7 @@ tasks:
           root: ${QRadar
           accessor: Asset.Name.Value}
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2776,7 +2776,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '80'
+        - '80'
     scriptarguments:
       append:
         simple: 'true'
@@ -2787,13 +2787,13 @@ tasks:
           root: ${QRadar
           accessor: Search.Result.events.sourceip}
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: ${QRadar.Search.Result.events.destinationip}
-                iscontext: true
-          - operator: uniq
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: ${QRadar.Search.Result.events.destinationip}
+                  iscontext: true
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2820,7 +2820,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '81'
+        - '81'
     scriptarguments:
       append:
         simple: 'true'
@@ -2831,7 +2831,7 @@ tasks:
           root: ${QRadar
           accessor: Search.Result.events.username}
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2858,7 +2858,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '82'
+        - '82'
     scriptarguments:
       fields: {}
       filter:
@@ -2866,19 +2866,19 @@ tasks:
           root: ${QRadar
           accessor: DetectedIPs}
           transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: interfaces contains ip_addresses contains value= "
-              suffix:
-                value:
-                  simple: '"'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: interfaces contains ip_addresses contains value= "
+                suffix:
+                  value:
+                    simple: '"'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
       headers: {}
       range: {}
     separatecontext: false
@@ -2907,7 +2907,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '25'
+        - '25'
     scriptarguments:
       append:
         simple: 'true'
@@ -2918,7 +2918,7 @@ tasks:
           root: ${QRadar
           accessor: Asset.Name.Value}
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2945,7 +2945,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '84'
+        - '84'
     scriptarguments:
       append:
         simple: 'true'
@@ -2956,13 +2956,13 @@ tasks:
           root: ${QRadar
           accessor: Search.Result.events.sourceip}
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: ${QRadar.Search.Result.events.destinationip}
-                iscontext: true
-          - operator: uniq
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: ${QRadar.Search.Result.events.destinationip}
+                  iscontext: true
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2989,7 +2989,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '85'
+        - '85'
     scriptarguments:
       append:
         simple: 'true'
@@ -3000,7 +3000,7 @@ tasks:
           root: ${QRadar
           accessor: Search.Result.events.username}
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -3027,7 +3027,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '86'
+        - '86'
     scriptarguments:
       fields: {}
       filter:
@@ -3035,19 +3035,19 @@ tasks:
           root: ${QRadar
           accessor: DetectedIPs}
           transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: interfaces contains ip_addresses contains value= "
-              suffix:
-                value:
-                  simple: '"'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: interfaces contains ip_addresses contains value= "
+                suffix:
+                  value:
+                    simple: '"'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
       headers: {}
       range: {}
     separatecontext: false
@@ -3076,7 +3076,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '25'
+        - '25'
     scriptarguments:
       append:
         simple: 'true'
@@ -3087,7 +3087,7 @@ tasks:
           root: ${QRadar
           accessor: Asset.Name.Value}
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -3114,7 +3114,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '76'
+        - '76'
     scriptarguments:
       append:
         simple: 'true'
@@ -3125,13 +3125,13 @@ tasks:
           root: ${QRadar
           accessor: Search.Result.events.sourceip}
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: ${QRadar.Search.Result.events.destinationip}
-                iscontext: true
-          - operator: uniq
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: ${QRadar.Search.Result.events.destinationip}
+                  iscontext: true
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -3157,23 +3157,23 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '48'
+        - '48'
       'yes':
-      - '66'
+        - '66'
     separatecontext: false
     conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: QRadar.Search.Result
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: QRadar.Search.Result
-            iscontext: true
+      - label: 'yes'
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: QRadar.Search.Result
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: QRadar.Search.Result
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -3198,23 +3198,23 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '10'
+        - '10'
       'yes':
-      - '71'
+        - '71'
     separatecontext: false
     conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: QRadar.Search.Result
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: QRadar.Search.Result
-            iscontext: true
+      - label: 'yes'
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: QRadar.Search.Result
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: QRadar.Search.Result
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -3239,23 +3239,23 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '25'
+        - '25'
       'yes':
-      - '87'
+        - '87'
     separatecontext: false
     conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: QRadar.Search.Result
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: QRadar.Search.Result
-            iscontext: true
+      - label: 'yes'
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: QRadar.Search.Result
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: QRadar.Search.Result
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -3280,23 +3280,23 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '25'
+        - '25'
       'yes':
-      - '79'
+        - '79'
     separatecontext: false
     conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: QRadar.Search.Result
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: QRadar.Search.Result
-            iscontext: true
+      - label: 'yes'
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: QRadar.Search.Result
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: QRadar.Search.Result
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -3321,23 +3321,23 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '25'
+        - '25'
       'yes':
-      - '83'
+        - '83'
     separatecontext: false
     conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: QRadar.Search.Result
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: QRadar.Search.Result
-            iscontext: true
+      - label: 'yes'
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: QRadar.Search.Result
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: QRadar.Search.Result
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -3361,89 +3361,85 @@ view: |-
     }
   }
 inputs:
-- key: MD5
-  value: {}
-  required: false
-  description: MD5 hash file or an array of hashes to search.
-- key: QradarMD5Field
-  value: {}
-  required: false
-  description: MD5 field to search in QRadar. If none are specified, the search will use a payload contains filter.
-- key: SHA1
-  value: {}
-  required: false
-  description: SHA1 hash file or an array of hashes to search.
-- key: QradarSHA1Field
-  value: {}
-  required: false
-  description: SHA1 field to search in QRadar. If none are specified, the search will use a payload contains filter.
-- key: SHA256
-  value: {}
-  required: false
-  description: SHA256 hash file or an array of hashes to search.
-- key: QradarSHA256Field
-  value: {}
-  required: false
-  description: SHA256 field to search in QRadar. If none are specified, the search will use a payload contains filter.
-- key: IPAddress
-  value: {}
-  required: false
-  description: |
-    Source or destination IP to search. Can be a single address or an array of addresses.
-- key: QradarIPfield
-  value:
-    simple: sourceip,destinationip
-  required: false
-  description: IP field to search in QRadar. If none are specified, the search will use sourceip or destinationip (combined).
-- key: URLDomain
-  value: {}
-  required: false
-  description: |
-    Domain or Url can be single or an array of domain/urls to search. By default the LIKE clause is used.
-- key: URLDomainField
-  value: {}
-  required: false
-  description: 'URL/Domain field to search in QRadar. If none are specified, the search will use a payload contains filter. '
-- key: SelectFields
-  value:
-    simple: '*'
-  required: true
-  description: The fields to be used in the select. Use comma delimited field names as they appear in AQL. * is an acceptable value.
-- key: TimeFrame
-  value:
-    simple: LAST 7 DAYS
-  required: false
-  description: |-
-    Time frame as used in AQL
-    Examples can be
-    LAST 7 DAYS
-    START '2019-09-25 15:51' STOP '2019-09-25 17:51'
-    For more examples review IBM's AQL documentation.
-- key: InvestigationFields
-  value:
-    simple: sourceip,destinationip,username
-  required: true
-  description: The fields to be used for the hunting outputs. These fields are added to the selected field's input.
+  - key: MD5
+    value: {}
+    required: false
+    description: MD5 hash file or an array of hashes to search.
+  - key: QradarMD5Field
+    value: {}
+    required: false
+    description: MD5 field to search in QRadar. If none are specified, the search will use a payload contains filter.
+  - key: SHA1
+    value: {}
+    required: false
+    description: SHA1 hash file or an array of hashes to search.
+  - key: QradarSHA1Field
+    value: {}
+    required: false
+    description: SHA1 field to search in QRadar. If none are specified, the search will use a payload contains filter.
+  - key: SHA256
+    value: {}
+    required: false
+    description: SHA256 hash file or an array of hashes to search.
+  - key: QradarSHA256Field
+    value: {}
+    required: false
+    description: SHA256 field to search in QRadar. If none are specified, the search will use a payload contains filter.
+  - key: IPAddress
+    value: {}
+    required: false
+    description: |
+      Source or destination IP to search. Can be a single address or an array of addresses.
+  - key: QradarIPfield
+    value:
+      simple: sourceip,destinationip
+    required: false
+    description: IP field to search in QRadar. If none are specified, the search will use sourceip or destinationip (combined).
+  - key: URLDomain
+    value: {}
+    required: false
+    description: |
+      Domain or Url can be single or an array of domain/urls to search. By default the LIKE clause is used.
+  - key: URLDomainField
+    value: {}
+    required: false
+    description: 'URL/Domain field to search in QRadar. If none are specified, the search will use a payload contains filter. '
+  - key: SelectFields
+    value:
+      simple: '*'
+    required: true
+    description: The fields to be used in the select. Use comma delimited field names as they appear in AQL. * is an acceptable value.
+  - key: TimeFrame
+    value:
+      simple: LAST 7 DAYS
+    required: false
+    description: |-
+      Time frame as used in AQL
+      Examples can be
+      LAST 7 DAYS
+      START '2019-09-25 15:51' STOP '2019-09-25 17:51'
+      For more examples review IBM's AQL documentation.
+  - key: InvestigationFields
+    value:
+      simple: sourceip,destinationip,username
+    required: true
+    description: The fields to be used for the hunting outputs. These fields are added to the selected field's input.
 outputs:
-- contextPath: QRadar.Search.Result
-  description: Qradar's search results.
-  type: string
-- contextPath: QRadar.DetectedIPs
-  description: IP addresses detected based on sourceip and destinationip fields in your search.
-  type: string
-- contextPath: QRadar.DetectedUsers
-  description: Users detected based on the username field in your search.
-  type: string
-- contextPath: QRadar.DetectedHosts
-  description: 'Hosts detected based on hosts in your assets table. Note that the data accuracy depends on how the Asset mapping is configured in QRadar.'
-  type: string
+  - contextPath: QRadar.Search.Result
+    description: Qradar's search results.
+    type: string
+  - contextPath: QRadar.DetectedIPs
+    description: IP addresses detected based on sourceip and destinationip fields in your search.
+    type: string
+  - contextPath: QRadar.DetectedUsers
+    description: Users detected based on the username field in your search.
+    type: string
+  - contextPath: QRadar.DetectedHosts
+    description: 'Hosts detected based on hosts in your assets table. Note that the data accuracy depends on how the Asset mapping is configured in QRadar.'
+    type: string
 tests:
-- No test - Deprecated playbook
+  - No test - Deprecated playbook
 deprecated: true
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

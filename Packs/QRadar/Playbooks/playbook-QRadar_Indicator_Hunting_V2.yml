@@ -19,7 +19,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "55"
+        - "55"
     separatecontext: false
     view: |-
       {
@@ -50,7 +50,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     separatecontext: false
     view: |-
       {
@@ -81,7 +81,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     separatecontext: false
     view: |-
       {
@@ -112,7 +112,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     separatecontext: false
     view: |-
       {
@@ -143,18 +143,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "166"
+        - "166"
       "yes":
-      - "50"
+        - "50"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.IPAddress
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.IPAddress
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -184,30 +184,30 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "166"
+        - "166"
       "yes":
-      - "26"
-      - "27"
-      - "38"
+        - "26"
+        - "27"
+        - "38"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.MD5
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.SHA1
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.SHA256
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.MD5
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.SHA1
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.SHA256
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -237,18 +237,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "166"
+        - "166"
       "yes":
-      - "11"
+        - "11"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.URLDomain
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.URLDomain
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -278,18 +278,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "56"
+        - "56"
       "yes":
-      - "57"
+        - "57"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.QradarURLDomainField
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.QradarURLDomainField
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -319,18 +319,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "64"
+        - "64"
       "yes":
-      - "65"
+        - "65"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.QradarMD5Field
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.QradarMD5Field
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -360,18 +360,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "166"
+        - "166"
       "yes":
-      - "21"
+        - "21"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.MD5
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.MD5
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -401,7 +401,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "22"
+        - "22"
     separatecontext: false
     view: |-
       {
@@ -432,7 +432,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "29"
+        - "29"
     separatecontext: false
     view: |-
       {
@@ -463,18 +463,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "166"
+        - "166"
       "yes":
-      - "31"
+        - "31"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.SHA1
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.SHA1
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -504,19 +504,19 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "62"
+        - "62"
       "yes":
-      - "63"
+        - "63"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.QradarSHA1Field
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.QradarSHA1Field
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -546,7 +546,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "39"
+        - "39"
     separatecontext: false
     view: |-
       {
@@ -577,18 +577,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "166"
+        - "166"
       "yes":
-      - "41"
+        - "41"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.SHA256
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.SHA256
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -618,19 +618,19 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "60"
+        - "60"
       "yes":
-      - "61"
+        - "61"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.QradarSHA256Field
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.QradarSHA256Field
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -660,19 +660,19 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "59"
+        - "59"
       "yes":
-      - "58"
+        - "58"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.QradarIPfield
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.QradarIPfield
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -702,36 +702,36 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "165"
+        - "165"
       "yes":
-      - "176"
+        - "176"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: inList
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: QRadar,QRadar_v2,QRadar v3
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: inList
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: QRadar,QRadar_v2,QRadar v3
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -761,7 +761,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "102"
+        - "102"
     separatecontext: false
     view: |-
       {
@@ -792,7 +792,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+        - "175"
     separatecontext: false
     view: |-
       {
@@ -823,7 +823,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "172"
+        - "172"
     separatecontext: false
     view: |-
       {
@@ -854,7 +854,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "101"
+        - "101"
     separatecontext: false
     view: |-
       {
@@ -885,7 +885,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "100"
+        - "100"
     separatecontext: false
     view: |-
       {
@@ -916,7 +916,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "169"
+        - "169"
     separatecontext: false
     view: |-
       {
@@ -947,7 +947,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "99"
+        - "99"
     separatecontext: false
     view: |-
       {
@@ -978,7 +978,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "170"
+        - "170"
     separatecontext: false
     view: |-
       {
@@ -1009,7 +1009,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "98"
+        - "98"
     separatecontext: false
     view: |-
       {
@@ -1040,7 +1040,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "181"
+        - "181"
     separatecontext: false
     view: |-
       {
@@ -1072,7 +1072,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "173"
+        - "173"
     scriptarguments:
       append:
         simple: "true"
@@ -1082,12 +1082,12 @@ tasks:
         complex:
           root: inputs.MD5
           transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
+            - operator: split
+              args:
+                delimiter:
+                  value:
+                    simple: ','
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -1119,7 +1119,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "171"
+        - "171"
     scriptarguments:
       append:
         simple: "true"
@@ -1129,12 +1129,12 @@ tasks:
         complex:
           root: inputs.SHA1
           transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
+            - operator: split
+              args:
+                delimiter:
+                  value:
+                    simple: ','
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -1166,7 +1166,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "168"
+        - "168"
     scriptarguments:
       append:
         simple: "true"
@@ -1176,12 +1176,12 @@ tasks:
         complex:
           root: inputs.SHA256
           transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
+            - operator: split
+              args:
+                delimiter:
+                  value:
+                    simple: ','
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -1213,7 +1213,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "167"
+        - "167"
     scriptarguments:
       append:
         simple: "true"
@@ -1223,12 +1223,12 @@ tasks:
         complex:
           root: inputs.IPAddress
           transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
+            - operator: split
+              args:
+                delimiter:
+                  value:
+                    simple: ','
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -1260,7 +1260,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "174"
+        - "174"
     scriptarguments:
       append:
         simple: "true"
@@ -1270,12 +1270,12 @@ tasks:
         complex:
           root: inputs.URLDomain
           transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
+            - operator: split
+              args:
+                delimiter:
+                  value:
+                    simple: ','
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -1306,7 +1306,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "124"
+        - "124"
     separatecontext: false
     view: |-
       {
@@ -1338,7 +1338,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "165"
+        - "165"
     scriptarguments:
       append:
         simple: "true"
@@ -1348,17 +1348,17 @@ tasks:
         complex:
           root: IP
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: IP.InRange
-                iscontext: true
-              right:
-                value:
-                  simple: "no"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: IP.InRange
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "no"
           accessor: Address
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -1389,18 +1389,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "165"
+        - "165"
       "yes":
-      - "142"
+        - "142"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: QRadar.DetectedIPs
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: QRadar.DetectedIPs
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -1431,7 +1431,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "143"
+        - "143"
     scriptarguments:
       ip:
         simple: ${QRadar.DetectedIPs}
@@ -1468,7 +1468,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "123"
+        - "123"
     scriptarguments:
       append:
         simple: "true"
@@ -1478,17 +1478,17 @@ tasks:
         complex:
           root: IP
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: IP.InRange
-                iscontext: true
-              right:
-                value:
-                  simple: "yes"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: IP.InRange
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "yes"
           accessor: Address
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -1520,7 +1520,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "162"
+        - "162"
     scriptarguments:
       append:
         simple: "true"
@@ -1531,16 +1531,16 @@ tasks:
           root: ${
           accessor: =[]}
           transformers:
-          - operator: GetValuesOfMultipleFields
-            args:
-              key:
-                value:
-                  simple: QRadar.SearchEvents.Events
-                iscontext: true
-              list:
-                value:
-                  simple: inputs.InvestigationUserFields
-                iscontext: true
+            - operator: GetValuesOfMultipleFields
+              args:
+                key:
+                  value:
+                    simple: QRadar.SearchEvents.Events
+                  iscontext: true
+                list:
+                  value:
+                    simple: inputs.InvestigationUserFields
+                  iscontext: true
     separatecontext: false
     view: |-
       {
@@ -1572,26 +1572,26 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "163"
+        - "163"
     scriptarguments:
       filter:
         complex:
           root: QRadar
           accessor: DetectedIPs
           transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: interfaces contains ip_addresses contains value= "
-              suffix:
-                value:
-                  simple: '"'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: interfaces contains ip_addresses contains value= "
+                suffix:
+                  value:
+                    simple: '"'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
     separatecontext: false
     continueonerror: true
     view: |-
@@ -1624,7 +1624,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "120"
+        - "120"
     scriptarguments:
       append:
         simple: "true"
@@ -1635,7 +1635,7 @@ tasks:
           root: QRadar.Asset.Name
           accessor: Value
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1694,7 +1694,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "178"
+        - "178"
     separatecontext: false
     view: |-
       {
@@ -1727,7 +1727,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "166"
+        - "166"
     scriptarguments:
       interval_in_seconds:
         simple: "1"
@@ -1737,66 +1737,66 @@ tasks:
         complex:
           root: IPAddress
           transformers:
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: (.*)
-              replaceWith:
-                value:
-                  simple: UTF8(payload) ILIKE  '%$1%'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationIPFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationUserFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),
-              suffix: {}
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: (.*)
+                replaceWith:
+                  value:
+                    simple: UTF8(payload) ILIKE  '%$1%'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationIPFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationUserFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),
+                suffix: {}
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1828,7 +1828,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "166"
+        - "166"
     scriptarguments:
       interval_in_seconds:
         simple: "1"
@@ -1838,66 +1838,66 @@ tasks:
         complex:
           root: FileSHA256
           transformers:
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: (.*)
-              replaceWith:
-                value:
-                  simple: UTF8(payload) ILIKE  '%$1%'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationIPFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationUserFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),
-              suffix: {}
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: (.*)
+                replaceWith:
+                  value:
+                    simple: UTF8(payload) ILIKE  '%$1%'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationIPFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationUserFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),
+                suffix: {}
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1929,7 +1929,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "166"
+        - "166"
     scriptarguments:
       interval_in_seconds:
         simple: "1"
@@ -1939,81 +1939,81 @@ tasks:
         complex:
           root: inputs.QradarSHA256Field
           transformers:
-          - operator: ProductJoin
-            args:
-              join:
-                value:
-                  simple: "="
-              list2:
-                value:
-                  simple: inputs.SHA256
-                iscontext: true
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ''' OR "'
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: "="
-              replaceWith:
-                value:
-                  simple: '" = '''
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where "'
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationUserFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationIPFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ''' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
+            - operator: ProductJoin
+              args:
+                join:
+                  value:
+                    simple: "="
+                list2:
+                  value:
+                    simple: inputs.SHA256
+                  iscontext: true
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ''' OR "'
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: "="
+                replaceWith:
+                  value:
+                    simple: '" = '''
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where "'
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationUserFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationIPFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ''' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2045,7 +2045,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "166"
+        - "166"
     scriptarguments:
       interval_in_seconds:
         simple: "1"
@@ -2055,81 +2055,81 @@ tasks:
         complex:
           root: inputs.QradarSHA1Field
           transformers:
-          - operator: ProductJoin
-            args:
-              join:
-                value:
-                  simple: "="
-              list2:
-                value:
-                  simple: inputs.SHA1
-                iscontext: true
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ''' OR "'
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: "="
-              replaceWith:
-                value:
-                  simple: '" = '''
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where "'
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationUserFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationIPFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ''' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
+            - operator: ProductJoin
+              args:
+                join:
+                  value:
+                    simple: "="
+                list2:
+                  value:
+                    simple: inputs.SHA1
+                  iscontext: true
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ''' OR "'
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: "="
+                replaceWith:
+                  value:
+                    simple: '" = '''
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where "'
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationUserFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationIPFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ''' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2161,7 +2161,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "166"
+        - "166"
     scriptarguments:
       interval_in_seconds:
         simple: "1"
@@ -2171,66 +2171,66 @@ tasks:
         complex:
           root: FileSHA1
           transformers:
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: (.*)
-              replaceWith:
-                value:
-                  simple: UTF8(payload) ILIKE  '%$1%'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationIPFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationUserFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),
-              suffix: {}
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: (.*)
+                replaceWith:
+                  value:
+                    simple: UTF8(payload) ILIKE  '%$1%'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationIPFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationUserFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),
+                suffix: {}
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2262,7 +2262,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "166"
+        - "166"
     scriptarguments:
       interval_in_seconds:
         simple: "1"
@@ -2272,81 +2272,81 @@ tasks:
         complex:
           root: inputs.QradarIPfield
           transformers:
-          - operator: ProductJoin
-            args:
-              join:
-                value:
-                  simple: "="
-              list2:
-                value:
-                  simple: inputs.IPAddress
-                iscontext: true
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ''' OR "'
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: "="
-              replaceWith:
-                value:
-                  simple: '" = '''
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where "'
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationUserFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationIPFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ''' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
+            - operator: ProductJoin
+              args:
+                join:
+                  value:
+                    simple: "="
+                list2:
+                  value:
+                    simple: inputs.IPAddress
+                  iscontext: true
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ''' OR "'
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: "="
+                replaceWith:
+                  value:
+                    simple: '" = '''
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where "'
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationUserFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationIPFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ''' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2378,7 +2378,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "166"
+        - "166"
     scriptarguments:
       interval_in_seconds:
         simple: "1"
@@ -2388,66 +2388,66 @@ tasks:
         complex:
           root: FileMD5
           transformers:
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: (.*)
-              replaceWith:
-                value:
-                  simple: UTF8(payload) ILIKE  '%$1%'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationIPFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationUserFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),
-              suffix: {}
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: (.*)
+                replaceWith:
+                  value:
+                    simple: UTF8(payload) ILIKE  '%$1%'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationIPFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationUserFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),
+                suffix: {}
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2479,7 +2479,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "166"
+        - "166"
     scriptarguments:
       interval_in_seconds:
         simple: "1"
@@ -2489,68 +2489,68 @@ tasks:
         complex:
           root: DomainURL
           transformers:
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: (.*)
-              replaceWith:
-                value:
-                  simple: UTF8(payload) ILIKE  '%$1%'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationIPFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationUserFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: (.*)
+                replaceWith:
+                  value:
+                    simple: UTF8(payload) ILIKE  '%$1%'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationIPFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationUserFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2582,7 +2582,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "166"
+        - "166"
     scriptarguments:
       interval_in_seconds:
         simple: "1"
@@ -2592,85 +2592,85 @@ tasks:
         complex:
           root: inputs.QradarURLDomainField
           transformers:
-          - operator: ProductJoin
-            args:
-              join:
-                value:
-                  simple: ILIKE
-              list2:
-                value:
-                  simple: inputs.URLDomain
-                iscontext: true
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: '%'' OR "'
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: ILIKE
-              replaceWith:
-                value:
-                  simple: '" ILIKE ''%'
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where "'
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationIPFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationUserFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: '%'' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
+            - operator: ProductJoin
+              args:
+                join:
+                  value:
+                    simple: ILIKE
+                list2:
+                  value:
+                    simple: inputs.URLDomain
+                  iscontext: true
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: '%'' OR "'
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: ILIKE
+                replaceWith:
+                  value:
+                    simple: '" ILIKE ''%'
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where "'
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationIPFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationUserFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: '%'' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2701,9 +2701,9 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
-      - "5"
-      - "6"
+        - "2"
+        - "5"
+        - "6"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2734,22 +2734,22 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "120"
+        - "120"
       "yes":
-      - "182"
+        - "182"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: QRadar.SearchEvents
-                accessor: Events
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: QRadar.SearchEvents
+                      accessor: Events
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -2780,7 +2780,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "166"
+        - "166"
     scriptarguments:
       interval_in_seconds:
         simple: "1"
@@ -2790,81 +2790,81 @@ tasks:
         complex:
           root: inputs.QradarMD5Field
           transformers:
-          - operator: ProductJoin
-            args:
-              join:
-                value:
-                  simple: "="
-              list2:
-                value:
-                  simple: inputs.MD5
-                iscontext: true
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ''' OR "'
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: "="
-              replaceWith:
-                value:
-                  simple: '" = '''
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where "'
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationUserFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationIPFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ''' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
+            - operator: ProductJoin
+              args:
+                join:
+                  value:
+                    simple: "="
+                list2:
+                  value:
+                    simple: inputs.MD5
+                  iscontext: true
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ''' OR "'
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: "="
+                replaceWith:
+                  value:
+                    simple: '" = '''
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where "'
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationUserFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationIPFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ''' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2896,7 +2896,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "161"
+        - "161"
     scriptarguments:
       append:
         simple: "true"
@@ -2907,16 +2907,16 @@ tasks:
           root: ${
           accessor: =[]}
           transformers:
-          - operator: GetValuesOfMultipleFields
-            args:
-              key:
-                value:
-                  simple: QRadar.SearchEvents.Events
-                iscontext: true
-              list:
-                value:
-                  simple: inputs.InvestigationIPFields
-                iscontext: true
+            - operator: GetValuesOfMultipleFields
+              args:
+                key:
+                  value:
+                    simple: QRadar.SearchEvents.Events
+                  iscontext: true
+                list:
+                  value:
+                    simple: inputs.InvestigationIPFields
+                  iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2957,134 +2957,130 @@ view: |-
     }
   }
 inputs:
-- key: MD5
-  value: {}
-  required: false
-  description: MD5 hash file or an array of hashes to search.
-  playbookInputQuery:
-- key: QradarMD5Field
-  value: {}
-  required: false
-  description: MD5 field to search in QRadar. If none are specified, the search will use a payload contains filter.
-  playbookInputQuery:
-- key: SHA1
-  value: {}
-  required: false
-  description: SHA1 hash file or an array of hashes to search.
-  playbookInputQuery:
-- key: QradarSHA1Field
-  value: {}
-  required: false
-  description: SHA1 field to search in QRadar. If none are specified, the search will use a payload contains filter.
-  playbookInputQuery:
-- key: SHA256
-  value: {}
-  required: false
-  description: SHA256 hash file or an array of hashes to search.
-  playbookInputQuery:
-- key: QradarSHA256Field
-  value: {}
-  required: false
-  description: SHA256 field to search in QRadar. If none are specified, the search will use a payload contains filter.
-  playbookInputQuery:
-- key: IPAddress
-  value: {}
-  required: false
-  description: |
-    Source or destination IP to search. Can be a single address or an array of addresses.
-  playbookInputQuery:
-- key: QradarIPfield
-  value:
-    simple: sourceip,destinationip
-  required: false
-  description: IP field to search in QRadar. If none are specified, the search will use sourceip or destinationip (combined).
-  playbookInputQuery:
-- key: URLDomain
-  value: {}
-  required: false
-  description: |
-    Domain or Url can be single or an array of domain/urls to search. By default the LIKE clause is used.
-  playbookInputQuery:
-- key: QradarURLDomainField
-  value: {}
-  required: false
-  description: 'URL/Domain field to search in QRadar. If none are specified, the search will use a payload contains filter. '
-  playbookInputQuery:
-- key: TimeFrame
-  value:
-    simple: LAST 7 DAYS
-  required: false
-  description: |-
-    Time frame as used in AQL
-    Examples can be
-    LAST 7 DAYS
-    START '2019-09-25 15:51' STOP '2019-09-25 17:51'
-    For more examples review IBM's AQL documentation.
-  playbookInputQuery:
-- key: InternalRange
-  value:
-    complex:
-      root: lists
-      accessor: PrivateIPs
-      transformers:
-      - operator: RegexExtractAll
-        args:
-          error_if_no_match: {}
-          ignore_case: {}
-          multi_line: {}
-          period_matches_newline: {}
-          regex:
-            value:
-              simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
-          unpack_matches: {}
-      - operator: join
-        args:
-          separator:
-            value:
-              simple: ','
-  required: false
-  description: 'A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).'
-  playbookInputQuery:
-- key: InvestigationIPFields
-  value:
-    simple: sourceip,destinationip
-  required: true
-  description: The values of these QRadar fields will be used for the playbook IP addresses outputs.
-  playbookInputQuery:
-- key: InvestigationUserFields
-  value:
-    simple: username
-  required: true
-  description: The values of these QRadar fields will be used for the playbook user name outputs.
-  playbookInputQuery:
+  - key: MD5
+    value: {}
+    required: false
+    description: MD5 hash file or an array of hashes to search.
+    playbookInputQuery:
+  - key: QradarMD5Field
+    value: {}
+    required: false
+    description: MD5 field to search in QRadar. If none are specified, the search will use a payload contains filter.
+    playbookInputQuery:
+  - key: SHA1
+    value: {}
+    required: false
+    description: SHA1 hash file or an array of hashes to search.
+    playbookInputQuery:
+  - key: QradarSHA1Field
+    value: {}
+    required: false
+    description: SHA1 field to search in QRadar. If none are specified, the search will use a payload contains filter.
+    playbookInputQuery:
+  - key: SHA256
+    value: {}
+    required: false
+    description: SHA256 hash file or an array of hashes to search.
+    playbookInputQuery:
+  - key: QradarSHA256Field
+    value: {}
+    required: false
+    description: SHA256 field to search in QRadar. If none are specified, the search will use a payload contains filter.
+    playbookInputQuery:
+  - key: IPAddress
+    value: {}
+    required: false
+    description: |
+      Source or destination IP to search. Can be a single address or an array of addresses.
+    playbookInputQuery:
+  - key: QradarIPfield
+    value:
+      simple: sourceip,destinationip
+    required: false
+    description: IP field to search in QRadar. If none are specified, the search will use sourceip or destinationip (combined).
+    playbookInputQuery:
+  - key: URLDomain
+    value: {}
+    required: false
+    description: |
+      Domain or Url can be single or an array of domain/urls to search. By default the LIKE clause is used.
+    playbookInputQuery:
+  - key: QradarURLDomainField
+    value: {}
+    required: false
+    description: 'URL/Domain field to search in QRadar. If none are specified, the search will use a payload contains filter. '
+    playbookInputQuery:
+  - key: TimeFrame
+    value:
+      simple: LAST 7 DAYS
+    required: false
+    description: |-
+      Time frame as used in AQL
+      Examples can be
+      LAST 7 DAYS
+      START '2019-09-25 15:51' STOP '2019-09-25 17:51'
+      For more examples review IBM's AQL documentation.
+    playbookInputQuery:
+  - key: InternalRange
+    value:
+      complex:
+        root: lists
+        accessor: PrivateIPs
+        transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
+              unpack_matches: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    required: false
+    description: 'A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).'
+    playbookInputQuery:
+  - key: InvestigationIPFields
+    value:
+      simple: sourceip,destinationip
+    required: true
+    description: The values of these QRadar fields will be used for the playbook IP addresses outputs.
+    playbookInputQuery:
+  - key: InvestigationUserFields
+    value:
+      simple: username
+    required: true
+    description: The values of these QRadar fields will be used for the playbook user name outputs.
+    playbookInputQuery:
 outputs:
-- contextPath: QRadar.DetectedUsers
-  description: Users detected based on the username field in your search.
-  type: string
-- contextPath: QRadar.DetectedInternalIPs
-  description: Internal IP addresses detected based on fields and inputs in your search.
-  type: string
-- contextPath: QRadar.DetectedExternalIPs
-  description: External IP addresses detected based on fields and inputs in your search.
-  type: string
-- contextPath: QRadar.DetectedInternalHosts
-  description: Internal host names detected based on hosts in your assets table. Note that the data accuracy depends on how the Asset mapping is configured in QRadar.
-  type: string
-- contextPath: QRadar.DetectedExternalHosts
-  description: External host names detected based on hosts in your assets table. Note that the data accuracy depends on how the Asset mapping is configured in QRadar.
-  type: string
+  - contextPath: QRadar.DetectedUsers
+    description: Users detected based on the username field in your search.
+    type: string
+  - contextPath: QRadar.DetectedInternalIPs
+    description: Internal IP addresses detected based on fields and inputs in your search.
+    type: string
+  - contextPath: QRadar.DetectedExternalIPs
+    description: External IP addresses detected based on fields and inputs in your search.
+    type: string
+  - contextPath: QRadar.DetectedInternalHosts
+    description: Internal host names detected based on hosts in your assets table. Note that the data accuracy depends on how the Asset mapping is configured in QRadar.
+    type: string
+  - contextPath: QRadar.DetectedExternalHosts
+    description: External host names detected based on hosts in your assets table. Note that the data accuracy depends on how the Asset mapping is configured in QRadar.
+    type: string
 tests:
-- test_Qradar_v2
-- QRadar_v3-test
-- QRadar Indicator Hunting Test
+  - test_Qradar_v2
+  - QRadar_v3-test
+  - QRadar Indicator Hunting Test
 fromversion: 5.0.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
-- edr
-- cloud
-- cloud_runtime_security
+  - agentix
+  - xsiam
+  - edr
+  - cloud
+  - cloud_runtime_security

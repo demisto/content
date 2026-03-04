@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -48,34 +48,34 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "7"
+        - "7"
       "yes":
-      - "3"
+        - "3"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-          right:
-            value:
-              simple: ServiceNow v2
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                              ignorecase: true
+                      accessor: brand
+                  iscontext: true
+                right:
+                  value:
+                    simple: ServiceNow v2
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -106,7 +106,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       assignment_group:
         complex:
@@ -172,28 +172,28 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "11"
+        - "11"
       "yes":
-      - "16"
+        - "16"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.Action
-            iscontext: true
-          right:
-            value:
-              simple: NewTicket
-          ignorecase: true
-      - - operator: isEmpty
-          left:
-            value:
-              simple: inputs.serviceNowTicketID
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.Action
+                  iscontext: true
+                right:
+                  value:
+                    simple: NewTicket
+                ignorecase: true
+          -   - operator: isEmpty
+                left:
+                  value:
+                    simple: inputs.serviceNowTicketID
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -224,7 +224,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       comments:
         complex:
@@ -291,21 +291,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+        - "9"
       "yes":
-      - "19"
+        - "19"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.CommentToAdd
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.CommentToAdd
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -335,7 +335,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -364,20 +364,20 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Add comment to the ticket
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: longText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
+        - id: "0"
+          label: ""
+          labelarg:
+            simple: Add comment to the ticket
+          required: true
+          gridcolumns: []
+          defaultrows: []
+          type: longText
+          options: []
+          optionsarg: []
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: ""
+          readonly: false
       title: what is the comment for the ticket?
       description: ""
       sender: ""
@@ -401,23 +401,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "7"
+        - "7"
       "yes":
-      - "8"
+        - "8"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.addCommentPerEndpoint
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.addCommentPerEndpoint
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -447,55 +447,55 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "17"
+        - "17"
       "yes":
-      - "18"
+        - "18"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.serviceNowCategory
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.serviceNowImpact
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.serviceNowUrgency
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: 'inputs.serviceNowSeverity '
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.serviceNowTicketType
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.serviceNowShortDescription
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.description
+                  iscontext: true
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.serviceNowCategory
+                  iscontext: true
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.serviceNowImpact
+                  iscontext: true
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.serviceNowUrgency
+                  iscontext: true
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: 'inputs.serviceNowSeverity '
+                  iscontext: true
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.serviceNowTicketType
+                  iscontext: true
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.serviceNowShortDescription
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -525,7 +525,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -554,104 +554,104 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Enter ticket description
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: longText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: Description of the ticket.
-        readonly: false
-      - id: "1"
-        label: ""
-        labelarg:
-          simple: Enter ticket Category
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: The category of the ServiceNow Ticket.
-        readonly: false
-      - id: "2"
-        label: ""
-        labelarg:
-          simple: Enter ticket Impact
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: The impact for the new ticket. Leave empty for ServiceNow default impact.
-        readonly: false
-      - id: "3"
-        label: ""
-        labelarg:
-          simple: Enter ticket Urgency
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
-        readonly: false
-      - id: "4"
-        label: ""
-        labelarg:
-          simple: 'Enter ticket Severity '
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: The severity of the new ticket. Leave empty for ServiceNow default severity.
-        readonly: false
-      - id: "5"
-        label: ""
-        labelarg:
-          simple: Enter ticket Type
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
-        readonly: false
-      - id: "6"
-        label: ""
-        labelarg:
-          simple: Enter ticket Short Description
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: A short description of the ticket.
-        readonly: false
+        - id: "0"
+          label: ""
+          labelarg:
+            simple: Enter ticket description
+          required: true
+          gridcolumns: []
+          defaultrows: []
+          type: longText
+          options: []
+          optionsarg: []
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: Description of the ticket.
+          readonly: false
+        - id: "1"
+          label: ""
+          labelarg:
+            simple: Enter ticket Category
+          required: false
+          gridcolumns: []
+          defaultrows: []
+          type: shortText
+          options: []
+          optionsarg: []
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: The category of the ServiceNow Ticket.
+          readonly: false
+        - id: "2"
+          label: ""
+          labelarg:
+            simple: Enter ticket Impact
+          required: false
+          gridcolumns: []
+          defaultrows: []
+          type: shortText
+          options: []
+          optionsarg: []
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: The impact for the new ticket. Leave empty for ServiceNow default impact.
+          readonly: false
+        - id: "3"
+          label: ""
+          labelarg:
+            simple: Enter ticket Urgency
+          required: false
+          gridcolumns: []
+          defaultrows: []
+          type: shortText
+          options: []
+          optionsarg: []
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
+          readonly: false
+        - id: "4"
+          label: ""
+          labelarg:
+            simple: 'Enter ticket Severity '
+          required: false
+          gridcolumns: []
+          defaultrows: []
+          type: shortText
+          options: []
+          optionsarg: []
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: The severity of the new ticket. Leave empty for ServiceNow default severity.
+          readonly: false
+        - id: "5"
+          label: ""
+          labelarg:
+            simple: Enter ticket Type
+          required: false
+          gridcolumns: []
+          defaultrows: []
+          type: shortText
+          options: []
+          optionsarg: []
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+          readonly: false
+        - id: "6"
+          label: ""
+          labelarg:
+            simple: Enter ticket Short Description
+          required: false
+          gridcolumns: []
+          defaultrows: []
+          type: shortText
+          options: []
+          optionsarg: []
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: A short description of the ticket.
+          readonly: false
       title: Please provide the following details to open a ticket.
       description: ""
       sender: ""
@@ -676,7 +676,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       assignment_group:
         complex:
@@ -736,7 +736,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       comments:
         complex:
@@ -776,84 +776,80 @@ view: |-
     }
   }
 inputs:
-- key: serviceNowTicketID
-  value: {}
-  required: false
-  description: The ticket ID.
-  playbookInputQuery:
-- key: serviceNowCategory
-  value: {}
-  required: false
-  description: The category of the ServiceNow ticket.
-  playbookInputQuery:
-- key: description
-  value: {}
-  required: false
-  description: Description of the ticket.
-  playbookInputQuery:
-- key: serviceNowImpact
-  value: {}
-  required: false
-  description: The impact for the new ticket. Leave empty for ServiceNow default impact.
-  playbookInputQuery:
-- key: serviceNowUrgency
-  value: {}
-  required: false
-  description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
-  playbookInputQuery:
-- key: 'serviceNowSeverity '
-  value: {}
-  required: false
-  description: The severity of the new ticket. Leave empty for ServiceNow default severity.
-  playbookInputQuery:
-- key: CommentToAdd
-  value: {}
-  required: false
-  description: Comment for the ticket.
-  playbookInputQuery:
-- key: serviceNowTicketType
-  value: {}
-  required: false
-  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
-  playbookInputQuery:
-- key: addCommentPerEndpoint
-  value:
-    simple: "True"
-  required: false
-  description: 'Whether to add a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
-  playbookInputQuery:
-- key: serviceNowShortDescription
-  value: {}
-  required: false
-  description: A short description of the ticket.
-  playbookInputQuery:
-- key: Action
-  value: {}
-  required: false
-  description: 'Whether to open a new ticket or to add a new comment. Possible values: NewTicket/AddComment.'
-  playbookInputQuery:
-- key: serviceNowAssignmentGroup
-  value: {}
-  required: false
-  description: The group to which to assign the new ticket.
-  playbookInputQuery:
+  - key: serviceNowTicketID
+    value: {}
+    required: false
+    description: The ticket ID.
+    playbookInputQuery:
+  - key: serviceNowCategory
+    value: {}
+    required: false
+    description: The category of the ServiceNow ticket.
+    playbookInputQuery:
+  - key: description
+    value: {}
+    required: false
+    description: Description of the ticket.
+    playbookInputQuery:
+  - key: serviceNowImpact
+    value: {}
+    required: false
+    description: The impact for the new ticket. Leave empty for ServiceNow default impact.
+    playbookInputQuery:
+  - key: serviceNowUrgency
+    value: {}
+    required: false
+    description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
+    playbookInputQuery:
+  - key: 'serviceNowSeverity '
+    value: {}
+    required: false
+    description: The severity of the new ticket. Leave empty for ServiceNow default severity.
+    playbookInputQuery:
+  - key: CommentToAdd
+    value: {}
+    required: false
+    description: Comment for the ticket.
+    playbookInputQuery:
+  - key: serviceNowTicketType
+    value: {}
+    required: false
+    description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+    playbookInputQuery:
+  - key: addCommentPerEndpoint
+    value:
+      simple: "True"
+    required: false
+    description: 'Whether to add a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
+    playbookInputQuery:
+  - key: serviceNowShortDescription
+    value: {}
+    required: false
+    description: A short description of the ticket.
+    playbookInputQuery:
+  - key: Action
+    value: {}
+    required: false
+    description: 'Whether to open a new ticket or to add a new comment. Possible values: NewTicket/AddComment.'
+    playbookInputQuery:
+  - key: serviceNowAssignmentGroup
+    value: {}
+    required: false
+    description: The group to which to assign the new ticket.
+    playbookInputQuery:
 outputs:
-- contextPath: ServiceNow.Ticket.ID
-  description: ServiceNow Ticket ID.
+  - contextPath: ServiceNow.Ticket.ID
+    description: ServiceNow Ticket ID.
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 marketplaces:
-- xsoar
-- marketplacev2
-- platform
+  - xsoar
+  - marketplacev2
+  - platform
 fromversion: 6.8.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
-- edr
-- cloud
-- cloud_runtime_security
+  - agentix
+  - xsiam
+  - edr
+  - cloud
+  - cloud_runtime_security

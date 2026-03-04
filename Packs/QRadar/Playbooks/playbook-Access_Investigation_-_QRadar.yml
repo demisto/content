@@ -21,7 +21,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     reputationcalc: 0
     separatecontext: false
     view: |-
@@ -45,8 +45,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
-      - "9"
+        - "8"
+        - "9"
     separatecontext: false
     view: |-
       {
@@ -78,7 +78,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       GetCorrelationLogs:
         simple: "True"
@@ -118,26 +118,26 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     scriptarguments:
       DstIP:
         complex:
           root: QRadar
           accessor: Correlation.DestinationIP
           transformers:
-          - operator: uniq
+            - operator: uniq
       SrcIP:
         complex:
           root: QRadar
           accessor: Correlation.SourceIP
           transformers:
-          - operator: uniq
+            - operator: uniq
       Username:
         complex:
           root: QRadar
           accessor: Correlation.Username
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: true
     loop:
       iscommand: false
@@ -164,7 +164,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     reputationcalc: 0
     separatecontext: false
     view: |-
@@ -214,7 +214,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     scriptarguments:
       addLabels: {}
       app: {}
@@ -238,8 +238,8 @@ tasks:
           root: QRadar
           accessor: Correlation.DestinationIP
           transformers:
-          - operator: uniq
-          - operator: Stringify
+            - operator: uniq
+            - operator: Stringify
       destntdomain: {}
       details: {}
       duration: {}
@@ -297,16 +297,16 @@ tasks:
           root: QRadar
           accessor: Correlation.SourceIP
           transformers:
-          - operator: uniq
-          - operator: Stringify
+            - operator: uniq
+            - operator: Stringify
       srcntdomain: {}
       srcuser:
         complex:
           root: QRadar
           accessor: Correlation.Username
           transformers:
-          - operator: uniq
-          - operator: Stringify
+            - operator: uniq
+            - operator: Stringify
       systems: {}
       test: {}
       test2: {}
@@ -347,36 +347,36 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+        - "2"
       "yes":
-      - "11"
+        - "11"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: QRadar
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: QRadar
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -403,36 +403,36 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+        - "2"
       "yes":
-      - "10"
+        - "10"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: QRadar_v2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: QRadar_v2
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -460,7 +460,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     scriptarguments:
       append: {}
       key:
@@ -471,11 +471,11 @@ tasks:
           root: incident.labels
           accessor: start_time
           transformers:
-          - operator: FormattedDateToEpoch
-            args:
-              formatter:
-                value:
-                  simple: '%Y-%m-%dT%H:%M:%S.%fZ'
+            - operator: FormattedDateToEpoch
+              args:
+                formatter:
+                  value:
+                    simple: '%Y-%m-%dT%H:%M:%S.%fZ'
     separatecontext: false
     view: |-
       {
@@ -504,7 +504,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     scriptarguments:
       append: {}
       key:
@@ -541,12 +541,8 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- No test
+  - No test
 deprecated: true
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

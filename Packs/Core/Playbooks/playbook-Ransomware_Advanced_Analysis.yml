@@ -20,7 +20,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "35"
+        - "35"
     separatecontext: false
     view: |-
       {
@@ -77,7 +77,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "45"
+        - "45"
     separatecontext: false
     view: |-
       {
@@ -108,28 +108,28 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "43"
+        - "43"
     scriptarguments:
       entryID:
         complex:
           root: File
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: File.Extension
-                iscontext: true
-              right:
-                value:
-                  simple: txt
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Extension
-                iscontext: true
-              right:
-                value:
-                  simple: html
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: File.Extension
+                    iscontext: true
+                  right:
+                    value:
+                      simple: txt
+                - operator: isEqualString
+                  left:
+                    value:
+                      simple: File.Extension
+                    iscontext: true
+                  right:
+                    value:
+                      simple: html
           accessor: EntryID
     separatecontext: false
     view: |-
@@ -143,10 +143,10 @@ tasks:
     timertriggers: []
     ignoreworker: false
     fieldMapping:
-    - incidentfield: Note
-      output:
-        complex:
-          root: FileData
+      - incidentfield: Note
+        output:
+          complex:
+            root: FileData
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -161,14 +161,14 @@ tasks:
       name: Rasterize the ransomware note
       description: Converts the body of an email to an image file or a PDF file.
       tags:
-      - RansomwareNote
+        - RansomwareNote
       script: Rasterize|||rasterize-email
       type: regular
       iscommand: true
       brand: Rasterize
     nexttasks:
       '#none#':
-      - "51"
+        - "51"
     scriptarguments:
       height:
         simple: "800"
@@ -206,7 +206,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "46"
+        - "46"
     separatecontext: false
     view: |-
       {
@@ -236,9 +236,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "14"
+        - "14"
       "Yes":
-      - "42"
+        - "42"
     separatecontext: false
     view: |-
       {
@@ -268,7 +268,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "48"
+        - "48"
     separatecontext: false
     view: |-
       {
@@ -310,7 +310,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "49"
+        - "49"
     separatecontext: false
     view: |-
       {
@@ -340,9 +340,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "14"
+        - "14"
       "Yes":
-      - "50"
+        - "50"
     separatecontext: false
     view: |-
       {
@@ -372,7 +372,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     separatecontext: false
     view: |-
       {
@@ -403,7 +403,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "47"
+        - "47"
     scriptarguments:
       text:
         complex:
@@ -443,19 +443,15 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 marketplaces: ["marketplacev2", "platform"]
 fromversion: 6.6.0
 
 
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- cloud
-- cloud_posture
-- cloud_runtime_security
-- edr
-- xsiam
+  - agentix
+  - cloud
+  - cloud_posture
+  - cloud_runtime_security
+  - edr
+  - xsiam

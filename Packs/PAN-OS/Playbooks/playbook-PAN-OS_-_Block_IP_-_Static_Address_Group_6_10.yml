@@ -23,7 +23,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -54,37 +54,37 @@ tasks:
       description: ""
     nexttasks:
       '#default#':
-      - "3"
+        - "3"
       "yes":
-      - "2"
+        - "2"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Panorama
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Panorama
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                      accessor: brand
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -114,18 +114,18 @@ tasks:
       description: ""
     nexttasks:
       '#default#':
-      - "3"
+        - "3"
       "yes":
-      - "4"
+        - "4"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: inputs.IP
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    simple: inputs.IP
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -184,7 +184,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     scriptarguments:
       name:
         complex:
@@ -219,22 +219,22 @@ tasks:
       description: ""
     nexttasks:
       '#default#':
-      - "7"
+        - "7"
       "yes":
-      - "3"
+        - "3"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: Panorama.AddressGroups.Addresses
-            iscontext: true
-          right:
-            value:
-              simple: inputs.IP
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: containsGeneral
+                left:
+                  value:
+                    simple: Panorama.AddressGroups.Addresses
+                  iscontext: true
+                right:
+                  value:
+                    simple: inputs.IP
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -265,17 +265,17 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+        - "11"
     scriptarguments:
       element_to_add:
         complex:
           root: inputs.IP
           transformers:
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ','
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ','
       name:
         complex:
           root: inputs.AddressGroupName
@@ -312,7 +312,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+        - "12"
     scriptarguments:
       description:
         simple: ${inputs.IPDescription}
@@ -352,7 +352,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     separatecontext: true
     continueonerrortype: ""
     view: |-
@@ -383,22 +383,22 @@ tasks:
       description: ""
     nexttasks:
       '#default#':
-      - "13"
+        - "13"
       "yes":
-      - "16"
+        - "16"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoCommit
-            iscontext: true
-          right:
-            value:
-              simple: "Yes"
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.AutoCommit
+                  iscontext: true
+                right:
+                  value:
+                    simple: "Yes"
     continueonerrortype: ""
     view: |-
       {
@@ -428,7 +428,7 @@ tasks:
       description: ""
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -460,17 +460,17 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+        - "15"
     scriptarguments:
       element_to_add:
         complex:
           root: inputs.IP
           transformers:
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ','
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ','
       name:
         complex:
           root: inputs.AddressGroupName
@@ -506,7 +506,7 @@ tasks:
       description: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -538,7 +538,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "6"
+        - "6"
     separatecontext: true
     continueonerrortype: ""
     view: |-
@@ -572,67 +572,62 @@ view: |-
     }
   }
 inputs:
-- key: IP
-  value:
-    complex:
-      root: IP
-      filters:
-      - - operator: isExists
-          left:
-            value:
-              simple: IP.Malicious
-            iscontext: true
-      accessor: Address
-      transformers:
-      - operator: uniq
-  required: false
-  description: IP address to block
-  playbookInputQuery:
-- key: AddressGroupName
-  value:
-    simple: Remediation - Static Address Group
-  required: false
-  description: Static address group name
-  playbookInputQuery:
-- key: AutoCommit
-  value:
-    simple: "No"
-  required: false
-  description: |-
-    This input establishes whether to commit the configuration automatically.
-    Yes - Commit automatically.
-    No - Commit manually.
-  playbookInputQuery:
-- key: IPDescription
-  value:
-    simple: Automatically created using "PAN-OS - Block IP - Static Address Group" playbook in Cortex XSIAM.
-  required: false
-  description: The description of the IP in case it will get created by the playbook.
-  playbookInputQuery:
+  - key: IP
+    value:
+      complex:
+        root: IP
+        filters:
+          -   - operator: isExists
+                left:
+                  value:
+                    simple: IP.Malicious
+                  iscontext: true
+        accessor: Address
+        transformers:
+          - operator: uniq
+    required: false
+    description: IP address to block
+    playbookInputQuery:
+  - key: AddressGroupName
+    value:
+      simple: Remediation - Static Address Group
+    required: false
+    description: Static address group name
+    playbookInputQuery:
+  - key: AutoCommit
+    value:
+      simple: "No"
+    required: false
+    description: |-
+      This input establishes whether to commit the configuration automatically.
+      Yes - Commit automatically.
+      No - Commit manually.
+    playbookInputQuery:
+  - key: IPDescription
+    value:
+      simple: Automatically created using "PAN-OS - Block IP - Static Address Group" playbook in Cortex XSIAM.
+    required: false
+    description: The description of the IP in case it will get created by the playbook.
+    playbookInputQuery:
 inputSections:
-- inputs:
-  - IP
-  - AddressGroupName
-  - AutoCommit
-  - IPDescription
-  name: General (Inputs group)
-  description: Generic group for inputs
+  - inputs:
+      - IP
+      - AddressGroupName
+      - AutoCommit
+      - IPDescription
+    name: General (Inputs group)
+    description: Generic group for inputs
 outputSections:
-- outputs: []
-  name: General (Outputs group)
-  description: Generic group for outputs
+  - outputs: []
+    name: General (Outputs group)
+    description: Generic group for outputs
 outputs: []
 tests:
-- PAN-OS - Block IP - Static Address Group Test
+  - PAN-OS - Block IP - Static Address Group Test
 fromversion: 6.10.0
 supportedModules:
-- X0
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
-- edr
-- cloud
-- cloud_runtime_security
+  - agentix
+  - xsiam
+  - edr
+  - cloud
+  - cloud_runtime_security

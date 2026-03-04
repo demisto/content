@@ -19,7 +19,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -50,37 +50,37 @@ tasks:
       description: ""
     nexttasks:
       '#default#':
-      - "4"
+        - "4"
       "yes":
-      - "5"
+        - "5"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Panorama
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Panorama
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                      accessor: brand
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -138,20 +138,20 @@ tasks:
       description: ""
     nexttasks:
       '#default#':
-      - "4"
+        - "4"
       "yes":
-      - "11"
+        - "11"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: inputs.EDLName
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    simple: inputs.EDLName
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -181,22 +181,22 @@ tasks:
       description: ""
     nexttasks:
       '#default#':
-      - "12"
+        - "12"
       "yes":
-      - "15"
+        - "15"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoCommit
-            iscontext: true
-          right:
-            value:
-              simple: "Yes"
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.AutoCommit
+                  iscontext: true
+                right:
+                  value:
+                    simple: "Yes"
     continueonerrortype: ""
     view: |-
       {
@@ -226,7 +226,7 @@ tasks:
       description: ""
     nexttasks:
       '#none#':
-      - "13"
+        - "13"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -258,7 +258,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     scriptarguments:
       direction:
         simple: from
@@ -266,11 +266,11 @@ tasks:
         complex:
           root: inputs.LogForwarding
           filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.LogForwarding
-                iscontext: true
+            -   - operator: isNotEmpty
+                  left:
+                    value:
+                      simple: inputs.LogForwarding
+                    iscontext: true
       object_type:
         simple: edl
       object_value:
@@ -309,7 +309,7 @@ tasks:
       description: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -341,7 +341,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+        - "16"
     scriptarguments:
       description:
         simple: Commit from XSIAM
@@ -378,7 +378,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+        - "17"
     scriptarguments:
       direction:
         simple: from
@@ -386,11 +386,11 @@ tasks:
         complex:
           root: inputs.LogForwarding
           filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.LogForwarding
-                iscontext: true
+            -   - operator: isNotEmpty
+                  left:
+                    value:
+                      simple: inputs.LogForwarding
+                    iscontext: true
       object_type:
         simple: edl
       object_value:
@@ -430,7 +430,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     scriptarguments:
       description:
         simple: Commit from XSIAM
@@ -468,52 +468,46 @@ view: |-
     }
   }
 inputs:
-- key: RuleName
-  value: {}
-  required: false
-  description: Panorama rule name
-  playbookInputQuery:
-- key: EDLName
-  value: {}
-  required: false
-  description: EDL IPs to block
-  playbookInputQuery:
-- key: AutoCommit
-  value:
-    simple: "No"
-  required: false
-  description: |-
-    This input establishes whether to commit the configuration automatically.
-    Yes - Commit automatically.
-    No - Commit manually.
-  playbookInputQuery:
-- key: LogForwarding
-  value: {}
-  required: false
-  description: Panorama log forwarding object name
-  playbookInputQuery:
+  - key: RuleName
+    value: {}
+    required: false
+    description: Panorama rule name
+    playbookInputQuery:
+  - key: EDLName
+    value: {}
+    required: false
+    description: EDL IPs to block
+    playbookInputQuery:
+  - key: AutoCommit
+    value:
+      simple: "No"
+    required: false
+    description: |-
+      This input establishes whether to commit the configuration automatically.
+      Yes - Commit automatically.
+      No - Commit manually.
+    playbookInputQuery:
+  - key: LogForwarding
+    value: {}
+    required: false
+    description: Panorama log forwarding object name
+    playbookInputQuery:
 inputSections:
-- inputs:
-  - RuleName
-  - EDLName
-  - AutoCommit
-  - LogForwarding
-  name: General (Inputs group)
-  description: Generic group for inputs
+  - inputs:
+      - RuleName
+      - EDLName
+      - AutoCommit
+      - LogForwarding
+    name: General (Inputs group)
+    description: Generic group for inputs
 outputSections:
-- outputs: []
-  name: General (Outputs group)
-  description: Generic group for outputs
+  - outputs: []
+    name: General (Outputs group)
+    description: Generic group for outputs
 outputs: []
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 6.10.0
 supportedModules:
-- C3
-- X0
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

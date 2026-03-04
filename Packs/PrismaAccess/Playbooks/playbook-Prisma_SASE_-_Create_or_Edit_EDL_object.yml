@@ -19,7 +19,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "13"
+        - "13"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -51,7 +51,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       folder:
         simple: ${inputs.Folder}
@@ -74,13 +74,13 @@ tasks:
         complex:
           root: inputs.EDLObjectType
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Choose your EDL type.Answers.0
-                iscontext: true
-          - operator: uniq
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: Choose your EDL type.Answers.0
+                  iscontext: true
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -140,7 +140,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+        - "6"
     scriptarguments:
       folders:
         complex:
@@ -178,34 +178,34 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "6"
+        - "6"
       Auto Commit:
-      - "7"
+        - "7"
       Manual:
-      - "12"
+        - "12"
     separatecontext: false
     conditions:
-    - label: Auto Commit
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.AutoCommit
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    - label: Manual
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.AutoCommit
-            iscontext: true
-          right:
-            value:
-              simple: "False"
+      - label: Auto Commit
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.AutoCommit
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
+      - label: Manual
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.AutoCommit
+                  iscontext: true
+                right:
+                  value:
+                    simple: "False"
     continueonerrortype: ""
     view: |-
       {
@@ -235,9 +235,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "6"
+        - "6"
       Push:
-      - "7"
+        - "7"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -265,8 +265,8 @@ tasks:
         completeafterv2: true
         completeaftersla: false
       replyOptions:
-      - Push
-      - "No"
+        - Push
+        - "No"
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -286,7 +286,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     scriptarguments:
       folder:
         complex:
@@ -327,22 +327,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "16"
+        - "16"
       "yes":
-      - "15"
+        - "15"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: PrismaSase.ExternalDynamicList.name
-            iscontext: true
-          right:
-            value:
-              simple: inputs.Name
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: PrismaSase.ExternalDynamicList.name
+                  iscontext: true
+                right:
+                  value:
+                    simple: inputs.Name
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -373,7 +373,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       folder:
         simple: ${inputs.Folder}
@@ -428,20 +428,20 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "1"
+        - "1"
       "yes":
-      - "17"
+        - "17"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEmpty
-          left:
-            value:
-              simple: inputs.EDLObjectType
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isEmpty
+                left:
+                  value:
+                    simple: inputs.EDLObjectType
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -471,7 +471,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -500,26 +500,26 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: 'Choose one of the following types:'
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - {}
-        - simple: domain
-        - simple: ip
-        - simple: url
-        - simple: predefined_ip
-        - simple: predefined_url
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
+        - id: "0"
+          label: ""
+          labelarg:
+            simple: 'Choose one of the following types:'
+          required: true
+          gridcolumns: []
+          defaultrows: []
+          type: singleSelect
+          options: []
+          optionsarg:
+            - {}
+            - simple: domain
+            - simple: ip
+            - simple: url
+            - simple: predefined_ip
+            - simple: predefined_url
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: ""
+          readonly: false
       title: Choose your EDL type
       description: Your EDL type is missing and we want to ensure that your EDL object will be created successfully.
       sender: ""
@@ -546,116 +546,112 @@ view: |-
     }
   }
 inputs:
-- key: Name
-  value: {}
-  required: false
-  description: The external dynamic list object name.
-  playbookInputQuery:
-- key: Folder
-  value:
-    simple: Shared
-  required: false
-  description: |-
-    The configuration folder group setting.
-    The default value is 'Shared'.
-  playbookInputQuery:
-- key: TSGID
-  value: {}
-  required: false
-  description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
-  playbookInputQuery:
-- key: IPListName
-  value: {}
-  required: false
-  description: |-
-    The predefined IP list. If the type is predefined_ip, a value must be provided.
-    Possible values: panw-bulletproof-ip-list,panw-highrisk-ip-list,panw-known-ip-list,panw-torexit-ip-list.
-  playbookInputQuery:
-- key: URLListName
-  value: {}
-  required: false
-  description: |-
-    The predefined URL list. If the type is predefined_url, a value must be provided.
+  - key: Name
+    value: {}
+    required: false
+    description: The external dynamic list object name.
+    playbookInputQuery:
+  - key: Folder
+    value:
+      simple: Shared
+    required: false
+    description: |-
+      The configuration folder group setting.
+      The default value is 'Shared'.
+    playbookInputQuery:
+  - key: TSGID
+    value: {}
+    required: false
+    description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+    playbookInputQuery:
+  - key: IPListName
+    value: {}
+    required: false
+    description: |-
+      The predefined IP list. If the type is predefined_ip, a value must be provided.
+      Possible values: panw-bulletproof-ip-list,panw-highrisk-ip-list,panw-known-ip-list,panw-torexit-ip-list.
+    playbookInputQuery:
+  - key: URLListName
+    value: {}
+    required: false
+    description: |-
+      The predefined URL list. If the type is predefined_url, a value must be provided.
 
-    Possible value:
-    panw–auth-portal-exclude-list
-  playbookInputQuery:
-- key: SourceURL
-  value: {}
-  required: false
-  description: The source URL. If the type is ip, url or domain, a value must be provided.
-  playbookInputQuery:
-- key: Frequency
-  value: {}
-  required: false
-  description: |-
-    Frequency to check for updates on the EDL URL.
-    Possible values:
-    daily,five_minute,hourly,monthly,weekly
-  playbookInputQuery:
-- key: FrequencyTime
-  value: {}
-  required: false
-  description: The frequency hour. If the frequency argument is daily, weekly or monthly, a value must be provided. Possible values are 00-23.
-  playbookInputQuery:
-- key: EDLObjectType
-  value: {}
-  required: false
-  description: |-
-    Possible values:
-    domain,ip,url,predefined_ip,predefined_url
-  playbookInputQuery:
-- key: AutoCommit
-  value: {}
-  required: false
-  description: |-
-    Possible values:
-    True -> Will commit and push configuration.
-    False -> Manual push will be required.
-    Else --> Will ignore the push section and continue the playbook.
-  playbookInputQuery:
-- key: Overwrite
-  value:
-    simple: "False"
-  required: false
-  description: |-
-    Whether to overwrite the original external dynamic list values.
-    Default value is 'false'.
-  playbookInputQuery:
+      Possible value:
+      panw–auth-portal-exclude-list
+    playbookInputQuery:
+  - key: SourceURL
+    value: {}
+    required: false
+    description: The source URL. If the type is ip, url or domain, a value must be provided.
+    playbookInputQuery:
+  - key: Frequency
+    value: {}
+    required: false
+    description: |-
+      Frequency to check for updates on the EDL URL.
+      Possible values:
+      daily,five_minute,hourly,monthly,weekly
+    playbookInputQuery:
+  - key: FrequencyTime
+    value: {}
+    required: false
+    description: The frequency hour. If the frequency argument is daily, weekly or monthly, a value must be provided. Possible values are 00-23.
+    playbookInputQuery:
+  - key: EDLObjectType
+    value: {}
+    required: false
+    description: |-
+      Possible values:
+      domain,ip,url,predefined_ip,predefined_url
+    playbookInputQuery:
+  - key: AutoCommit
+    value: {}
+    required: false
+    description: |-
+      Possible values:
+      True -> Will commit and push configuration.
+      False -> Manual push will be required.
+      Else --> Will ignore the push section and continue the playbook.
+    playbookInputQuery:
+  - key: Overwrite
+    value:
+      simple: "False"
+    required: false
+    description: |-
+      Whether to overwrite the original external dynamic list values.
+      Default value is 'false'.
+    playbookInputQuery:
 outputs:
-- contextPath: PrismaSase.ExternalDynamicList
-  description: The external dynamic list object.
-  type: unknown
-- contextPath: PrismaSase.ExternalDynamicList.id
-  description: The external dynamic list ID.
-- contextPath: PrismaSase.ExternalDynamicList.name
-  description: The external dynamic list name.
-- contextPath: PrismaSase.ExternalDynamicList.folder
-  description: The external dynamic list folder.
-- contextPath: PrismaSase.ExternalDynamicList.description
-  description: The external dynamic list description.
-- contextPath: PrismaSase.ExternalDynamicList.type
-  description: The external dynamic list type.
-- contextPath: PrismaSase.ExternalDynamicList.source
-  description: The external dynamic list source.
-- contextPath: PrismaSase.ExternalDynamicList.frequency
-  description: The external dynamic list frequency.
-- contextPath: PrismaSase.CandidateConfig
-  description: Configuration job object.
-  type: unknown
-- contextPath: PrismaSase.CandidateConfig.job_id
-  description: Configuration job ID.
-- contextPath: PrismaSase.CandidateConfig.result
-  description: The configuration push result, e.g., OK, FAIL.
-- contextPath: PrismaSase.CandidateConfig.details
-  description: The configuration push details.
+  - contextPath: PrismaSase.ExternalDynamicList
+    description: The external dynamic list object.
+    type: unknown
+  - contextPath: PrismaSase.ExternalDynamicList.id
+    description: The external dynamic list ID.
+  - contextPath: PrismaSase.ExternalDynamicList.name
+    description: The external dynamic list name.
+  - contextPath: PrismaSase.ExternalDynamicList.folder
+    description: The external dynamic list folder.
+  - contextPath: PrismaSase.ExternalDynamicList.description
+    description: The external dynamic list description.
+  - contextPath: PrismaSase.ExternalDynamicList.type
+    description: The external dynamic list type.
+  - contextPath: PrismaSase.ExternalDynamicList.source
+    description: The external dynamic list source.
+  - contextPath: PrismaSase.ExternalDynamicList.frequency
+    description: The external dynamic list frequency.
+  - contextPath: PrismaSase.CandidateConfig
+    description: Configuration job object.
+    type: unknown
+  - contextPath: PrismaSase.CandidateConfig.job_id
+    description: Configuration job ID.
+  - contextPath: PrismaSase.CandidateConfig.result
+    description: The configuration push result, e.g., OK, FAIL.
+  - contextPath: PrismaSase.CandidateConfig.details
+    description: The configuration push details.
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 6.8.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

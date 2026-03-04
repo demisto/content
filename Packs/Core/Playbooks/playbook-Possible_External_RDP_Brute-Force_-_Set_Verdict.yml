@@ -19,13 +19,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "3"
-      - "4"
-      - "1"
-      - "2"
-      - "10"
-      - "12"
-      - "13"
+        - "3"
+        - "4"
+        - "1"
+        - "2"
+        - "10"
+        - "12"
+        - "13"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -56,21 +56,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+        - "9"
       "yes":
-      - "8"
+        - "8"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.RelatedCampaign
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.RelatedCampaign
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -100,23 +100,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+        - "9"
       "yes":
-      - "7"
+        - "7"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.HuntResults
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.HuntResults
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -146,21 +146,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+        - "9"
       "yes":
-      - "6"
+        - "6"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.RelatedAlerts
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.RelatedAlerts
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -190,23 +190,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+        - "9"
       "yes":
-      - "5"
+        - "5"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.UnusualGeoLocation
-            iscontext: true
-          right:
-            value:
-              simple: "false"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.UnusualGeoLocation
+                  iscontext: true
+                right:
+                  value:
+                    simple: "false"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -237,7 +237,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       append:
         simple: "true"
@@ -258,9 +258,9 @@ tasks:
     timertriggers: []
     ignoreworker: false
     fieldMapping:
-    - incidentfield: Source Geolocation
-      output:
-        simple: Connection from unusual country
+      - incidentfield: Source Geolocation
+        output:
+          simple: Connection from unusual country
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -280,7 +280,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       append:
         simple: "true"
@@ -301,10 +301,10 @@ tasks:
     timertriggers: []
     ignoreworker: false
     fieldMapping:
-    - incidentfield: Alert Search Results
-      output:
-        complex:
-          root: inputs.RelatedAlerts
+      - incidentfield: Alert Search Results
+        output:
+          complex:
+            root: inputs.RelatedAlerts
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -324,7 +324,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       append:
         simple: "true"
@@ -345,9 +345,9 @@ tasks:
     timertriggers: []
     ignoreworker: false
     fieldMapping:
-    - incidentfield: Hunt Results Count
-      output:
-        simple: Has campaign hunt results
+      - incidentfield: Hunt Results Count
+        output:
+          simple: Has campaign hunt results
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -367,7 +367,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       append:
         simple: "true"
@@ -388,10 +388,10 @@ tasks:
     timertriggers: []
     ignoreworker: false
     fieldMapping:
-    - incidentfield: Part of Campaign
-      output:
-        complex:
-          root: inputs.RelatedCampaign
+      - incidentfield: Part of Campaign
+        output:
+          complex:
+            root: inputs.RelatedCampaign
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -438,22 +438,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+        - "9"
       "yes":
-      - "11"
+        - "11"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: greaterThanOrEqual
-          left:
-            value:
-              complex:
-                root: inputs.IpReputation
-            iscontext: true
-          right:
-            value:
-              simple: "2"
+      - label: "yes"
+        condition:
+          -   - operator: greaterThanOrEqual
+                left:
+                  value:
+                    complex:
+                      root: inputs.IpReputation
+                  iscontext: true
+                right:
+                  value:
+                    simple: "2"
     continueonerrortype: ""
     view: |-
       {
@@ -484,7 +484,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       append:
         simple: "true"
@@ -522,19 +522,19 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+        - "9"
       "yes":
-      - "14"
+        - "14"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.RiskyUser
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.RiskyUser
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -564,19 +564,19 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+        - "9"
       "yes":
-      - "15"
+        - "15"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.RiskyHost
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.RiskyHost
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -607,7 +607,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       append:
         simple: "true"
@@ -646,7 +646,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       append:
         simple: "true"
@@ -687,106 +687,102 @@ view: |-
     }
   }
 inputs:
-- key: RelatedAlerts
-  value: {}
-  required: false
-  description: Number of XDR alerts that are related to the same user or endpoint.
-  playbookInputQuery:
-- key: RelatedCampaign
-  value: {}
-  required: false
-  description: Campaign related to the external IP.
-  playbookInputQuery:
-- key: HuntResults
-  value: {}
-  required: false
-  description: Determine whether hunting results exist. The input value should be true or false.
-  playbookInputQuery:
-- key: UnusualGeoLocation
-  value: {}
-  required: false
-  description: ' determine whether the RDP connection has made RDP Connection made from rare geo-location. the input value should be true or false.'
-  playbookInputQuery:
-- key: IpReputation
-  value: {}
-  required: false
-  description: The external IP reputation.
-  playbookInputQuery:
-- key: RiskyUser
-  value:
-    complex:
-      root: Core.RiskyUser
-      filters:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Core.RiskyUser.risk_level
-            iscontext: true
-          right:
-            value:
-              simple: MED
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: Core.RiskyUser.risk_level
-            iscontext: true
-          right:
-            value:
-              simple: HIGH
-          ignorecase: true
-      accessor: id
-  required: false
-  description: Usernames of users that were found as risky by Cortex Core IR.
-  playbookInputQuery:
-- key: RiskyHost
-  value:
-    complex:
-      root: Core.RiskyHost
-      filters:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Core.RiskyHost.risk_level
-            iscontext: true
-          right:
-            value:
-              simple: MED
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: Core.RiskyHost.risk_level
-            iscontext: true
-          right:
-            value:
-              simple: HIGH
-          ignorecase: true
-      accessor: id
-  required: false
-  description: Hostnames that were found as risky by Cortex Core IR.
-  playbookInputQuery:
+  - key: RelatedAlerts
+    value: {}
+    required: false
+    description: Number of XDR alerts that are related to the same user or endpoint.
+    playbookInputQuery:
+  - key: RelatedCampaign
+    value: {}
+    required: false
+    description: Campaign related to the external IP.
+    playbookInputQuery:
+  - key: HuntResults
+    value: {}
+    required: false
+    description: Determine whether hunting results exist. The input value should be true or false.
+    playbookInputQuery:
+  - key: UnusualGeoLocation
+    value: {}
+    required: false
+    description: ' determine whether the RDP connection has made RDP Connection made from rare geo-location. the input value should be true or false.'
+    playbookInputQuery:
+  - key: IpReputation
+    value: {}
+    required: false
+    description: The external IP reputation.
+    playbookInputQuery:
+  - key: RiskyUser
+    value:
+      complex:
+        root: Core.RiskyUser
+        filters:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: Core.RiskyUser.risk_level
+                  iscontext: true
+                right:
+                  value:
+                    simple: MED
+                ignorecase: true
+              - operator: isEqualString
+                left:
+                  value:
+                    simple: Core.RiskyUser.risk_level
+                  iscontext: true
+                right:
+                  value:
+                    simple: HIGH
+                ignorecase: true
+        accessor: id
+    required: false
+    description: Usernames of users that were found as risky by Cortex Core IR.
+    playbookInputQuery:
+  - key: RiskyHost
+    value:
+      complex:
+        root: Core.RiskyHost
+        filters:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: Core.RiskyHost.risk_level
+                  iscontext: true
+                right:
+                  value:
+                    simple: MED
+                ignorecase: true
+              - operator: isEqualString
+                left:
+                  value:
+                    simple: Core.RiskyHost.risk_level
+                  iscontext: true
+                right:
+                  value:
+                    simple: HIGH
+                ignorecase: true
+        accessor: id
+    required: false
+    description: Hostnames that were found as risky by Cortex Core IR.
+    playbookInputQuery:
 outputs:
-- contextPath: Suspicious_Elements
-  description: Array that contains all the suspicious elements.
-  type: unknown
+  - contextPath: Suspicious_Elements
+    description: Array that contains all the suspicious elements.
+    type: unknown
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 marketplaces:
-- marketplacev2
-- platform
+  - marketplacev2
+  - platform
 fromversion: 6.8.0
 system: true
 
 
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- cloud
-- cloud_posture
-- cloud_runtime_security
-- edr
-- xsiam
+  - agentix
+  - cloud
+  - cloud_posture
+  - cloud_runtime_security
+  - edr
+  - xsiam

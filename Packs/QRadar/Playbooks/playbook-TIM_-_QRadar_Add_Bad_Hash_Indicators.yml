@@ -18,7 +18,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "18"
+        - "18"
     separatecontext: false
     view: |-
       {
@@ -71,38 +71,38 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "3"
+        - "3"
       "yes":
-      - "49"
-      - "50"
-      - "51"
+        - "49"
+        - "50"
+        - "51"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: inList
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: QRadar,QRadar_v2,QRadar v3
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: inList
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: QRadar,QRadar_v2,QRadar v3
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -129,37 +129,37 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "3"
+        - "3"
       "yes":
-      - "9"
+        - "9"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: playbookQuery
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: playbookQuery.indicator_type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: File
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: playbookQuery.CustomFields.tags
-                      iscontext: true
-                    right:
-                      value:
-                        simple: approved_black
-                accessor: value
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: playbookQuery
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: playbookQuery.indicator_type
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: File
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: playbookQuery.CustomFields.tags
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: approved_black
+                      accessor: value
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -187,7 +187,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "52"
+        - "52"
     scriptarguments:
       date_value: {}
       ref_name:
@@ -197,48 +197,48 @@ tasks:
         complex:
           root: playbookQuery
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: Sha256
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: approved_black
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.indicator_type
-                iscontext: true
-              right:
-                value:
-                  simple: File
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Sha256
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: approved_black
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.indicator_type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: File
           accessor: value
           transformers:
-          - operator: uniq
+            - operator: uniq
       values:
         complex:
           root: playbookQuery
           filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: playbookQuery.value
-                iscontext: true
-              right:
-                value:
-                  simple: "64"
+            -   - operator: stringHasLength
+                  left:
+                    value:
+                      simple: playbookQuery.value
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "64"
           accessor: value
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -266,50 +266,50 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "3"
+        - "3"
       "yes":
-      - "26"
+        - "26"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.QRadarSha256ReferenceSetName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: playbookQuery
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: playbookQuery.indicator_type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: File
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: playbookQuery.CustomFields.tags
-                      iscontext: true
-                    right:
-                      value:
-                        simple: approved_black
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: playbookQuery.CustomFields.tags
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Sha256
-                accessor: value
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.QRadarSha256ReferenceSetName
+                  iscontext: true
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: playbookQuery
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: playbookQuery.indicator_type
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: File
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: playbookQuery.CustomFields.tags
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: approved_black
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: playbookQuery.CustomFields.tags
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Sha256
+                      accessor: value
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -336,50 +336,50 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "3"
+        - "3"
       "yes":
-      - "38"
+        - "38"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.QRadarSha1ReferenceSetName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: playbookQuery
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: playbookQuery.indicator_type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: File
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: playbookQuery.CustomFields.tags
-                      iscontext: true
-                    right:
-                      value:
-                        simple: approved_black
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: playbookQuery.CustomFields.tags
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Sha1
-                accessor: value
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.QRadarSha1ReferenceSetName
+                  iscontext: true
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: playbookQuery
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: playbookQuery.indicator_type
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: File
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: playbookQuery.CustomFields.tags
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: approved_black
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: playbookQuery.CustomFields.tags
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Sha1
+                      accessor: value
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -407,7 +407,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "53"
+        - "53"
     scriptarguments:
       date_value: {}
       ref_name:
@@ -417,48 +417,48 @@ tasks:
         complex:
           root: playbookQuery
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: Sha1
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: approved_black
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.indicator_type
-                iscontext: true
-              right:
-                value:
-                  simple: File
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Sha1
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: approved_black
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.indicator_type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: File
           accessor: value
           transformers:
-          - operator: uniq
+            - operator: uniq
       values:
         complex:
           root: playbookQuery
           filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: playbookQuery.value
-                iscontext: true
-              right:
-                value:
-                  simple: "40"
+            -   - operator: stringHasLength
+                  left:
+                    value:
+                      simple: playbookQuery.value
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "40"
           accessor: value
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -486,50 +486,50 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "3"
+        - "3"
       "yes":
-      - "41"
+        - "41"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.QRadarMd5ReferenceSetName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: playbookQuery
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: playbookQuery.indicator_type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: File
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: playbookQuery.CustomFields.tags
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Md5
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: playbookQuery.CustomFields.tags
-                      iscontext: true
-                    right:
-                      value:
-                        simple: approved_black
-                accessor: value
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.QRadarMd5ReferenceSetName
+                  iscontext: true
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: playbookQuery
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: playbookQuery.indicator_type
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: File
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: playbookQuery.CustomFields.tags
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Md5
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: playbookQuery.CustomFields.tags
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: approved_black
+                      accessor: value
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -557,7 +557,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "54"
+        - "54"
     scriptarguments:
       date_value: {}
       ref_name:
@@ -567,48 +567,48 @@ tasks:
         complex:
           root: playbookQuery
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: Md5
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: approved_black
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.indicator_type
-                iscontext: true
-              right:
-                value:
-                  simple: File
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Md5
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: approved_black
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.indicator_type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: File
           accessor: value
           transformers:
-          - operator: uniq
+            - operator: uniq
       values:
         complex:
           root: playbookQuery
           filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: playbookQuery.value
-                iscontext: true
-              right:
-                value:
-                  simple: "32"
+            -   - operator: stringHasLength
+                  left:
+                    value:
+                      simple: playbookQuery.value
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "32"
           accessor: value
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -636,7 +636,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "31"
+        - "31"
     separatecontext: false
     view: |-
       {
@@ -664,7 +664,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "36"
+        - "36"
     separatecontext: false
     view: |-
       {
@@ -692,7 +692,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "39"
+        - "39"
     separatecontext: false
     view: |-
       {
@@ -721,7 +721,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       field:
         simple: tags
@@ -731,33 +731,33 @@ tasks:
         complex:
           root: playbookQuery
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.indicator_type
-                iscontext: true
-              right:
-                value:
-                  simple: File
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: approved_black
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: Sha256
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.indicator_type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: File
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: approved_black
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Sha256
           accessor: value
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -786,7 +786,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       field:
         simple: tags
@@ -796,33 +796,33 @@ tasks:
         complex:
           root: playbookQuery
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.indicator_type
-                iscontext: true
-              right:
-                value:
-                  simple: File
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: approved_black
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: Sha1
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.indicator_type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: File
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: approved_black
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Sha1
           accessor: value
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -851,7 +851,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       field:
         simple: tags
@@ -861,33 +861,33 @@ tasks:
         complex:
           root: playbookQuery
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.indicator_type
-                iscontext: true
-              right:
-                value:
-                  simple: File
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: approved_black
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: Md5
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.indicator_type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: File
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: approved_black
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Md5
           accessor: value
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -914,49 +914,45 @@ view: |-
     }
   }
 inputs:
-- key: QRadarMd5ReferenceSetName
-  value: {}
-  required: false
-  description: The name of the QRadar Md5 reference set to insert the data in to.
-  playbookInputQuery:
-- key: QRadarSha1ReferenceSetName
-  value: {}
-  required: false
-  description: The name of the QRadar Sha1 reference set to insert the data in to.
-  playbookInputQuery:
-- key: QRadarSha256ReferenceSetName
-  value: {}
-  required: false
-  description: The name of the QRadar Sha256 reference set to insert the data in to.
-  playbookInputQuery:
-- key: ""
-  value: {}
-  required: false
-  description: ""
-  playbookInputQuery:
-    query: ""
-    queryEntity: indicators
-    results:
-    daterange:
-      fromdate: 0001-01-01T00:00:00Z
-      todate: 0001-01-01T00:00:00Z
-      period:
-        by: ""
-        byto: ""
-        byfrom: ""
-        tovalue:
-        fromvalue:
-        field: ""
-      fromdatelicenseval: 0001-01-01T00:00:00Z
-    runFromLastJobTime: false
+  - key: QRadarMd5ReferenceSetName
+    value: {}
+    required: false
+    description: The name of the QRadar Md5 reference set to insert the data in to.
+    playbookInputQuery:
+  - key: QRadarSha1ReferenceSetName
+    value: {}
+    required: false
+    description: The name of the QRadar Sha1 reference set to insert the data in to.
+    playbookInputQuery:
+  - key: QRadarSha256ReferenceSetName
+    value: {}
+    required: false
+    description: The name of the QRadar Sha256 reference set to insert the data in to.
+    playbookInputQuery:
+  - key: ""
+    value: {}
+    required: false
+    description: ""
+    playbookInputQuery:
+      query: ""
+      queryEntity: indicators
+      results:
+      daterange:
+        fromdate: 0001-01-01T00:00:00Z
+        todate: 0001-01-01T00:00:00Z
+        period:
+          by: ""
+          byto: ""
+          byfrom: ""
+          tovalue:
+          fromvalue:
+          field: ""
+        fromdatelicenseval: 0001-01-01T00:00:00Z
+      runFromLastJobTime: false
 outputs: []
 quiet: true
 tests:
-- No test
+  - No test
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

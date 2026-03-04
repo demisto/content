@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -48,37 +48,37 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+        - "4"
       "yes":
-      - "15"
+        - "15"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Panorama
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Panorama
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                      accessor: brand
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -109,7 +109,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "29"
+        - "29"
     scriptarguments:
       action:
         simple: drop
@@ -126,11 +126,11 @@ tasks:
         complex:
           root: inputs.LogForwarding
           filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.LogForwarding
-                iscontext: true
+            -   - operator: isNotEmpty
+                  left:
+                    value:
+                      simple: inputs.LogForwarding
+                    iscontext: true
       pre_post:
         simple: pre-rulebase
       rulename:
@@ -203,7 +203,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+        - "11"
     scriptarguments:
       device-group:
         complex:
@@ -212,12 +212,12 @@ tasks:
         complex:
           root: inputs.IP
           transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: /32
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: /32
       name:
         complex:
           root: PanoramaAddress
@@ -252,7 +252,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     scriptarguments:
       device-group:
         complex:
@@ -292,23 +292,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "21"
+        - "21"
       "yes":
-      - "2"
+        - "2"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoCommit
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.AutoCommit
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -338,7 +338,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -369,31 +369,31 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+        - "4"
       "yes":
-      - "16"
+        - "16"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.IP
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.Port
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.Protocol
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: inputs.IP
+                  iscontext: true
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: inputs.Port
+                  iscontext: true
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: inputs.Protocol
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -424,7 +424,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+        - "17"
     scriptarguments:
       device-group:
         complex:
@@ -460,7 +460,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+        - "18"
     scriptarguments:
       append:
         simple: "false"
@@ -470,38 +470,38 @@ tasks:
         complex:
           root: Panorama.Services
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Panorama.Services.DestinationPort
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.Port
-                iscontext: true
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Panorama.Services.Protocol
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.Protocol
-                iscontext: true
-              ignorecase: true
-          - - operator: startWith
-              left:
-                value:
-                  simple: Panorama.Services.Name
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.ServiceNamePrefix
-                iscontext: true
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: Panorama.Services.DestinationPort
+                    iscontext: true
+                  right:
+                    value:
+                      simple: inputs.Port
+                    iscontext: true
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: Panorama.Services.Protocol
+                    iscontext: true
+                  right:
+                    value:
+                      simple: inputs.Protocol
+                    iscontext: true
+                  ignorecase: true
+            -   - operator: startWith
+                  left:
+                    value:
+                      simple: Panorama.Services.Name
+                    iscontext: true
+                  right:
+                    value:
+                      simple: inputs.ServiceNamePrefix
+                    iscontext: true
           accessor: Name
           transformers:
-          - operator: uniq
-          - operator: FirstArrayElement
+            - operator: uniq
+            - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -532,19 +532,19 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "20"
+        - "20"
       "yes":
-      - "25"
+        - "25"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: PanoramaServiceName
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: PanoramaServiceName
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -575,7 +575,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "25"
+        - "25"
     scriptarguments:
       description:
         simple: Created by Cortex XSOAR
@@ -621,7 +621,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+        - "19"
     scriptarguments:
       key:
         simple: PanoramaServiceName
@@ -658,7 +658,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     scriptarguments:
       action:
         simple: drop
@@ -675,11 +675,11 @@ tasks:
         complex:
           root: inputs.LogForwarding
           filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.LogForwarding
-                iscontext: true
+            -   - operator: isNotEmpty
+                  left:
+                    value:
+                      simple: inputs.LogForwarding
+                    iscontext: true
       pre_post:
         simple: pre-rulebase
       rulename:
@@ -723,21 +723,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "28"
+        - "28"
       "yes":
-      - "11"
+        - "11"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: PanoramaAddress
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: PanoramaAddress
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -768,7 +768,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - "27"
+        - "27"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -800,7 +800,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "24"
+        - "24"
     scriptarguments:
       append:
         simple: "false"
@@ -810,28 +810,28 @@ tasks:
         complex:
           root: Panorama.Addresses
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Panorama.Addresses.IP_Netmask
-                iscontext: true
-              right:
-                value:
-                  simple: ${ip_netmask}
-                iscontext: true
-              ignorecase: true
-          - - operator: startWith
-              left:
-                value:
-                  simple: Panorama.Addresses.Name
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.ObjectNamePrefix
-                iscontext: true
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: Panorama.Addresses.IP_Netmask
+                    iscontext: true
+                  right:
+                    value:
+                      simple: ${ip_netmask}
+                    iscontext: true
+                  ignorecase: true
+            -   - operator: startWith
+                  left:
+                    value:
+                      simple: Panorama.Addresses.Name
+                    iscontext: true
+                  right:
+                    value:
+                      simple: inputs.ObjectNamePrefix
+                    iscontext: true
           transformers:
-          - operator: uniq
-          - operator: FirstArrayElement
+            - operator: uniq
+            - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -863,7 +863,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "26"
+        - "26"
     scriptarguments:
       key:
         simple: ip_netmask
@@ -871,12 +871,12 @@ tasks:
         complex:
           root: inputs.IP
           transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: /32
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: /32
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -908,7 +908,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       key:
         simple: PanoramaAddress
@@ -944,23 +944,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "10"
+        - "10"
       "yes":
-      - "30"
+        - "30"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.DeviceGroup
-            iscontext: true
-          right:
-            value:
-              simple: shared
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.DeviceGroup
+                  iscontext: true
+                right:
+                  value:
+                    simple: shared
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -991,7 +991,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     scriptarguments:
       device-group:
         complex:
@@ -1038,89 +1038,85 @@ view: |-
     }
   }
 inputs:
-- key: LogForwarding
-  value: {}
-  required: false
-  description: Panorama log forwarding object name.
-  playbookInputQuery:
-- key: IP
-  value: {}
-  required: false
-  description: IP address to block.
-  playbookInputQuery:
-- key: AutoCommit
-  value:
-    simple: "False"
-  required: false
-  description: |-
-    This input establishes whether to commit the configuration automatically.
-    True - Commit automatically.
-    False - Commit manually.
-  playbookInputQuery:
-- key: DeviceGroup
-  value: {}
-  required: false
-  description: Target Device Group.
-  playbookInputQuery:
-- key: Port
-  value: {}
-  required: false
-  description: Destination port to block.
-  playbookInputQuery:
-- key: Protocol
-  value: {}
-  required: false
-  description: Protocol
-  playbookInputQuery:
-- key: ServiceNamePrefix
-  value:
-    simple: xsoar-service-
-  required: false
-  description: Prefix of the Service name to be created.
-  playbookInputQuery:
-- key: RuleNamePrefix
-  value:
-    simple: xsoar-rule-
-  required: false
-  description: Prefix of the Rule name to be created.
-  playbookInputQuery:
-- key: ObjectNamePrefix
-  value:
-    simple: xsoar-object-
-  required: false
-  description: Prefix of the object name to be created.
-  playbookInputQuery:
-- key: WhereRule
-  value:
-    simple: top
-  required: false
-  description: 'Where to move the rule. If you specify "before" or "after", you need to supply the "dst" argument. (Default is: ''top'')'
-  playbookInputQuery:
-- key: SourceZone
-  value: {}
-  required: false
-  description: A comma-separated list of source zones.
-  playbookInputQuery:
-- key: DestinationZone
-  value: {}
-  required: false
-  description: A comma-separated list of destination zones.
-  playbookInputQuery:
-- key: SecondaryDeviceGroup
-  value: {}
-  required: false
-  description: If the rule, address and service are created in the "Shared" location, we need to know what device-groups we can push to because it isn't possible to push to the "Shared" location.
-  playbookInputQuery:
+  - key: LogForwarding
+    value: {}
+    required: false
+    description: Panorama log forwarding object name.
+    playbookInputQuery:
+  - key: IP
+    value: {}
+    required: false
+    description: IP address to block.
+    playbookInputQuery:
+  - key: AutoCommit
+    value:
+      simple: "False"
+    required: false
+    description: |-
+      This input establishes whether to commit the configuration automatically.
+      True - Commit automatically.
+      False - Commit manually.
+    playbookInputQuery:
+  - key: DeviceGroup
+    value: {}
+    required: false
+    description: Target Device Group.
+    playbookInputQuery:
+  - key: Port
+    value: {}
+    required: false
+    description: Destination port to block.
+    playbookInputQuery:
+  - key: Protocol
+    value: {}
+    required: false
+    description: Protocol
+    playbookInputQuery:
+  - key: ServiceNamePrefix
+    value:
+      simple: xsoar-service-
+    required: false
+    description: Prefix of the Service name to be created.
+    playbookInputQuery:
+  - key: RuleNamePrefix
+    value:
+      simple: xsoar-rule-
+    required: false
+    description: Prefix of the Rule name to be created.
+    playbookInputQuery:
+  - key: ObjectNamePrefix
+    value:
+      simple: xsoar-object-
+    required: false
+    description: Prefix of the object name to be created.
+    playbookInputQuery:
+  - key: WhereRule
+    value:
+      simple: top
+    required: false
+    description: 'Where to move the rule. If you specify "before" or "after", you need to supply the "dst" argument. (Default is: ''top'')'
+    playbookInputQuery:
+  - key: SourceZone
+    value: {}
+    required: false
+    description: A comma-separated list of source zones.
+    playbookInputQuery:
+  - key: DestinationZone
+    value: {}
+    required: false
+    description: A comma-separated list of destination zones.
+    playbookInputQuery:
+  - key: SecondaryDeviceGroup
+    value: {}
+    required: false
+    description: If the rule, address and service are created in the "Shared" location, we need to know what device-groups we can push to because it isn't possible to push to the "Shared" location.
+    playbookInputQuery:
 outputs: []
 tests:
-- No Tests
+  - No Tests
 fromversion: 5.0.0
 contentitemexportablefields:
   contentitemfields: {}
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

@@ -19,7 +19,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "54"
+        - "54"
     separatecontext: false
     view: |-
       {
@@ -50,7 +50,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     separatecontext: false
     view: |-
       {
@@ -81,7 +81,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     separatecontext: false
     view: |-
       {
@@ -112,7 +112,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     separatecontext: false
     view: |-
       {
@@ -143,18 +143,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "48"
+        - "48"
       "yes":
-      - "50"
+        - "50"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.IPAddress
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.IPAddress
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -184,30 +184,30 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "48"
+        - "48"
       "yes":
-      - "26"
-      - "27"
-      - "38"
+        - "26"
+        - "27"
+        - "38"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.MD5
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.SHA1
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.SHA256
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.MD5
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.SHA1
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.SHA256
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -237,18 +237,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "48"
+        - "48"
       "yes":
-      - "11"
+        - "11"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.URLDomain
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.URLDomain
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -278,18 +278,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "89"
+        - "89"
       "yes":
-      - "90"
+        - "90"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.SplunkURLDomainField
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.SplunkURLDomainField
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -320,7 +320,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "69"
+        - "69"
     scriptarguments:
       append:
         simple: "true"
@@ -330,12 +330,12 @@ tasks:
         complex:
           root: inputs.MD5
           transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
+            - operator: split
+              args:
+                delimiter:
+                  value:
+                    simple: ','
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -366,18 +366,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "82"
+        - "82"
       "yes":
-      - "81"
+        - "81"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.SplunkMD5Field
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.SplunkMD5Field
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -407,18 +407,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "48"
+        - "48"
       "yes":
-      - "21"
+        - "21"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.MD5
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.MD5
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -448,7 +448,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "22"
+        - "22"
     separatecontext: false
     view: |-
       {
@@ -479,7 +479,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "29"
+        - "29"
     separatecontext: false
     view: |-
       {
@@ -510,18 +510,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "48"
+        - "48"
       "yes":
-      - "31"
+        - "31"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.SHA1
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.SHA1
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -551,19 +551,19 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "84"
+        - "84"
       "yes":
-      - "83"
+        - "83"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.SplunkSHA1Field
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.SplunkSHA1Field
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -593,7 +593,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "39"
+        - "39"
     separatecontext: false
     view: |-
       {
@@ -624,18 +624,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "48"
+        - "48"
       "yes":
-      - "41"
+        - "41"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.SHA256
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.SHA256
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -665,19 +665,19 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "86"
+        - "86"
       "yes":
-      - "85"
+        - "85"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.SplunkSHA256Field
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.SplunkSHA256Field
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -707,7 +707,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "107"
+        - "107"
     separatecontext: false
     view: |-
       {
@@ -738,19 +738,19 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "88"
+        - "88"
       "yes":
-      - "87"
+        - "87"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.SplunkIPField
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.SplunkIPField
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -780,38 +780,38 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "48"
+        - "48"
       "yes":
-      - "2"
-      - "5"
-      - "6"
+        - "2"
+        - "5"
+        - "6"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: inList
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: SplunkPy,SplunkPy v2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: inList
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: SplunkPy,SplunkPy v2
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -837,14 +837,14 @@ tasks:
       name: Splunk search with custom fields
       description: Search Splunk for events using custom fields.
       tags:
-      - SIEMResults
+        - SIEMResults
       script: '|||splunk-search'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "48"
+        - "48"
     scriptarguments:
       earliest_time:
         simple: ${inputs.earliest_time}
@@ -856,105 +856,105 @@ tasks:
         complex:
           root: inputs.URLDomain
           transformers:
-          - operator: ProductJoin
-            args:
-              join:
-                value:
-                  simple: ' *'
-              list2:
-                value:
-                  simple: inputs.SplunkURLDomainField
-                iscontext: true
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: (.*)
-              replaceWith:
-                value:
-                  simple: $1*
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ')  | table '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.IPFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.UserFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.HostFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' ('
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.IndexName
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: index=
-              suffix: {}
+            - operator: ProductJoin
+              args:
+                join:
+                  value:
+                    simple: ' *'
+                list2:
+                  value:
+                    simple: inputs.SplunkURLDomainField
+                  iscontext: true
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: (.*)
+                replaceWith:
+                  value:
+                    simple: $1*
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ')  | table '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.SelectFields
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.IPFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.UserFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.HostFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' ('
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.IndexName
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: index=
+                suffix: {}
     separatecontext: false
     view: |-
       {
@@ -985,14 +985,14 @@ tasks:
       name: Splunk search with custom fields
       description: Search Splunk for events using custom fields.
       tags:
-      - SIEMResults
+        - SIEMResults
       script: '|||splunk-search'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "48"
+        - "48"
     scriptarguments:
       earliest_time:
         simple: ${inputs.earliest_time}
@@ -1004,97 +1004,97 @@ tasks:
         complex:
           root: inputs.SplunkIPField
           transformers:
-          - operator: ProductJoin
-            args:
-              join:
-                value:
-                  simple: '='
-              list2:
-                value:
-                  simple: inputs.IPAddress
-                iscontext: true
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ')  | table '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.IPFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.UserFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' ('
-              suffix: {}
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.HostFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.IndexName
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: index=
-              suffix: {}
+            - operator: ProductJoin
+              args:
+                join:
+                  value:
+                    simple: '='
+                list2:
+                  value:
+                    simple: inputs.IPAddress
+                  iscontext: true
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ')  | table '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.SelectFields
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.IPFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.UserFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' ('
+                suffix: {}
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.HostFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.IndexName
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: index=
+                suffix: {}
     separatecontext: false
     view: |-
       {
@@ -1125,14 +1125,14 @@ tasks:
       name: Splunk search without custom fields
       description: Search Splunk for events without using custom fields.
       tags:
-      - SIEMResults
+        - SIEMResults
       script: '|||splunk-search'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "48"
+        - "48"
     scriptarguments:
       earliest_time:
         simple: ${inputs.earliest_time}
@@ -1144,88 +1144,88 @@ tasks:
         complex:
           root: FileMD5
           transformers:
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ')  | table '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.IPFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.UserFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.HostFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' ('
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.IndexName
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: index=
-              suffix: {}
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ')  | table '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.SelectFields
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.IPFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.UserFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.HostFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' ('
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.IndexName
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: index=
+                suffix: {}
     separatecontext: false
     view: |-
       {
@@ -1256,14 +1256,14 @@ tasks:
       name: Splunk search without custom fields
       description: Searches Splunk for events without using custom fields.
       tags:
-      - SIEMResults
+        - SIEMResults
       script: '|||splunk-search'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "48"
+        - "48"
     scriptarguments:
       earliest_time:
         simple: ${inputs.earliest_time}
@@ -1275,88 +1275,88 @@ tasks:
         complex:
           root: FileSHA1
           transformers:
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ')  | table '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.IPFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.UserFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.HostFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' ('
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.IndexName
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: index=
-              suffix: {}
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ')  | table '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.SelectFields
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.IPFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.UserFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.HostFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' ('
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.IndexName
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: index=
+                suffix: {}
     separatecontext: false
     view: |-
       {
@@ -1387,14 +1387,14 @@ tasks:
       name: Splunk search without custom fields
       description: Searches Splunk for events without using custom fields.
       tags:
-      - SIEMResults
+        - SIEMResults
       script: '|||splunk-search'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "48"
+        - "48"
     scriptarguments:
       earliest_time:
         simple: ${inputs.earliest_time}
@@ -1406,88 +1406,88 @@ tasks:
         complex:
           root: FileSHA256
           transformers:
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ')  | table '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.IPFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.UserFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.HostFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' ('
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.IndexName
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: index=
-              suffix: {}
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ')  | table '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.SelectFields
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.IPFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.UserFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.HostFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' ('
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.IndexName
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: index=
+                suffix: {}
     separatecontext: false
     view: |-
       {
@@ -1518,14 +1518,14 @@ tasks:
       name: Splunk search without custom fields
       description: Searches Splunk for events without using custom fields.
       tags:
-      - SIEMResults
+        - SIEMResults
       script: '|||splunk-search'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "48"
+        - "48"
     scriptarguments:
       earliest_time:
         simple: ${inputs.earliest_time}
@@ -1537,96 +1537,96 @@ tasks:
         complex:
           root: DomainURL
           transformers:
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: (.*)
-              replaceWith:
-                value:
-                  simple: '*$1*'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ')  | table '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.IPFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.UserFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.HostFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' ('
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.IndexName
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: index=
-              suffix: {}
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: (.*)
+                replaceWith:
+                  value:
+                    simple: '*$1*'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ')  | table '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.SelectFields
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.IPFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.UserFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.HostFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' ('
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.IndexName
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: index=
+                suffix: {}
     separatecontext: false
     view: |-
       {
@@ -1657,14 +1657,14 @@ tasks:
       name: Splunk search with custom fields
       description: Searches Splunk for events using custom fields.
       tags:
-      - SIEMResults
+        - SIEMResults
       script: '|||splunk-search'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "48"
+        - "48"
     scriptarguments:
       earliest_time:
         simple: ${inputs.earliest_time}
@@ -1676,97 +1676,97 @@ tasks:
         complex:
           root: inputs.SplunkSHA1Field
           transformers:
-          - operator: ProductJoin
-            args:
-              join:
-                value:
-                  simple: '='
-              list2:
-                value:
-                  simple: inputs.SHA1
-                iscontext: true
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ')  | table '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.IPFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.UserFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.HostFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' ('
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.IndexName
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: index=
-              suffix: {}
+            - operator: ProductJoin
+              args:
+                join:
+                  value:
+                    simple: '='
+                list2:
+                  value:
+                    simple: inputs.SHA1
+                  iscontext: true
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ')  | table '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.SelectFields
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.IPFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.UserFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.HostFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' ('
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.IndexName
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: index=
+                suffix: {}
     separatecontext: false
     view: |-
       {
@@ -1797,14 +1797,14 @@ tasks:
       name: Splunk search with custom fields
       description: Searches Splunk for events using custom fields.
       tags:
-      - SIEMResults
+        - SIEMResults
       script: '|||splunk-search'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "48"
+        - "48"
     scriptarguments:
       earliest_time:
         simple: ${inputs.earliest_time}
@@ -1816,97 +1816,97 @@ tasks:
         complex:
           root: inputs.SplunkSHA256Field
           transformers:
-          - operator: ProductJoin
-            args:
-              join:
-                value:
-                  simple: '='
-              list2:
-                value:
-                  simple: inputs.SHA256
-                iscontext: true
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ')  | table '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.IPFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.UserFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.HostFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' ('
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.IndexName
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: index=
-              suffix: {}
+            - operator: ProductJoin
+              args:
+                join:
+                  value:
+                    simple: '='
+                list2:
+                  value:
+                    simple: inputs.SHA256
+                  iscontext: true
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ')  | table '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.SelectFields
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.IPFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.UserFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.HostFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' ('
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.IndexName
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: index=
+                suffix: {}
     separatecontext: false
     view: |-
       {
@@ -1937,14 +1937,14 @@ tasks:
       name: Splunk search without custom fields
       description: Searches Splunk for events.
       tags:
-      - SIEMResults
+        - SIEMResults
       script: '|||splunk-search'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "48"
+        - "48"
     scriptarguments:
       earliest_time:
         simple: ${inputs.earliest_time}
@@ -1956,88 +1956,88 @@ tasks:
         complex:
           root: IPAddress
           transformers:
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ')  | table '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.IPFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.UserFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.HostFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' ('
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.IndexName
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: index=
-              suffix: {}
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ')  | table '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.SelectFields
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.IPFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.UserFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.HostFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' ('
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.IndexName
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: index=
+                suffix: {}
     separatecontext: false
     view: |-
       {
@@ -2072,7 +2072,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "122"
+        - "122"
     separatecontext: false
     view: |-
       {
@@ -2103,7 +2103,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "20"
+        - "20"
     separatecontext: false
     view: |-
       {
@@ -2134,7 +2134,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "78"
+        - "78"
     separatecontext: false
     view: |-
       {
@@ -2165,7 +2165,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "112"
+        - "112"
     separatecontext: false
     view: |-
       {
@@ -2196,7 +2196,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "79"
+        - "79"
     separatecontext: false
     view: |-
       {
@@ -2227,7 +2227,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "113"
+        - "113"
     separatecontext: false
     view: |-
       {
@@ -2258,7 +2258,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "64"
+        - "64"
     separatecontext: false
     view: |-
       {
@@ -2289,7 +2289,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "114"
+        - "114"
     separatecontext: false
     view: |-
       {
@@ -2320,7 +2320,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "115"
+        - "115"
     separatecontext: false
     view: |-
       {
@@ -2351,7 +2351,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "57"
+        - "57"
     separatecontext: false
     view: |-
       {
@@ -2382,18 +2382,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "127"
+        - "127"
       "yes":
-      - "123"
+        - "123"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Splunk.Result
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: Splunk.Result
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -2424,7 +2424,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "116"
+        - "116"
     scriptarguments:
       append:
         simple: "true"
@@ -2435,16 +2435,16 @@ tasks:
           root: ${
           accessor: =[]}
           transformers:
-          - operator: GetValuesOfMultipleFields
-            args:
-              key:
-                value:
-                  simple: Splunk.Result
-                iscontext: true
-              list:
-                value:
-                  simple: inputs.IPFieldsToReturn
-                iscontext: true
+            - operator: GetValuesOfMultipleFields
+              args:
+                key:
+                  value:
+                    simple: Splunk.Result
+                  iscontext: true
+                list:
+                  value:
+                    simple: inputs.IPFieldsToReturn
+                  iscontext: true
     separatecontext: false
     view: |-
       {
@@ -2476,7 +2476,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "127"
+        - "127"
     scriptarguments:
       append:
         simple: "true"
@@ -2487,16 +2487,16 @@ tasks:
           root: ${
           accessor: =[]}
           transformers:
-          - operator: GetValuesOfMultipleFields
-            args:
-              key:
-                value:
-                  simple: Splunk.Result
-                iscontext: true
-              list:
-                value:
-                  simple: inputs.UserFieldsToReturn
-                iscontext: true
+            - operator: GetValuesOfMultipleFields
+              args:
+                key:
+                  value:
+                    simple: Splunk.Result
+                  iscontext: true
+                list:
+                  value:
+                    simple: inputs.UserFieldsToReturn
+                  iscontext: true
     separatecontext: false
     view: |-
       {
@@ -2528,7 +2528,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "138"
+        - "138"
     scriptarguments:
       append:
         simple: "true"
@@ -2539,16 +2539,16 @@ tasks:
           root: ${
           accessor: =[]}
           transformers:
-          - operator: GetValuesOfMultipleFields
-            args:
-              key:
-                value:
-                  simple: Splunk.Result
-                iscontext: true
-              list:
-                value:
-                  simple: inputs.HostFieldsToReturn
-                iscontext: true
+            - operator: GetValuesOfMultipleFields
+              args:
+                key:
+                  value:
+                    simple: Splunk.Result
+                  iscontext: true
+                list:
+                  value:
+                    simple: inputs.HostFieldsToReturn
+                  iscontext: true
     separatecontext: false
     view: |-
       {
@@ -2580,7 +2580,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "71"
+        - "71"
     scriptarguments:
       append:
         simple: "true"
@@ -2590,12 +2590,12 @@ tasks:
         complex:
           root: inputs.SHA1
           transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
+            - operator: split
+              args:
+                delimiter:
+                  value:
+                    simple: ','
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2627,7 +2627,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "72"
+        - "72"
     scriptarguments:
       append:
         simple: "true"
@@ -2637,12 +2637,12 @@ tasks:
         complex:
           root: inputs.SHA256
           transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
+            - operator: split
+              args:
+                delimiter:
+                  value:
+                    simple: ','
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2674,7 +2674,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "80"
+        - "80"
     scriptarguments:
       append:
         simple: "true"
@@ -2684,12 +2684,12 @@ tasks:
         complex:
           root: inputs.IPAddress
           transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
+            - operator: split
+              args:
+                delimiter:
+                  value:
+                    simple: ','
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2721,7 +2721,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "74"
+        - "74"
     scriptarguments:
       append:
         simple: "true"
@@ -2731,12 +2731,12 @@ tasks:
         complex:
           root: inputs.URLDomain
           transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
+            - operator: split
+              args:
+                delimiter:
+                  value:
+                    simple: ','
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2767,7 +2767,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "117"
+        - "117"
     separatecontext: false
     view: |-
       {
@@ -2798,18 +2798,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "121"
+        - "121"
       "yes":
-      - "118"
+        - "118"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Splunk.DetectedIPs
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: Splunk.DetectedIPs
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -2840,7 +2840,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "119"
+        - "119"
     scriptarguments:
       ip:
         simple: ${Splunk.DetectedIPs}
@@ -2877,7 +2877,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "120"
+        - "120"
     scriptarguments:
       append:
         simple: "true"
@@ -2887,17 +2887,17 @@ tasks:
         complex:
           root: IP
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: IP.InRange
-                iscontext: true
-              right:
-                value:
-                  simple: "yes"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: IP.InRange
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "yes"
           accessor: Address
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2929,7 +2929,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "121"
+        - "121"
     scriptarguments:
       append:
         simple: "true"
@@ -2939,17 +2939,17 @@ tasks:
         complex:
           root: IP
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: IP.InRange
-                iscontext: true
-              right:
-                value:
-                  simple: "no"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: IP.InRange
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "no"
           accessor: Address
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -2980,7 +2980,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "127"
+        - "127"
     separatecontext: false
     view: |-
       {
@@ -3007,14 +3007,14 @@ tasks:
       name: Splunk search with custom fields
       description: Searches Splunk for events using custom fields.
       tags:
-      - SIEMResults
+        - SIEMResults
       script: '|||splunk-search'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "48"
+        - "48"
     scriptarguments:
       earliest_time:
         simple: ${inputs.earliest_time}
@@ -3026,97 +3026,97 @@ tasks:
         complex:
           root: inputs.SplunkMD5Field
           transformers:
-          - operator: ProductJoin
-            args:
-              join:
-                value:
-                  simple: '='
-              list2:
-                value:
-                  simple: inputs.MD5
-                iscontext: true
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ')  | table '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.IPFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.UserFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.HostFieldsToReturn
-                iscontext: true
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' ('
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.IndexName
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: index=
-              suffix: {}
+            - operator: ProductJoin
+              args:
+                join:
+                  value:
+                    simple: '='
+                list2:
+                  value:
+                    simple: inputs.MD5
+                  iscontext: true
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ' OR '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ')  | table '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.SelectFields
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.IPFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.UserFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.HostFieldsToReturn
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' ('
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.IndexName
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: index=
+                suffix: {}
     separatecontext: false
     view: |-
       {
@@ -3151,9 +3151,9 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "135"
-      - "136"
-      - "137"
+        - "135"
+        - "136"
+        - "137"
     separatecontext: false
     view: |-
       {
@@ -3184,18 +3184,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "129"
+        - "129"
       "yes":
-      - "108"
+        - "108"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.IPFieldsToReturn
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.IPFieldsToReturn
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -3225,18 +3225,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "133"
+        - "133"
       "yes":
-      - "110"
+        - "110"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.HostFieldsToReturn
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.HostFieldsToReturn
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -3266,18 +3266,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "131"
+        - "131"
       "yes":
-      - "109"
+        - "109"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.UserFieldsToReturn
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.UserFieldsToReturn
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -3335,7 +3335,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "130"
+        - "130"
     separatecontext: false
     view: |-
       {
@@ -3367,7 +3367,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "116"
+        - "116"
     scriptarguments:
       contextKey:
         simple: Splunk.DetectedIPs
@@ -3405,7 +3405,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "132"
+        - "132"
     separatecontext: false
     view: |-
       {
@@ -3437,7 +3437,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "127"
+        - "127"
     scriptarguments:
       contextKey:
         simple: Splunk.DetectedUsers
@@ -3475,7 +3475,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "134"
+        - "134"
     separatecontext: false
     view: |-
       {
@@ -3507,7 +3507,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "138"
+        - "138"
     scriptarguments:
       contextKey:
         simple: Splunk.DetectedHosts
@@ -3545,7 +3545,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "126"
+        - "126"
     separatecontext: false
     view: |-
       {
@@ -3576,7 +3576,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "125"
+        - "125"
     separatecontext: false
     view: |-
       {
@@ -3607,7 +3607,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "124"
+        - "124"
     separatecontext: false
     view: |-
       {
@@ -3638,7 +3638,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "139"
+        - "139"
     separatecontext: false
     view: |-
       {
@@ -3669,18 +3669,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "141"
+        - "141"
       "yes":
-      - "144"
+        - "144"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Splunk.DetectedHosts
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: Splunk.DetectedHosts
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -3711,7 +3711,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "142"
+        - "142"
     scriptarguments:
       domainName:
         simple: 1${inputs.InternalDomainName}
@@ -3751,7 +3751,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "127"
+        - "127"
     separatecontext: false
     view: |-
       {
@@ -3783,7 +3783,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "143"
+        - "143"
     scriptarguments:
       append:
         simple: "true"
@@ -3793,17 +3793,17 @@ tasks:
         complex:
           root: Endpoint
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Endpoint.IsInternal
-                iscontext: true
-              right:
-                value:
-                  simple: "true"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: Endpoint.IsInternal
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "true"
           accessor: Hostname
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -3835,7 +3835,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "141"
+        - "141"
     scriptarguments:
       append:
         simple: "true"
@@ -3845,17 +3845,17 @@ tasks:
         complex:
           root: Endpoint
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Endpoint.IsInternal
-                iscontext: true
-              right:
-                value:
-                  simple: "false"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: Endpoint.IsInternal
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "false"
           accessor: Hostname
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -3886,19 +3886,19 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "145"
+        - "145"
       "yes":
-      - "140"
+        - "140"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.InternalDomainName
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.InternalDomainName
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -3929,7 +3929,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "141"
+        - "141"
     scriptarguments:
       append:
         simple: "true"
@@ -3967,171 +3967,167 @@ view: |-
     }
   }
 inputs:
-- key: MD5
-  value: {}
-  required: false
-  description: MD5 hash file or an array of hashes for which to search.
-  playbookInputQuery:
-- key: SplunkMD5Field
-  value: {}
-  required: false
-  description: The name of the fields, in Splunk, in which to find the MD5 hash. You can enter multiple field names using a comma-separated format. If no field is specified, the search uses quick filter.
-  playbookInputQuery:
-- key: SHA1
-  value: {}
-  required: false
-  description: SHA1 hash file or an array of hashes on which to search.
-  playbookInputQuery:
-- key: SplunkSHA1Field
-  value: {}
-  required: false
-  description: The name of the fields, in Splunk, in which to find the SHA1 field. You can enter multiple field names using a comma-separated format. If no field is specified, the search uses quick filter.
-  playbookInputQuery:
-- key: SHA256
-  value: {}
-  required: false
-  description: SHA256 hash file or an array of hashes on which to search.
-  playbookInputQuery:
-- key: SplunkSHA256Field
-  value: {}
-  required: false
-  description: The name of the fields, in Splunk, in which to find the SHA256. You can enter multiple field names using a comma-separated format. If no field is specified, the search uses quick filter.
-  playbookInputQuery:
-- key: IPAddress
-  value: {}
-  required: false
-  description: |
-    Source or destination IP on which to search. Can be a single address or an array of addresses.
-  playbookInputQuery:
-- key: SplunkIPField
-  value: {}
-  required: false
-  description: The name of the fields, in Splunk, in which to find the IP addresses. You can enter multiple field names using a comma-separated format. For example, sourceip,destinationip.
-  playbookInputQuery:
-- key: URLDomain
-  value: {}
-  required: false
-  description: |
-    Domain or Url can be single or an array of domain/urls to search. By default the LIKE clause is used.
-  playbookInputQuery:
-- key: SplunkURLDomainField
-  value: {}
-  required: false
-  description: The name of the fields, in Splunk, in which to find the URL/Domain. If no field is specified, the search uses quick filter. Only one field can be used in this parameter.
-  playbookInputQuery:
-- key: earliest_time
-  value:
-    simple: -1d
-  required: false
-  description: |-
-    Earliest time to search.
-    Examples:
-    -7d
-    -24h
+  - key: MD5
+    value: {}
+    required: false
+    description: MD5 hash file or an array of hashes for which to search.
+    playbookInputQuery:
+  - key: SplunkMD5Field
+    value: {}
+    required: false
+    description: The name of the fields, in Splunk, in which to find the MD5 hash. You can enter multiple field names using a comma-separated format. If no field is specified, the search uses quick filter.
+    playbookInputQuery:
+  - key: SHA1
+    value: {}
+    required: false
+    description: SHA1 hash file or an array of hashes on which to search.
+    playbookInputQuery:
+  - key: SplunkSHA1Field
+    value: {}
+    required: false
+    description: The name of the fields, in Splunk, in which to find the SHA1 field. You can enter multiple field names using a comma-separated format. If no field is specified, the search uses quick filter.
+    playbookInputQuery:
+  - key: SHA256
+    value: {}
+    required: false
+    description: SHA256 hash file or an array of hashes on which to search.
+    playbookInputQuery:
+  - key: SplunkSHA256Field
+    value: {}
+    required: false
+    description: The name of the fields, in Splunk, in which to find the SHA256. You can enter multiple field names using a comma-separated format. If no field is specified, the search uses quick filter.
+    playbookInputQuery:
+  - key: IPAddress
+    value: {}
+    required: false
+    description: |
+      Source or destination IP on which to search. Can be a single address or an array of addresses.
+    playbookInputQuery:
+  - key: SplunkIPField
+    value: {}
+    required: false
+    description: The name of the fields, in Splunk, in which to find the IP addresses. You can enter multiple field names using a comma-separated format. For example, sourceip,destinationip.
+    playbookInputQuery:
+  - key: URLDomain
+    value: {}
+    required: false
+    description: |
+      Domain or Url can be single or an array of domain/urls to search. By default the LIKE clause is used.
+    playbookInputQuery:
+  - key: SplunkURLDomainField
+    value: {}
+    required: false
+    description: The name of the fields, in Splunk, in which to find the URL/Domain. If no field is specified, the search uses quick filter. Only one field can be used in this parameter.
+    playbookInputQuery:
+  - key: earliest_time
+    value:
+      simple: -1d
+    required: false
+    description: |-
+      Earliest time to search.
+      Examples:
+      -7d
+      -24h
 
-    More examples
-    https://docs.splunk.com/Documentation/Splunk/8.0.0/Search/Specifytimemodifiersinyoursearch
-
-
-    For more examples view
-    https://docs.splunk.com/Documentation/Splunk/8.0.0/SearchReference/SearchTimeModifiers
-
-    It is recommended to set a limit for the time frame.
-  playbookInputQuery:
-- key: latest_time
-  value: {}
-  required: false
-  description: |-
-    Latest time to search.
-    Examples:
-    -6d
-    -23h
-
-    More examples
-    https://docs.splunk.com/Documentation/Splunk/8.0.0/Search/Specifytimemodifiersinyoursearch
+      More examples
+      https://docs.splunk.com/Documentation/Splunk/8.0.0/Search/Specifytimemodifiersinyoursearch
 
 
-    For more examples view
-    https://docs.splunk.com/Documentation/Splunk/8.0.0/SearchReference/SearchTimeModifiers
+      For more examples view
+      https://docs.splunk.com/Documentation/Splunk/8.0.0/SearchReference/SearchTimeModifiers
 
-    It is recommended to set a limit for the time frame.
-  playbookInputQuery:
-- key: event_limit
-  value:
-    simple: "100"
-  required: true
-  description: Limit the number of events returned by query. This argument is not mandatory for the command, but is mandatory for the playbook.
-  playbookInputQuery:
-- key: IPFieldsToReturn
-  value: {}
-  required: false
-  description: The value of the IP fields to return from Splunk when the specified indicator is found. These values are used as inputs in the Setting IP addresses section. For example, src,src_ip,dst,dst_ip.
-  playbookInputQuery:
-- key: UserFieldsToReturn
-  value: {}
-  required: false
-  description: The value of the username fields to return from Splunk when the specified indicator is found. These values are used as inputs in the Setting user names section. For example, username,src_username,dst_username.
-  playbookInputQuery:
-- key: HostFieldsToReturn
-  value: {}
-  required: false
-  description: The value of the hostname fields to return from Splunk when the specified indicator is found. These values are used as inputs in the Setting host names section. For example, hostname,src_hostname, dst_hostname.
-  playbookInputQuery:
-- key: InternalIPRange
-  value: {}
-  required: false
-  description: 'A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR format, separated by commas. An example of a list of ranges could be: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16. If a list of IP ranges is not provided, the list provided in the IsIPInRanges script (the known IPv4 private address ranges) is used by default.'
-  playbookInputQuery:
-- key: IndexName
-  value:
-    simple: '*'
-  required: true
-  description: A single Spunk index to use in the search.
-  playbookInputQuery:
-- key: SelectFields
-  value:
-    simple: source,timestamp
-  required: true
-  description: Use this field to include additional enrichment data for the Splunk query. If you have defined one or more investigation fields, the SelectField should not include those fields. If there are no other investigation fields defined, the SelectField must contain some value. Enter a comma-separated list of field names as they appear in Splunk. * is valid value, but not recommended since it creates large output.
-  playbookInputQuery:
-- key: InternalDomainName
-  value: {}
-  required: false
-  description: The organizations internal domain name. This is provided for the script IsInternalHostName that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example demisto.com. If there is more than one domain, use the | character to separate values such as (demisto.com|test.com)
-  playbookInputQuery:
-- key: InternalHostRegex
-  value: {}
-  required: false
-  description: This is provided for the script IsInternalHostName that checks if the detected host names are internal or external. if the hosts match the organizations naming convention. For example the host testpc1 will have the following regex \w{6}\d{1}
-  playbookInputQuery:
+      It is recommended to set a limit for the time frame.
+    playbookInputQuery:
+  - key: latest_time
+    value: {}
+    required: false
+    description: |-
+      Latest time to search.
+      Examples:
+      -6d
+      -23h
+
+      More examples
+      https://docs.splunk.com/Documentation/Splunk/8.0.0/Search/Specifytimemodifiersinyoursearch
+
+
+      For more examples view
+      https://docs.splunk.com/Documentation/Splunk/8.0.0/SearchReference/SearchTimeModifiers
+
+      It is recommended to set a limit for the time frame.
+    playbookInputQuery:
+  - key: event_limit
+    value:
+      simple: "100"
+    required: true
+    description: Limit the number of events returned by query. This argument is not mandatory for the command, but is mandatory for the playbook.
+    playbookInputQuery:
+  - key: IPFieldsToReturn
+    value: {}
+    required: false
+    description: The value of the IP fields to return from Splunk when the specified indicator is found. These values are used as inputs in the Setting IP addresses section. For example, src,src_ip,dst,dst_ip.
+    playbookInputQuery:
+  - key: UserFieldsToReturn
+    value: {}
+    required: false
+    description: The value of the username fields to return from Splunk when the specified indicator is found. These values are used as inputs in the Setting user names section. For example, username,src_username,dst_username.
+    playbookInputQuery:
+  - key: HostFieldsToReturn
+    value: {}
+    required: false
+    description: The value of the hostname fields to return from Splunk when the specified indicator is found. These values are used as inputs in the Setting host names section. For example, hostname,src_hostname, dst_hostname.
+    playbookInputQuery:
+  - key: InternalIPRange
+    value: {}
+    required: false
+    description: 'A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR format, separated by commas. An example of a list of ranges could be: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16. If a list of IP ranges is not provided, the list provided in the IsIPInRanges script (the known IPv4 private address ranges) is used by default.'
+    playbookInputQuery:
+  - key: IndexName
+    value:
+      simple: '*'
+    required: true
+    description: A single Spunk index to use in the search.
+    playbookInputQuery:
+  - key: SelectFields
+    value:
+      simple: source,timestamp
+    required: true
+    description: Use this field to include additional enrichment data for the Splunk query. If you have defined one or more investigation fields, the SelectField should not include those fields. If there are no other investigation fields defined, the SelectField must contain some value. Enter a comma-separated list of field names as they appear in Splunk. * is valid value, but not recommended since it creates large output.
+    playbookInputQuery:
+  - key: InternalDomainName
+    value: {}
+    required: false
+    description: The organizations internal domain name. This is provided for the script IsInternalHostName that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example demisto.com. If there is more than one domain, use the | character to separate values such as (demisto.com|test.com)
+    playbookInputQuery:
+  - key: InternalHostRegex
+    value: {}
+    required: false
+    description: This is provided for the script IsInternalHostName that checks if the detected host names are internal or external. if the hosts match the organizations naming convention. For example the host testpc1 will have the following regex \w{6}\d{1}
+    playbookInputQuery:
 outputs:
-- contextPath: Splunk.DetectedUsers
-  description: Users detected based on the username field in your search.
-  type: string
-- contextPath: Splunk.DetectedInternalIPs
-  description: Internal IP addresses detected by your search.
-  type: string
-- contextPath: Splunk.DetectedExternalIPs
-  description: External IP addresses detected by your search.
-  type: string
-- contextPath: Splunk.DetectedInternalHosts
-  description: Internal host names detected based on the fields in your search.
-  type: string
-- contextPath: Splunk.DetectedExternalHosts
-  description: External host names detected based on the fields in your search.
-  type: string
+  - contextPath: Splunk.DetectedUsers
+    description: Users detected based on the username field in your search.
+    type: string
+  - contextPath: Splunk.DetectedInternalIPs
+    description: Internal IP addresses detected by your search.
+    type: string
+  - contextPath: Splunk.DetectedExternalIPs
+    description: External IP addresses detected by your search.
+    type: string
+  - contextPath: Splunk.DetectedInternalHosts
+    description: Internal host names detected based on the fields in your search.
+    type: string
+  - contextPath: Splunk.DetectedExternalHosts
+    description: External host names detected based on the fields in your search.
+    type: string
 tests:
-- Splunk-Test
-- Splunk Indicator Hunting Test
-- SplunkPy-Test-V2
+  - Splunk-Test
+  - Splunk Indicator Hunting Test
+  - SplunkPy-Test-V2
 fromversion: 5.0.0
 supportedModules:
-- agentix
-- xsiam
-- edr
-- cloud
-- cloud_runtime_security
-- X1
-- X3
-- X5
-- ENT_PLUS
+  - agentix
+  - xsiam
+  - edr
+  - cloud
+  - cloud_runtime_security

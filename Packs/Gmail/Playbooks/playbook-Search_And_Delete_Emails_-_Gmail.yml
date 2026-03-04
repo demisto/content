@@ -19,7 +19,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     view: |-
       {
@@ -49,39 +49,39 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+        - "8"
       "yes":
-      - "2"
+        - "2"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Gmail
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Gmail
+                              ignorecase: true
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                              ignorecase: true
+                      accessor: brand
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -110,7 +110,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     separatecontext: false
     view: |-
       {
@@ -141,22 +141,22 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+        - "6"
     scriptarguments:
       after:
         complex:
           root: TimeNowUnix
           transformers:
-          - operator: TimeStampToDate
-          - operator: RegexExtractAll
-            args:
-              error_if_no_match: {}
-              ignore_case: {}
-              multi_line: {}
-              period_matches_newline: {}
-              regex:
-                value:
-                  simple: ^[^T]+
+            - operator: TimeStampToDate
+            - operator: RegexExtractAll
+              args:
+                error_if_no_match: {}
+                ignore_case: {}
+                multi_line: {}
+                period_matches_newline: {}
+                regex:
+                  value:
+                    simple: ^[^T]+
       filename:
         complex:
           root: inputs.AttachmentName
@@ -172,14 +172,14 @@ tasks:
         complex:
           root: inputs.Subject
           transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: '"'
-              suffix:
-                value:
-                  simple: '"'
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: '"'
+                suffix:
+                  value:
+                    simple: '"'
     separatecontext: false
     view: |-
       {
@@ -210,7 +210,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       message-id:
         complex:
@@ -252,29 +252,29 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+        - "8"
       "yes":
-      - "13"
+        - "13"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Gmail.Subject
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Gmail.Subject
-                      iscontext: true
-                    right:
-                      value:
-                        simple: inputs.Subject
-                      iscontext: true
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: Gmail.Subject
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: Gmail.Subject
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: inputs.Subject
+                                iscontext: true
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -303,7 +303,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "12"
+        - "12"
     separatecontext: false
     view: |-
       {
@@ -360,23 +360,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "11"
+        - "11"
       "yes":
-      - "10"
+        - "10"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.SearchThisWeek
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.SearchThisWeek
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -407,7 +407,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     scriptarguments:
       daysAgo:
         simple: "7"
@@ -441,22 +441,22 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+        - "6"
     scriptarguments:
       after:
         complex:
           root: TimeNowUnix
           transformers:
-          - operator: TimeStampToDate
-          - operator: RegexExtractAll
-            args:
-              error_if_no_match: {}
-              ignore_case: {}
-              multi_line: {}
-              period_matches_newline: {}
-              regex:
-                value:
-                  simple: ^[^T]+
+            - operator: TimeStampToDate
+            - operator: RegexExtractAll
+              args:
+                error_if_no_match: {}
+                ignore_case: {}
+                multi_line: {}
+                period_matches_newline: {}
+                regex:
+                  value:
+                    simple: ^[^T]+
       filename:
         complex:
           root: inputs.AttachmentName
@@ -510,9 +510,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+        - "8"
       "Yes":
-      - "5"
+        - "5"
     separatecontext: false
     view: |-
       {
@@ -543,7 +543,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     scriptarguments:
       key:
         simple: GmailSearchResults
@@ -551,15 +551,15 @@ tasks:
         complex:
           root: Gmail
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Gmail.Subject
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.Subject
-                iscontext: true
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: Gmail.Subject
+                    iscontext: true
+                  right:
+                    value:
+                      simple: inputs.Subject
+                    iscontext: true
     separatecontext: false
     view: |-
       {
@@ -590,7 +590,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "15"
+        - "15"
     scriptarguments:
       text:
         complex:
@@ -626,7 +626,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       key:
         simple: GmailTo
@@ -635,7 +635,7 @@ tasks:
           root: ExtractedIndicators
           accessor: Email
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -672,52 +672,48 @@ view: |-
     }
   }
 inputs:
-- key: From
-  value: {}
-  required: false
-  description: The value of the malicious email's "From" attribute.
-  playbookInputQuery:
-- key: Subject
-  value: {}
-  required: false
-  description: The value of the malicious email's "Subject" attribute.
-  playbookInputQuery:
-- key: AttachmentName
-  value: {}
-  required: false
-  description: The value of the malicious email's "AttachmentName" attribute.
-  playbookInputQuery:
-- key: Limit
-  value:
-    simple: "50"
-  required: false
-  description: The maximum number of search results.
-  playbookInputQuery:
-- key: DeleteType
-  value:
-    simple: "False"
-  required: false
-  description: |-
-    The deletion type (trash or permanent).
-    For permanent choose 'True'.
-  playbookInputQuery:
-- key: SearchThisWeek
-  value:
-    simple: "true"
-  required: false
-  description: Limit the search to the current week (true/false).
-  playbookInputQuery:
+  - key: From
+    value: {}
+    required: false
+    description: The value of the malicious email's "From" attribute.
+    playbookInputQuery:
+  - key: Subject
+    value: {}
+    required: false
+    description: The value of the malicious email's "Subject" attribute.
+    playbookInputQuery:
+  - key: AttachmentName
+    value: {}
+    required: false
+    description: The value of the malicious email's "AttachmentName" attribute.
+    playbookInputQuery:
+  - key: Limit
+    value:
+      simple: "50"
+    required: false
+    description: The maximum number of search results.
+    playbookInputQuery:
+  - key: DeleteType
+    value:
+      simple: "False"
+    required: false
+    description: |-
+      The deletion type (trash or permanent).
+      For permanent choose 'True'.
+    playbookInputQuery:
+  - key: SearchThisWeek
+    value:
+      simple: "true"
+    required: false
+    description: Limit the search to the current week (true/false).
+    playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 6.0.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
-- edr
-- cloud
-- cloud_runtime_security
+  - agentix
+  - xsiam
+  - edr
+  - cloud
+  - cloud_runtime_security

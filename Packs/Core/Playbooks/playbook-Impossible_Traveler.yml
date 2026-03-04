@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "50"
+        - "50"
     separatecontext: false
     view: |-
       {
@@ -48,7 +48,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "118"
+        - "118"
     separatecontext: false
     view: |-
       {
@@ -79,7 +79,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "111"
+        - "111"
     separatecontext: false
     view: |-
       {
@@ -90,8 +90,8 @@ tasks:
       }
     note: false
     timertriggers:
-    - fieldname: detectionsla
-      action: start
+      - fieldname: detectionsla
+        action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 2
@@ -112,7 +112,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "104"
+        - "104"
     separatecontext: false
     view: |-
       {
@@ -143,24 +143,24 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "106"
+        - "106"
       "yes":
-      - "84"
+        - "84"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: greaterThan
-          left:
-            value:
-              complex:
-                root: GeoEvents
-                accessor: distance
-            iscontext: true
-          right:
-            value:
-              simple: inputs.MaxMilesPerHourAllowed
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: greaterThan
+                left:
+                  value:
+                    complex:
+                      root: GeoEvents
+                      accessor: distance
+                  iscontext: true
+                right:
+                  value:
+                    simple: inputs.MaxMilesPerHourAllowed
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -190,45 +190,45 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "112"
+        - "112"
       "yes":
-      - "106"
+        - "106"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: in
-          left:
-            value:
-              complex:
-                root: ImpossibleTravelerIPs
-                transformers:
-                - operator: uniq
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: inputs.WhitelistedIPs
-                transformers:
-                - operator: splitAndTrim
-                  args:
-                    delimiter:
-                      value:
-                        simple: ','
-            iscontext: true
-        - operator: IsInCidrRanges
-          left:
-            value:
-              complex:
-                root: ImpossibleTravelerIPs
-                transformers:
-                - operator: uniq
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: inputs.AllowlistCIDR
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: in
+                left:
+                  value:
+                    complex:
+                      root: ImpossibleTravelerIPs
+                      transformers:
+                        - operator: uniq
+                  iscontext: true
+                right:
+                  value:
+                    complex:
+                      root: inputs.WhitelistedIPs
+                      transformers:
+                        - operator: splitAndTrim
+                          args:
+                            delimiter:
+                              value:
+                                simple: ','
+                  iscontext: true
+              - operator: IsInCidrRanges
+                left:
+                  value:
+                    complex:
+                      root: ImpossibleTravelerIPs
+                      transformers:
+                        - operator: uniq
+                  iscontext: true
+                right:
+                  value:
+                    complex:
+                      root: inputs.AllowlistCIDR
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -258,26 +258,26 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "112"
+        - "112"
       "yes":
-      - "67"
+        - "67"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.WhitelistedIPs
-            iscontext: true
-          right:
-            value: {}
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.AllowlistCIDR
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.WhitelistedIPs
+                  iscontext: true
+                right:
+                  value: {}
+              - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.AllowlistCIDR
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -308,7 +308,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "102"
+        - "102"
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -320,8 +320,8 @@ tasks:
       }
     note: false
     timertriggers:
-    - fieldname: remediationsla
-      action: stop
+      - fieldname: remediationsla
+        action: stop
     ignoreworker: false
     skipunavailable: false
     quietmode: 2
@@ -342,7 +342,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "68"
+        - "68"
     separatecontext: false
     view: |-
       {
@@ -373,31 +373,31 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "32"
+        - "32"
       "yes":
-      - "113"
+        - "113"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: UserManagerEmail
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.ContactUserManager
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: UserManagerEmail
+                  iscontext: true
+                right:
+                  value: {}
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.ContactUserManager
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -427,7 +427,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "73"
+        - "73"
     separatecontext: false
     view: |-
       {
@@ -486,53 +486,53 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "110"
+        - "110"
       "yes":
-      - "119"
+        - "119"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: greaterThan
-          left:
-            value:
-              complex:
-                root: IP
-                accessor: PositiveDetections
-            iscontext: true
-          right:
-            value:
-              simple: "5"
-        - operator: greaterThanOrEqual
-          left:
-            value:
-              simple: AbuseIPDB.IP.AbuseConfidenceScore
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: inputs.AbuseIPDBThreshold
-            iscontext: true
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: DBotScore
-                filters:
-                - - operator: in
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: alert.localip
-                      iscontext: true
-                accessor: Score
-            iscontext: true
-          right:
-            value:
-              simple: "3"
+      - label: "yes"
+        condition:
+          -   - operator: greaterThan
+                left:
+                  value:
+                    complex:
+                      root: IP
+                      accessor: PositiveDetections
+                  iscontext: true
+                right:
+                  value:
+                    simple: "5"
+              - operator: greaterThanOrEqual
+                left:
+                  value:
+                    simple: AbuseIPDB.IP.AbuseConfidenceScore
+                  iscontext: true
+                right:
+                  value:
+                    complex:
+                      root: inputs.AbuseIPDBThreshold
+                  iscontext: true
+              - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: DBotScore
+                      filters:
+                        -   - operator: in
+                              left:
+                                value:
+                                  simple: DBotScore.Indicator
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: alert.localip
+                                iscontext: true
+                      accessor: Score
+                  iscontext: true
+                right:
+                  value:
+                    simple: "3"
     continueonerrortype: ""
     view: |-
       {
@@ -563,7 +563,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "102"
+        - "102"
     separatecontext: false
     view: |-
       {
@@ -599,7 +599,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "51"
+        - "51"
     scriptarguments:
       domain:
         complex:
@@ -647,7 +647,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "119"
+        - "119"
     scriptarguments:
       key:
         simple: BlockIndicators
@@ -684,14 +684,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "107"
+        - "107"
     scriptarguments:
       arrayData:
         complex:
           root: alert
           accessor: localip
           transformers:
-          - operator: uniq
+            - operator: uniq
       contextKey:
         simple: ImpossibleTravelerIPs
       ignore-outputs:
@@ -723,14 +723,14 @@ tasks:
       name: Calculate geographical distance between logins
       description: Computes the distance between two sets of coordinates, in miles.
       tags:
-      - geodistance
+        - geodistance
       scriptName: impossibleTravelerGetDistance
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "63"
+        - "63"
     scriptarguments:
       dest_coords:
         complex:
@@ -775,7 +775,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "114"
+        - "114"
     separatecontext: false
     view: |-
       {
@@ -795,7 +795,7 @@ tasks:
         simple: Impossible Traveler Alert Validation
       body:
       methods:
-      - email
+        - email
       format: ""
       bcc:
       cc:
@@ -807,32 +807,32 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Select the suspicious locations
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: multiSelect
-        options: []
-        optionsarg:
-        - {}
-        - complex:
-            root: GeoEvents
-            accessor: source_country
-            transformers:
-            - operator: append
-              args:
-                item:
-                  value:
-                    simple: GeoEvents.dest_country
-                  iscontext: true
-            - operator: uniq
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
+        - id: "0"
+          label: ""
+          labelarg:
+            simple: Select the suspicious locations
+          required: false
+          gridcolumns: []
+          defaultrows: []
+          type: multiSelect
+          options: []
+          optionsarg:
+            - {}
+            - complex:
+                root: GeoEvents
+                accessor: source_country
+                transformers:
+                  - operator: append
+                    args:
+                      item:
+                        value:
+                          simple: GeoEvents.dest_country
+                        iscontext: true
+                  - operator: uniq
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: ""
+          readonly: false
       title: Impossible Traveler Alert Validation
       description: |-
         The user ${alert.username} signed in from several countries in a one-hour timeframe, which is considered an impossible traveler activity.
@@ -859,21 +859,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "32"
+        - "32"
       Approved:
-      - "70"
+        - "70"
     separatecontext: false
     conditions:
-    - label: Approved
-      condition:
-      - - operator: isEmpty
-          left:
-            value:
-              complex:
-                root: Impossible Traveler Alert Validation.Answers.0
-            iscontext: true
-          right:
-            value: {}
+      - label: Approved
+        condition:
+          -   - operator: isEmpty
+                left:
+                  value:
+                    complex:
+                      root: Impossible Traveler Alert Validation.Answers.0
+                  iscontext: true
+                right:
+                  value: {}
     view: |-
       {
         "position": {
@@ -904,7 +904,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "97"
+        - "97"
     scriptarguments:
       AutoContainment:
         complex:
@@ -913,12 +913,12 @@ tasks:
         complex:
           root: BlockIndicators
           transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: "True"
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: "True"
       ClearUserSessions:
         simple: "True"
       FileContainment:
@@ -939,7 +939,7 @@ tasks:
           root: alert
           accessor: username
           transformers:
-          - operator: uniq
+            - operator: uniq
       AutoBlockIndicators:
         simple: "True"
       EndpointID:
@@ -947,7 +947,7 @@ tasks:
           root: alert
           accessor: agentid
           transformers:
-          - operator: uniq
+            - operator: uniq
       HostContainment:
         simple: "True"
       UserVerification:
@@ -988,7 +988,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "120"
+        - "120"
     scriptarguments:
       AutoContainment:
         complex:
@@ -1009,26 +1009,26 @@ tasks:
         complex:
           root: ImpossibleTravelerIPs
           filters:
-          - - operator: in
-              left:
-                value:
-                  simple: ImpossibleTravelerIPs
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.WhitelistedIPs
-                iscontext: true
-            - operator: IsInCidrRanges
-              left:
-                value:
-                  simple: ImpossibleTravelerIPs
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.AllowlistCIDR
-                iscontext: true
+            -   - operator: in
+                  left:
+                    value:
+                      simple: ImpossibleTravelerIPs
+                    iscontext: true
+                  right:
+                    value:
+                      simple: inputs.WhitelistedIPs
+                    iscontext: true
+                - operator: IsInCidrRanges
+                  left:
+                    value:
+                      simple: ImpossibleTravelerIPs
+                    iscontext: true
+                  right:
+                    value:
+                      simple: inputs.AllowlistCIDR
+                    iscontext: true
           transformers:
-          - operator: uniq
+            - operator: uniq
       UserContainment:
         simple: "true"
     separatecontext: true
@@ -1066,23 +1066,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "97"
+        - "97"
       "yes":
-      - "117"
+        - "117"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.preInvestigationContainment
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.preInvestigationContainment
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1113,7 +1113,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "121"
+        - "121"
     scriptarguments:
       manual_severity:
         simple: high
@@ -1147,23 +1147,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "70"
+        - "70"
       "yes":
-      - "122"
+        - "122"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
-            value:
-              complex:
-                root: inputs.ShouldOpenTicket
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualNumber
+                left:
+                  value:
+                    complex:
+                      root: inputs.ShouldOpenTicket
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1194,7 +1194,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "70"
+        - "70"
     scriptarguments:
       CommentToAdd:
         complex:
@@ -1294,302 +1294,298 @@ view: |-
     }
   }
 inputs:
-- key: MaxMilesPerHourAllowed
-  value:
-    simple: "400"
-  required: false
-  description: The maximum miles per hour that is considered reasonable. If the geographical distance and difference in time between logins is greater than this value, the user will be considered an impossible traveler.
-  playbookInputQuery:
-- key: WhitelistedIPs
-  value: {}
-  required: false
-  description: A comma separated list of IP addresses that are allowed to be used across long distances.
-  playbookInputQuery:
-- key: ContactUserManager
-  value:
-    simple: "True"
-  required: false
-  description: Whether to ask the user manager for the legitimacy of the login events, in case of an alleged impossible traveler.
-  playbookInputQuery:
-- key: AutoContainment
-  value:
-    simple: "False"
-  required: false
-  description: Whether to execute auto containment.
-  playbookInputQuery:
-- key: AbuseIPDBThreshold
-  value:
-    simple: "80"
-  required: false
-  description: The score needed from AbuseIPDB to consider IP address as malicious.
-  playbookInputQuery:
-- key: preInvestigationContainment
-  value: {}
-  required: false
-  description: Whether to execute containment prior investigation phase
-  playbookInputQuery:
-- key: AllowlistCIDR
-  value:
-    complex:
-      root: lists
-      accessor: CIDR - Allowlist
-  required: false
-  description: A comma separated list of CIDR that are allowed to be used across long distances.
-  playbookInputQuery:
-- key: username
-  value:
-    complex:
-      root: alert
-      accessor: username
-  required: false
-  description: The username to iterate over.
-  playbookInputQuery:
-- key: domain
-  value: {}
-  required: false
-  description: The organization domain.
-  playbookInputQuery:
-- key: ShouldOpenTicket
-  value:
-    simple: "False"
-  required: false
-  description: Whether to open a ticket automatically in a ticketing system. (True/False).
-  playbookInputQuery:
-- key: serviceNowShortDescription
-  value:
-    simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
-  required: false
-  description: A short description of the ticket.
-  playbookInputQuery:
-- key: serviceNowImpact
-  value: {}
-  required: false
-  description: The impact for the new ticket. Leave empty for ServiceNow default impact.
-  playbookInputQuery:
-- key: serviceNowUrgency
-  value: {}
-  required: false
-  description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
-  playbookInputQuery:
-- key: serviceNowSeverity
-  value: {}
-  required: false
-  description: The severity of the new ticket. Leave empty for ServiceNow default severity.
-  playbookInputQuery:
-- key: serviceNowTicketType
-  value: {}
-  required: false
-  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
-  playbookInputQuery:
-- key: serviceNowCategory
-  value: {}
-  required: false
-  description: The category of the ServiceNow ticket.
-  playbookInputQuery:
-- key: serviceNowAssignmentGroup
-  value: {}
-  required: false
-  description: The group to which to assign the new ticket.
-  playbookInputQuery:
-- key: ZendeskPriority
-  value: {}
-  required: false
-  description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
-  playbookInputQuery:
-- key: ZendeskRequester
-  value: {}
-  required: false
-  description: The user who requested this ticket.
-  playbookInputQuery:
-- key: ZendeskStatus
-  value: {}
-  required: false
-  description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
-  playbookInputQuery:
-- key: ZendeskSubject
-  value:
-    simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
-  required: false
-  description: The value of the subject field for this ticket.
-  playbookInputQuery:
-- key: ZendeskTags
-  value: {}
-  required: false
-  description: The array of tags applied to this ticket.
-  playbookInputQuery:
-- key: ZendeskType
-  value: {}
-  required: false
-  description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
-  playbookInputQuery:
-- key: ZendeskAssigne
-  value: {}
-  required: false
-  description: The agent currently assigned to the ticket.
-  playbookInputQuery:
-- key: ZendeskCollaborators
-  value: {}
-  required: false
-  description: The users currently CC'ed on the ticket.
-  playbookInputQuery:
-- key: description
-  value:
-    simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
-  required: false
-  description: The ticket description.
-  playbookInputQuery:
-- key: addCommentPerEndpoint
-  value:
-    simple: "True"
-  required: false
-  description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
-  playbookInputQuery:
-- key: CommentToAdd
-  value:
-    simple: '${alert.name}. Alert ID: ${alert.id}'
-  required: false
-  description: Comment for the ticket.
-  playbookInputQuery:
+  - key: MaxMilesPerHourAllowed
+    value:
+      simple: "400"
+    required: false
+    description: The maximum miles per hour that is considered reasonable. If the geographical distance and difference in time between logins is greater than this value, the user will be considered an impossible traveler.
+    playbookInputQuery:
+  - key: WhitelistedIPs
+    value: {}
+    required: false
+    description: A comma separated list of IP addresses that are allowed to be used across long distances.
+    playbookInputQuery:
+  - key: ContactUserManager
+    value:
+      simple: "True"
+    required: false
+    description: Whether to ask the user manager for the legitimacy of the login events, in case of an alleged impossible traveler.
+    playbookInputQuery:
+  - key: AutoContainment
+    value:
+      simple: "False"
+    required: false
+    description: Whether to execute auto containment.
+    playbookInputQuery:
+  - key: AbuseIPDBThreshold
+    value:
+      simple: "80"
+    required: false
+    description: The score needed from AbuseIPDB to consider IP address as malicious.
+    playbookInputQuery:
+  - key: preInvestigationContainment
+    value: {}
+    required: false
+    description: Whether to execute containment prior investigation phase
+    playbookInputQuery:
+  - key: AllowlistCIDR
+    value:
+      complex:
+        root: lists
+        accessor: CIDR - Allowlist
+    required: false
+    description: A comma separated list of CIDR that are allowed to be used across long distances.
+    playbookInputQuery:
+  - key: username
+    value:
+      complex:
+        root: alert
+        accessor: username
+    required: false
+    description: The username to iterate over.
+    playbookInputQuery:
+  - key: domain
+    value: {}
+    required: false
+    description: The organization domain.
+    playbookInputQuery:
+  - key: ShouldOpenTicket
+    value:
+      simple: "False"
+    required: false
+    description: Whether to open a ticket automatically in a ticketing system. (True/False).
+    playbookInputQuery:
+  - key: serviceNowShortDescription
+    value:
+      simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+    required: false
+    description: A short description of the ticket.
+    playbookInputQuery:
+  - key: serviceNowImpact
+    value: {}
+    required: false
+    description: The impact for the new ticket. Leave empty for ServiceNow default impact.
+    playbookInputQuery:
+  - key: serviceNowUrgency
+    value: {}
+    required: false
+    description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
+    playbookInputQuery:
+  - key: serviceNowSeverity
+    value: {}
+    required: false
+    description: The severity of the new ticket. Leave empty for ServiceNow default severity.
+    playbookInputQuery:
+  - key: serviceNowTicketType
+    value: {}
+    required: false
+    description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+    playbookInputQuery:
+  - key: serviceNowCategory
+    value: {}
+    required: false
+    description: The category of the ServiceNow ticket.
+    playbookInputQuery:
+  - key: serviceNowAssignmentGroup
+    value: {}
+    required: false
+    description: The group to which to assign the new ticket.
+    playbookInputQuery:
+  - key: ZendeskPriority
+    value: {}
+    required: false
+    description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
+    playbookInputQuery:
+  - key: ZendeskRequester
+    value: {}
+    required: false
+    description: The user who requested this ticket.
+    playbookInputQuery:
+  - key: ZendeskStatus
+    value: {}
+    required: false
+    description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
+    playbookInputQuery:
+  - key: ZendeskSubject
+    value:
+      simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+    required: false
+    description: The value of the subject field for this ticket.
+    playbookInputQuery:
+  - key: ZendeskTags
+    value: {}
+    required: false
+    description: The array of tags applied to this ticket.
+    playbookInputQuery:
+  - key: ZendeskType
+    value: {}
+    required: false
+    description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
+    playbookInputQuery:
+  - key: ZendeskAssigne
+    value: {}
+    required: false
+    description: The agent currently assigned to the ticket.
+    playbookInputQuery:
+  - key: ZendeskCollaborators
+    value: {}
+    required: false
+    description: The users currently CC'ed on the ticket.
+    playbookInputQuery:
+  - key: description
+    value:
+      simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
+    required: false
+    description: The ticket description.
+    playbookInputQuery:
+  - key: addCommentPerEndpoint
+    value:
+      simple: "True"
+    required: false
+    description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
+    playbookInputQuery:
+  - key: CommentToAdd
+    value:
+      simple: '${alert.name}. Alert ID: ${alert.id}'
+    required: false
+    description: Comment for the ticket.
+    playbookInputQuery:
 inputSections:
-- inputs:
-  - domain
-  - username
-  - ContactUserManager
-  name: Alert Management
-  description: Alert management settings and data, including escalation processes, and user engagements.
-- inputs:
-  - WhitelistedIPs
-  - AllowlistCIDR
-  - MaxMilesPerHourAllowed
-  name: Investigation
-  description: Investigation settings and data, including any deep dive alert investigation and verdict determination.
-- inputs:
-  - preInvestigationContainment
-  - AutoContainment
-  - AbuseIPDBThreshold
-  name: Remediation
-  description: Remediation settings and data, including containment, eradication, and recovery.
-- inputs:
-  - ShouldOpenTicket
-  - serviceNowShortDescription
-  - serviceNowImpact
-  - serviceNowUrgency
-  - serviceNowSeverity
-  - serviceNowTicketType
-  - serviceNowCategory
-  - serviceNowAssignmentGroup
-  - ZendeskPriority
-  - ZendeskRequester
-  - ZendeskStatus
-  - ZendeskSubject
-  - ZendeskTags
-  - ZendeskType
-  - ZendeskAssigne
-  - ZendeskCollaborators
-  - description
-  - addCommentPerEndpoint
-  - CommentToAdd
-  name: Ticket Management
-  description: Ticket management settings and data.
+  - inputs:
+      - domain
+      - username
+      - ContactUserManager
+    name: Alert Management
+    description: Alert management settings and data, including escalation processes, and user engagements.
+  - inputs:
+      - WhitelistedIPs
+      - AllowlistCIDR
+      - MaxMilesPerHourAllowed
+    name: Investigation
+    description: Investigation settings and data, including any deep dive alert investigation and verdict determination.
+  - inputs:
+      - preInvestigationContainment
+      - AutoContainment
+      - AbuseIPDBThreshold
+    name: Remediation
+    description: Remediation settings and data, including containment, eradication, and recovery.
+  - inputs:
+      - ShouldOpenTicket
+      - serviceNowShortDescription
+      - serviceNowImpact
+      - serviceNowUrgency
+      - serviceNowSeverity
+      - serviceNowTicketType
+      - serviceNowCategory
+      - serviceNowAssignmentGroup
+      - ZendeskPriority
+      - ZendeskRequester
+      - ZendeskStatus
+      - ZendeskSubject
+      - ZendeskTags
+      - ZendeskType
+      - ZendeskAssigne
+      - ZendeskCollaborators
+      - description
+      - addCommentPerEndpoint
+      - CommentToAdd
+    name: Ticket Management
+    description: Ticket management settings and data.
 outputSections:
-- outputs:
-  - Account.Email.Address
-  - DBotScore
-  - Account.ID
-  - Account.Username
-  - Account.Email
-  - Account.Type
-  - Account.Groups
-  - Account
-  - Account.DisplayName
-  - Account.Manager
-  - DBotScore.Indicator
-  - DBotScore.Type
-  - DBotScore.Vendor
-  - DBotScore.Score
-  - IP
-  - Endpoint
-  - Endpoint.Hostname
-  - Endpoint.OS
-  - Endpoint.IP
-  - Endpoint.MAC
-  - Endpoint.Domain
-  name: General (Outputs group)
-  description: Generic group for outputs
+  - outputs:
+      - Account.Email.Address
+      - DBotScore
+      - Account.ID
+      - Account.Username
+      - Account.Email
+      - Account.Type
+      - Account.Groups
+      - Account
+      - Account.DisplayName
+      - Account.Manager
+      - DBotScore.Indicator
+      - DBotScore.Type
+      - DBotScore.Vendor
+      - DBotScore.Score
+      - IP
+      - Endpoint
+      - Endpoint.Hostname
+      - Endpoint.OS
+      - Endpoint.IP
+      - Endpoint.MAC
+      - Endpoint.Domain
+    name: General (Outputs group)
+    description: Generic group for outputs
 outputs:
-- contextPath: Account.Email.Address
-  description: The email address object associated with the Account.
-  type: string
-- contextPath: DBotScore
-  description: Indicator, Score, Type, Vendor.
-  type: unknown
-- contextPath: Account.ID
-  description: The unique Account DN (Distinguished Name).
-  type: string
-- contextPath: Account.Username
-  description: The username of the Account.
-  type: string
-- contextPath: Account.Email
-  description: The email address associated with the Account.
-- contextPath: Account.Type
-  description: The type of the Account entity.
-  type: string
-- contextPath: Account.Groups
-  description: The groups that the Account is a part of.
-- contextPath: Account
-  description: Account object
-  type: unknown
-- contextPath: Account.DisplayName
-  description: The display name of the Account.
-  type: string
-- contextPath: Account.Manager
-  description: The manager of the Account.
-  type: string
-- contextPath: DBotScore.Indicator
-  description: The indicator value.
-  type: string
-- contextPath: DBotScore.Type
-  description: The indicator's type.
-  type: string
-- contextPath: DBotScore.Vendor
-  description: The indicator's vendor.
-  type: string
-- contextPath: DBotScore.Score
-  description: The indicator's score.
-  type: number
-- contextPath: IP
-  description: The IP objects.
-  type: unknown
-- contextPath: Endpoint
-  description: The Endpoint's object.
-  type: unknown
-- contextPath: Endpoint.Hostname
-  description: The hostname to enrich.
-  type: string
-- contextPath: Endpoint.OS
-  description: The Endpoint OS.
-  type: string
-- contextPath: Endpoint.IP
-  description: The list of Endpoint IP addresses.
-- contextPath: Endpoint.MAC
-  description: The list of Endpoint MAC addresses.
-- contextPath: Endpoint.Domain
-  description: The domain name of the Endpoint.
-  type: string
+  - contextPath: Account.Email.Address
+    description: The email address object associated with the Account.
+    type: string
+  - contextPath: DBotScore
+    description: Indicator, Score, Type, Vendor.
+    type: unknown
+  - contextPath: Account.ID
+    description: The unique Account DN (Distinguished Name).
+    type: string
+  - contextPath: Account.Username
+    description: The username of the Account.
+    type: string
+  - contextPath: Account.Email
+    description: The email address associated with the Account.
+  - contextPath: Account.Type
+    description: The type of the Account entity.
+    type: string
+  - contextPath: Account.Groups
+    description: The groups that the Account is a part of.
+  - contextPath: Account
+    description: Account object
+    type: unknown
+  - contextPath: Account.DisplayName
+    description: The display name of the Account.
+    type: string
+  - contextPath: Account.Manager
+    description: The manager of the Account.
+    type: string
+  - contextPath: DBotScore.Indicator
+    description: The indicator value.
+    type: string
+  - contextPath: DBotScore.Type
+    description: The indicator's type.
+    type: string
+  - contextPath: DBotScore.Vendor
+    description: The indicator's vendor.
+    type: string
+  - contextPath: DBotScore.Score
+    description: The indicator's score.
+    type: number
+  - contextPath: IP
+    description: The IP objects.
+    type: unknown
+  - contextPath: Endpoint
+    description: The Endpoint's object.
+    type: unknown
+  - contextPath: Endpoint.Hostname
+    description: The hostname to enrich.
+    type: string
+  - contextPath: Endpoint.OS
+    description: The Endpoint OS.
+    type: string
+  - contextPath: Endpoint.IP
+    description: The list of Endpoint IP addresses.
+  - contextPath: Endpoint.MAC
+    description: The list of Endpoint MAC addresses.
+  - contextPath: Endpoint.Domain
+    description: The domain name of the Endpoint.
+    type: string
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 marketplaces:
-- marketplacev2
-- platform
+  - marketplacev2
+  - platform
 fromversion: 6.6.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- cloud
-- cloud_posture
-- cloud_runtime_security
-- edr
-- xsiam
+  - agentix
+  - cloud
+  - cloud_posture
+  - cloud_runtime_security
+  - edr
+  - xsiam

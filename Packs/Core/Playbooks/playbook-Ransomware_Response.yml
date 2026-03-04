@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "133"
+        - "133"
     separatecontext: false
     view: |-
       {
@@ -47,7 +47,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     separatecontext: false
     view: |-
       {
@@ -77,24 +77,24 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "14"
+        - "14"
       "yes":
-      - "103"
-      - "136"
+        - "103"
+        - "136"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.earlyRemediation
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.earlyRemediation
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -123,8 +123,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "120"
-      - "137"
+        - "120"
+        - "137"
     separatecontext: false
     view: |-
       {
@@ -154,7 +154,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "121"
+        - "121"
     separatecontext: false
     view: |-
       {
@@ -184,7 +184,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "135"
+        - "135"
     separatecontext: false
     view: |-
       {
@@ -214,7 +214,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "106"
+        - "106"
     separatecontext: false
     view: |-
       {
@@ -281,7 +281,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     scriptarguments:
       AutoContainment:
         complex:
@@ -314,14 +314,14 @@ tasks:
         complex:
           root: alert.username
           filters:
-          - - operator: notIn
-              left:
-                value:
-                  simple: alert.username
-                iscontext: true
-              right:
-                value:
-                  simple: administrator,system
+            -   - operator: notIn
+                  left:
+                    value:
+                      simple: alert.username
+                    iscontext: true
+                  right:
+                    value:
+                      simple: administrator,system
     separatecontext: true
     loop:
       iscommand: false
@@ -366,7 +366,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "129"
+        - "129"
     scriptarguments:
       AutoContainment:
         simple: "False"
@@ -402,24 +402,24 @@ tasks:
         complex:
           root: foundIncidents.CustomFields.username
           filters:
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: foundIncidents.CustomFields.username
-                iscontext: true
-              right:
-                value:
-                  simple: administrator
-              ignorecase: true
-            - operator: notContainsGeneral
-              left:
-                value:
-                  simple: foundIncidents.CustomFields.username
-                iscontext: true
-              right:
-                value:
-                  simple: system
-              ignorecase: true
+            -   - operator: notContainsGeneral
+                  left:
+                    value:
+                      simple: foundIncidents.CustomFields.username
+                    iscontext: true
+                  right:
+                    value:
+                      simple: administrator
+                  ignorecase: true
+                - operator: notContainsGeneral
+                  left:
+                    value:
+                      simple: foundIncidents.CustomFields.username
+                    iscontext: true
+                  right:
+                    value:
+                      simple: system
+                  ignorecase: true
     separatecontext: false
     loop:
       iscommand: false
@@ -464,7 +464,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "36"
+        - "36"
     scriptarguments:
       FileSHA256:
         complex:
@@ -511,23 +511,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - '63'
+        - '63'
       yes:
-      - '138'
+        - '138'
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.RunAdvancedAnalysis
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.RunAdvancedAnalysis
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -558,7 +558,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "95"
+        - "95"
     scriptarguments:
       FileSHA256:
         complex:
@@ -612,7 +612,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "95"
+        - "95"
     scriptarguments:
       closeReason:
         simple: Resolved - True Positive
@@ -645,9 +645,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "126"
+        - "126"
       "yes":
-      - "128"
+        - "128"
     separatecontext: false
     view: |-
       {
@@ -677,23 +677,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "127"
+        - "127"
       "yes":
-      - "124"
+        - "124"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.ShouldCloseAutomatically
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.ShouldCloseAutomatically
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -722,7 +722,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "124"
+        - "124"
     separatecontext: false
     view: |-
       {
@@ -759,7 +759,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "126"
+        - "126"
     scriptarguments:
       FileHash:
         complex:
@@ -806,7 +806,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "125"
+        - "125"
     separatecontext: false
     view: |-
       {
@@ -836,7 +836,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "122"
+        - "122"
     separatecontext: false
     view: |-
       {
@@ -866,18 +866,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "129"
+        - "129"
       "yes":
-      - "81"
+        - "81"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: foundIncidents
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: foundIncidents
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -907,7 +907,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "134"
+        - "134"
     scriptarguments:
       CloseReason:
         simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue
@@ -967,89 +967,89 @@ tasks:
       brand: ""
     nexttasks:
       False Positive:
-      - "130"
+        - "130"
       True Positive:
-      - "140"
+        - "140"
     separatecontext: false
     conditions:
-    - label: True Positive
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: VTFileVerdict
-            iscontext: true
-          right:
-            value:
-              simple: malicious
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: FileVerdict
-            iscontext: true
-          right:
-            value:
-              simple: suspicious
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: VTFileSigners
-                transformers:
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: XDRFileSigners
-                      iscontext: true
-            iscontext: true
-          right:
-            value:
-              simple: unTrusted
-    - label: False Positive
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: VTFileVerdict
-            iscontext: true
-          right:
-            value:
-              simple: benign
-          ignorecase: true
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: NSRLFileVerdict
-            iscontext: true
-          right:
-            value:
-              simple: isNSRL
-          ignorecase: true
-        - operator: notContainsGeneral
-          left:
-            value:
-              complex:
-                root: VTFileSigners
-                transformers:
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: XDRFileSigners
-                      iscontext: true
-                - operator: uniq
-            iscontext: true
-          right:
-            value:
-              simple: unTrusted
-          ignorecase: true
+      - label: True Positive
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: VTFileVerdict
+                  iscontext: true
+                right:
+                  value:
+                    simple: malicious
+                ignorecase: true
+              - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: FileVerdict
+                  iscontext: true
+                right:
+                  value:
+                    simple: suspicious
+                ignorecase: true
+              - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: VTFileSigners
+                      transformers:
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: XDRFileSigners
+                              iscontext: true
+                  iscontext: true
+                right:
+                  value:
+                    simple: unTrusted
+      - label: False Positive
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: VTFileVerdict
+                  iscontext: true
+                right:
+                  value:
+                    simple: benign
+                ignorecase: true
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: NSRLFileVerdict
+                  iscontext: true
+                right:
+                  value:
+                    simple: isNSRL
+                ignorecase: true
+              - operator: notContainsGeneral
+                left:
+                  value:
+                    complex:
+                      root: VTFileSigners
+                      transformers:
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: XDRFileSigners
+                              iscontext: true
+                        - operator: uniq
+                  iscontext: true
+                right:
+                  value:
+                    simple: unTrusted
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -1088,7 +1088,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "132"
+        - "132"
     scriptarguments:
       FileSHA256:
         complex:
@@ -1163,7 +1163,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     scriptarguments:
       AutoEradicate:
         complex:
@@ -1219,7 +1219,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "36"
+        - "36"
     scriptarguments:
       Username:
         complex:
@@ -1263,7 +1263,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "63"
+        - "63"
     separatecontext: false
     loop:
       iscommand: false
@@ -1299,7 +1299,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "141"
+        - "141"
     scriptarguments:
       manual_severity:
         simple: high
@@ -1333,23 +1333,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+        - "3"
       "yes":
-      - "142"
+        - "142"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.ShouldOpenTicket
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.ShouldOpenTicket
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1380,7 +1380,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       CommentToAdd:
         complex:
@@ -1479,238 +1479,234 @@ view: |-
     }
   }
 inputs:
-- key: earlyRemediation
-  value:
-    simple: "True"
-  required: false
-  description: Whether to execute the early remediation phase.
-  playbookInputQuery:
-- key: AutoContainment
-  value:
-    simple: "True"
-  required: false
-  description: Whether to execute the containment actions automatically.
-  playbookInputQuery:
-- key: AutoEradication
-  value:
-    simple: "True"
-  required: false
-  description: Whether to execute the eradication actions automatically.
-  playbookInputQuery:
-- key: isolateRemoteAttacker
-  value:
-    simple: "True"
-  required: false
-  description: Whether to isolate the remote endpoint if the attack has been triggered remotely.
-  playbookInputQuery:
-- key: isolateSimilarEndpoints
-  value:
-    simple: "True"
-  required: false
-  description: Whether to isolate the endpoints identified with similar IoCs to the ransomware alert.
-  playbookInputQuery:
-- key: RunAdvancedAnalysis
-  value:
-    simple: "True"
-  required: false
-  description: Whether to execute the Ransomware Advanced Analysis playbook.  Note that advanced analysis contains manual tasks which will stop the playbook's flow until the analysts's response.
-  playbookInputQuery:
-- key: ShouldCloseAutomatically
-  value:
-    simple: "False"
-  required: false
-  description: Whether to close the alert automatically.
-  playbookInputQuery:
-- key: FileSHA256
-  value:
-    complex:
-      root: alert
-      accessor: initiatorsha256
-  required: false
-  description: The file SHA256 to investigate.
-  playbookInputQuery:
-- key: FilePath
-  value:
-    complex:
-      root: alert
-      accessor: initiatorpath
-  required: false
-  description: The file path to investigate.
-  playbookInputQuery:
-- key: IP
-  value:
-    complex:
-      root: alert
-      accessor: hostip
-  required: false
-  description: The IP address to investigate.
-  playbookInputQuery:
-- key: ShouldOpenTicket
-  value:
-    simple: "False"
-  required: false
-  description: Whether to open a ticket automatically in a ticketing system. (True/False).
-  playbookInputQuery:
-- key: serviceNowShortDescription
-  value:
-    simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
-  required: false
-  description: A short description of the ticket.
-  playbookInputQuery:
-- key: serviceNowImpact
-  value: {}
-  required: false
-  description: The impact for the new ticket. Leave empty for ServiceNow default impact.
-  playbookInputQuery:
-- key: serviceNowUrgency
-  value: {}
-  required: false
-  description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
-  playbookInputQuery:
-- key: serviceNowSeverity
-  value: {}
-  required: false
-  description: The severity of the new ticket. Leave empty for ServiceNow default severity.
-  playbookInputQuery:
-- key: serviceNowTicketType
-  value: {}
-  required: false
-  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
-  playbookInputQuery:
-- key: serviceNowCategory
-  value: {}
-  required: false
-  description: The category of the ServiceNow ticket.
-  playbookInputQuery:
-- key: serviceNowAssignmentGroup
-  value: {}
-  required: false
-  description: The group to which to assign the new ticket.
-  playbookInputQuery:
-- key: ZendeskPriority
-  value: {}
-  required: false
-  description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
-  playbookInputQuery:
-- key: ZendeskRequester
-  value: {}
-  required: false
-  description: The user who requested this ticket.
-  playbookInputQuery:
-- key: ZendeskStatus
-  value: {}
-  required: false
-  description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
-  playbookInputQuery:
-- key: ZendeskSubject
-  value:
-    simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
-  required: false
-  description: The value of the subject field for this ticket.
-  playbookInputQuery:
-- key: ZendeskTags
-  value: {}
-  required: false
-  description: The array of tags applied to this ticket.
-  playbookInputQuery:
-- key: ZendeskType
-  value: {}
-  required: false
-  description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
-  playbookInputQuery:
-- key: ZendeskAssigne
-  value: {}
-  required: false
-  description: The agent currently assigned to the ticket.
-  playbookInputQuery:
-- key: ZendeskCollaborators
-  value: {}
-  required: false
-  description: The users currently CC'ed on the ticket.
-  playbookInputQuery:
-- key: description
-  value:
-    simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
-  required: false
-  description: The ticket description.
-  playbookInputQuery:
-- key: addCommentPerEndpoint
-  value:
-    simple: "True"
-  required: false
-  description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
-  playbookInputQuery:
-- key: CommentToAdd
-  value:
-    simple: '${alert.name}. Alert ID: ${alert.id}'
-  required: false
-  description: Comment for the ticket.
-  playbookInputQuery:
+  - key: earlyRemediation
+    value:
+      simple: "True"
+    required: false
+    description: Whether to execute the early remediation phase.
+    playbookInputQuery:
+  - key: AutoContainment
+    value:
+      simple: "True"
+    required: false
+    description: Whether to execute the containment actions automatically.
+    playbookInputQuery:
+  - key: AutoEradication
+    value:
+      simple: "True"
+    required: false
+    description: Whether to execute the eradication actions automatically.
+    playbookInputQuery:
+  - key: isolateRemoteAttacker
+    value:
+      simple: "True"
+    required: false
+    description: Whether to isolate the remote endpoint if the attack has been triggered remotely.
+    playbookInputQuery:
+  - key: isolateSimilarEndpoints
+    value:
+      simple: "True"
+    required: false
+    description: Whether to isolate the endpoints identified with similar IoCs to the ransomware alert.
+    playbookInputQuery:
+  - key: RunAdvancedAnalysis
+    value:
+      simple: "True"
+    required: false
+    description: Whether to execute the Ransomware Advanced Analysis playbook.  Note that advanced analysis contains manual tasks which will stop the playbook's flow until the analysts's response.
+    playbookInputQuery:
+  - key: ShouldCloseAutomatically
+    value:
+      simple: "False"
+    required: false
+    description: Whether to close the alert automatically.
+    playbookInputQuery:
+  - key: FileSHA256
+    value:
+      complex:
+        root: alert
+        accessor: initiatorsha256
+    required: false
+    description: The file SHA256 to investigate.
+    playbookInputQuery:
+  - key: FilePath
+    value:
+      complex:
+        root: alert
+        accessor: initiatorpath
+    required: false
+    description: The file path to investigate.
+    playbookInputQuery:
+  - key: IP
+    value:
+      complex:
+        root: alert
+        accessor: hostip
+    required: false
+    description: The IP address to investigate.
+    playbookInputQuery:
+  - key: ShouldOpenTicket
+    value:
+      simple: "False"
+    required: false
+    description: Whether to open a ticket automatically in a ticketing system. (True/False).
+    playbookInputQuery:
+  - key: serviceNowShortDescription
+    value:
+      simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+    required: false
+    description: A short description of the ticket.
+    playbookInputQuery:
+  - key: serviceNowImpact
+    value: {}
+    required: false
+    description: The impact for the new ticket. Leave empty for ServiceNow default impact.
+    playbookInputQuery:
+  - key: serviceNowUrgency
+    value: {}
+    required: false
+    description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
+    playbookInputQuery:
+  - key: serviceNowSeverity
+    value: {}
+    required: false
+    description: The severity of the new ticket. Leave empty for ServiceNow default severity.
+    playbookInputQuery:
+  - key: serviceNowTicketType
+    value: {}
+    required: false
+    description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+    playbookInputQuery:
+  - key: serviceNowCategory
+    value: {}
+    required: false
+    description: The category of the ServiceNow ticket.
+    playbookInputQuery:
+  - key: serviceNowAssignmentGroup
+    value: {}
+    required: false
+    description: The group to which to assign the new ticket.
+    playbookInputQuery:
+  - key: ZendeskPriority
+    value: {}
+    required: false
+    description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
+    playbookInputQuery:
+  - key: ZendeskRequester
+    value: {}
+    required: false
+    description: The user who requested this ticket.
+    playbookInputQuery:
+  - key: ZendeskStatus
+    value: {}
+    required: false
+    description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
+    playbookInputQuery:
+  - key: ZendeskSubject
+    value:
+      simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+    required: false
+    description: The value of the subject field for this ticket.
+    playbookInputQuery:
+  - key: ZendeskTags
+    value: {}
+    required: false
+    description: The array of tags applied to this ticket.
+    playbookInputQuery:
+  - key: ZendeskType
+    value: {}
+    required: false
+    description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
+    playbookInputQuery:
+  - key: ZendeskAssigne
+    value: {}
+    required: false
+    description: The agent currently assigned to the ticket.
+    playbookInputQuery:
+  - key: ZendeskCollaborators
+    value: {}
+    required: false
+    description: The users currently CC'ed on the ticket.
+    playbookInputQuery:
+  - key: description
+    value:
+      simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
+    required: false
+    description: The ticket description.
+    playbookInputQuery:
+  - key: addCommentPerEndpoint
+    value:
+      simple: "True"
+    required: false
+    description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
+    playbookInputQuery:
+  - key: CommentToAdd
+    value:
+      simple: '${alert.name}. Alert ID: ${alert.id}'
+    required: false
+    description: Comment for the ticket.
+    playbookInputQuery:
 inputSections:
-- inputs:
-  - ShouldCloseAutomatically
-  - FileSHA256
-  - FilePath
-  - IP
-  name: Alert Management
-  description: Alert management settings and data, including escalation processes, and user engagements.
-- inputs:
-  - RunAdvancedAnalysis
-  name: Investigation
-  description: Investigation settings and data, including any deep dive alert investigation and verdict determination.
-- inputs:
-  - earlyRemediation
-  - AutoContainment
-  - AutoEradication
-  - isolateRemoteAttacker
-  - isolateSimilarEndpoints
-  name: Remediation
-  description: Remediation settings and data, including containment, eradication, and recovery.
-- inputs:
-  - ShouldOpenTicket
-  - serviceNowShortDescription
-  - serviceNowImpact
-  - serviceNowUrgency
-  - serviceNowSeverity
-  - serviceNowTicketType
-  - serviceNowCategory
-  - serviceNowAssignmentGroup
-  - ZendeskPriority
-  - ZendeskRequester
-  - ZendeskStatus
-  - ZendeskSubject
-  - ZendeskTags
-  - ZendeskType
-  - ZendeskAssigne
-  - ZendeskCollaborators
-  - description
-  - addCommentPerEndpoint
-  - CommentToAdd
-  name: Ticket Management
-  description: Ticket management settings and data.
+  - inputs:
+      - ShouldCloseAutomatically
+      - FileSHA256
+      - FilePath
+      - IP
+    name: Alert Management
+    description: Alert management settings and data, including escalation processes, and user engagements.
+  - inputs:
+      - RunAdvancedAnalysis
+    name: Investigation
+    description: Investigation settings and data, including any deep dive alert investigation and verdict determination.
+  - inputs:
+      - earlyRemediation
+      - AutoContainment
+      - AutoEradication
+      - isolateRemoteAttacker
+      - isolateSimilarEndpoints
+    name: Remediation
+    description: Remediation settings and data, including containment, eradication, and recovery.
+  - inputs:
+      - ShouldOpenTicket
+      - serviceNowShortDescription
+      - serviceNowImpact
+      - serviceNowUrgency
+      - serviceNowSeverity
+      - serviceNowTicketType
+      - serviceNowCategory
+      - serviceNowAssignmentGroup
+      - ZendeskPriority
+      - ZendeskRequester
+      - ZendeskStatus
+      - ZendeskSubject
+      - ZendeskTags
+      - ZendeskType
+      - ZendeskAssigne
+      - ZendeskCollaborators
+      - description
+      - addCommentPerEndpoint
+      - CommentToAdd
+    name: Ticket Management
+    description: Ticket management settings and data.
 outputSections:
-- outputs: []
-  name: General (Outputs group)
-  description: Generic group for outputs
+  - outputs: []
+    name: General (Outputs group)
+    description: Generic group for outputs
 outputs: []
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 marketplaces:
-- marketplacev2
-- platform
+  - marketplacev2
+  - platform
 fromversion: 6.6.0
 
 
 
 
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- cloud
-- cloud_posture
-- cloud_runtime_security
-- edr
-- xsiam
+  - agentix
+  - cloud
+  - cloud_posture
+  - cloud_runtime_security
+  - edr
+  - xsiam

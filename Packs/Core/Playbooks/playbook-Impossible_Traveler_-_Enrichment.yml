@@ -21,7 +21,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "28"
+        - "28"
     separatecontext: false
     view: |-
       {
@@ -52,20 +52,20 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "27"
+        - "27"
       "yes":
-      - "29"
+        - "29"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: incident.username
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    simple: incident.username
+                  iscontext: true
+                right:
+                  value: {}
     view: |-
       {
         "position": {
@@ -124,7 +124,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     scriptarguments:
       method:
         simple: GET
@@ -161,11 +161,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
-      - "16"
-      - "19"
-      - "24"
-      - "26"
+        - "15"
+        - "16"
+        - "19"
+        - "24"
+        - "26"
     scriptarguments:
       extend-context:
         simple: Coordinates=
@@ -176,7 +176,7 @@ tasks:
           root: HttpRequest.Response
           accessor: Body
           transformers:
-          - operator: Stringify
+            - operator: Stringify
     separatecontext: false
     view: |-
       {
@@ -208,7 +208,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+        - "22"
     scriptarguments:
       append:
         simple: "true"
@@ -219,17 +219,17 @@ tasks:
           root: Coordinates
           accessor: lat
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Coordinates.lon
-                iscontext: true
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ', '
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: Coordinates.lon
+                  iscontext: true
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ', '
     separatecontext: false
     view: |-
       {
@@ -261,7 +261,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+        - "22"
     scriptarguments:
       append:
         simple: "true"
@@ -309,7 +309,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       all:
         simple: "no"
@@ -346,7 +346,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+        - "22"
     scriptarguments:
       append:
         simple: "true"
@@ -356,16 +356,16 @@ tasks:
         complex:
           root: Coordinates.query
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Coordinates.query
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.sourceip
-                iscontext: true
-              ignorecase: true
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: Coordinates.query
+                    iscontext: true
+                  right:
+                    value:
+                      simple: inputs.sourceip
+                    iscontext: true
+                  ignorecase: true
     separatecontext: false
     view: |-
       {
@@ -404,7 +404,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       all:
         simple: "no"
@@ -441,7 +441,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     scriptarguments:
       append:
         simple: "true"
@@ -451,17 +451,17 @@ tasks:
         complex:
           root: Events
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Events.ip
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.sourceip
-                iscontext: true
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: Events.ip
+                    iscontext: true
+                  right:
+                    value:
+                      simple: inputs.sourceip
+                    iscontext: true
           transformers:
-          - operator: StringToArray
+            - operator: StringToArray
     separatecontext: false
     view: |-
       {
@@ -500,7 +500,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       all:
         simple: "no"
@@ -537,7 +537,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+        - "22"
     scriptarguments:
       append:
         simple: "true"
@@ -547,16 +547,16 @@ tasks:
         complex:
           root: Coordinates
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Coordinates.query
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.sourceip
-                iscontext: true
-              ignorecase: true
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: Coordinates.query
+                    iscontext: true
+                  right:
+                    value:
+                      simple: inputs.sourceip
+                    iscontext: true
+                  ignorecase: true
           accessor: countryCode
     separatecontext: false
     view: |-
@@ -589,7 +589,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+        - "22"
     scriptarguments:
       append:
         simple: "true"
@@ -600,7 +600,7 @@ tasks:
           root: alert
           accessor: username
           transformers:
-          - operator: FirstArrayElement
+            - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {
@@ -631,9 +631,9 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "21"
-      - "23"
-      - "18"
+        - "21"
+        - "23"
+        - "18"
     separatecontext: false
     view: |-
       {
@@ -665,7 +665,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+        - "13"
     scriptarguments:
       ip:
         complex:
@@ -712,7 +712,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "27"
+        - "27"
     scriptarguments:
       Domain:
         complex:
@@ -721,7 +721,7 @@ tasks:
         complex:
           root: inputs.username
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -759,73 +759,69 @@ view: |-
     }
   }
 inputs:
-- key: sourceip
-  value: {}
-  required: false
-  description: The source IP to iterate over.
-  playbookInputQuery:
-- key: username
-  value: {}
-  required: false
-  description: The username to iterate over.
-  playbookInputQuery:
-- key: domain
-  value: {}
-  required: false
-  description: The organization domain.
-  playbookInputQuery:
+  - key: sourceip
+    value: {}
+    required: false
+    description: The source IP to iterate over.
+    playbookInputQuery:
+  - key: username
+    value: {}
+    required: false
+    description: The username to iterate over.
+    playbookInputQuery:
+  - key: domain
+    value: {}
+    required: false
+    description: The organization domain.
+    playbookInputQuery:
 outputs:
-- contextPath: ActiveDirectory.Users.manager
-  description: The manager of the user.
-- contextPath: IP
-  description: The IP enrichment results.
-  type: unknown
-- contextPath: IP.Geo
-  description: The IP geo information.
-  type: unknown
-- contextPath: IP.Malicious
-  description: The IP verdict.
-  type: unknown
-- contextPath: AbuseIPDB.IP
-  description: The IP information retrieved from AbuseIPDB.
-  type: unknown
-- contextPath: AbuseIPDB.IP.Geo
-  description: The IP geo information.
-  type: unknown
-- contextPath: DBotScore
-  description: The DBotScore
-  type: unknown
-- contextPath: AbuseIPDB.IP.Malicious
-  description: The IP verdict.
-  type: unknown
-- contextPath: Account
-  description: The account object.
-  type: unknown
-- contextPath: ActiveDirectory.Users
-  description: The AD users.
-  type: unknown
-- contextPath: MSGraphUser
-  description: The user information retrieved from MSGraphUser
-  type: unknown
-- contextPath: MSGraphUserManager.Manager
-  description: The user's manager information retrieved from MSGraphUser.
-  type: unknown
+  - contextPath: ActiveDirectory.Users.manager
+    description: The manager of the user.
+  - contextPath: IP
+    description: The IP enrichment results.
+    type: unknown
+  - contextPath: IP.Geo
+    description: The IP geo information.
+    type: unknown
+  - contextPath: IP.Malicious
+    description: The IP verdict.
+    type: unknown
+  - contextPath: AbuseIPDB.IP
+    description: The IP information retrieved from AbuseIPDB.
+    type: unknown
+  - contextPath: AbuseIPDB.IP.Geo
+    description: The IP geo information.
+    type: unknown
+  - contextPath: DBotScore
+    description: The DBotScore
+    type: unknown
+  - contextPath: AbuseIPDB.IP.Malicious
+    description: The IP verdict.
+    type: unknown
+  - contextPath: Account
+    description: The account object.
+    type: unknown
+  - contextPath: ActiveDirectory.Users
+    description: The AD users.
+    type: unknown
+  - contextPath: MSGraphUser
+    description: The user information retrieved from MSGraphUser
+    type: unknown
+  - contextPath: MSGraphUserManager.Manager
+    description: The user's manager information retrieved from MSGraphUser.
+    type: unknown
 tests:
-- Test Playbook - Impossible Traveler - Enrichment
+  - Test Playbook - Impossible Traveler - Enrichment
 marketplaces:
-- marketplacev2
-- platform
+  - marketplacev2
+  - platform
 fromversion: 6.6.0
 
 
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- cloud
-- cloud_posture
-- cloud_runtime_security
-- edr
-- xsiam
+  - agentix
+  - cloud
+  - cloud_posture
+  - cloud_runtime_security
+  - edr
+  - xsiam

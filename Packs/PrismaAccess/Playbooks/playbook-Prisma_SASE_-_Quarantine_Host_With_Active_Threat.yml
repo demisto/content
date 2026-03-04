@@ -31,7 +31,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -63,7 +63,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       limit:
         simple: "100000"
@@ -72,14 +72,14 @@ tasks:
           root: incident
           accessor: devicename
           transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: SELECT  DISTINCT host_id,endpoint_device_name FROM `firewall.globalprotect` where event_id.value = 'gateway-connected'  and endpoint_device_name='
-              suffix:
-                value:
-                  simple: ''''
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: SELECT  DISTINCT host_id,endpoint_device_name FROM `firewall.globalprotect` where event_id.value = 'gateway-connected'  and endpoint_device_name='
+                suffix:
+                  value:
+                    simple: ''''
       transform_results:
         simple: "false"
     separatecontext: false
@@ -112,18 +112,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "7"
+        - "7"
       "yes":
-      - "5"
+        - "5"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CDL.Logging.host_id
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: CDL.Logging.host_id
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -153,22 +153,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "11"
+        - "11"
       "yes":
-      - "7"
+        - "7"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: SentinelOne.agentDetails.agentRealtimeInfo.agentIsDecommissioned
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: SentinelOne.agentDetails.agentRealtimeInfo.agentIsDecommissioned
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -199,9 +199,9 @@ tasks:
       brand: ""
     nexttasks:
       '#error#':
-      - "9"
+        - "9"
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       host_id:
         complex:
@@ -267,7 +267,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     scriptarguments:
       extend-context:
         simple: SentinelOne.agentDetails=
@@ -340,9 +340,9 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "7"
+        - "7"
       "yes":
-      - "3"
+        - "3"
     scriptarguments:
       brandname:
         simple: Cortex Data Lake
@@ -377,9 +377,9 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "7"
+        - "7"
       "yes":
-      - "6"
+        - "6"
     scriptarguments:
       brandname:
         simple: Palo Alto Networks - Prisma SASE
@@ -424,12 +424,8 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 6.10.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

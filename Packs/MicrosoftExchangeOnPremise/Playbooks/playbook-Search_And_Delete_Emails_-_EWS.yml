@@ -18,7 +18,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+        - "18"
     separatecontext: false
     view: |-
       {
@@ -42,7 +42,7 @@ tasks:
       brand: EWS v2
     nexttasks:
       '#none#':
-      - "17"
+        - "17"
     scriptarguments:
       email_addresses: {}
       filter:
@@ -75,7 +75,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     separatecontext: false
     view: |-
       {
@@ -98,7 +98,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     view: |-
       {
@@ -122,7 +122,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       SearchThisWeek:
         simple: ${inputs.SearchThisWeek}
@@ -130,32 +130,32 @@ tasks:
         complex:
           root: inputs.AttachmentName
           filters:
-          - - operator: general.isExists
-              left:
-                value:
-                  simple: inputs.AttachmentName
-                iscontext: true
+            -   - operator: general.isExists
+                  left:
+                    value:
+                      simple: inputs.AttachmentName
+                    iscontext: true
       body: {}
       from:
         complex:
           root: inputs.From
           filters:
-          - - operator: general.isExists
-              left:
-                value:
-                  simple: inputs.From
-                iscontext: true
+            -   - operator: general.isExists
+                  left:
+                    value:
+                      simple: inputs.From
+                    iscontext: true
       searchThisWeek:
         simple: ${inputs.SearchThisWeek}
       subject:
         complex:
           root: inputs.Subject
           filters:
-          - - operator: general.isExists
-              left:
-                value:
-                  simple: inputs.Subject
-                iscontext: true
+            -   - operator: general.isExists
+                  left:
+                    value:
+                      simple: inputs.Subject
+                    iscontext: true
     separatecontext: false
     view: |-
       {
@@ -178,7 +178,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     separatecontext: false
     view: |-
       {
@@ -204,9 +204,9 @@ tasks:
       brand: ""
     nexttasks:
       "No":
-      - "15"
+        - "15"
       "yes":
-      - "16"
+        - "16"
     separatecontext: false
     view: |-
       {
@@ -250,7 +250,7 @@ tasks:
       brand: EWS v2
     nexttasks:
       '#none#':
-      - "15"
+        - "15"
     scriptarguments:
       delete-type:
         complex:
@@ -285,20 +285,20 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "15"
+        - "15"
       "yes":
-      - "13"
+        - "13"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: EWS
-                accessor: Items.itemId
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: general.isExists
+                left:
+                  value:
+                    complex:
+                      root: EWS
+                      accessor: Items.itemId
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -321,38 +321,38 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "15"
+        - "15"
       "yes":
-      - "2"
+        - "2"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: string.isEqual
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: EWS v2
-                    ignorecase: true
-                - - operator: string.isEqual
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: general.isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: string.isEqual
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: EWS v2
+                              ignorecase: true
+                        -   - operator: string.isEqual
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                      accessor: brand
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -373,52 +373,48 @@ view: |-
     }
   }
 inputs:
-- key: From
-  value:
-    complex:
-      root: incident
-      accessor: emailfrom
-  required: true
-  description: The value of the malicious email's "From" attribute.
-- key: Subject
-  value:
-    complex:
-      root: incident
-      accessor: emailsubject
-  required: false
-  description: The value of the malicious email's "Subject" attribute.
-- key: AttachmentName
-  value:
-    complex:
-      root: incident
-      accessor: attachmentname
-  required: false
-  description: The value of the malicious email's "AttachmentName" attribute.
-- key: SearchThisWeek
-  value:
-    simple: "true"
-  required: true
-  description: Limit the search to the current week (true/false).
-- key: Limit
-  value:
-    simple: "20"
-  required: true
-  description: The maximum number of search results.
-- key: DeleteType
-  value:
-    simple: trash
-  required: true
-  description: The deletion type (trash, soft, or hard).
+  - key: From
+    value:
+      complex:
+        root: incident
+        accessor: emailfrom
+    required: true
+    description: The value of the malicious email's "From" attribute.
+  - key: Subject
+    value:
+      complex:
+        root: incident
+        accessor: emailsubject
+    required: false
+    description: The value of the malicious email's "Subject" attribute.
+  - key: AttachmentName
+    value:
+      complex:
+        root: incident
+        accessor: attachmentname
+    required: false
+    description: The value of the malicious email's "AttachmentName" attribute.
+  - key: SearchThisWeek
+    value:
+      simple: "true"
+    required: true
+    description: Limit the search to the current week (true/false).
+  - key: Limit
+    value:
+      simple: "20"
+    required: true
+    description: The maximum number of search results.
+  - key: DeleteType
+    value:
+      simple: trash
+    required: true
+    description: The deletion type (trash, soft, or hard).
 outputs: []
 tests:
-- No test
+  - No test
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
-- edr
-- cloud
-- cloud_runtime_security
+  - agentix
+  - xsiam
+  - edr
+  - cloud
+  - cloud_runtime_security

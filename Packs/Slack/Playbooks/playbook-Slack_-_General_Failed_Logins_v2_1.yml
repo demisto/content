@@ -18,7 +18,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     separatecontext: false
     view: |-
       {
@@ -45,9 +45,9 @@ tasks:
       brand: ""
     nexttasks:
       "No":
-      - "4"
+        - "4"
       "Yes":
-      - "12"
+        - "12"
     reputationcalc: 1
     separatecontext: false
     sla:
@@ -76,7 +76,7 @@ tasks:
       body:
         simple: There were several failed login attempts with your user ID. Please confirm that you attempted these logins.
       methods:
-      - SlackV2
+        - SlackV2
       format: ""
       bcc:
       cc:
@@ -85,8 +85,8 @@ tasks:
         retriesinterval: 360
         completeafterreplies: 1
       replyOptions:
-      - "Yes"
-      - "No"
+        - "Yes"
+        - "No"
   "4":
     id: "4"
     taskid: 62ae1482-75b7-4df5-8644-7023bb01e93b
@@ -102,7 +102,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "11"
+        - "11"
     scriptarguments:
       accountid: {}
       accountname: {}
@@ -418,9 +418,9 @@ tasks:
       brand: ""
     nexttasks:
       "No":
-      - "9"
+        - "9"
       "yes":
-      - "7"
+        - "7"
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -441,7 +441,7 @@ tasks:
       body:
         simple: Should we reset the password?
       methods:
-      - SlackV2
+        - SlackV2
       format: ""
       bcc:
       cc:
@@ -450,8 +450,8 @@ tasks:
         retriesinterval: 360
         completeafterreplies: 1
       replyOptions:
-      - "Yes"
-      - "No"
+        - "Yes"
+        - "No"
   "7":
     id: "7"
     taskid: f631ded5-6337-4bb8-8680-1b906db2d70d
@@ -468,7 +468,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       base-dn: {}
       username:
@@ -502,7 +502,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       adaptive_card: {}
       blocks: {}
@@ -544,7 +544,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "11"
+        - "11"
     scriptarguments:
       assetid: {}
       closeNotes: {}
@@ -580,36 +580,36 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "11"
+        - "11"
       "yes":
-      - "2"
+        - "2"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: SlackV2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: SlackV2
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -657,28 +657,28 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "13"
+        - "13"
       "yes":
-      - "6"
+        - "6"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Active Directory Query v2
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Active Directory Query v2
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -703,7 +703,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     separatecontext: false
     view: |-
       {
@@ -737,21 +737,17 @@ view: |-
     }
   }
 inputs:
-- key: UsernameOrEmail
-  value:
-    complex:
-      root: incident
-      accessor: srcuser
-  required: true
-  description: The username or the email address of the user who failed to login.
+  - key: UsernameOrEmail
+    value:
+      complex:
+        root: incident
+        accessor: srcuser
+    required: true
+    description: The username or the email address of the user who failed to login.
 outputs: []
 fromversion: 5.0.0
 tests:
-- No tests
+  - No tests
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

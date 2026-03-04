@@ -5,9 +5,9 @@ description: |-
   This playbook should be run as a job. It is used to periodically remove the specified tag from domain indicators. It should be used in conjunction with the "PAN-OS - Job - Add Malicious Domains To Sinkhole" playbook, to stop domains from being sinkholed after a certain amount of time.
   The idea is that traffic to malicious domains will not be redirected to a sinkhole address forever, as malicious domains tend to lose their malicious properties (become inactive, get taken down, or the malware using them is no longer used or maintained).
 tags:
-- TIM
-- Sinkhole
-- PAN-OS
+  - TIM
+  - Sinkhole
+  - PAN-OS
 starttaskid: "0"
 tasks:
   "0":
@@ -23,9 +23,9 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
-      - "3"
-      - "6"
+        - "1"
+        - "3"
+        - "6"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -57,7 +57,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "13"
+        - "13"
     scriptarguments:
       extend-context:
         simple: indicators=
@@ -65,14 +65,14 @@ tasks:
         complex:
           root: inputs.SinkholeTag
           transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: tags:"
-              suffix:
-                value:
-                  simple: '" and type:Domain'
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: tags:"
+                suffix:
+                  value:
+                    simple: '" and type:Domain'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -104,7 +104,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+        - "13"
     scriptarguments:
       contextKey:
         simple: MinimumTime
@@ -144,7 +144,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     scriptarguments:
       field:
         simple: tags
@@ -155,18 +155,18 @@ tasks:
         complex:
           root: indicators.value
           filters:
-          - - operator: notIn
-              left:
-                value:
-                  simple: indicators.value
-                iscontext: true
-              right:
-                value:
-                  simple: DomainsRecentlyTagged
-                iscontext: true
-              ignorecase: true
+            -   - operator: notIn
+                  left:
+                    value:
+                      simple: indicators.value
+                    iscontext: true
+                  right:
+                    value:
+                      simple: DomainsRecentlyTagged
+                    iscontext: true
+                  ignorecase: true
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -226,7 +226,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+        - "13"
     scriptarguments:
       key:
         simple: TagEventName
@@ -234,14 +234,14 @@ tasks:
         complex:
           root: inputs.SinkholeTag
           transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'The value '
-              suffix:
-                value:
-                  simple: ' was added to field Tags'
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'The value '
+                suffix:
+                  value:
+                    simple: ' was added to field Tags'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -272,7 +272,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "17"
+        - "17"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -305,41 +305,41 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "19"
+        - "19"
       "yes":
-      - "18"
+        - "18"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: indicators
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: indicators.comments.content
-                      iscontext: true
-                    right:
-                      value:
-                        simple: TagEventName
-                      iscontext: true
-                - - operator: isAfter
-                    left:
-                      value:
-                        simple: indicators.comments.created
-                      iscontext: true
-                    right:
-                      value:
-                        simple: MinimumTimeTimeNow
-                      iscontext: true
-                accessor: value
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: indicators
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: indicators.comments.content
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: TagEventName
+                                iscontext: true
+                        -   - operator: isAfter
+                              left:
+                                value:
+                                  simple: indicators.comments.created
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: MinimumTimeTimeNow
+                                iscontext: true
+                      accessor: value
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -370,7 +370,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+        - "19"
     scriptarguments:
       key:
         simple: DomainsRecentlyTagged
@@ -378,27 +378,27 @@ tasks:
         complex:
           root: indicators
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: indicators.comments.content
-                iscontext: true
-              right:
-                value:
-                  simple: TagEventName
-                iscontext: true
-          - - operator: isAfter
-              left:
-                value:
-                  simple: indicators.comments.created
-                iscontext: true
-              right:
-                value:
-                  simple: MinimumTimeTimeNow
-                iscontext: true
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: indicators.comments.content
+                    iscontext: true
+                  right:
+                    value:
+                      simple: TagEventName
+                    iscontext: true
+            -   - operator: isAfter
+                  left:
+                    value:
+                      simple: indicators.comments.created
+                    iscontext: true
+                  right:
+                    value:
+                      simple: MinimumTimeTimeNow
+                    iscontext: true
           accessor: value
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -429,32 +429,32 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+        - "5"
       "yes":
-      - "4"
+        - "4"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: indicators
-                filters:
-                - - operator: notIn
-                    left:
-                      value:
-                        simple: indicators.value
-                      iscontext: true
-                    right:
-                      value:
-                        simple: DomainsRecentlyTagged
-                      iscontext: true
-                accessor: value
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: indicators
+                      filters:
+                        -   - operator: notIn
+                              left:
+                                value:
+                                  simple: indicators.value
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: DomainsRecentlyTagged
+                                iscontext: true
+                      accessor: value
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -483,34 +483,30 @@ view: |-
     }
   }
 inputs:
-- key: SinkholeTag
-  value:
-    simple: to_sinkhole
-  required: true
-  description: |-
-    The tag that will be removed from the tagged domain indicators.
-    This should be the tag that was used to export the domains to the EDL using the Generic Export Indicators Service integration, which is used by the firewall's sinkhole configuration.
-  playbookInputQuery:
-- key: DaysTaggedBeforeRemoval
-  value:
-    simple: "14"
-  required: true
-  description: |-
-    The "decay period" - how many days should pass since the domains were tagged, before removing the sinkhole tag from those domains.
-    The value should be a number of days. For example: 14.
+  - key: SinkholeTag
+    value:
+      simple: to_sinkhole
+    required: true
+    description: |-
+      The tag that will be removed from the tagged domain indicators.
+      This should be the tag that was used to export the domains to the EDL using the Generic Export Indicators Service integration, which is used by the firewall's sinkhole configuration.
+    playbookInputQuery:
+  - key: DaysTaggedBeforeRemoval
+    value:
+      simple: "14"
+    required: true
+    description: |-
+      The "decay period" - how many days should pass since the domains were tagged, before removing the sinkhole tag from those domains.
+      The value should be a number of days. For example: 14.
 
-    Technical details: When specifying the decay period, the playbook will take into account multiple tagging/untagging activities in the domain indicator in Cortex XSOAR. This means that if you specified a value of "14" and a domain was tagged 15 days ago, but also untagged and then tagged again 10 days ago - it will not be untagged by the playbook, as tagging activity happened 10 days ago. It will, however, be untagged when the playbook runs 5 days afterwards, since at that time the domain will have reached the decay period again.
-  playbookInputQuery:
+      Technical details: When specifying the decay period, the playbook will take into account multiple tagging/untagging activities in the domain indicator in Cortex XSOAR. This means that if you specified a value of "14" and a domain was tagged 15 days ago, but also untagged and then tagged again 10 days ago - it will not be untagged by the playbook, as tagging activity happened 10 days ago. It will, however, be untagged when the playbook runs 5 days afterwards, since at that time the domain will have reached the decay period again.
+    playbookInputQuery:
 outputs: []
 quiet: true
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 6.9.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
-- cloud_posture
+  - agentix
+  - xsiam
+  - cloud_posture

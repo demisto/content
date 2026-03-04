@@ -19,8 +19,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "4"
-      - "5"
+        - "4"
+        - "5"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -52,7 +52,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     scriptarguments:
       folders:
         simple: Remote Networks, Mobile Users, Service Connections
@@ -89,34 +89,34 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+        - "4"
       Auto Commit:
-      - "1"
+        - "1"
       Manual:
-      - "13"
+        - "13"
     separatecontext: false
     conditions:
-    - label: Auto Commit
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.AutoCommit
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    - label: Manual
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.AutoCommit
-            iscontext: true
-          right:
-            value:
-              simple: "False"
+      - label: Auto Commit
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.AutoCommit
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
+      - label: Manual
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.AutoCommit
+                  iscontext: true
+                right:
+                  value:
+                    simple: "False"
     continueonerrortype: ""
     view: |-
       {
@@ -174,34 +174,34 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+        - "4"
       Create New Object:
-      - "9"
+        - "9"
       EDL Object Exist:
-      - "6"
+        - "6"
     separatecontext: false
     conditions:
-    - label: EDL Object Exist
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.EDLObjectName
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.URL
-            iscontext: true
-    - label: Create New Object
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.URL
-            iscontext: true
+      - label: EDL Object Exist
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.EDLObjectName
+                  iscontext: true
+                right:
+                  value: {}
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.URL
+                  iscontext: true
+      - label: Create New Object
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.URL
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -232,7 +232,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       folder:
         complex:
@@ -273,29 +273,29 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+        - "9"
       "yes":
-      - "10"
+        - "10"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PrismaSase.ExternalDynamicList.id
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isEqualString
-          left:
-            value:
-              simple: PrismaSase.ExternalDynamicList.source
-            iscontext: true
-          right:
-            value:
-              simple: inputs.EDLObjectName
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: PrismaSase.ExternalDynamicList.id
+                  iscontext: true
+                right:
+                  value: {}
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: PrismaSase.ExternalDynamicList.source
+                  iscontext: true
+                right:
+                  value:
+                    simple: inputs.EDLObjectName
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -326,7 +326,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     scriptarguments:
       AutoCommit:
         simple: Else
@@ -386,7 +386,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     scriptarguments:
       Action:
         simple: deny
@@ -452,9 +452,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+        - "4"
       Push:
-      - "1"
+        - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -482,8 +482,8 @@ tasks:
         completeafterv2: true
         completeaftersla: false
       replyOptions:
-      - Push
-      - "No"
+        - Push
+        - "No"
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -502,142 +502,138 @@ view: |-
     }
   }
 inputs:
-- key: TSGID
-  value: {}
-  required: false
-  description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
-  playbookInputQuery:
-- key: Folder
-  value:
-    simple: Shared
-  required: false
-  description: |-
-    The configuration folder group setting.
-    The default value is 'Shared'.
-  playbookInputQuery:
-- key: URL
-  value: {}
-  required: false
-  description: The source URL for the External Dynamic List. If the chosen type is ip/url/domain, this value must be provided.
-  playbookInputQuery:
-- key: EDLObjectName
-  value: {}
-  required: false
-  description: The external dynamic list object name.
-  playbookInputQuery:
-- key: RuleName
-  value:
-    simple: 'Block Indicators using EDL - Created by XSOAR'
-  required: false
-  description: The Security Policy Rule name will be created for blocking the indicators.
-  playbookInputQuery:
-- key: EDLObjectType
-  value: {}
-  required: false
-  description: |-
-    Possible values (Choose only 1):
-    domain,ip,url,predefined_ip,predefined_url
-  playbookInputQuery:
-- key: AutoCommit
-  value: {}
-  required: false
-  description: |-
-    Possible Values:
-    True -> Will commit and push configuration.
-    False -> Manual push will be required.
-    Else --> Will ignore the push section and continue the playbook.
-  playbookInputQuery:
-- key: IPListName
-  value: {}
-  required: false
-  description: |-
-    The predefined IP list. If the type is predefined_ip, a value must be provided.
-    Possible values: panw-bulletproof-ip-list,panw-highrisk-ip-list,panw-known-ip-list,panw-torexit-ip-list.
-  playbookInputQuery:
-- key: URLListName
-  value: {}
-  required: false
-  description: |-
-    The predefined URL list. If the type is predefined_url, a value must be provided.
+  - key: TSGID
+    value: {}
+    required: false
+    description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+    playbookInputQuery:
+  - key: Folder
+    value:
+      simple: Shared
+    required: false
+    description: |-
+      The configuration folder group setting.
+      The default value is 'Shared'.
+    playbookInputQuery:
+  - key: URL
+    value: {}
+    required: false
+    description: The source URL for the External Dynamic List. If the chosen type is ip/url/domain, this value must be provided.
+    playbookInputQuery:
+  - key: EDLObjectName
+    value: {}
+    required: false
+    description: The external dynamic list object name.
+    playbookInputQuery:
+  - key: RuleName
+    value:
+      simple: 'Block Indicators using EDL - Created by XSOAR'
+    required: false
+    description: The Security Policy Rule name will be created for blocking the indicators.
+    playbookInputQuery:
+  - key: EDLObjectType
+    value: {}
+    required: false
+    description: |-
+      Possible values (Choose only 1):
+      domain,ip,url,predefined_ip,predefined_url
+    playbookInputQuery:
+  - key: AutoCommit
+    value: {}
+    required: false
+    description: |-
+      Possible Values:
+      True -> Will commit and push configuration.
+      False -> Manual push will be required.
+      Else --> Will ignore the push section and continue the playbook.
+    playbookInputQuery:
+  - key: IPListName
+    value: {}
+    required: false
+    description: |-
+      The predefined IP list. If the type is predefined_ip, a value must be provided.
+      Possible values: panw-bulletproof-ip-list,panw-highrisk-ip-list,panw-known-ip-list,panw-torexit-ip-list.
+    playbookInputQuery:
+  - key: URLListName
+    value: {}
+    required: false
+    description: |-
+      The predefined URL list. If the type is predefined_url, a value must be provided.
 
-    Possible value:
-    panw–auth-portal-exclude-list
+      Possible value:
+      panw–auth-portal-exclude-list
 outputs:
-- contextPath: PrismaSase.CandidateConfig
-  description: Configuration job object.
-  type: unknown
-- contextPath: PrismaSase.CandidateConfig.job_id
-  description: Configuration job ID.
-- contextPath: PrismaSase.CandidateConfig.result
-  description: The configuration push result, e.g. OK, FAIL.
-- contextPath: PrismaSase.CandidateConfig.details
-  description: The configuration push details.
-- contextPath: PrismaSase.ExternalDynamicList
-  description: The external dynamic list object.
-  type: unknown
-- contextPath: PrismaSase.ExternalDynamicList.id
-  description: The external dynamic list ID.
-- contextPath: PrismaSase.ExternalDynamicList.name
-  description: The external dynamic list name.
-- contextPath: PrismaSase.ExternalDynamicList.folder
-  description: The external dynamic list folder.
-- contextPath: PrismaSase.ExternalDynamicList.description
-  description: The external dynamic list description.
-- contextPath: PrismaSase.ExternalDynamicList.type
-  description: The external dynamic list type.
-- contextPath: PrismaSase.ExternalDynamicList.source
-  description: The external dynamic list source.
-- contextPath: PrismaSase.ExternalDynamicList.frequency
-  description: The external dynamic list frequency.
-- contextPath: PrismaSase
-  description: The root context key for Prisma SASE integration output.
-  type: unknown
-- contextPath: PrismaSase.SecurityRule
-  description: Found security rule.
-- contextPath: PrismaSase.SecurityRule.action
-  description: Security rule action.
-- contextPath: PrismaSase.SecurityRule.application
-  description: Security rule application.
-- contextPath: PrismaSase.SecurityRule.category
-  description: Security rule category.
-- contextPath: PrismaSase.SecurityRule.description
-  description: Security rule description.
-- contextPath: PrismaSase.SecurityRule.destination
-  description: Security rule destination.
-- contextPath: PrismaSase.SecurityRule.folder
-  description: Security rule folder.
-- contextPath: PrismaSase.SecurityRule.from
-  description: Security rule from field (source zone(s)).
-- contextPath: PrismaSase.SecurityRule.id
-  description: Security rule ID.
-- contextPath: PrismaSase.SecurityRule.log_setting
-  description: Security rule log setting.
-- contextPath: PrismaSase.SecurityRule.name
-  description: Security rule name.
-- contextPath: PrismaSase.SecurityRule.position
-  description: Security rule position.
-- contextPath: PrismaSase.SecurityRule.service
-  description: Security rule service.
-- contextPath: PrismaSase.SecurityRule.source
-  description: Security rule source.
-- contextPath: PrismaSase.SecurityRule.source_user
-  description: Security rule source user.
-- contextPath: PrismaSase.SecurityRule.to
-  description: Security rule to field (destination zone(s)).
-- contextPath: PrismaSase.SecurityRule.negate_destination
-  description: Security rule negate destination.
-- contextPath: PrismaSase.SecurityRule.profile_setting
-  description: The Security rule group object in the rule.
-  type: unknown
-- contextPath: PrismaSase.SecurityRule.profile_setting.group
-  description: Security rule group.
+  - contextPath: PrismaSase.CandidateConfig
+    description: Configuration job object.
+    type: unknown
+  - contextPath: PrismaSase.CandidateConfig.job_id
+    description: Configuration job ID.
+  - contextPath: PrismaSase.CandidateConfig.result
+    description: The configuration push result, e.g. OK, FAIL.
+  - contextPath: PrismaSase.CandidateConfig.details
+    description: The configuration push details.
+  - contextPath: PrismaSase.ExternalDynamicList
+    description: The external dynamic list object.
+    type: unknown
+  - contextPath: PrismaSase.ExternalDynamicList.id
+    description: The external dynamic list ID.
+  - contextPath: PrismaSase.ExternalDynamicList.name
+    description: The external dynamic list name.
+  - contextPath: PrismaSase.ExternalDynamicList.folder
+    description: The external dynamic list folder.
+  - contextPath: PrismaSase.ExternalDynamicList.description
+    description: The external dynamic list description.
+  - contextPath: PrismaSase.ExternalDynamicList.type
+    description: The external dynamic list type.
+  - contextPath: PrismaSase.ExternalDynamicList.source
+    description: The external dynamic list source.
+  - contextPath: PrismaSase.ExternalDynamicList.frequency
+    description: The external dynamic list frequency.
+  - contextPath: PrismaSase
+    description: The root context key for Prisma SASE integration output.
+    type: unknown
+  - contextPath: PrismaSase.SecurityRule
+    description: Found security rule.
+  - contextPath: PrismaSase.SecurityRule.action
+    description: Security rule action.
+  - contextPath: PrismaSase.SecurityRule.application
+    description: Security rule application.
+  - contextPath: PrismaSase.SecurityRule.category
+    description: Security rule category.
+  - contextPath: PrismaSase.SecurityRule.description
+    description: Security rule description.
+  - contextPath: PrismaSase.SecurityRule.destination
+    description: Security rule destination.
+  - contextPath: PrismaSase.SecurityRule.folder
+    description: Security rule folder.
+  - contextPath: PrismaSase.SecurityRule.from
+    description: Security rule from field (source zone(s)).
+  - contextPath: PrismaSase.SecurityRule.id
+    description: Security rule ID.
+  - contextPath: PrismaSase.SecurityRule.log_setting
+    description: Security rule log setting.
+  - contextPath: PrismaSase.SecurityRule.name
+    description: Security rule name.
+  - contextPath: PrismaSase.SecurityRule.position
+    description: Security rule position.
+  - contextPath: PrismaSase.SecurityRule.service
+    description: Security rule service.
+  - contextPath: PrismaSase.SecurityRule.source
+    description: Security rule source.
+  - contextPath: PrismaSase.SecurityRule.source_user
+    description: Security rule source user.
+  - contextPath: PrismaSase.SecurityRule.to
+    description: Security rule to field (destination zone(s)).
+  - contextPath: PrismaSase.SecurityRule.negate_destination
+    description: Security rule negate destination.
+  - contextPath: PrismaSase.SecurityRule.profile_setting
+    description: The Security rule group object in the rule.
+    type: unknown
+  - contextPath: PrismaSase.SecurityRule.profile_setting.group
+    description: Security rule group.
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 6.8.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

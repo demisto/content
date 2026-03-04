@@ -22,7 +22,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     separatecontext: false
     view: |-
       {
@@ -53,14 +53,14 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+        - "2"
       "yes":
-      - "3"
+        - "3"
     scriptarguments:
       brandname:
         simple: EWS v2
     results:
-    - brandInstances
+      - brandInstances
     separatecontext: false
     view: |-
       {
@@ -117,25 +117,25 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+        - "2"
       Inputs-Exist:
-      - "4"
+        - "4"
     separatecontext: false
     conditions:
-    - label: Inputs-Exist
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.TargetMailbox
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.MessageID
-            iscontext: true
+      - label: Inputs-Exist
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: inputs.TargetMailbox
+                  iscontext: true
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: inputs.MessageID
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -165,7 +165,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     scriptarguments:
       message-id:
         complex:
@@ -204,20 +204,20 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+        - "2"
       "yes":
-      - "7"
+        - "7"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: EWS.Items
-                accessor: itemId
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: EWS.Items
+                      accessor: itemId
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -247,7 +247,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     scriptarguments:
       item-id:
         complex:
@@ -285,8 +285,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
-      - "9"
+        - "1"
+        - "9"
     separatecontext: false
     view: |-
       {
@@ -317,14 +317,14 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+        - "2"
       "yes":
-      - "3"
+        - "3"
     scriptarguments:
       brandname:
         simple: EWSO365
     results:
-    - brandInstances
+      - brandInstances
     separatecontext: false
     view: |-
       {
@@ -357,27 +357,23 @@ view: |-
     }
   }
 inputs:
-- key: TargetMailbox
-  value: {}
-  required: false
-  description: The target mailbox to retrieve the EML file from.
-  playbookInputQuery:
-- key: MessageID
-  value: {}
-  required: false
-  description: The InReplyTo header in the forwarded email.
-  playbookInputQuery:
+  - key: TargetMailbox
+    value: {}
+    required: false
+    description: The target mailbox to retrieve the EML file from.
+    playbookInputQuery:
+  - key: MessageID
+    value: {}
+    required: false
+    description: The InReplyTo header in the forwarded email.
+    playbookInputQuery:
 outputs:
-- contextPath: File
-  description: The original email as an EML file.
-  type: string
+  - contextPath: File
+    description: The original email as an EML file.
+    type: string
 tests:
-- Get Original Email - EWS v2 - test
+  - Get Original Email - EWS v2 - test
 fromversion: 6.0.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

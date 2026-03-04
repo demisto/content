@@ -25,7 +25,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -57,7 +57,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -88,7 +88,7 @@ tasks:
       description: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -117,66 +117,66 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Choose the action
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - simple: Do nothing
-        - simple: Add IP to static group
-        - simple: Tag the IP
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
-      - id: "1"
-        label: ""
-        labelarg:
-          simple: If you chose "Add to static group", please choose the relevant group
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - simple: N/A
-        - complex:
-            root: Panorama.AddressGroups
-            filters:
-            - - operator: isEqualString
-                left:
-                  value:
-                    simple: Panorama.AddressGroups.Type
-                  iscontext: true
-                right:
-                  value:
-                    simple: static
-                ignorecase: true
-            accessor: Name
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
-      - id: "2"
-        label: ""
-        labelarg:
-          simple: If you chose "Tag the IP", please choose the relevant tags
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: multiSelect
-        options: []
-        optionsarg:
-        - simple: ${Panorama.Tag.name}
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
+        - id: "0"
+          label: ""
+          labelarg:
+            simple: Choose the action
+          required: true
+          gridcolumns: []
+          defaultrows: []
+          type: singleSelect
+          options: []
+          optionsarg:
+            - simple: Do nothing
+            - simple: Add IP to static group
+            - simple: Tag the IP
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: ""
+          readonly: false
+        - id: "1"
+          label: ""
+          labelarg:
+            simple: If you chose "Add to static group", please choose the relevant group
+          required: false
+          gridcolumns: []
+          defaultrows: []
+          type: singleSelect
+          options: []
+          optionsarg:
+            - simple: N/A
+            - complex:
+                root: Panorama.AddressGroups
+                filters:
+                  -   - operator: isEqualString
+                        left:
+                          value:
+                            simple: Panorama.AddressGroups.Type
+                          iscontext: true
+                        right:
+                          value:
+                            simple: static
+                        ignorecase: true
+                accessor: Name
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: ""
+          readonly: false
+        - id: "2"
+          label: ""
+          labelarg:
+            simple: If you chose "Tag the IP", please choose the relevant tags
+          required: false
+          gridcolumns: []
+          defaultrows: []
+          type: multiSelect
+          options: []
+          optionsarg:
+            - simple: ${Panorama.Tag.name}
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: ""
+          readonly: false
       title: BlockIPAction
       description: |-
         This task will define the action which will be done on the enumerating IPs. Note that chosen actions will be automatically committed.
@@ -205,7 +205,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -236,46 +236,46 @@ tasks:
       description: ""
     nexttasks:
       Do Nothing:
-      - "7"
+        - "7"
       Static:
-      - "5"
+        - "5"
       Tag IP:
-      - "6"
+        - "6"
     separatecontext: false
     conditions:
-    - label: Do Nothing
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: BlockIPAction.Answers.0
-            iscontext: true
-          right:
-            value:
-              simple: Do nothing
-          ignorecase: true
-    - label: Static
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: BlockIPAction.Answers.0
-            iscontext: true
-          right:
-            value:
-              simple: Add IP to static group
-          ignorecase: true
-    - label: Tag IP
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: BlockIPAction.Answers.0
-            iscontext: true
-          right:
-            value:
-              simple: Tag the IP
-          ignorecase: true
+      - label: Do Nothing
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: BlockIPAction.Answers.0
+                  iscontext: true
+                right:
+                  value:
+                    simple: Do nothing
+                ignorecase: true
+      - label: Static
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: BlockIPAction.Answers.0
+                  iscontext: true
+                right:
+                  value:
+                    simple: Add IP to static group
+                ignorecase: true
+      - label: Tag IP
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: BlockIPAction.Answers.0
+                  iscontext: true
+                right:
+                  value:
+                    simple: Tag the IP
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -310,7 +310,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       AddressGroupName:
         simple: ${BlockIPAction.Answers.1}
@@ -354,7 +354,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       action-type:
         simple: deny
@@ -437,30 +437,30 @@ tasks:
       description: ""
     nexttasks:
       '#default#':
-      - "7"
+        - "7"
       "yes":
-      - "3"
-      - "1"
+        - "3"
+        - "1"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-          right:
-            value:
-              simple: Panorama
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.state
-            iscontext: true
-          right:
-            value:
-              simple: active
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.brand
+                  iscontext: true
+                right:
+                  value:
+                    simple: Panorama
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.state
+                  iscontext: true
+                right:
+                  value:
+                    simple: active
     continueonerrortype: ""
     view: |-
       {
@@ -495,32 +495,26 @@ view: |-
     }
   }
 inputs:
-- key: MaliciousIPs
-  value: {}
-  required: false
-  description: 'IP or list of IPs.'
-  playbookInputQuery:
+  - key: MaliciousIPs
+    value: {}
+    required: false
+    description: 'IP or list of IPs.'
+    playbookInputQuery:
 inputSections:
-- inputs:
-  - MaliciousIPs
-  name: General (Inputs group)
-  description: Generic group for inputs.
+  - inputs:
+      - MaliciousIPs
+    name: General (Inputs group)
+    description: Generic group for inputs.
 outputSections:
-- outputs: []
-  name: General (Outputs group)
-  description: Generic group for outputs.
+  - outputs: []
+    name: General (Outputs group)
+    description: Generic group for outputs.
 outputs: []
 quiet: true
 tests:
-- PAN-OS - Block IP - Static Address Group Test
-- PAN-OS DAG Configuration Test
+  - PAN-OS - Block IP - Static Address Group Test
+  - PAN-OS DAG Configuration Test
 fromversion: 6.10.0
 supportedModules:
-- C3
-- X0
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

@@ -18,7 +18,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "18"
+        - "18"
     separatecontext: false
     view: |-
       {
@@ -46,38 +46,38 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "34"
+        - "34"
       "yes":
-      - "31"
-      - "32"
-      - "37"
+        - "31"
+        - "32"
+        - "37"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: inList
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: QRadar,QRadar_v2,QRadar v3
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: inList
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: QRadar,QRadar_v2,QRadar v3
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -104,26 +104,26 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "34"
+        - "34"
       "yes":
-      - "9"
+        - "9"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: playbookQuery.value
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: playbookQuery.indicator_type
-            iscontext: true
-          right:
-            value:
-              simple: IP
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: playbookQuery.value
+                  iscontext: true
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: playbookQuery.indicator_type
+                  iscontext: true
+                right:
+                  value:
+                    simple: IP
     view: |-
       {
         "position": {
@@ -151,7 +151,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+        - "35"
     scriptarguments:
       date_value: {}
       ref_name:
@@ -161,30 +161,30 @@ tasks:
         complex:
           root: playbookQuery
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: approved_black
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.indicator_type
-                iscontext: true
-              right:
-                value:
-                  simple: IP
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: approved_black
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.indicator_type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: IP
           accessor: value
           transformers:
-          - operator: uniq
+            - operator: uniq
       values:
         complex:
           root: inputs.ParentPlaybookIndicators
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -212,42 +212,42 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "34"
+        - "34"
       "yes":
-      - "26"
+        - "26"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.QRadarBlackListIPReferenceSetName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: playbookQuery
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: playbookQuery.CustomFields.tags
-                      iscontext: true
-                    right:
-                      value:
-                        simple: approved_black
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: playbookQuery.indicator_type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: IP
-                accessor: value
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.QRadarBlackListIPReferenceSetName
+                  iscontext: true
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: playbookQuery
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: playbookQuery.CustomFields.tags
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: approved_black
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: playbookQuery.indicator_type
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: IP
+                      accessor: value
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -274,42 +274,42 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "34"
+        - "34"
       "yes":
-      - "33"
+        - "33"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.QRadarWhiteListIPReferenceSetName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: playbookQuery
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: playbookQuery.CustomFields.tags
-                      iscontext: true
-                    right:
-                      value:
-                        simple: approved_white
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: playbookQuery.indicator_type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: IP
-                accessor: value
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.QRadarWhiteListIPReferenceSetName
+                  iscontext: true
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: playbookQuery
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: playbookQuery.CustomFields.tags
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: approved_white
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: playbookQuery.indicator_type
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: IP
+                      accessor: value
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -337,7 +337,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "36"
+        - "36"
     scriptarguments:
       date_value: {}
       ref_name:
@@ -347,30 +347,30 @@ tasks:
         complex:
           root: playbookQuery
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: approved_white
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.indicator_type
-                iscontext: true
-              right:
-                value:
-                  simple: IP
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: approved_white
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.indicator_type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: IP
           accessor: value
           transformers:
-          - operator: uniq
+            - operator: uniq
       values:
         complex:
           root: inputs.ParentPlaybookIndicators
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -424,7 +424,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "34"
+        - "34"
     scriptarguments:
       field:
         simple: tags
@@ -434,25 +434,25 @@ tasks:
         complex:
           root: playbookQuery
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: approved_black
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.indicator_type
-                iscontext: true
-              right:
-                value:
-                  simple: IP
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: approved_black
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.indicator_type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: IP
           accessor: value
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -481,7 +481,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "34"
+        - "34"
     scriptarguments:
       field:
         simple: tags
@@ -491,25 +491,25 @@ tasks:
         complex:
           root: playbookQuery
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: approved_white
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.indicator_type
-                iscontext: true
-              right:
-                value:
-                  simple: IP
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: approved_white
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.indicator_type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: IP
           accessor: value
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -537,42 +537,42 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "34"
+        - "34"
       "yes":
-      - "38"
+        - "38"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.QRadarWatchListIPReferenceSetName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: playbookQuery
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: playbookQuery.CustomFields.tags
-                      iscontext: true
-                    right:
-                      value:
-                        simple: approved_watchlist
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: playbookQuery.indicator_type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: IP
-                accessor: value
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.QRadarWatchListIPReferenceSetName
+                  iscontext: true
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: playbookQuery
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: playbookQuery.CustomFields.tags
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: approved_watchlist
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: playbookQuery.indicator_type
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: IP
+                      accessor: value
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -600,7 +600,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
+        - "39"
     scriptarguments:
       date_value: {}
       ref_name:
@@ -610,30 +610,30 @@ tasks:
         complex:
           root: playbookQuery
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: approved_watchlist
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.indicator_type
-                iscontext: true
-              right:
-                value:
-                  simple: IP
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: approved_watchlist
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.indicator_type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: IP
           accessor: value
           transformers:
-          - operator: uniq
+            - operator: uniq
       values:
         complex:
           root: inputs.ParentPlaybookIndicators
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -662,7 +662,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "34"
+        - "34"
     scriptarguments:
       field:
         simple: tags
@@ -672,25 +672,25 @@ tasks:
         complex:
           root: playbookQuery
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.CustomFields.tags
-                iscontext: true
-              right:
-                value:
-                  simple: approved_watchlist
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.indicator_type
-                iscontext: true
-              right:
-                value:
-                  simple: IP
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.CustomFields.tags
+                    iscontext: true
+                  right:
+                    value:
+                      simple: approved_watchlist
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: playbookQuery.indicator_type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: IP
           accessor: value
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -717,49 +717,45 @@ view: |-
     }
   }
 inputs:
-- key: QRadarBlackListIPReferenceSetName
-  value: {}
-  required: false
-  description: The name of the QRadar block list IP reference set to insert the data to.
-  playbookInputQuery:
-- key: ""
-  value: {}
-  required: false
-  description: ""
-  playbookInputQuery:
-    query: ""
-    queryEntity: indicators
-    results:
-    daterange:
-      fromdate: 0001-01-01T00:00:00Z
-      todate: 0001-01-01T00:00:00Z
-      period:
-        by: ""
-        byto: ""
-        byfrom: ""
-        tovalue:
-        fromvalue:
-        field: ""
-      fromdatelicenseval: 0001-01-01T00:00:00Z
-    runFromLastJobTime: false
-- key: QRadarWhiteListIPReferenceSetName
-  value: {}
-  required: false
-  description: The name of the QRadar allow list IP reference set to insert the data in to.
-  playbookInputQuery:
-- key: QRadarWatchListIPReferenceSetName
-  value: {}
-  required: false
-  description: The name of the QRadar watch list IP reference set to insert the data in to.
-  playbookInputQuery:
+  - key: QRadarBlackListIPReferenceSetName
+    value: {}
+    required: false
+    description: The name of the QRadar block list IP reference set to insert the data to.
+    playbookInputQuery:
+  - key: ""
+    value: {}
+    required: false
+    description: ""
+    playbookInputQuery:
+      query: ""
+      queryEntity: indicators
+      results:
+      daterange:
+        fromdate: 0001-01-01T00:00:00Z
+        todate: 0001-01-01T00:00:00Z
+        period:
+          by: ""
+          byto: ""
+          byfrom: ""
+          tovalue:
+          fromvalue:
+          field: ""
+        fromdatelicenseval: 0001-01-01T00:00:00Z
+      runFromLastJobTime: false
+  - key: QRadarWhiteListIPReferenceSetName
+    value: {}
+    required: false
+    description: The name of the QRadar allow list IP reference set to insert the data in to.
+    playbookInputQuery:
+  - key: QRadarWatchListIPReferenceSetName
+    value: {}
+    required: false
+    description: The name of the QRadar watch list IP reference set to insert the data in to.
+    playbookInputQuery:
 outputs: []
 quiet: true
 tests:
-- No test
+  - No test
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

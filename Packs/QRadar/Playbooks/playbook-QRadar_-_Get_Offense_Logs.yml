@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "26"
+        - "26"
     separatecontext: false
     view: |-
       {
@@ -48,21 +48,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+        - "2"
       "true":
-      - "29"
+        - "29"
     separatecontext: false
     conditions:
-    - label: "true"
-      condition:
-      - - operator: inList
-          left:
-            value:
-              simple: inputs.GetOnlyCREEvents
-            iscontext: true
-          right:
-            value:
-              simple: OnlyCRE,OnlyNotCRE, All
+      - label: "true"
+        condition:
+          -   - operator: inList
+                left:
+                  value:
+                    simple: inputs.GetOnlyCREEvents
+                  iscontext: true
+                right:
+                  value:
+                    simple: OnlyCRE,OnlyNotCRE, All
     view: |-
       {
         "position": {
@@ -121,13 +121,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "34"
-      - "35"
-      - "36"
-      - "37"
-      - "38"
-      - "40"
-      - "41"
+        - "34"
+        - "35"
+        - "36"
+        - "37"
+        - "38"
+        - "40"
+        - "41"
     scriptarguments:
       capitalize:
         simple: "True"
@@ -169,9 +169,9 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "2"
+        - "2"
       "yes":
-      - "43"
+        - "43"
     scriptarguments:
       brandname:
         simple: QRadar v3
@@ -206,7 +206,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "46"
+        - "46"
     scriptarguments:
       key:
         simple: CRESettings
@@ -214,14 +214,14 @@ tasks:
         complex:
           root: inputs.GetOnlyCREEvents
           transformers:
-          - operator: MapValuesTransformer
-            args:
-              input_values:
-                value:
-                  simple: OnlyCRE,OnlyNotCRE,All
-              mapped_values:
-                value:
-                  simple: 'AND "CRE NAME" IS NOT NULL , AND "CRE NAME" IS NULL , '
+            - operator: MapValuesTransformer
+              args:
+                input_values:
+                  value:
+                    simple: OnlyCRE,OnlyNotCRE,All
+                mapped_values:
+                  value:
+                    simple: 'AND "CRE NAME" IS NOT NULL , AND "CRE NAME" IS NULL , '
     separatecontext: false
     view: |-
       {
@@ -253,7 +253,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "42"
+        - "42"
     scriptarguments:
       key:
         simple: QRadar.SourceIP
@@ -262,7 +262,7 @@ tasks:
           root: QRadar.Events
           accessor: Sourceip
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -294,7 +294,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "42"
+        - "42"
     scriptarguments:
       key:
         simple: QRadar.DestinationIP
@@ -303,7 +303,7 @@ tasks:
           root: QRadar.Events
           accessor: Destinationip
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -335,7 +335,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "42"
+        - "42"
     scriptarguments:
       key:
         simple: QRadar.Username
@@ -344,7 +344,7 @@ tasks:
           root: QRadar.Events
           accessor: Username
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -376,7 +376,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "42"
+        - "42"
     scriptarguments:
       key:
         simple: QRadar.HighLevelCategory
@@ -385,7 +385,7 @@ tasks:
           root: QRadar.Events
           accessor: Categoryname_Highlevelcategory
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -417,7 +417,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "42"
+        - "42"
     scriptarguments:
       key:
         simple: QRadar.LowLevelCategory
@@ -426,7 +426,7 @@ tasks:
           root: QRadar.Events
           accessor: Categoryname_Category
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -457,7 +457,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     separatecontext: false
     view: |-
       {
@@ -489,7 +489,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "42"
+        - "42"
     scriptarguments:
       key:
         simple: QRadar.QidName
@@ -498,7 +498,7 @@ tasks:
           root: QRadar.Events
           accessor: Qidname_Qid
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -530,7 +530,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "42"
+        - "42"
     scriptarguments:
       key:
         simple: QRadar.StartTime
@@ -539,10 +539,10 @@ tasks:
           root: QRadar.Events
           accessor: Starttime
           transformers:
-          - operator: sort
-            args:
-              descending: {}
-          - operator: FirstArrayElement
+            - operator: sort
+              args:
+                descending: {}
+            - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {
@@ -574,7 +574,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     continueonerror: true
     separatecontext: false
     view: |-
@@ -621,22 +621,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "44"
+        - "44"
       "yes":
-      - "45"
+        - "45"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: lessThan
-          left:
-            value:
-              complex:
-                root: inputs.ApiVersion
-            iscontext: true
-          right:
-            value:
-              simple: "19"
+      - label: "yes"
+        condition:
+          -   - operator: lessThan
+                left:
+                  value:
+                    complex:
+                      root: inputs.ApiVersion
+                  iscontext: true
+                right:
+                  value:
+                    simple: "19"
     continueonerrortype: ""
     view: |-
       {
@@ -667,7 +667,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     scriptarguments:
       key:
         simple: Time
@@ -675,14 +675,14 @@ tasks:
         complex:
           root: inputs.StartTime
           transformers:
-          - operator: FormattedDateToEpoch
-            args:
-              formatter: {}
-          - operator: multiply
-            args:
-              by:
-                value:
-                  simple: "1000"
+            - operator: FormattedDateToEpoch
+              args:
+                formatter: {}
+            - operator: multiply
+              args:
+                by:
+                  value:
+                    simple: "1000"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -714,7 +714,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     scriptarguments:
       key:
         simple: Time
@@ -722,9 +722,9 @@ tasks:
         complex:
           root: inputs.StartTime
           transformers:
-          - operator: FormattedDateToEpoch
-            args:
-              formatter: {}
+            - operator: FormattedDateToEpoch
+              args:
+                formatter: {}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -756,7 +756,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
+        - "39"
     scriptarguments:
       interval_in_seconds:
         simple: "1"
@@ -796,85 +796,81 @@ view: |-
     }
   }
 inputs:
-- key: MaxLogsCount
-  value:
-    simple: "50"
-  required: false
-  description: 'Maximum number of log entires to query from QRadar (default: 50)'
-  playbookInputQuery:
-- key: ID
-  value:
-    complex:
-      root: incident
-      accessor: idoffense
-  required: true
-  description: The QRadar offense ID. Uses the id offense incident field.
-  playbookInputQuery:
-- key: StartTime
-  value:
-    complex:
-      root: incident
-      accessor: starttime
-  required: true
-  description: The QRadar offense start time
-  playbookInputQuery:
-- key: GetOnlyCREEvents
-  value:
-    simple: All
-  required: false
-  description: |-
-    If value "OnlyCRE" get only events made by CRE.
-    Values can be "OnlyCRE", "OnlyNotCRE", "All".
-  playbookInputQuery:
-- key: Fields
-  value:
-    simple: QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime
-  required: false
-  description: |-
-    A comma-separated list of extra fields to get from each event.
-    You can replace with different fields as well as rename the field names.
-  playbookInputQuery:
-- key: ApiVersion
-  value:
-    simple: "17"
-  required: false
-  description: The API version for the timestamp format changes between versions
-  playbookInputQuery:
+  - key: MaxLogsCount
+    value:
+      simple: "50"
+    required: false
+    description: 'Maximum number of log entires to query from QRadar (default: 50)'
+    playbookInputQuery:
+  - key: ID
+    value:
+      complex:
+        root: incident
+        accessor: idoffense
+    required: true
+    description: The QRadar offense ID. Uses the id offense incident field.
+    playbookInputQuery:
+  - key: StartTime
+    value:
+      complex:
+        root: incident
+        accessor: starttime
+    required: true
+    description: The QRadar offense start time
+    playbookInputQuery:
+  - key: GetOnlyCREEvents
+    value:
+      simple: All
+    required: false
+    description: |-
+      If value "OnlyCRE" get only events made by CRE.
+      Values can be "OnlyCRE", "OnlyNotCRE", "All".
+    playbookInputQuery:
+  - key: Fields
+    value:
+      simple: QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime
+    required: false
+    description: |-
+      A comma-separated list of extra fields to get from each event.
+      You can replace with different fields as well as rename the field names.
+    playbookInputQuery:
+  - key: ApiVersion
+    value:
+      simple: "17"
+    required: false
+    description: The API version for the timestamp format changes between versions
+    playbookInputQuery:
 outputs:
-- contextPath: QRadar
-  description: The QRadar offense logs.
-  type: string
-- contextPath: QRadar.SourceIP
-  description: The unique source ips.
-  type: string
-- contextPath: QRadar.DestinationIP
-  description: The unique destination ips.
-  type: string
-- contextPath: QRadar.Username
-  description: The unique usernames.
-  type: string
-- contextPath: QRadar.HighLevelCategory
-  description: The unique high level categories.
-  type: string
-- contextPath: QRadar.LowLevelCategory
-  description: The unique high low categories.
-  type: string
-- contextPath: QRadar.QidName
-  description: The unique QID names.
-  type: string
-- contextPath: QRadar.StartTime
-  description: The start time of the first event.
-  type: string
+  - contextPath: QRadar
+    description: The QRadar offense logs.
+    type: string
+  - contextPath: QRadar.SourceIP
+    description: The unique source ips.
+    type: string
+  - contextPath: QRadar.DestinationIP
+    description: The unique destination ips.
+    type: string
+  - contextPath: QRadar.Username
+    description: The unique usernames.
+    type: string
+  - contextPath: QRadar.HighLevelCategory
+    description: The unique high level categories.
+    type: string
+  - contextPath: QRadar.LowLevelCategory
+    description: The unique high low categories.
+    type: string
+  - contextPath: QRadar.QidName
+    description: The unique QID names.
+    type: string
+  - contextPath: QRadar.StartTime
+    description: The start time of the first event.
+    type: string
 tests:
-- QRadar - Get Offense Logs Test
+  - QRadar - Get Offense Logs Test
 fromversion: 6.0.0
 contentitemexportablefields:
   contentitemfields: {}
 system: true
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

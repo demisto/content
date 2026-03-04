@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     separatecontext: false
     view: |-
       {
@@ -48,7 +48,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "54"
+        - "54"
     separatecontext: false
     view: |-
       {
@@ -79,7 +79,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "51"
+        - "51"
     separatecontext: false
     view: |-
       {
@@ -110,7 +110,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "39"
+        - "39"
     separatecontext: false
     view: |-
       {
@@ -145,9 +145,9 @@ tasks:
       brand: ""
     nexttasks:
       "No":
-      - "57"
+        - "57"
       "Yes":
-      - "44"
+        - "44"
     separatecontext: false
     view: |-
       {
@@ -179,7 +179,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "29"
+        - "29"
     scriptarguments:
       closeReason:
         simple: Resolved - Threat Handled
@@ -213,7 +213,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "50"
+        - "50"
     separatecontext: false
     view: |-
       {
@@ -244,8 +244,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "42"
-      - "52"
+        - "42"
+        - "52"
     separatecontext: false
     view: |-
       {
@@ -276,23 +276,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "34"
+        - "34"
       "yes":
-      - "43"
+        - "43"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoRestoreEndpoint
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.AutoRestoreEndpoint
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -350,23 +350,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "29"
+        - "29"
       "yes":
-      - "17"
+        - "17"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.ShouldCloseAutomatically
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.ShouldCloseAutomatically
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -396,21 +396,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "55"
+        - "55"
       "yes":
-      - "57"
+        - "57"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: CommandlineVerdict
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: CommandlineVerdict
+                  iscontext: true
+                right:
+                  value: {}
     view: |-
       {
         "position": {
@@ -448,7 +448,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "49"
+        - "49"
     scriptarguments:
       AutoEradicate:
         simple: "false"
@@ -508,7 +508,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "34"
+        - "34"
     scriptarguments:
       endpointID:
         complex:
@@ -555,7 +555,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "29"
+        - "29"
     scriptarguments:
       FileSHA256:
         complex:
@@ -612,31 +612,31 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+        - "15"
     scriptarguments:
       Commandline:
         complex:
           root: Core.DynamicAnalysis.internals.attributes
           accessor: content
           transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: ${Core.DynamicAnalysis.internals.attributes.scriptblock_text}
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: ${Core.DynamicAnalysis.internals.attributes.original_command_line}
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: ${alert.targetprocesscmd}
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: ${Core.DynamicAnalysis.internals.attributes.scriptblock_text}
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: ${Core.DynamicAnalysis.internals.attributes.original_command_line}
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: ${alert.targetprocesscmd}
     separatecontext: false
     loop:
       iscommand: false
@@ -672,19 +672,19 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "49"
+        - "49"
       "yes":
-      - "27"
+        - "27"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: foundIncidents
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: foundIncidents
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -714,7 +714,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "28"
+        - "28"
     separatecontext: false
     view: |-
       {
@@ -755,7 +755,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "48"
+        - "48"
     scriptarguments:
       HuntCnCTechniques:
         simple: "True"
@@ -828,18 +828,18 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+        - "19"
     scriptarguments:
       AutoContainment:
         complex:
           root: inputs.AutoContainment
           transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: "true"
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: "true"
       BlockIndicators:
         simple: "True"
       ClearUserSessions:
@@ -874,12 +874,12 @@ tasks:
           complex:
             root: inputs.AutoContainment
             transformers:
-            - operator: SetIfEmpty
-              args:
-                applyIfEmpty: {}
-                defaultValue:
-                  value:
-                    simple: "true"
+              - operator: SetIfEmpty
+                args:
+                  applyIfEmpty: {}
+                  defaultValue:
+                    value:
+                      simple: "true"
         BlockIndicators:
           simple: "True"
         ClearUserSessions:
@@ -894,52 +894,52 @@ tasks:
           complex:
             root: alert
             filters:
-            - - operator: isNotEqualString
-                left:
-                  value:
-                    simple: alert.initiatorpath
-                  iscontext: true
-                right:
-                  value:
-                    simple: c:\windows\explorer.exe
-                ignorecase: true
+              -   - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: alert.initiatorpath
+                      iscontext: true
+                    right:
+                      value:
+                        simple: c:\windows\explorer.exe
+                    ignorecase: true
             accessor: initiatorsha256
             transformers:
-            - operator: SetIfEmpty
-              args:
-                applyIfEmpty: {}
-                defaultValue:
-                  value:
-                    simple: alert.targetprocesssha256
-                  iscontext: true
+              - operator: SetIfEmpty
+                args:
+                  applyIfEmpty: {}
+                  defaultValue:
+                    value:
+                      simple: alert.targetprocesssha256
+                    iscontext: true
         FilePath:
           complex:
             root: alert.initiatorpath
             filters:
-            - - operator: isNotEqualString
-                left:
-                  value:
-                    simple: alert.initiatorpath
-                  iscontext: true
-                right:
-                  value:
-                    simple: c:\windows\explorer.exe
-                ignorecase: true
+              -   - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: alert.initiatorpath
+                      iscontext: true
+                    right:
+                      value:
+                        simple: c:\windows\explorer.exe
+                    ignorecase: true
             transformers:
-            - operator: SetIfEmpty
-              args:
-                applyIfEmpty: {}
-                defaultValue:
-                  value:
-                    simple: alert.targetprocesscmd
-                  iscontext: true
-            - operator: replaceMatch
-              args:
-                regex:
-                  value:
-                    simple: \"
-                replaceWith: {}
-            - operator: uniq
+              - operator: SetIfEmpty
+                args:
+                  applyIfEmpty: {}
+                  defaultValue:
+                    value:
+                      simple: alert.targetprocesscmd
+                    iscontext: true
+              - operator: replaceMatch
+                args:
+                  regex:
+                    value:
+                      simple: \"
+                  replaceWith: {}
+              - operator: uniq
         FileRemediation:
           simple: Quarantine
         IAMUserDomain: {}
@@ -991,18 +991,18 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "49"
+        - "49"
     scriptarguments:
       AutoContainment:
         complex:
           root: inputs.AutoContainment
           transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: "false"
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: "false"
       BlockIndicators:
         simple: "True"
       ClearUserSessions:
@@ -1017,41 +1017,41 @@ tasks:
         complex:
           root: foundIncidents.CustomFields
           filters:
-          - - operator: isNotEqualString
-              left:
-                value:
-                  simple: foundIncidents.CustomFields.initiatorpath
-                iscontext: true
-              right:
-                value:
-                  simple: c:\windows\explorer.exe
-              ignorecase: true
+            -   - operator: isNotEqualString
+                  left:
+                    value:
+                      simple: foundIncidents.CustomFields.initiatorpath
+                    iscontext: true
+                  right:
+                    value:
+                      simple: c:\windows\explorer.exe
+                  ignorecase: true
           accessor: initiatorsha256
       FilePath:
         complex:
           root: foundIncidents.CustomFields.initiatorpath
           filters:
-          - - operator: isNotEqualString
-              left:
-                value:
-                  simple: foundIncidents.CustomFields.initiatorpath
-                iscontext: true
-              right:
-                value:
-                  simple: c:\windows\explorer.exe
-              ignorecase: true
+            -   - operator: isNotEqualString
+                  left:
+                    value:
+                      simple: foundIncidents.CustomFields.initiatorpath
+                    iscontext: true
+                  right:
+                    value:
+                      simple: c:\windows\explorer.exe
+                  ignorecase: true
           transformers:
-          - operator: uniq
+            - operator: uniq
       FileRemediation:
         complex:
           root: inputs.FileRemediation
           transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: "false"
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: "false"
       UserContainment:
         simple: "False"
     separatecontext: true
@@ -1062,12 +1062,12 @@ tasks:
           complex:
             root: inputs.AutoContainment
             transformers:
-            - operator: SetIfEmpty
-              args:
-                applyIfEmpty: {}
-                defaultValue:
-                  value:
-                    simple: "false"
+              - operator: SetIfEmpty
+                args:
+                  applyIfEmpty: {}
+                  defaultValue:
+                    value:
+                      simple: "false"
         BlockIndicators:
           simple: "True"
         ClearUserSessions:
@@ -1082,31 +1082,31 @@ tasks:
           complex:
             root: foundIncidents.CustomFields
             filters:
-            - - operator: isNotEqualString
-                left:
-                  value:
-                    simple: foundIncidents.CustomFields.initiatorpath
-                  iscontext: true
-                right:
-                  value:
-                    simple: c:\windows\explorer.exe
-                ignorecase: true
+              -   - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: foundIncidents.CustomFields.initiatorpath
+                      iscontext: true
+                    right:
+                      value:
+                        simple: c:\windows\explorer.exe
+                    ignorecase: true
             accessor: initiatorsha256
         FilePath:
           complex:
             root: foundIncidents.CustomFields.initiatorpath
             filters:
-            - - operator: isNotEqualString
-                left:
-                  value:
-                    simple: foundIncidents.CustomFields.initiatorpath
-                  iscontext: true
-                right:
-                  value:
-                    simple: c:\windows\explorer.exe
-                ignorecase: true
+              -   - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: foundIncidents.CustomFields.initiatorpath
+                      iscontext: true
+                    right:
+                      value:
+                        simple: c:\windows\explorer.exe
+                    ignorecase: true
             transformers:
-            - operator: uniq
+              - operator: uniq
         FileRemediation:
           complex:
             root: inputs.FileRemediation
@@ -1146,7 +1146,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "61"
+        - "61"
     scriptarguments:
       alert_ids:
         complex:
@@ -1183,7 +1183,7 @@ tasks:
       brand: Cortex Core - IR
     nexttasks:
       '#none#':
-      - "56"
+        - "56"
     scriptarguments:
       process_command_line:
         complex:
@@ -1219,24 +1219,24 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "16"
+        - "16"
       "yes":
-      - "44"
+        - "44"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: Core.AnalyticsPrevalence.Cmd
-                accessor: value
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: containsGeneral
+                left:
+                  value:
+                    complex:
+                      root: Core.AnalyticsPrevalence.Cmd
+                      accessor: value
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1267,7 +1267,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "58"
+        - "58"
     scriptarguments:
       manual_severity:
         simple: high
@@ -1301,23 +1301,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "14"
+        - "14"
       "yes":
-      - "59"
+        - "59"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.ShouldOpenTicket
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.ShouldOpenTicket
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1348,7 +1348,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     scriptarguments:
       CommentToAdd:
         complex:
@@ -1439,33 +1439,33 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "62"
+        - "62"
       "yes":
-      - "47"
+        - "47"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Core.DynamicAnalysis.internals.attributes.content
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: Core.DynamicAnalysis.internals.attributes.scriptblock_text
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: Core.DynamicAnalysis.internals.attributes.original_command_line
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: alert.targetprocesscmd
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: Core.DynamicAnalysis.internals.attributes.content
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: Core.DynamicAnalysis.internals.attributes.scriptblock_text
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: Core.DynamicAnalysis.internals.attributes.original_command_line
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: alert.targetprocesscmd
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -1495,7 +1495,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "29"
+        - "29"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1535,184 +1535,180 @@ view: |-
     }
   }
 inputs:
-- key: ShouldCloseAutomatically
-  value:
-    simple: "False"
-  required: false
-  description: "Whether to close the alert automatically or manually, after an analyst's review."
-  playbookInputQuery:
-- key: AutoRestoreEndpoint
-  value:
-    simple: "False"
-  required: false
-  description: Whether to execute the Recovery playbook.
-  playbookInputQuery:
-- key: AutoContainment
-  value: {}
-  required: false
-  description: "Whether to execute automatically or manually the containment plan tasks:\n* Block indicators\n* Quarantine file\n* Disable user "
-  playbookInputQuery:
-- key: FileRemediation
-  value: {}
-  required: false
-  description: Can be 'Quarantine' or 'Delete'.
-  playbookInputQuery:
-- key: ShouldOpenTicket
-  value:
-    simple: "False"
-  required: false
-  description: Whether to open a ticket automatically in a ticketing system. (True/False).
-  playbookInputQuery:
-- key: serviceNowShortDescription
-  value:
-    simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
-  required: false
-  description: A short description of the ticket.
-  playbookInputQuery:
-- key: serviceNowImpact
-  value: {}
-  required: false
-  description: The impact for the new ticket. Leave empty for ServiceNow default impact.
-  playbookInputQuery:
-- key: serviceNowUrgency
-  value: {}
-  required: false
-  description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
-  playbookInputQuery:
-- key: serviceNowSeverity
-  value: {}
-  required: false
-  description: The severity of the new ticket. Leave empty for ServiceNow default severity.
-  playbookInputQuery:
-- key: serviceNowTicketType
-  value: {}
-  required: false
-  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
-  playbookInputQuery:
-- key: serviceNowCategory
-  value: {}
-  required: false
-  description: The category of the ServiceNow ticket.
-  playbookInputQuery:
-- key: serviceNowAssignmentGroup
-  value: {}
-  required: false
-  description: The group to which to assign the new ticket.
-  playbookInputQuery:
-- key: ZendeskPriority
-  value: {}
-  required: false
-  description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
-  playbookInputQuery:
-- key: ZendeskRequester
-  value: {}
-  required: false
-  description: The user who requested this ticket.
-  playbookInputQuery:
-- key: ZendeskStatus
-  value: {}
-  required: false
-  description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
-  playbookInputQuery:
-- key: ZendeskSubject
-  value:
-    simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
-  required: false
-  description: The value of the subject field for this ticket.
-  playbookInputQuery:
-- key: ZendeskTags
-  value: {}
-  required: false
-  description: The array of tags applied to this ticket.
-  playbookInputQuery:
-- key: ZendeskType
-  value: {}
-  required: false
-  description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
-  playbookInputQuery:
-- key: ZendeskAssigne
-  value: {}
-  required: false
-  description: The agent currently assigned to the ticket.
-  playbookInputQuery:
-- key: ZendeskCollaborators
-  value: {}
-  required: false
-  description: The users currently CC'ed on the ticket.
-  playbookInputQuery:
-- key: description
-  value:
-    simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
-  required: false
-  description: The ticket description.
-  playbookInputQuery:
-- key: addCommentPerEndpoint
-  value:
-    simple: "True"
-  required: false
-  description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
-  playbookInputQuery:
-- key: CommentToAdd
-  value:
-    simple: '${alert.name}. Alert ID: ${alert.id}'
-  required: false
-  description: Comment for the ticket.
-  playbookInputQuery:
+  - key: ShouldCloseAutomatically
+    value:
+      simple: "False"
+    required: false
+    description: "Whether to close the alert automatically or manually, after an analyst's review."
+    playbookInputQuery:
+  - key: AutoRestoreEndpoint
+    value:
+      simple: "False"
+    required: false
+    description: Whether to execute the Recovery playbook.
+    playbookInputQuery:
+  - key: AutoContainment
+    value: {}
+    required: false
+    description: "Whether to execute automatically or manually the containment plan tasks:\n* Block indicators\n* Quarantine file\n* Disable user "
+    playbookInputQuery:
+  - key: FileRemediation
+    value: {}
+    required: false
+    description: Can be 'Quarantine' or 'Delete'.
+    playbookInputQuery:
+  - key: ShouldOpenTicket
+    value:
+      simple: "False"
+    required: false
+    description: Whether to open a ticket automatically in a ticketing system. (True/False).
+    playbookInputQuery:
+  - key: serviceNowShortDescription
+    value:
+      simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+    required: false
+    description: A short description of the ticket.
+    playbookInputQuery:
+  - key: serviceNowImpact
+    value: {}
+    required: false
+    description: The impact for the new ticket. Leave empty for ServiceNow default impact.
+    playbookInputQuery:
+  - key: serviceNowUrgency
+    value: {}
+    required: false
+    description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
+    playbookInputQuery:
+  - key: serviceNowSeverity
+    value: {}
+    required: false
+    description: The severity of the new ticket. Leave empty for ServiceNow default severity.
+    playbookInputQuery:
+  - key: serviceNowTicketType
+    value: {}
+    required: false
+    description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+    playbookInputQuery:
+  - key: serviceNowCategory
+    value: {}
+    required: false
+    description: The category of the ServiceNow ticket.
+    playbookInputQuery:
+  - key: serviceNowAssignmentGroup
+    value: {}
+    required: false
+    description: The group to which to assign the new ticket.
+    playbookInputQuery:
+  - key: ZendeskPriority
+    value: {}
+    required: false
+    description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
+    playbookInputQuery:
+  - key: ZendeskRequester
+    value: {}
+    required: false
+    description: The user who requested this ticket.
+    playbookInputQuery:
+  - key: ZendeskStatus
+    value: {}
+    required: false
+    description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
+    playbookInputQuery:
+  - key: ZendeskSubject
+    value:
+      simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+    required: false
+    description: The value of the subject field for this ticket.
+    playbookInputQuery:
+  - key: ZendeskTags
+    value: {}
+    required: false
+    description: The array of tags applied to this ticket.
+    playbookInputQuery:
+  - key: ZendeskType
+    value: {}
+    required: false
+    description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
+    playbookInputQuery:
+  - key: ZendeskAssigne
+    value: {}
+    required: false
+    description: The agent currently assigned to the ticket.
+    playbookInputQuery:
+  - key: ZendeskCollaborators
+    value: {}
+    required: false
+    description: The users currently CC'ed on the ticket.
+    playbookInputQuery:
+  - key: description
+    value:
+      simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
+    required: false
+    description: The ticket description.
+    playbookInputQuery:
+  - key: addCommentPerEndpoint
+    value:
+      simple: "True"
+    required: false
+    description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
+    playbookInputQuery:
+  - key: CommentToAdd
+    value:
+      simple: '${alert.name}. Alert ID: ${alert.id}'
+    required: false
+    description: Comment for the ticket.
+    playbookInputQuery:
 inputSections:
-- inputs:
-  - ShouldCloseAutomatically
-  name: Alert Management
-  description: Alert management settings and data, including escalation processes, and user engagements.
-- inputs:
-  - AutoContainment
-  - FileRemediation
-  - AutoRestoreEndpoint
-  name: Remediation
-  description: Remediation settings and data, including containment, eradication, and recovery.
-- inputs:
-  - ShouldOpenTicket
-  - serviceNowShortDescription
-  - serviceNowImpact
-  - serviceNowUrgency
-  - serviceNowSeverity
-  - serviceNowTicketType
-  - serviceNowCategory
-  - serviceNowAssignmentGroup
-  - ZendeskPriority
-  - ZendeskRequester
-  - ZendeskStatus
-  - ZendeskSubject
-  - ZendeskTags
-  - ZendeskType
-  - ZendeskAssigne
-  - ZendeskCollaborators
-  - description
-  - addCommentPerEndpoint
-  - CommentToAdd
-  name: Ticket Management
-  description: Ticket management settings and data.
+  - inputs:
+      - ShouldCloseAutomatically
+    name: Alert Management
+    description: Alert management settings and data, including escalation processes, and user engagements.
+  - inputs:
+      - AutoContainment
+      - FileRemediation
+      - AutoRestoreEndpoint
+    name: Remediation
+    description: Remediation settings and data, including containment, eradication, and recovery.
+  - inputs:
+      - ShouldOpenTicket
+      - serviceNowShortDescription
+      - serviceNowImpact
+      - serviceNowUrgency
+      - serviceNowSeverity
+      - serviceNowTicketType
+      - serviceNowCategory
+      - serviceNowAssignmentGroup
+      - ZendeskPriority
+      - ZendeskRequester
+      - ZendeskStatus
+      - ZendeskSubject
+      - ZendeskTags
+      - ZendeskType
+      - ZendeskAssigne
+      - ZendeskCollaborators
+      - description
+      - addCommentPerEndpoint
+      - CommentToAdd
+    name: Ticket Management
+    description: Ticket management settings and data.
 outputSections:
-- outputs: []
-  name: General (Outputs group)
-  description: Generic group for outputs
+  - outputs: []
+    name: General (Outputs group)
+    description: Generic group for outputs
 outputs: []
 tests:
-- T1059 - Command and Scripting Interpreter - Test
+  - T1059 - Command and Scripting Interpreter - Test
 fromversion: 6.6.0
 contentitemexportablefields:
   contentitemfields: {}
 marketplaces:
-- marketplacev2
-- platform
+  - marketplacev2
+  - platform
 
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- cloud
-- cloud_posture
-- cloud_runtime_security
-- edr
-- xsiam
+  - agentix
+  - cloud
+  - cloud_posture
+  - cloud_runtime_security
+  - edr
+  - xsiam

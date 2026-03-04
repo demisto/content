@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -48,7 +48,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -80,7 +80,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       fieldExactMatch:
         simple: alert.name,alert.rawName
@@ -126,22 +126,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "6"
+        - "6"
       "yes":
-      - "4"
+        - "4"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: isSimilarIncidentFound
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: isSimilarIncidentFound
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -171,22 +171,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "56"
+        - "56"
       "yes":
-      - "5"
+        - "5"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.FurtherInvestigation
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.FurtherInvestigation
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -219,9 +219,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "56"
+        - "56"
       "Yes":
-      - "6"
+        - "6"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -252,7 +252,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -311,79 +311,79 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "59"
+        - "59"
       More Than Threshold:
-      - "36"
+        - "36"
     separatecontext: false
     conditions:
-    - label: More Than Threshold
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: alert
-                accessor: details
-                transformers:
-                - operator: RegexGroups
-                  args:
-                    flags: {}
-                    groups:
-                      value:
-                        simple: "1"
-                    keys: {}
-                    regex:
-                      value:
-                        simple: uploaded\s(.*(MB|GB|TB))
-            iscontext: true
-          right:
-            value:
-              simple: GB
-          ignorecase: true
-        - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: alert
-                accessor: details
-                transformers:
-                - operator: RegexGroups
-                  args:
-                    flags: {}
-                    groups:
-                      value:
-                        simple: "1"
-                    keys: {}
-                    regex:
-                      value:
-                        simple: uploaded\s(.*(MB|GB|TB))
-            iscontext: true
-          right:
-            value:
-              simple: TB
-          ignorecase: true
-        - operator: greaterThanOrEqual
-          left:
-            value:
-              complex:
-                root: alert
-                accessor: details
-                transformers:
-                - operator: RegexGroups
-                  args:
-                    flags: {}
-                    groups:
-                      value:
-                        simple: "0"
-                    keys: {}
-                    regex:
-                      value:
-                        simple: (?i)uploaded\s(\d+(?:[.]\d+)?)
-            iscontext: true
-          right:
-            value:
-              simple: inputs.Transferred_Data _Threshold
-            iscontext: true
+      - label: More Than Threshold
+        condition:
+          -   - operator: containsGeneral
+                left:
+                  value:
+                    complex:
+                      root: alert
+                      accessor: details
+                      transformers:
+                        - operator: RegexGroups
+                          args:
+                            flags: {}
+                            groups:
+                              value:
+                                simple: "1"
+                            keys: {}
+                            regex:
+                              value:
+                                simple: uploaded\s(.*(MB|GB|TB))
+                  iscontext: true
+                right:
+                  value:
+                    simple: GB
+                ignorecase: true
+              - operator: containsGeneral
+                left:
+                  value:
+                    complex:
+                      root: alert
+                      accessor: details
+                      transformers:
+                        - operator: RegexGroups
+                          args:
+                            flags: {}
+                            groups:
+                              value:
+                                simple: "1"
+                            keys: {}
+                            regex:
+                              value:
+                                simple: uploaded\s(.*(MB|GB|TB))
+                  iscontext: true
+                right:
+                  value:
+                    simple: TB
+                ignorecase: true
+              - operator: greaterThanOrEqual
+                left:
+                  value:
+                    complex:
+                      root: alert
+                      accessor: details
+                      transformers:
+                        - operator: RegexGroups
+                          args:
+                            flags: {}
+                            groups:
+                              value:
+                                simple: "0"
+                            keys: {}
+                            regex:
+                              value:
+                                simple: (?i)uploaded\s(\d+(?:[.]\d+)?)
+                  iscontext: true
+                right:
+                  value:
+                    simple: inputs.Transferred_Data _Threshold
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -414,68 +414,68 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     scriptarguments:
       Domain:
         complex:
           root: Core.OriginalAlert._all_events
           accessor: dst_action_external_hostname
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Core.OriginalAlert._all_events.ssl_req_chello_sni_sample
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Core.OriginalAlert._all_events.target_address
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Core.OriginalAlert._all_events.domain
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Core.OriginalAlert._all_events.action_external_hostname
-                iscontext: true
-          - operator: uniq
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: Core.OriginalAlert._all_events.ssl_req_chello_sni_sample
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: Core.OriginalAlert._all_events.target_address
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: Core.OriginalAlert._all_events.domain
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: Core.OriginalAlert._all_events.action_external_hostname
+                  iscontext: true
+            - operator: uniq
       Hostname:
         complex:
           root: alert
           accessor: hostname
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Core.OriginalAlert._all_events.agent_hostname
-                iscontext: true
-          - operator: uniq
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: Core.OriginalAlert._all_events.agent_hostname
+                  iscontext: true
+            - operator: uniq
       IP:
         complex:
           root: Core.OriginalAlert._all_events
           accessor: action_local_ip
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Core.OriginalAlert._all_events.target_ip
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Core.OriginalAlert._all_events.action_remote_ip
-                iscontext: true
-          - operator: uniq
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: Core.OriginalAlert._all_events.target_ip
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: Core.OriginalAlert._all_events.action_remote_ip
+                  iscontext: true
+            - operator: uniq
       InternalRange:
         simple: ${inputs.InternalIPRanges}
       ResolveIP:
@@ -485,19 +485,19 @@ tasks:
           root: Core.OriginalAlert._all_events
           accessor: os_actor_process_image_sha256
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Core.OriginalAlert._all_events.actor_process_image_sha256
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Core.OriginalAlert._all_events.causality_actor_process_image_sha256
-                iscontext: true
-          - operator: uniq
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: Core.OriginalAlert._all_events.actor_process_image_sha256
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: Core.OriginalAlert._all_events.causality_actor_process_image_sha256
+                  iscontext: true
+            - operator: uniq
       URLSSLVerification:
         simple: "False"
       Username:
@@ -505,7 +505,7 @@ tasks:
           root: Core.OriginalAlert._all_events.causality_actor_primary_normalized_user
           accessor: username
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -541,12 +541,12 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "11"
-      - "12"
-      - "13"
-      - "14"
-      - "17"
-      - "19"
+        - "11"
+        - "12"
+        - "13"
+        - "14"
+        - "17"
+        - "19"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -585,7 +585,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+        - "20"
     scriptarguments:
       key:
         simple: Analysis.AdditionalAlerts
@@ -593,26 +593,26 @@ tasks:
         complex:
           root: Core.OriginalAlert.alert_name
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Core.OriginalAlert._all_events.product
-                iscontext: true
-              right:
-                value:
-                  simple: XDR Agent
-              ignorecase: true
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: Core.OriginalAlert.alert_name
-                iscontext: true
-              right:
-                value:
-                  simple: Large Upload
-              ignorecase: true
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: Core.OriginalAlert._all_events.product
+                    iscontext: true
+                  right:
+                    value:
+                      simple: XDR Agent
+                  ignorecase: true
+            -   - operator: notContainsGeneral
+                  left:
+                    value:
+                      simple: Core.OriginalAlert.alert_name
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Large Upload
+                  ignorecase: true
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -651,7 +651,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+        - "20"
     scriptarguments:
       key:
         simple: Analysis.FTP_Server
@@ -661,18 +661,18 @@ tasks:
         complex:
           root: ActiveDirectory.Computers
           filters:
-          - - operator: match
-              left:
-                value:
-                  simple: ActiveDirectory.Computers.memberOf
-                iscontext: true
-              right:
-                value:
-                  simple: (?i)CN=.*(?:FTP|File).*,
-              ignorecase: true
+            -   - operator: match
+                  left:
+                    value:
+                      simple: ActiveDirectory.Computers.memberOf
+                    iscontext: true
+                  right:
+                    value:
+                      simple: (?i)CN=.*(?:FTP|File).*,
+                  ignorecase: true
           accessor: name
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -711,7 +711,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+        - "20"
     scriptarguments:
       key:
         simple: Analysis.SMTP_Server
@@ -721,18 +721,18 @@ tasks:
         complex:
           root: ActiveDirectory.Computers
           filters:
-          - - operator: match
-              left:
-                value:
-                  simple: ActiveDirectory.Computers.memberOf
-                iscontext: true
-              right:
-                value:
-                  simple: (?i)CN=.*(?:SMTP|Mail).*,
-              ignorecase: true
+            -   - operator: match
+                  left:
+                    value:
+                      simple: ActiveDirectory.Computers.memberOf
+                    iscontext: true
+                  right:
+                    value:
+                      simple: (?i)CN=.*(?:SMTP|Mail).*,
+                  ignorecase: true
           accessor: name
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -763,39 +763,39 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "20"
+        - "20"
       "yes":
-      - "15"
+        - "15"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: notIn
-          left:
-            value:
-              complex:
-                root: Core.OriginalAlert._all_events
-                accessor: fw_app_id
-                transformers:
-                - operator: split
-                  args:
-                    delimiter:
-                      value:
-                        simple: ','
-                - operator: uniq
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: inputs.FWApps_Processes_Whitlist
-                transformers:
-                - operator: split
-                  args:
-                    delimiter:
-                      value:
-                        simple: ','
-            iscontext: true
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: notIn
+                left:
+                  value:
+                    complex:
+                      root: Core.OriginalAlert._all_events
+                      accessor: fw_app_id
+                      transformers:
+                        - operator: split
+                          args:
+                            delimiter:
+                              value:
+                                simple: ','
+                        - operator: uniq
+                  iscontext: true
+                right:
+                  value:
+                    complex:
+                      root: inputs.FWApps_Processes_Whitlist
+                      transformers:
+                        - operator: split
+                          args:
+                            delimiter:
+                              value:
+                                simple: ','
+                  iscontext: true
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -826,7 +826,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+        - "20"
     scriptarguments:
       key:
         simple: Analysis.Unusual_FW_App_ID
@@ -863,7 +863,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+        - "20"
     scriptarguments:
       key:
         simple: Analysis.Unusual_Process
@@ -899,51 +899,51 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "20"
+        - "20"
       "yes":
-      - "16"
+        - "16"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: notIn
-          left:
-            value:
-              complex:
-                root: Core.OriginalAlert._all_events
-                accessor: causality_actor_process_image_name
-                transformers:
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: Core.OriginalAlert._all_events.os_actor_process_image_name
-                      iscontext: true
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: Core.OriginalAlert._all_events.actor_process_image_name
-                      iscontext: true
-                - operator: split
-                  args:
-                    delimiter:
-                      value:
-                        simple: ','
-                - operator: uniq
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: inputs.FWApps_Processes_Whitlist
-                transformers:
-                - operator: split
-                  args:
-                    delimiter:
-                      value:
-                        simple: ','
-            iscontext: true
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: notIn
+                left:
+                  value:
+                    complex:
+                      root: Core.OriginalAlert._all_events
+                      accessor: causality_actor_process_image_name
+                      transformers:
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: Core.OriginalAlert._all_events.os_actor_process_image_name
+                              iscontext: true
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: Core.OriginalAlert._all_events.actor_process_image_name
+                              iscontext: true
+                        - operator: split
+                          args:
+                            delimiter:
+                              value:
+                                simple: ','
+                        - operator: uniq
+                  iscontext: true
+                right:
+                  value:
+                    complex:
+                      root: inputs.FWApps_Processes_Whitlist
+                      transformers:
+                        - operator: split
+                          args:
+                            delimiter:
+                              value:
+                                simple: ','
+                  iscontext: true
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -974,7 +974,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+        - "20"
     scriptarguments:
       key:
         simple: Analysis.Unsigned_Process
@@ -1010,38 +1010,38 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "20"
+        - "20"
       "yes":
-      - "18"
+        - "18"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEqualString
-          left:
-            value:
-              complex:
-                root: Core.OriginalAlert._all_events
-                accessor: causality_actor_process_signature_status
-                transformers:
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: Core.OriginalAlert._all_events.os_actor_process_signature_status
-                      iscontext: true
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: Core.OriginalAlert._all_events.actor_process_signature_status
-                      iscontext: true
-                - operator: uniq
-            iscontext: true
-          right:
-            value:
-              simple: SIGNATURE_SIGNED
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEqualString
+                left:
+                  value:
+                    complex:
+                      root: Core.OriginalAlert._all_events
+                      accessor: causality_actor_process_signature_status
+                      transformers:
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: Core.OriginalAlert._all_events.os_actor_process_signature_status
+                              iscontext: true
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: Core.OriginalAlert._all_events.actor_process_signature_status
+                              iscontext: true
+                        - operator: uniq
+                  iscontext: true
+                right:
+                  value:
+                    simple: SIGNATURE_SIGNED
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1071,7 +1071,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "21"
+        - "21"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1102,64 +1102,64 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "24"
+        - "24"
       "yes":
-      - "22"
+        - "22"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: greaterThanOrEqual
-          left:
-            value:
-              complex:
-                root: DBotScore
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DBotScore.Type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Domain
-                    ignorecase: true
-                accessor: Score
-            iscontext: true
-          right:
-            value:
-              simple: "3"
-        - operator: greaterThanOrEqual
-          left:
-            value:
-              complex:
-                root: DBotScore
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DBotScore.Type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: File
-                    ignorecase: true
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: DBotScore.Type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: |-
-                          Hash
-                          As
-                    ignorecase: true
-                accessor: Score
-            iscontext: true
-          right:
-            value:
-              simple: "3"
+      - label: "yes"
+        condition:
+          -   - operator: greaterThanOrEqual
+                left:
+                  value:
+                    complex:
+                      root: DBotScore
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: DBotScore.Type
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Domain
+                              ignorecase: true
+                      accessor: Score
+                  iscontext: true
+                right:
+                  value:
+                    simple: "3"
+              - operator: greaterThanOrEqual
+                left:
+                  value:
+                    complex:
+                      root: DBotScore
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: DBotScore.Type
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: File
+                              ignorecase: true
+                            - operator: isEqualString
+                              left:
+                                value:
+                                  simple: DBotScore.Type
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: |-
+                                    Hash
+                                    As
+                              ignorecase: true
+                      accessor: Score
+                  iscontext: true
+                right:
+                  value:
+                    simple: "3"
     continueonerrortype: ""
     view: |-
       {
@@ -1189,22 +1189,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "24"
+        - "24"
       "yes":
-      - "23"
+        - "23"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.EarlyContainment
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.EarlyContainment
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1243,7 +1243,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "24"
+        - "24"
     scriptarguments:
       AutoBlockIndicators:
         simple: ${inputs.AutoBlockIndicators}
@@ -1257,48 +1257,48 @@ tasks:
         complex:
           root: DBotScore
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: domain
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: domain
+            -   - operator: greaterThanOrEqual
+                  left:
+                    value:
+                      simple: DBotScore.Score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "3"
           accessor: Indicator
           transformers:
-          - operator: uniq
+            - operator: uniq
       FilesToBlock:
         complex:
           root: DBotScore
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: file
+            -   - operator: greaterThanOrEqual
+                  left:
+                    value:
+                      simple: DBotScore.Score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "3"
           accessor: Indicator
           transformers:
-          - operator: uniq
+            - operator: uniq
       InputEnrichment:
         simple: "False"
       InternalRange:
@@ -1307,41 +1307,41 @@ tasks:
         complex:
           root: DBotScore
           filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: "32"
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: hash
+            -   - operator: stringHasLength
+                  left:
+                    value:
+                      simple: DBotScore.Indicator
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "32"
+            -   - operator: greaterThanOrEqual
+                  left:
+                    value:
+                      simple: DBotScore.Score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "3"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: file
+                - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: hash
           accessor: Indicator
           transformers:
-          - operator: uniq
+            - operator: uniq
       RuleDirection:
         simple: outbound
       RuleName:
@@ -1350,41 +1350,41 @@ tasks:
         complex:
           root: DBotScore
           filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: "64"
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: hash
+            -   - operator: stringHasLength
+                  left:
+                    value:
+                      simple: DBotScore.Indicator
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "64"
+            -   - operator: greaterThanOrEqual
+                  left:
+                    value:
+                      simple: DBotScore.Score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "3"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: file
+                - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: hash
           accessor: Indicator
           transformers:
-          - operator: uniq
+            - operator: uniq
       Tag:
         simple: Blocked Indicator In Systems
       UserVerification:
@@ -1424,10 +1424,10 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "25"
-      - "27"
-      - "28"
-      - "31"
+        - "25"
+        - "27"
+        - "28"
+        - "31"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1465,14 +1465,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "34"
+        - "34"
     scriptarguments:
       Indicator:
         complex:
           root: DBotScore
           accessor: Indicator
           transformers:
-          - operator: uniq
+            - operator: uniq
       LimitResults:
         simple: "200"
     separatecontext: false
@@ -1520,7 +1520,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "34"
+        - "34"
     scriptarguments:
       AzureSearchTime:
         simple: ago(1d)
@@ -1543,7 +1543,7 @@ tasks:
           root: Core.OriginalAlert._all_events.actor_primary_normalized_user
           accessor: identity
           transformers:
-          - operator: uniq
+            - operator: uniq
       XDRAlertSearch:
         simple: "True"
       XDRUsernameField:
@@ -1583,21 +1583,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "34"
+        - "34"
       "yes":
-      - "26"
+        - "26"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Core.OriginalAlert._all_events.actor_primary_normalized_user.identity
-            iscontext: true
-          right:
-            value: {}
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: Core.OriginalAlert._all_events.actor_primary_normalized_user.identity
+                  iscontext: true
+                right:
+                  value: {}
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1628,26 +1628,26 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "34"
+        - "34"
     scriptarguments:
       FileSHA256:
         complex:
           root: Core.OriginalAlert._all_events
           accessor: os_actor_process_image_sha256
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Core.OriginalAlert._all_events.actor_process_image_sha256
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Core.OriginalAlert._all_events.causality_actor_process_image_sha256
-                iscontext: true
-          - operator: uniq
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: Core.OriginalAlert._all_events.actor_process_image_sha256
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: Core.OriginalAlert._all_events.causality_actor_process_image_sha256
+                  iscontext: true
+            - operator: uniq
       HuntAttacker:
         simple: "True"
       HuntByFile:
@@ -1683,55 +1683,55 @@ tasks:
           root: Core.OriginalAlert._all_events
           accessor: agent_id
           transformers:
-          - operator: uniq
+            - operator: uniq
       attackerExternalHost:
         complex:
           root: DBotScore
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: Domain
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "2"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Domain
+                  ignorecase: true
+            -   - operator: greaterThanOrEqual
+                  left:
+                    value:
+                      simple: DBotScore.Score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "2"
           accessor: Indicator
           transformers:
-          - operator: uniq
+            - operator: uniq
       attackerRemoteIP:
         complex:
           root: DBotScore
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: IP
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: IP
+                  ignorecase: true
+            -   - operator: greaterThanOrEqual
+                  left:
+                    value:
+                      simple: DBotScore.Score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "3"
           accessor: Indicator
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -1768,20 +1768,20 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "32"
+        - "32"
     scriptarguments:
       Commandline:
         complex:
           root: Core.OriginalAlert._all_events
           accessor: os_actor_process_command_line
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Core.OriginalAlert._all_events.actor_process_command_line
-                iscontext: true
-          - operator: uniq
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: Core.OriginalAlert._all_events.actor_process_command_line
+                  iscontext: true
+            - operator: uniq
       StringSimilarityThreshold:
         simple: "0.5"
     separatecontext: false
@@ -1829,7 +1829,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "32"
+        - "32"
     scriptarguments:
       HuntingTimeFrame:
         simple: 7 days
@@ -1876,31 +1876,31 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "34"
+        - "34"
       "yes":
-      - "30"
-      - "29"
+        - "30"
+        - "29"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Core.OriginalAlert._all_events
-                accessor: actor_process_command_line
-                transformers:
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: Core.OriginalAlert._all_events.os_actor_process_command_line
-                      iscontext: true
-            iscontext: true
-          right:
-            value: {}
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: Core.OriginalAlert._all_events
+                      accessor: actor_process_command_line
+                      transformers:
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: Core.OriginalAlert._all_events.os_actor_process_command_line
+                              iscontext: true
+                  iscontext: true
+                right:
+                  value: {}
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1930,66 +1930,66 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "34"
+        - "34"
       "yes":
-      - "33"
+        - "33"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Findings
-            iscontext: true
-          ignorecase: true
-          right:
-            value: {}
-        - operator: isEqualString
-          left:
-            value:
-              simple: CommandlineVerdict.suspiciousParameters
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: CommandlineVerdict.foundIndicators
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: CommandlineVerdict.maliciousTools
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: CommandlineVerdict.networkActivity
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: CommandlineVerdict.SuspiciousLolbinExecution
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: Findings
+                  iscontext: true
+                ignorecase: true
+                right:
+                  value: {}
+              - operator: isEqualString
+                left:
+                  value:
+                    simple: CommandlineVerdict.suspiciousParameters
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
+              - operator: isEqualString
+                left:
+                  value:
+                    simple: CommandlineVerdict.foundIndicators
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
+              - operator: isEqualString
+                left:
+                  value:
+                    simple: CommandlineVerdict.maliciousTools
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
+              - operator: isEqualString
+                left:
+                  value:
+                    simple: CommandlineVerdict.networkActivity
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
+              - operator: isEqualString
+                left:
+                  value:
+                    simple: CommandlineVerdict.SuspiciousLolbinExecution
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -2020,7 +2020,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "34"
+        - "34"
     scriptarguments:
       key:
         simple: Investigation.CMDReputation
@@ -2056,7 +2056,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "35"
+        - "35"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2087,660 +2087,660 @@ tasks:
       brand: ""
     nexttasks:
       ' Malicious':
-      - "40"
+        - "40"
       '#default#':
-      - "38"
+        - "38"
       Benign:
-      - "37"
+        - "37"
     separatecontext: false
     conditions:
-    - label: ' Malicious'
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Investigation.CMDReputation
-            iscontext: true
-          right:
-            value:
-              simple: Malicious
-          ignorecase: true
-        - operator: greaterThanOrEqual
-          left:
-            value:
-              complex:
-                root: DBotScore
-                filters:
-                - - operator: containsGeneral
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert._all_events.os_actor_process_image_sha256
-                      iscontext: true
-                    ignorecase: true
-                  - operator: containsGeneral
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert._all_events.actor_process_image_sha256
-                      iscontext: true
-                    ignorecase: true
-                  - operator: containsGeneral
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert._all_events.causality_actor_process_image_sha256
-                      iscontext: true
-                    ignorecase: true
-                accessor: Score
-                transformers:
-                - operator: uniq
-                - operator: sort
-                  args:
-                    descending:
-                      value:
-                        simple: "false"
-                - operator: LastArrayElement
-            iscontext: true
-          right:
-            value:
-              simple: "3"
-        - operator: greaterThanOrEqual
-          left:
-            value:
-              complex:
-                root: DBotScore
-                filters:
-                - - operator: containsGeneral
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert._all_events.dst_action_external_hostname
-                      iscontext: true
-                    ignorecase: true
-                  - operator: containsGeneral
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert._all_events.ssl_req_chello_sni_sample
-                      iscontext: true
-                    ignorecase: true
-                  - operator: containsGeneral
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert._all_events.target_address
-                      iscontext: true
-                    ignorecase: true
-                  - operator: containsGeneral
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert._all_events.domain
-                      iscontext: true
-                    ignorecase: true
-                  - operator: containsGeneral
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert._all_events.action_external_hostname
-                      iscontext: true
-                    ignorecase: true
-                accessor: Score
-                transformers:
-                - operator: uniq
-                - operator: sort
-                  args:
-                    descending:
-                      value:
-                        simple: "false"
-                - operator: LastArrayElement
-            iscontext: true
-          right:
-            value:
-              simple: "3"
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: RelatedAttackPatterns
-                transformers:
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: RelatedCampaign
-                      iscontext: true
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: RelatedFiles
-                      iscontext: true
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: RelatedDomains
-                      iscontext: true
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: RelatedIPs
-                      iscontext: true
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: RelatedURLs
-                      iscontext: true
-            iscontext: true
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Core.RiskyUser
-                filters:
-                - - operator: containsString
-                    left:
-                      value:
-                        simple: Core.RiskyUser.id
-                      iscontext: true
-                    right:
-                      value:
-                        simple: alert.username
-                      iscontext: true
-                    ignorecase: true
-                accessor: risk_level
-                transformers:
-                - operator: uniq
-            iscontext: true
-          right:
-            value:
-              simple: High
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Core.RiskyHost
-                filters:
-                - - operator: containsString
-                    left:
-                      value:
-                        simple: Core.RiskyHost.id
-                      iscontext: true
-                    right:
-                      value:
-                        simple: alert.hostname
-                      iscontext: true
-                    ignorecase: true
-                accessor: 'risk_level'
-                transformers:
-                - operator: uniq
-            iscontext: true
-          right:
-            value:
-              simple: High
-          ignorecase: true
-        - operator: greaterThanOrEqual
-          left:
-            value:
-              simple: NumOfSiemFailedLogon
-            iscontext: true
-          right:
-            value:
-              simple: "3"
-        - operator: greaterThanOrEqual
-          left:
-            value:
-              simple: NumOfThreatLogs
-            iscontext: true
-          right:
-            value:
-              simple: "3"
-        - operator: greaterThanOrEqual
-          left:
-            value:
-              simple: NumOfOktaSuspiciousActivities
-            iscontext: true
-          right:
-            value:
-              simple: "3"
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: PaloAltoNetworksXDR
-                accessor: Alert
-                transformers:
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: Splunk.Result
-                      iscontext: true
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: QRadar.Search.Result
-                      iscontext: true
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: SuspiciousUserAgent
-                      iscontext: true
-            iscontext: true
-    - label: Benign
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Core.OriginalAlert
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Core.OriginalAlert.alert_name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Large Upload (HTTPS)
-                    ignorecase: true
-                accessor: raw_abioc.event.is_src_host_dns_server
-                transformers:
-                - operator: uniq
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Core.OriginalAlert
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Core.OriginalAlert.alert_name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Large Upload (HTTPS)
-                    ignorecase: true
-                accessor: raw_abioc.event.is_src_host_internet_facing_server
-                transformers:
-                - operator: uniq
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Core.OriginalAlert
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Core.OriginalAlert.alert_name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Large Upload (HTTPS)
-                    ignorecase: true
-                accessor: raw_abioc.event.is_src_host_http_server
-                transformers:
-                - operator: uniq
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: IsInCidrRanges
-          left:
-            value:
-              complex:
-                root: Core.OriginalAlert
-                filters:
-                - - operator: isEqualNumber
-                    left:
-                      value:
-                        simple: Core.OriginalAlert._all_events.target_port
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "22"
-                  - operator: isEqualNumber
-                    left:
-                      value:
-                        simple: Core.OriginalAlert._all_events.action_remote_port
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "22"
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Core.OriginalAlert.alert_name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Large Upload (Generic)
-                    ignorecase: true
-                accessor: _all_events.target_ip
-                transformers:
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: Core.OriginalAlert._all_events.action_remote_ip
-                      iscontext: true
-                - operator: uniq
-            iscontext: true
-          right:
-            value:
-              simple: inputs.InternalIPRanges
-            iscontext: true
-        - operator: inList
-          left:
-            value:
-              complex:
-                root: Core.OriginalAlert
-                filters:
-                - - operator: isNotEmpty
-                    left:
-                      value:
-                        simple: Core.OriginalAlert._all_events.agent_hostname
-                      iscontext: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Core.OriginalAlert.alert_name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Large Upload (FTP)
-                    ignorecase: true
-                accessor: _all_events.agent_hostname
-                transformers:
-                - operator: uniq
-            iscontext: true
-          right:
-            value:
-              simple: Analysis.FTP_Server
-            iscontext: true
-          ignorecase: true
-        - operator: inList
-          left:
-            value:
-              complex:
-                root: Core.OriginalAlert
-                filters:
-                - - operator: isNotEmpty
-                    left:
-                      value:
-                        simple: Core.OriginalAlert._all_events.agent_hostname
-                      iscontext: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Core.OriginalAlert.alert_name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Large Upload (SMTP)
-                    ignorecase: true
-                accessor: _all_events.agent_hostname
-                transformers:
-                - operator: uniq
-            iscontext: true
-          right:
-            value:
-              simple: Analysis.SMTP_Server
-            iscontext: true
-          ignorecase: true
-      - - operator: lessThanOrEqual
-          left:
-            value:
-              complex:
-                root: DBotScore
-                filters:
-                - - operator: containsGeneral
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert._all_events.dst_action_external_hostname
-                      iscontext: true
-                    ignorecase: true
-                  - operator: containsGeneral
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert._all_events.ssl_req_chello_sni_sample
-                      iscontext: true
-                    ignorecase: true
-                  - operator: containsGeneral
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert._all_events.target_address
-                      iscontext: true
-                    ignorecase: true
-                  - operator: containsGeneral
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert._all_events.target_address
-                      iscontext: true
-                    ignorecase: true
-                  - operator: containsGeneral
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert._all_events.domain
-                      iscontext: true
-                    ignorecase: true
-                  - operator: containsGeneral
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert._all_events.action_external_hostname
-                      iscontext: true
-                    ignorecase: true
-                accessor: Score
-                transformers:
-                - operator: uniq
-                - operator: sort
-                  args:
-                    descending:
-                      value:
-                        simple: "true"
-                - operator: LastArrayElement
-            iscontext: true
-          right:
-            value:
-              simple: "1"
-        - operator: isEmpty
-          left:
-            value:
-              complex:
-                root: Core.OriginalAlert._all_events
-                accessor: dst_action_external_hostname
-                transformers:
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: Core.OriginalAlert._all_events.ssl_req_chello_sni_sample
-                      iscontext: true
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: Core.OriginalAlert._all_events.target_address
-                      iscontext: true
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: Core.OriginalAlert._all_events.domain
-                      iscontext: true
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: Core.OriginalAlert._all_events.action_external_hostname
-                      iscontext: true
-            iscontext: true
-      - - operator: lessThanOrEqual
-          left:
-            value:
-              complex:
-                root: DBotScore
-                filters:
-                - - operator: containsGeneral
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert._all_events.os_actor_process_image_sha256
-                      iscontext: true
-                    ignorecase: true
-                  - operator: containsGeneral
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert._all_events.actor_process_image_sha256
-                      iscontext: true
-                    ignorecase: true
-                  - operator: containsGeneral
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert._all_events.causality_actor_process_image_sha256
-                      iscontext: true
-                    ignorecase: true
-                accessor: Score
-                transformers:
-                - operator: uniq
-                - operator: sort
-                  args:
-                    descending:
-                      value:
-                        simple: "true"
-                - operator: LastArrayElement
-            iscontext: true
-          right:
-            value:
-              simple: "1"
-        - operator: isEmpty
-          left:
-            value:
-              complex:
-                root: Core.OriginalAlert._all_events
-                accessor: os_actor_process_image_sha256
-                transformers:
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: Core.OriginalAlert._all_events.actor_process_image_sha256
-                      iscontext: true
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: Core.OriginalAlert._all_events.causality_actor_process_image_sha256
-                      iscontext: true
-            iscontext: true
-      - - operator: isNotEqualString
-          left:
-            value:
-              simple: Investigation.CMDReputation
-            iscontext: true
-          right:
-            value:
-              simple: Malicious
-          ignorecase: true
-      - - operator: isNotExists
-          left:
-            value:
-              simple: Analysis.AdditionalAlerts
-            iscontext: true
-      - - operator: isNotExists
-          left:
-            value:
-              simple: Analysis.Unusual_FW_App_ID
-            iscontext: true
-      - - operator: isNotExists
-          left:
-            value:
-              simple: Analysis.Unusual_Process
-            iscontext: true
-      - - operator: isNotExists
-          left:
-            value:
-              simple: Analysis.Unsigned_Process
-            iscontext: true
+      - label: ' Malicious'
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: Investigation.CMDReputation
+                  iscontext: true
+                right:
+                  value:
+                    simple: Malicious
+                ignorecase: true
+              - operator: greaterThanOrEqual
+                left:
+                  value:
+                    complex:
+                      root: DBotScore
+                      filters:
+                        -   - operator: containsGeneral
+                              left:
+                                value:
+                                  simple: DBotScore.Indicator
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Core.OriginalAlert._all_events.os_actor_process_image_sha256
+                                iscontext: true
+                              ignorecase: true
+                            - operator: containsGeneral
+                              left:
+                                value:
+                                  simple: DBotScore.Indicator
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Core.OriginalAlert._all_events.actor_process_image_sha256
+                                iscontext: true
+                              ignorecase: true
+                            - operator: containsGeneral
+                              left:
+                                value:
+                                  simple: DBotScore.Indicator
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Core.OriginalAlert._all_events.causality_actor_process_image_sha256
+                                iscontext: true
+                              ignorecase: true
+                      accessor: Score
+                      transformers:
+                        - operator: uniq
+                        - operator: sort
+                          args:
+                            descending:
+                              value:
+                                simple: "false"
+                        - operator: LastArrayElement
+                  iscontext: true
+                right:
+                  value:
+                    simple: "3"
+              - operator: greaterThanOrEqual
+                left:
+                  value:
+                    complex:
+                      root: DBotScore
+                      filters:
+                        -   - operator: containsGeneral
+                              left:
+                                value:
+                                  simple: DBotScore.Indicator
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Core.OriginalAlert._all_events.dst_action_external_hostname
+                                iscontext: true
+                              ignorecase: true
+                            - operator: containsGeneral
+                              left:
+                                value:
+                                  simple: DBotScore.Indicator
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Core.OriginalAlert._all_events.ssl_req_chello_sni_sample
+                                iscontext: true
+                              ignorecase: true
+                            - operator: containsGeneral
+                              left:
+                                value:
+                                  simple: DBotScore.Indicator
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Core.OriginalAlert._all_events.target_address
+                                iscontext: true
+                              ignorecase: true
+                            - operator: containsGeneral
+                              left:
+                                value:
+                                  simple: DBotScore.Indicator
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Core.OriginalAlert._all_events.domain
+                                iscontext: true
+                              ignorecase: true
+                            - operator: containsGeneral
+                              left:
+                                value:
+                                  simple: DBotScore.Indicator
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Core.OriginalAlert._all_events.action_external_hostname
+                                iscontext: true
+                              ignorecase: true
+                      accessor: Score
+                      transformers:
+                        - operator: uniq
+                        - operator: sort
+                          args:
+                            descending:
+                              value:
+                                simple: "false"
+                        - operator: LastArrayElement
+                  iscontext: true
+                right:
+                  value:
+                    simple: "3"
+              - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: RelatedAttackPatterns
+                      transformers:
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: RelatedCampaign
+                              iscontext: true
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: RelatedFiles
+                              iscontext: true
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: RelatedDomains
+                              iscontext: true
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: RelatedIPs
+                              iscontext: true
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: RelatedURLs
+                              iscontext: true
+                  iscontext: true
+              - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: Core.RiskyUser
+                      filters:
+                        -   - operator: containsString
+                              left:
+                                value:
+                                  simple: Core.RiskyUser.id
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: alert.username
+                                iscontext: true
+                              ignorecase: true
+                      accessor: risk_level
+                      transformers:
+                        - operator: uniq
+                  iscontext: true
+                right:
+                  value:
+                    simple: High
+                ignorecase: true
+              - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: Core.RiskyHost
+                      filters:
+                        -   - operator: containsString
+                              left:
+                                value:
+                                  simple: Core.RiskyHost.id
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: alert.hostname
+                                iscontext: true
+                              ignorecase: true
+                      accessor: 'risk_level'
+                      transformers:
+                        - operator: uniq
+                  iscontext: true
+                right:
+                  value:
+                    simple: High
+                ignorecase: true
+              - operator: greaterThanOrEqual
+                left:
+                  value:
+                    simple: NumOfSiemFailedLogon
+                  iscontext: true
+                right:
+                  value:
+                    simple: "3"
+              - operator: greaterThanOrEqual
+                left:
+                  value:
+                    simple: NumOfThreatLogs
+                  iscontext: true
+                right:
+                  value:
+                    simple: "3"
+              - operator: greaterThanOrEqual
+                left:
+                  value:
+                    simple: NumOfOktaSuspiciousActivities
+                  iscontext: true
+                right:
+                  value:
+                    simple: "3"
+              - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: PaloAltoNetworksXDR
+                      accessor: Alert
+                      transformers:
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: Splunk.Result
+                              iscontext: true
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: QRadar.Search.Result
+                              iscontext: true
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: SuspiciousUserAgent
+                              iscontext: true
+                  iscontext: true
+      - label: Benign
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: Core.OriginalAlert
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: Core.OriginalAlert.alert_name
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Large Upload (HTTPS)
+                              ignorecase: true
+                      accessor: raw_abioc.event.is_src_host_dns_server
+                      transformers:
+                        - operator: uniq
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
+              - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: Core.OriginalAlert
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: Core.OriginalAlert.alert_name
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Large Upload (HTTPS)
+                              ignorecase: true
+                      accessor: raw_abioc.event.is_src_host_internet_facing_server
+                      transformers:
+                        - operator: uniq
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
+              - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: Core.OriginalAlert
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: Core.OriginalAlert.alert_name
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Large Upload (HTTPS)
+                              ignorecase: true
+                      accessor: raw_abioc.event.is_src_host_http_server
+                      transformers:
+                        - operator: uniq
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
+              - operator: IsInCidrRanges
+                left:
+                  value:
+                    complex:
+                      root: Core.OriginalAlert
+                      filters:
+                        -   - operator: isEqualNumber
+                              left:
+                                value:
+                                  simple: Core.OriginalAlert._all_events.target_port
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: "22"
+                            - operator: isEqualNumber
+                              left:
+                                value:
+                                  simple: Core.OriginalAlert._all_events.action_remote_port
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: "22"
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: Core.OriginalAlert.alert_name
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Large Upload (Generic)
+                              ignorecase: true
+                      accessor: _all_events.target_ip
+                      transformers:
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: Core.OriginalAlert._all_events.action_remote_ip
+                              iscontext: true
+                        - operator: uniq
+                  iscontext: true
+                right:
+                  value:
+                    simple: inputs.InternalIPRanges
+                  iscontext: true
+              - operator: inList
+                left:
+                  value:
+                    complex:
+                      root: Core.OriginalAlert
+                      filters:
+                        -   - operator: isNotEmpty
+                              left:
+                                value:
+                                  simple: Core.OriginalAlert._all_events.agent_hostname
+                                iscontext: true
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: Core.OriginalAlert.alert_name
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Large Upload (FTP)
+                              ignorecase: true
+                      accessor: _all_events.agent_hostname
+                      transformers:
+                        - operator: uniq
+                  iscontext: true
+                right:
+                  value:
+                    simple: Analysis.FTP_Server
+                  iscontext: true
+                ignorecase: true
+              - operator: inList
+                left:
+                  value:
+                    complex:
+                      root: Core.OriginalAlert
+                      filters:
+                        -   - operator: isNotEmpty
+                              left:
+                                value:
+                                  simple: Core.OriginalAlert._all_events.agent_hostname
+                                iscontext: true
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: Core.OriginalAlert.alert_name
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Large Upload (SMTP)
+                              ignorecase: true
+                      accessor: _all_events.agent_hostname
+                      transformers:
+                        - operator: uniq
+                  iscontext: true
+                right:
+                  value:
+                    simple: Analysis.SMTP_Server
+                  iscontext: true
+                ignorecase: true
+          -   - operator: lessThanOrEqual
+                left:
+                  value:
+                    complex:
+                      root: DBotScore
+                      filters:
+                        -   - operator: containsGeneral
+                              left:
+                                value:
+                                  simple: DBotScore.Indicator
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Core.OriginalAlert._all_events.dst_action_external_hostname
+                                iscontext: true
+                              ignorecase: true
+                            - operator: containsGeneral
+                              left:
+                                value:
+                                  simple: DBotScore.Indicator
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Core.OriginalAlert._all_events.ssl_req_chello_sni_sample
+                                iscontext: true
+                              ignorecase: true
+                            - operator: containsGeneral
+                              left:
+                                value:
+                                  simple: DBotScore.Indicator
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Core.OriginalAlert._all_events.target_address
+                                iscontext: true
+                              ignorecase: true
+                            - operator: containsGeneral
+                              left:
+                                value:
+                                  simple: DBotScore.Indicator
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Core.OriginalAlert._all_events.target_address
+                                iscontext: true
+                              ignorecase: true
+                            - operator: containsGeneral
+                              left:
+                                value:
+                                  simple: DBotScore.Indicator
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Core.OriginalAlert._all_events.domain
+                                iscontext: true
+                              ignorecase: true
+                            - operator: containsGeneral
+                              left:
+                                value:
+                                  simple: DBotScore.Indicator
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Core.OriginalAlert._all_events.action_external_hostname
+                                iscontext: true
+                              ignorecase: true
+                      accessor: Score
+                      transformers:
+                        - operator: uniq
+                        - operator: sort
+                          args:
+                            descending:
+                              value:
+                                simple: "true"
+                        - operator: LastArrayElement
+                  iscontext: true
+                right:
+                  value:
+                    simple: "1"
+              - operator: isEmpty
+                left:
+                  value:
+                    complex:
+                      root: Core.OriginalAlert._all_events
+                      accessor: dst_action_external_hostname
+                      transformers:
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: Core.OriginalAlert._all_events.ssl_req_chello_sni_sample
+                              iscontext: true
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: Core.OriginalAlert._all_events.target_address
+                              iscontext: true
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: Core.OriginalAlert._all_events.domain
+                              iscontext: true
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: Core.OriginalAlert._all_events.action_external_hostname
+                              iscontext: true
+                  iscontext: true
+          -   - operator: lessThanOrEqual
+                left:
+                  value:
+                    complex:
+                      root: DBotScore
+                      filters:
+                        -   - operator: containsGeneral
+                              left:
+                                value:
+                                  simple: DBotScore.Indicator
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Core.OriginalAlert._all_events.os_actor_process_image_sha256
+                                iscontext: true
+                              ignorecase: true
+                            - operator: containsGeneral
+                              left:
+                                value:
+                                  simple: DBotScore.Indicator
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Core.OriginalAlert._all_events.actor_process_image_sha256
+                                iscontext: true
+                              ignorecase: true
+                            - operator: containsGeneral
+                              left:
+                                value:
+                                  simple: DBotScore.Indicator
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Core.OriginalAlert._all_events.causality_actor_process_image_sha256
+                                iscontext: true
+                              ignorecase: true
+                      accessor: Score
+                      transformers:
+                        - operator: uniq
+                        - operator: sort
+                          args:
+                            descending:
+                              value:
+                                simple: "true"
+                        - operator: LastArrayElement
+                  iscontext: true
+                right:
+                  value:
+                    simple: "1"
+              - operator: isEmpty
+                left:
+                  value:
+                    complex:
+                      root: Core.OriginalAlert._all_events
+                      accessor: os_actor_process_image_sha256
+                      transformers:
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: Core.OriginalAlert._all_events.actor_process_image_sha256
+                              iscontext: true
+                        - operator: append
+                          args:
+                            item:
+                              value:
+                                simple: Core.OriginalAlert._all_events.causality_actor_process_image_sha256
+                              iscontext: true
+                  iscontext: true
+          -   - operator: isNotEqualString
+                left:
+                  value:
+                    simple: Investigation.CMDReputation
+                  iscontext: true
+                right:
+                  value:
+                    simple: Malicious
+                ignorecase: true
+          -   - operator: isNotExists
+                left:
+                  value:
+                    simple: Analysis.AdditionalAlerts
+                  iscontext: true
+          -   - operator: isNotExists
+                left:
+                  value:
+                    simple: Analysis.Unusual_FW_App_ID
+                  iscontext: true
+          -   - operator: isNotExists
+                left:
+                  value:
+                    simple: Analysis.Unusual_Process
+                  iscontext: true
+          -   - operator: isNotExists
+                left:
+                  value:
+                    simple: Analysis.Unsigned_Process
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -2771,13 +2771,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       alert_ids:
         complex:
           root: inputs.Alert_ID
           transformers:
-          - operator: uniq
+            - operator: uniq
       filter_alert_fields:
         simple: "false"
     separatecontext: false
@@ -2810,7 +2810,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "57"
+        - "57"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2841,7 +2841,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "39"
+        - "39"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2872,9 +2872,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "57"
+        - "57"
       Remediation:
-      - "46"
+        - "46"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2905,7 +2905,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "41"
+        - "41"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2937,7 +2937,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "42"
+        - "42"
     scriptarguments:
       verdict:
         simple: Malicious
@@ -2971,7 +2971,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "43"
+        - "43"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -3002,33 +3002,33 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "46"
+        - "46"
       "yes":
-      - "45"
+        - "45"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: RelatedFiles
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: RelatedDomains
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: RelatedIPs
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: RelatedURLs
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: RelatedFiles
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: RelatedDomains
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: RelatedIPs
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: RelatedURLs
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -3059,195 +3059,195 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "46"
+        - "46"
     scriptarguments:
       IPAddress:
         complex:
           root: DBotScore
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: IP
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: IP
+                  ignorecase: true
+            -   - operator: greaterThanOrEqual
+                  left:
+                    value:
+                      simple: DBotScore.Score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "3"
           accessor: Indicator
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: RelatedIPs
-                iscontext: true
-          - operator: uniq
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: RelatedIPs
+                  iscontext: true
+            - operator: uniq
       InternalRange:
         complex:
           root: lists
           accessor: PrivateIPs
           transformers:
-          - operator: RegexExtractAll
-            args:
-              error_if_no_match: {}
-              ignore_case: {}
-              multi_line: {}
-              period_matches_newline: {}
-              regex:
-                value:
-                  simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
-              unpack_matches: {}
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ','
+            - operator: RegexExtractAll
+              args:
+                error_if_no_match: {}
+                ignore_case: {}
+                multi_line: {}
+                period_matches_newline: {}
+                regex:
+                  value:
+                    simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
+                unpack_matches: {}
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ','
       MD5:
         complex:
           root: DBotScore
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: File
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: Hash
-              ignorecase: true
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: "32"
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: File
+                  ignorecase: true
+                - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Hash
+                  ignorecase: true
+            -   - operator: stringHasLength
+                  left:
+                    value:
+                      simple: DBotScore.Indicator
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "32"
+            -   - operator: greaterThanOrEqual
+                  left:
+                    value:
+                      simple: DBotScore.Score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "3"
           accessor: Indicator
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: RelatedFiles
-                iscontext: true
-          - operator: uniq
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: RelatedFiles
+                  iscontext: true
+            - operator: uniq
       QRadarTimeFrame:
         simple: LAST 7 DAYS
       SHA1:
         complex:
           root: DBotScore
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: File
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: Hash
-              ignorecase: true
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: "40"
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: File
+                  ignorecase: true
+                - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Hash
+                  ignorecase: true
+            -   - operator: stringHasLength
+                  left:
+                    value:
+                      simple: DBotScore.Indicator
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "40"
+            -   - operator: greaterThanOrEqual
+                  left:
+                    value:
+                      simple: DBotScore.Score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "3"
           accessor: Indicator
           transformers:
-          - operator: uniq
+            - operator: uniq
       SHA256:
         complex:
           root: DBotScore
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: File
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: Hash
-              ignorecase: true
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: "64"
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: File
+                  ignorecase: true
+                - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Hash
+                  ignorecase: true
+            -   - operator: stringHasLength
+                  left:
+                    value:
+                      simple: DBotScore.Indicator
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "64"
+            -   - operator: greaterThanOrEqual
+                  left:
+                    value:
+                      simple: DBotScore.Score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "3"
           accessor: Indicator
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: RelatedFiles
-                iscontext: true
-          - operator: uniq
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: RelatedFiles
+                  iscontext: true
+            - operator: uniq
       SplunkEarliestTime:
         simple: -7d@d
       SplunkLatestTime:
@@ -3256,38 +3256,38 @@ tasks:
         complex:
           root: DBotScore
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: domain
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: domain
+                  ignorecase: true
+            -   - operator: greaterThanOrEqual
+                  left:
+                    value:
+                      simple: DBotScore.Score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "3"
           accessor: Indicator
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: RelatedDomains
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: RelatedDomains
-                iscontext: true
-          - operator: uniq
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: RelatedDomains
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: RelatedDomains
+                  iscontext: true
+            - operator: uniq
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -3323,8 +3323,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "47"
-      - "48"
+        - "47"
+        - "48"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -3364,7 +3364,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "58"
+        - "58"
     scriptarguments:
       AutoBlockIndicators:
         simple: ${inputs.AutoBlockIndicators}
@@ -3378,118 +3378,118 @@ tasks:
         complex:
           root: DBotScore.Indicator
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: domain
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          - - operator: notIn
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: IndicatorsToBlock
-                iscontext: true
-              ignorecase: true
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: domain
+            -   - operator: greaterThanOrEqual
+                  left:
+                    value:
+                      simple: DBotScore.Score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "3"
+            -   - operator: notIn
+                  left:
+                    value:
+                      simple: DBotScore.Indicator
+                    iscontext: true
+                  right:
+                    value:
+                      simple: IndicatorsToBlock
+                    iscontext: true
+                  ignorecase: true
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: RelatedDomains
-                iscontext: true
-          - operator: uniq
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: RelatedDomains
+                  iscontext: true
+            - operator: uniq
       FilesToBlock:
         complex:
           root: DBotScore.Indicator
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          - - operator: notIn
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: IndicatorsToBlock
-                iscontext: true
-              ignorecase: true
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: file
+            -   - operator: greaterThanOrEqual
+                  left:
+                    value:
+                      simple: DBotScore.Score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "3"
+            -   - operator: notIn
+                  left:
+                    value:
+                      simple: DBotScore.Indicator
+                    iscontext: true
+                  right:
+                    value:
+                      simple: IndicatorsToBlock
+                    iscontext: true
+                  ignorecase: true
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: RelatedFiles
-                iscontext: true
-          - operator: uniq
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: RelatedFiles
+                  iscontext: true
+            - operator: uniq
       IP:
         complex:
           root: DBotScore
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: Core.OriginalAlert._all_events.target_ip
-                iscontext: true
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: Core.OriginalAlert._all_events.action_remote_ip
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Indicator
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Core.OriginalAlert._all_events.target_ip
+                    iscontext: true
+                  ignorecase: true
+                - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Indicator
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Core.OriginalAlert._all_events.action_remote_ip
+                  ignorecase: true
+            -   - operator: greaterThanOrEqual
+                  left:
+                    value:
+                      simple: DBotScore.Score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "3"
           accessor: Indicator
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: RelatedIPs
-                iscontext: true
-          - operator: uniq
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: RelatedIPs
+                  iscontext: true
+            - operator: uniq
       InputEnrichment:
         simple: "False"
       InternalRange:
@@ -3498,49 +3498,49 @@ tasks:
         complex:
           root: DBotScore.Indicator
           filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: "32"
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: hash
-          - - operator: notIn
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: IndicatorsToBlock
-              ignorecase: true
+            -   - operator: stringHasLength
+                  left:
+                    value:
+                      simple: DBotScore.Indicator
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "32"
+            -   - operator: greaterThanOrEqual
+                  left:
+                    value:
+                      simple: DBotScore.Score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "3"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: file
+                - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: hash
+            -   - operator: notIn
+                  left:
+                    value:
+                      simple: DBotScore.Indicator
+                    iscontext: true
+                  right:
+                    value:
+                      simple: IndicatorsToBlock
+                  ignorecase: true
           transformers:
-          - operator: uniq
+            - operator: uniq
       RuleDirection:
         simple: outbound
       RuleName:
@@ -3549,76 +3549,76 @@ tasks:
         complex:
           root: DBotScore.Indicator
           filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: "64"
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: hash
-          - - operator: notIn
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: IndicatorsToBlock
-                iscontext: true
-              ignorecase: true
+            -   - operator: stringHasLength
+                  left:
+                    value:
+                      simple: DBotScore.Indicator
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "64"
+            -   - operator: greaterThanOrEqual
+                  left:
+                    value:
+                      simple: DBotScore.Score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "3"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: file
+                - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: hash
+            -   - operator: notIn
+                  left:
+                    value:
+                      simple: DBotScore.Indicator
+                    iscontext: true
+                  right:
+                    value:
+                      simple: IndicatorsToBlock
+                    iscontext: true
+                  ignorecase: true
           transformers:
-          - operator: uniq
+            - operator: uniq
       Tag:
         simple: Blocked Indicator In Systems
       URL:
         complex:
           root: DBotScore
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: url
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
+            -   - operator: isEqualString
+                  left:
+                    value:
+                      simple: DBotScore.Type
+                    iscontext: true
+                  right:
+                    value:
+                      simple: url
+                  ignorecase: true
+            -   - operator: greaterThanOrEqual
+                  left:
+                    value:
+                      simple: DBotScore.Score
+                    iscontext: true
+                  right:
+                    value:
+                      simple: "3"
           accessor: Indicator
           transformers:
-          - operator: uniq
+            - operator: uniq
       UserVerification:
         simple: ${inputs.BlockIndicators_UserVerification}
     separatecontext: true
@@ -3656,27 +3656,27 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "58"
+        - "58"
       "yes":
-      - "55"
+        - "55"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.AutoIsolateEndpoint
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Core.OriginalAlert._all_events.agent_id
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.AutoIsolateEndpoint
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: Core.OriginalAlert._all_events.agent_id
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -3707,7 +3707,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "58"
+        - "58"
     scriptarguments:
       endpoint_id:
         simple: ${Core.OriginalAlert._all_events.agent_id}
@@ -3742,7 +3742,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       status:
         simple: Resolved - Duplicate Alert
@@ -3777,7 +3777,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       status:
         simple: Resolved - False Positive
@@ -3812,7 +3812,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       status:
         simple: Resolved - True Positive
@@ -3847,7 +3847,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       status:
         simple: Resolved - Other
@@ -3897,92 +3897,88 @@ view: |-
     }
   }
 inputs:
-- key: InternalIPRanges
-  value:
-    simple: ${lists.PrivateIPs}
-  required: false
-  description: 'A list of IP ranges to check the IP against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
-  playbookInputQuery:
-- key: FurtherInvestigation
-  value:
-    simple: "False"
-  required: true
-  description: |-
-    Determines whether an alert should be further investigated if similar previous false positive alerts were found.
-    Possible values:True/False. Default: False.
-  playbookInputQuery:
-- key: AutoBlockIndicators
-  value:
-    simple: "True"
-  required: true
-  description: |-
-    Determine whether the given indicators be automatically blocked, or if the user should be given the option to choose.
-    Possible values:True/False. Default: True.
-    If set to True - no prompt will appear, and all provided indicators will be blocked automatically.
-    If set to False - the user will be prompted to select which indicators to block.
-  playbookInputQuery:
-- key: BlockIndicators_UserVerification
-  value:
-    simple: "False"
-  required: true
-  description: |-
-    Determine whether the blocking of any indicator requires the verification of the user.
-    Possible values:True/False. Default: False.
-  playbookInputQuery:
-- key: EarlyContainment
-  value:
-    simple: "True"
-  required: true
-  description: |-
-    Whether early containment should be allowed when the IP address is known to be malicious.
-    Possible values:True/False. Default: True.
-  playbookInputQuery:
-- key: AutoIsolateEndpoint
-  value:
-    simple: "False"
-  required: true
-  description: |-
-    Whether to isolate the initiating endpoint automatically if the investigation verdict is malicious.
-    Possible values:True/False. Default: False.
-  playbookInputQuery:
-- key: Transferred_Data _Threshold
-  value:
-    simple: "150"
-  required: true
-  description: |-
-    Specify the uploaded data threshold volume (in MB) from which large upload alerts should be investigated.
-    By setting a threshold, you will be able to determine which large upload alerts require investigation.
-    Default value: 150 (MB).
-  playbookInputQuery:
-- key: FWApps_Processes_Whitlist
-  value:
-    simple: ip,tcp,udp,ssl,syslog,quic,Chrome.exe,Firefox.exe,Opera.exe,Safari.exe,iexplore.exe,msedge.exe,brave.exe
-  required: false
-  description: A list of known and authorized FW application IDs and processes used in the organization.
-  playbookInputQuery:
-- key: Alert_ID
-  value:
-    simple: ${alert.id}
-  required: false
-  description: The Cortex XDR alert ID.
-  playbookInputQuery:
+  - key: InternalIPRanges
+    value:
+      simple: ${lists.PrivateIPs}
+    required: false
+    description: 'A list of IP ranges to check the IP against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
+    playbookInputQuery:
+  - key: FurtherInvestigation
+    value:
+      simple: "False"
+    required: true
+    description: |-
+      Determines whether an alert should be further investigated if similar previous false positive alerts were found.
+      Possible values:True/False. Default: False.
+    playbookInputQuery:
+  - key: AutoBlockIndicators
+    value:
+      simple: "True"
+    required: true
+    description: |-
+      Determine whether the given indicators be automatically blocked, or if the user should be given the option to choose.
+      Possible values:True/False. Default: True.
+      If set to True - no prompt will appear, and all provided indicators will be blocked automatically.
+      If set to False - the user will be prompted to select which indicators to block.
+    playbookInputQuery:
+  - key: BlockIndicators_UserVerification
+    value:
+      simple: "False"
+    required: true
+    description: |-
+      Determine whether the blocking of any indicator requires the verification of the user.
+      Possible values:True/False. Default: False.
+    playbookInputQuery:
+  - key: EarlyContainment
+    value:
+      simple: "True"
+    required: true
+    description: |-
+      Whether early containment should be allowed when the IP address is known to be malicious.
+      Possible values:True/False. Default: True.
+    playbookInputQuery:
+  - key: AutoIsolateEndpoint
+    value:
+      simple: "False"
+    required: true
+    description: |-
+      Whether to isolate the initiating endpoint automatically if the investigation verdict is malicious.
+      Possible values:True/False. Default: False.
+    playbookInputQuery:
+  - key: Transferred_Data _Threshold
+    value:
+      simple: "150"
+    required: true
+    description: |-
+      Specify the uploaded data threshold volume (in MB) from which large upload alerts should be investigated.
+      By setting a threshold, you will be able to determine which large upload alerts require investigation.
+      Default value: 150 (MB).
+    playbookInputQuery:
+  - key: FWApps_Processes_Whitlist
+    value:
+      simple: ip,tcp,udp,ssl,syslog,quic,Chrome.exe,Firefox.exe,Opera.exe,Safari.exe,iexplore.exe,msedge.exe,brave.exe
+    required: false
+    description: A list of known and authorized FW application IDs and processes used in the organization.
+    playbookInputQuery:
+  - key: Alert_ID
+    value:
+      simple: ${alert.id}
+    required: false
+    description: The Cortex XDR alert ID.
+    playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 6.10.0
 marketplaces:
-- marketplacev2
-- platform
+  - marketplacev2
+  - platform
 
 
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- cloud
-- cloud_posture
-- cloud_runtime_security
-- edr
-- xsiam
+  - agentix
+  - cloud
+  - cloud_posture
+  - cloud_runtime_security
+  - edr
+  - xsiam

@@ -23,7 +23,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -55,16 +55,16 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "4"
+        - "4"
       "yes":
-      - "2"
-      - "3"
-      - "13"
+        - "2"
+        - "3"
+        - "13"
     scriptarguments:
       brandname:
         simple: Microsoft 365 Defender
     results:
-    - brandInstances
+      - brandInstances
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -95,19 +95,19 @@ tasks:
       description: ""
     nexttasks:
       '#default#':
-      - "4"
+        - "4"
       URLDomain Exists:
-      - "11"
+        - "11"
     separatecontext: false
     conditions:
-    - label: URLDomain Exists
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.URLDomain
-            iscontext: true
+      - label: URLDomain Exists
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.URLDomain
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -137,19 +137,19 @@ tasks:
       description: ""
     nexttasks:
       '#default#':
-      - "4"
+        - "4"
       SHA256 Exists:
-      - "12"
+        - "12"
     separatecontext: false
     conditions:
-    - label: SHA256 Exists
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.SHA256
-            iscontext: true
+      - label: SHA256 Exists
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.SHA256
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -208,7 +208,7 @@ tasks:
       brand: Microsoft 365 Defender
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     scriptarguments:
       limit:
         complex:
@@ -248,7 +248,7 @@ tasks:
       brand: Microsoft 365 Defender
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     scriptarguments:
       limit:
         complex:
@@ -295,7 +295,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+        - "16"
     scriptarguments:
       key:
         simple: Microsoft365Defender.RetrievedEmails
@@ -303,18 +303,18 @@ tasks:
         complex:
           root: Microsoft365Defender.Hunt.results
           filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Microsoft365Defender.Hunt.results.SHA256
-                iscontext: true
-            - operator: isNotEmpty
-              left:
-                value:
-                  simple: Microsoft365Defender.Hunt.results.Url
-                iscontext: true
+            -   - operator: isNotEmpty
+                  left:
+                    value:
+                      simple: Microsoft365Defender.Hunt.results.SHA256
+                    iscontext: true
+                - operator: isNotEmpty
+                  left:
+                    value:
+                      simple: Microsoft365Defender.Hunt.results.Url
+                    iscontext: true
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -346,7 +346,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     scriptarguments:
       key:
         simple: URLDomainParsed
@@ -354,20 +354,20 @@ tasks:
         complex:
           root: inputs.URLDomain
           transformers:
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: '|||'
-          - operator: replace
-            args:
-              limit: {}
-              replaceWith:
-                value:
-                  simple: '```, ```'
-              toReplace:
-                value:
-                  simple: '|||'
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: '|||'
+            - operator: replace
+              args:
+                limit: {}
+                replaceWith:
+                  value:
+                    simple: '```, ```'
+                toReplace:
+                  value:
+                    simple: '|||'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -399,7 +399,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+        - "6"
     scriptarguments:
       key:
         simple: SHA256Parsed
@@ -407,20 +407,20 @@ tasks:
         complex:
           root: inputs.SHA256
           transformers:
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ', '
-          - operator: replace
-            args:
-              limit: {}
-              replaceWith:
-                value:
-                  simple: '","'
-              toReplace:
-                value:
-                  simple: ','
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ', '
+            - operator: replace
+              args:
+                limit: {}
+                replaceWith:
+                  value:
+                    simple: '","'
+                toReplace:
+                  value:
+                    simple: ','
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -451,21 +451,21 @@ tasks:
       description: ""
     nexttasks:
       '#default#':
-      - "4"
+        - "4"
       IPAddress Exists:
-      - "14"
+        - "14"
     separatecontext: false
     conditions:
-    - label: IPAddress Exists
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.IPAddress
-            iscontext: true
-          right:
-            value: {}
+      - label: IPAddress Exists
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.IPAddress
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -496,8 +496,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
-      - "18"
+        - "15"
+        - "18"
     scriptarguments:
       key:
         simple: IPAddressParsed
@@ -505,20 +505,20 @@ tasks:
         complex:
           root: inputs.IPAddress
           transformers:
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ', '
-          - operator: replace
-            args:
-              limit: {}
-              replaceWith:
-                value:
-                  simple: '", "'
-              toReplace:
-                value:
-                  simple: ', '
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ', '
+            - operator: replace
+              args:
+                limit: {}
+                replaceWith:
+                  value:
+                    simple: '", "'
+                toReplace:
+                  value:
+                    simple: ', '
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -550,7 +550,7 @@ tasks:
       brand: Microsoft 365 Defender
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     scriptarguments:
       limit:
         complex:
@@ -597,7 +597,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     scriptarguments:
       append:
         simple: "true"
@@ -607,17 +607,17 @@ tasks:
         complex:
           root: Microsoft365Defender.Hunt.results
           filters:
-          - - operator: notIn
-              left:
-                value:
-                  simple: Microsoft365Defender.Hunt.results.NetworkMessageId
-                iscontext: true
-              right:
-                value:
-                  simple: Microsoft365Defender.RetrievedEmails.NetworkMessageId
-                iscontext: true
+            -   - operator: notIn
+                  left:
+                    value:
+                      simple: Microsoft365Defender.Hunt.results.NetworkMessageId
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Microsoft365Defender.RetrievedEmails.NetworkMessageId
+                    iscontext: true
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -649,7 +649,7 @@ tasks:
       brand: Microsoft 365 Defender
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     scriptarguments:
       limit:
         complex:
@@ -695,121 +695,117 @@ view: |-
     }
   }
 inputs:
-- key: URLDomain
-  value: {}
-  required: false
-  description: Domain or URL to search within emails. Can be a single domain or URL or an array of domains or URLs to search. The search looks for the exact Domain or URL.
-  playbookInputQuery:
-- key: SHA256
-  value: {}
-  required: false
-  description: The SHA256 hash file or an array of hashes to search within emails.
-  playbookInputQuery:
-- key: IPAddress
-  value: {}
-  required: false
-  description: The source or destination IP address to search. Can be a single address or an array of IP addresses.
-  playbookInputQuery:
-- key: Timeout
-  value:
-    simple: "180"
-  required: false
-  description: The time limit in seconds for the HTTP request to run. Default is 180.
-  playbookInputQuery:
-- key: SearchTimeframe
-  value:
-    simple: "7"
-  required: false
-  description: Number of days past to search. Default is 7.
-  playbookInputQuery:
-- key: ResultsLimit
-  value:
-    simple: "50"
-  required: false
-  description: Number of retrieved entries. Enter -1 for unlimited query. 50 is the default.
-  playbookInputQuery:
-- key: ListenerMailbox
-  value: {}
-  required: false
-  description: The mailbox of the listening integration. In case it is provided, the emails found in it will be ignored.
-  playbookInputQuery:
+  - key: URLDomain
+    value: {}
+    required: false
+    description: Domain or URL to search within emails. Can be a single domain or URL or an array of domains or URLs to search. The search looks for the exact Domain or URL.
+    playbookInputQuery:
+  - key: SHA256
+    value: {}
+    required: false
+    description: The SHA256 hash file or an array of hashes to search within emails.
+    playbookInputQuery:
+  - key: IPAddress
+    value: {}
+    required: false
+    description: The source or destination IP address to search. Can be a single address or an array of IP addresses.
+    playbookInputQuery:
+  - key: Timeout
+    value:
+      simple: "180"
+    required: false
+    description: The time limit in seconds for the HTTP request to run. Default is 180.
+    playbookInputQuery:
+  - key: SearchTimeframe
+    value:
+      simple: "7"
+    required: false
+    description: Number of days past to search. Default is 7.
+    playbookInputQuery:
+  - key: ResultsLimit
+    value:
+      simple: "50"
+    required: false
+    description: Number of retrieved entries. Enter -1 for unlimited query. 50 is the default.
+    playbookInputQuery:
+  - key: ListenerMailbox
+    value: {}
+    required: false
+    description: The mailbox of the listening integration. In case it is provided, the emails found in it will be ignored.
+    playbookInputQuery:
 outputs:
-- contextPath: Microsoft365Defender.RetrievedEmails
-  description: Email objects containing relevant fields.
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.InternetMessageId
-  description: Internet Message ID of the email.
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.SenderFromDomain
-  description: Sender domain.
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.EmailDirection
-  description: Email direction (inbound/outbound).
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.DeliveryLocation
-  description: Delivery location.
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.AuthenticationDetails
-  description: Authentication details (SPF, DKIM, DMARC, CompAuth).
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.DeliveryAction
-  description: Delivery action.
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.Subject
-  description: Email subject.
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.AttachmentCount
-  description: Number of attachments.
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.ThreatNames
-  description: Threat names.
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.RecipientEmailAddress
-  description: Recipient email address.
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.EmailAction
-  description: Email action.
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.EmailLanguage
-  description: Email language.
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.SenderFromAddress
-  description: Sender address.
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.Timestamp
-  description: Timestamp.
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.SenderDisplayName
-  description: Sender display name.
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.SenderIPv4
-  description: Sender IPv4
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.ConfidenceLevel
-  description: Confidence level.
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.ThreatTypes
-  description: Threat types.
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.SHA256
-  description: SHA256 of the attachments (if exists in the email).
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.Url
-  description: URLs found in the email's body.
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.UrlCount
-  description: Number of URLs found in the email's body.
-  type: string
-- contextPath: Microsoft365Defender.RetrievedEmails.SenderIPv6
-  description: Sender IPv6.
-  type: unknown
+  - contextPath: Microsoft365Defender.RetrievedEmails
+    description: Email objects containing relevant fields.
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.InternetMessageId
+    description: Internet Message ID of the email.
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.SenderFromDomain
+    description: Sender domain.
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.EmailDirection
+    description: Email direction (inbound/outbound).
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.DeliveryLocation
+    description: Delivery location.
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.AuthenticationDetails
+    description: Authentication details (SPF, DKIM, DMARC, CompAuth).
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.DeliveryAction
+    description: Delivery action.
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.Subject
+    description: Email subject.
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.AttachmentCount
+    description: Number of attachments.
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.ThreatNames
+    description: Threat names.
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.RecipientEmailAddress
+    description: Recipient email address.
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.EmailAction
+    description: Email action.
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.EmailLanguage
+    description: Email language.
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.SenderFromAddress
+    description: Sender address.
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.Timestamp
+    description: Timestamp.
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.SenderDisplayName
+    description: Sender display name.
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.SenderIPv4
+    description: Sender IPv4
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.ConfidenceLevel
+    description: Confidence level.
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.ThreatTypes
+    description: Threat types.
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.SHA256
+    description: SHA256 of the attachments (if exists in the email).
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.Url
+    description: URLs found in the email's body.
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.UrlCount
+    description: Number of URLs found in the email's body.
+    type: string
+  - contextPath: Microsoft365Defender.RetrievedEmails.SenderIPv6
+    description: Sender IPv6.
+    type: unknown
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 6.2.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

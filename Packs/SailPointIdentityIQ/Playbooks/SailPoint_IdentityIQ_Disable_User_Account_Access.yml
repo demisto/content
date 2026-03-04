@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     view: |-
       {
@@ -46,7 +46,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       active: {}
       email:
@@ -81,7 +81,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       application_name: {}
       display_name: {}
@@ -118,21 +118,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+        - "5"
       "yes":
-      - "4"
+        - "4"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: greaterThanOrEqual
-          left:
-            value:
-              simple: IdentityIQ.Identity.sailpointUser.riskScore
-            iscontext: true
-          right:
-            value:
-              simple: "500"
+      - label: "yes"
+        condition:
+          -   - operator: greaterThanOrEqual
+                left:
+                  value:
+                    simple: IdentityIQ.Identity.sailpointUser.riskScore
+                  iscontext: true
+                right:
+                  value:
+                    simple: "500"
     view: |-
       {
         "position": {
@@ -160,7 +160,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+        - "6"
     scriptarguments:
       value:
         simple: Over 500
@@ -192,7 +192,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       value:
         simple: Less Risk User
@@ -224,7 +224,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     scriptarguments:
       accountid: {}
       accountname: {}
@@ -560,7 +560,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     separatecontext: false
     view: |-
       {
@@ -589,7 +589,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       id:
         simple: ${IdentityIQ.Account.id}
@@ -619,19 +619,15 @@ view: |-
     }
   }
 inputs:
-- key: email
-  value: {}
-  required: false
-  description: "Email of the Identity."
-  playbookInputQuery:
+  - key: email
+    value: {}
+    required: false
+    description: "Email of the Identity."
+    playbookInputQuery:
 outputs: []
 fromversion: 6.0.0
 tests:
-- SailPointIdentityIQ-Test
+  - SailPointIdentityIQ-Test
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

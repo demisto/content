@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "27"
+        - "27"
     separatecontext: false
     view: |-
       {
@@ -45,40 +45,40 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "34"
+        - "34"
       "yes":
-      - "40"
+        - "40"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Prisma Access Egress IP feed
-                accessor: brand
-            iscontext: true
-          right:
-            value:
-              simple: Prisma Access Egress IP feed
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Prisma Access Egress IP feed
+                      accessor: brand
+                  iscontext: true
+                right:
+                  value:
+                    simple: Prisma Access Egress IP feed
     view: |-
       {
         "position": {
@@ -106,7 +106,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "45"
+        - "45"
     scriptarguments:
       assetid: {}
       closeNotes: {}
@@ -143,7 +143,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "34"
+        - "34"
     scriptarguments:
       IP:
         simple: ${PrismaAccess.Egress.IP(["US West","Argentina"].indexOf(val.Zone)>=0).Address}
@@ -184,7 +184,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "34"
+        - "34"
     scriptarguments:
       GCPFirewallName:
         simple: ${inputs.GCPFirewallName}
@@ -225,9 +225,9 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "42"
-      - "43"
-      - "44"
+        - "42"
+        - "43"
+        - "44"
     scriptarguments:
       limit:
         simple: "1000"
@@ -259,7 +259,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "34"
+        - "34"
     scriptarguments:
       IP:
         simple: ${PrismaAccess.Egress.IP(["US West","Argentina"].indexOf(val.Zone)>=0).Address}
@@ -299,18 +299,18 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "34"
+        - "34"
       "yes":
-      - "41"
+        - "41"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.OktaZoneID
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.OktaZoneID
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -337,18 +337,18 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "34"
+        - "34"
       "yes":
-      - "35"
+        - "35"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.AWSSecurityGroupName
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.AWSSecurityGroupName
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -375,18 +375,18 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "34"
+        - "34"
       "yes":
-      - "36"
+        - "36"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.GCPFirewallName
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.GCPFirewallName
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -442,49 +442,45 @@ view: |-
     }
   }
 inputs:
-- key: ""
-  value: {}
-  required: false
-  description: ""
-  playbookInputQuery:
-    query: ""
-    queryEntity: indicators
-    results:
-    daterange:
-      fromdate: 0001-01-01T00:00:00Z
-      todate: 0001-01-01T00:00:00Z
-      period:
-        by: ""
-        byto: ""
-        byfrom: ""
-        tovalue:
-        fromvalue:
-        field: ""
-      fromdatelicenseval: 0001-01-01T00:00:00Z
-    runFromLastJobTime: false
-- key: AWSSecurityGroupName
-  value: {}
-  required: false
-  description: Name of the AWS Security Group to update with the IPs.
-  playbookInputQuery:
-- key: GCPFirewallName
-  value: {}
-  required: false
-  description: Name of the GCP Firewall to update with the IPs.
-  playbookInputQuery:
-- key: OktaZoneID
-  value: {}
-  required: false
-  description: ID of the Okta Zone to update. Use !okta-list-zones to obtain
-  playbookInputQuery:
+  - key: ""
+    value: {}
+    required: false
+    description: ""
+    playbookInputQuery:
+      query: ""
+      queryEntity: indicators
+      results:
+      daterange:
+        fromdate: 0001-01-01T00:00:00Z
+        todate: 0001-01-01T00:00:00Z
+        period:
+          by: ""
+          byto: ""
+          byfrom: ""
+          tovalue:
+          fromvalue:
+          field: ""
+        fromdatelicenseval: 0001-01-01T00:00:00Z
+      runFromLastJobTime: false
+  - key: AWSSecurityGroupName
+    value: {}
+    required: false
+    description: Name of the AWS Security Group to update with the IPs.
+    playbookInputQuery:
+  - key: GCPFirewallName
+    value: {}
+    required: false
+    description: Name of the GCP Firewall to update with the IPs.
+    playbookInputQuery:
+  - key: OktaZoneID
+    value: {}
+    required: false
+    description: ID of the Okta Zone to update. Use !okta-list-zones to obtain
+    playbookInputQuery:
 outputs: []
 fromversion: 5.5.0
 tests:
-- No tests
+  - No tests
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

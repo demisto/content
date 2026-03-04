@@ -20,7 +20,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "156"
+        - "156"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -80,7 +80,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "153"
+        - "153"
     scriptarguments:
       IPAddress:
         complex:
@@ -151,15 +151,15 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "153"
+        - "153"
       "yes":
-      - "155"
-      - "158"
+        - "155"
+        - "158"
     scriptarguments:
       brandname:
         simple: AutoFocus V2
     results:
-    - brandInstances
+      - brandInstances
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -191,7 +191,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "153"
+        - "153"
     scriptarguments:
       MD5:
         complex:
@@ -265,225 +265,221 @@ view: |-
     }
   }
 inputs:
-- key: IPAddress
-  value: {}
-  required: false
-  description: |-
-    One or more IP addresses to search for in Autofocus simple mode search.
+  - key: IPAddress
+    value: {}
+    required: false
+    description: |-
+      One or more IP addresses to search for in Autofocus simple mode search.
 
-    Separate multiple search values by commas only (without spaces or any special characters).
-  playbookInputQuery:
-- key: URLDomain
-  value: {}
-  required: false
-  description: |-
-    One or more URLs and/or domains to search for in Autofocus simple mode search.
+      Separate multiple search values by commas only (without spaces or any special characters).
+    playbookInputQuery:
+  - key: URLDomain
+    value: {}
+    required: false
+    description: |-
+      One or more URLs and/or domains to search for in Autofocus simple mode search.
 
-    Separate multiple search values by commas only (without spaces or any special characters).
-  playbookInputQuery:
-- key: MD5
-  value: {}
-  required: false
-  description: |-
-    One or more MD5 file hashes to search for in Autofocus simple mode search.
+      Separate multiple search values by commas only (without spaces or any special characters).
+    playbookInputQuery:
+  - key: MD5
+    value: {}
+    required: false
+    description: |-
+      One or more MD5 file hashes to search for in Autofocus simple mode search.
 
-    Separate multiple search values by commas only (without spaces or any special characters).
-  playbookInputQuery:
-- key: SHA256
-  value: {}
-  required: false
-  description: |-
-    One or more SHA256 file hashes to search for in Autofocus simple mode search.
+      Separate multiple search values by commas only (without spaces or any special characters).
+    playbookInputQuery:
+  - key: SHA256
+    value: {}
+    required: false
+    description: |-
+      One or more SHA256 file hashes to search for in Autofocus simple mode search.
 
-    Separate multiple search values by commas only (without spaces or any special characters).
-  playbookInputQuery:
-- key: SHA1
-  value: {}
-  required: false
-  description: |-
-    One or more SHA1 file hashes to search for in Autofocus simple mode search.
+      Separate multiple search values by commas only (without spaces or any special characters).
+    playbookInputQuery:
+  - key: SHA1
+    value: {}
+    required: false
+    description: |-
+      One or more SHA1 file hashes to search for in Autofocus simple mode search.
 
-    Separate multiple search values by commas only (without spaces or any special characters).
-  playbookInputQuery:
-- key: Search Type
-  value: {}
-  required: true
-  description: "Which Autofocus search types should be executed. \n\nPossible values are session, sample, tag, or all. Session and sample are the recommended search types for this playbook. \n\nSample-based search detects threat indicators or identifiers within samples sent to WildFire for analysis. \n\nSession-based search detects threat indicators or identifiers within various context details and session data provided by samples during sample submission. \n\nTag-based search identifies the most popular tags."
-  playbookInputQuery:
-- key: Scope
-  value: {}
-  required: true
-  description: Search scope for sample and session. Possible values are industry, organization, global, or all.
-  playbookInputQuery:
-- key: SampleQuery
-  value: {}
-  required: false
-  description: |-
-    Use the Autofocus advanced search mode to leverage a variety of query options within a sample search. Advanced search requires you to specify all field names, parameters, and operators.
+      Separate multiple search values by commas only (without spaces or any special characters).
+    playbookInputQuery:
+  - key: Search Type
+    value: {}
+    required: true
+    description: "Which Autofocus search types should be executed. \n\nPossible values are session, sample, tag, or all. Session and sample are the recommended search types for this playbook. \n\nSample-based search detects threat indicators or identifiers within samples sent to WildFire for analysis. \n\nSession-based search detects threat indicators or identifiers within various context details and session data provided by samples during sample submission. \n\nTag-based search identifies the most popular tags."
+    playbookInputQuery:
+  - key: Scope
+    value: {}
+    required: true
+    description: Search scope for sample and session. Possible values are industry, organization, global, or all.
+    playbookInputQuery:
+  - key: SampleQuery
+    value: {}
+    required: false
+    description: |-
+      Use the Autofocus advanced search mode to leverage a variety of query options within a sample search. Advanced search requires you to specify all field names, parameters, and operators.
 
-    The query currently supports only JSON format which can be extracted from the Autofocus web console API radio button.
-  playbookInputQuery:
-- key: Sample first seen
-  value: {}
-  required: false
-  description: |-
-    Narrow down a sample-based search by specifying the timestamp samples were first uploaded to WildFire for analysis (indicators will be searched within samples after this timestamp).
+      The query currently supports only JSON format which can be extracted from the Autofocus web console API radio button.
+    playbookInputQuery:
+  - key: Sample first seen
+    value: {}
+    required: false
+    description: |-
+      Narrow down a sample-based search by specifying the timestamp samples were first uploaded to WildFire for analysis (indicators will be searched within samples after this timestamp).
 
-    Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
-  playbookInputQuery:
-- key: Sample last modified
-  value: {}
-  required: false
-  description: |-
-    Narrow down a sample-based search by specifying the timestamp samples were last modified (indicators will be searched within samples after this timestamp).
+      Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
+    playbookInputQuery:
+  - key: Sample last modified
+    value: {}
+    required: false
+    description: |-
+      Narrow down a sample-based search by specifying the timestamp samples were last modified (indicators will be searched within samples after this timestamp).
 
-    Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
-  playbookInputQuery:
-- key: SessionQuery
-  value: {}
-  required: false
-  description: |-
-    Use the Autofocus advanced search mode to leverage a variety of query options within a session search. Advanced search requires you to specify all field names, parameters, and operators.
+      Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
+    playbookInputQuery:
+  - key: SessionQuery
+    value: {}
+    required: false
+    description: |-
+      Use the Autofocus advanced search mode to leverage a variety of query options within a session search. Advanced search requires you to specify all field names, parameters, and operators.
 
-    The query currently supports only JSON format which can be extracted from the Autofocus web console API radio button.
-  playbookInputQuery:
-- key: Sessions time before
-  value: {}
-  required: false
-  description: |-
-    Narrow down a session-based search by specifying the query end timestamp (indicators will be searched within sessions before this timestamp).
+      The query currently supports only JSON format which can be extracted from the Autofocus web console API radio button.
+    playbookInputQuery:
+  - key: Sessions time before
+    value: {}
+    required: false
+    description: |-
+      Narrow down a session-based search by specifying the query end timestamp (indicators will be searched within sessions before this timestamp).
 
-    Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
-  playbookInputQuery:
-- key: Sessions time after
-  value: {}
-  required: false
-  description: |-
-    Narrow down a session-based search by specifying the query start timestamp (indicators will be searched within sessions after this timestamp).
+      Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
+    playbookInputQuery:
+  - key: Sessions time after
+    value: {}
+    required: false
+    description: |-
+      Narrow down a session-based search by specifying the query start timestamp (indicators will be searched within sessions after this timestamp).
 
-    Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
-  playbookInputQuery:
-- key: Wildfire Verdict
-  value: {}
-  required: false
-  description: "Filter results by WildFire classification assigned to samples based on properties, behaviors, and activities observed for files or email links during static and dynamic analysis.\n\nPossible values are malware, benign, phishing, and greyware. "
-  playbookInputQuery:
+      Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
+    playbookInputQuery:
+  - key: Wildfire Verdict
+    value: {}
+    required: false
+    description: "Filter results by WildFire classification assigned to samples based on properties, behaviors, and activities observed for files or email links during static and dynamic analysis.\n\nPossible values are malware, benign, phishing, and greyware. "
+    playbookInputQuery:
 outputs:
-- contextPath: Autofocus.Samples.HuntingResults
-  description: Sample objects containing relevant fields.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.Created
-  description: The date the file was created.
-  type: date
-- contextPath: Autofocus.Samples.HuntingResults.Finished
-  description: The date the file was finished.
-  type: date
-- contextPath: Autofocus.Samples.HuntingResults.FileName
-  description: The name of the file.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.FileType
-  description: The file type.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.SHA1
-  description: The SHA1 hash of the file.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.SHA256
-  description: The SHA256 hash of the file.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.MD5
-  description: The MD5 hash of the file.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.Region
-  description: The region of the sample.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.Tags
-  description: The tags attached to the sample.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.TagGroups
-  description: The groups of relevant tags.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.Verdict
-  description: The verdict of the sample.
-  type: number
-- contextPath: Autofocus.Samples.HuntingResults.Artifact.confidence
-  description: The decision confidence.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.Artifact.indicator
-  description: The indicator that was tested.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.Artifact.indicator_type
-  description: 'The indicator type, for example: Mutex, User agent, IPv4, Domain.'
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.Artifact.b
-  description: How many set the artifact as benign.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.Artifact.g
-  description: How many set the artifact as grayware.
-  type: string
-- contextPath: Autofocus.Samples.HuntingResults.Artifact.m
-  description: How many set the artifact as malicious.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults
-  description: Session objects containing relevant fields.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.Seen
-  description: The seen date.
-  type: date
-- contextPath: Autofocus.Sessions.HuntingResults.UploadSource
-  description: The source of the uploaded sample.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.ID
-  description: The ID of the session. Used to get session details.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.FileName
-  description: The name of the file.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.FileURL
-  description: The URL of the file.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.SHA256
-  description: The SHA256 hash of the file.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.Industry
-  description: The related industry.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.Region
-  description: The regions of the sessions.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.Tags
-  description: The relevant tags.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.app
-  description: The associated application name.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.dst_ip
-  description: The associated destination IP.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.src_ip
-  description: The associated source IP.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.dst_countrycode
-  description: The associated destination country code.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.src_countrycode
-  description: The associated source country code.
-  type: string
-- contextPath: Autofocus.Sessions.HuntingResults.dst_port
-  description: The associated destination port number.
-  type: number
-- contextPath: Autofocus.Sessions.HuntingResults.src_port
-  description: The associated source port number.
-  type: number
-- contextPath: Autofocus.Sessions.HuntingResults.user_id
-  description: The recipient user ID.
-  type: string
+  - contextPath: Autofocus.Samples.HuntingResults
+    description: Sample objects containing relevant fields.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.Created
+    description: The date the file was created.
+    type: date
+  - contextPath: Autofocus.Samples.HuntingResults.Finished
+    description: The date the file was finished.
+    type: date
+  - contextPath: Autofocus.Samples.HuntingResults.FileName
+    description: The name of the file.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.FileType
+    description: The file type.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.SHA1
+    description: The SHA1 hash of the file.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.SHA256
+    description: The SHA256 hash of the file.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.MD5
+    description: The MD5 hash of the file.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.Region
+    description: The region of the sample.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.Tags
+    description: The tags attached to the sample.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.TagGroups
+    description: The groups of relevant tags.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.Verdict
+    description: The verdict of the sample.
+    type: number
+  - contextPath: Autofocus.Samples.HuntingResults.Artifact.confidence
+    description: The decision confidence.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.Artifact.indicator
+    description: The indicator that was tested.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.Artifact.indicator_type
+    description: 'The indicator type, for example: Mutex, User agent, IPv4, Domain.'
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.Artifact.b
+    description: How many set the artifact as benign.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.Artifact.g
+    description: How many set the artifact as grayware.
+    type: string
+  - contextPath: Autofocus.Samples.HuntingResults.Artifact.m
+    description: How many set the artifact as malicious.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults
+    description: Session objects containing relevant fields.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.Seen
+    description: The seen date.
+    type: date
+  - contextPath: Autofocus.Sessions.HuntingResults.UploadSource
+    description: The source of the uploaded sample.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.ID
+    description: The ID of the session. Used to get session details.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.FileName
+    description: The name of the file.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.FileURL
+    description: The URL of the file.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.SHA256
+    description: The SHA256 hash of the file.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.Industry
+    description: The related industry.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.Region
+    description: The regions of the sessions.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.Tags
+    description: The relevant tags.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.app
+    description: The associated application name.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.dst_ip
+    description: The associated destination IP.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.src_ip
+    description: The associated source IP.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.dst_countrycode
+    description: The associated destination country code.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.src_countrycode
+    description: The associated source country code.
+    type: string
+  - contextPath: Autofocus.Sessions.HuntingResults.dst_port
+    description: The associated destination port number.
+    type: number
+  - contextPath: Autofocus.Sessions.HuntingResults.src_port
+    description: The associated source port number.
+    type: number
+  - contextPath: Autofocus.Sessions.HuntingResults.user_id
+    description: The recipient user ID.
+    type: string
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 6.5.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

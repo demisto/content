@@ -29,7 +29,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     separatecontext: false
     view: |-
       {
@@ -57,37 +57,37 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "22"
+        - "22"
       "yes":
-      - "8"
+        - "8"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: containsGeneral
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Panorama
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: containsGeneral
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Panorama
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                      accessor: brand
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -140,7 +140,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+        - "15"
     scriptarguments:
       category:
         simple: content
@@ -175,7 +175,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "26"
+        - "26"
     scriptarguments:
       category:
         simple: content
@@ -211,7 +211,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+        - "22"
     scriptarguments:
       job_id:
         simple: ${Panorama.Content.Install.JobID}
@@ -244,7 +244,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     scriptarguments:
       assetid: {}
       closeNotes:
@@ -289,7 +289,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+        - "18"
     scriptarguments:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
@@ -338,56 +338,52 @@ view: |-
     }
   }
 inputs:
-- key: panorama_admin_email
-  value: {}
-  required: true
-  description: Panorama Admin Email Address.
-  playbookInputQuery:
-- key: smbshare
-  value: {}
-  required: true
-  description: SMB Shared folder name.
-  playbookInputQuery:
-- key: scpwildfire
-  value: {}
-  required: false
-  description: SCP folder for wildfire content update file.
-  playbookInputQuery:
-- key: scpcontents
-  value: {}
-  required: true
-  description: SCP folder for contents content update file.
-  playbookInputQuery:
-- key: scpantivirus
-  value: {}
-  required: true
-  description: SCP folder for Anti-Virus content update file.
-  playbookInputQuery:
-- key: smbpath
-  value: {}
-  required: true
-  description: SMB path to the content files files.
-  playbookInputQuery:
+  - key: panorama_admin_email
+    value: {}
+    required: true
+    description: Panorama Admin Email Address.
+    playbookInputQuery:
+  - key: smbshare
+    value: {}
+    required: true
+    description: SMB Shared folder name.
+    playbookInputQuery:
+  - key: scpwildfire
+    value: {}
+    required: false
+    description: SCP folder for wildfire content update file.
+    playbookInputQuery:
+  - key: scpcontents
+    value: {}
+    required: true
+    description: SCP folder for contents content update file.
+    playbookInputQuery:
+  - key: scpantivirus
+    value: {}
+    required: true
+    description: SCP folder for Anti-Virus content update file.
+    playbookInputQuery:
+  - key: smbpath
+    value: {}
+    required: true
+    description: SMB path to the content files files.
+    playbookInputQuery:
 outputs: []
 fromversion: 5.0.0
 tests:
-- PAN-OS URL Filtering enrichment - Test
-- Panorama Best Practise - Test
-- PAN-OS - Block IP - Static Address Group Test
-- PAN-OS - Block URL - Custom URL Category Test
-- PAN-OS - Block IP and URL - External Dynamic List v2 Test
-- palo_alto_firewall_test_pb
-- PAN-OS Create Or Edit Rule Test
-- palo_alto_panorama_test_pb
-- PAN-OS EDL Setup v3 Test
-- PAN-OS Query Logs For Indicators Test
-- PAN-OS DAG Configuration Test
-- Panorama Query Logs - Test
-- PAN-OS - Block IP - Custom Block Rule Test
+  - PAN-OS URL Filtering enrichment - Test
+  - Panorama Best Practise - Test
+  - PAN-OS - Block IP - Static Address Group Test
+  - PAN-OS - Block URL - Custom URL Category Test
+  - PAN-OS - Block IP and URL - External Dynamic List v2 Test
+  - palo_alto_firewall_test_pb
+  - PAN-OS Create Or Edit Rule Test
+  - palo_alto_panorama_test_pb
+  - PAN-OS EDL Setup v3 Test
+  - PAN-OS Query Logs For Indicators Test
+  - PAN-OS DAG Configuration Test
+  - Panorama Query Logs - Test
+  - PAN-OS - Block IP - Custom Block Rule Test
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

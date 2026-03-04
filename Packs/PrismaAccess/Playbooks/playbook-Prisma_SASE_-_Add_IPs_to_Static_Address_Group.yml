@@ -19,7 +19,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -51,7 +51,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     scriptarguments:
       folder:
         complex:
@@ -92,18 +92,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+        - "3"
       "yes":
-      - "4"
+        - "4"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.IP
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.IP
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -161,18 +161,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+        - "3"
       "yes":
-      - "1"
+        - "1"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.AddressGroupName
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.AddressGroupName
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -202,27 +202,27 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+        - "3"
       "yes":
-      - "8"
+        - "8"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PrismaSase.AddressGroup.id
-            iscontext: true
-      - - operator: notIn
-          left:
-            value:
-              simple: inputs.IP
-            iscontext: true
-          right:
-            value:
-              simple: PrismaSase.AddressGroup.addresses
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: PrismaSase.AddressGroup.id
+                  iscontext: true
+          -   - operator: notIn
+                left:
+                  value:
+                    simple: inputs.IP
+                  iscontext: true
+                right:
+                  value:
+                    simple: PrismaSase.AddressGroup.addresses
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -253,7 +253,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     scriptarguments:
       folder:
         complex:
@@ -266,7 +266,7 @@ tasks:
         complex:
           root: inputs.IP
           transformers:
-          - operator: uniq
+            - operator: uniq
       tsg_id:
         complex:
           root: inputs.TSGID
@@ -301,7 +301,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       folders:
         simple: Remote Networks, Mobile Users, Service Connections
@@ -339,7 +339,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+        - "6"
     scriptarguments:
       AutoCommit:
         simple: Else
@@ -350,17 +350,17 @@ tasks:
         complex:
           root: inputs.IP
           filters:
-          - - operator: notIn
-              left:
-                value:
-                  simple: inputs.IP
-                iscontext: true
-              right:
-                value:
-                  simple: PrismaSase.AddressGroup.addresses
-                iscontext: true
+            -   - operator: notIn
+                  left:
+                    value:
+                      simple: inputs.IP
+                    iscontext: true
+                  right:
+                    value:
+                      simple: PrismaSase.AddressGroup.addresses
+                    iscontext: true
           transformers:
-          - operator: uniq
+            - operator: uniq
       Type:
         simple: ip_netmask
       TSGID:
@@ -403,34 +403,34 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+        - "3"
       Auto Commit:
-      - "7"
+        - "7"
       Manual:
-      - "12"
+        - "12"
     separatecontext: false
     conditions:
-    - label: Auto Commit
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.AutoCommit
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    - label: Manual
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.AutoCommit
-            iscontext: true
-          right:
-            value:
-              simple: "False"
+      - label: Auto Commit
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.AutoCommit
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
+      - label: Manual
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.AutoCommit
+                  iscontext: true
+                right:
+                  value:
+                    simple: "False"
     continueonerrortype: ""
     view: |-
       {
@@ -460,9 +460,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+        - "3"
       Push:
-      - "7"
+        - "7"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -490,8 +490,8 @@ tasks:
         completeafterv2: true
         completeaftersla: false
       replyOptions:
-      - Push
-      - "No"
+        - Push
+        - "No"
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -510,87 +510,83 @@ view: |-
     }
   }
 inputs:
-- key: TSGID
-  value: {}
-  required: false
-  description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
-  playbookInputQuery:
-- key: AutoCommit
-  value: {}
-  required: false
-  description: |-
-    Possible Values:
-    True -> Will commit and push configuration.
-    False -> Manual push will be required.
-    Else --> Will ignore the push section and continue the playbook.
-  playbookInputQuery:
-- key: IP
-  value: {}
-  required: false
-  description: A comma-separated list of IP addresses.
-  playbookInputQuery:
-- key: AddressGroupName
-  value: {}
-  required: false
-  description: The address group name to be appanded.
-  playbookInputQuery:
-- key: Folder
-  value:
-    simple: Shared
-  required: false
-  description: |-
-    The configuration folder group setting.
-    The default value is 'Shared'.
-  playbookInputQuery:
+  - key: TSGID
+    value: {}
+    required: false
+    description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+    playbookInputQuery:
+  - key: AutoCommit
+    value: {}
+    required: false
+    description: |-
+      Possible Values:
+      True -> Will commit and push configuration.
+      False -> Manual push will be required.
+      Else --> Will ignore the push section and continue the playbook.
+    playbookInputQuery:
+  - key: IP
+    value: {}
+    required: false
+    description: A comma-separated list of IP addresses.
+    playbookInputQuery:
+  - key: AddressGroupName
+    value: {}
+    required: false
+    description: The address group name to be appanded.
+    playbookInputQuery:
+  - key: Folder
+    value:
+      simple: Shared
+    required: false
+    description: |-
+      The configuration folder group setting.
+      The default value is 'Shared'.
+    playbookInputQuery:
 outputs:
-- contextPath: PrismaSase.AddressGroup
-  description: The root context key for Prisma SASE integration output.
-  type: unknown
-- contextPath: PrismaSase.AddressGroup.id
-  description: The address group ID.
-- contextPath: PrismaSase.AddressGroup.name
-  description: The address group name.
-- contextPath: PrismaSase.AddressGroup.description
-  description: The address group description.
-- contextPath: PrismaSase.AddressGroup.addresses
-  description: The address group addresses.
-- contextPath: PrismaSase.AddressGroup.dynamic_filter
-  description: The address group filter.
-- contextPath: PrismaSase
-  description: The root context key for Prisma SASE integration output.
-  type: unknown
-- contextPath: PrismaSase.Address
-  description: Created address object.
-- contextPath: PrismaSase.Address.description
-  description: Address description.
-- contextPath: PrismaSase.Address.folder
-  description: Address folder.
-- contextPath: PrismaSase.Address.id
-  description: Address ID.
-- contextPath: PrismaSase.Address.type
-  description: Address type.
-- contextPath: PrismaSase.Address.address_value
-  description: Address value.
-- contextPath: PrismaSase.Address.name
-  description: Address name.
-- contextPath: PrismaSase.CandidateConfig
-  description: Configuration job object.
-  type: unknown
-- contextPath: PrismaSase.CandidateConfig.job_id
-  description: Configuration job ID.
-- contextPath: PrismaSase.CandidateConfig.result
-  description: The configuration push result, e.g. OK, FAIL.
-- contextPath: PrismaSase.CandidateConfig.details
-  description: The configuration push details.
-- contextPath: PrismaSase.AddressGroup.folder
-  description: The address group folder.
+  - contextPath: PrismaSase.AddressGroup
+    description: The root context key for Prisma SASE integration output.
+    type: unknown
+  - contextPath: PrismaSase.AddressGroup.id
+    description: The address group ID.
+  - contextPath: PrismaSase.AddressGroup.name
+    description: The address group name.
+  - contextPath: PrismaSase.AddressGroup.description
+    description: The address group description.
+  - contextPath: PrismaSase.AddressGroup.addresses
+    description: The address group addresses.
+  - contextPath: PrismaSase.AddressGroup.dynamic_filter
+    description: The address group filter.
+  - contextPath: PrismaSase
+    description: The root context key for Prisma SASE integration output.
+    type: unknown
+  - contextPath: PrismaSase.Address
+    description: Created address object.
+  - contextPath: PrismaSase.Address.description
+    description: Address description.
+  - contextPath: PrismaSase.Address.folder
+    description: Address folder.
+  - contextPath: PrismaSase.Address.id
+    description: Address ID.
+  - contextPath: PrismaSase.Address.type
+    description: Address type.
+  - contextPath: PrismaSase.Address.address_value
+    description: Address value.
+  - contextPath: PrismaSase.Address.name
+    description: Address name.
+  - contextPath: PrismaSase.CandidateConfig
+    description: Configuration job object.
+    type: unknown
+  - contextPath: PrismaSase.CandidateConfig.job_id
+    description: Configuration job ID.
+  - contextPath: PrismaSase.CandidateConfig.result
+    description: The configuration push result, e.g. OK, FAIL.
+  - contextPath: PrismaSase.CandidateConfig.details
+    description: The configuration push details.
+  - contextPath: PrismaSase.AddressGroup.folder
+    description: The address group folder.
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 6.8.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

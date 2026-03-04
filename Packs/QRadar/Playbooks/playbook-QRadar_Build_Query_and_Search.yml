@@ -24,7 +24,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '8'
+        - '8'
     separatecontext: false
     view: |-
       {
@@ -56,7 +56,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       base_field_match:
         simple: ${inputs.BaseFieldMatch}
@@ -117,7 +117,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '6'
+        - '6'
     scriptarguments:
       SearchResults:
         simple: ${QRadar.SearchEvents}
@@ -156,22 +156,22 @@ tasks:
       description: "Use hunting results?"
     nexttasks:
       '#default#':
-      - '6'
+        - '6'
       yes:
-      - '4'
+        - '4'
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.UseHuntingResults
-            iscontext: true
-          right:
-            value:
-              simple: 'True'
-          ignorecase: true
+      - label: yes
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.UseHuntingResults
+                  iscontext: true
+                right:
+                  value:
+                    simple: 'True'
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -229,21 +229,21 @@ tasks:
       description: "Are there search results?"
     nexttasks:
       '#default#':
-      - '6'
+        - '6'
       yes:
-      - '5'
+        - '5'
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: QRadar.SearchEvents
-            iscontext: true
-          right:
-            value:
-              simple: 'true'
+      - label: yes
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: QRadar.SearchEvents
+                  iscontext: true
+                right:
+                  value:
+                    simple: 'true'
     view: |-
       {
         "position": {
@@ -273,28 +273,28 @@ tasks:
       description: "Are there values to search?"
     nexttasks:
       '#default#':
-      - '6'
+        - '6'
       yes:
-      - '3'
+        - '3'
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.BaseValuesToSearch
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.FirstAdditionalValues
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.SecondAdditionalValues
-            iscontext: true
+      - label: yes
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.BaseValuesToSearch
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.FirstAdditionalValues
+                  iscontext: true
+              - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.SecondAdditionalValues
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -325,7 +325,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       interval_in_seconds:
         simple: "1"
@@ -335,7 +335,7 @@ tasks:
         complex:
           root: QRadarQuery
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -366,126 +366,122 @@ view: |-
     }
   }
 inputs:
-- key: BaseValuesToSearch
-  value: {}
-  required: false
-  description: The values of the first field to search. This can be a single value or a comma-separated list of values. For example, admin1,admin2
-  playbookInputQuery:
-- key: BaseFieldsToSearch
-  value: {}
-  required: false
-  description: The field names of the first field to search. This can be a single value or a comma-separated list of values. For example, username,user
-  playbookInputQuery:
-- key: BaseFieldState
-  value:
-    simple: include
-  required: false
-  description: The state of the first field to search, meaning whether the values in the field be included or excluded. Valid options are include or exclude.
-  playbookInputQuery:
-- key: BaseFieldMatch
-  value:
-    simple: exact
-  required: false
-  description: Whether the values of the first field should be an exact match or a partial match. Valid options are exact or partial. When choosing exact, the AQL query will use the = operator. When choosing partial, the AQL query will ILIKE and add '%%' to the values. Notice that if you choose exact you will have to specify the BaseFieldsToSearch as well.
-  playbookInputQuery:
-- key: FirstAdditionalValues
-  value: {}
-  required: false
-  description: The values of the second field to search. This can be a single value or a comma-separated list of values. For example admin1,admin2
-  playbookInputQuery:
-- key: FirstAdditionalFields
-  value: {}
-  required: false
-  description: The field names of the second field to search. This can be a single value or a comma-separated list of values. For example admin1,admin2
-  playbookInputQuery:
-- key: FirstAdditionalFieldState
-  value:
-    simple: include
-  required: false
-  description: The state of the second field to search, meaning whether the values in the field should be included or excluded. Valid options are include or exclude. Notice that if you choose exact you will have to specify the FirstAdditionalFields as well.
-  playbookInputQuery:
-- key: FirstAdditionalFieldMatch
-  value:
-    simple: exact
-  required: false
-  description: Whether the values of the second field should be an exact match or a partial match. Valid options are exact or partial.
-  playbookInputQuery:
-- key: SecondAdditionalValues
-  value: {}
-  required: false
-  description: The values of the third field to search. This can be a single value or a comma-separated list of values. For example admin1,admin2
-  playbookInputQuery:
-- key: SecondAdditionalFields
-  value: {}
-  required: false
-  description: The field names of the third field to search. This can be a single value or a comma-separated list of values. For example username,user
-  playbookInputQuery:
-- key: SecondAdditionalFieldState
-  value:
-    simple: include
-  required: false
-  description: The state of the third field to search, meaning should the values in the field be included or excluded. Valid options are include or exclude.
-  playbookInputQuery:
-- key: SecondAdditionalFieldMatch
-  value:
-    simple: exact
-  required: false
-  description: Should the values of the third field be an exact match or a partial match. Valid options are exact or partial. When choosing exact, the AQL query will use the = operator. When choosing partial, the AQL query will ILIKE and add '%%' to the values. Notice that if you choose exact you will have to specify the SecondAdditionalFields as well.
-  playbookInputQuery:
-- key: SelectFields
-  value:
-    simple: DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),sourceip,destinationip,username
-  required: false
-  description: |-
-    The list of fields to select within the AQL query.
-    The default fields are
-    DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),sourceip,destinationip,username
-  playbookInputQuery:
-- key: TimeFrame
-  value:
-    simple: LAST 1 HOURS
-  required: false
-  description: |-
-    Time frame as used in AQL.
-    For example:
-    LAST 7 DAYS
-    START '2019-09-25 15:51' STOP '2019-09-25 17:51'
-    For more examples, see IBM's AQL documentation.
-  playbookInputQuery:
-- key: UseHuntingResults
-  value:
-    simple: 'false'
-  required: false
-  description: The QRadar Get Hunting Results playbook outputs the detected hosts, users, and IP addresses detected in the QRadar search results.
-  playbookInputQuery:
+  - key: BaseValuesToSearch
+    value: {}
+    required: false
+    description: The values of the first field to search. This can be a single value or a comma-separated list of values. For example, admin1,admin2
+    playbookInputQuery:
+  - key: BaseFieldsToSearch
+    value: {}
+    required: false
+    description: The field names of the first field to search. This can be a single value or a comma-separated list of values. For example, username,user
+    playbookInputQuery:
+  - key: BaseFieldState
+    value:
+      simple: include
+    required: false
+    description: The state of the first field to search, meaning whether the values in the field be included or excluded. Valid options are include or exclude.
+    playbookInputQuery:
+  - key: BaseFieldMatch
+    value:
+      simple: exact
+    required: false
+    description: Whether the values of the first field should be an exact match or a partial match. Valid options are exact or partial. When choosing exact, the AQL query will use the = operator. When choosing partial, the AQL query will ILIKE and add '%%' to the values. Notice that if you choose exact you will have to specify the BaseFieldsToSearch as well.
+    playbookInputQuery:
+  - key: FirstAdditionalValues
+    value: {}
+    required: false
+    description: The values of the second field to search. This can be a single value or a comma-separated list of values. For example admin1,admin2
+    playbookInputQuery:
+  - key: FirstAdditionalFields
+    value: {}
+    required: false
+    description: The field names of the second field to search. This can be a single value or a comma-separated list of values. For example admin1,admin2
+    playbookInputQuery:
+  - key: FirstAdditionalFieldState
+    value:
+      simple: include
+    required: false
+    description: The state of the second field to search, meaning whether the values in the field should be included or excluded. Valid options are include or exclude. Notice that if you choose exact you will have to specify the FirstAdditionalFields as well.
+    playbookInputQuery:
+  - key: FirstAdditionalFieldMatch
+    value:
+      simple: exact
+    required: false
+    description: Whether the values of the second field should be an exact match or a partial match. Valid options are exact or partial.
+    playbookInputQuery:
+  - key: SecondAdditionalValues
+    value: {}
+    required: false
+    description: The values of the third field to search. This can be a single value or a comma-separated list of values. For example admin1,admin2
+    playbookInputQuery:
+  - key: SecondAdditionalFields
+    value: {}
+    required: false
+    description: The field names of the third field to search. This can be a single value or a comma-separated list of values. For example username,user
+    playbookInputQuery:
+  - key: SecondAdditionalFieldState
+    value:
+      simple: include
+    required: false
+    description: The state of the third field to search, meaning should the values in the field be included or excluded. Valid options are include or exclude.
+    playbookInputQuery:
+  - key: SecondAdditionalFieldMatch
+    value:
+      simple: exact
+    required: false
+    description: Should the values of the third field be an exact match or a partial match. Valid options are exact or partial. When choosing exact, the AQL query will use the = operator. When choosing partial, the AQL query will ILIKE and add '%%' to the values. Notice that if you choose exact you will have to specify the SecondAdditionalFields as well.
+    playbookInputQuery:
+  - key: SelectFields
+    value:
+      simple: DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),sourceip,destinationip,username
+    required: false
+    description: |-
+      The list of fields to select within the AQL query.
+      The default fields are
+      DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),sourceip,destinationip,username
+    playbookInputQuery:
+  - key: TimeFrame
+    value:
+      simple: LAST 1 HOURS
+    required: false
+    description: |-
+      Time frame as used in AQL.
+      For example:
+      LAST 7 DAYS
+      START '2019-09-25 15:51' STOP '2019-09-25 17:51'
+      For more examples, see IBM's AQL documentation.
+    playbookInputQuery:
+  - key: UseHuntingResults
+    value:
+      simple: 'false'
+    required: false
+    description: The QRadar Get Hunting Results playbook outputs the detected hosts, users, and IP addresses detected in the QRadar search results.
+    playbookInputQuery:
 outputs:
-- contextPath: QRadar.SearchEvents
-  description: The result of the search.
-  type: string
-- contextPath: QRadar.DetectedUsers
-  description: Users detected based on the username field in your search.
-  type: string
-- contextPath: QRadar.DetectedInternalIPs
-  description: Internal IP addresses detected based on fields and inputs in your search.
-  type: string
-- contextPath: QRadar.DetectedExternalIPs
-  description: External IP addresses detected based on fields and inputs in your search.
-  type: string
-- contextPath: QRadar.DetectedInternalHosts
-  description: Internal host names detected based on hosts in your assets table. Note that the data accuracy depends on how the asset mapping is configured in QRadar.
-  type: string
-- contextPath: QRadar.DetectedExternalHosts
-  description: External host names detected based on hosts in your assets table. Note that the data accuracy depends on how the asset mapping is configured in QRadar.
-  type: string
+  - contextPath: QRadar.SearchEvents
+    description: The result of the search.
+    type: string
+  - contextPath: QRadar.DetectedUsers
+    description: Users detected based on the username field in your search.
+    type: string
+  - contextPath: QRadar.DetectedInternalIPs
+    description: Internal IP addresses detected based on fields and inputs in your search.
+    type: string
+  - contextPath: QRadar.DetectedExternalIPs
+    description: External IP addresses detected based on fields and inputs in your search.
+    type: string
+  - contextPath: QRadar.DetectedInternalHosts
+    description: Internal host names detected based on hosts in your assets table. Note that the data accuracy depends on how the asset mapping is configured in QRadar.
+    type: string
+  - contextPath: QRadar.DetectedExternalHosts
+    description: External host names detected based on hosts in your assets table. Note that the data accuracy depends on how the asset mapping is configured in QRadar.
+    type: string
 tests:
-- no test
+  - no test
 fromversion: 6.2.0
 contentitemexportablefields:
   contentitemfields: {}
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

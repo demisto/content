@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     separatecontext: false
     view: |-
       {
@@ -45,7 +45,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "28"
+        - "28"
     separatecontext: false
     view: |-
       {
@@ -74,7 +74,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "13"
+        - "13"
     scriptarguments:
       a: {}
       actor: {}
@@ -180,14 +180,14 @@ tasks:
           root: ${ListCompare
           accessor: LeftOnly}
           transformers:
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: /
-              fields:
-                value:
-                  simple: "-1"
+            - operator: Cut
+              args:
+                delimiter:
+                  value:
+                    simple: /
+                fields:
+                  value:
+                    simple: "-1"
     separatecontext: false
     view: |-
       {
@@ -241,7 +241,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "26"
+        - "26"
     scriptarguments:
       append: {}
       key:
@@ -252,12 +252,12 @@ tasks:
           root: ${inputs
           accessor: IP}
           transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: /32
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: /32
     separatecontext: false
     view: |-
       {
@@ -286,7 +286,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "13"
+        - "13"
     scriptarguments:
       field:
         simple: tags
@@ -297,14 +297,14 @@ tasks:
           root: ${ListCompare
           accessor: RightOnly}
           transformers:
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: /
-              fields:
-                value:
-                  simple: "-1"
+            - operator: Cut
+              args:
+                delimiter:
+                  value:
+                    simple: /
+                fields:
+                  value:
+                    simple: "-1"
     separatecontext: false
     view: |-
       {
@@ -333,8 +333,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "33"
-      - "32"
+        - "33"
+        - "32"
     scriptarguments:
       left:
         simple: ${AllowedCIDRs}
@@ -369,40 +369,40 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "13"
+        - "13"
       "yes":
-      - "38"
+        - "38"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Okta v2
-                accessor: brand
-            iscontext: true
-          right:
-            value:
-              simple: Okta v2
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Okta v2
+                      accessor: brand
+                  iscontext: true
+                right:
+                  value:
+                    simple: Okta v2
     view: |-
       {
         "position": {
@@ -429,18 +429,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "13"
+        - "13"
       "yes":
-      - "39"
+        - "39"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ListCompare.LeftOnly
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: ListCompare.LeftOnly
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -467,18 +467,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "13"
+        - "13"
       "yes":
-      - "25"
+        - "25"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ListCompare.RightOnly
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: ListCompare.RightOnly
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -505,30 +505,30 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "36"
+        - "36"
       "yes":
-      - "20"
+        - "20"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: Okta
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Okta.Zone.id
-                      iscontext: true
-                    right:
-                      value:
-                        simple: inputs.ZoneID
-                      iscontext: true
-                accessor: Zone.id
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: Okta
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: Okta.Zone.id
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: inputs.ZoneID
+                                iscontext: true
+                      accessor: Zone.id
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -555,7 +555,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "37"
+        - "37"
     separatecontext: false
     view: |-
       {
@@ -609,7 +609,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+        - "35"
     scriptarguments:
       ZoneID:
         simple: ${inputs.ZoneID}
@@ -643,7 +643,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       gatewayIPs:
         simple: ${AllowedCIDRs}
@@ -682,50 +682,46 @@ view: |-
     }
   }
 inputs:
-- key: ""
-  value: {}
-  required: false
-  description: ""
-  playbookInputQuery:
-    query: ""
-    queryEntity: indicators
-    results:
-    daterange:
-      fromdate: 0001-01-01T00:00:00Z
-      todate: 0001-01-01T00:00:00Z
-      period:
-        by: ""
-        byto: ""
-        byfrom: ""
-        tovalue:
-        fromvalue:
-        field: ""
-      fromdatelicenseval: 0001-01-01T00:00:00Z
-    runFromLastJobTime: true
-- key: IP
-  value: {}
-  required: true
-  description: IP addresses to set in the allow list
-  playbookInputQuery:
-- key: ZoneID
-  value: {}
-  required: true
-  description: ID of the Okta Zone to update. Use !okta-list-zones to obtain the available zones.
-  playbookInputQuery:
-- key: IndicatorTagName
-  value:
-    simple: Okta_Zone
-  required: true
-  description: Name of the Indicator Tag to apply to any IPs allowed by this playbook.
-  playbookInputQuery:
+  - key: ""
+    value: {}
+    required: false
+    description: ""
+    playbookInputQuery:
+      query: ""
+      queryEntity: indicators
+      results:
+      daterange:
+        fromdate: 0001-01-01T00:00:00Z
+        todate: 0001-01-01T00:00:00Z
+        period:
+          by: ""
+          byto: ""
+          byfrom: ""
+          tovalue:
+          fromvalue:
+          field: ""
+        fromdatelicenseval: 0001-01-01T00:00:00Z
+      runFromLastJobTime: true
+  - key: IP
+    value: {}
+    required: true
+    description: IP addresses to set in the allow list
+    playbookInputQuery:
+  - key: ZoneID
+    value: {}
+    required: true
+    description: ID of the Okta Zone to update. Use !okta-list-zones to obtain the available zones.
+    playbookInputQuery:
+  - key: IndicatorTagName
+    value:
+      simple: Okta_Zone
+    required: true
+    description: Name of the Indicator Tag to apply to any IPs allowed by this playbook.
+    playbookInputQuery:
 outputs: []
 fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

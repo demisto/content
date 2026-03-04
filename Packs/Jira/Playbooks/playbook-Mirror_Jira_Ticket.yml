@@ -19,7 +19,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "6"
+        - "6"
     separatecontext: false
     view: |-
       {
@@ -48,7 +48,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "11"
+        - "11"
     scriptarguments:
       dbotMirrorDirection:
         complex:
@@ -114,24 +114,24 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+        - "8"
       "yes":
-      - "12"
+        - "12"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: 'inputs.FieldPolling '
-                transformers:
-                - operator: toLowerCase
-            iscontext: true
-          right:
-            value:
-              simple: "true"
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: 'inputs.FieldPolling '
+                      transformers:
+                        - operator: toLowerCase
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
     view: |-
       {
         "position": {
@@ -159,7 +159,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       field:
         simple: jirastatus
@@ -204,56 +204,52 @@ view: |-
     }
   }
 inputs:
-- key: TicketId
-  value: {}
-  required: false
-  description: Jira Ticket ID to mirror.
-  playbookInputQuery:
-- key: MirrorInstanceName
-  value: {}
-  required: false
-  description: Set the mirror instance name to enable mirroring with Jira.
-  playbookInputQuery:
-- key: MirrorDirection
-  value: {}
-  required: false
-  description: "Set the mirror direction to one of the following values: \n1. In\n2. Out\n3. Both"
-  playbookInputQuery:
-- key: MirrorTags
-  value: {}
-  required: false
-  description: Set tags for mirror comments and files to Jira
-  playbookInputQuery:
-- key: 'FieldPolling '
-  value: {}
-  required: false
-  description: |
-    Set the value to true or false to determine if the FieldPolling sub-playbook will be executed in the context of a parent playbook.
-    This is useful in cases when it is needed to wait for the Jira issue to be resolved in order to continue the parent playbook.
-  playbookInputQuery:
-- key: FieldPollingInterval
-  value: {}
-  required: false
-  description: |-
-    Set interval time for the polling to run
-    (In minutes)
-  playbookInputQuery:
-- key: FieldPollingTimeout
-  value: {}
-  required: false
-  description: |2-
+  - key: TicketId
+    value: {}
+    required: false
+    description: Jira Ticket ID to mirror.
+    playbookInputQuery:
+  - key: MirrorInstanceName
+    value: {}
+    required: false
+    description: Set the mirror instance name to enable mirroring with Jira.
+    playbookInputQuery:
+  - key: MirrorDirection
+    value: {}
+    required: false
+    description: "Set the mirror direction to one of the following values: \n1. In\n2. Out\n3. Both"
+    playbookInputQuery:
+  - key: MirrorTags
+    value: {}
+    required: false
+    description: Set tags for mirror comments and files to Jira
+    playbookInputQuery:
+  - key: 'FieldPolling '
+    value: {}
+    required: false
+    description: |
+      Set the value to true or false to determine if the FieldPolling sub-playbook will be executed in the context of a parent playbook.
+      This is useful in cases when it is needed to wait for the Jira issue to be resolved in order to continue the parent playbook.
+    playbookInputQuery:
+  - key: FieldPollingInterval
+    value: {}
+    required: false
+    description: |-
+      Set interval time for the polling to run
+      (In minutes)
+    playbookInputQuery:
+  - key: FieldPollingTimeout
+    value: {}
+    required: false
+    description: |2-
 
-    Set the amount of time to poll the status of the ticket before declaring a timeout and resuming the playbook.
-    (In minutes)
-  playbookInputQuery:
+      Set the amount of time to poll the status of the ticket before declaring a timeout and resuming the playbook.
+      (In minutes)
+    playbookInputQuery:
 outputs: []
 tests:
-- No test.
+  - No test.
 fromversion: 6.0.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

@@ -19,7 +19,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     separatecontext: false
     view: |-
       {
@@ -77,14 +77,14 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "3"
+        - "3"
       "yes":
-      - "9"
+        - "9"
     scriptarguments:
       brandname:
         simple: WildFire-v2
     results:
-    - brandInstances
+      - brandInstances
     separatecontext: false
     view: |-
       {
@@ -114,51 +114,51 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+        - "3"
       "yes":
-      - "8"
+        - "8"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.File
-                filters:
-                - - operator: match
-                    left:
-                      value:
-                        simple: inputs.File.Type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PE64|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
-                    ignorecase: true
-                  - operator: match
-                    left:
-                      value:
-                        simple: inputs.File.Info
-                      iscontext: true
-                    right:
-                      value:
-                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PE64|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
-                    ignorecase: true
-                  - operator: match
-                    left:
-                      value:
-                        simple: inputs.File.Extension
-                      iscontext: true
-                    right:
-                      value:
-                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|EXE|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
-                    ignorecase: true
-                accessor: EntryID
-            iscontext: true
-          right:
-            value: {}
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: inputs.File
+                      filters:
+                        -   - operator: match
+                              left:
+                                value:
+                                  simple: inputs.File.Type
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PE64|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
+                              ignorecase: true
+                            - operator: match
+                              left:
+                                value:
+                                  simple: inputs.File.Info
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PE64|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
+                              ignorecase: true
+                            - operator: match
+                              left:
+                                value:
+                                  simple: inputs.File.Extension
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|EXE|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
+                              ignorecase: true
+                      accessor: EntryID
+                  iscontext: true
+                right:
+                  value: {}
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -188,7 +188,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+        - "6"
     scriptarguments:
       key:
         simple: File
@@ -225,7 +225,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     scriptarguments:
       extended_data:
         simple: "true"
@@ -272,18 +272,18 @@ tasks:
       description: 'Checks if there is a file available for detonation.'
     nexttasks:
       '#default#':
-      - "3"
+        - "3"
       "yes":
-      - "7"
+        - "7"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.File
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.File
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -313,7 +313,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       format:
         simple: pdf
@@ -351,24 +351,20 @@ view: |-
     }
   }
 inputs:
-- key: File
-  value: {}
-  required: false
-  description: The details of the file to detonate.
-  playbookInputQuery:
+  - key: File
+    value: {}
+    required: false
+    description: The details of the file to detonate.
+    playbookInputQuery:
 outputs:
-- contextPath: WildFire.Report
-  description: The Wildfire findings.
-  type: string
+  - contextPath: WildFire.Report
+    description: The Wildfire findings.
+    type: string
 tests:
-- No tests
+  - No tests
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
-- edr
-- cloud
-- cloud_runtime_security
+  - agentix
+  - xsiam
+  - edr
+  - cloud
+  - cloud_runtime_security

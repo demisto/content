@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "11"
+        - "11"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -48,34 +48,34 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "18"
+        - "18"
       "yes":
-      - "25"
+        - "25"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-          right:
-            value:
-              simple: Zendesk v2
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                              ignorecase: true
+                      accessor: brand
+                  iscontext: true
+                right:
+                  value:
+                    simple: Zendesk v2
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -105,21 +105,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "14"
+        - "14"
       "yes":
-      - "24"
+        - "24"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.CommentToAdd
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.CommentToAdd
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -149,7 +149,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+        - "19"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -178,20 +178,20 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Add comment to the ticket
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: longText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
+        - id: "0"
+          label: ""
+          labelarg:
+            simple: Add comment to the ticket
+          required: true
+          gridcolumns: []
+          defaultrows: []
+          type: longText
+          options: []
+          optionsarg: []
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: ""
+          readonly: false
       title: Add comment to the ticket
       description: ""
       sender: ""
@@ -218,7 +218,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+        - "18"
     scriptarguments:
       assignee_email:
         complex:
@@ -311,7 +311,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+        - "18"
     scriptarguments:
       comment:
         complex:
@@ -350,23 +350,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "18"
+        - "18"
       "yes":
-      - "13"
+        - "13"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.addCommentPerEndpoint
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.addCommentPerEndpoint
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -396,43 +396,43 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "22"
+        - "22"
       "yes":
-      - "23"
+        - "23"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.ZendeskPriority
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.ZendeskStatus
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.ZendeskSubject
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.ZendeskType
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.description
+                  iscontext: true
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.ZendeskPriority
+                  iscontext: true
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.ZendeskStatus
+                  iscontext: true
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.ZendeskSubject
+                  iscontext: true
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.ZendeskType
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -462,7 +462,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+        - "15"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -491,90 +491,90 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Enter ticket Subject
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: The value of the subject field for this ticket.
-        readonly: false
-      - id: "1"
-        label: ""
-        labelarg:
-          simple: Enter ticket description
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: longText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: Description of the ticket.
-        readonly: false
-      - id: "2"
-        label: ""
-        labelarg:
-          simple: Enter ticket Type
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
-        readonly: false
-      - id: "3"
-        label: ""
-        labelarg:
-          simple: Enter ticket Requester
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: The user who requested this ticket.
-        readonly: false
-      - id: "4"
-        label: ""
-        labelarg:
-          simple: Enter ticket Priority
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
-        readonly: false
-      - id: "5"
-        label: ""
-        labelarg:
-          simple: Enter ticket Status
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
-        readonly: false
+        - id: "0"
+          label: ""
+          labelarg:
+            simple: Enter ticket Subject
+          required: true
+          gridcolumns: []
+          defaultrows: []
+          type: shortText
+          options: []
+          optionsarg: []
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: The value of the subject field for this ticket.
+          readonly: false
+        - id: "1"
+          label: ""
+          labelarg:
+            simple: Enter ticket description
+          required: true
+          gridcolumns: []
+          defaultrows: []
+          type: longText
+          options: []
+          optionsarg: []
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: Description of the ticket.
+          readonly: false
+        - id: "2"
+          label: ""
+          labelarg:
+            simple: Enter ticket Type
+          required: true
+          gridcolumns: []
+          defaultrows: []
+          type: shortText
+          options: []
+          optionsarg: []
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
+          readonly: false
+        - id: "3"
+          label: ""
+          labelarg:
+            simple: Enter ticket Requester
+          required: true
+          gridcolumns: []
+          defaultrows: []
+          type: shortText
+          options: []
+          optionsarg: []
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: The user who requested this ticket.
+          readonly: false
+        - id: "4"
+          label: ""
+          labelarg:
+            simple: Enter ticket Priority
+          required: false
+          gridcolumns: []
+          defaultrows: []
+          type: shortText
+          options: []
+          optionsarg: []
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
+          readonly: false
+        - id: "5"
+          label: ""
+          labelarg:
+            simple: Enter ticket Status
+          required: false
+          gridcolumns: []
+          defaultrows: []
+          type: shortText
+          options: []
+          optionsarg: []
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
+          readonly: false
       title: Please provide the following details to open a ticket.
       description: ""
       sender: ""
@@ -601,7 +601,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+        - "18"
     scriptarguments:
       assignee_email:
         complex:
@@ -660,7 +660,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+        - "18"
     scriptarguments:
       comment:
         complex:
@@ -698,29 +698,29 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "20"
+        - "20"
       "yes":
-      - "21"
+        - "21"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.Action
-            iscontext: true
-          right:
-            value:
-              simple: NewTicket
-          ignorecase: true
-      - - operator: isEmpty
-          left:
-            value:
-              complex:
-                root: inputs.ZendeskTicketID
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.Action
+                  iscontext: true
+                right:
+                  value:
+                    simple: NewTicket
+                ignorecase: true
+          -   - operator: isEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.ZendeskTicketID
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -752,90 +752,86 @@ view: |-
     }
   }
 inputs:
-- key: ZendeskTicketID
-  value: {}
-  required: false
-  description: The ticket ID.
-  playbookInputQuery:
-- key: ZendeskAssigne
-  value: {}
-  required: false
-  description: The agent currently assigned to the ticket.
-  playbookInputQuery:
-- key: ZendeskCollaborators
-  value: {}
-  required: false
-  description: The users currently CC'ed on the ticket.
-  playbookInputQuery:
-- key: description
-  value: {}
-  required: true
-  description: The ticket description.
-  playbookInputQuery:
-- key: ZendeskPriority
-  value:
-    simple: high
-  required: false
-  description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
-  playbookInputQuery:
-- key: ZendeskRequester
-  value: {}
-  required: true
-  description: The user who requested this ticket.
-  playbookInputQuery:
-- key: ZendeskStatus
-  value: {}
-  required: false
-  description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
-  playbookInputQuery:
-- key: ZendeskSubject
-  value: {}
-  required: true
-  description: The value of the subject field for this ticket.
-  playbookInputQuery:
-- key: ZendeskTags
-  value: {}
-  required: false
-  description: The array of tags applied to this ticket.
-  playbookInputQuery:
-- key: ZendeskType
-  value: {}
-  required: true
-  description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
-  playbookInputQuery:
-- key: CommentToAdd
-  value: {}
-  required: false
-  description: Comment for the ticket.
-  playbookInputQuery:
-- key: addCommentPerEndpoint
-  value:
-    simple: "True"
-  required: false
-  description: 'Whether to add a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
-  playbookInputQuery:
-- key: Action
-  value: {}
-  required: false
-  description: 'Whether to open a new ticket or to add a new comment. Possible values: NewTicket/AddComment.'
-  playbookInputQuery:
+  - key: ZendeskTicketID
+    value: {}
+    required: false
+    description: The ticket ID.
+    playbookInputQuery:
+  - key: ZendeskAssigne
+    value: {}
+    required: false
+    description: The agent currently assigned to the ticket.
+    playbookInputQuery:
+  - key: ZendeskCollaborators
+    value: {}
+    required: false
+    description: The users currently CC'ed on the ticket.
+    playbookInputQuery:
+  - key: description
+    value: {}
+    required: true
+    description: The ticket description.
+    playbookInputQuery:
+  - key: ZendeskPriority
+    value:
+      simple: high
+    required: false
+    description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
+    playbookInputQuery:
+  - key: ZendeskRequester
+    value: {}
+    required: true
+    description: The user who requested this ticket.
+    playbookInputQuery:
+  - key: ZendeskStatus
+    value: {}
+    required: false
+    description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
+    playbookInputQuery:
+  - key: ZendeskSubject
+    value: {}
+    required: true
+    description: The value of the subject field for this ticket.
+    playbookInputQuery:
+  - key: ZendeskTags
+    value: {}
+    required: false
+    description: The array of tags applied to this ticket.
+    playbookInputQuery:
+  - key: ZendeskType
+    value: {}
+    required: true
+    description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
+    playbookInputQuery:
+  - key: CommentToAdd
+    value: {}
+    required: false
+    description: Comment for the ticket.
+    playbookInputQuery:
+  - key: addCommentPerEndpoint
+    value:
+      simple: "True"
+    required: false
+    description: 'Whether to add a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
+    playbookInputQuery:
+  - key: Action
+    value: {}
+    required: false
+    description: 'Whether to open a new ticket or to add a new comment. Possible values: NewTicket/AddComment.'
+    playbookInputQuery:
 outputs:
-- contextPath: Zendesk.Ticket.id
-  description: The ticket ID.
+  - contextPath: Zendesk.Ticket.id
+    description: The ticket ID.
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 marketplaces:
-- xsoar
-- marketplacev2
-- platform
+  - xsoar
+  - marketplacev2
+  - platform
 fromversion: 6.8.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
-- edr
-- cloud
-- cloud_runtime_security
+  - agentix
+  - xsiam
+  - edr
+  - cloud
+  - cloud_runtime_security

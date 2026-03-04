@@ -2,9 +2,7 @@ id: NetOps - Upgrade PAN-OS Firewall Device
 version: -1
 fromversion: 5.0.0
 name: NetOps - Upgrade PAN-OS Firewall Device
-description: 'Network operations playbook that upgrades the firewall.
-  You must have Superuser permissions to update the PAN-OS version.
-  Note: This playbook should only be used for minor version upgrades. Major version upgrades will not work due to a change in the API key.'
+description: 'Network operations playbook that upgrades the firewall. You must have Superuser permissions to update the PAN-OS version. Note: This playbook should only be used for minor version upgrades. Major version upgrades will not work due to a change in the API key.'
 starttaskid: "0"
 tasks:
   "0":
@@ -20,7 +18,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     view: |-
       {
@@ -47,7 +45,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - "36"
+        - "36"
     scriptarguments:
       target: {}
     separatecontext: false
@@ -62,16 +60,16 @@ tasks:
     timertriggers: []
     ignoreworker: false
     fieldMapping:
-    - incidentfield: Current Firewall Version
-      output:
-        complex:
-          root: Panorama
-          accessor: Device.Info.Version
-    - incidentfield: Firewall Model
-      output:
-        complex:
-          root: Panorama
-          accessor: Device.Info.Model
+      - incidentfield: Current Firewall Version
+        output:
+          complex:
+            root: Panorama
+            accessor: Device.Info.Version
+      - incidentfield: Firewall Model
+        output:
+          complex:
+            root: Panorama
+            accessor: Device.Info.Model
   "36":
     id: "36"
     taskid: da298286-0c26-42e1-81ca-0ec9a67b952e
@@ -87,7 +85,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "37"
+        - "37"
     separatecontext: true
     loop:
       iscommand: false
@@ -139,18 +137,14 @@ view: |-
     }
   }
 inputs:
-- key: target_version
-  value: {}
-  required: true
-  description: Target PAN-OS version to upgrade.
+  - key: target_version
+    value: {}
+    required: true
+    description: Target PAN-OS version to upgrade.
 outputs: []
 tests:
-- No Tests
+  - No Tests
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
-- cloud_posture
+  - agentix
+  - xsiam
+  - cloud_posture

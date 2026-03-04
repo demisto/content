@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "35"
+        - "35"
     separatecontext: false
     view: |-
       {
@@ -70,7 +70,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+        - "30"
     separatecontext: false
     view: |-
       {
@@ -98,7 +98,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "31"
+        - "31"
     separatecontext: false
     view: |-
       {
@@ -130,7 +130,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "32"
+        - "32"
     separatecontext: false
     view: |-
       {
@@ -163,7 +163,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "33"
+        - "33"
     separatecontext: false
     view: |-
       {
@@ -195,7 +195,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "34"
+        - "34"
     separatecontext: false
     view: |-
       {
@@ -231,7 +231,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "28"
+        - "28"
     separatecontext: false
     view: |-
       {
@@ -259,33 +259,33 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "36"
+        - "36"
       "yes":
-      - "37"
+        - "37"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-          right:
-            value:
-              simple: MicrosoftPolicyAndComplianceAuditLog
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                              ignorecase: true
+                      accessor: brand
+                  iscontext: true
+                right:
+                  value:
+                    simple: MicrosoftPolicyAndComplianceAuditLog
     view: |-
       {
         "position": {
@@ -312,7 +312,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "29"
+        - "29"
     separatecontext: false
     view: |-
       {
@@ -340,7 +340,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "38"
+        - "38"
     separatecontext: false
     view: |-
       {
@@ -369,7 +369,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
+        - "39"
     scriptarguments:
       end_date: {}
       free_text: {}
@@ -413,7 +413,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "40"
+        - "40"
     scriptarguments:
       end_date: {}
       free_text:
@@ -458,7 +458,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "41"
+        - "41"
     scriptarguments:
       end_date: {}
       free_text:
@@ -498,7 +498,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "42"
+        - "42"
     scriptarguments:
       end_date: {}
       free_text:
@@ -538,7 +538,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "43"
+        - "43"
     scriptarguments:
       end_date: {}
       free_text: {}
@@ -578,7 +578,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "45"
+        - "45"
     scriptarguments:
       end_date: {}
       free_text:
@@ -618,7 +618,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "28"
+        - "28"
     scriptarguments:
       append: {}
       key:
@@ -628,30 +628,30 @@ tasks:
         complex:
           root: O365AuditLog
           filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: O365AuditLog.ModifiedProperties.NewValue
-                iscontext: true
-              right:
-                value:
-                  simple: Mail.Read
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: O365AuditLog.ModifiedProperties.NewValue
-                iscontext: true
-              right:
-                value:
-                  simple: Mail.ReadWrite
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: O365AuditLog.ModifiedProperties.OldValue
-                iscontext: true
-              right:
-                value:
-                  simple: Mail.Read
+            -   - operator: containsGeneral
+                  left:
+                    value:
+                      simple: O365AuditLog.ModifiedProperties.NewValue
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Mail.Read
+                - operator: containsGeneral
+                  left:
+                    value:
+                      simple: O365AuditLog.ModifiedProperties.NewValue
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Mail.ReadWrite
+            -   - operator: notContainsGeneral
+                  left:
+                    value:
+                      simple: O365AuditLog.ModifiedProperties.OldValue
+                    iscontext: true
+                  right:
+                    value:
+                      simple: Mail.Read
     separatecontext: false
     view: |-
       {
@@ -679,44 +679,44 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "28"
+        - "28"
       "yes":
-      - "44"
+        - "44"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: O365AuditLog
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: O365AuditLog.ModifiedProperties.NewValue
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Mail.Read
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: O365AuditLog.ModifiedProperties.NewValue
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Mail.ReadWrite
-                - - operator: notContainsGeneral
-                    left:
-                      value:
-                        simple: O365AuditLog.ModifiedProperties.OldValue
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Mail.Read
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: O365AuditLog
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: O365AuditLog.ModifiedProperties.NewValue
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Mail.Read
+                            - operator: isEqualString
+                              left:
+                                value:
+                                  simple: O365AuditLog.ModifiedProperties.NewValue
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Mail.ReadWrite
+                        -   - operator: notContainsGeneral
+                              left:
+                                value:
+                                  simple: O365AuditLog.ModifiedProperties.OldValue
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: Mail.Read
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -747,12 +747,8 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- No tests
+  - No tests
 fromversion: 5.5.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

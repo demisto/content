@@ -18,7 +18,7 @@ tasks:
       description: ""
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     view: |-
       {
@@ -47,7 +47,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     scriptarguments:
       saved_search_id:
         simple: ${inputs.saved_search_id}
@@ -79,7 +79,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       query:
         simple: ${AzureLogAnalytics.SavedSearch.query}
@@ -138,29 +138,25 @@ view: |-
     }
   }
 inputs:
-- key: saved_search_id
-  value: {}
-  required: true
-  description: The ID of the saved search to run.
-  playbookInputQuery:
-- key: timespan
-  value: {}
-  required: false
-  description: The timespan over which to query data. This is an ISO8601 time period value. This timespan is applied in addition to timespans that are specified in the query expression.
-  playbookInputQuery:
+  - key: saved_search_id
+    value: {}
+    required: true
+    description: The ID of the saved search to run.
+    playbookInputQuery:
+  - key: timespan
+    value: {}
+    required: false
+    description: The timespan over which to query data. This is an ISO8601 time period value. This timespan is applied in addition to timespans that are specified in the query expression.
+    playbookInputQuery:
 outputs:
-- contextPath: AzureLogAnalytics.Query.Query
-  description: The executed query.
-  type: string
-- contextPath: AzureLogAnalytics.Query.TableName
-  description: The name of the query table.
-  type: string
+  - contextPath: AzureLogAnalytics.Query.Query
+    description: The executed query.
+    type: string
+  - contextPath: AzureLogAnalytics.Query.TableName
+    description: The name of the query table.
+    type: string
 tests:
-- No tests
+  - No tests
 supportedModules:
-- agentix
-- xsiam
-- X1
-- X3
-- X5
-- ENT_PLUS
+  - agentix
+  - xsiam

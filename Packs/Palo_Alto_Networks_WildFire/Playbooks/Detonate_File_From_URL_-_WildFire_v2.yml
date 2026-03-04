@@ -22,7 +22,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -81,18 +81,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+        - "5"
       "yes":
-      - "9"
+        - "9"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: inputs.FileURL
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    simple: inputs.FileURL
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -122,38 +122,38 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+        - "5"
       "yes":
-      - "6"
+        - "6"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: WildFire-v2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: WildFire-v2
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -184,7 +184,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     scriptarguments:
       format:
         complex:
@@ -224,7 +224,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       interval_in_seconds:
         complex:
@@ -238,7 +238,7 @@ tasks:
         complex:
           root: inputs.FileURL
           transformers:
-          - operator: uniq
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -268,137 +268,133 @@ view: |-
     }
   }
 inputs:
-- key: FileURL
-  value:
-    complex:
-      root: FileURL
-      transformers:
-      - operator: uniq
-  required: false
-  description: URL of the web file to detonate. The FileUrl is taken from the context.
-  playbookInputQuery:
-- key: Interval
-  value:
-    simple: "1"
-  required: false
-  description: Duration for executing the pooling (in seconds).
-  playbookInputQuery:
-- key: Timeout
-  value:
-    simple: "8"
-  required: false
-  description: The duration after which to stop pooling and to resume the playbook (in seconds).
-  playbookInputQuery:
-- key: ReportFileType
-  value: {}
-  required: false
-  description: The resource type to download. Default is pdf. XML is also possible.
-  playbookInputQuery:
+  - key: FileURL
+    value:
+      complex:
+        root: FileURL
+        transformers:
+          - operator: uniq
+    required: false
+    description: URL of the web file to detonate. The FileUrl is taken from the context.
+    playbookInputQuery:
+  - key: Interval
+    value:
+      simple: "1"
+    required: false
+    description: Duration for executing the pooling (in seconds).
+    playbookInputQuery:
+  - key: Timeout
+    value:
+      simple: "8"
+    required: false
+    description: The duration after which to stop pooling and to resume the playbook (in seconds).
+    playbookInputQuery:
+  - key: ReportFileType
+    value: {}
+    required: false
+    description: The resource type to download. Default is pdf. XML is also possible.
+    playbookInputQuery:
 outputs:
-- contextPath: DBotScore
-  description: The DBotScore object.
-  type: unknown
-- contextPath: DBotScore.Score
-  description: The actual score.
-  type: number
-- contextPath: File.Size
-  description: File size.
-  type: number
-- contextPath: File.MD5
-  description: MD5 hash of the file.
-  type: string
-- contextPath: File.SHA1
-  description: SHA1 hash of the file.
-  type: string
-- contextPath: File.Type
-  description: File type, e.g., "PE".
-  type: string
-- contextPath: File.SHA256
-  description: SHA256 hash of the file.
-  type: string
-- contextPath: File.EntryID
-  description: The Entry ID of the sample.
-  type: string
-- contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision.
-  type: string
-- contextPath: File.Name
-  description: Filename.
-  type: string
-- contextPath: File.Malicious.Description
-  description: For malicious files, the reason the vendor made the decision.
-  type: string
-- contextPath: DBotScore.Indicator
-  description: The indicator tested.
-  type: string
-- contextPath: DBotScore.Type
-  description: The type of the indicator.
-  type: string
-- contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score.
-  type: string
-- contextPath: IP.Address
-  description: IPs relevant to the sample.
-  type: string
-- contextPath: File
-  description: The file object.
-  type: unknown
-- contextPath: InfoFile
-  description: The report file object.
-  type: unknown
-- contextPath: InfoFile.EntryID
-  description: The EntryID of the report file.
-  type: string
-- contextPath: InfoFile.Extension
-  description: The extension of the report file.
-  type: string
-- contextPath: InfoFile.Name
-  description: The name of the report file.
-  type: string
-- contextPath: InfoFile.Info
-  description: The info of the report file.
-  type: string
-- contextPath: InfoFile.Size
-  description: The size of the report file.
-  type: number
-- contextPath: InfoFile.Type
-  description: The type of the report file.
-  type: string
-- contextPath: File.Malicious
-  description: The malicious object.
-  type: unknown
-- contextPath: WildFire.Report
-  description: The submission object.
-  type: unknown
-- contextPath: WildFire.Report.MD5
-  description: MD5 of the submission.
-  type: string
-- contextPath: WildFire.Report.SHA256
-  description: SHA256 of the submission.
-  type: string
-- contextPath: WildFire.Report.FileType
-  description: The type of the submission.
-  type: string
-- contextPath: WildFire.Report.Status
-  description: The status of the submission.
-  type: string
-- contextPath: WildFire.Report.Size
-  description: The size of the submission.
-  type: number
-- contextPath: WildFire.Report.ExtractedURL.URL
-  description: The extracted URL.
-  type: string
-- contextPath: WildFire.Report.ExtractedURL.Verdict
-  description: The extracted verdict.
-  type: number
+  - contextPath: DBotScore
+    description: The DBotScore object.
+    type: unknown
+  - contextPath: DBotScore.Score
+    description: The actual score.
+    type: number
+  - contextPath: File.Size
+    description: File size.
+    type: number
+  - contextPath: File.MD5
+    description: MD5 hash of the file.
+    type: string
+  - contextPath: File.SHA1
+    description: SHA1 hash of the file.
+    type: string
+  - contextPath: File.Type
+    description: File type, e.g., "PE".
+    type: string
+  - contextPath: File.SHA256
+    description: SHA256 hash of the file.
+    type: string
+  - contextPath: File.EntryID
+    description: The Entry ID of the sample.
+    type: string
+  - contextPath: File.Malicious.Vendor
+    description: For malicious files, the vendor that made the decision.
+    type: string
+  - contextPath: File.Name
+    description: Filename.
+    type: string
+  - contextPath: File.Malicious.Description
+    description: For malicious files, the reason the vendor made the decision.
+    type: string
+  - contextPath: DBotScore.Indicator
+    description: The indicator tested.
+    type: string
+  - contextPath: DBotScore.Type
+    description: The type of the indicator.
+    type: string
+  - contextPath: DBotScore.Vendor
+    description: Vendor used to calculate the score.
+    type: string
+  - contextPath: IP.Address
+    description: IPs relevant to the sample.
+    type: string
+  - contextPath: File
+    description: The file object.
+    type: unknown
+  - contextPath: InfoFile
+    description: The report file object.
+    type: unknown
+  - contextPath: InfoFile.EntryID
+    description: The EntryID of the report file.
+    type: string
+  - contextPath: InfoFile.Extension
+    description: The extension of the report file.
+    type: string
+  - contextPath: InfoFile.Name
+    description: The name of the report file.
+    type: string
+  - contextPath: InfoFile.Info
+    description: The info of the report file.
+    type: string
+  - contextPath: InfoFile.Size
+    description: The size of the report file.
+    type: number
+  - contextPath: InfoFile.Type
+    description: The type of the report file.
+    type: string
+  - contextPath: File.Malicious
+    description: The malicious object.
+    type: unknown
+  - contextPath: WildFire.Report
+    description: The submission object.
+    type: unknown
+  - contextPath: WildFire.Report.MD5
+    description: MD5 of the submission.
+    type: string
+  - contextPath: WildFire.Report.SHA256
+    description: SHA256 of the submission.
+    type: string
+  - contextPath: WildFire.Report.FileType
+    description: The type of the submission.
+    type: string
+  - contextPath: WildFire.Report.Status
+    description: The status of the submission.
+    type: string
+  - contextPath: WildFire.Report.Size
+    description: The size of the submission.
+    type: number
+  - contextPath: WildFire.Report.ExtractedURL.URL
+    description: The extracted URL.
+    type: string
+  - contextPath: WildFire.Report.ExtractedURL.Verdict
+    description: The extracted verdict.
+    type: number
 tests:
-- Wildfire Test With Polling
-- Wildfire Test
+  - Wildfire Test With Polling
+  - Wildfire Test
 fromversion: 6.10.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

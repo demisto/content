@@ -26,7 +26,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "6"
+        - "6"
     separatecontext: false
     view: |-
       {
@@ -55,7 +55,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "11"
+        - "11"
     scriptarguments:
       accountid: {}
       accountinformationbreached: {}
@@ -402,24 +402,24 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+        - "8"
       "yes":
-      - "12"
+        - "12"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: 'inputs.FieldPolling '
-                transformers:
-                - operator: toLowerCase
-            iscontext: true
-          right:
-            value:
-              simple: "true"
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: 'inputs.FieldPolling '
+                      transformers:
+                        - operator: toLowerCase
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
     view: |-
       {
         "position": {
@@ -447,7 +447,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       field:
         simple: servicenowstate
@@ -492,58 +492,54 @@ view: |-
     }
   }
 inputs:
-- key: IncidentID
-  value: {}
-  required: false
-  description: ServiceNow Incident ID to mirror.
-  playbookInputQuery:
-- key: MirrorInstanceName
-  value: {}
-  required: false
-  description: Set the mirror instance name to enable mirroring with ServiceNow.
-  playbookInputQuery:
-- key: MirrorDirection
-  value:
-    simple: Both
-  required: false
-  description: "Set the mirror direction, should be one of the following: \n1. In\n2. Out\n3. Both"
-  playbookInputQuery:
-- key: MirrorCommentTags
-  value:
-    simple: comments,work_notes,ForServiceNow
-  required: false
-  description: Set tags for mirror comments and files to ServiceNow
-  playbookInputQuery:
-- key: 'FieldPolling '
-  value: {}
-  required: false
-  description: |
-    Set the value to true or false to determine if the FieldPolling sub-playbook will be executed in the context of a parent playbook.
-    This is useful in cases when it is needed to wait for the ServiceNow ticket to be resolved in order to continue the parent playbook.
-  playbookInputQuery:
-- key: FieldPollingInterval
-  value: {}
-  required: false
-  description: |-
-    Set interval time for the polling to run
-    (In minutes)
-  playbookInputQuery:
-- key: FieldPollingTimeout
-  value: {}
-  required: false
-  description: |2-
+  - key: IncidentID
+    value: {}
+    required: false
+    description: ServiceNow Incident ID to mirror.
+    playbookInputQuery:
+  - key: MirrorInstanceName
+    value: {}
+    required: false
+    description: Set the mirror instance name to enable mirroring with ServiceNow.
+    playbookInputQuery:
+  - key: MirrorDirection
+    value:
+      simple: Both
+    required: false
+    description: "Set the mirror direction, should be one of the following: \n1. In\n2. Out\n3. Both"
+    playbookInputQuery:
+  - key: MirrorCommentTags
+    value:
+      simple: comments,work_notes,ForServiceNow
+    required: false
+    description: Set tags for mirror comments and files to ServiceNow
+    playbookInputQuery:
+  - key: 'FieldPolling '
+    value: {}
+    required: false
+    description: |
+      Set the value to true or false to determine if the FieldPolling sub-playbook will be executed in the context of a parent playbook.
+      This is useful in cases when it is needed to wait for the ServiceNow ticket to be resolved in order to continue the parent playbook.
+    playbookInputQuery:
+  - key: FieldPollingInterval
+    value: {}
+    required: false
+    description: |-
+      Set interval time for the polling to run
+      (In minutes)
+    playbookInputQuery:
+  - key: FieldPollingTimeout
+    value: {}
+    required: false
+    description: |2-
 
-    Set the amount of time to poll the status of the ticket before declaring a timeout and resuming the playbook.
-    (In minutes)
-  playbookInputQuery:
+      Set the amount of time to poll the status of the ticket before declaring a timeout and resuming the playbook.
+      (In minutes)
+    playbookInputQuery:
 outputs: []
 tests:
-- Create ServiceNow Ticket and Mirror Test
+  - Create ServiceNow Ticket and Mirror Test
 fromversion: 6.0.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

@@ -28,8 +28,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "25"
-      - "26"
+        - "25"
+        - "26"
     separatecontext: false
     view: |-
       {
@@ -57,21 +57,21 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "2"
+        - "2"
       "true":
-      - "5"
+        - "5"
     separatecontext: false
     conditions:
-    - label: "true"
-      condition:
-      - - operator: inList
-          left:
-            value:
-              simple: inputs.GetOnlyCREEvents
-            iscontext: true
-          right:
-            value:
-              simple: OnlyCRE,OnlyNotCRE, All
+      - label: "true"
+        condition:
+          -   - operator: inList
+                left:
+                  value:
+                    simple: inputs.GetOnlyCREEvents
+                  iscontext: true
+                right:
+                  value:
+                    simple: OnlyCRE,OnlyNotCRE, All
     view: |-
       {
         "position": {
@@ -123,7 +123,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "24"
+        - "24"
     separatecontext: false
     view: |-
       {
@@ -151,28 +151,28 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "2"
+        - "2"
       "true":
-      - "19"
+        - "19"
     separatecontext: false
     conditions:
-    - label: "true"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.GetCorrelationLogs
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ${QRadar.Correlation.QID}
-            iscontext: true
+      - label: "true"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.GetCorrelationLogs
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
+          -   - operator: isExists
+                left:
+                  value:
+                    simple: ${QRadar.Correlation.QID}
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -200,7 +200,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     scriptarguments:
       headers: {}
       interval:
@@ -251,7 +251,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "6"
+        - "6"
     scriptarguments:
       capitalize:
         simple: "True"
@@ -294,22 +294,22 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "10"
+        - "10"
       "true":
-      - "7"
+        - "7"
     separatecontext: false
     conditions:
-    - label: "true"
-      condition:
-      - - operator: inList
-          left:
-            value:
-              complex:
-                root: inputs.GetOnlyCREEvents
-            iscontext: true
-          right:
-            value:
-              simple: All,OnlyCRE
+      - label: "true"
+        condition:
+          -   - operator: inList
+                left:
+                  value:
+                    complex:
+                      root: inputs.GetOnlyCREEvents
+                  iscontext: true
+                right:
+                  value:
+                    simple: All,OnlyCRE
     view: |-
       {
         "position": {
@@ -336,21 +336,21 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "10"
+        - "10"
       "true":
-      - "13"
+        - "13"
     separatecontext: false
     conditions:
-    - label: "true"
-      condition:
-      - - operator: inList
-          left:
-            value:
-              simple: inputs.GetOnlyCREEvents
-            iscontext: true
-          right:
-            value:
-              simple: All,OnlyNotCRE
+      - label: "true"
+        condition:
+          -   - operator: inList
+                left:
+                  value:
+                    simple: inputs.GetOnlyCREEvents
+                  iscontext: true
+                right:
+                  value:
+                    simple: All,OnlyNotCRE
     view: |-
       {
         "position": {
@@ -378,7 +378,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     scriptarguments:
       headers: {}
       interval:
@@ -429,7 +429,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     scriptarguments:
       GetOnlyCREEvents:
         simple: ${inputs.GetOnlyCREEvents}
@@ -444,13 +444,13 @@ tasks:
           root: ${QRadar
           accessor: Correlation.QID}
           transformers:
-          - operator: uniq
-          - operator: Stringify
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ) ILIKE '%' OR RULENAME(
+            - operator: uniq
+            - operator: Stringify
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ) ILIKE '%' OR RULENAME(
       additionalQueryFields:
         simple: ${QRadar.AdditionalFields}
     separatecontext: true
@@ -486,8 +486,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
-      - "12"
+        - "11"
+        - "12"
     scriptarguments:
       append: {}
       key:
@@ -497,23 +497,23 @@ tasks:
         complex:
           root: inputs.Fields
           transformers:
-          - operator: replace
-            args:
-              limit: {}
-              replaceWith:
-                value:
-                  simple: '","'
-              toReplace:
-                value:
-                  simple: ','
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ',"'
-              suffix:
-                value:
-                  simple: '"'
+            - operator: replace
+              args:
+                limit: {}
+                replaceWith:
+                  value:
+                    simple: '","'
+                toReplace:
+                  value:
+                    simple: ','
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ',"'
+                suffix:
+                  value:
+                    simple: '"'
     separatecontext: false
     view: |-
       {
@@ -541,19 +541,19 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "11"
-      - "12"
+        - "11"
+        - "12"
       "true":
-      - "23"
+        - "23"
     separatecontext: false
     conditions:
-    - label: "true"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.Fields
-            iscontext: true
+      - label: "true"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.Fields
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -580,36 +580,36 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "1"
+        - "1"
       "yes":
-      - "29"
+        - "29"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: QRadar
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: QRadar
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -636,36 +636,36 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "1"
+        - "1"
       "yes":
-      - "28"
+        - "28"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: QRadar_v2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: QRadar_v2
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -693,7 +693,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     scriptarguments:
       append: {}
       key:
@@ -703,11 +703,11 @@ tasks:
         complex:
           root: inputs.StartTime
           transformers:
-          - operator: FormattedDateToEpoch
-            args:
-              formatter:
-                value:
-                  simple: '%Y-%m-%dT%H:%M:%S.%fZ'
+            - operator: FormattedDateToEpoch
+              args:
+                formatter:
+                  value:
+                    simple: '%Y-%m-%dT%H:%M:%S.%fZ'
     separatecontext: false
     view: |-
       {
@@ -736,7 +736,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     scriptarguments:
       append: {}
       key:
@@ -773,104 +773,100 @@ view: |-
     }
   }
 inputs:
-- key: GetCorrelationLogs
-  value:
-    simple: "True"
-  required: false
-  description: When set to "True", retrieves all of the offense's correlations logs
-  playbookInputQuery:
-- key: MaxLogsCount
-  value:
-    simple: "20"
-  required: false
-  description: 'Maximum number of log entires to query from QRadar (default: 20)'
-  playbookInputQuery:
-- key: ID
-  value:
-    complex:
-      root: incident
-      accessor: labels.id
-  required: true
-  description: 'The QRadar offense ID '
-  playbookInputQuery:
-- key: StartTime
-  value:
-    complex:
-      root: incident
-      accessor: labels.start_time
-  required: true
-  description: The QRadar offense start time
-  playbookInputQuery:
-- key: GetOnlyCREEvents
-  value:
-    simple: All
-  required: false
-  description: |-
-    If value "OnlyCRE" get only events made by CRE.
-    Values can be "OnlyCRE", "OnlyNotCRE", "All".
-  playbookInputQuery:
-- key: MaxCorrelationCount
-  value:
-    simple: "100"
-  required: false
-  description: 'Maximum number of correlations to query from QRadar (default: 100)'
-  playbookInputQuery:
-- key: Fields
-  value: {}
-  required: false
-  description: A comma-separated list of extra fields to get from each event.
-  playbookInputQuery:
+  - key: GetCorrelationLogs
+    value:
+      simple: "True"
+    required: false
+    description: When set to "True", retrieves all of the offense's correlations logs
+    playbookInputQuery:
+  - key: MaxLogsCount
+    value:
+      simple: "20"
+    required: false
+    description: 'Maximum number of log entires to query from QRadar (default: 20)'
+    playbookInputQuery:
+  - key: ID
+    value:
+      complex:
+        root: incident
+        accessor: labels.id
+    required: true
+    description: 'The QRadar offense ID '
+    playbookInputQuery:
+  - key: StartTime
+    value:
+      complex:
+        root: incident
+        accessor: labels.start_time
+    required: true
+    description: The QRadar offense start time
+    playbookInputQuery:
+  - key: GetOnlyCREEvents
+    value:
+      simple: All
+    required: false
+    description: |-
+      If value "OnlyCRE" get only events made by CRE.
+      Values can be "OnlyCRE", "OnlyNotCRE", "All".
+    playbookInputQuery:
+  - key: MaxCorrelationCount
+    value:
+      simple: "100"
+    required: false
+    description: 'Maximum number of correlations to query from QRadar (default: 100)'
+    playbookInputQuery:
+  - key: Fields
+    value: {}
+    required: false
+    description: A comma-separated list of extra fields to get from each event.
+    playbookInputQuery:
 outputs:
-- contextPath: QRadar.Correlation.StartTime
-  description: The correlation start time
-- contextPath: QRadar.Correlation.CategoryID
-  description: 'The correlation category id '
-- contextPath: QRadar.Correlation.QID
-  description: The correlation QID identifier
-- contextPath: QRadar.Correlation.CREName
-  description: The correlation name
-- contextPath: QRadar.Correlation.CREDescription
-  description: The correlation description
-- contextPath: QRadar.Correlation
-  description: The QRadar offense correlations
-- contextPath: QRadar.Correlation.SourceIP
-  description: The correlation source IP
-- contextPath: QRadar.Correlation.DestinationIP
-  description: The correlation destination IP
-- contextPath: QRadar.Correlation.Category
-  description: The correlation high level category
-- contextPath: QRadar.Correlation.Username
-  description: The correlation username
-- contextPath: QRadar.Log
-  description: The QRadar offense correlation logs
-- contextPath: QRadar.Log.QID
-  description: The log's correlation ID
-- contextPath: QRadar.Log.SourceIP
-  description: The log's source IP
-- contextPath: QRadar.Log.DestinationPort
-  description: The log's destination port
-- contextPath: QRadar.Log.SourcePort
-  description: The log's source port
-- contextPath: QRadar.Log.DestinationIP
-  description: The log's destination IP
-- contextPath: QRadar.Log.Category
-  description: The log's category
-- contextPath: QRadar.Log.IdentityIP
-  description: The log's identity IP
-- contextPath: QRadar.Log.Username
-  description: The log's username
-- contextPath: QRadar.Log.StartTime
-  description: The log's start time
-- contextPath: QRadar.Log.Magnitude
-  description: The log's magnitude
-- contextPath: QRadar.Log.ProtocolName
-  description: The log's protocol name
+  - contextPath: QRadar.Correlation.StartTime
+    description: The correlation start time
+  - contextPath: QRadar.Correlation.CategoryID
+    description: 'The correlation category id '
+  - contextPath: QRadar.Correlation.QID
+    description: The correlation QID identifier
+  - contextPath: QRadar.Correlation.CREName
+    description: The correlation name
+  - contextPath: QRadar.Correlation.CREDescription
+    description: The correlation description
+  - contextPath: QRadar.Correlation
+    description: The QRadar offense correlations
+  - contextPath: QRadar.Correlation.SourceIP
+    description: The correlation source IP
+  - contextPath: QRadar.Correlation.DestinationIP
+    description: The correlation destination IP
+  - contextPath: QRadar.Correlation.Category
+    description: The correlation high level category
+  - contextPath: QRadar.Correlation.Username
+    description: The correlation username
+  - contextPath: QRadar.Log
+    description: The QRadar offense correlation logs
+  - contextPath: QRadar.Log.QID
+    description: The log's correlation ID
+  - contextPath: QRadar.Log.SourceIP
+    description: The log's source IP
+  - contextPath: QRadar.Log.DestinationPort
+    description: The log's destination port
+  - contextPath: QRadar.Log.SourcePort
+    description: The log's source port
+  - contextPath: QRadar.Log.DestinationIP
+    description: The log's destination IP
+  - contextPath: QRadar.Log.Category
+    description: The log's category
+  - contextPath: QRadar.Log.IdentityIP
+    description: The log's identity IP
+  - contextPath: QRadar.Log.Username
+    description: The log's username
+  - contextPath: QRadar.Log.StartTime
+    description: The log's start time
+  - contextPath: QRadar.Log.Magnitude
+    description: The log's magnitude
+  - contextPath: QRadar.Log.ProtocolName
+    description: The log's protocol name
 tests:
-- No test
+  - No test
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

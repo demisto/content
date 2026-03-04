@@ -21,7 +21,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     separatecontext: false
     view: |-
       {
@@ -50,7 +50,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     scriptarguments:
       additionalPollingCommandArgNames:
         complex:
@@ -97,15 +97,15 @@ tasks:
       name: Waiting for Ticket State Polling to complete (Automated Task)
       description: This task will complete automatically when polling is complete.
       tags:
-      - polling
+        - polling
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "6"
+        - "6"
       "YES":
-      - "5"
+        - "5"
     separatecontext: false
     view: |-
       {
@@ -134,7 +134,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     scriptarguments:
       additionalPollingCommandArgNames:
         complex:
@@ -231,44 +231,40 @@ view: |-
     }
   }
 inputs:
-- key: TicketNumber
-  value: {}
-  required: true
-  description: The ServiceNow ticket number to poll for its state.
-  playbookInputQuery:
-- key: Interval
-  value: {}
-  required: true
-  description: Frequency that the polling command will run (minutes).
-  playbookInputQuery:
-- key: Timeout
-  value: {}
-  required: true
-  description: Amount of time to poll before declaring a timeout and resuming the playbook (in minutes).
-  playbookInputQuery:
-- key: InstanceName
-  value: {}
-  required: false
-  description: |-
-    Set the ServiceNow Instance that will be used by the polling command.
-    Only relevant when there is more than one ServiceNow instance.
-  playbookInputQuery:
-- key: AdditionalPollingCommandName
-  value: {}
-  required: false
-  description: |-
-    Additional polling commands are relevant when using StatePolling, and there is more than one ServiceNow instance. It will specify the polling command to use a specific instance to run on. 
-    If so, please add "using" to the value.
-    The polling command will then take the instance name as the instance to use. 
-  playbookInputQuery:
+  - key: TicketNumber
+    value: {}
+    required: true
+    description: The ServiceNow ticket number to poll for its state.
+    playbookInputQuery:
+  - key: Interval
+    value: {}
+    required: true
+    description: Frequency that the polling command will run (minutes).
+    playbookInputQuery:
+  - key: Timeout
+    value: {}
+    required: true
+    description: Amount of time to poll before declaring a timeout and resuming the playbook (in minutes).
+    playbookInputQuery:
+  - key: InstanceName
+    value: {}
+    required: false
+    description: |-
+      Set the ServiceNow Instance that will be used by the polling command.
+      Only relevant when there is more than one ServiceNow instance.
+    playbookInputQuery:
+  - key: AdditionalPollingCommandName
+    value: {}
+    required: false
+    description: |-
+      Additional polling commands are relevant when using StatePolling, and there is more than one ServiceNow instance. It will specify the polling command to use a specific instance to run on. 
+      If so, please add "using" to the value.
+      The polling command will then take the instance name as the instance to use. 
+    playbookInputQuery:
 outputs: []
 tests:
-- Create ServiceNow Ticket and State Polling Test
+  - Create ServiceNow Ticket and State Polling Test
 fromversion: 6.0.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

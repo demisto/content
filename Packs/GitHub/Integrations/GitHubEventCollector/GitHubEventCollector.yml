@@ -2,92 +2,88 @@ commonfields:
   id: Github Event Collector
   version: -1
 sectionorder:
-- Connect
-- Collect
+  - Connect
+  - Collect
 name: Github Event Collector
 display: GitHub Event Collector
 category: Analytics & SIEM
 provider: Microsoft
 description: GitHub logs event collector integration for Cortex XSIAM.
 configuration:
-- display: Server URL (e.g. 'https://api.github.com/orgs/XXXXX/audit-log')
-  name: url
-  defaultvalue: 'https://api.github.com/orgs/${ORGANIZATION}/audit-log'
-  type: 0
-  required: true
-  section: Connect
-- display: ""
-  displaypassword: API Token
-  name: auth_credendtials
-  type: 9
-  required: true
-  hiddenusername: true
-  section: Connect
-- display: Maximum number of events per fetch
-  name: limit
-  type: 0
-  defaultvalue: 1000
-  section: Collect
-  required: false
-- display: First fetch timestamp
-  name: after
-  type: 0
-  defaultvalue: 1 minute
-  section: Collect
-  required: false
-  hidden: true
-- display: The event types to include
-  additionalinfo: web - returns web (non-Git) events, git - returns Git events, all - returns both web and Git events.
-  name: include
-  defaultvalue: all
-  type: 15
-  options:
-  - all
-  - web
-  - git
-  section: Collect
-  advanced: true
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  section: Connect
-  advanced: true
-  required: false
-- display: Trust any certificate (not secure)
-  name: verify
-  type: 8
-  section: Connect
-  advanced: true
-  required: false
+  - display: Server URL (e.g. 'https://api.github.com/orgs/XXXXX/audit-log')
+    name: url
+    defaultvalue: 'https://api.github.com/orgs/${ORGANIZATION}/audit-log'
+    type: 0
+    required: true
+    section: Connect
+  - display: ""
+    displaypassword: API Token
+    name: auth_credendtials
+    type: 9
+    required: true
+    hiddenusername: true
+    section: Connect
+  - display: Maximum number of events per fetch
+    name: limit
+    type: 0
+    defaultvalue: 1000
+    section: Collect
+    required: false
+  - display: First fetch timestamp
+    name: after
+    type: 0
+    defaultvalue: 1 minute
+    section: Collect
+    required: false
+    hidden: true
+  - display: The event types to include
+    additionalinfo: web - returns web (non-Git) events, git - returns Git events, all - returns both web and Git events.
+    name: include
+    defaultvalue: all
+    type: 15
+    options:
+      - all
+      - web
+      - git
+    section: Collect
+    advanced: true
+    required: false
+  - display: Use system proxy settings
+    name: proxy
+    type: 8
+    section: Connect
+    advanced: true
+    required: false
+  - display: Trust any certificate (not secure)
+    name: verify
+    type: 8
+    section: Connect
+    advanced: true
+    required: false
 script:
   script: ""
   type: python
   commands:
-  - arguments:
-    - auto: PREDEFINED
-      defaultValue: 'False'
-      description: Set this argument to True in order to create events, otherwise the command will only display them.
-      name: should_push_events
-      predefined:
-      - 'True'
-      - 'False'
-      required: true
-    description: Manual command to fetch events and display them.
-    name: github-get-events
+    - arguments:
+        - auto: PREDEFINED
+          defaultValue: 'False'
+          description: Set this argument to True in order to create events, otherwise the command will only display them.
+          name: should_push_events
+          predefined:
+            - 'True'
+            - 'False'
+          required: true
+      description: Manual command to fetch events and display them.
+      name: github-get-events
   dockerimage: demisto/py3-tools:1.0.0.6308650
   isfetchevents: true
   subtype: python3
 marketplaces:
-- marketplacev2
-- platform
+  - marketplacev2
+  - platform
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam
 fromversion: 6.8.0
 tests:
-- No tests
+  - No tests

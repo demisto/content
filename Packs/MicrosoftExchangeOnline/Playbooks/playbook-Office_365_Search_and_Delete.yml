@@ -18,7 +18,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     view: |-
       {
@@ -43,7 +43,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     scriptarguments:
       query:
         complex:
@@ -83,7 +83,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       Ids:
         complex:
@@ -127,7 +127,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     scriptarguments:
       search-name:
         complex:
@@ -160,9 +160,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+        - "9"
       Purge:
-      - "5"
+        - "5"
     separatecontext: false
     view: |-
       {
@@ -187,7 +187,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       search-name:
         complex:
@@ -249,7 +249,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+        - "8"
     scriptarguments:
       Ids:
         complex:
@@ -293,7 +293,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+        - "9"
     scriptarguments:
       search-name:
         complex:
@@ -327,7 +327,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+        - "6"
     scriptarguments:
       search-name:
         complex:
@@ -362,18 +362,14 @@ view: |-
     }
   }
 inputs:
-- key: Query
-  value: {}
-  required: true
-  description: Compliance Search query
+  - key: Query
+    value: {}
+    required: true
+    description: Compliance Search query
 outputs: []
 tests:
-- No test
+  - No test
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- cloud
-- xsiam
+  - agentix
+  - cloud
+  - xsiam

@@ -12,7 +12,7 @@ description: |
   - A newly overwritten profile
   - A newly added profile
 tags:
-- PAN-OS
+  - PAN-OS
 starttaskid: "0"
 tasks:
   "0":
@@ -28,7 +28,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -65,75 +65,75 @@ tasks:
       brand: ""
     nexttasks:
       Maybe, if group is empty:
-      - "35"
+        - "35"
       No, profile exists:
-      - "27"
+        - "27"
       Yes, add/overwrite profile:
-      - "18"
+        - "18"
       Yes, edit group:
-      - "29"
+        - "29"
     separatecontext: false
     conditions:
-    - label: Yes, add/overwrite profile
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.OverwriteProfileIfExists
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: isEmpty
-          left:
-            value:
-              simple: Panorama.SecurityRule.SecurityProfile.spyware
-            iscontext: true
-      - - operator: isEmpty
-          left:
-            value:
-              simple: Panorama.SecurityRule.SecurityProfileGroup
-            iscontext: true
-    - label: Yes, edit group
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Panorama.SecurityRule.SecurityProfileGroup
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.OverwriteProfileIfExists
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    - label: No, profile exists
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.OverwriteProfileIfExists
-            iscontext: true
-          right:
-            value:
-              simple: "False"
-          ignorecase: true
-      - - operator: isEmpty
-          left:
-            value:
-              simple: Panorama.SecurityRule.SecurityProfileGroup
-            iscontext: true
-    - label: Maybe, if group is empty
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Panorama.SecurityRule.SecurityProfileGroup
-            iscontext: true
+      - label: Yes, add/overwrite profile
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.OverwriteProfileIfExists
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
+              - operator: isEmpty
+                left:
+                  value:
+                    simple: Panorama.SecurityRule.SecurityProfile.spyware
+                  iscontext: true
+          -   - operator: isEmpty
+                left:
+                  value:
+                    simple: Panorama.SecurityRule.SecurityProfileGroup
+                  iscontext: true
+      - label: Yes, edit group
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: Panorama.SecurityRule.SecurityProfileGroup
+                  iscontext: true
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.OverwriteProfileIfExists
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
+      - label: No, profile exists
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    simple: inputs.OverwriteProfileIfExists
+                  iscontext: true
+                right:
+                  value:
+                    simple: "False"
+                ignorecase: true
+          -   - operator: isEmpty
+                left:
+                  value:
+                    simple: Panorama.SecurityRule.SecurityProfileGroup
+                  iscontext: true
+      - label: Maybe, if group is empty
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: Panorama.SecurityRule.SecurityProfileGroup
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -163,21 +163,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "7"
+        - "7"
       "yes":
-      - "4"
+        - "4"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.RuleName
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: inputs.RuleName
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -208,7 +208,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     scriptarguments:
       rulename:
         complex:
@@ -243,20 +243,20 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "7"
+        - "7"
       "yes":
-      - "1"
+        - "1"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Panorama.SecurityRule
-                accessor: Name
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: Panorama.SecurityRule
+                      accessor: Name
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -314,7 +314,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "33"
+        - "33"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -346,7 +346,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "37"
+        - "37"
     scriptarguments:
       profile_name:
         complex:
@@ -386,7 +386,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "21"
+        - "21"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -418,7 +418,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     scriptarguments:
       profile_name:
         complex:
@@ -454,7 +454,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+        - "22"
     scriptarguments:
       security_profile:
         simple: spyware
@@ -488,31 +488,31 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "20"
+        - "20"
       "Yes":
-      - "14"
+        - "14"
     separatecontext: false
     conditions:
-    - label: "Yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Panorama.Spyware.Name
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Panorama.Spyware.Name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: inputs.SecurityProfileName
-                      iscontext: true
-            iscontext: true
-          right:
-            value: {}
+      - label: "Yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: Panorama.Spyware.Name
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: Panorama.Spyware.Name
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: inputs.SecurityProfileName
+                                iscontext: true
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -542,7 +542,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "39"
+        - "39"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -573,7 +573,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "31"
+        - "31"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -605,7 +605,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+        - "13"
     scriptarguments:
       profile_name:
         complex:
@@ -641,7 +641,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "32"
+        - "32"
     scriptarguments:
       security_profile:
         simple: spyware
@@ -675,31 +675,31 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "30"
+        - "30"
       "Yes":
-      - "13"
+        - "13"
     separatecontext: false
     conditions:
-    - label: "Yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Panorama.Spyware.Name
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Panorama.Spyware.Name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: inputs.SecurityProfileName
-                      iscontext: true
-            iscontext: true
-          right:
-            value: {}
+      - label: "Yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: Panorama.Spyware.Name
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: Panorama.Spyware.Name
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: inputs.SecurityProfileName
+                                iscontext: true
+                  iscontext: true
+                right:
+                  value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -737,7 +737,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       key:
         simple: AntiSpywareProfileNameApplied
@@ -774,7 +774,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "36"
+        - "36"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -804,20 +804,20 @@ tasks:
         completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: What is the name of the anti-spyware profile of the security group called ${Panorama.SecurityRule.SecurityProfileGroup}?
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
+        - id: "0"
+          label: ""
+          labelarg:
+            simple: What is the name of the anti-spyware profile of the security group called ${Panorama.SecurityRule.SecurityProfileGroup}?
+          required: true
+          gridcolumns: []
+          defaultrows: []
+          type: shortText
+          options: []
+          optionsarg: []
+          fieldassociated: ""
+          placeholder: ""
+          tooltip: ""
+          readonly: false
       title: PAN-OS - Adding an Anti-Spyware Profile to a Group
       description: ""
       sender: ""
@@ -841,9 +841,9 @@ tasks:
       brand: ""
     nexttasks:
       Group does not have an anti-spyware profile:
-      - "29"
+        - "29"
       Group has an anti-spyware profile:
-      - "34"
+        - "34"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -882,7 +882,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       key:
         simple: AntiSpywareProfileNameApplied
@@ -928,7 +928,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       key:
         simple: AntiSpywareProfileNameApplied
@@ -973,7 +973,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
       key:
         simple: AntiSpywareProfileNameApplied
@@ -1021,37 +1021,33 @@ view: |-
     }
   }
 inputs:
-- key: RuleName
-  value: {}
-  required: true
-  description: The name of the rule to which the Security Profile should be added.
-  playbookInputQuery:
-- key: SecurityProfileName
-  value: {}
-  required: true
-  description: The name of the Security Profile that should be added to the rule. If it doesn't exit, one will be created with the name specified here.
-  playbookInputQuery:
-- key: OverwriteProfileIfExists
-  value:
-    simple: "False"
-  required: true
-  description: |-
-    Whether to overwrite an existing Anti-Spyware Security Profile.
-    If an Anti-Spyware Security Profile is configured to the rule through a group of profiles and not a single profile, setting this input's value to True will overwrite the existing profile within the group instead of applying the profile and overwriting the whole group.
+  - key: RuleName
+    value: {}
+    required: true
+    description: The name of the rule to which the Security Profile should be added.
+    playbookInputQuery:
+  - key: SecurityProfileName
+    value: {}
+    required: true
+    description: The name of the Security Profile that should be added to the rule. If it doesn't exit, one will be created with the name specified here.
+    playbookInputQuery:
+  - key: OverwriteProfileIfExists
+    value:
+      simple: "False"
+    required: true
+    description: |-
+      Whether to overwrite an existing Anti-Spyware Security Profile.
+      If an Anti-Spyware Security Profile is configured to the rule through a group of profiles and not a single profile, setting this input's value to True will overwrite the existing profile within the group instead of applying the profile and overwriting the whole group.
 
-    Possible values are: True to overwrite, False to keep existing.
-  playbookInputQuery:
+      Possible values are: True to overwrite, False to keep existing.
+    playbookInputQuery:
 outputs:
-- contextPath: AntiSpywareProfileNameApplied
-  description: The name of the Anti-Spyware Security Profile that is applied to the rule. The value could be the name of the profile that was added, overwritten with, or left untouched - for the specified rule.
-  type: unknown
+  - contextPath: AntiSpywareProfileNameApplied
+    description: The name of the Anti-Spyware Security Profile that is applied to the rule. The value could be the name of the profile that was added, overwritten with, or left untouched - for the specified rule.
+    type: unknown
 tests:
-- PAN-OS - Add Anti-Spyware Security Profile To Rule - Test
+  - PAN-OS - Add Anti-Spyware Security Profile To Rule - Test
 fromversion: 6.9.0
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- xsiam
+  - agentix
+  - xsiam

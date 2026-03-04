@@ -52,7 +52,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     separatecontext: false
     view: |-
       {
@@ -83,22 +83,22 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "11"
+        - "11"
       Internal:
-      - "33"
+        - "33"
     separatecontext: false
     conditions:
-    - label: Internal
-      condition:
-      - - operator: IsInCidrRanges
-          left:
-            value:
-              complex:
-                root: inputs.scannerIP
-            iscontext: true
-          right:
-            value:
-              simple: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+      - label: Internal
+        condition:
+          -   - operator: IsInCidrRanges
+                left:
+                  value:
+                    complex:
+                      root: inputs.scannerIP
+                  iscontext: true
+                right:
+                  value:
+                    simple: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
     view: |-
       {
         "position": {
@@ -156,7 +156,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "23"
+        - "23"
     separatecontext: false
     view: |-
       {
@@ -187,7 +187,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "50"
+        - "50"
     separatecontext: false
     view: |-
       {
@@ -218,7 +218,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "51"
+        - "51"
     separatecontext: false
     view: |-
       {
@@ -249,21 +249,21 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "46"
+        - "46"
       "yes":
-      - "61"
+        - "61"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: foundIncidents
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    complex:
+                      root: foundIncidents
+                  iscontext: true
+                right:
+                  value: {}
     view: |-
       {
         "position": {
@@ -294,7 +294,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "40"
+        - "40"
     scriptarguments:
       body:
         simple: |-
@@ -342,7 +342,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "55"
+        - "55"
     scriptarguments:
       AutoCommit:
         simple: "No"
@@ -397,33 +397,33 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "28"
+        - "28"
       "yes":
-      - "57"
+        - "57"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: greaterThanOrEqual
-          left:
-            value:
-              complex:
-                root: DBotScore
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: inputs.scannerIP
-                      iscontext: true
-                accessor: Score
-            iscontext: true
-          right:
-            value:
-              simple: "2"
+      - label: "yes"
+        condition:
+          -   - operator: greaterThanOrEqual
+                left:
+                  value:
+                    complex:
+                      root: DBotScore
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: DBotScore.Indicator
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: inputs.scannerIP
+                                iscontext: true
+                      accessor: Score
+                  iscontext: true
+                right:
+                  value:
+                    simple: "2"
     view: |-
       {
         "position": {
@@ -481,34 +481,34 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "47"
+        - "47"
       "yes":
-      - "57"
+        - "57"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: greaterThanOrEqual
-          left:
-            value:
-              complex:
-                root: foundIncidents
-                transformers:
-                - operator: count
-            iscontext: true
-          right:
-            value:
-              simple: "5"
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.blockKnownScanner
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: greaterThanOrEqual
+                left:
+                  value:
+                    complex:
+                      root: foundIncidents
+                      transformers:
+                        - operator: count
+                  iscontext: true
+                right:
+                  value:
+                    simple: "5"
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.blockKnownScanner
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -555,7 +555,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "27"
+        - "27"
     scriptarguments:
       AutoCloseAlert:
         simple: "false"
@@ -609,7 +609,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "26"
+        - "26"
     scriptarguments:
       fromdate:
         simple: 7 days ago
@@ -659,7 +659,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "46"
+        - "46"
     scriptarguments:
       AutoContainment:
         complex:
@@ -678,29 +678,29 @@ tasks:
         complex:
           root: foundIncidents.CustomFields
           filters:
-          - - operator: isNotEqualString
-              left:
-                value:
-                  simple: foundIncidents.CustomFields.initiatorpath
-                iscontext: true
-              right:
-                value:
-                  simple: c:\windows\explorer.exe
-              ignorecase: true
+            -   - operator: isNotEqualString
+                  left:
+                    value:
+                      simple: foundIncidents.CustomFields.initiatorpath
+                    iscontext: true
+                  right:
+                    value:
+                      simple: c:\windows\explorer.exe
+                  ignorecase: true
           accessor: initiatorsha256
       FilePath:
         complex:
           root: foundIncidents.CustomFields.initiatorpath
           filters:
-          - - operator: isNotEqualString
-              left:
-                value:
-                  simple: foundIncidents.CustomFields.initiatorpath
-                iscontext: true
-              right:
-                value:
-                  simple: c:\windows\explorer.exe
-              ignorecase: true
+            -   - operator: isNotEqualString
+                  left:
+                    value:
+                      simple: foundIncidents.CustomFields.initiatorpath
+                    iscontext: true
+                  right:
+                    value:
+                      simple: c:\windows\explorer.exe
+                  ignorecase: true
       FileRemediation:
         simple: Quarantine
       HostAutoContainment:
@@ -746,7 +746,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     separatecontext: false
     view: |-
       {
@@ -777,23 +777,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "60"
+        - "60"
       "yes":
-      - "45"
+        - "45"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoRecovery
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.AutoRecovery
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -830,7 +830,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "60"
+        - "60"
     scriptarguments:
       releaseFile:
         simple: "false"
@@ -871,7 +871,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "42"
+        - "42"
     separatecontext: false
     view: |-
       {
@@ -902,9 +902,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+        - "5"
       "Yes":
-      - "48"
+        - "48"
     separatecontext: false
     view: |-
       {
@@ -937,7 +937,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     scriptarguments:
       ShouldCloseAutomatically:
         complex:
@@ -985,7 +985,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "34"
+        - "34"
     scriptarguments:
       ip:
         complex:
@@ -1030,7 +1030,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+        - "17"
     scriptarguments:
       HuntAttacker:
         simple: "True"
@@ -1099,7 +1099,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+        - "14"
     scriptarguments:
       categories:
         simple: "14"
@@ -1136,23 +1136,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "14"
+        - "14"
       "yes":
-      - "56"
+        - "56"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.reportIPAddress
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.reportIPAddress
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
+                ignorecase: true
     view: |-
       {
         "position": {
@@ -1182,37 +1182,37 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "14"
+        - "14"
       "yes":
-      - "54"
+        - "54"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: abuseipdb
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isExists
+                left:
+                  value:
+                    complex:
+                      root: modules
+                      filters:
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.brand
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: abuseipdb
+                              ignorecase: true
+                        -   - operator: isEqualString
+                              left:
+                                value:
+                                  simple: modules.state
+                                iscontext: true
+                              right:
+                                value:
+                                  simple: active
+                  iscontext: true
     view: |-
       {
         "position": {
@@ -1243,7 +1243,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "58"
+        - "58"
     scriptarguments:
       manual_severity:
         simple: high
@@ -1277,23 +1277,23 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "10"
+        - "10"
       "yes":
-      - "59"
+        - "59"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.ShouldOpenTicket
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.ShouldOpenTicket
+                  iscontext: true
+                right:
+                  value:
+                    simple: "True"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1324,7 +1324,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     scriptarguments:
       CommentToAdd:
         complex:
@@ -1415,23 +1415,23 @@ tasks:
       brand: Builtin
     nexttasks:
       '#default#':
-      - "5"
+        - "5"
       "yes":
-      - "41"
+        - "41"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoCloseAlert
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex:
+                      root: inputs.AutoCloseAlert
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
+                ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1461,18 +1461,18 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "40"
+        - "40"
       "yes":
-      - "19"
+        - "19"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.SOCEmailAddress
-            iscontext: true
+      - label: "yes"
+        condition:
+          -   - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.SOCEmailAddress
+                  iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -1518,230 +1518,226 @@ view: |-
     }
   }
 inputs:
-- key: scannerIP
-  value:
-    complex:
-      root: alert
-      accessor: localip
-  required: false
-  description: The scanner IP address.
-  playbookInputQuery:
-- key: blockKnownScanner
-  value:
-    simple: "true"
-  required: false
-  description: Whether to block the IP address based on previously seen scanning alerts.
-  playbookInputQuery:
-- key: AutoCloseAlert
-  value:
-    simple: "false"
-  required: false
-  description: Whether to close the alert automatically or manually, after an analyst's review.
-  playbookInputQuery:
-- key: AutoRecovery
-  value:
-    simple: "false"
-  required: false
-  description: Whether to execute the Recovery playbook.
-  playbookInputQuery:
-- key: SOCEmailAddress
-  value: {}
-  required: false
-  description: The SOC email address.
-  playbookInputQuery:
-- key: reportIPAddress
-  value:
-    simple: "false"
-  required: false
-  description: Whether to report the IP address to AbuseIPDB.
-  playbookInputQuery:
-- key: AutoContainment
-  value:
-    simple: "false"
-  required: false
-  description: |-
-    Whether to execute automatically or manually the containment plan tasks:
-    * Block indicators
-    * Quarantine file
-    * Disable user
-  playbookInputQuery:
-- key: HostAutoContainment
-  value:
-    simple: "false"
-  required: false
-  description: Whether to execute endpoint isolation automatically or manually.
-  playbookInputQuery:
-- key: ShouldOpenTicket
-  value:
-    simple: "False"
-  required: false
-  description: Whether to open a ticket automatically in a ticketing system. (True/False).
-  playbookInputQuery:
-- key: serviceNowShortDescription
-  value:
-    simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
-  required: false
-  description: A short description of the ticket.
-  playbookInputQuery:
-- key: serviceNowImpact
-  value: {}
-  required: false
-  description: The impact for the new ticket. Leave empty for ServiceNow default impact.
-  playbookInputQuery:
-- key: serviceNowUrgency
-  value: {}
-  required: false
-  description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
-  playbookInputQuery:
-- key: serviceNowSeverity
-  value: {}
-  required: false
-  description: The severity of the new ticket. Leave empty for ServiceNow default severity.
-  playbookInputQuery:
-- key: serviceNowTicketType
-  value: {}
-  required: false
-  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
-  playbookInputQuery:
-- key: serviceNowCategory
-  value: {}
-  required: false
-  description: The category of the ServiceNow ticket.
-  playbookInputQuery:
-- key: serviceNowAssignmentGroup
-  value: {}
-  required: false
-  description: The group to which to assign the new ticket.
-  playbookInputQuery:
-- key: ZendeskPriority
-  value: {}
-  required: false
-  description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
-  playbookInputQuery:
-- key: ZendeskRequester
-  value: {}
-  required: false
-  description: The user who requested this ticket.
-  playbookInputQuery:
-- key: ZendeskStatus
-  value: {}
-  required: false
-  description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
-  playbookInputQuery:
-- key: ZendeskSubject
-  value:
-    simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
-  required: false
-  description: The value of the subject field for this ticket.
-  playbookInputQuery:
-- key: ZendeskTags
-  value: {}
-  required: false
-  description: The array of tags applied to this ticket.
-  playbookInputQuery:
-- key: ZendeskType
-  value: {}
-  required: false
-  description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
-  playbookInputQuery:
-- key: ZendeskAssigne
-  value: {}
-  required: false
-  description: The agent currently assigned to the ticket.
-  playbookInputQuery:
-- key: ZendeskCollaborators
-  value: {}
-  required: false
-  description: The users currently CC'ed on the ticket.
-  playbookInputQuery:
-- key: description
-  value:
-    simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
-  required: false
-  description: The ticket description.
-  playbookInputQuery:
-- key: addCommentPerEndpoint
-  value:
-    simple: "True"
-  required: false
-  description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
-  playbookInputQuery:
-- key: CommentToAdd
-  value:
-    simple: '${alert.name}. Alert ID: ${alert.id}'
-  required: false
-  description: Comment for the ticket.
-  playbookInputQuery:
-- key: UserVerification
-  value:
-    simple: "True"
-  required: false
-  description: |-
-    Possible values: True/False.  Default: True.
-    Whether to provide user verification for blocking IP addresses.
-  playbookInputQuery:
+  - key: scannerIP
+    value:
+      complex:
+        root: alert
+        accessor: localip
+    required: false
+    description: The scanner IP address.
+    playbookInputQuery:
+  - key: blockKnownScanner
+    value:
+      simple: "true"
+    required: false
+    description: Whether to block the IP address based on previously seen scanning alerts.
+    playbookInputQuery:
+  - key: AutoCloseAlert
+    value:
+      simple: "false"
+    required: false
+    description: Whether to close the alert automatically or manually, after an analyst's review.
+    playbookInputQuery:
+  - key: AutoRecovery
+    value:
+      simple: "false"
+    required: false
+    description: Whether to execute the Recovery playbook.
+    playbookInputQuery:
+  - key: SOCEmailAddress
+    value: {}
+    required: false
+    description: The SOC email address.
+    playbookInputQuery:
+  - key: reportIPAddress
+    value:
+      simple: "false"
+    required: false
+    description: Whether to report the IP address to AbuseIPDB.
+    playbookInputQuery:
+  - key: AutoContainment
+    value:
+      simple: "false"
+    required: false
+    description: |-
+      Whether to execute automatically or manually the containment plan tasks:
+      * Block indicators
+      * Quarantine file
+      * Disable user
+    playbookInputQuery:
+  - key: HostAutoContainment
+    value:
+      simple: "false"
+    required: false
+    description: Whether to execute endpoint isolation automatically or manually.
+    playbookInputQuery:
+  - key: ShouldOpenTicket
+    value:
+      simple: "False"
+    required: false
+    description: Whether to open a ticket automatically in a ticketing system. (True/False).
+    playbookInputQuery:
+  - key: serviceNowShortDescription
+    value:
+      simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+    required: false
+    description: A short description of the ticket.
+    playbookInputQuery:
+  - key: serviceNowImpact
+    value: {}
+    required: false
+    description: The impact for the new ticket. Leave empty for ServiceNow default impact.
+    playbookInputQuery:
+  - key: serviceNowUrgency
+    value: {}
+    required: false
+    description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
+    playbookInputQuery:
+  - key: serviceNowSeverity
+    value: {}
+    required: false
+    description: The severity of the new ticket. Leave empty for ServiceNow default severity.
+    playbookInputQuery:
+  - key: serviceNowTicketType
+    value: {}
+    required: false
+    description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+    playbookInputQuery:
+  - key: serviceNowCategory
+    value: {}
+    required: false
+    description: The category of the ServiceNow ticket.
+    playbookInputQuery:
+  - key: serviceNowAssignmentGroup
+    value: {}
+    required: false
+    description: The group to which to assign the new ticket.
+    playbookInputQuery:
+  - key: ZendeskPriority
+    value: {}
+    required: false
+    description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
+    playbookInputQuery:
+  - key: ZendeskRequester
+    value: {}
+    required: false
+    description: The user who requested this ticket.
+    playbookInputQuery:
+  - key: ZendeskStatus
+    value: {}
+    required: false
+    description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
+    playbookInputQuery:
+  - key: ZendeskSubject
+    value:
+      simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+    required: false
+    description: The value of the subject field for this ticket.
+    playbookInputQuery:
+  - key: ZendeskTags
+    value: {}
+    required: false
+    description: The array of tags applied to this ticket.
+    playbookInputQuery:
+  - key: ZendeskType
+    value: {}
+    required: false
+    description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
+    playbookInputQuery:
+  - key: ZendeskAssigne
+    value: {}
+    required: false
+    description: The agent currently assigned to the ticket.
+    playbookInputQuery:
+  - key: ZendeskCollaborators
+    value: {}
+    required: false
+    description: The users currently CC'ed on the ticket.
+    playbookInputQuery:
+  - key: description
+    value:
+      simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
+    required: false
+    description: The ticket description.
+    playbookInputQuery:
+  - key: addCommentPerEndpoint
+    value:
+      simple: "True"
+    required: false
+    description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
+    playbookInputQuery:
+  - key: CommentToAdd
+    value:
+      simple: '${alert.name}. Alert ID: ${alert.id}'
+    required: false
+    description: Comment for the ticket.
+    playbookInputQuery:
+  - key: UserVerification
+    value:
+      simple: "True"
+    required: false
+    description: |-
+      Possible values: True/False.  Default: True.
+      Whether to provide user verification for blocking IP addresses.
+    playbookInputQuery:
 inputSections:
-- inputs:
-  - SOCEmailAddress
-  - AutoCloseAlert
-  name: Alert Management
-  description: Alert management settings and data, including escalation processes, and user engagements.
-- inputs:
-  - scannerIP
-  name: Investigation
-  description: Investigation settings and data, including any deep dive alert investigation and verdict determination.
-- inputs:
-  - blockKnownScanner
-  - reportIPAddress
-  - AutoContainment
-  - UserVerification
-  - HostAutoContainment
-  - AutoRecovery
-  name: Remediation
-  description: Remediation settings and data, including containment, eradication, and recovery.
-- inputs:
-  - ShouldOpenTicket
-  - serviceNowShortDescription
-  - serviceNowImpact
-  - serviceNowUrgency
-  - serviceNowSeverity
-  - serviceNowTicketType
-  - serviceNowCategory
-  - serviceNowAssignmentGroup
-  - ZendeskPriority
-  - ZendeskRequester
-  - ZendeskStatus
-  - ZendeskSubject
-  - ZendeskTags
-  - ZendeskType
-  - ZendeskAssigne
-  - ZendeskCollaborators
-  - description
-  - addCommentPerEndpoint
-  - CommentToAdd
-  name: Ticket Management
-  description: Ticket management settings and data.
+  - inputs:
+      - SOCEmailAddress
+      - AutoCloseAlert
+    name: Alert Management
+    description: Alert management settings and data, including escalation processes, and user engagements.
+  - inputs:
+      - scannerIP
+    name: Investigation
+    description: Investigation settings and data, including any deep dive alert investigation and verdict determination.
+  - inputs:
+      - blockKnownScanner
+      - reportIPAddress
+      - AutoContainment
+      - UserVerification
+      - HostAutoContainment
+      - AutoRecovery
+    name: Remediation
+    description: Remediation settings and data, including containment, eradication, and recovery.
+  - inputs:
+      - ShouldOpenTicket
+      - serviceNowShortDescription
+      - serviceNowImpact
+      - serviceNowUrgency
+      - serviceNowSeverity
+      - serviceNowTicketType
+      - serviceNowCategory
+      - serviceNowAssignmentGroup
+      - ZendeskPriority
+      - ZendeskRequester
+      - ZendeskStatus
+      - ZendeskSubject
+      - ZendeskTags
+      - ZendeskType
+      - ZendeskAssigne
+      - ZendeskCollaborators
+      - description
+      - addCommentPerEndpoint
+      - CommentToAdd
+    name: Ticket Management
+    description: Ticket management settings and data.
 outputSections:
-- outputs: []
-  name: General (Outputs group)
-  description: Generic group for outputs
+  - outputs: []
+    name: General (Outputs group)
+    description: Generic group for outputs
 outputs: []
 tests:
-- Test Playbook - NGFW Scan
+  - Test Playbook - NGFW Scan
 marketplaces:
-- marketplacev2
-- platform
+  - marketplacev2
+  - platform
 fromversion: 6.6.0
 contentitemexportablefields:
   contentitemfields: {}
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- cloud
-- cloud_posture
-- cloud_runtime_security
-- edr
-- xsiam
+  - agentix
+  - cloud
+  - cloud_posture
+  - cloud_runtime_security
+  - edr
+  - xsiam
