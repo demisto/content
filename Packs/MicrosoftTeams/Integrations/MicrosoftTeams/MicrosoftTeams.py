@@ -3398,7 +3398,7 @@ def entitlement_handler(integration_context: dict, request_body: dict, value: di
         user_email = team_member.get("user_email", "")
         demisto.debug(f"Found user in team cache: {user_email}")
     except ValueError:
-        demisto.debug(f"Cant Find user in team cache, check proactive users cache")
+        demisto.debug("Cant Find user in team cache, check proactive users cache")
         # Not in team cache - check proactive users cache
         proactive_users: dict = json.loads(integration_context.get("proactive_users", "{}"))
         if team_members_id in proactive_users:
