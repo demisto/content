@@ -538,6 +538,11 @@ ignore=GR109
 # GR109 fails on playbooks that use modules that the pack does not support. This ignore entry should be removed once GR109 can be ignored at the pack level / no longer poses an issue (new repo or pack).
 [file:silent-playbook-WmiPrvSe.exe_Rare_Child_Command_Line.yml]
 ignore=GR109
+
+# GR109 fails on playbooks that use modules that the pack does not support. This ignore entry should be removed once GR109 can be ignored at the pack level / no longer poses an issue (new repo or pack).
+[file:silent-playbook-MS_DLP_Rule_Match.yml]
+ignore=GR109
+
 [known_words]
 xsiam
 coreirapimodule
