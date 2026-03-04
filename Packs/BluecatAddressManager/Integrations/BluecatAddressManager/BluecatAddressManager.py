@@ -458,9 +458,9 @@ def create_human_readable_entity(entity_obj: dict, name: str) -> str:
     entity_obj_cpy = dict(entity_obj)
     reversed_parents = list(reversed(entity_obj_cpy.get("Parents", [])))
     entity_obj_cpy.pop("Parents", None)
-    hr = tblToMd(f"Entity Result for {name}:", entity_obj_cpy, headerTransform=pascalToSpace)
+    hr = tableToMarkdown(f"Entity Result for {name}:", entity_obj_cpy, headerTransform=pascalToSpace)
     if reversed_parents:
-        hr += tblToMd("Parents Details:", reversed_parents, headerTransform=pascalToSpace)
+        hr += tableToMarkdown("Parents Details:", reversed_parents, headerTransform=pascalToSpace)
     return hr
 
 
