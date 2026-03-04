@@ -1542,7 +1542,7 @@ def checkpoint_update_address_range_command(
     tags_list = argToList(tags) if tags else None
     ignore_warnings_bool = argToBoolean(ignore_warnings)
     ignore_errors_bool = argToBoolean(ignore_errors)
-    nat_settings = build_nat_settings(None, nat_method, nat_ip, nat_install_on, nat_hide_behind)
+    nat_settings = build_nat_settings(None, nat_method, nat_ip, nat_install_on, nat_hide_behind, require_auto_rule=False)
 
     result = client.update_address_range(
         identifier,
@@ -3014,13 +3014,20 @@ def build_nat_settings(
     nat_ip: str | None = None,
     nat_install_on: str | None = None,
     nat_hide_behind: str | None = None,
+    require_auto_rule: bool = True,
 ) -> dict | None:
     """Build the nat-settings dict for the Check Point API from individual arguments.
 
     Returns None if no NAT arguments are provided.
 
+    Args:
+        require_auto_rule: When True, raises ValueError if nat_auto_rule is missing
+            when other nat_* arguments are provided. Set to False for commands that
+            do not expose nat_auto_rule (e.g. checkpoint-address-range-update).
+
     Raises:
-        ValueError: If nat_auto_rule is missing when other nat_* arguments are provided.
+        ValueError: If nat_auto_rule is missing when other nat_* arguments are provided
+            and require_auto_rule is True.
         ValueError: If nat_hide_behind is provided when nat_method is 'static'.
         ValueError: If nat_ip is missing when nat_method is 'hide' and nat_hide_behind is 'ip_address'.
         ValueError: If nat_ip is provided when nat_method is 'hide' and nat_hide_behind is 'gateway'.
@@ -3028,7 +3035,7 @@ def build_nat_settings(
     has_any_nat_arg = any([nat_method, nat_ip, nat_install_on, nat_hide_behind])
 
     # nat_auto_rule is required when any other nat_* argument is provided
-    if has_any_nat_arg and nat_auto_rule is None:
+    if require_auto_rule and has_any_nat_arg and nat_auto_rule is None:
         raise ValueError(
             "The 'nat_auto_rule' argument is required when any NAT argument "
             "(nat_method, nat_ip, nat_install_on, nat_hide_behind) is provided. "
