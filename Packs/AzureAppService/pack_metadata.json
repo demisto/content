@@ -10,13 +10,16 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "Security"
+        "Security",
+        "Alerts",
+        "Security Analytics"
     ],
     "useCases": [],
     "keywords": [
         "Azure",
         "App Service",
-        "Azure App Service"
+        "Azure App Service",
+        "Microsoft"
     ],
     "marketplaces": [
         "marketplacev2",

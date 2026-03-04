@@ -18,7 +18,8 @@
     "keywords": [
         "Azure",
         "WAF",
-        "Web Application Firewall"
+        "Web Application Firewall",
+        "Microsoft"
     ],
     "marketplaces": [
         "xsoar",

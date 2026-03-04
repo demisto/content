@@ -12,13 +12,17 @@
         "Cloud Service Provider"
     ],
     "tags": [
-        "IT"
+        "IT",
+        "Alerts",
+        "Security",
+        "Security Analytics"
     ],
     "useCases": [],
     "keywords": [
         "security center",
         "azure",
-        "Microsoft"
+        "Microsoft",
+        "Azure Security Center"
     ],
     "marketplaces": [
         "xsoar",

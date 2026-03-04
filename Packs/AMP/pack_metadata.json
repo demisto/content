@@ -10,7 +10,9 @@
     "categories": [
         "Endpoint"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
     "keywords": [
         "Cisco",

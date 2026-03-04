@@ -12,7 +12,8 @@
     "tags": [],
     "useCases": [],
     "keywords": [
-        "Atlassian"
+        "Atlassian",
+        "Jira"
     ],
     "marketplaces": [
         "xsoar",
