@@ -849,7 +849,7 @@ class Client(CoreClient):
         )
         return res.get("reply", {}).get("DATA", [])
 
-    def create_issue(self, request_data: dict):
+    def create_issue(self, request_data: dict) -> dict:
         res = self._http_request(
             method="POST",
             url_suffix="/issue",
@@ -857,7 +857,7 @@ class Client(CoreClient):
         )
         return res.get("reply", {})
 
-    def update_issue(self, issue_id: str, request_data: dict):
+    def update_issue(self, issue_id: str, request_data: dict) -> None:
         self._http_request(method="POST", url_suffix=f"/issue/{issue_id}", json_data=request_data, resp_type="response")
 
 
@@ -2971,7 +2971,7 @@ def list_issues_command(client: Client, args: Dict) -> CommandResults:
             converted_ids = [int(i) for i in issue_ids]
             filters.append({"field": "id", "operator": "in", "value": converted_ids})
         except (ValueError, TypeError):
-            return_error("Invalid Issue ID provided. Please ensure all IDs are numbers.")
+            raise DemistoException("Invalid Issue ID provided. Please ensure all IDs are numbers.")
     if external_id := argToList(args.get("external_id")):
         filters.append({"field": "external_id", "operator": "in", "value": external_id})
     if detection_method := argToList(args.get("detection_method")):
@@ -2992,7 +2992,7 @@ def list_issues_command(client: Client, args: Dict) -> CommandResults:
     page_size = arg_to_number(args.get("page_size")) or limit
     page = arg_to_number(args.get("page")) or 0
 
-    request_data: dict[str, Any] = {
+    request_data: Dict[str, Any] = {
         "request_data": {
             "search_from": page * page_size,
             "search_to": (page + 1) * page_size,
@@ -3128,7 +3128,7 @@ def update_issue_command(client: Client, args: Dict) -> CommandResults:
 
     issue_id = args.get("issue_id", "")
     if not str(issue_id).isdigit():
-        return CommandResults(readable_output=f"Error: '{issue_id}' is not a valid numeric ID.")
+        raise DemistoException(f"'{issue_id}' is not a valid numeric Issue ID.")
 
     request_data = {"request_data": {"update_data": update_data}}
     client.update_issue(issue_id, request_data)

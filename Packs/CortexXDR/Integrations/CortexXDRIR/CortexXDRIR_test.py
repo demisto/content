@@ -3875,7 +3875,7 @@ def test_endpoint_triage_command(mocker, args, expected_request_data):
             {"issue_id": "100", "status": "new"},
             [
                 {"field": "id", "operator": "in", "value": [100]},
-                {"field": "status.progress", "operator": "in", "value": ["new"]},
+                {"field": "status.progress", "operator": "in", "value": ["New"]},
             ],
             {},
         ),
@@ -3975,7 +3975,7 @@ def test_list_issues_command(args, expected_filters, expected_sort):
                 "issue_domain": "identity",
                 "category": "compliance",
                 "severity": "MEDIUM",
-                "type_": "misconfiguration",
+                "type": "misconfiguration",
                 "is_excluded": True,
                 "is_starred": False,
                 "assigned_to": "admin@example.com",
