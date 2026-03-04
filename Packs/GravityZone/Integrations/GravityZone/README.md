@@ -6,11 +6,11 @@ This integration was integrated and tested with version 6.6 of GravityZone.
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The URL of your GravityZone Cloud instance. | True |
-| Api key | API key to access the service REST API. | True |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
-| Fetch incidents |  | False |
-| Maximum incidents to fetch. | Maximum number of incidents per fetch. The default value is 50. | False |
+| API key | API key to access the service REST API. | True |
+| Trust any certificate (not secure) | When selected, the server certificates are not verified. | False |
+| Use system proxy settings | Use the system proxy settings for connecting to the server. | False |
+| Fetch incidents | When selected, the integration will fetch incidents from the server. | False |
+| Maximum incidents to fetch | Maximum number of incidents per fetch. The default value is 50. | False |
 | First fetch time | The time period from which the first fetch will start. | False |
 | Mirroring Direction | The mirroring direction in which to mirror the incident. You can mirror "Incoming" \(from GravityZone to Cortex XSOAR\), "Outgoing" \(from Cortex XSOAR to GravityZone\), or in both directions. | False |
 | Incident type |  | False |
@@ -84,7 +84,7 @@ Retrieves the list of managed endpoints.
 
 #### Human Readable Output
 
->### Gravity Zone Endpoints
+>### GravityZone Endpoints List
 >
 >|ID|Hostname|IP|OS|MAC|Vendor|
 >|---|---|---|---|---|---|
@@ -155,7 +155,7 @@ Retrieves endpoint details by endpoint ID.
 
 #### Human Readable Output
 
->### Gravity Zone Endpoint
+>### GravityZone Endpoint
 >
 >|ID|Hostname|IP|OS|Status|Vendor|LastLoggedUsers|
 >|---|---|---|---|---|---|---|
@@ -349,12 +349,12 @@ Isolates an endpoint from the network.
                 "TaskID": "6941bbc98ba450a5c10e5a16",
                 "TaskType": "Isolate",
                 "Status": "Processed",
-                "EndDate": "2025-12-16T22:06:33",
+                "EndDate": "2025-12-16T22:06:33Z",
                 "EndpointID": "6942a43afe8d4e463ca5c197",
                 "Hostname": "ENDPOINT_NAME",
                 "ErrorCode": "Success",
                 "Error": "Success",
-                "StartDate": "2025-12-16T22:06:33"
+                "StartDate": "2025-12-16T22:06:33Z"
             }
         }
     }
@@ -367,7 +367,7 @@ Isolates an endpoint from the network.
 >
 >|EndpointID|Hostname|StartDate|EndDate|Error|
 >|---|---|---|---|---|
->| 6942a43afe8d4e463ca5c197 | ENDPOINT_NAME | 2025-12-16T22:06:33 | 2025-12-16T22:06:33 | Success |
+>| 6942a43afe8d4e463ca5c197 | ENDPOINT_NAME | 2025-12-16T22:06:33Z | 2025-12-16T22:06:33Z | Success |
 
 ### gz-endpoint-deisolate
 
@@ -412,12 +412,12 @@ Restores an isolated endpoint to the network.
                 "TaskID": "6941bbc98ba450a5c10e5a16",
                 "TaskType": "Deisolate",
                 "Status": "Processed",
-                "EndDate": "2025-12-16T22:08:33",
+                "EndDate": "2025-12-16T22:08:33Z",
                 "EndpointID": "6942a43afe8d4e463ca5c197",
                 "Hostname": "ENDPOINT_NAME",
                 "ErrorCode": "Success",
                 "Error": "Success",
-                "StartDate": "2025-12-16T22:08:33"
+                "StartDate": "2025-12-16T22:08:33Z"
             }
         }
     }
@@ -430,7 +430,7 @@ Restores an isolated endpoint to the network.
 >
 >|EndpointID|Hostname|StartDate|EndDate|Error|
 >|---|---|---|---|---|
->| 6942a43afe8d4e463ca5c197 | ENDPOINT_NAME | 2025-12-16T22:08:33 | 2025-12-16T22:08:33 | Success |
+>| 6942a43afe8d4e463ca5c197 | ENDPOINT_NAME | 2025-12-16T22:08:33Z | 2025-12-16T22:08:33Z | Success |
 
 ### gz-endpoint-kill-process
 
@@ -478,12 +478,12 @@ Terminates a process on an endpoint by process ID.
                 "TaskID": "6941b6ffa830c3132b0d63d8",
                 "TaskType": "KillProcess",
                 "Status": "Processed",
-                "EndDate": "2025-12-16T21:46:08",
+                "EndDate": "2025-12-16T21:46:08Z",
                 "EndpointID": "6942a43afe8d4e463ca5c197",
                 "Hostname": "ENDPOINT_NAME",
                 "ErrorCode": "Success",
                 "Error": "Success",
-                "StartDate": "2025-12-16T21:46:07",
+                "StartDate": "2025-12-16T21:46:07Z",
                 "ProcessID": 5876,
                 "ProcessPath": ""
             }
@@ -498,7 +498,7 @@ Terminates a process on an endpoint by process ID.
 >
 >|EndpointID|Hostname|StartDate|EndDate|Error|ProcessID|
 >|---|---|---|---|---|---|
->| 6942a43afe8d4e463ca5c197 | ENDPOINT_NAME | 2025-12-16T21:46:07 | 2025-12-16T21:46:08 | Success | 5876 |
+>| 6942a43afe8d4e463ca5c197 | ENDPOINT_NAME | 2025-12-16T21:46:07Z | 2025-12-16T21:46:08Z | Success | 5876 |
 
 ### gz-endpoint-run-command
 
@@ -593,6 +593,42 @@ Uploads a file to an endpoint.
 | GravityZone.Command.UploadFile.EndDate | Date | The end date of the command execution. |
 | GravityZone.Command.UploadFile.EntryID | String | The entry ID of the uploaded file. |
 | GravityZone.Command.UploadFile.DestinationPath | String | The destination path of the uploaded file. |
+
+#### Command example
+
+```!gz-endpoint-upload-file id=6942a43afe8d4e463ca5c197 entry_id=LtvQ6B8eCFvTNo7bf3vDUD@25729aa7-7442-4231-8b98-ecb0fc29a642 remote_location=/root/test/```
+
+#### Context Example
+
+```json
+{
+    "GravityZone": {
+        "Command": {
+            "UploadFile": {
+                "TaskID": "694447384f1ba9a2650ec75a",
+                "TaskType": "UploadFile",
+                "Status": "Processed",
+                "EndDate": "2025-12-18T20:26:40Z",
+                "EndpointID": "6942a43afe8d4e463ca5c197",
+                "Hostname": "ENDPOINT_NAME",
+                "ErrorCode": "Success",
+                "Error": "Success",
+                "StartDate": "2025-12-18T20:26:00Z",
+                "EntryID": "LtvQ6B8eCFvTNo7bf3vDUD@25729aa7-7442-4231-8b98-ecb0fc29a642",
+                "DestinationPath": "/root/test/"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### GravityZone.Command.UploadFile command on hosts 6942a43afe8d4e463ca5c197
+>
+>|EndpointID|Hostname|StartDate|EndDate|Error|EntryID|DestinationPath|
+>|---|---|---|---|---|---|---|
+>| 6942a43afe8d4e463ca5c197 | ENDPOINT_NAME | 2025-12-18T20:26:00Z | 2025-12-18T20:26:40Z | Success | LtvQ6B8eCFvTNo7bf3vDUD@25729aa7-7442-4231-8b98-ecb0fc29a642 | /root/test/ |
 
 ### gz-endpoint-list-by-running-process-hash
 
@@ -972,7 +1008,7 @@ Retrieves incident details by ID.
 
 #### Human Readable Output
 
->### Gravity Zone Incident
+>### GravityZone Incident
 >
 >|Action Taken|Assigned Priority|Assigned User|Company Name|Created|Endpoint ID|Endpoint IP|Endpoint Name|ID|Last Processed|Last Updated|Number|Permalink|Severity Score|Status|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -1012,23 +1048,23 @@ Retrieves incidents within the last three days from all endpoints or a specific 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GravityZone.SummarizedIncidents.ID | String | The incident ID. |
-| GravityZone.SummarizedIncidents.Type | String | The incident type \('incident' / 'extendedIncident'\). |
-| GravityZone.SummarizedIncidents.CompanyName | String | The GravityZone company name where the incident is located. |
-| GravityZone.SummarizedIncidents.Number | Number | The incident number \(specific to the company\). |
-| GravityZone.SummarizedIncidents.SeverityScore | Number | The incident severity score \(0 - 100\). |
-| GravityZone.SummarizedIncidents.Status | Number | The incident status. |
-| GravityZone.SummarizedIncidents.ActionTaken | String | The action taken by the detecting technology \('reported' / 'blocked' / 'partially_blocked'\). |
-| GravityZone.SummarizedIncidents.Created | Date | The date when the incident was detected on the endpoint / sensor. |
-| GravityZone.SummarizedIncidents.LastUpdated | Date | The date when the incident was last updated in GravityZone or by the endpoint / sensor. |
-| GravityZone.SummarizedIncidents.LastProcessed | Date | The incident last processed date by GravityZone services. |
-| GravityZone.SummarizedIncidents.Permalink | String | The incident URL in the GravityZone Console. |
-| GravityZone.SummarizedIncidents.AssignedPriority | String | The priority assigned to the incident \('unknown' / 'low' / 'medium' / 'high' / 'critical'\). |
-| GravityZone.SummarizedIncidents.AssignedUserId | String | The ID of the user assigned to the incident. |
-| GravityZone.SummarizedIncidents.RawJSON | JSON | The raw JSON response from the GravityZone API. |
-| GravityZone.SummarizedIncidents.EndpointID | String | The endpoint ID. Available only for 'incident'-type incidents. |
-| GravityZone.SummarizedIncidents.EndpointHostname | String | The endpoint hostname. Available only for 'incident'-type incidents. |
-| GravityZone.SummarizedIncidents.EndpointIP | String | The endpoint IP address. Available only for 'incident'-type incidents. |
+| GravityZone.IncidentsList.ID | String | The incident ID. |
+| GravityZone.IncidentsList.Type | String | The incident type \('incident' / 'extendedIncident'\). |
+| GravityZone.IncidentsList.CompanyName | String | The GravityZone company name where the incident is located. |
+| GravityZone.IncidentsList.Number | Number | The incident number \(specific to the company\). |
+| GravityZone.IncidentsList.SeverityScore | Number | The incident severity score \(0 - 100\). |
+| GravityZone.IncidentsList.Status | Number | The incident status. |
+| GravityZone.IncidentsList.ActionTaken | String | The action taken by the detecting technology \('reported' / 'blocked' / 'partially_blocked'\). |
+| GravityZone.IncidentsList.Created | Date | The date when the incident was detected on the endpoint / sensor. |
+| GravityZone.IncidentsList.LastUpdated | Date | The date when the incident was last updated in GravityZone or by the endpoint / sensor. |
+| GravityZone.IncidentsList.LastProcessed | Date | The incident last processed date by GravityZone services. |
+| GravityZone.IncidentsList.Permalink | String | The incident URL in the GravityZone Console. |
+| GravityZone.IncidentsList.AssignedPriority | String | The priority assigned to the incident \('unknown' / 'low' / 'medium' / 'high' / 'critical'\). |
+| GravityZone.IncidentsList.AssignedUserId | String | The ID of the user assigned to the incident. |
+| GravityZone.IncidentsList.RawJSON | JSON | The raw JSON response from the GravityZone API. |
+| GravityZone.IncidentsList.EndpointID | String | The endpoint ID. Available only for 'incident'-type incidents. |
+| GravityZone.IncidentsList.EndpointHostname | String | The endpoint hostname. Available only for 'incident'-type incidents. |
+| GravityZone.IncidentsList.EndpointIP | String | The endpoint IP address. Available only for 'incident'-type incidents. |
 
 #### Command example
 
@@ -1039,7 +1075,7 @@ Retrieves incidents within the last three days from all endpoints or a specific 
 ```json
 {
     "GravityZone": {
-        "SummarizedIncidents": [
+        "IncidentsList": [
             {
                 "ActionTaken": "reported",
                 "AssignedPriority": "unknown",
@@ -1129,7 +1165,7 @@ Retrieves incidents within the last three days from all endpoints or a specific 
 
 #### Human Readable Output
 
->### Summarized Incidents List
+>### GravityZone Incidents List
 >
 >|ActionTaken|Assigned Priority|Assigned User ID|Attack Types|Company Name|Created|ID|Last Processed|Last Updated|Number|Permalink|Severity Score|Status|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -1144,7 +1180,7 @@ Retrieves incidents within the last three days from all endpoints or a specific 
 ```json
 {
     "GravityZone": {
-        "SummarizedIncidents": [
+        "IncidentsList": [
             {
                 "ActionTaken": "reported",
                 "AssignedPriority": "unknown",
@@ -1234,7 +1270,7 @@ Retrieves incidents within the last three days from all endpoints or a specific 
 
 #### Human Readable Output
 
->### Summarized Incidents List
+>### GravityZone Incidents List
 >
 >|ActionTaken|Assigned Priority|Assigned User ID|Attack Types|Company Name|Created|ID|Last Processed|Last Updated|Number|Permalink|Severity Score|Status|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -1249,7 +1285,7 @@ Retrieves incidents within the last three days from all endpoints or a specific 
 ```json
 {
     "GravityZone": {
-        "SummarizedIncidents": [
+        "IncidentsList": [
             {
                 "ActionTaken": "reported",
                 "AssignedPriority": "critical",
@@ -1320,7 +1356,7 @@ Retrieves incidents within the last three days from all endpoints or a specific 
 
 #### Human Readable Output
 
->### Summarized Incidents List
+>### GravityZone Incidents List
 >
 >|ActionTaken|Assigned Priority|Assigned User ID|Attack Types|Company Name|Created|Endpoint ID|Endpoint IP|Endpoint Name|ID|Last Processed|Last Updated|Number|Permalink|Severity Score|Status|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|

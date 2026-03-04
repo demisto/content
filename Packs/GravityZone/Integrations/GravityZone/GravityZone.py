@@ -140,27 +140,28 @@ class Client(BaseClient):
         Raises:
             DemistoException: If neither api_key nor jwt_token is provided.
         """
-        super().__init__(base_url=f"{url.strip('/')}", verify=verify, proxy=proxy)
+        super().__init__(base_url=url.strip("/"), verify=verify, proxy=proxy)
 
         if not api_key and (not jwt_token):
             raise DemistoException("Either 'api_key' or 'jwt_token' must be provided for authentication.")
 
-        self.api_key = api_key
-        self.jwt_token = jwt_token
-        self.headers = self._build_headers()
+        self.headers = self._build_headers(api_key, jwt_token)
 
-    def _build_headers(self) -> dict[str, Any]:
+    def _build_headers(self, api_key: str | None, jwt_token: str | None) -> dict[str, Any]:
         """
         Build the headers for the HTTP requests based on the authentication method.
+        Args:
+            api_key (Optional[str]): API key for Basic Authentication.
+            jwt_token (Optional[str]): JWT token for Bearer Authentication.
         Returns:
             dict[str, Any]: Headers for the HTTP requests.
         """
         headers = {"Content-Type": "application/json"}
-        if self.api_key:
-            auth_sequence = f"{self.api_key}:".encode()
+        if api_key:
+            auth_sequence = f"{api_key}:".encode()
             headers["Authorization"] = f"Basic {base64.b64encode(auth_sequence).decode()}"
-        elif self.jwt_token:
-            headers["Authorization"] = f"Bearer {self.jwt_token}"
+        elif jwt_token:
+            headers["Authorization"] = f"Bearer {jwt_token}"
         return headers
 
     @logger
@@ -744,7 +745,7 @@ def check_investigation_status(args: dict[str, Any], client: Client) -> PollResu
     metadata = args.get("metadata", {})
     if isinstance(metadata, str):
         metadata = json.loads(metadata)
-    if output_file and len(output_file) == 0:
+    if not output_file:
         output_file = None
 
     if not target_id or not activity_id:
@@ -761,7 +762,7 @@ def check_investigation_status(args: dict[str, Any], client: Client) -> PollResu
     url = investigation_file_url.get("url")
     error_code = investigation_file_url.get("errorCode")
 
-    activity_type = metadata.get("activityType")
+    activity_type = metadata.get("activityType", 0)
 
     command_name_from_activity_type = ACTIVITY_NUMERIC_TO_COMMAND_NAME.get(activity_type, f"UnknownActivity_{hex(activity_type)}")
 
@@ -1439,7 +1440,7 @@ def get_incident_human_readable_output(context_incident: dict[str, Any]) -> str:
         data["Endpoint Name"] = computer_name
     if computer_ip:
         data["Endpoint IP"] = computer_ip
-    return tableToMarkdown("Gravity Zone Incident", data)
+    return tableToMarkdown("GravityZone Incident", data)
 
 
 def get_incident_notes_human_readable_output(context_incident: dict[str, Any]) -> str:
@@ -1539,7 +1540,7 @@ def generate_human_readable_summarized_incidents_from_context(
         if computer_ip:
             processed_incident["Endpoint IP"] = computer_ip
         processed_incidents.append(processed_incident)
-    return tableToMarkdown("Summarized Incidents List", processed_incidents)
+    return tableToMarkdown("GravityZone Incidents List", processed_incidents)
 
 
 def get_node_by_id(node_id: str, incident: dict[str, Any]) -> dict[str, str] | None:
@@ -1785,12 +1786,12 @@ def generate_task_output(
         "TaskID": task_id,
         "TaskType": task_type,
         "Status": status if status else "Error",
-        "EndDate": end_date if end_date else datetime.now().isoformat(),
+        "EndDate": f"{end_date}Z" if end_date else datetime.now(UTC).strftime(DATE_FORMAT),
         "EndpointID": endpoint_id,
         "Hostname": host_name if host_name else "Unknown",
         "ErrorCode": error_code if error_code else "-1000",
         "Error": error if error else "Invalid Command Arguments",
-        "StartDate": start_date if start_date else datetime.now().isoformat(),
+        "StartDate": f"{start_date}Z" if start_date else datetime.now(UTC).strftime(DATE_FORMAT),
     }
 
 
@@ -2167,7 +2168,7 @@ def gz_incident_list_command(client: Client, args: dict[str, Any]) -> CommandRes
     readable_output = generate_human_readable_summarized_incidents_from_context(context_data)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="GravityZone.SummarizedIncidents",
+        outputs_prefix="GravityZone.IncidentsList",
         outputs_key_field="ID",
         outputs=context_data,
         raw_response=incidents,
@@ -2355,7 +2356,7 @@ def gz_endpoint_list_command(client: Client, args: dict[str, Any]) -> CommandRes
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            "Gravity Zone Endpoints", outputs, headers=["ID", "Hostname", "IP", "OS", "MAC", "Vendor"]
+            "GravityZone Endpoints List", outputs, headers=["ID", "Hostname", "IP", "OS", "MAC", "Vendor"]
         ),
         raw_response=raw_endpoints,
         outputs=outputs,
@@ -2385,7 +2386,7 @@ def gz_endpoint_get_command(client: Client, args: dict[str, Any]) -> CommandResu
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            "Gravity Zone Endpoint",
+            "GravityZone Endpoint",
             entry,
             headers=[
                 "ID",

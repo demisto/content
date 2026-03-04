@@ -1,4 +1,4 @@
-### Gravity Zone Incident
+### GravityZone Incident
 |Action Taken|Assigned Priority|Assigned User|Company Name|Created|ID|Last Processed|Last Updated|Number|Permalink|Severity Score|Status|Type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | Blocked | High | Unassigned | COMPANY_NAME | 2025-12-17T07:30:24+02:00 | 6942404716491034acd30418 | 2025-12-17T07:32:11+02:00 | 2025-12-17T07:30:24+02:00 | 476 | https://localhost/#!/incidents/view/6942404716491034acd30418 | 51% | 0 (Pending) | Extended Incident (XDR) |

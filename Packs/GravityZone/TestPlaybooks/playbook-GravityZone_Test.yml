@@ -1,6 +1,6 @@
-id: GravityZone
+id: GravityZone Test
 version: -1
-name: GravityZone
+name: GravityZone Test
 starttaskid: "0"
 tasks:
   "0":
@@ -1339,62 +1339,62 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.SummarizedIncidents.ID
+              simple: GravityZone.IncidentsList.ID
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.SummarizedIncidents.Type
+              simple: GravityZone.IncidentsList.Type
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.SummarizedIncidents.CompanyName
+              simple: GravityZone.IncidentsList.CompanyName
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.SummarizedIncidents.Number
+              simple: GravityZone.IncidentsList.Number
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.SummarizedIncidents.SeverityScore
+              simple: GravityZone.IncidentsList.SeverityScore
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.SummarizedIncidents.Status
+              simple: GravityZone.IncidentsList.Status
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.SummarizedIncidents.Created
+              simple: GravityZone.IncidentsList.Created
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.SummarizedIncidents.LastUpdated
+              simple: GravityZone.IncidentsList.LastUpdated
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.SummarizedIncidents.LastProcessed
+              simple: GravityZone.IncidentsList.LastProcessed
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.SummarizedIncidents.Permalink
+              simple: GravityZone.IncidentsList.Permalink
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.SummarizedIncidents.AssignedPriority
+              simple: GravityZone.IncidentsList.AssignedPriority
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.SummarizedIncidents.RawJSON
+              simple: GravityZone.IncidentsList.RawJSON
             iscontext: true
     continueonerrortype: ""
     view: |-

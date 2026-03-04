@@ -34,7 +34,7 @@
       "headers": {
         "Content-Disposition": "attachment; filename=\"investigation_file_ENDPOINT_NAME_2025-12-18-12-45-53.tgz\""
       },
-      "content": "investigation_2025-12-18_12-45-53.log\n"
+      "content": "investigation_2025-12-18_12-45-53.log"
     }
   }
 ]

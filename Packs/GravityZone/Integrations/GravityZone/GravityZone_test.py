@@ -140,6 +140,7 @@ def test_fetch_incidents_command(mock_demisto, requests_mock):
 
     incident_names = [incident.get("name") for incident in incidents]
     assert incident_names == ["GravityZone Incident #477", "GravityZone Incident #475"]
+    assert mock_demisto.setLastRun.call_count == 1
 
 
 @patch("GravityZone.demisto")
@@ -830,6 +831,7 @@ def test_update_remote_system_command(mock_demisto, requests_mock, incident_id, 
 
     # Assert command response
     assert command_response == incident_id
+    assert requests_mock.called
 
 
 @pytest.mark.parametrize(

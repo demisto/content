@@ -1,4 +1,4 @@
-### Gravity Zone Incident
+### GravityZone Incident
 |Action Taken|Assigned Priority|Assigned User|Company Name|Created|Endpoint ID|Endpoint IP|Endpoint Name|ID|Last Processed|Last Updated|Number|Permalink|Severity Score|Status|Type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | Reported | Unknown | Unassigned | COMPANY_NAME | 2025-12-17T09:02:03+02:00 | ENDPOINT_ID | ENDPOINT_IP | ENDPOINT_NAME | INCIDENT_ID_1 | 2025-12-17T09:02:13+02:00 | 2025-12-17T09:02:03+02:00 | 477 | https://localhost/#!/incidents/view/INCIDENT_ID_1 | 33% | 0 (Pending) | Incident (EDR) |

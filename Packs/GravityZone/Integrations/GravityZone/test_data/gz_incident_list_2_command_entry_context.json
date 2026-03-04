@@ -1,5 +1,5 @@
 {
-    "GravityZone.SummarizedIncidents(val.ID && val.ID == obj.ID)": [
+    "GravityZone.IncidentsList(val.ID && val.ID == obj.ID)": [
         {
             "ID": "INCIDENT_ID_1",
             "Number": 477,

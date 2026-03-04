@@ -4,12 +4,12 @@
             "TaskID": "694447384f1ba9a2650ec75a",
             "TaskType": "UploadFile",
             "Status": "Processed",
-            "EndDate": "2025-12-18T20:26:40",
+            "EndDate": "2025-12-18T20:26:40Z",
             "EndpointID": "6942a43afe8d4e463ca5c197",
             "Hostname": "ENDPOINT_NAME",
             "ErrorCode": "2",
             "Error": "Task failed! [2]",
-            "StartDate": "2025-12-18T20:26:00",
+            "StartDate": "2025-12-18T20:26:00Z",
             "EntryID": "abc",
             "DestinationPath": "/home/ENDPOINT_NAME/"
         }

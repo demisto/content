@@ -1,4 +1,4 @@
-### Gravity Zone Endpoints
+### GravityZone Endpoints List
 |ID|Hostname|IP|OS|MAC|Vendor|
 |---|---|---|---|---|---|
 | 67c87017f3e11f09dc9143e8 | HOST_NAME | IP_158 | Windows 10 Pro | 005056b1ef97 | GravityZone |

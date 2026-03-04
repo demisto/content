@@ -21,7 +21,7 @@ configuration:
 - name: credentials
   type: 9
   required: true
-  displaypassword: Api key
+  displaypassword: API key
   hiddenusername: true
   section: Connect
   additionalinfo: API key to access the service REST API.
@@ -32,6 +32,7 @@ configuration:
   advanced: true
   type: 8
   section: Connect
+  additionalinfo: When selected, the server certificates are not verified.
 
 - name: proxy
   display: Use system proxy settings
@@ -39,16 +40,18 @@ configuration:
   advanced: true
   type: 8
   section: Connect
+  additionalinfo: Use the system proxy settings for connecting to the server.
 
 - name: isFetch
   display: Fetch incidents
   type: 8
   required: false
   section: Collect
+  additionalinfo: When selected, the integration will fetch incidents from the server.
 
 - additionalinfo: The maximum number of incidents per fetch. Default is 50.
   defaultvalue: '50'
-  display: Maximum incidents to fetch.
+  display: Maximum incidents to fetch
   name: max_fetch
   section: Collect
   type: 0
@@ -711,55 +714,55 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: GravityZone.SummarizedIncidents.ID
+    - contextPath: GravityZone.IncidentsList.ID
       description: The incident ID.
       type: String
-    - contextPath: GravityZone.SummarizedIncidents.Type
+    - contextPath: GravityZone.IncidentsList.Type
       description: The incident type ('incident' / 'extendedIncident').
       type: String
-    - contextPath: GravityZone.SummarizedIncidents.CompanyName
+    - contextPath: GravityZone.IncidentsList.CompanyName
       description: The GravityZone company name where the incident is located.
       type: String
-    - contextPath: GravityZone.SummarizedIncidents.Number
+    - contextPath: GravityZone.IncidentsList.Number
       description: The incident number (specific to the company).
       type: Number
-    - contextPath: GravityZone.SummarizedIncidents.SeverityScore
+    - contextPath: GravityZone.IncidentsList.SeverityScore
       description: The incident severity score (0 - 100).
       type: Number
-    - contextPath: GravityZone.SummarizedIncidents.Status
+    - contextPath: GravityZone.IncidentsList.Status
       description: The incident status.
       type: Number
-    - contextPath: GravityZone.SummarizedIncidents.ActionTaken
+    - contextPath: GravityZone.IncidentsList.ActionTaken
       description: The action taken by the detecting technology ('reported' / 'blocked' / 'partially_blocked').
       type: String
-    - contextPath: GravityZone.SummarizedIncidents.Created
+    - contextPath: GravityZone.IncidentsList.Created
       description: The date the incident was detected on the endpoint / sensor.
       type: Date
-    - contextPath: GravityZone.SummarizedIncidents.LastUpdated
+    - contextPath: GravityZone.IncidentsList.LastUpdated
       description: The date the incident was last updated in GravityZone or by the endpoint / sensor.
       type: Date
-    - contextPath: GravityZone.SummarizedIncidents.LastProcessed
+    - contextPath: GravityZone.IncidentsList.LastProcessed
       description: The incident last processed date by GravityZone services.
       type: Date
-    - contextPath: GravityZone.SummarizedIncidents.Permalink
+    - contextPath: GravityZone.IncidentsList.Permalink
       description: The incident URL in the GravityZone Console.
       type: String
-    - contextPath: GravityZone.SummarizedIncidents.AssignedPriority
+    - contextPath: GravityZone.IncidentsList.AssignedPriority
       description: The priority assigned to the incident ('unknown' / 'low' / 'medium' / 'high' / 'critical').
       type: String
-    - contextPath: GravityZone.SummarizedIncidents.AssignedUserId
+    - contextPath: GravityZone.IncidentsList.AssignedUserId
       description: The ID of the user assigned to the incident.
       type: String
-    - contextPath: GravityZone.SummarizedIncidents.RawJSON
+    - contextPath: GravityZone.IncidentsList.RawJSON
       description: The raw JSON response from the GravityZone API.
       type: JSON
-    - contextPath: GravityZone.SummarizedIncidents.EndpointID
+    - contextPath: GravityZone.IncidentsList.EndpointID
       description: The endpoint ID. Available only for 'incident'-type incidents.
       type: String
-    - contextPath: GravityZone.SummarizedIncidents.EndpointHostname
+    - contextPath: GravityZone.IncidentsList.EndpointHostname
       description: The endpoint hostname. Available only for 'incident'-type incidents.
       type: String
-    - contextPath: GravityZone.SummarizedIncidents.EndpointIP
+    - contextPath: GravityZone.IncidentsList.EndpointIP
       description: The endpoint IP address. Available only for 'incident'-type incidents.
       type: String
 
@@ -943,4 +946,4 @@ fromversion: 6.10.0
 marketplaces:
 - xsoar
 tests:
-- No tests (auto formatted)
+- GravityZone - Test
