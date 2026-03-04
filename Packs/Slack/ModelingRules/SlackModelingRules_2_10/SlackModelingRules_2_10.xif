@@ -26,7 +26,7 @@ filter action IN("user_login*", "user_logout_compromised", "user_logout_non_comp
     xdm.event.outcome_reason = if(
         action = "user_login_failed", "failed_login",
         action IN("user_logout_non_compliant_mobile_app_version", "user_logout_compromised"), "auth_policy_access_violation",
-        "NOT_SPECIFIED"
+        "OTHER"
         ),
     xdm.event.original_event_type = action,
     xdm.network.ip_protocol = XDM_CONST.IP_PROTOCOL_TCP,
