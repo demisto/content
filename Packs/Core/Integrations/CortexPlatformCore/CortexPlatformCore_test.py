@@ -8384,6 +8384,66 @@ def test_update_case_command_status_resolved_with_reason(mocker: MockerFixture):
     assert call_args["caseResolvedComment"] == "This was a false alarm"
 
 
+def test_update_case_command_status_resolved_true_positive(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with status=resolved and resolve_reason=true_positive.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Case is updated with the correct backend enum value STATUS_090_TRUE_POSITIVE (not STATUS_090_RESOLVED_TRUE_POSITIVE).
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+
+    args = {
+        "case_id": "123",
+        "status": "resolved",
+        "resolve_reason": "true_positive",
+    }
+
+    update_case_command(client, args)
+
+    mock_update_case.assert_called_once()
+    call_args = mock_update_case.call_args[0][0]
+    assert call_args["status"] == "STATUS_025_RESOLVED"
+    assert call_args["resolve_reason"] == "STATUS_090_TRUE_POSITIVE"
+
+
+def test_update_case_command_status_resolved_security_testing(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with status=resolved and resolve_reason=security_testing.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Case is updated with the correct backend enum value STATUS_100_SECURITY_TESTING (not STATUS_100_RESOLVED_SECURITY_TESTING).
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+
+    args = {
+        "case_id": "123",
+        "status": "resolved",
+        "resolve_reason": "security_testing",
+    }
+
+    update_case_command(client, args)
+
+    mock_update_case.assert_called_once()
+    call_args = mock_update_case.call_args[0][0]
+    assert call_args["status"] == "STATUS_025_RESOLVED"
+    assert call_args["resolve_reason"] == "STATUS_100_SECURITY_TESTING"
+
+
 def test_update_case_command_status_resolved_without_reason_raises_error(mocker: MockerFixture):
     """
     GIVEN:
