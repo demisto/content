@@ -23,7 +23,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 def get_now():
-    """A wrapper function for datetime.now
+    """A wrapper function for datetime.utcnow
     helps handle tests
     Returns:
         datetime: time right now in the UTC timezone.
