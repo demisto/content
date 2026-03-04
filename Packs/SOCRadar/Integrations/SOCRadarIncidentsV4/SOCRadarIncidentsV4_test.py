@@ -546,7 +546,7 @@ def test_test_fetch_success(mock_client, mocker):
     )
 
     result = test_fetch_command(mock_client, {"first_fetch": "3 days", "limit": "5"})
-    assert "✅" in result.readable_output
+    assert "Found" in result.readable_output
 
 
 def test_test_fetch_no_incidents(mock_client, mocker):
@@ -555,7 +555,7 @@ def test_test_fetch_no_incidents(mock_client, mocker):
     mocker.patch.object(mock_client, "search_incidents", return_value=_mock_response([]))
 
     result = test_fetch_command(mock_client, {"first_fetch": "3 days", "limit": "5"})
-    assert "❌" in result.readable_output
+    assert "No incidents found" in result.readable_output
 
 
 def test_client_search_incidents_error_response(mock_client, mocker):
