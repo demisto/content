@@ -1416,6 +1416,7 @@ def test_get_extended_hostnames_set_empty():
     """
     assert get_extended_hostnames_set({}) == set()
 
+
 def test_get_command_results_skips_unsupported_command_error(setup, mocker):
     """
     Given:
@@ -1430,20 +1431,11 @@ def test_get_command_results_skips_unsupported_command_error(setup, mocker):
 
     unsupported_error_msg = "Unsupported Command : endpoint , verify you have proper integration enabled to support it"
     results = [
-        {
-            "Type": EntryType.ERROR,
-            "Contents": unsupported_error_msg
-        },
-        {
-            "Type": EntryType.NOTE,
-            "EntryContext": {"key": "value"},
-            "HumanReadable": "Valid output"
-        }
+        {"Type": EntryType.ERROR, "Contents": unsupported_error_msg},
+        {"Type": EntryType.NOTE, "EntryContext": {"key": "value"}, "HumanReadable": "Valid output"},
     ]
 
-    context_outputs, human_readable_entry, error_outputs = command_runner.get_command_results(
-        "endpoint", results, {}
-    )
+    context_outputs, human_readable_entry, error_outputs = command_runner.get_command_results("endpoint", results, {})
 
     # Verify that the error output was skipped (error_outputs should be empty)
     assert len(error_outputs) == 0

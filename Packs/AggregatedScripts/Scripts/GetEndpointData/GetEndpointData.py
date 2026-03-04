@@ -338,10 +338,13 @@ class EndpointCommandRunner:
         for entry in results:
             entry_type = entry.get("Type")
             contents = entry.get("Contents")
-            if isinstance(contents, str) and "Unsupported Command : endpoint , verify you have proper integration enabled to support it" in contents:
+            if (
+                isinstance(contents, str)
+                and "Unsupported Command : endpoint , verify you have proper integration enabled to support it" in contents
+            ):
                 demisto.debug(f"Skipping unsupported command error for '{command}' command.")
                 continue
-                
+
             if entry_type == EntryType.ERROR or entry_type == EntryType.WARNING:
                 command_error_outputs.append(hr_to_command_results(command, args, contents, entry_type=entry_type))  # type: ignore[arg-type]
             elif entry_type == EntryType.NOTE:
