@@ -5156,48 +5156,34 @@ def verify_support_ticket_permission_command(client: Client) -> CommandResults:
     """
     
     
-    try: 
-        response = client.check_support_permission()
-        reply = response.get("reply", {})
-        user_csp_permission = reply.get("user_csp_permission", False)
-        tenant_entitlement_check = reply.get("tenant_entitlement_check", False)
-    
-        has_permission = bool(user_csp_permission and tenant_entitlement_check)
-    
-        output = {
-            "user_csp_permission": user_csp_permission,
-            "tenant_entitlement_check": tenant_entitlement_check,
-            "has_permission": True,
-        }
-    
-        readable_output = tableToMarkdown(
-            "Support Ticket Permission",
-            output,
-            headerTransform=string_to_table_header,
-        )
-    
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.SupportTicketPermission",
-            outputs=output,
-            raw_response=response,
-        )
-    
-    except Exception as e:
-        return CommandResults(
-            readable_output="hardcoded",
-            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.SupportTicketPermission",
-            outputs={
-            "user_csp_permission": True,
-            "tenant_entitlement_check": True,
-            "has_permission": True,
-        },
-            raw_response={
-            "user_csp_permission": True,
-            "tenant_entitlement_check": True,
-            "has_permission": True,
-        },
-        )
+    response = client.check_support_permission()
+    reply = response.get("reply", {})
+    user_csp_permission = reply.get("user_csp_permission", False)
+    tenant_entitlement_check = reply.get("tenant_entitlement_check", False)
+
+    has_permission = bool(user_csp_permission and tenant_entitlement_check)
+
+    output = {
+        "user_csp_permission": user_csp_permission,
+        "tenant_entitlement_check": tenant_entitlement_check,
+        "has_permission": has_permission,
+    }
+
+    if not has_permission:
+        raise DemistoException("You do not have the required permissions to manage support tickets.")
+
+    readable_output = tableToMarkdown(
+        "Support Ticket Permission",
+        output,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.SupportTicketPermission",
+        outputs=output,
+        raw_response=response,
+    )
 
 
 def main():  # pragma: no cover
@@ -5352,15 +5338,15 @@ def main():  # pragma: no cover
             return_results(delete_profile_command(client, args))
 
         elif command == "core-fill-support-ticket":
-            # verify_platform_version("8.14.0")
+            verify_platform_version("8.14.0")
             return_results(core_fill_support_ticket_command(args))
 
         elif command == "core-get-support-ticket-taxonomy":
-            # verify_platform_version("8.14.0")
+            verify_platform_version("8.14.0")
             return_results(get_support_ticket_taxonomy_command(client, args))
 
         elif command == "core-verify-support-ticket-permission":
-            # verify_platform_version("8.14.0")
+            verify_platform_version("8.14.0")
             return_results(verify_support_ticket_permission_command(client))
 
     except Exception as err:
