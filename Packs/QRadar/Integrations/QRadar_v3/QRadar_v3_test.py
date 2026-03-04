@@ -1669,19 +1669,17 @@ def test_integration_context_during_run(test_case_data, mocker):
         enrich_mock = mocker.patch.object(QRadar_v3, "enrich_offense_with_events")
         enrich_mock.side_effect = second_loop_offenses_with_events
         expected_ctx_second_loop = ctx_test_data["context_data_second_loop_default"].copy()
-        # The samples from the first loop are preserved and second loop samples are appended and sliced by SAMPLE_SIZE
+        # The samples from the second loop take priority over first loop samples (new samples first)
         if is_offenses_first_loop:
             expected_ctx_second_loop[SAMPLE_INCIDENTS_KEY] = (
-                expected_ctx_first_loop.get(SAMPLE_INCIDENTS_KEY, []) + expected_ctx_second_loop.get(SAMPLE_INCIDENTS_KEY, [])
+                expected_ctx_second_loop.get(SAMPLE_INCIDENTS_KEY, []) + expected_ctx_first_loop.get(SAMPLE_INCIDENTS_KEY, [])
             )[:SAMPLE_SIZE]
     else:
         mocker.patch.object(client, "offenses_list", return_value=[])
         expected_ctx_second_loop = expected_ctx_first_loop.copy()
-        # When no new offenses in second loop, the existing samples are appended and sliced by SAMPLE_SIZE
-        if expected_ctx_first_loop.get(SAMPLE_INCIDENTS_KEY):
-            expected_ctx_second_loop[SAMPLE_INCIDENTS_KEY] = (
-                expected_ctx_first_loop.get(SAMPLE_INCIDENTS_KEY, []) + expected_ctx_first_loop.get(SAMPLE_INCIDENTS_KEY, [])
-            )[:SAMPLE_SIZE]
+        # When no new offenses in second loop, existing samples remain unchanged (no new samples to prepend)
+        # The old behavior was to append existing samples to themselves, but with the fix,
+        # since there are no new samples, the existing samples stay as-is
     perform_long_running_loop(
         client=client,
         offenses_per_fetch=2,
@@ -2431,26 +2429,26 @@ def test_is_incident_size_acceptable_false():
         pytest.param(
             ["sample1", "sample2"],
             ["sample3", "sample4"],
-            ["sample1", "sample2"],
-            id="Two new samples with two existing samples",
+            ["sample3", "sample4"],
+            id="Two new samples with two existing samples - new samples take priority",
         ),
         pytest.param(
             [],
             ["sample3", "sample4", "sample5"],
             ["sample3", "sample4"],
-            id="No new samples with existing samples list",
+            id="No existing samples with new samples list - new samples stored",
         ),
         pytest.param(
             '["sample1"]',
             ["sample2", "sample3", "sample4"],
             ["sample2", "sample3"],
-            id="Handling legacy string format",
+            id="Handling legacy string format - new samples override",
         ),
         pytest.param(
             ["sample1"],
             ["sample2"],
-            ["sample1", "sample2"],
-            id="One new sample with one existing sample",
+            ["sample2", "sample1"],
+            id="One new sample with one existing sample - new sample first",
         ),
         pytest.param(
             [],
@@ -2462,9 +2460,9 @@ def test_is_incident_size_acceptable_false():
 )
 def test_merge_samples(current_samples: list, new_samples: list, expected_samples: list):
     """
-    Given samples in the existing integration contex and new samples in the changes to be merged
+    Given samples in the existing integration context and new samples in the changes to be merged
     When calling merge_samples
-    Then ensure merged samples do not exceed `SAMPLE_SIZE`
+    Then ensure merged samples do not exceed `SAMPLE_SIZE` and new samples take priority over old samples
     """
     from QRadar_v3 import merge_samples
 
