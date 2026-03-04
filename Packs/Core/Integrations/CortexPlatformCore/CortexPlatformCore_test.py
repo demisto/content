@@ -8421,7 +8421,8 @@ def test_update_case_command_status_resolved_security_testing(mocker: MockerFixt
     WHEN:
         The update_case_command function is called.
     THEN:
-        Case is updated with the correct backend enum value STATUS_100_SECURITY_TESTING (not STATUS_100_RESOLVED_SECURITY_TESTING).
+        Case is updated with the correct backend enum value STATUS_100_SECURITY_TESTING
+        (not STATUS_100_RESOLVED_SECURITY_TESTING).
     """
     from CortexPlatformCore import update_case_command, Client
 
