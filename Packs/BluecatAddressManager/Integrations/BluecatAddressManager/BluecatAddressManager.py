@@ -139,8 +139,7 @@ class Client:
         no match is found.
 
         :param name: The name of the target entity (e.g., a DNS name or FQDN).
-        :param parent_id: The ID of the parent entity to search within. Defaults to
-            the root configuration ID if None.
+        :param parent_id: The ID of the parent entity to search within.
         :param entity_type: The BlueCat object type constant to filter by
             (e.g., 'HostRecord', 'IP4Address'). If None, no type filter is applied.
         :param include_ha: When True, includes xHA pair status details in the response.
@@ -151,7 +150,7 @@ class Client:
         :rtype: dict
         """
         params = {
-            "parentId": parent_id if parent_id else self.conf,
+            "parentId": parent_id,
             "name": name,
             "type": entity_type,
             "includeHA": include_ha,
