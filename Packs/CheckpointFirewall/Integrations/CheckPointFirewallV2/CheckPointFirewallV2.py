@@ -3000,7 +3000,46 @@ def build_nat_settings(
     """Build the nat-settings dict for the Check Point API from individual arguments.
 
     Returns None if no NAT arguments are provided.
+
+    Raises:
+        ValueError: If nat_auto_rule is missing when other nat_* arguments are provided.
+        ValueError: If nat_hide_behind is provided when nat_method is 'static'.
+        ValueError: If nat_ip is missing when nat_method is 'hide' and nat_hide_behind is 'ip_address'.
+        ValueError: If nat_ip is provided when nat_method is 'hide' and nat_hide_behind is 'gateway'.
     """
+    has_any_nat_arg = any([nat_method, nat_ip, nat_install_on, nat_hide_behind])
+
+    # nat_auto_rule is required when any other nat_* argument is provided
+    if has_any_nat_arg and nat_auto_rule is None:
+        raise ValueError(
+            "The 'nat_auto_rule' argument is required when any NAT argument "
+            "(nat_method, nat_ip, nat_install_on, nat_hide_behind) is provided. "
+            "Please provide 'nat_auto_rule'."
+        )
+
+    # nat_hide_behind is forbidden when nat_method is 'static'
+    if nat_method == "static" and nat_hide_behind:
+        raise ValueError(
+            "The 'nat_hide_behind' argument is forbidden when 'nat_method' is 'static'. "
+            "Please remove 'nat_hide_behind' or change 'nat_method'."
+        )
+
+    # When nat_method is 'hide' and nat_hide_behind is 'gateway', nat_ip must not be provided
+    if nat_method == "hide" and nat_hide_behind == "gateway" and nat_ip:
+        raise ValueError(
+            "The 'nat_ip' argument must not be provided when 'nat_method' is 'hide' and "
+            "'nat_hide_behind' is 'gateway'. Please remove 'nat_ip' or change 'nat_hide_behind'."
+            " This prevents ambiguity and matches SmartConsole behavior"
+        )
+
+    # When nat_method is 'hide' and nat_hide_behind is 'ip_address', nat_ip is required
+    if nat_method == "hide" and nat_hide_behind == "ip_address" and not nat_ip:
+        raise ValueError(
+            "The 'nat_ip' argument is required when 'nat_method' is 'hide' and "
+            "'nat_hide_behind' is 'ip_address'. Please provide 'nat_ip'."
+            " This prevents ambiguity and matches SmartConsole behavior."
+        )
+
     nat_settings: dict = {}
     if nat_auto_rule is not None:
         nat_settings["auto-rule"] = argToBoolean(nat_auto_rule)
