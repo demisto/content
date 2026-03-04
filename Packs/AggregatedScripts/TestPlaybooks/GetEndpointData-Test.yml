@@ -2479,5 +2479,5 @@ dirtyInputs: true
 marketplaces:
 - platform
 - marketplacev2
-- xsoar_saas
+- xsoar
 fromversion: 8.0.0
