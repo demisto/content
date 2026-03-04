@@ -1346,9 +1346,9 @@ script:
       - Ask
       - Prevent
       - Detect
-    - description: Profiles to apply this indicator to.
+    - description: 'List of profile-action pairs. Each item should be in the format: <profile>_<action> (e.g., "Standard Threat Prevention_Prevent"). The profile and action are separated by an underscore.'
       isArray: true
-      name: profile
+      name: profile_action
     - description: Comments string.
       name: comments
     - auto: PREDEFINED
@@ -1428,7 +1428,7 @@ script:
       description: Executes the command with the specified session ID.
       name: session_id
       required: true
-    - description: 'List of profile-action pairs. Each item should be in the format: profile_action (e.g., "Standard Threat Prevention_prevent"). The profile and action are separated by an underscore.'
+    - description: 'List of profile-action pairs. Each item should be in the format: <profile>_<action> (e.g., "Standard Threat Prevention_Prevent"). The profile and action are separated by an underscore.'
       isArray: true
       name: profile_action
     - auto: PREDEFINED

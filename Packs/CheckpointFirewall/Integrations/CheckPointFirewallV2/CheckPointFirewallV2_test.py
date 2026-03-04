@@ -436,7 +436,9 @@ def test_checkpoint_add_threat_indicator_command(mocker):
     mocked_client = mocker.Mock()
     mock_response = util_load_json("test_data/add_threat_indicator.json")
     mocked_client.add_threat_indicator.return_value = mock_response
-    result = checkpoint_add_threat_indicator_command(mocked_client, "threat_indicator_1", []).outputs
+    result = checkpoint_add_threat_indicator_command(
+        mocked_client, "threat_indicator_1", profile_action="Standard Threat Prevention_prevent", observables=[]
+    ).outputs
     assert result.get("task-id") == "123456789"
 
 
@@ -1267,11 +1269,11 @@ def test_add_threat_indicator_with_new_args(mocker):
     checkpoint_add_threat_indicator_command(
         mocked_client,
         "indicator1",
+        profile_action="Standard Threat Prevention_prevent,Strict Threat Prevention_detect",
         comments="indicator comment",
         color="yellow",
         tags="tag1,tag2",
         action="Prevent",
-        profile="profile1,profile2",
         ignore_warnings="true",
     )
 
@@ -1280,7 +1282,10 @@ def test_add_threat_indicator_with_new_args(mocker):
     assert call_kwargs[1]["color"] == "yellow"
     assert call_kwargs[1]["tags"] == ["tag1", "tag2"]
     assert call_kwargs[1]["action"] == "Prevent"
-    assert call_kwargs[1]["profile"] == ["profile1", "profile2"]
+    assert call_kwargs[1]["profile_overrides"] == [
+        {"profile": "Standard Threat Prevention", "action": "prevent"},
+        {"profile": "Strict Threat Prevention", "action": "detect"},
+    ]
     assert call_kwargs[1]["ignore_warnings"] is True
 
 
@@ -1291,11 +1296,11 @@ def test_add_threat_indicator_without_new_args(mocker):
     mock_response = util_load_json("test_data/add_threat_indicator.json")
     mocked_client.add_threat_indicator.return_value = mock_response
 
-    checkpoint_add_threat_indicator_command(mocked_client, "indicator1", [])
+    checkpoint_add_threat_indicator_command(mocked_client, "indicator1", profile_action="Minimal_inactive", observables=[])
 
     call_kwargs = mocked_client.add_threat_indicator.call_args
     assert call_kwargs[1]["tags"] is None
-    assert call_kwargs[1]["profile"] is None
+    assert call_kwargs[1]["profile_overrides"] == [{"profile": "Minimal", "action": "inactive"}]
 
 
 def test_update_threat_indicator_with_new_args(mocker):
