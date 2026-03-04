@@ -14,14 +14,16 @@
         "CI/CD"
     ],
     "tags": [
-        "IT"
+        "IT",
+        "Security"
     ],
     "useCases": [],
     "keywords": [
         "azure",
         "aks",
         "kubernetes",
-        "kubernetes services"
+        "kubernetes services",
+        "Microsoft"
     ],
     "marketplaces": [
         "xsoar",

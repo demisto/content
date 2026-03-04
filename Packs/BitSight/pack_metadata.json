@@ -12,7 +12,8 @@
     "tags": [
         "Alerts",
         "Security",
-        "Threat Intelligence Management"
+        "Threat Intelligence Management",
+        "IT"
     ],
     "useCases": [
         "Compliance",
@@ -20,7 +21,9 @@
         "Threat Intelligence Management"
     ],
     "keywords": [
-        "bitsight"
+        "bitsight",
+        "Bit Sight Event Collector",
+        "Bit Sight For Security Performance Management"
     ],
     "marketplaces": [
         "xsoar",

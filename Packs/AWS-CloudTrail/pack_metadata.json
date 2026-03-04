@@ -11,7 +11,8 @@
         "Cloud Service Provider"
     ],
     "tags": [
-        "marketplacev2:Data Source"
+        "marketplacev2:Data Source",
+        "Security"
     ],
     "useCases": [],
     "keywords": [
