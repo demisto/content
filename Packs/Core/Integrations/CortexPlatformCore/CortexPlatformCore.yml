@@ -3472,43 +3472,44 @@ script:
           isArray: true
           auto: PREDEFINED
           predefined:
-            - CONFIGURATION
-            - VULNERABILITY
-            - MALWARE
-            - IDENTITY
-            - DATA
-            - CODE
-            - POSTURE
-            - BRAND_PROTECTION
+            - Configuration
+            - Vulnerability
+            - Malware
+            - Identity
+            - Data
+            - Code
+            - Posture
+            - Brand protection
         - name: finding_source
           description: A comma-separated list of finding sources to filter by.
           isArray: true
           auto: PREDEFINED
           predefined:
-            - CORTEX_AGENTLESS_SCANNER
-            - CORTEX_AGENT
-            - TENABLE
-            - QUALYS
-            - CHECKMARX
-            - VERACODE
-            - SEMGREP
-            - SNYK
-            - GITHUB_ADVANCED_SECURITY
-            - SONARQUBE
-            - ZAP
-            - NUCLEI
-            - MEND
-            - BLACKDUCK
-            - EXTERNAL_CODE_SCANNER
-            - CORTEX_APPSEC
-            - CORTEX_ATTACK_SURFACE_MANAGEMENT
-            - CORTEX_ATTACK_SURFACE_TESTING
-            - CORTEX_NETWORK_SCANNER
-            - CORTEX_CONTAINER_REGISTRY_SCANNER
-            - CORTEX_SERVERLESS_FUNCTION_SCANNER
-            - CORTEX_CLI_SCANNER
-            - CORTEX_DATA_SECURITY
-            - RAPID7_INSIGHTVM
+            - Cortex agentless scanner
+            - Cortex agent
+            - Tenable
+            - Qualys
+            - Checkmarx
+            - Veracode
+            - Semgrep
+            - Snyk
+            - Github advanced security
+            - Sonarqube
+            - Zap
+            - Nuclei
+            - Mend
+            - Blackduck
+            - External code scanner
+            - Cortex appsec
+            - Cortex attack surface management
+            - Cortex attack surface testing
+            - Cortex network scanner
+            - Cortex container registry scanner
+            - Cortex serverless function scanner
+            - Cortex cli scanner
+            - Cortex data security
+            - Rapid7 insightvm
+            - THIRD_PARTY_SCANNER
         - name: page
           description: Page number for pagination.
           defaultValue: "0"

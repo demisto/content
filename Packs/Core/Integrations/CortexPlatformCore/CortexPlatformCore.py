@@ -4789,8 +4789,8 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
     asset_names = argToList(args.get("asset_name"))
     asset_category = argToList(args.get("asset_category"))
     asset_class = argToList(args.get("asset_class"))
-    category = argToList(args.get("category"))
-    finding_source = argToList(args.get("finding_source"))
+    category = [c.replace(" ", "_").upper() for c in argToList(args.get("category"))]
+    finding_source = [c.replace(" ", "_").upper() for c in argToList(args.get("finding_source"))]
     page = arg_to_number(args.get("page")) or 0
     page_size = arg_to_number(args.get("page_size")) or 100
 
