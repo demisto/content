@@ -13,7 +13,7 @@ SEARCH_SHA256_FIELDS = [
 ]
 
 
-NUMERIC_ARGS = {"issue_id", "offset", "limit"}
+NUMERIC_ARGS = {"issue_id", "page", "page_size"}
 
 
 def remove_empty_string_values(args: dict) -> dict:

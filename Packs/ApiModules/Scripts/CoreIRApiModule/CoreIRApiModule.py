@@ -4114,7 +4114,7 @@ def determine_issue_assignee_filter_field(assignee_list: list) -> str:
 def create_issues_filter(args) -> dict:
     """Build filter dictionary for issues based on provided arguments."""
     filter_builder = FilterBuilder()
-    # To maintain backward compatibility for time_frame 
+    # To maintain backward compatibility for time_frame
     filter_builder.add_time_range_field(
         ISSUE_FIELDS["start_time"], start_time=args.get("start_time"), end_time=args.get("end_time")
     )
@@ -4311,10 +4311,8 @@ def get_issues_by_filter_command(client: CoreClient, args: Dict):
             "Issue ID": alert.get("internal_id"),
             "Detection Timestamp": timestamp_to_datestring(alert.get("source_insert_ts")),
             "Name": alert.get("alert_name"),
-            "Severity": SEVERITY_STATUSES_REVERSE.get(alert.get("severity")) if is_platform() else alert.get("severity"),
-            "Status": STATUS_PROGRESS_REVERSE.get(alert.get("status.progress"))
-            if is_platform()
-            else alert.get("status.progress"),
+            "Severity": SEVERITY_STATUSES_REVERSE.get(alert.get("severity")),
+            "Status": STATUS_PROGRESS_REVERSE.get(alert.get("status.progress")),
             "Category": alert.get("alert_category"),
             "Action": alert.get("alert_action_status_readable"),
             "Description": alert.get("alert_description"),
