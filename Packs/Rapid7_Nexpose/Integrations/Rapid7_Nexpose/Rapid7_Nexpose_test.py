@@ -1,9 +1,12 @@
+import asyncio
 import json
 from pathlib import Path
+from unittest.mock import AsyncMock, MagicMock
 
 import copy
 import pytest
 from Rapid7_Nexpose import *
+from Rapid7_Nexpose import _AiohttpCompatContentStream, _AiohttpCompatResponse
 
 
 @pytest.fixture
@@ -2999,152 +3002,321 @@ async def test_stream_report_success(mocker):
 
 
 @pytest.mark.asyncio
-async def test_fetch_assets_long_running_command(mocker):
+async def test_aiohttp_compat_content_stream():
     """
     Given:
-      - Parameters for the fetch_assets_long_running_command function
-      - A token for authentication
+      - An httpx response object with async byte streaming via aiter_bytes
 
     When:
-      - Calling the fetch_assets_long_running_command function
+      - Wrapping it in _AiohttpCompatContentStream and calling iter_any()
 
     Then:
-      - Ensure the InsightVMClient is created with the correct parameters
-      - Ensure run_all_collectors is called with the correct parameters
-      - Ensure the function sleeps for the correct interval
-      - Ensure the function continues running in a loop
+      - Ensure iter_any() yields the same byte chunks as aiter_bytes()
     """
-    # Mock the parameters and token
-    params = {
-        "server": "https://test-server.com",
-        "credentials": {"identifier": "test-user", "password": "test-password"},
-        "unsecure": False,
-    }
-    token = "test-token"
+    # Create a mock httpx response with aiter_bytes
+    mock_httpx_response = MagicMock()
+    expected_chunks = [b"chunk1", b"chunk2", b"chunk3"]
 
-    # Mock the InsightVMClient
-    mock_client_instance = mocker.AsyncMock()
-    mock_client_class = mocker.patch("Rapid7_Nexpose.InsightVMClient", return_value=mock_client_instance)
-    mock_client_instance.__aenter__.return_value = mock_client_instance
+    async def mock_aiter_bytes():
+        for chunk in expected_chunks:
+            yield chunk
 
-    # Mock run_all_collectors
-    mock_run_all_collectors = mocker.patch("Rapid7_Nexpose.run_all_collectors")
+    mock_httpx_response.aiter_bytes = mock_aiter_bytes
 
-    # Mock asyncio.sleep to avoid waiting in the test
-    mock_sleep = mocker.patch("Rapid7_Nexpose.asyncio.sleep")
+    # Wrap in the adapter
+    stream = _AiohttpCompatContentStream(mock_httpx_response)
 
-    # Mock time.time to control the execution time
-    mock_time = mocker.patch("Rapid7_Nexpose.time.time")
-    # First call is at the start, second call is at the end of the first iteration
-    mock_time.side_effect = [100, 200, 300, 400]
+    # Collect chunks from iter_any()
+    collected_chunks: list[bytes] = []
+    async for chunk in stream.iter_any():
+        collected_chunks.append(chunk)
 
-    # Mock INTERVAL_SECONDS constant
-    mocker.patch("Rapid7_Nexpose.TWENTYFOUR_HOURS_AS_SECONDS", 3600)  # 1 hour
-
-    # Mock demisto.debug to avoid debug output during tests
-    mocker.patch("Rapid7_Nexpose.demisto.debug")
-
-    # Create a function to stop the infinite loop after 2 iterations
-    iteration_count = 0
-    original_sleep = asyncio.sleep
-
-    async def mock_sleep_with_exit(seconds):
-        nonlocal iteration_count
-        iteration_count += 1
-        if iteration_count >= 2:
-            raise Exception("Test complete")
-        return await original_sleep(0)  # Return immediately for testing
-
-    mock_sleep.side_effect = mock_sleep_with_exit
-
-    # Call the function under test and expect it to exit after 2 iterations
-    with pytest.raises(Exception, match="Test complete"):
-        await fetch_assets_long_running_command(params, token)
-
-    # Verify InsightVMClient was created with the correct parameters
-    mock_client_class.assert_called_with(
-        base_url="https://test-server.com", username="test-user", password="test-password", token="test-token", verify=True
-    )
-
-    # Verify run_all_collectors was called at least once
-    assert mock_run_all_collectors.call_count >= 1
-    mock_run_all_collectors.assert_called_with(mock_client_instance, batch_size=3000)
-
-    # Verify sleep was called
-    assert mock_sleep.call_count >= 1
+    assert collected_chunks == expected_chunks
 
 
 @pytest.mark.asyncio
-async def test_fetch_assets_long_running_command_error_handling(mocker):
+async def test_aiohttp_compat_response():
     """
     Given:
-      - Parameters for the fetch_assets_long_running_command function
-      - A token for authentication
-      - run_all_collectors raises an exception
+      - An httpx response object with status_code, headers, json(), text, and close()
 
     When:
-      - Calling the fetch_assets_long_running_command function
+      - Wrapping it in _AiohttpCompatResponse
 
     Then:
-      - Ensure the exception is caught and logged
-      - Ensure the function continues running in a loop despite the error
+      - Ensure .status returns the status_code
+      - Ensure .headers returns the headers
+      - Ensure await .json() returns the parsed JSON
+      - Ensure await .text() returns the text body
+      - Ensure await .release() completes without error
+      - Ensure .content returns an _AiohttpCompatContentStream instance
     """
-    # Mock the parameters and token
-    params = {
-        "server": "https://test-server.com",
-        "credentials": {"identifier": "test-user", "password": "test-password"},
-        "unsecure": False,
-    }
-    token = "test-token"
+    mock_httpx_response = MagicMock()
+    mock_httpx_response.status_code = 200
+    mock_httpx_response.headers = {"Content-Type": "application/json"}
+    mock_httpx_response.json.return_value = {"key": "value"}
+    mock_httpx_response.text = "response body"
+    mock_httpx_response.close = MagicMock()
 
-    # Mock the InsightVMClient
-    mock_client_instance = mocker.AsyncMock()
-    mocker.patch("Rapid7_Nexpose.InsightVMClient", return_value=mock_client_instance)
-    mock_client_instance.__aenter__.return_value = mock_client_instance
+    adapter = _AiohttpCompatResponse(mock_httpx_response)
 
-    # Mock run_all_collectors to raise an exception
-    mock_run_all_collectors = mocker.patch("Rapid7_Nexpose.run_all_collectors")
-    mock_run_all_collectors.side_effect = Exception("Test error")
+    # Verify .status
+    assert adapter.status == 200
 
-    # Mock asyncio.sleep to avoid waiting in the test
-    mock_sleep = mocker.patch("Rapid7_Nexpose.asyncio.sleep")
+    # Verify .headers
+    assert adapter.headers == {"Content-Type": "application/json"}
 
-    # Mock time.time to control the execution time
-    mock_time = mocker.patch("Rapid7_Nexpose.time.time")
-    # First call is at the start, second call is at the end of the first iteration
-    mock_time.side_effect = [100, 200, 300, 400]
+    # Verify await .json()
+    result_json = await adapter.json()
+    assert result_json == {"key": "value"}
 
-    # Mock TWENTYFOUR_HOURS_AS_SECONDS constant
-    mocker.patch("Rapid7_Nexpose.TWENTYFOUR_HOURS_AS_SECONDS", 3600)  # 1 hour
+    # Verify await .text()
+    result_text = await adapter.text()
+    assert result_text == "response body"
 
-    # Mock demisto.debug to check error logging
+    # Verify await .release() completes without error
+    await adapter.release()
+
+    # Verify .content returns _AiohttpCompatContentStream
+    assert isinstance(adapter.content, _AiohttpCompatContentStream)
+
+    # Verify .close() delegates to the underlying response
+    adapter.close()
+    mock_httpx_response.close.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_client_async_http_request(mocker):
+    """
+    Given:
+      - A Client instance with a mocked _request() method
+
+    When:
+      - Calling the async http_request() method
+
+    Then:
+      - Ensure _request() is called with the correct parameters
+      - Ensure the returned object is an _AiohttpCompatResponse
+    """
+    # Mock demisto.debug to avoid debug output during tests
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    # Create a mock httpx response
+    mock_httpx_response = MagicMock()
+    mock_httpx_response.status_code = 200
+    mock_httpx_response.headers = {"Content-Type": "application/json"}
+
+    # Create a client and mock _request
+    client = Client(url="https://test-server.com", username="user", password="pass", verify=False)
+    mocker.patch.object(client, "_request", new_callable=AsyncMock, return_value=mock_httpx_response)
+
+    # Call http_request
+    result = await client.http_request("GET", "/api/3/reports")
+
+    # Verify the result is an _AiohttpCompatResponse
+    assert isinstance(result, _AiohttpCompatResponse)
+    assert result.status == 200
+
+    # Verify _request was called with the correct parameters
+    client._request.assert_called_once_with(
+        method="GET",
+        full_url="https://test-server.com/api/3/reports",
+        json_data=None,
+        resp_type="response",
+        ok_codes=(200, 201, 202, 204),
+    )
+
+
+@pytest.mark.asyncio
+async def test_client_async_http_request_with_payload(mocker):
+    """
+    Given:
+      - A Client instance with a mocked _request() method
+      - A JSON payload to send
+
+    When:
+      - Calling the async http_request() method with a payload
+
+    Then:
+      - Ensure _request() is called with the payload as json_data
+    """
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    mock_httpx_response = MagicMock()
+    mock_httpx_response.status_code = 201
+    mock_httpx_response.headers = {}
+
+    client = Client(url="https://test-server.com", username="user", password="pass", verify=False)
+    mocker.patch.object(client, "_request", new_callable=AsyncMock, return_value=mock_httpx_response)
+
+    payload = {"name": "test-report", "format": "csv"}
+    result = await client.http_request("POST", "/api/3/reports", payload=payload)
+
+    assert isinstance(result, _AiohttpCompatResponse)
+    assert result.status == 201
+
+    client._request.assert_called_once_with(
+        method="POST",
+        full_url="https://test-server.com/api/3/reports",
+        json_data=payload,
+        resp_type="response",
+        ok_codes=(200, 201, 202, 204),
+    )
+
+
+@pytest.mark.asyncio
+async def test_client_async_http_request_retries_on_server_error(mocker):
+    """
+    Given:
+      - A Client instance where _request() returns a 500 status on the first call
+        and a 200 status on the second call
+
+    When:
+      - Calling the async http_request() method
+
+    Then:
+      - Ensure the method retries and eventually returns the successful response
+    """
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+    mocker.patch("Rapid7_Nexpose.asyncio.sleep", new_callable=AsyncMock)
+
+    mock_error_response = MagicMock()
+    mock_error_response.status_code = 500
+    mock_error_response.close = MagicMock()
+
+    mock_success_response = MagicMock()
+    mock_success_response.status_code = 200
+    mock_success_response.headers = {}
+
+    client = Client(url="https://test-server.com", username="user", password="pass", verify=False)
+    mocker.patch.object(
+        client,
+        "_request",
+        new_callable=AsyncMock,
+        side_effect=[mock_error_response, mock_success_response],
+    )
+
+    result = await client.http_request("GET", "/api/3/assets")
+
+    assert isinstance(result, _AiohttpCompatResponse)
+    assert result.status == 200
+    assert client._request.call_count == 2
+
+
+@pytest.mark.asyncio
+async def test_fetch_assets_command(mocker):
+    """
+    Given:
+      - A fully-initialised Client instance
+
+    When:
+      - Calling the fetch_assets_command function
+
+    Then:
+      - Ensure the client is used as an async context manager
+      - Ensure run_all_collectors is called with the correct parameters
+      - Ensure timing debug messages are logged
+    """
+    # Mock demisto.debug
     mock_debug = mocker.patch("Rapid7_Nexpose.demisto.debug")
 
-    # Create a function to stop the infinite loop after 2 iterations
-    iteration_count = 0
-    original_sleep = asyncio.sleep
+    # Mock time.time to control duration calculation
+    mock_time = mocker.patch("Rapid7_Nexpose.time.time")
+    mock_time.side_effect = [1000.0, 1042.5]
 
-    async def mock_sleep_with_exit(seconds):
-        nonlocal iteration_count
-        iteration_count += 1
-        if iteration_count >= 2:
-            raise Exception("Test complete")
-        return await original_sleep(0)  # Return immediately for testing
+    # Create a mock client that supports async context manager
+    mock_client = AsyncMock()
+    mock_client.__aenter__ = AsyncMock(return_value=mock_client)
+    mock_client.__aexit__ = AsyncMock(return_value=False)
 
-    mock_sleep.side_effect = mock_sleep_with_exit
+    # Mock run_all_collectors
+    mock_run_all_collectors = mocker.patch("Rapid7_Nexpose.run_all_collectors", new_callable=AsyncMock)
 
-    # Call the function under test and expect it to exit after 2 iterations
-    with pytest.raises(Exception, match="Test complete"):
-        await fetch_assets_long_running_command(params, token)
+    # Call the function under test
+    await fetch_assets_command(mock_client)
 
-    # Verify run_all_collectors was called at least once
-    assert mock_run_all_collectors.call_count >= 1
+    # Verify run_all_collectors was called with the client and default batch size
+    mock_run_all_collectors.assert_called_once_with(mock_client, batch_size=DEFAULT_BATCH_SIZE)
 
-    # Verify the error was logged
-    mock_debug.assert_any_call("Got the following error while trying to stream events: Test error")
+    # Verify the client was used as an async context manager
+    mock_client.__aenter__.assert_called_once()
+    mock_client.__aexit__.assert_called_once()
 
-    # Verify sleep was called
-    assert mock_sleep.call_count >= 1
+    # Verify debug messages were logged
+    mock_debug.assert_any_call("fetch-assets: starting collector run")
+    mock_debug.assert_any_call("fetch-assets: collector run completed in 42.5s")
+
+
+@pytest.mark.asyncio
+async def test_fetch_assets_command_propagates_errors(mocker):
+    """
+    Given:
+      - A Client instance where run_all_collectors raises an exception
+
+    When:
+      - Calling the fetch_assets_command function
+
+    Then:
+      - Ensure the exception propagates (no silent swallowing)
+    """
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+    mocker.patch("Rapid7_Nexpose.time.time", side_effect=[1000.0, 1010.0])
+
+    mock_client = AsyncMock()
+    mock_client.__aenter__ = AsyncMock(return_value=mock_client)
+    mock_client.__aexit__ = AsyncMock(return_value=False)
+
+    mocker.patch(
+        "Rapid7_Nexpose.run_all_collectors",
+        new_callable=AsyncMock,
+        side_effect=DemistoException("Collector failure"),
+    )
+
+    with pytest.raises(DemistoException, match="Collector failure"):
+        await fetch_assets_command(mock_client)
+
+
+def test_main_fetch_assets_dispatch(mocker):
+    """
+    Given:
+      - demisto.command() returns 'fetch-assets'
+
+    When:
+      - Calling main()
+
+    Then:
+      - Ensure asyncio.run is called with fetch_assets_command(client)
+      - Ensure demisto.info is called with the expected message
+    """
+    mocker.patch.object(demisto, "command", return_value="fetch-assets")
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "server": "https://test-server.com",
+            "credentials": {"identifier": "test-user", "password": "test-password"},
+            "unsecure": False,
+        },
+    )
+    mocker.patch.object(demisto, "info")
+    mocker.patch("Rapid7_Nexpose.handle_proxy")
+
+    mock_asyncio_run = mocker.patch("Rapid7_Nexpose.asyncio.run")
+
+    main()
+
+    # Verify asyncio.run was called once
+    mock_asyncio_run.assert_called_once()
+
+    # Verify the argument to asyncio.run is a coroutine (from fetch_assets_command)
+    call_args = mock_asyncio_run.call_args[0][0]
+    assert asyncio.iscoroutine(call_args)
+    # Clean up the unawaited coroutine to avoid RuntimeWarning
+    call_args.close()
+
+    # Verify demisto.info was called
+    demisto.info.assert_called_with("Starting fetch-assets execution.")
 
 
 @pytest.mark.asyncio
