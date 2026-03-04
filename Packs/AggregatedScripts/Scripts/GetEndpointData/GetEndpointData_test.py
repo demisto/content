@@ -1415,3 +1415,39 @@ def test_get_extended_hostnames_set_empty():
         It returns an empty set.
     """
     assert get_extended_hostnames_set({}) == set()
+
+def test_get_command_results_skips_unsupported_command_error(setup, mocker):
+    """
+    Given:
+        A command result containing an "Unsupported Command" error message.
+    When:
+        get_command_results is called.
+    Then:
+        The unsupported command error should be skipped and not added to command_error_outputs.
+    """
+    command_runner, _, _ = setup
+    mocker.patch("GetEndpointData.demisto.debug")
+
+    unsupported_error_msg = "Unsupported Command : endpoint , verify you have proper integration enabled to support it"
+    results = [
+        {
+            "Type": EntryType.ERROR,
+            "Contents": unsupported_error_msg
+        },
+        {
+            "Type": EntryType.NOTE,
+            "EntryContext": {"key": "value"},
+            "HumanReadable": "Valid output"
+        }
+    ]
+
+    context_outputs, human_readable_entry, error_outputs = command_runner.get_command_results(
+        "endpoint", results, {}
+    )
+
+    # Verify that the error output was skipped (error_outputs should be empty)
+    assert len(error_outputs) == 0
+    # Verify that the valid output was still processed
+    assert len(context_outputs) == 1
+    assert context_outputs[0] == {"key": "value"}
+    assert "Valid output" in human_readable_entry[0].readable_output
