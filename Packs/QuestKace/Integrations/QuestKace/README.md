@@ -640,7 +640,7 @@ Returns a list of all tickets in Quest KACE.
                     "State": "stalled"
                 },
                 "Submitter": {
-                    "Email": "tmalache@paloaltonetworks.com",
+                    "Email": "tmalache@example.com",
                     "FullName": "admin",
                     "ID": 10,
                     "UserName": "admin"
@@ -786,7 +786,7 @@ Returns a list of all tickets in Quest KACE.
                     "State": "stalled"
                 },
                 "Submitter": {
-                    "Email": "tmalache@paloaltonetworks.com",
+                    "Email": "tmalache@example.com",
                     "FullName": "admin",
                     "ID": 10,
                     "UserName": "admin"
@@ -1085,7 +1085,7 @@ Returns a list of all tickets in Quest KACE.
                     "State": "stalled"
                 },
                 "Submitter": {
-                    "Email": "tmalache@paloaltonetworks.com",
+                    "Email": "tmalache@example.com",
                     "FullName": "admin",
                     "ID": 10,
                     "UserName": "admin"
