@@ -5931,7 +5931,7 @@
             "instance_names": [
                 "virus_total_v3"
             ],
-            "fromversion": "6.10.0"
+            "fromversion": "8.0.0"
         },
         {
             "playbookID": "GetEndpointData-Test",
@@ -5940,7 +5940,7 @@
                 "active_directory_80k"
             ],
             "timeout": 300,
-            "fromversion": "6.10.0"
+            "fromversion": "8.0.0"
         },
         {
             "integrations": "Unit 42 Intelligence",
