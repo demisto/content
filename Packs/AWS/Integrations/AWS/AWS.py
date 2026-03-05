@@ -4920,7 +4920,11 @@ class EC2:
             outputs_key_field="FleetId",
             outputs=outputs,
             readable_output=tableToMarkdown(
-                "AWS EC2 Fleet", outputs, headers=["FleetId"], removeNull=True, headerTransform=pascalToSpace
+                "The AWS EC2 Fleet was created successfully",
+                outputs,
+                headers=["FleetId"],
+                removeNull=True,
+                headerTransform=pascalToSpace
             ),
             raw_response=response,
         )
@@ -5006,14 +5010,14 @@ class EC2:
 
         kwargs = remove_empty_elements(
             {
-                "Filters": parse_filter_field(args.get("filters")) if args.get("filters") else None,
+                "Filters": parse_filter_field(args.get("filters")),
                 "FleetIds": argToList(args.get("fleet_ids")),
             }
         )
 
         # Add pagination if no fleet_ids specified
         if not kwargs.get("FleetIds"):
-            kwargs.update(build_pagination_kwargs(args, minimum_limit=1))
+            kwargs.update(build_pagination_kwargs(args))
 
         print_debug_logs(client, f"Describing fleets with parameters: {kwargs}")
         response = client.describe_fleets(**kwargs)
@@ -5059,11 +5063,11 @@ class EC2:
         kwargs = remove_empty_elements(
             {
                 "FleetId": args.get("fleet_id"),
-                "Filters": parse_filter_field(args.get("filters")) if args.get("filters") else None,
+                "Filters": parse_filter_field(args.get("filters")),
             }
         )
 
-        kwargs.update(build_pagination_kwargs(args, minimum_limit=1))
+        kwargs.update(build_pagination_kwargs(args))
 
         print_debug_logs(client, f"Describing fleet instances with parameters: {kwargs}")
         response = client.describe_fleet_instances(**kwargs)
@@ -5077,16 +5081,13 @@ class EC2:
         if not active_instances:
             return CommandResults(readable_output="No active instances were found.")
 
+        response["FleetInstancesNextToken"] = response.pop("NextToken", None)
         response_data = {k: v for k, v in response.items() if k != "ResponseMetadata"}
-        outputs = {
-            "AWS.EC2.Fleets(val.FleetId && val.FleetId == obj.FleetId)": response_data,
-            "AWS.EC2.Fleets(true)": {"FleetInstancesNextToken": response_data.get("NextToken")},
-        }
 
         return CommandResults(
-            outputs=outputs,
+            outputs=response_data,
             readable_output=tableToMarkdown(
-                "AWS EC2 Fleets Instances",
+                f"AWS EC2 Fleet {args.get('fleet_id')} Instances",
                 active_instances,
                 headers=["InstanceId", "InstanceType", "SpotInstanceRequestId", "InstanceHealth"],
                 removeNull=True,
