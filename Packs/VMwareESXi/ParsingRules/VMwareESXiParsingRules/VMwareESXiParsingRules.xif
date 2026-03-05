@@ -1,6 +1,6 @@
-[INGEST:vendor="VMware", product="ESXi", target_dataset="VMware_ESXi_raw", no_hit=keep]
-// Filter for RFC 3164 log format, with ISO-8601 timestamp format: <PRI>YYYY-MM-DDTHH:MM:SS.mmZ HOSTNAME PROCESS: MSG
+[INGEST:vendor="VMware", product="ESXi", target_dataset="vmware_esxi_raw", no_hit=keep]
 filter _raw_log ~= "^\<*\d*\>*\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}"
+// Filter for RFC 3164 log format, with ISO-8601 timestamp format: <PRI>YYYY-MM-DDTHH:MM:SS.mmZ HOSTNAME PROCESS: MSG
 | alter
     parsed_fields = if(
     _raw_log ~= "^\<*\d*\>*\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}Z*", regexcapture(_raw_log, "\<*(?P<pri>\d*)\>*(?P<timestamp>\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}Z*)\s+(?P<hostname>\S+)\s+(?P<process_pid>.+?)\:\s*(?P<msg>.+)")),
@@ -17,8 +17,8 @@ filter _raw_log ~= "^\<*\d*\>*\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}"
     _time = tmp_format_check
 | fields -tmp*;
 
-// Filter for RFC 5242 log format, with ISO-8601 timestamp format: <PRI>VERSION YYYY-MM-DDTHH:MM:SS.mmZ HOSTNAME PROCESS: MSG
 filter
+// Filter for RFC 5242 log format, with ISO-8601 timestamp format: <PRI>VERSION YYYY-MM-DDTHH:MM:SS.mmZ HOSTNAME PROCESS: MSG
     _raw_log ~= "^\<\d+\>\d+\s+\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}"
 | alter
     parsed_fields = if(
