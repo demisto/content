@@ -844,3 +844,79 @@ def test_fetch_incidents_partial_page(mock_client, mocker):
 
     assert len(incidents) == 1
     assert next_run["last_alarm_ids"] == [999]
+
+
+def test_fetch_incidents_multi_page(mock_client, mocker):
+    """Test fetch collects incidents across multiple pages"""
+    from SOCRadarIncidentsV4MultiTenant import fetch_incidents
+
+    alarm_template = {
+        "company_id": "111",
+        "alarm_risk_level": "HIGH",
+        "alarm_asset": "example.com",
+        "status": "OPEN",
+        "date": "2024-01-15T10:30:00",
+        "alarm_type_details": {"alarm_main_type": "Test", "alarm_sub_type": ""},
+        "alarm_text": "test",
+        "tags": [],
+        "alarm_related_entities": [],
+    }
+
+    page1 = {
+        "is_success": True,
+        "data": [{**alarm_template, "alarm_id": i} for i in range(1, 6)],
+        "total_records": 10,
+        "total_pages": 2,
+        "current_page": 1,
+    }
+    page2 = {
+        "is_success": True,
+        "data": [{**alarm_template, "alarm_id": i} for i in range(6, 11)],
+        "total_records": 10,
+        "total_pages": 2,
+        "current_page": 2,
+    }
+
+    mocker.patch.object(mock_client, "search_incidents", side_effect=[page1, page2])
+
+    next_run, incidents = fetch_incidents(
+        client=mock_client,
+        max_results=100,
+        last_run={"last_fetch": "2024-01-14T00:00:00Z"},
+        first_fetch_time="3 days",
+        fetch_interval_minutes=1,
+    )
+
+    assert len(incidents) == 10
+    assert "last_alarm_ids" in next_run
+
+
+def test_fetch_incidents_severity_and_status_filter(mock_client, mocker):
+    """Test fetch passes severity and status filters to search_incidents"""
+    from SOCRadarIncidentsV4MultiTenant import fetch_incidents
+
+    mock_search = mocker.patch.object(
+        mock_client,
+        "search_incidents",
+        return_value={
+            "is_success": True,
+            "data": [],
+            "total_records": 0,
+            "total_pages": 0,
+            "current_page": 1,
+        },
+    )
+
+    fetch_incidents(
+        client=mock_client,
+        max_results=100,
+        last_run={},
+        first_fetch_time="3 days",
+        fetch_interval_minutes=1,
+        severities=["CRITICAL"],
+        status=["OPEN", "INVESTIGATING"],
+    )
+
+    call_kwargs = mock_search.call_args[1]
+    assert call_kwargs["severities"] == ["CRITICAL"]
+    assert call_kwargs["status"] == ["OPEN", "INVESTIGATING"]
