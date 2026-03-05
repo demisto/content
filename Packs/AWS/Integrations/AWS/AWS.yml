@@ -13544,12 +13544,6 @@ script:
         predefined:
           - 'true'
           - 'false'
-      - name: limit
-        description: The maximum number of results to return in a single call.
-        required: false
-      - name: next_token
-        description: The token for the next page of results.
-        required: false
     outputs:
       - contextPath: AWS.EC2.KeyPairs.KeyPairId
         description: The ID of the key pair.

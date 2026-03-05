@@ -5409,20 +5409,21 @@ class EC2:
                 "KeyNames": argToList(args.get("key_names")),
                 "Filters": parse_filter_field(args.get("filters")),
                 "IncludePublicKey": arg_to_bool_or_none(args.get("include_public_key")),
+
             }
         )
-
-        if not kwargs.get("KeyPairIds") and not kwargs.get("KeyNames"):
-            kwargs.update(build_pagination_kwargs(args))
 
         print_debug_logs(client, f"Describing key pairs with parameters: {kwargs}")
         response = client.describe_key_pairs(**kwargs)
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
         response = serialize_response_with_datetime_encoding(response)
         key_pairs = response.get("KeyPairs", [])
+
         if not key_pairs:
             return CommandResults(readable_output="No key pairs were found.")
+
         return CommandResults(
             outputs_prefix="AWS.EC2.KeyPairs",
             outputs_key_field="KeyPairId",
@@ -5436,6 +5437,7 @@ class EC2:
             ),
             raw_response=response,
         )
+
     @staticmethod
     def allocate_hosts_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -5458,14 +5460,17 @@ class EC2:
                 "OutpostArn": args.get("outpost_arn"),
                 "AssetIds": argToList(args.get("asset_ids")),
                 "TagSpecifications": [{"ResourceType": "dedicated-host", "Tags": parse_tag_field(args.get("tags"))}]
-                if args.get("tags")
-                else None,
             }
         )
+
+        if not kwargs.get("TagSpecifications"):
+            raise DemistoException("Tag specification must have at least one tag")
+
         print_debug_logs(client, f"Allocating Dedicated Hosts with parameters: {kwargs}")
         response = client.allocate_hosts(**kwargs)
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
         host_ids = response.get("HostIds", [])
         return CommandResults(
             outputs_prefix="AWS.EC2.Hosts",
@@ -5473,6 +5478,7 @@ class EC2:
             readable_output=f"Successfully allocated {args.get('quantity')} Dedicated Host(s). Host IDs: {', '.join(host_ids)}",
             raw_response=response,
         )
+
     @staticmethod
     def release_hosts_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -5484,30 +5490,32 @@ class EC2:
             CommandResults: Results containing successful and unsuccessful release information.
         """
         host_ids = argToList(args.get("host_ids"))
+        demisto.info(f"{host_ids=}")
         print_debug_logs(client, f"Releasing Dedicated Hosts: {host_ids}")
+
         response = client.release_hosts(HostIds=host_ids)
+        demisto.info(f"{response=}")
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-        successful = [item.get("HostId") for item in response.get("Successful", [])]
-        unsuccessful = response.get("Unsuccessful", [])
+
         outputs = remove_empty_elements(
             {
-                "Successful": successful,
-                "Unsuccessful": unsuccessful,
+                "Successful": response.get("Successful", []),
+                "Unsuccessful": response.get("Unsuccessful", []),
             }
         )
         readable_parts = []
-        if successful:
-            readable_parts.append(f"Successfully released: {', '.join(successful)}")
-        if unsuccessful:
-            failed_ids = [item.get("ResourceId") for item in unsuccessful]
-            readable_parts.append(f"Failed to release: {', '.join(str(i) for i in failed_ids)}")
+        if outputs.get("Successful"):
+            readable_parts.append(f"Successfully released: {', '.join(outputs.get('Successful'))}")
+        if outputs.get("Unsuccessful"):
+            readable_parts.append(f"Failed to release: {', '.join(outputs.get('Unsuccessful'))}")
         return CommandResults(
             outputs_prefix="AWS.EC2.ReleasedHosts",
             outputs=outputs,
             readable_output="\n".join(readable_parts) if readable_parts else "No hosts were released.",
             raw_response=response,
         )
+
     @staticmethod
     def create_traffic_mirror_session_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -5528,14 +5536,13 @@ class EC2:
                 "PacketLength": arg_to_number(args.get("packet_length")),
                 "Description": args.get("description"),
                 "TagSpecifications": [{"ResourceType": "traffic-mirror-session", "Tags": parse_tag_field(args.get("tags"))}]
-                if args.get("tags")
-                else None,
             }
         )
         print_debug_logs(client, f"Creating Traffic Mirror session with parameters: {kwargs}")
         response = client.create_traffic_mirror_session(**kwargs)
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
         response = serialize_response_with_datetime_encoding(response)
         session = response.get("TrafficMirrorSession", {})
         return CommandResults(
