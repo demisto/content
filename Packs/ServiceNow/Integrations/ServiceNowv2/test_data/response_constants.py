@@ -2710,7 +2710,7 @@ RESPONSE_ITEM_DETAILS = {
                     },
                     {
                         "index": 5,
-                        "label": "T-Mobile USA",
+                        "label": "TestMobile USA",
                         "price": 0,
                         "price_currency": "USD",
                         "recurring_price": 0,
