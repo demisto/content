@@ -1045,6 +1045,7 @@ def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
 
         return CommandResults(readable_output=message, raw_response={"error": error_msg, "traceback": traceback.format_exc()})
 
+
 def main() -> None:
     """Main execution function"""
     params = demisto.params()

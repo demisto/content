@@ -781,7 +781,8 @@ def test_client_search_incidents_error_response(mock_client, mocker, capfd):
 
     with capfd.disabled(), pytest.raises(DemistoException, match="Invalid request"):
         mock_client.search_incidents(limit=10, page=1)
-        
+
+
 def test_fetch_incidents_no_alarms(mock_client, mocker):
     """Test fetch when API returns no alarms"""
     from SOCRadarIncidentsV4MultiTenant import fetch_incidents
