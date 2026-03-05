@@ -1,6 +1,9 @@
 commonfields:
   id: McAfee Active Response
   version: -1
+sectionorder:
+- Connect
+- Collect
 name: McAfee Active Response
 display: McAfee Active Response
 category: Endpoint
@@ -12,21 +15,25 @@ configuration:
   defaultvalue: ""
   type: 12
   required: true
+  section: Connect
 - display: Client certificates content (see `client.crt` in instructions)
   name: cert_file
   defaultvalue: ""
   type: 12
   required: true
+  section: Connect
 - display: Client private key content (see `client.key` in instructions)
   name: private_key
   defaultvalue: ""
   type: 14
   required: true
+  section: Connect
 - display: Brokers urls (comma separated list in the form of - [ssl://]<hostname>[:port]) - get hostname & port from `brokerlist.properties` file in instructions. Note that the broker should be reachable from demisto server
   name: broker_urls
   defaultvalue: ""
   type: 0
   required: true
+  section: Connect
 script:
   script: ''
   type: python
@@ -118,10 +125,10 @@ script:
       description: "MAR Results in given collector(e.g. 'MAR.HostInfo`, For information about possible output paths, run the command: 'mar-collectors-list'."
     - contextPath: MAR
       description: "MAR Results in given collector(e.g. 'MAR.HostInfo`, For information about possible output paths, run the command: 'mar-collectors-list'."
-    description: Search endpoint data
+    description: Search endpoint data.
   - name: mar-collectors-list
     arguments: []
-    description: Returns a list of all collectors and their outputs
+    description: Returns a list of all collectors and their outputs.
   - name: mar-search-multiple
     arguments:
     - name: collectors
@@ -206,7 +213,7 @@ script:
     outputs:
     - contextPath: Mar.SearchMultiple
       description: "The result of the search query, For information about possible output paths, run the command: 'mar-collectors-list'."
-    description: Search endpoint data crossed by multiple collectors
+    description: Search endpoint data crossed by multiple collectors.
   - name: mar-search-services
     arguments:
     - name: filter-by
@@ -238,7 +245,7 @@ script:
       description: Service startup type.
     - contextPath: MAR.Services.User
       description: Service user.
-    description: Gets services information from McAfee Active Response
+    description: Gets services information from McAfee Active Response.
   - name: mar-search-processes
     arguments:
     - name: filter-by
@@ -286,7 +293,7 @@ script:
       description: Process user.
     - contextPath: MAR.Processes.User_id
       description: Process user id.
-    description: Gets processes information from McAfee Active Response
+    description: Gets processes information from McAfee Active Response.
   - name: mar-search-win-registry
     arguments:
     - name: filter-by
@@ -316,7 +323,7 @@ script:
       description: WinRegistry value data.
     - contextPath: MAR.WinRegistry.Valuetype
       description: WinRegistry value type.
-    description: Gets WinRegistry information from McAfee Active Response
+    description: Gets WinRegistry information from McAfee Active Response.
   - name: mar-search-files
     arguments:
     - name: filter-by
@@ -356,7 +363,7 @@ script:
       description: File created at.
     - contextPath: MAR.Files.Deleted_at
       description: File deleted at.
-    description: Gets files information from McAfee Active Response
+    description: Gets files information from McAfee Active Response.
   - name: mar-search-usb-connected-storage-devices
     arguments:
     - name: filter-by
@@ -394,7 +401,7 @@ script:
       description: Usb connected storage devices user name.
     - contextPath: MAR.UsbConnectedStorageDevices.Last_time_used_by_user
       description: Usb connected storage devices last time used by user.
-    description: Gets Usb connected devices information from McAfee Active Response
+    description: Gets Usb connected devices information from McAfee Active Response.
   - name: mar-search-user-profiles
     arguments:
     - name: filter-by
@@ -434,7 +441,7 @@ script:
       description: User profile sid.
     - contextPath: MAR.UserProfiles.Passwordexpires
       description: User profile password expired.
-    description: Gets user profiles information from McAfee Active Response
+    description: Gets user profiles information from McAfee Active Response.
   - name: mar-search-scheduled-tasks
     arguments:
     - name: filter-by
@@ -468,7 +475,7 @@ script:
       description: Scheduled tasks user name.
     - contextPath: MAR.ScheduledTasks.Schedule_on
       description: Scheduled tasks schedule on.
-    description: Gets scheduled tasks information from McAfee Active Response
+    description: Gets scheduled tasks information from McAfee Active Response.
   - name: mar-search-host-info
     arguments:
     - name: filter-by
@@ -496,8 +503,8 @@ script:
       description: Host Ip address.
     - contextPath: MAR.HostInfo.Os
       description: Host operation system.
-    description: Gets host information from McAfee Active Response
-  dockerimage: demisto/dxl:1.0.0.116949
+    description: Gets host information from McAfee Active Response.
+  dockerimage: demisto/dxl:1.0.0.6911103
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
