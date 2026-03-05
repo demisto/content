@@ -2425,10 +2425,10 @@ Builtin Roles with this permission includes: "Responder", "Privileged Responder"
 
 There is no context output for this command.
 
-### xdr-get-alerts
+### xdr-get-alerts (Deprecated)
 
 ***
-Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object.
+This command is deprecated, please use xdr-issue-list instead. Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object.
 Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value.
 
 ##### Required Permissions
@@ -3849,10 +3849,10 @@ There is no context output for this command.
 >The endpoint alias was changed successfully.
 Note: If there is no error in the process, then this is the output even when the specific endpoint does not exist.
 
-### xdr-update-alert
+### xdr-update-alert (Deprecated)
 
 ***
-Update one or more alerts. You can update up to 100 alerts per request. Missing fields are ignored. Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
+This command is deprecated, please use xdr-issue-update instead. Update one or more alerts. You can update up to 100 alerts per request. Missing fields are ignored. Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
 
 #### Base Command
 
