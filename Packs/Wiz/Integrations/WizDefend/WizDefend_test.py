@@ -2751,6 +2751,37 @@ def test_set_threat_comment(mock_return_error, mock_return_results, mock_args, s
             assert not mock_return_results.called
 
 
+def test_truncate_note():
+    from WizDefend import truncate_note, MAX_NOTE_LENGTH
+
+    # Short notes are unchanged
+    assert truncate_note("short note") == "short note"
+    assert truncate_note("") == ""
+    assert truncate_note(None) is None
+
+    # Exactly at limit is unchanged
+    exact = "a" * MAX_NOTE_LENGTH
+    assert truncate_note(exact) == exact
+
+    # Over limit gets truncated
+    long_text = "a" * (MAX_NOTE_LENGTH + 1)
+    result = truncate_note(long_text)
+    assert len(result) <= MAX_NOTE_LENGTH
+    assert result.endswith("... [truncated]")
+    assert len(result) == MAX_NOTE_LENGTH
+
+
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries", return_value={"id": "note-123"})
+def test_set_issue_note_truncates_long_note(mock_get_entries):
+    long_note = "a" * (MAX_NOTE_LENGTH + 1)
+    set_issue_note(str(uuid.uuid4()), long_note)
+
+    call_args = mock_get_entries.call_args
+    sent_text = call_args[0][1]["input"]["text"]
+    assert len(sent_text) <= MAX_NOTE_LENGTH
+    assert sent_text.endswith("... [truncated]")
+
+
 @pytest.mark.parametrize(
     "threat_notes,delete_success_count,should_succeed",
     [

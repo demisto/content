@@ -181,7 +181,7 @@ Resolve a Wiz Threat.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | issue_id | Threat issue id. | Required |
-| resolution_reason | Resolution reason. Possible values are: OBJECT_DELETED, ISSUE_FIXED, FALSE_POSITIVE, EXCEPTION, CONTROL_DISABLED, CONTROL_DELETED, WONT_FIX, DETECTION_EXPIRED. | Required |
+| resolution_reason | Resolution reason. Possible values are: MALICIOUS_THREAT, NOT_MALICIOUS_THREAT, SECURITY_TEST_THREAT, PLANNED_ACTION_THREAT, INCONCLUSIVE_THREAT. | Required |
 | resolution_note | Resolution note. | Required |
 
 ### wiz-defend-set-threat-in-progress
