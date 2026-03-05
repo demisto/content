@@ -1,8 +1,4 @@
 category: Database
-provider: Elastic
-sectionorder:
-- Connect
-- Collect
 commonfields:
   id: Elasticsearch v2
   version: -1
@@ -13,34 +9,31 @@ configuration:
   type: 0
   additionalinfo: The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. The default port for Elasticsearch v7 and below is 9200. Use the Server URL for on-premises deployments.
   section: Connect
-- display: Authorization type
-  defaultvalue: Basic auth
-  additionalinfo: |-
-    Select the authentication type and enter the appropriate credentials:
-    - Basic Auth: Enter Username and Password.
-    - Bearer Auth: Enter Username and Password.
-    - API Key Auth: Enter the API Key ID and API Key.
+- display: Kibana API URL
+  additionalinfo: 'The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Kibana port. The default port for the Kibana API is 443. Example: https://hostname.com:443'
+  name: kibana_url
+  type: 0
+  required: false
+- additionalinfo: 'Select the authentication type and enter the appropriate credentials:- Basic Auth: Enter Username and Password.- Bearer Auth: Enter Username and Password.- API Key Auth: Enter the API Key ID and API Key.'
+  display: Authorization type
   name: auth_type
+  type: 15
+  required: false
   options:
   - Basic auth
   - Bearer auth
   - API key auth
-  type: 15
-  section: Connect
-  required: true
-- additionalinfo: Use for API key auth
-  display: API key ID
-  displaypassword: API Key
+- display: API key ID
   name: api_key_auth_credentials
   type: 9
-  section: Connect
   required: false
-- additionalinfo: Use for Basic auth. Optionally you can use Username as an API key ID and Password as an API key for API Key auth.
-  display: Username
+  displaypassword: API Key
+- display: Username
   name: credentials
   type: 9
   section: Connect
   required: false
+  additionalinfo: Provide Username + Password instead of API key + API ID
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -53,73 +46,65 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- defaultvalue: Elasticsearch
-  additionalinfo: In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type.
-  display: Client type
+- display: Client type
   name: client_type
+  type: 15
+  section: Connect
+  required: false
+  additionalinfo: In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type.
+  advanced: true
+  defaultvalue: Elasticsearch
   options:
   - Elasticsearch
   - OpenSearch
   - Elasticsearch_v8
   - Elasticsearch_v9
-  type: 15
-  section: Connect
-  advanced: true
-  required: false
-- display: Index to fetch incidents from
+- display: Index from which to fetch incidents
   name: fetch_index
   type: 0
+  additionalinfo: |-
+    CSV
   section: Collect
   required: false
-  additionalinfo: CSV
 - display: Query String
   name: fetch_query
   type: 0
-  additionalinfo: |-
-    Query string uses the Lucene syntax.
-    For more information about the Lucene syntax, see the link in the help section.
-    The query will be used when fetching incidents. Index time field will be used as a filter in the query.
-
-    The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
   section: Collect
   required: false
+  additionalinfo: Query string uses the Lucene syntax.For more information about the Lucene syntax, see the link in the help section.The query will be used when fetching incidents. Index time field will be used as a filter in the query.The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
 - display: Index time field
   name: fetch_time_field
   type: 0
+  additionalinfo: |-
+    The time field used for sorting and limiting results. If using a nested field, separate field names with dot notation.
   section: Collect
   required: false
-  additionalinfo: The time field used for sorting and limiting results. If using a nested field, separate field names with dot notation.
 - display: Raw Query
   name: raw_query
   type: 12
-  additionalinfo: |-
-    Raw Query allows raw DSL queries and will override the 'Query String' Lucene syntax string.
-    Results will not be filtered or sorted. Use additional parameters in the raw query for these purposes.
-    For more information see the link in the help section.
-
-    The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
   section: Collect
   advanced: true
   required: false
-- display: Time field type
-  defaultvalue: 'Simple-Date'
+  additionalinfo: Raw Query allows raw DSL queries and will override the 'Query String' Lucene syntax string.Results will not be filtered or sorted. Use additional parameters in the raw query for these purposes.For more information see the link in the help section.The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
+- defaultvalue: 'Simple-Date'
+  display: Time field type
   name: time_method
   type: 15
-  options:
-  - Simple-Date
-  - Timestamp-Seconds
-  - Timestamp-Milliseconds
   section: Collect
   advanced: true
   required: false
   additionalinfo: For more information see the explanation in the help section.
+  options:
+  - Simple-Date
+  - Timestamp-Seconds
+  - Timestamp-Milliseconds
 - defaultvalue: 'true'
   display: Map JSON fields into labels
   name: map_labels
   type: 8
   section: Collect
-  advanced: true
   required: false
+  advanced: true
 - defaultvalue: '3 days'
   display: First fetch timestamp
   name: fetch_time
@@ -127,19 +112,19 @@ configuration:
   section: Collect
   required: false
   additionalinfo: <number> <time unit>, e.g., 12 hours, 7 days
-- defaultvalue: '50'
-  display: The maximum number of results per fetch
+- display: The maximum number of results to return per fetch.
   name: fetch_size
   type: 0
+  defaultvalue: '50'
   section: Collect
   required: false
 - display: Request timeout (in seconds).
   name: timeout
   type: 0
-  defaultvalue: '60'
   section: Connect
-  advanced: true
   required: false
+  advanced: true
+  defaultvalue: '60'
 - display: Incident type
   name: incidentType
   type: 13
@@ -147,9 +132,14 @@ configuration:
   required: false
 - display: Fetch incidents
   name: isFetch
-  type: 8
-  section: Collect
   required: false
+  section: Collect
+  type: 8
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: "Search for and analyze data in real time. \n Supports version 6 and later."
 display: Elasticsearch v2
 name: Elasticsearch v2
@@ -163,6 +153,7 @@ script:
       name: query
       predefined:
       - ''
+      auto: PREDEFINED
     - description: A comma-separated list of document fields to fetch. If empty, the entire document is fetched.
       isArray: true
       name: fields
@@ -183,6 +174,7 @@ script:
       name: sort-field
       predefined:
       - ''
+      auto: PREDEFINED
     - auto: PREDEFINED
       defaultValue: asc
       description: The order by which to sort the results table. The results tables can only be sorted if a sort-field is defined.
@@ -249,6 +241,7 @@ script:
       name: query
       predefined:
       - ''
+      auto: PREDEFINED
     - description: A comma-separated list of document fields to fetch. If empty, fetches the entire document.
       isArray: true
       name: fields
@@ -269,6 +262,7 @@ script:
       name: sort-field
       predefined:
       - ''
+      auto: PREDEFINED
     - auto: PREDEFINED
       defaultValue: asc
       description: The order by which to sort the results table. The results tables can only be sorted if a sort-field is defined.
@@ -323,19 +317,19 @@ script:
       type: Number
   - name: get-mapping-fields
     description: Returns the schema of the index to fetch from. This commmand should be used for debugging purposes.
+    arguments: []
   - name: es-integration-health-check
     description: Returns the health status of the integration. This commmand should be used for debugging purposes.
+    arguments: []
   - name: es-get-indices-statistics
     description: Returns Elasticsearch indices statistics and information. This command is not supported for client type OpenSearch.
     arguments:
     - description: The maximum number of indices to return.
       name: limit
-      required: false
       defaultValue: '50'
     - description: Whether to retrieve all the Elasticsearch indices. If true, the "limit" argument will be ignored.
       name: all_results
-      required: false
-      defaultValue: false
+      defaultValue: 'false'
       auto: PREDEFINED
       predefined:
       - 'false'
@@ -463,16 +457,267 @@ script:
     outputs:
     - contextPath: Elasticsearch.ESQLSearch
       description: ES|QL search result.
-  dockerimage: demisto/elasticsearch:1.0.0.5954979
+  - arguments:
+    - auto: PREDEFINED
+      description: The status of the cases to retrieve.
+      name: status
+      predefined:
+      - open
+      - in-progress
+      - closed
+    - auto: PREDEFINED
+      description: The status of the cases to retrieve.
+      name: severity
+      predefined:
+      - critical
+      - high
+      - medium
+      - low
+    - description: Earliest time to search from (i.e. 2025-10-02T00:27:58.162Z).
+      name: from_time
+    description: Used to list cases in Kibana.
+    name: kibana-find-cases
+    outputs:
+    - contextPath: Kibana.Cases
+      description: Kibana Cases Search Result.
+  - arguments:
+    - description: ID of case in Kibana. Locate with "kibana-find-cases".
+      name: case_id
+      required: true
+    description: Returns information on the alerts of a case in Kibana.
+    name: kibana-find-alerts-for-case
+  - arguments:
+    - description: Alert ID to update. Find with "kibana-list-detection-alerts".
+      name: alert_id
+      required: true
+    - auto: PREDEFINED
+      description: Status to set the alert to.
+      name: status
+      predefined:
+      - open
+      - closed
+      required: true
+    description: Updates the status of an input alert.
+    name: kibana-update-alert-status
+  - arguments:
+    - auto: PREDEFINED
+      description: The status of the case to update.
+      name: status
+      predefined:
+      - open
+      - in-progress
+      - closed
+      required: true
+    - description: ID of case in Kibana. Locate with "kibana-find-cases".
+      name: case_id
+      required: true
+    - description: Version ID of the case. Found with kibana-find-cases. This ID changes after each case update.
+      name: version_id
+      required: true
+    description: Updates the status of an input case.
+    name: kibana-update-case-status
+  - arguments: []
+    description: Get list of user spaces in Kibana.
+    name: kibana-find-user-spaces
+  - arguments:
+    - description: Case ID to find comments for. Locate with "kibana-find-cases".
+      name: case_id
+      required: true
+    description: Finds comments for an input case ID.
+    name: kibana-find-case-comments
+  - arguments:
+    - description: Case ID to delete. Locate with "kibana-find-cases".
+      name: case_id
+      required: true
+    description: Deletes a case in Kibana based on case ID.
+    name: kibana-delete-case
+  - arguments:
+    - description: Rule ID to delete. Find with "kibana-search-rule-details".
+      name: rule_id
+      required: true
+    description: Delete rule in Kibana based on input rule ID.
+    name: kibana-delete-rule
+  - arguments:
+    - description: 'Example query: "alert.attributes.name: *Smith*".'
+      name: kql_query
+    description: Retrieve details about detection rule in Kibana based on input KQL filter.
+    name: kibana-search-rule-details
+  - arguments:
+    - description: Case ID to add comment to. Locate with "kibana-find-cases".
+      name: case_id
+      required: true
+    - auto: PREDEFINED
+      description: Owner of the case listed in kibana-find-cases output.
+      name: case_owner
+      predefined:
+      - cases
+      - observability
+      - securitySolution
+      required: true
+    - description: The comment to add to the case in Kibana.
+      name: comment
+      required: true
+    description: Adds a comment to a case in Kibana. Get case ID/owner from kibana-find-cases.
+    name: kibana-add-case-comment
+  - arguments: []
+    description: Search for list of users in Kibana and return user's UID.
+    name: kibana-get-user-list
+  - arguments:
+    - description: UID of user to be assigned. Locate with 'kibana-get-user-list'.
+      name: user_id
+      required: true
+    - description: Alert ID to assign user to. Find with "kibana-list-detection-alerts".
+      name: alert_id
+      required: true
+    description: Used to assign an alert in Kibana to a user via user ID input.
+    name: kibana-assign-alert
+  - arguments:
+    - auto: PREDEFINED
+      description: Status of the detection alert to search for.
+      name: alert_status
+      predefined:
+      - open
+      - closed
+      required: true
+    description: Used to search for detection alerts in Kibana.
+    name: kibana-list-detection-alerts
+  - arguments:
+    - description: Alert ID to update the note on. Find with "kibana-list-detection-alerts".
+      name: alert_id
+      required: true
+    - description: The note text to add to the alert.
+      name: note
+      required: true
+    description: Add note to an alert in Kibana.
+    name: kibana-add-alert-note
+  - arguments: []
+    description: Get the health status of Kibana alerting framework.
+    name: kibana-get-alerting-health
+  - arguments:
+    - description: Rule ID to disable. Find rule ID with "kibana-search-rule-details".
+      name: rule_id
+      required: true
+    description: Disable a detection alerting rule. Clears associated alerts from active alerts page.
+    name: kibana-disable-alert-rule
+  - arguments:
+    - description: Rule ID to enable. Find rule ID with "kibana-search-rule-details".
+      name: rule_id
+      required: true
+    description: 'Used to enable a rule used for detection alerting. '
+    name: kibana-enable-alert-rule
+  - arguments: []
+    description: Get a list of all exception list containers.
+    name: kibana-get-exception-lists
+  - arguments:
+    - description: Describes the value list.
+      name: description
+      required: true
+    - description: Value list's name.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: Elasticsearch data type the list container holds.
+      name: data_type
+      predefined:
+      - keyword
+      - ip
+      - ip_range
+      - text
+      required: true
+    - description: Value list's identifier.
+      name: list_id
+      required: true
+    description: Used to create a value list in Kibana.
+    name: kibana-create-value-list
+  - arguments: []
+    description: Find all value lists in Kibana Detection Rules menu.
+    name: kibana-get-value-lists
+  - arguments:
+    - description: Value list ID to import values to. Find with "kibana-get-value-lists".
+      name: list_id
+      required: true
+    - description: Entries of the IOC file to import to Kibana.
+      name: file_content
+      required: true
+    description: Import value list items from a TXT or CSV file.
+    name: kibana-import-value-list-items
+  - arguments:
+    - description: Value list ID to update. Find with "kibana-get-value-lists".
+      name: list_id
+      required: true
+    - description: Item to add to the specified value list.
+      name: new_value_list_item
+      required: true
+    description: Create a value list item and associate it with the specified value list.
+    name: kibana-create-value-list-item
+  - arguments:
+    - description: Value list ID to retrieve values for. Find with "kibana-get-value-lists".
+      name: list_id
+      required: true
+    - defaultValue: '100'
+      description: Size of results to return.
+      name: result_size
+    description: Used to display entries in an input value list.
+    name: kibana-get-value-list-items
+  - arguments:
+    - description: Value list entry ID to delete. Find with "kibana-get-value-list-items".
+      name: item_id
+      required: true
+    description: Used to delete a value list item given the item ID as input.
+    name: kibana-delete-value-list-item
+  - arguments:
+    - description: Value list ID to delete. Find with "kibana-get-value-lists".
+      name: list_id
+      required: true
+    description: Used to delete a value list given the list ID as input.
+    name: kibana-delete-value-list
+  - arguments: []
+    description: Check Kibana's operational status.
+    name: kibana-get-status
+  - arguments: []
+    description: Get the health status of the Kibana task manager.
+    name: kibana-get-task-manager-health
+  - arguments: []
+    description: Check the status of your cluster.
+    name: kibana-get-upgrade-readiness-status
+  - arguments:
+    - description: Case ID to delete comment on. Retrieve case IDs with "kibana-find-cases".
+      name: case_id
+      required: true
+    - description: Identifier for the comment. To retrieve comment IDs use kibana-find-case-comments.
+      name: comment_id
+      required: true
+    description: Delete a case comment.
+    name: kibana-delete-case-comment
+  - arguments:
+    - description: Case ID to attach the file to. Locate with "kibana-find-cases".
+      name: case_id
+      required: true
+    - description: File entry ID from XSOAR context data to add to the case.
+      name: file_id
+      required: true
+    description: 'Attach a file to a case. '
+    name: kibana-add-file-to-case
+  - arguments:
+    - description: Full or partial email address to search for user with. (i.e. william.smith@*).
+      name: email_wildcard
+      required: true
+    description: Search for a single user's UID in Kibana by email address filter.
+    name: kibana-get-user-by-email
+  - arguments:
+    - description: The case ID to retrieve information for. View available case IDs with kibana_find_cases.
+      name: case_id
+      required: true
+    description: Retrieve information for a specific case in Kibana.
+    name: kibana-get-case-information
+  dockerimage: demisto/elasticsearch:1.0.0.6977863
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
   ismappable: true
-autoUpdateDockerImage: false
 fromversion: 5.0.0
-defaultmapperin: Elasticsearch - Incoming Mapper
 tests:
 - Elasticsearch_v2_test
 - Elasticsearch_v2_test-v6
