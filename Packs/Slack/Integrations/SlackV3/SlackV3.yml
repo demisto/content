@@ -499,8 +499,38 @@ script:
     - description: |
         Lower bound for conversation history (sent to Slack 'oldest' query parameter). Returns messages with time stamp ≥ this value. Accepts Unix timestamp or ISO strings (e.g., "1727448000.000200", "2025-10-12T09:00:00+03:00"). Results are returned in descending order.
       name: from_time
+    - description: Token to retrieve the next page of results.
+      name: page_token
     description: Fetches a conversation's history of messages and events.
     name: slack-get-conversation-history
+    outputs:
+    - contextPath: Slack.Messages.Type
+      description: The type of the message (e.g., message, file_share, etc.).
+      type: string
+    - contextPath: Slack.Messages.Text
+      description: The text content of the message.
+      type: string
+    - contextPath: Slack.Messages.UserId
+      description: The user ID of the message sender.
+      type: string
+    - contextPath: Slack.Messages.Name
+      description: The username of the message sender.
+      type: string
+    - contextPath: Slack.Messages.FullName
+      description: The full name of the message sender.
+      type: string
+    - contextPath: Slack.Messages.TimeStamp
+      description: The timestamp of the message.
+      type: string
+    - contextPath: Slack.Messages.HasReplies
+      description: Whether the message has replies.
+      type: string
+    - contextPath: Slack.Messages.ThreadTimeStamp
+      description: The thread timestamp of the message.
+      type: string
+    - contextPath: SlackConversationHistory.NextPageToken
+      description: Token to retrieve the next page of results.
+      type: string
   - arguments:
     - name: channel_id
       description: ID of the channel.
