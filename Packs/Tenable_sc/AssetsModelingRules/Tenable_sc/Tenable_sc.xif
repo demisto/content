@@ -1,0 +1,2 @@
+[MODEL:kind=asset, dataset="tenable_io_assets_raw"]
+alter xdm.asset.cloud.provider = "placeholder";
