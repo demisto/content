@@ -53,6 +53,9 @@ class Boto3Client:
     def get_bucket_encryption(self):
         pass
 
+    def list_objects_v2(self):
+        pass
+
 
 class paginator:
     def paginate(self):
@@ -340,3 +343,77 @@ def test_get_bucket_encryption(mocker):
     data = [{"BucketName": args.get("bucket"), "ServerSideEncryptionConfiguration": encryption}]
     res = AWS_S3.get_bucket_encryption(args, client)
     assert tableToMarkdown("AWS S3 Bucket Encryption", data) == res.readable_output
+
+
+def test_module_success(mocker):
+    """
+    Given:
+    - A successful connection to AWS S3.
+    When:
+    - Calling test_module method.
+    Then:
+    - Ensure that the connection was successful.
+    """
+    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
+    mocker.patch.object(Boto3Client, "list_buckets", return_value={"ResponseMetadata": {"HTTPStatusCode": 200}})
+    client = AWSClient()
+    assert AWS_S3.test_module(client) == "ok"
+
+
+def test_module_list_buckets_fail_list_objects_success(mocker):
+    """
+    Given:
+    - A failed connection to AWS S3, but a bucket is provided.
+    When:
+    - Calling test_module method.
+    Then:
+    - Ensure that the connection was successful.
+    """
+    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
+    mocker.patch.object(Boto3Client, "list_buckets", side_effect=Exception)
+    mocker.patch.object(AWS_S3.demisto, "params", return_value={"bucket": "test_bucket"})
+    list_objects_v2_mock = mocker.patch.object(
+        Boto3Client, "list_objects_v2", return_value={"ResponseMetadata": {"HTTPStatusCode": 200}}
+    )
+    client = AWSClient()
+    assert AWS_S3.test_module(client) == "ok"
+    list_objects_v2_mock.assert_called_once()
+
+
+def test_module_list_buckets_fail_list_objects_fail(mocker):
+    """
+    Given:
+    - A failed connection to AWS S3, and a bucket is provided, but list_objects_v2 fails.
+    When:
+    - Calling test_module method.
+    Then:
+    - Ensure that the connection failed.
+    """
+    from CommonServerPython import CommandResults, EntryFormat, EntryType
+
+    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
+    mocker.patch.object(Boto3Client, "list_buckets", side_effect=Exception)
+    mocker.patch.object(AWS_S3.demisto, "params", return_value={"bucket": "test_bucket"})
+    mocker.patch.object(Boto3Client, "list_objects_v2", return_value={"ResponseMetadata": {"HTTPStatusCode": 404}})
+    client = AWSClient()
+    result = AWS_S3.test_module(client)
+    assert isinstance(result, CommandResults)
+    assert result.content_format == EntryFormat.TEXT
+    assert result.entry_type == EntryType.ERROR
+
+
+def test_module_fail(mocker):
+    """
+    Given:
+    - A failed connection to AWS S3, and no bucket is provided.
+    When:
+    - Calling test_module method.
+    Then:
+    - Ensure that the connection failed and an exception is raised.
+    """
+    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
+    mocker.patch.object(Boto3Client, "list_buckets", side_effect=Exception)
+    mocker.patch.object(AWS_S3.demisto, "params", return_value={})
+    client = AWSClient()
+    with pytest.raises(Exception):
+        AWS_S3.test_module(client)

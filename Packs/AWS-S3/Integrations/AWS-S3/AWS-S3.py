@@ -313,6 +313,45 @@ def get_bucket_encryption(args: Dict[str, Any], aws_client: AWSClient) -> Comman
     )
 
 
+def test_module(aws_client: AWSClient) -> str | CommandResults:
+    """
+    test tje integration connectivity.
+
+    Args:
+        aws_client: A Boto3 AWS S3 client.
+
+    Returns:
+        A string whether the connectivity test was successful.
+    """
+    client = aws_client.aws_session(service=SERVICE)
+    try:
+        demisto.debug("executing list_buckets")
+        response = client.list_buckets()
+        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+            return "ok"
+        else:
+            demisto.debug(f"list_buckets failed with {response=}")
+            raise response
+
+    except Exception as e:
+        params = demisto.params()
+        bucket = params.get("bucket")
+        if bucket:
+            demisto.debug(f"executing list_objects_v2 with {bucket=}")
+            response_objects = client.list_objects_v2(Bucket=bucket)
+            if response_objects["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+                return "ok"
+            else:
+                return CommandResults(
+                    content_format=EntryFormat.TEXT,
+                    entry_type=EntryType.ERROR,
+                    readable_output=f"received status code {response_objects['ResponseMetadata']['HTTPStatusCode']}",
+                )
+        else:
+            demisto.debug("No bucket provided, raising an error.")
+            raise e
+
+
 def main():  # pragma: no cover
     params = demisto.params()
     aws_default_region = params.get("defaultRegion")
@@ -351,10 +390,7 @@ def main():  # pragma: no cover
 
         demisto.info(f"Command being called is {demisto.command()}")
         if command == "test-module":
-            client = aws_client.aws_session(service=SERVICE)
-            response = client.list_buckets()
-            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-                demisto.results("ok")
+            return_results(test_module(aws_client))
 
         elif command == "aws-s3-create-bucket":
             return_results(create_bucket_command(args, aws_client))
