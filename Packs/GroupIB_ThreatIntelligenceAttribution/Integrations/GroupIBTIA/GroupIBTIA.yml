@@ -1264,6 +1264,30 @@ script:
     - contextPath: GIBTIA.CompromisedSPD.evaluation.severity
       description: Event severity.
       type: String
+    - contextPath: GIBTIA.CompromisedSPD.evaluation.tlp
+      description: Traffic Light Protocol (TLP).
+      type: String
+    - contextPath: GIBTIA.CompromisedSPD.evaluation.ttl
+      description: Time-to-live (days) from evaluation.
+      type: Number
+    - contextPath: GIBTIA.CompromisedSPD.ownerName
+      description: Owner name.
+      type: String
+    - contextPath: GIBTIA.CompromisedSPD.illegalScore
+      description: Illegal score.
+      type: Number
+    - contextPath: GIBTIA.CompromisedSPD.events
+      description: SPD events (compromised at, source, malware, threat actor, etc.).
+      type: String
+    - contextPath: GIBTIA.CompromisedSPD.sources
+      description: Sources.
+      type: String
+    - contextPath: GIBTIA.CompromisedSPD.malware
+      description: Associated malware.
+      type: String
+    - contextPath: GIBTIA.CompromisedSPD.threatActor
+      description: Associated threat actor.
+      type: String
   - arguments:
     - description: |-
         GIB event id.
