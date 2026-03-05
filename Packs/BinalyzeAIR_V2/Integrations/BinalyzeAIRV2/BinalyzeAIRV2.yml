@@ -1,0 +1,187 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: Binalyze AIR_v2
+  version: -1
+configuration:
+- additionalinfo: Binalyze AIR Server URL
+  display: Binalyze AIR Server URL
+  name: server
+  required: true
+  type: 0
+- additionalinfo: 'e.g.: api_1234567890abcdef1234567890abcdef'
+  display: API Key
+  name: api_key
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Collect your forensics data under 10 minutes.
+display: Binalyze AIR_v2
+name: Binalyze AIR_v2
+script:
+  commands:
+  - arguments:
+    - description: Hostname of endpoint.
+      name: hostname
+      required: true
+    - auto: PREDEFINED
+      description: Organization ID of the endpoint. For a custom organization ID, you can specify a custom value outside the predefined set.
+      name: organization_id
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      required: true
+    - auto: PREDEFINED
+      description: To isolate use enable.
+      name: isolation
+      predefined:
+      - enable
+      - disable
+      required: true
+    description: Isolate an endpoint.
+    name: binalyze-air-isolate
+    outputs:
+    - contextPath: BinalyzeAIR.Isolate.result._id
+      description: Isolation unique task ID.
+      type: string
+    - contextPath: BinalyzeAIR.Isolate.result.name
+      description: Isolation task name.
+      type: string
+    - contextPath: BinalyzeAIR.Isolate.result.organizationId
+      description: Organization Id of endpoint.
+      type: number
+  - arguments:
+    - description: Hostname of endpoint.
+      name: hostname
+      required: true
+    - auto: PREDEFINED
+      description: Acquisition profile. To use a custom acquisition profile, you can specify a custom profile outside the predefined set.
+      name: profile
+      predefined:
+      - compromise-assessment
+      - browsing-history
+      - event-logs
+      - memory-ram-pagefile
+      - quick
+      - full
+      required: true
+    - description: ID for the case,e.g. C-2022-0001.
+      name: case_id
+      required: true
+    - auto: PREDEFINED
+      description: Organization ID of the endpoint. For a custom organization ID, you can specify a custom value outside the predefined set.
+      name: organization_id
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      required: true
+    description: Acquire evidence from an endpoint.
+    name: binalyze-air-acquire
+    outputs:
+    - contextPath: BinalyzeAIR.Acquire.result._id
+      description: Acquisition unique task ID.
+      type: string
+    - contextPath: BinalyzeAIR.Acquire.result.name
+      description: Acquisition task name.
+      type: string
+    - contextPath: BinalyzeAIR.Acquire.result.organizationId
+      description: Organization Id of endpoint.
+      type: number
+  - arguments:
+    - name: description
+    - name: rule
+    - auto: PREDEFINED
+      name: engine
+      predefined:
+      - yara
+      - sigma
+      - osquery
+    - auto: PREDEFINED
+      name: searchIn
+      predefined:
+      - system
+      - memory
+      - both
+      - event-records
+    - description: comma-seperated values.
+      name: organizationIds
+    name: binalyze-air-create-triage-rule
+  - arguments:
+    - name: rule
+    - auto: PREDEFINED
+      name: engine
+      predefined:
+      - yara
+      - sigma
+      - osquery
+    name: binalyze-air-validate-triage-rule
+  - arguments:
+    - name: name
+    - name: organizationId
+      required: true
+    - name: ownerUserId
+      required: true
+    - auto: PREDEFINED
+      name: visibility
+      predefined:
+      - Public to Organization
+      - Private to Users
+      required: true
+    - name: assignedUserIds
+    name: binalyze-air-create-case
+  - arguments:
+    - name: description
+    - name: rule
+    - auto: PREDEFINED
+      name: searchIn
+      predefined:
+      - system
+      - memory
+      - both
+      - event-records
+    - name: organizationIds
+    name: binalyze-air-update-triage-rule
+  - arguments:
+    - name: file_name
+    name: binalyze-air-download-file
+  - arguments:
+    - name: caseId
+    - description: comma separeted values.
+      name: triageRuleIds
+    - auto: PREDEFINED
+      defaultValue: use-policy
+      name: task_config_choice
+      predefined:
+      - use-policy
+      - use-custom-options
+    - defaultValue: '8'
+      description: min:1 max:100.
+      name: task_config_cpu_limit
+    - description: device name probably.
+      name: hostname
+    - auto: PREDEFINED
+      name: mitreAttack
+      predefined:
+      - 'True'
+      - 'False'
+    - description: comma separated values.
+      name: excludedEndpointIds
+    - description: comma separated values.
+      name: includedEndpointIds
+    name: binalyze-air-assign-triage-task
+  dockerimage: demisto/python3:3.12.12.7090913
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
