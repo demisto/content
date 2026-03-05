@@ -145,13 +145,13 @@ configuration:
   - WHITE
   type: 15
   required: false
-- additionalinfo: When enabled, each indicator gets its TLP from Group-IB when the source provides it. For ioc/common, TLP defaults to AMBER. The Traffic Light Protocol Color setting is then used only as a fallback when the source has no TLP. When disabled, all indicators use the selected Traffic Light Protocol Color.
-  display: Use TLP from source (per indicator)
+- display: 'Use TLP from source (per indicator)'
   name: use_tlp_from_source
-  section: Collect
   type: 8
+  section: Collect
+  defaultvalue: 'false'
   required: false
-  defaultvalue: false
+  additionalinfo: When enabled, each indicator gets its TLP from Group-IB when the source provides it. For ioc/common, TLP defaults to AMBER. The Traffic Light Protocol Color setting is then used only as a fallback when the source has no TLP. When disabled, all indicators use the selected Traffic Light Protocol Color.
 - display: 'Limit (items per request)'
   name: limit
   type: 0
