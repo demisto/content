@@ -15,6 +15,7 @@ commonfields:
   id: AwsEC2SyncAccounts
   version: -1
 enabled: true
+internal: true
 name: AwsEC2SyncAccounts
 outputs: []
 script: '-'
