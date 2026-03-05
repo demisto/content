@@ -2281,7 +2281,8 @@ def bq_dataset_policy_update_command(creds: Credentials, args: dict[str, Any]) -
         # Filter out access entries matching the email
         # Access entries can have 'userByEmail', 'groupByEmail', or 'domain'
         new_access = [
-            entry for entry in current_access
+            entry
+            for entry in current_access
             if entry.get("userByEmail") != user_email or entry.get("groupByEmail") != group_email
         ]
 

@@ -615,15 +615,11 @@ def build_kwargs_lambda_function_config_update(args: dict) -> dict:
         "VpcConfig": {
             "SubnetIds": argToList(args.get("subnet_ids")),
             "SecurityGroupIds": argToList(args.get("security_group_ids")),
-            "Ipv6AllowedForDualStack": arg_to_bool_or_none(args.get("ipv6_allowed_for_dualstack"))
+            "Ipv6AllowedForDualStack": arg_to_bool_or_none(args.get("ipv6_allowed_for_dualstack")),
         },
-        "Environment": {
-            "Variables": parse_key_1_value_to_dict(args.get("environment", ""))
-        },
+        "Environment": {"Variables": parse_key_1_value_to_dict(args.get("environment", ""))},
         "Runtime": args["runtime"],
-        "DeadLetterConfig": {
-            "TargetArn": args.get("target_arn")
-        },
+        "DeadLetterConfig": {"TargetArn": args.get("target_arn")},
         "KMSKeyArn": args.get("kms_key_arn"),
         "TracingConfig": {
             "Mode": args.get("tracing_config_mode"),
@@ -633,38 +629,34 @@ def build_kwargs_lambda_function_config_update(args: dict) -> dict:
         "ImageConfig": {
             "EntryPoint": argToList(args.get("image_config_entry_point")),
             "Command": argToList(args.get("image_config_command")),
-            "WorkingDirectory": args.get("image_config_working_directory")
+            "WorkingDirectory": args.get("image_config_working_directory"),
         },
-        "EphemeralStorage": {
-            "Size": args.get("ephemeral_storage_size")
-        },
-        "SnapStart": {
-            "ApplyOn": args.get("snap_start_apply_on")
-        },
+        "EphemeralStorage": {"Size": args.get("ephemeral_storage_size")},
+        "SnapStart": {"ApplyOn": args.get("snap_start_apply_on")},
         "LoggingConfig": {
-            'LogFormat': args.get("log_format"),
-            'ApplicationLogLevel': args.get("application_log_level"),
-            'SystemLogLevel': args.get("system_log_level"),
-            'LogGroup': args.get("log_group")
+            "LogFormat": args.get("log_format"),
+            "ApplicationLogLevel": args.get("application_log_level"),
+            "SystemLogLevel": args.get("system_log_level"),
+            "LogGroup": args.get("log_group"),
         },
         "CapacityProviderConfig": {
             "LambdaManagedInstancesCapacityProviderConfig": {
-                'CapacityProviderArn': args.get("capacity_provider_arn"),
-                'PerExecutionEnvironmentMaxConcurrency': args.get("per_execution_env_max_concurrency"),
-                'ExecutionEnvironmentMemoryGiBPerVCpu': args.get("execution_env_memory_per_cpu")
+                "CapacityProviderArn": args.get("capacity_provider_arn"),
+                "PerExecutionEnvironmentMaxConcurrency": args.get("per_execution_env_max_concurrency"),
+                "ExecutionEnvironmentMemoryGiBPerVCpu": args.get("execution_env_memory_per_cpu"),
             }
         },
         "DurableConfig": {
-            'RetentionPeriodInDays': args.get("durable_retention_period"),
-            'ExecutionTimeout': args.get("durable_execution_timeout")
-        }
+            "RetentionPeriodInDays": args.get("durable_retention_period"),
+            "ExecutionTimeout": args.get("durable_execution_timeout"),
+        },
     }
 
     if "file_system_configs" in args:
         key_value_list = parse_tag_field(args.get("file_system_configs"))
         arn_local_mount_path_list = []
         for key_value in key_value_list:
-            arn_local_mount_path_list.append({'Arn': key_value['Key'], "LocalMountPath": key_value["Value"]})
+            arn_local_mount_path_list.append({"Arn": key_value["Key"], "LocalMountPath": key_value["Value"]})
         kwargs["FileSystemConfigs"] = arn_local_mount_path_list
 
     return kwargs
@@ -5301,7 +5293,9 @@ class RDS:
         }
 
         if not args.get("db_instance_identifier"):
-            pagination_kwargs = build_pagination_kwargs(args, minimum_limit=20, max_limit=100, limit_name="MaxRecords", next_token_name="Marker")
+            pagination_kwargs = build_pagination_kwargs(
+                args, minimum_limit=20, max_limit=100, limit_name="MaxRecords", next_token_name="Marker"
+            )
             kwargs.update(pagination_kwargs)
 
         remove_nulls_from_dictionary(kwargs)
@@ -5319,7 +5313,7 @@ class RDS:
 
         outputs = {
             "AWS.RDS.DBInstances(val.DBInstanceIdentifier && val.DBInstanceIdentifier == obj.DBInstanceIdentifier)": db_instances,
-            "AWS.RDS(true)": {"DBInstancesNextToken": response.get("Marker")}
+            "AWS.RDS(true)": {"DBInstancesNextToken": response.get("Marker")},
         }
 
         readable_output = tableToMarkdown(
@@ -5388,7 +5382,7 @@ class Redshift:
             "MasterPasswordSecretKmsKeyId": args.get("master_password_secret_kms_key_id"),
             "IpAddressType": args.get("ip_address_type"),
             "MultiAZ": arg_to_bool_or_none(args.get("multi_az")),
-            "ExtraComputeForAutomaticOptimization": arg_to_bool_or_none(args.get("extra_compute_for_automatic_optimization"))
+            "ExtraComputeForAutomaticOptimization": arg_to_bool_or_none(args.get("extra_compute_for_automatic_optimization")),
         }
         remove_nulls_from_dictionary(kwargs)
 
@@ -5414,6 +5408,7 @@ class Redshift:
             readable_output=readable_output,
             raw_response=response,
         )
+
 
 class CostExplorer:
     service = AWSServices.CostExplorer
@@ -6388,6 +6383,7 @@ class Lambda:
             raw_response=response,
         )
 
+    @staticmethod
     def get_function_command(client: BotoClient, args: Dict[str, Any]):
         """
         Retrieves information about a Lambda function including configuration, code location, and metadata.

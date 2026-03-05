@@ -70,7 +70,11 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-network-disable-storage-account-access-quick-action",
         "azure-set-storage-account-https-only-quick-action",
     ],
-    "Microsoft.Network/networkInterfaces/read": ["azure-nsg-network-interfaces-list", "azure-vm-network-interface-details-get", "azure-vn-network-interface-update"],
+    "Microsoft.Network/networkInterfaces/read": [
+        "azure-nsg-network-interfaces-list",
+        "azure-vm-network-interface-details-get",
+        "azure-vn-network-interface-update",
+    ],
     "Microsoft.Network/networkInterfaces/write": ["azure-vn-network-interface-update"],
     "Microsoft.Network/publicIPAddresses/read": ["azure-nsg-public-ip-addresses-list", "azure-vm-public-ip-details-get"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/write": ["azure-storage-blob-containers-update"],
@@ -201,7 +205,7 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Consumption/usageDetails/read": ["azure-billing-usage-list"],
     "Microsoft.Consumption/budgets/read": ["azure-billing-budgets-list"],
     "Microsoft.CostManagement/forecast/read": ["azure-billing-forecast-list"],
-    "Microsoft.Network/networkSecurityGroups/write": ["create_network_security_group"]
+    "Microsoft.Network/networkSecurityGroups/write": ["create_network_security_group"],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -1806,7 +1810,9 @@ class AzureClient:
             method="DELETE", full_url=f"{PREFIX_URL_MS_GRAPH}/groups/{group_id}/members/{user_id}/$ref", resp_type="text"
         )
 
-    def create_network_security_group(self, subscription_id: str, resource_group_name: str, security_group_name: str, location: str):
+    def create_network_security_group(
+        self, subscription_id: str, resource_group_name: str, security_group_name: str, location: str
+    ):
         """
         Create or update a network security group.
 
@@ -2148,7 +2154,7 @@ class AzureClient:
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
- 
+
     def validate_provisioning_state(self, subscription_id, resource_group, vm_name):
         """
         Ensure that the provisioning state of a VM is 'Succeeded'
@@ -3888,7 +3894,7 @@ def nsg_security_group_create_command(client: AzureClient, params: dict[str, Any
         outputs_key_field="id",
         outputs=response,
         readable_output=hr,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -4420,7 +4426,7 @@ def get_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str, 
         readable_output=human_readable,
         raw_response=response,
     )
- 
+
 
 def list_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]):
     """
@@ -4451,7 +4457,7 @@ def list_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str,
 
     outputs = {
         "Azure.Compute.VMs(val.id && val.id == obj.id)": vms_list,
-        "Azure.Compute(true)": {"VMsNextToken": response.get("nextLink")}
+        "Azure.Compute(true)": {"VMsNextToken": response.get("nextLink")},
     }
 
     title = "The list of Virtual Machines"
@@ -4466,7 +4472,7 @@ def list_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str,
         raw_response=response,
     )
 
- 
+
 def get_network_interface_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]):
     """
     Retrieves details for a specific Azure Network Interface (NIC).
@@ -4584,8 +4590,12 @@ def network_interface_update_command(client: AzureClient, params: dict[str, Any]
 
     # Update properties based on user arguments
     properties = current_nic.get("properties", {})
-    properties["enableIPForwarding"] = arg_to_bool_or_none(args.get("enable_ip_forwarding")) or properties.get("enableIPForwarding")
-    properties["enableAcceleratedNetworking"] = arg_to_bool_or_none(args.get("accelerate_networking")) or properties.get("enableAcceleratedNetworking")
+    properties["enableIPForwarding"] = arg_to_bool_or_none(args.get("enable_ip_forwarding")) or properties.get(
+        "enableIPForwarding"
+    )
+    properties["enableAcceleratedNetworking"] = arg_to_bool_or_none(args.get("accelerate_networking")) or properties.get(
+        "enableAcceleratedNetworking"
+    )
     properties["auxiliaryMode"] = args.get("auxiliary_mode") or properties.get("auxiliaryMode")
     properties["auxiliarySku"] = args.get("auxiliary_sku") or properties.get("auxiliarySku")
     properties["nicType"] = args.get("nic_type") or properties.get("nicType")
@@ -4596,8 +4606,12 @@ def network_interface_update_command(client: AzureClient, params: dict[str, Any]
     if "dnsSettings" not in properties:
         properties["dnsSettings"] = {}
 
-    properties["dnsSettings"]["internalDnsNameLabel"] = args.get("internal_dns_name_label") or properties.get("dnsSettings", {}).get("internalDnsNameLabel")
-    properties["dnsSettings"]["dnsServers"] = argToList(args.get("dns_servers")) or properties.get("dnsSettings", {}).get("dnsServers")
+    properties["dnsSettings"]["internalDnsNameLabel"] = args.get("internal_dns_name_label") or properties.get(
+        "dnsSettings", {}
+    ).get("internalDnsNameLabel")
+    properties["dnsSettings"]["dnsServers"] = argToList(args.get("dns_servers")) or properties.get("dnsSettings", {}).get(
+        "dnsServers"
+    )
 
     if remove_network_security_group:
         demisto.debug(f"Removing the network security group {properties.get('networkSecurityGroup')}")
@@ -4628,7 +4642,9 @@ def network_interface_update_command(client: AzureClient, params: dict[str, Any]
         "Name": network_interface_name.lower(),
         "ID": response.get("id"),
         "Location": response.get("location"),
-        "NetworkSecurityGroup": updated_properties.get("networkSecurityGroup", {}).get("name") if updated_properties.get("networkSecurityGroup") else None,
+        "NetworkSecurityGroup": updated_properties.get("networkSecurityGroup", {}).get("name")
+        if updated_properties.get("networkSecurityGroup")
+        else None,
     }
 
     title = f'Successfully Updated Network Interface "{network_interface_name.lower()}"'
