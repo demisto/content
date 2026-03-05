@@ -290,11 +290,7 @@ def test_module(client: Client) -> str:
         start_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
         demisto.debug(f"[SOCRadar] Test module using start_date: {start_date}")
 
-        response = client.search_incidents(
-            limit=1,
-            page=1,
-            start_date=start_date
-        )
+        response = client.search_incidents(limit=1, page=1, start_date=start_date)
 
         demisto.debug(f"[SOCRadar] Test response: {response}")
 
@@ -726,7 +722,9 @@ def change_status_command(client: Client, args: dict[str, str]) -> CommandResult
     comments = args.get("comments")
     company_id = args.get("company_id")
     update_related_finding_status_str = args.get("update_related_finding_status")
-    update_related_finding_status: bool | None = argToBoolean(update_related_finding_status_str) if update_related_finding_status_str else None
+    update_related_finding_status: bool | None = (
+        argToBoolean(update_related_finding_status_str) if update_related_finding_status_str else None
+    )
     email = args.get("email")
 
     if not alarm_ids_str or not status_reason:

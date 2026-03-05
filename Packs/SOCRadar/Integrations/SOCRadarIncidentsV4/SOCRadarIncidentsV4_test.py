@@ -139,7 +139,7 @@ def test_alarm_to_incident_basic():
     assert "SOCRadar Alarm 123" in incident["name"]
     assert "Test Type" in incident["name"]
     assert "Test Sub" in incident["name"]
-    assert "test.com" in incident["name"]
+    assert "TESTSOCRadar" in incident["name"]  # asset field value
     assert incident["CustomFields"]["socradaralarmid"] == "123"
     assert incident["CustomFields"]["socradarasset"] == "test.com"
     assert incident["CustomFields"]["socradarstatus"] == "OPEN"
@@ -269,9 +269,7 @@ def test_test_module_success(mock_client, mocker):
 def test_test_module_failure(mock_client, mocker, capfd):
     from SOCRadarIncidentsV4 import test_module
 
-    mocker.patch.object(
-        mock_client, "search_incidents", return_value={"is_success": False, "message": "Authentication failed"}
-    )
+    mocker.patch.object(mock_client, "search_incidents", return_value={"is_success": False, "message": "Authentication failed"})
     with capfd.disabled():
         result = test_module(mock_client)
     assert "Test failed" in result
