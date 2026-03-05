@@ -100,6 +100,7 @@ Configured by the instance configuration fetch_limit (behind the scenes an query
 
 ## Configure SplunkPy in Cortex
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -128,13 +129,13 @@ Configured by the instance configuration fetch_limit (behind the scenes an query
 | The app context of the namespace |  | False |
 | HEC Token (HTTP Event Collector) |  | False |
 | HEC BASE URL (e.g: https://localhost:8088 or https://example.splunkcloud.com/). |  | False |
-| Enrichment Types | Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual \(without enrichment\). Multiple drilldown searches enrichment is supported from Enterprise Security v7.2.0. For more info about enrichment types see [Enriching Notable Events](#enriching-notable-events). | False |
+| Enrichment Types | Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual \(without enrichment\). Multiple drilldown searches enrichment is supported from Enterprise Security v7.2.0. For more info about enrichment types see the integration additional info. | False |
 | Asset enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Asset enrichment data. | False |
 | Identity enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Identity enrichment data. | False |
 | Enrichment Timeout (Minutes) | When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment. | False |
 | Number of Events Per Enrichment Type | The limit of how many events to retrieve per each one of the enrichment types \(Drilldown, Asset, and Identity\). In a case of multiple drilldown enrichments the limit will apply for each drilldown search query. To retrieve all events, enter "0" \(not recommended\). | False |
 | Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise. |  | False |
-| Advanced: Time type to use when fetching events | Defines which timestamp will be used to filter the events:<br/>- creation time: Filters based on when the event actually occurred.<br/>- index time \(Beta\): \*Beta feature\* – Filters based on when the event was ingested into Splunk.  <br/>  This option is still in testing and may not behave as expected in all scenarios.  <br/>  When using this mode, the parameter "Fetch backwards window for the events occurrence time \(minutes\)" should be set to \`0\`\`, as indexing time ensures there are no delay-based gaps.<br/>  The default is "creation time".<br/> |  |
+| Advanced: Time type to use when fetching events | Defines which timestamp will be used to filter the events:<br/>- creation time: Filters based on when the event actually occurred.<br/>- index time \(Beta\): \*Beta feature\* – Filters based on when the event was ingested into Splunk.  <br/>  This option is still in testing and may not behave as expected in all scenarios.  <br/>  When using this mode, the parameter "Fetch backwards window for the events occurrence time \(minutes\)" should be set to \`0\`\`, as indexing time ensures there are no delay-based gaps.<br/>  The default is "creation time".<br/> | False |
 | Advanced: Fetch backwards window for the events occurrence time (minutes) | The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment. | False |
 | Advanced: Unique ID fields | A comma-separated list of fields, which together are a unique identifier for the events to fetch in order to avoid fetching duplicates incidents. | False |
 | Enable user mapping | Whether to enable the user mapping between Cortex XSOAR and Splunk, or not. For more information see https://xsoar.pan.dev/docs/reference/integrations/splunk-py\#configure-user-mapping-between-splunk-and-cortex-xsoar | False |
@@ -144,6 +145,7 @@ Configured by the instance configuration fetch_limit (behind the scenes an query
 | Incidents Fetch Interval |  | False |
 | Comment tag from Splunk | Add this tag to an entry to mirror it as a comment from Splunk. | False |
 | Comment tag to Splunk | Add this tag to an entry to mirror it as a comment to Splunk. | False |
+
 
 **Note:** To use a Splunk Cloud instance, contact Splunk support to request API access. Use a non-SAML account to access the API.
 
@@ -1344,3 +1346,84 @@ Commands that return large data (such as `splunk-search`) can cause performance 
 
 - Use the `event_limit` argument (where available).
 - Append `| head 30000` directly to your Splunk query.
+### splunk-create-saved-search
+
+***
+Create a saved search with option to enable scheduled runs and email notifications.
+
+#### Base Command
+
+`splunk-create-saved-search`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| app_namespace | App in which to create the saved search (controls RBAC and file path in etc/apps/&lt;app&gt;/local). Default is search. | Optional | 
+| saved_search_name | Human‑readable name (stanza) of the saved search; must be unique within the app. | Required | 
+| spl_query | The SPL for the saved search. | Required | 
+| cron_schedule | Cron expression defining when the search runs (e.g., 0 6 * * *). | Optional | 
+| dispatch_earliest | Time window start for each scheduled run (relative time ok). Default is -60m@m. | Optional | 
+| dispatch_latest | Time window end for each scheduled run. Default is now. | Optional | 
+| email_to | Email address to send saved search results to. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Splunk.SavedSearch.name | unknown | Saved search name | 
+| Splunk.SavedSearch.app | unknown | App namespace | 
+| Splunk.SavedSearch.schedule | unknown | Cron string | 
+| Splunk.SavedSearch.earliest | unknown | Dispatch window start time | 
+| Splunk.SavedSearch.latest | unknown | Dispatch window end time | 
+| Splunk.SavedSearch.status | unknown | created  | 
+| Splunk.SavedSearch.email_to | unknown | Email address that will receive the results | 
+
+### splunk-delete-saved-search
+
+***
+Delete a saved search
+
+#### Base Command
+
+`splunk-delete-saved-search`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| app_namespace | App from which to create the saved search (controls RBAC and file path in etc/apps/&lt;app&gt;/local). Default is search. | Optional | 
+| saved_search_name | exact stanza/name of the saved search. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Splunk.SavedSearch.name | unknown | Saved search name | 
+| Splunk.SavedSearch.app | unknown | App namespace | 
+| Splunk.SavedSearch.status | unknown | Deleted or not_found | 
+
+### splunk-disable-saved-search
+
+***
+Disable a saved search
+
+#### Base Command
+
+`splunk-disable-saved-search`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| app_namespace | App from which to create the saved search (controls RBAC and file path in etc/apps/&lt;app&gt;/local). Default is search. | Optional | 
+| saved_search_name | exact stanza/name of the saved search. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Splunk.SavedSearch.name | unknown | Saved search name | 
+| Splunk.SavedSearch.app | unknown | App namespace | 
+| Splunk.SavedSearch.status | unknown | Disabled or not_found | 
+

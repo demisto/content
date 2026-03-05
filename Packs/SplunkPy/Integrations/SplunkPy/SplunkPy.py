@@ -1914,7 +1914,8 @@ def get_comments_data_new(
         extensive_log(f"get_comments_data_new: notable_comments = {notable_comments}")
         for notable_id, comments in notable_comments.items():
             # Sort comments by update_time (newest first)
-            sorted_comments = sorted(comments, key=lambda x: x["update_time"], reverse=True)  # type: ignore[arg-type,return-value]
+            sorted_comments = sorted(comments, key=lambda x: x["update_time"],
+                                     reverse=True)  # type: ignore[arg-type,return-value]
             # Store comments under 'comment' key for backward compatibility and consistency:
             # Used by Notable.create_incident() during fetch operations and after enriching notables mechanism.
             id_to_notable_map[notable_id]["comment"] = [comment["comment"] for comment in sorted_comments]
@@ -3769,6 +3770,188 @@ def splunk_parse_raw_command(args: dict):
     )
 
 
+def splunk_create_saved_search(service: client.Service, args: dict) -> list[CommandResults]:
+
+    try:
+        app_namespace = args.get("app_namespace", "search")
+        saved_search_name = args.get("saved_search_name")
+        spl_query = args.get("spl_query")
+        cron_schedule = args.get("cron_schedule")
+        dispatch_earliest = args.get("dispatch_earliest", "-60m@m")
+        dispatch_latest = args.get("dispatch_latest", "now")
+        email_to = args.get("email_to")
+
+        if not spl_query:
+            return_error("Input error: No search was provided for the saved search creation.")
+        if not saved_search_name:
+            return_error("Input error: No saved search name.")
+        if email_to and not bool(re.match(r"[^@]+@[^@]+\.[^@]+$", email_to)):
+            return_error(f"Input error: Invalid email address provided '{email_to}'.")
+
+        created = False
+
+        service.namespace = namespace(app=app_namespace)
+
+        # Check if a saved search of the same name already exists.
+        saved = None
+        try:
+            saved = service.saved_searches[saved_search_name]
+        except KeyError:
+            saved = None
+        except HTTPError as e:
+            if e.status == 404:
+                saved = None
+            else:
+                raise
+
+        if saved:
+            return_error(
+                f"A saved search named '{saved_search_name}' already exists in app '{app_namespace}'. Please choose a different name.")
+        else:
+            # Create new search
+            create_kwargs = {
+                "name": saved_search_name,
+                "search": spl_query,
+                "disabled": 0,
+                "dispatch.earliest_time": dispatch_earliest,
+                "dispatch.latest_time": dispatch_latest,
+                **({"is_scheduled": 1, "cron_schedule": cron_schedule} if cron_schedule else {"is_scheduled": 0})
+            }
+
+            if email_to:
+                create_kwargs["actions"] = "email"
+                create_kwargs.update({
+                    "action.email.to": email_to,
+                    "action.email.subject": f"Splunk Results: {saved_search_name}",
+                    "action.email.format": "csv",                     # HTML table (friendly default)
+                    "action.email.include.results_link": 1,             # include link back to Splunk
+                    "action.email.sendresults": 1,                      # actually include results
+                    "action.email.attach.csv": 1,                       # send CSV attachment
+                    "action.email.inline": 0,                           # disable inline table
+
+                })
+
+            saved = service.saved_searches.create(**create_kwargs)
+            saved.refresh()
+            created = True
+
+        result = {
+            "status": "created",
+            "name": saved_search_name,
+            "app": app_namespace,
+            "cron_schedule": cron_schedule,
+            "dispatch_earliest": dispatch_earliest,
+            "dispatch_latest": dispatch_latest,
+            "email_to": email_to,
+        }
+
+        human_readable = f"Saved search **{saved_search_name}** {result['status']} in app **{app_namespace}**\n" \
+            f"- Schedule: `{cron_schedule}`\n" \
+            f"- Window: earliest=`{dispatch_earliest}` latest=`{dispatch_latest}`\n" \
+            f"- Email Action: `{email_to}`"
+
+        return CommandResults(
+            readable_output=human_readable,
+            outputs_prefix="Splunk.SavedSearch",
+            outputs_key_field="name",
+            outputs=result
+        )
+
+    except Exception as ex:
+        return_error(f"Failed to create saved search: {ex}\n{traceback.format_exc()}")
+
+
+def splunk_delete_saved_search(service: client.Service, args: dict) -> list[CommandResults]:
+
+    try:
+        app_namespace = args.get("app_namespace", "search")
+        saved_search_name = args.get("saved_search_name")
+
+        service.namespace = namespace(app=app_namespace)
+
+        # Check if a saved search of the same name already exists, if so that one will be modified.
+        try:
+
+            saved = service.saved_searches[saved_search_name]
+            # Disable schedule first
+            saved.update(is_scheduled=False)
+            saved.refresh()
+            saved.delete()
+
+            status = "deleted"
+            human = f"Saved search **{saved_search_name}** deleted from app **{app_namespace}**."
+            outputs = {
+                "name": saved_search_name,
+                "app": app_namespace,
+                "status": status
+            }
+
+        except KeyError:
+            status = "not_found"
+            human = (f"Saved search **{saved_search_name}** was **not found** in app "
+                     f"**{app_namespace}** (owner=nobody). No action taken.")
+            outputs = {
+                "name": saved_search_name,
+                "app": app_namespace,
+                "status": status
+            }
+
+        return CommandResults(
+            readable_output=human,
+            outputs_prefix="Splunk.SavedSearch",
+            outputs_key_field="name",
+            outputs=outputs
+        )
+
+    except Exception as ex:
+        return_error(f"Failed to delete saved search: {ex}\n{traceback.format_exc()}")
+
+
+def splunk_disable_scheduled_saved_search(service: client.Service, args: dict) -> list[CommandResults]:
+
+    try:
+        app_namespace = args.get("app_namespace", "search")
+        saved_search_name = args.get("saved_search_name")  # Mandatory
+
+        # Ensure we operate in the desired app namespace (saves under etc/apps/<app>/local/savedsearches.conf)
+        service.namespace = namespace(app=app_namespace, owner="nobody")
+
+        # Check if a saved search of the same name already exists, if so that one will be modified.
+        try:
+
+            saved = service.saved_searches[saved_search_name]
+            saved.update(disabled=1)
+            saved.refresh()
+
+            status = "disabled"
+            human = f"Saved search **{saved_search_name}** disabled in app **{app_namespace}**."
+            outputs = {
+                "name": saved_search_name,
+                "app": app_namespace,
+                "status": status
+            }
+
+        except KeyError:
+            status = "not_found"
+            human = (f"Saved search **{saved_search_name}** was **not found** in app "
+                     f"**{app_namespace}** (owner=nobody). No action taken.")
+            outputs = {
+                "name": saved_search_name,
+                "app": app_namespace,
+                "status": status
+            }
+
+        return CommandResults(
+            readable_output=human,
+            outputs_prefix="Splunk.SavedSearch",
+            outputs_key_field="name",
+            outputs=outputs
+        )
+
+    except Exception as ex:
+        return_error(f"Failed to disable saved search: {ex}\n{traceback.format_exc()}")
+
+
 def test_module(service: client.Service, params: dict) -> None:
     try:
         # validate connection
@@ -4162,6 +4345,12 @@ def main():  # pragma: no cover
         return_results(splunk_job_status(service, args))
     elif command == "splunk-job-share":
         return_results(splunk_job_share(service, args))
+    elif command == "splunk-create-saved-search":
+        return_results(splunk_create_saved_search(service, args))
+    elif command == "splunk-disable-saved-search":
+        return_results(splunk_disable_scheduled_saved_search(service, args))
+    elif command == "splunk-delete-saved-search":
+        return_results(splunk_delete_saved_search(service, args))
     elif command.startswith("splunk-kv-") and service is not None:
         app = args.get("app_name", "search")
         service.namespace = namespace(app=app, owner="nobody", sharing="app")

@@ -1,5 +1,4 @@
 category: Analytics & SIEM
-provider: Cisco Systems
 commonfields:
   id: SplunkPy
   version: -1
@@ -712,7 +711,80 @@ script:
       name: ttl
     description: Change job settings to share its results to all Splunk users, and change its TTL.
     name: splunk-job-share
-  dockerimage: demisto/splunksdk-py3:1.0.0.5493343
+  - arguments:
+    - defaultValue: search
+      description: App in which to create the saved search (controls RBAC and file path in etc/apps/<app>/local).
+      name: app_namespace
+      type: textArea
+    - description: Human‑readable name (stanza) of the saved search; must be unique within the app.
+      name: saved_search_name
+      required: true
+      type: textArea
+    - description: The SPL for the saved search.
+      name: spl_query
+      required: true
+    - description: Cron expression defining when the search runs (e.g., 0 6 * * *).
+      name: cron_schedule
+      type: textArea
+    - defaultValue: -60m@m
+      description: Time window start for each scheduled run (relative time ok).
+      name: dispatch_earliest
+      type: textArea
+    - defaultValue: now
+      description: Time window end for each scheduled run.
+      name: dispatch_latest
+    - description: Email address to send saved search results to.
+      name: email_to
+    description: Create a saved search with option to enable scheduled runs and email notifications.
+    name: splunk-create-saved-search
+    outputs:
+    - contextPath: Splunk.SavedSearch.name
+      description: Saved search name.
+    - contextPath: Splunk.SavedSearch.app
+      description: App namespace.
+    - contextPath: Splunk.SavedSearch.schedule
+      description: Cron string.
+    - contextPath: Splunk.SavedSearch.earliest
+      description: Dispatch window start time.
+    - contextPath: Splunk.SavedSearch.latest
+      description: Dispatch window end time.
+    - contextPath: Splunk.SavedSearch.status
+      description: 'created.'
+    - contextPath: Splunk.SavedSearch.email_to
+      description: Email address that will receive the results.
+  - arguments:
+    - defaultValue: search
+      description: App from which to create the saved search (controls RBAC and file path in etc/apps/<app>/local).
+      name: app_namespace
+    - description: exact stanza/name of the saved search.
+      name: saved_search_name
+      required: true
+    description: Delete a saved search.
+    name: splunk-delete-saved-search
+    outputs:
+    - contextPath: Splunk.SavedSearch.name
+      description: Saved search name.
+    - contextPath: Splunk.SavedSearch.app
+      description: App namespace.
+    - contextPath: Splunk.SavedSearch.status
+      description: Deleted or not_found.
+  - arguments:
+    - defaultValue: search
+      description: App from which to create the saved search (controls RBAC and file path in etc/apps/<app>/local).
+      name: app_namespace
+    - description: exact stanza/name of the saved search.
+      name: saved_search_name
+      required: true
+    description: Disable a saved search.
+    name: splunk-disable-saved-search
+    outputs:
+    - contextPath: Splunk.SavedSearch.name
+      description: Saved search name.
+    - contextPath: Splunk.SavedSearch.app
+      description: App namespace.
+    - contextPath: Splunk.SavedSearch.status
+      description: Disabled or not_found.
+  dockerimage: demisto/splunksdk-py3:1.0.0.6911797
   isfetch: true
   ismappable: true
   isremotesyncin: true
