@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SENTRIA - Sentria App Quick Actions"
+    ],
+    "caseInsensitive": true,
+    "cliName": "sentriaappactionmsganalyst",
+    "closeForm": false,
+    "content": true,
+    "description": "Sentria App Action Msg Analyst ",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_sentriaappactionmsganalyst",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Sentria App Action Msg Analyst",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "longText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

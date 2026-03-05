@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SENTRIA - Sentria App Quick Actions"
+    ],
+    "caseInsensitive": true,
+    "cliName": "sentriaappactionscanresponse",
+    "closeForm": false,
+    "content": true,
+    "description": "Sentria App Action Scan Response",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_sentriaappactionscanresponse",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Sentria App Action Scan Response",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "longText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
