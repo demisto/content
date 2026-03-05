@@ -4,8 +4,8 @@ commonfields:
 name: SupportTicketClassification
 isllm: true
 promptConfig:
-  temperature: 0.0
-  maxOutputTokens: 1000
+  temperature: 0.1
+  maxOutputTokens: 2000
   webSearch: false
 userprompt: |-
  

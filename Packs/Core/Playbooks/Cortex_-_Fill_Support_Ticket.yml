@@ -1,0 +1,342 @@
+id: Test Upload Cortex - Fill Support Ticket
+version: 1
+vcShouldKeepItemLegacyProdMachine: false
+name: Test Upload Cortex - Fill Support Ticket
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ec51c57c-fd21-4564-8b6d-81ca8cf09adf
+    type: start
+    task:
+      id: ec51c57c-fd21-4564-8b6d-81ca8cf09adf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": -230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 3b808a08-5704-428d-8a7a-4d05ea0e54a4
+    type: regular
+    task:
+      id: 3b808a08-5704-428d-8a7a-4d05ea0e54a4
+      version: -1
+      name: Set Playbook Inputs to Context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: description
+      value:
+        simple: ${inputs.description}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 1264a173-3fe1-4ade-85a3-ca94e8b6fc80
+    type: regular
+    task:
+      id: 1264a173-3fe1-4ade-85a3-ca94e8b6fc80
+      version: -1
+      name: Fill Support Ticket
+      description: Returns fields for the completion of the support ticket
+      script: Cortex Core - Platform|||core-fill-support-ticket
+      type: regular
+      iscommand: true
+      brand: Cortex Core - Platform
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    scriptarguments:
+      contact_number:
+        simple: ${inputs.contact_number}
+      description:
+        simple: ${inputs.description}
+      issue_category:
+        simple: ${Core.SupportTicketClassification.result}
+      issue_frequency:
+        simple: ${inputs.issue_impact}
+      issue_impact:
+        simple: ${inputs.issue_impact}
+      most_recent_issue_start_time:
+        simple: ${inputs.most_recent_issue_start_time}
+      problem_concentration:
+        simple: ${Core.SupportTicketClassification.result}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: b134ec2e-1ebb-4be1-85a3-baea232fb5d2
+    type: regular
+    task:
+      id: b134ec2e-1ebb-4be1-85a3-baea232fb5d2
+      version: -1
+      name: Get Support Ticket Taxonomy
+      description: Retrieves the complete support ticket taxonomy including all issue
+        categories and their associated problem concentrations.
+      script: Cortex Core - Platform|||core-get-support-ticket-taxonomy
+      type: regular
+      iscommand: true
+      brand: Cortex Core - Platform
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 580702c4-36df-4f50-8a6a-51f72af79b09
+    type: regular
+    task:
+      id: 580702c4-36df-4f50-8a6a-51f72af79b09
+      version: -1
+      name: Verify support ticket permission
+      description: Verifies whether the current user has the required permissions
+        to manage support tickets. Checks both user CSP permission and tenant entitlement.
+      script: Cortex Core - Platform|||core-verify-support-ticket-permission
+      type: regular
+      iscommand: true
+      brand: Cortex Core - Platform
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": -95
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 3ba59fa8-926e-41ee-839a-67f3c3fb11fa
+    type: condition
+    task:
+      id: 3ba59fa8-926e-41ee-839a-67f3c3fb11fa
+      version: -1
+      name: Check User Support Ticket Permissions
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: Core.SupportTicketPermission.has_permission
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 7437fac4-42f0-499f-8741-9aa03e7411a0
+    type: aiTask
+    task:
+      id: 7437fac4-42f0-499f-8741-9aa03e7411a0
+      version: -1
+      name: SupportTicketClassification
+      description: Classifies a support ticket by selecting the most appropriate issue
+        category and problem concentration from a dynamically provided taxonomy, based
+        on user-provided ticket details. The taxonomy argument expects the string
+        output of core-get-support-ticket-taxonomy (a list of dicts mapping each issue_category
+        to its problem_concentrations). Returns a delimited string parseable with
+        the Split transformer using delimiter |||.
+      aiTaskId: SupportTicketClassification
+      type: aiTask
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      description:
+        simple: ${description}
+      taxonomy:
+        simple: '{Core.SupportTicketTaxonomy}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "8_2_yes": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1165,
+        "width": 380,
+        "x": 830,
+        "y": -230
+      }
+    }
+  }
+inputs:
+- key: description
+  value: {}
+  required: true
+  description: A detailed description of the issue. Include error messages/codes or
+    other identifying details. Limited to 25-32000 chars.
+  playbookInputQuery: null
+- key: contact_number
+  value: {}
+  required: false
+  description: The preferred contact number for follow-up.
+  playbookInputQuery: null
+- key: issue_impact
+  value: {}
+  required: false
+  description: The impact of the issue on the system or business.
+  playbookInputQuery: null
+- key: issue_frequency
+  value: {}
+  required: false
+  description: The frequency of the issue.
+  playbookInputQuery: null
+- key: most_recent_issue_start_time
+  value: {}
+  required: false
+  description: The start date and time of the most recent occurrence of the issue.
+    Flexible formats are supported, including relative dates (e.g., "7 days ago",
+    "yesterday") and absolute dates (e.g., "2023-01-01T00:00:00Z").
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - description
+  - contact_number
+  - issue_impact
+  - issue_frequency
+  - most_recent_issue_start_time
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs:
+  - Core.SupportTicket
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs:
+- contextPath: Core.SupportTicket
+  type: unknown
+dirtyInputs: true
+adopted: true
