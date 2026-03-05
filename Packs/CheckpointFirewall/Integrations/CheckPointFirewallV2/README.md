@@ -42,9 +42,11 @@ Show all host objects
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximal number of returned results. | Optional |
-| offset | Number of the results to initially skip. | Optional |
-| session_id | Execute command with a specific session ID | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
+| offset | Number of results to initially skip. Default is 0. | Optional |
+| session_id | Executes the command with the specified session ID. | Optional |
+| details_level | details_level. Possible values are: standard, full, uid. | Optional |
+| domains_to_process | Indicates which domains to process the commands on. It cannot be used with the details-level full, must be run from the System Domain only and with ignore-warnings true. Valid values are: CURRENT_DOMAIN, ALL_DOMAINS_ON_THIS_SERVER. | Optional |
 
 #### Context Output
 
@@ -161,8 +163,9 @@ get all data of a given host
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | object unique identifier (uid) or name | Required |
-| session_id | Execute command with a specific session ID | Optional |
+| identifier | Object unique identifier (UID) or name for which to get data. | Required |
+| session_id | Executes the command with the specified session ID. | Optional |
+| details_level | details_level. Possible values are: standard, full, uid. | Optional |
 
 #### Context Output
 
@@ -228,12 +231,23 @@ Add new host
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | name of the new host | Required |
-| ip_address | ip address | Required |
-| groups | group identifier. | Optional |
-| session_id | Execute command with a specific session ID | Required |
-| ignore_warnings | Whether to ignore warnings when adding a host. | Optional |
-| ignore_errors | Whether to ignore errors when adding a host. | Optional |
+| name | The name of the new host. | Required |
+| ip_address | The IP address of the new host. | Required |
+| groups | Collection of group identifiers. | Optional |
+| session_id | Executes the command with the specified session ID. | Required |
+| ignore_warnings | Whether to ignore warnings when adding a host. Possible values are: true, false. Default is false. | Optional |
+| ignore_errors | Whether to ignore errors when adding a host. Possible values are: true, false. Default is false. | Optional |
+| comments | Comments string. | Optional |
+| nat_auto_rule | Required only when any nat_* argument is provided; otherwise omitted. Possible values are: true, false. | Optional |
+| color | Object color. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. | Optional |
+| nat_method | NAT method. Possible values are: hide, static. | Optional |
+| nat_ip | IPv4. This parameter is not required in case nat_method parameter is "hide" and nat_hide_behind parameter is "gateway". | Optional |
+| nat_install_on | Gateway for NAT rule. | Optional |
+| nat_hide_behind | Hide behind method. This parameter is forbidden in case "nat_method" parameter is "static". Possible values are: gateway, ip_address. | Optional |
+| interfaces_name | Interface name. | Required |
+| interfaces_subnet | IPv4. | Required |
+| interfaces_mask_length | IPv4. | Optional |
+| tags | Tags to assign. | Optional |
 
 #### Context Output
 
@@ -300,16 +314,24 @@ update host changes
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | Object unique identifier or name | Required |
+| identifier | Object unique identifier (UID) or name. | Required |
 | ip_address | IPv4 or IPv6 address. | Optional |
 | new_name | New name of the object. | Optional |
 | comments | Comments string. | Optional |
-| ignore_warnings | Apply changes ignoring warnings. | Optional |
-| ignore_errors | Apply changes ignoring errors. You won't be able to publish such a changes.<br/>If ignore-warnings flag was omitted - warnings will also be ignored. | Optional |
+| ignore_warnings | Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "False". Possible values are: true, false. | Optional |
+| ignore_errors | Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False". Possible values are: true, false. | Optional |
 | groups | Collection of group identifiers. | Optional |
-| session_id | Execute command with a specific session ID | Required |
-| ignore_warnings | Whether to ignore warnings when adding a host. | Optional |
-| ignore_errors | Whether to ignore errors when adding a host. | Optional |
+| session_id | Executes the command with the specified session ID. | Required |
+| nat_auto_rule | Required only when any nat_* argument is provided; otherwise omitted. Possible values are: true, false. | Optional |
+| color | Object color. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. | Optional |
+| nat_method | NAT method. Possible values are: hide, static. | Optional |
+| nat_ip | IPv4. This parameter is not required in case nat_method parameter is "hide" and nat_hide_behind parameter is "gateway". | Optional |
+| nat_install_on | Gateway for NAT rule. | Optional |
+| nat_hide_behind | Hide behind method. This parameter is forbidden in case "nat_method" parameter is "static". Possible values are: gateway, ip_address. | Optional |
+| interfaces_name | Interface name. Required only when defining interfaces (when any interfaces_* arg is provided). | Optional |
+| interfaces_subnet | IPv4. Required only when defining interfaces (when any interfaces_* arg is provided). | Optional |
+| interfaces_mask_length | IPv4 network mask length. Required only when defining interfaces (when any interfaces_* arg is provided). | Optional |
+| tags | Tags to assign. | Optional |
 
 #### Context Output
 
@@ -421,9 +443,12 @@ Show a list of all groups
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximal number of returned results. | Optional |
-| offset | Number of the results to initially skip. | Optional |
-| session_id | Execute command with a specific session ID | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
+| offset | Number of results to initially skip. Default is 0. | Optional |
+| session_id | Executes the command with the specified session ID. | Optional |
+| details_level | Level of detail for the results. Possible values are: standard, full, uid. | Optional |
+| domains_to_process | Indicates which domains to process the commands on. | Optional |
+| filter | Search expression to filter objects by. The provided text should be exactly the same as it would be given in SmartConsole Object Explorer. The logical operators in the expression ('AND', 'OR') should be provided in capital letters. The search involves both a IP search and a textual search in name, comment, tags etc. | Optional |
 
 #### Context Output
 
@@ -533,8 +558,9 @@ Get all data of a given group
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | object uid or name | Required |
-| session_id | Execute command with a specific session ID | Optional |
+| identifier | Object unique identifier (UID) or name. | Required |
+| session_id | Executes the command with the specified session ID. | Optional |
+| details_level | Level of detail for the results. Possible values are: standard, full, uid. | Optional |
 
 #### Context Output
 
@@ -609,7 +635,13 @@ add a group
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Object name. Must be unique in the domain. | Required |
-| session_id | Execute command with a specific session ID | Required |
+| session_id | Executes the command with the specified session ID. | Required |
+| members | Collection of group identifiers (names or UIDs). | Optional |
+| comments | Comments string. | Optional |
+| color | Valid values: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default: black. | Optional |
+| tags | Tags to assign. | Optional |
+| ignore_warnings | Apply changes ignoring warnings. Possible values are: true, false. Default is false. | Optional |
+| ignore_errors | Apply changes ignoring errors. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -670,13 +702,17 @@ update group object
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | uid or name. | Required |
-| new_name | New name of the group object | Optional |
-| comments | Comments string. | Optional |
-| ignore_warnings | Apply changes ignoring warnings. | Optional |
-| ignore_errors | Apply changes ignoring errors. | Optional |
-| session_id | Execute command with a specific session ID | Required |
-| members | Collection of Network objects identified by the name or UID. | Optional |
+| identifier | Object unique identifier (UID) or name. | Required |
+| new_name | New name of the object. | Optional |
+| comments | Update comments. | Optional |
+| ignore_warnings | Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True". Possible values are: true, false. | Optional |
+| ignore_errors | Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False". Note: you won't be able to publish such these changes. If the ignore-warnings flag was omitted, warnings will also be ignored. Possible values are: true, false. | Optional |
+| session_id | Executes the command with the specified session ID. | Required |
+| members | Collection of network objects identified by the name or UID. | Optional |
+| action | The action that should be taken towards the values. Possible values are: add, remove, modify. Default is modify. | Optional |
+| color | Valid values: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default: black. | Optional |
+| tags | Update tags. | Optional |
+| details_level | details_level. Possible values are: standard, full, uid. | Optional |
 
 #### Context Output
 
@@ -783,9 +819,11 @@ List all address range objects
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximal number of returned results. | Optional |
-| offset | Number of the results to initially skip. | Optional |
-| session_id | Execute command with a specific session ID | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
+| offset | Number of results to initially skip. Default is 0. | Optional |
+| session_id | Executes the command with the specified session ID. | Optional |
+| details_level | Level of detail for the results. Possible values are: standard, full, uid. | Optional |
+| domains_to_process | Indicates which domains to process the commands on. | Optional |
 
 #### Context Output
 
@@ -895,14 +933,22 @@ Add address range object
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | object name | Required |
+| name | Name for the new address range object. | Required |
 | ip_address_first | First IP address in the range. | Required |
 | ip_address_last | Last IP address in the range. | Required |
-| set_if_exists | If another object with the same identifier already exists, it will be updated. | Optional |
-| ignore_warnings | Apply changes ignoring warnings. | Optional |
-| ignore_errors | Apply changes ignoring errors. | Optional |
-| session_id | Execute command with a specific session ID | Required |
-| groups | Collection of group identifiers.  | Optional |
+| set_if_exists | Whether to update objects with the same identifier. Can be "true" or "false". Default is "false". Possible values are: true, false. | Optional |
+| ignore_warnings | Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True". Possible values are: true, false. | Optional |
+| ignore_errors | Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False". Note: you won't be able to publish such these changes. If the ignore-warnings flag was omitted, warnings will also be ignored. Possible values are: true, false. | Optional |
+| session_id | Executes the command with the specified session ID. | Required |
+| groups | Collection of group identifiers. | Optional |
+| comments | Comments string. | Optional |
+| color | Object color. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. | Optional |
+| nat_auto_rule | Required only when any nat_* argument is provided; otherwise omitted. Possible values are: true, false. | Optional |
+| nat_method | NAT method. Possible values are: hide, static. | Optional |
+| nat_ip | NAT IP. | Optional |
+| nat_install_on | NAT gateway. | Optional |
+| nat_hide_behind | Hide behind method. This parameter is forbidden in case "nat_method" parameter is "static". Possible values are: gateway, ip_address. | Optional |
+| tags | Tags to assign. | Optional |
 
 #### Context Output
 
@@ -972,15 +1018,21 @@ Update an address range object
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | uid or name. | Required |
-| ip_address_first | First IP address in the range. IPv4 or IPv6 address. | Optional |
-| ip_address_last | Last IP address in the range. IPv4 or IPv6 address. | Optional |
+| identifier | Name for the new address range object. | Required |
+| ip_address_first | First IP address in the range. Can be an IPv4 or IPv6 address. | Optional |
+| ip_address_last | Last IP address in the range. Can be an IPv4 or IPv6 address. | Optional |
 | new_name | New name of the object. | Optional |
-| comments | Comments string. | Optional |
-| ignore_warnings | Apply changes ignoring warnings. | Optional |
-| ignore_errors | Apply changes ignoring errors. | Optional |
+| comments | Update comments. | Optional |
+| ignore_warnings | Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True". Possible values are: true, false. | Optional |
+| ignore_errors | Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False". Note: you won't be able to publish such these changes. If the ignore-warnings flag was omitted, warnings will also be ignored. Possible values are: true, false. | Optional |
 | groups | Collection of group identifiers. | Optional |
-| session_id | Execute command with a specific session ID | Required |
+| session_id | Executes the command with the specified session ID. | Required |
+| color | Update color. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. | Optional |
+| nat_method | Update NAT method. Possible values are: hide, static. | Optional |
+| nat_ip | Update NAT IP. | Optional |
+| nat_install_on | Update NAT gateway. | Optional |
+| nat_hide_behind | Hide behind method. This parameter is forbidden in case "nat_method" parameter is "static". Possible values are: gateway, ip_address. | Optional |
+| tags | Update tags. | Optional |
 
 #### Context Output
 
@@ -1092,9 +1144,12 @@ List all threat indicators
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximal number of returned results. | Optional |
-| offset | Skip that many results before beginning to return them. | Optional |
-| session_id | Execute command with a specific session ID | Optional |
+| limit | The maximum number of results to return. | Optional |
+| offset | Number of results to initially skip. Default is 0. | Optional |
+| session_id | Executes the command with the specified session ID. | Optional |
+| domain_names | Indicates which domains to process. | Optional |
+| details_level | details_level. Possible values are: standard, full, uid. | Optional |
+| filter | Search expression to filter objects by. The provided text should be exactly the same as it would be given in SmartConsole Object Explorer. The logical operators in the expression ('AND', 'OR') should be provided in capital letters. The search involves both a IP search and a textual search in name, comment, tags etc. | Optional |
 
 #### Context Output
 
@@ -1269,9 +1324,15 @@ Add a threat indicator
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | threat indicator name | Required |
+| name | Name for the new threat indicator. | Required |
 | observables | The indicator's observable or the contents of a file containing the indicator's observables. | Required |
-| session_id | Execute command with a specific session ID | Required |
+| session_id | Executes the command with the specified session ID. | Required |
+| action | Action for the indicator. Possible values are: Inactive, Ask, Prevent, Detect. | Optional |
+| profile_action | \<Profiles to apply this indicator to\>_\<The indicator's action in this profile.\>. | Optional |
+| comments | Comments string. | Optional |
+| color | Object color. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. | Optional |
+| tags | Tags to assign. | Optional |
+| ignore_warnings | Apply changes ignoring warnings. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -1310,11 +1371,14 @@ Update a given indicator
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | uid or name. | Required |
-| action | the action to set. | Optional |
+| identifier | Object unique identifier (UID) or name. | Required |
+| action | The action to set for the indicator. Possible values are: Inactive, Ask, Prevent, Detect. Default is Prevent. | Optional |
 | new_name | New name of the object. | Optional |
-| comments | Comments string. | Optional |
-| session_id | Execute command with a specific session ID | Required |
+| comments | Comments for the object. | Optional |
+| session_id | Executes the command with the specified session ID. | Required |
+| profile_action | \<Profiles to apply this indicator to\>_\<The indicator's action in this profile.\>. | Optional |
+| color | Update color. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. | Optional |
+| tags | Update tags. | Optional |
 
 #### Context Output
 
@@ -1487,10 +1551,12 @@ Shows the entire Access Rules layer. This layer is divided into sections. An Acc
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | object name or uid | Required |
-| limit | The maximal number of returned results. | Optional |
-| offset | Number of the results to initially skip. | Optional |
-| session_id | Execute command with a specific session ID | Optional |
+| identifier | Object unique identifier (UID) or name. | Required |
+| limit | The maximum number of results to return. Default is 50. | Optional |
+| offset | Number of results to initially skip. Default is 0. | Optional |
+| session_id | Executes the command with the specified session ID. | Optional |
+| details_level | Level of detail for the results. Possible values are: standard, full, uid. | Optional |
+| show_hits | Include hit count data in the output. Possible values are: true, false. | Optional |
 
 #### Context Output
 
@@ -1608,15 +1674,21 @@ Create new access rule
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| layer | Layer that the rule belongs to identified by the name or UID. | Required |
+| layer | Layer to which to assign the rule, identified by the name or UID. | Required |
 | position | Position in the rulebase. | Required |
 | name | Rule name. | Optional |
-| action | Action settings. valid values are: Accept, Drop, Apply Layer, Ask and Info. default value is Drop. | Optional |
-| vpn | Communities or Directional. Valid values: Any, All_GwToGw. | Optional |
-| destination | Collection of Network objects identified by the name or UID. | Optional |
-| service | Collection of Network objects identified by the name or UID. | Optional |
-| source | Collection of Network objects identified by the name or UID. | Optional |
-| session_id | Execute command with a specific session ID | Required |
+| action | Action settings. Valid values are: Accept, Drop, Apply Layer, Ask and Info. Default value is Drop. Possible values are: Accept, Drop, Apply Layer, Ask, Info. | Optional |
+| vpn | Communities or Directional. Valid values: Any or All_GwToGw. Possible values are: Any, All_GwToGw. | Optional |
+| destination | Collection of network objects identified by the name or UID. | Optional |
+| service | Collection of network objects identified by the name or UID. | Optional |
+| source | Collection of network objects identified by the name or UID. | Optional |
+| session_id | Executes the command with the specified session ID. | Required |
+| comments | Comments string. | Optional |
+| install_on | Install targets. | Optional |
+| enabled | Enable/Disable the rule. Possible values are: true, false. Default is true. | Optional |
+| track_type | Track settings for the rule. Possible values are: Log, Extended Log, Detailed Log, None. | Optional |
+| track_accounting | Turns accounting for track on and off. Possible values are: true, false. | Optional |
+| track_per_session | Determines whether to perform the log per session. Possible values are: true, false. | Optional |
 
 #### Context Output
 
@@ -1679,15 +1751,26 @@ Edit existing access rule using object name or uid.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | object name or uid, OR rule number | Required |
-| layer | Layer that the rule belongs to identified by the name or UID. | Required |
-| action | action to be taken on the rule | Optional |
-| enabled | Enable/Disable the rule. | Optional |
+| identifier | Object unique identifier (UID), rule name, or rule number. | Required |
+| layer | Layer to which the rule belongs, identified by the name or UID. | Required |
+| action | Action to be taken on the rule. Possible values are: Accept, Drop, Apply Layer, Ask, Info. | Optional |
+| enabled | If "true", the rule is enabled. Default is "true". Possible values are: true, false. | Optional |
 | new_name | New name of the object. | Optional |
-| new_position | New position in the rulebase. Value can be int to set specific position, ot str- 'top' or 'bottom' | Optional |
-| ignore_warnings | Apply changes ignoring warnings. | Optional |
-| ignore_errors | Apply changes ignoring errors | Optional |
-| session_id | Execute command with a specific session ID | Required |
+| new_position | New position in the rulebase. Value can be "int" to set a specific position, or str- 'top' or 'bottom'. | Optional |
+| ignore_warnings | Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True". Possible values are: true, false. | Optional |
+| ignore_errors | Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False". Note: you won't be able to publish such these changes. If the ignore-warnings flag was omitted, warnings will also be ignored. Possible values are: true, false. | Optional |
+| session_id | Executes the command with the specified session ID. | Required |
+| comments | Update comments. | Optional |
+| track_type | Track settings for the rule. Possible values are: Log, Extended Log, Detailed Log, None. | Optional |
+| track_accounting | Turns accounting for track on and off. Possible values are: true, false. | Optional |
+| track_per_session | Determines whether to perform the log per session. Possible values are: true, false. | Optional |
+| install_on | Update targets. | Optional |
+| source_add | Adds to collection of values. | Optional |
+| source_remove | Removes from collection of values. | Optional |
+| service_add | Adds to collection of values. | Optional |
+| service_remove | Removes from collection of values. | Optional |
+| destination_add | Adds to collection of values. | Optional |
+| destination_remove | Removes from collection of values. | Optional |
 
 #### Context Output
 
@@ -1805,9 +1888,11 @@ Retrieve all objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximal number of returned results. | Optional |
-| offset | Number of the results to initially skip | Optional |
-| session_id | Execute command with a specific session ID | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
+| offset | Number of results to initially skip. Default is 0. | Optional |
+| session_id | Executes the command with the specified session ID. | Optional |
+| details_level | Level of detail for results. Possible values are: standard, full, uid. | Optional |
+| domains_to_process | Domains to process. | Optional |
 
 #### Context Output
 
@@ -1917,11 +2002,15 @@ Add application site
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Object name. Must be unique in the domain | Required |
-| primary_category | Each application is assigned to one primary category based on its most defining aspect | Required |
-| identifier | can be:<br/>  url-list(str): URLs that determine this particular application.<br/>  application-signature(str): Application signature generated by Signature Tool. | Required |
-| session_id | Execute command with a specific session ID | Required |
+| name | Object name. Must be unique in the domain. | Required |
+| primary_category | Each application is assigned to one primary category based on its most defining aspect. | Required |
+| identifier | Can be: url-list(str): URLs that determine this particular application. application-signature(str): Application signature generated by Signature Tool. | Required |
+| session_id | Executes the command with the specified session ID. | Required |
 | groups | Collection of group identifiers. | Optional |
+| description | Description of the application site. | Optional |
+| comments | Comments string. | Optional |
+| color | Object color. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. | Optional |
+| tags | Tags to assign. | Optional |
 
 #### Context Output
 
@@ -1989,17 +2078,20 @@ It's impossible to set  'application-signature' when the application was initial
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | uid or name. | Required |
-| description | A description for the application. | Optional |
+| identifier | Object unique identifier (UID) or name. | Required |
+| description | A description of the application. | Optional |
 | primary_category | Each application is assigned to one primary category based on its most defining aspect. | Optional |
 | application_signature | Application signature generated by Signature Tool. | Optional |
 | new_name | New name of the object. | Optional |
-| urls_defined_as_regular_expression | States whether the URL is defined as a Regular Expression or not. | Optional |
+| urls_defined_as_regular_expression | If "True", the URL is defined as a Regular Expression. Default is "True". Possible values are: true, false. Default is true. | Optional |
 | url_list | URLs that determine this particular application. This will replace the current url collection. | Optional |
-| url_list_to_add | Adds to collection of values. | Optional |
-| url_list_to_remove | Removes from collection of values. | Optional |
-| groups | Collection of group identifiers. Can be a single group or a list of groups. | Optional |
-| session_id | Execute command with a specific session ID | Required |
+| url_list_to_add | Adds to collection of URLs. | Optional |
+| url_list_to_remove | Removes from collection of URLs. | Optional |
+| groups | Update group membership. | Optional |
+| session_id | Executes the command with the specified session ID. | Required |
+| comments | Update comments. | Optional |
+| color | Update color. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. | Optional |
+| tags | Update tags. | Optional |
 
 #### Context Output
 
