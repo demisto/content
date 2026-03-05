@@ -96,9 +96,6 @@ You can configure the specific vendor and product for this instance.
 > [!NOTE]
 This content refers to IBM Guardium version 10.0
 
-
-
-
 # IBM Guardium Data Security Center
 
 The IBM Guardium Data Security Center is a unified, SaaS-native platform designed to centralize data security, compliance, and risk management across hybrid cloud and on-premises environments. It integrates advanced Data Security Posture Management (DSPM) with specialized modules for AI security and quantum-safe cryptography to provide proactive threat detection and streamlined regulatory reporting through a single dashboard.
@@ -172,6 +169,5 @@ There is no context output for this command.
 ## Additional Information
 
 **Note:** The integration fetches events from the last 12 hours by default on first run. This accounts for IBM Guardium's event indexing delays and ensures events are captured even when indexed with significant delays.
-
 
 </~XSIAM>
