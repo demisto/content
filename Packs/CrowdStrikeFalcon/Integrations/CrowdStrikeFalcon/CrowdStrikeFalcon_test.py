@@ -8714,6 +8714,8 @@ def test_detection_mapper_name_filter_structure():
     filter_condition = name_complex["filters"][0][0]
     assert filter_condition["operator"] == "isNotEmpty"
     assert filter_condition["left"]["value"]["simple"] == "display_name"
+
+
 # ============== NGSIEM Search Events Tests ==============
 @pytest.mark.parametrize(
     "events, expected_rawstring",
