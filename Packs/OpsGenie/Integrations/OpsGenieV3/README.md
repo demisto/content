@@ -636,7 +636,7 @@ Get escalations from OpsGenie.
                         "recipient": {
                             "id": "154d6425-c120-4beb-a3e6-a66c8c44f61d",
                             "type": "user",
-                            "username": "dvilenchik@paloaltonetworks.com"
+                            "username": "dvilenchik@example.com"
                         }
                     },
                     {
@@ -679,7 +679,7 @@ Get escalations from OpsGenie.
 >|description|id|name|ownerTeam|rules|
 >|---|---|---|---|---|
 >|  | 9a441a8d-2410-43f4-9ef2-f7a265e12b74 | Engineering_escalation | id: 51d69df8-c40b-439e-9808-e1a78e54f91b<br/>name: Engineering | {'condition': 'if-not-acked', 'notifyType': 'default', 'delay': {'timeAmount': 0, 'timeUnit': 'minutes'}, 'recipient': {'type': 'schedule', 'id': '7835aa84-7440-41d5-90bf-92e0045714d5', 'name': 'Engineering_schedule'}},<br/>{'condition': 'if-not-acked', 'notifyType': 'next', 'delay': {'timeAmount': 5, 'timeUnit': 'minutes'}, 'recipient': {'type': 'schedule', 'id': '7835aa84-7440-41d5-90bf-92e0045714d5', 'name': 'Engineering_schedule'}},<br/>{'condition': 'if-not-acked', 'notifyType': 'all', 'delay': {'timeAmount': 10, 'timeUnit': 'minutes'}, 'recipient': {'type': 'team', 'id': '51d69df8-c40b-439e-9808-e1a78e54f91b', 'name': 'Engineering'}} |
->|  | c8a0f950-577c-4da5-894b-1fd463d9f51c | Integration Team_escalation | id: fbbc3f9a-12f4-4794-9938-7e0a85a06f8b<br/>name: Integration Team | {'condition': 'if-not-acked', 'notifyType': 'default', 'delay': {'timeAmount': 0, 'timeUnit': 'minutes'}, 'recipient': {'type': 'schedule', 'id': 'df918339-b999-4878-b69b-3c2c0d508b01', 'name': 'Integration Team_schedule'}},<br/>{'condition': 'if-not-acked', 'notifyType': 'default', 'delay': {'timeAmount': 1, 'timeUnit': 'minutes'}, 'recipient': {'type': 'user', 'id': '154d6425-c120-4beb-a3e6-a66c8c44f61d', 'username': 'dvilenchik@paloaltonetworks.com'}},<br/>{'condition': 'if-not-acked', 'notifyType': 'next', 'delay': {'timeAmount': 5, 'timeUnit': 'minutes'}, 'recipient': {'type': 'schedule', 'id': 'df918339-b999-4878-b69b-3c2c0d508b01', 'name': 'Integration Team_schedule'}},<br/>{'condition': 'if-not-acked', 'notifyType': 'all', 'delay': {'timeAmount': 10, 'timeUnit': 'minutes'}, 'recipient': {'type': 'team', 'id': 'fbbc3f9a-12f4-4794-9938-7e0a85a06f8b', 'name': 'Integration Team'}} |
+>|  | c8a0f950-577c-4da5-894b-1fd463d9f51c | Integration Team_escalation | id: fbbc3f9a-12f4-4794-9938-7e0a85a06f8b<br/>name: Integration Team | {'condition': 'if-not-acked', 'notifyType': 'default', 'delay': {'timeAmount': 0, 'timeUnit': 'minutes'}, 'recipient': {'type': 'schedule', 'id': 'df918339-b999-4878-b69b-3c2c0d508b01', 'name': 'Integration Team_schedule'}},<br/>{'condition': 'if-not-acked', 'notifyType': 'default', 'delay': {'timeAmount': 1, 'timeUnit': 'minutes'}, 'recipient': {'type': 'user', 'id': '154d6425-c120-4beb-a3e6-a66c8c44f61d', 'username': 'dvilenchik@example.com'}},<br/>{'condition': 'if-not-acked', 'notifyType': 'next', 'delay': {'timeAmount': 5, 'timeUnit': 'minutes'}, 'recipient': {'type': 'schedule', 'id': 'df918339-b999-4878-b69b-3c2c0d508b01', 'name': 'Integration Team_schedule'}},<br/>{'condition': 'if-not-acked', 'notifyType': 'all', 'delay': {'timeAmount': 10, 'timeUnit': 'minutes'}, 'recipient': {'type': 'team', 'id': 'fbbc3f9a-12f4-4794-9938-7e0a85a06f8b', 'name': 'Integration Team'}} |
 
 ### opsgenie-escalate-alert
 
@@ -1083,7 +1083,7 @@ Get the on-call users for the provided schedule.
                     "onCallParticipants": [
                         {
                             "id": "154d6425-c120-4beb-a3e6-a66c8c44f61d",
-                            "name": "dvilenchik@paloaltonetworks.com",
+                            "name": "dvilenchik@example.com",
                             "type": "user"
                         }
                     ]
@@ -1102,7 +1102,7 @@ Get the on-call users for the provided schedule.
 >
 >|_parent|onCallParticipants|
 >|---|---|
->| id: 5892636c-6183-4788-99d6-6d93b9095194<br/>name: Escalation Schedule<br/>enabled: true | {'id': '154d6425-c120-4beb-a3e6-a66c8c44f61d', 'name': 'dvilenchik@paloaltonetworks.com', 'type': 'user'} |
+>| id: 5892636c-6183-4788-99d6-6d93b9095194<br/>name: Escalation Schedule<br/>enabled: true | {'id': '154d6425-c120-4beb-a3e6-a66c8c44f61d', 'name': 'dvilenchik@example.com', 'type': 'user'} |
 
 ### opsgenie-create-incident
 

@@ -32,7 +32,7 @@ xmlns:wd="urn:com.workday/bsvc" wd:version="v34.0">
 <wd:Worker_Descriptor>John Alayan</wd:Worker_Descriptor>
 <wd:Worker_Data>
 <wd:Worker_ID>123456</wd:Worker_ID>
-<wd:User_ID>JDoe@paloaltonetworks.com</wd:User_ID>
+<wd:User_ID>jdoe@example.com</wd:User_ID>
 <wd:Personal_Data>
 <wd:Name_Data>
 <wd:Legal_Name_Data>
@@ -95,7 +95,7 @@ xmlns:wd="urn:com.workday/bsvc" wd:version="v34.0">
 </wd:Address_Reference>
 <wd:Address_ID>ADDRESS_REFERENCE-3-3415</wd:Address_ID>
 </wd:Address_Data>
-<wd:Address_Data wd:Effective_Date="2020-04-09" wd:Address_Format_Type="Basic" wd:Formatted_Address="King Faisal District&amp;#xa;Narnia 13215&amp;#xa;Saudi Arabia" wd:Defaulted_Business_Site_Address="0">
+<wd:Address_Data wd:Effective_Date="2020-04-09" wd:Address_Format_Type="Basic" wd:Formatted_Address="King Testname District&amp;#xa;Narnia 13215&amp;#xa;Saudi Arabia" wd:Defaulted_Business_Site_Address="0">
 <wd:Country_Reference>
 <wd:ID wd:type="WID">50423b5190ad49bb89e94cd58dfaad69</wd:ID>
 <wd:ID wd:type="ISO_3166-1_Alpha-2_Code">SA</wd:ID>
@@ -103,7 +103,7 @@ xmlns:wd="urn:com.workday/bsvc" wd:version="v34.0">
 <wd:ID wd:type="ISO_3166-1_Numeric-3_Code">682</wd:ID>
 </wd:Country_Reference>
 <wd:Last_Modified>2020-04-09T09:42:32.972-07:00</wd:Last_Modified>
-<wd:Address_Line_Data wd:Type="ADDRESS_LINE_1" wd:Descriptor="Address Line 1">King Faisal District</wd:Address_Line_Data>
+<wd:Address_Line_Data wd:Type="ADDRESS_LINE_1" wd:Descriptor="Address Line 1">King Testname District</wd:Address_Line_Data>
 <wd:Municipality>Narnia</wd:Municipality>
 <wd:Postal_Code>13215</wd:Postal_Code>
 <wd:Usage_Data wd:Public="0">
@@ -182,7 +182,7 @@ xmlns:wd="urn:com.workday/bsvc" wd:version="v34.0">
 <wd:ID>EMAIL_REFERENCE-3-14523</wd:ID>
 </wd:Email_Address_Data>
 <wd:Email_Address_Data>
-<wd:Email_Address>JDoe@paloaltonetworks.com</wd:Email_Address>
+<wd:Email_Address>jdoe@example.com</wd:Email_Address>
 <wd:Usage_Data wd:Public="1">
 <wd:Type_Data wd:Primary="1">
 <wd:Type_Reference>
