@@ -8934,6 +8934,18 @@ def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
     resource = ods_create_scan(args, is_scheduled=False)
     scan_id = resource.get("id")
 
+    polling = argToBoolean(args.get("polling", True))
+
+    if not polling:
+        human_readable = f'Successfully created scan with ID: {scan_id}'
+        return CommandResults(
+            raw_response=resource,
+            outputs_prefix="CrowdStrike.ODSScan",
+            outputs_key_field="id",
+            outputs=resource,
+            readable_output=human_readable,
+        )
+
     query_scan_args = {
         "ids": scan_id,
         "wait_for_result": True,

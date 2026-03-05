@@ -5931,6 +5931,33 @@ def test_cs_falcon_ods_create_scan_command(mocker):
     )
 
 
+def test_cs_falcon_ods_create_scan_command_no_polling(mocker):
+    """
+    Test cs_falcon_ods_create_scan_command with polling=false.
+
+    Given
+        - Arguments to create a scan with polling set to false.
+
+    When
+        - The user runs the "cs-falcon-ods-create-scan" command with polling=false.
+
+    Then
+        - Create an ODS scan and return CommandResults immediately without calling cs_falcon_ODS_query_scans_command.
+    """
+
+    from CrowdStrikeFalcon import cs_falcon_ods_create_scan_command
+
+    mocker.patch("CrowdStrikeFalcon.ods_create_scan", return_value={"id": "random_id"})
+    query_scans_command = mocker.patch("CrowdStrikeFalcon.cs_falcon_ODS_query_scans_command")
+
+    result = cs_falcon_ods_create_scan_command({"interval_in_seconds": 1, "timeout_in_seconds": 1, "polling": "false"})
+
+    query_scans_command.assert_not_called()
+    assert result.readable_output == "Successfully created scan with ID: random_id"
+    assert result.outputs == {"id": "random_id"}
+    assert result.outputs_prefix == "CrowdStrike.ODSScan"
+
+
 def test_cs_falcon_ods_create_scheduled_scan_command(mocker):
     """
     Test cs_falcon_ods_create_scheduled_scan_command.

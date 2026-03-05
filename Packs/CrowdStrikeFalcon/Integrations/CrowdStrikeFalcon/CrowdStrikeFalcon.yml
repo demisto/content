@@ -4373,6 +4373,13 @@ script:
       - '2'
       - '3'
       - '4'
+    - name: polling
+      description: Whether to use polling to wait for the scan result. If set to false, the command will only create the scan and return immediately without waiting for results.
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     description: Create an ODS scan and wait for the results.
     name: cs-falcon-ods-create-scan
     polling: true
