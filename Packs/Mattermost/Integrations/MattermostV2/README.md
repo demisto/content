@@ -82,7 +82,7 @@ Must be authenticated and have the view_team permission.
             "delete_at": 0,
             "description": "",
             "display_name": "PANW",
-            "email": "rrapoport@paloaltonetworks.com",
+            "email": "rrapoport@example.com",
             "group_constrained": false,
             "id": "6ie46zmi4fdqiqqe7p5gfki9hr",
             "invite_id": "ocoh4fcrw7dzxgfu5bdtqpy7cr",
