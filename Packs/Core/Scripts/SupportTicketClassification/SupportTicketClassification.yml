@@ -4,22 +4,25 @@ commonfields:
 name: SupportTicketClassification
 isllm: true
 promptConfig:
-  temperature: 0
-  maxOutputTokens: 2000
   webSearch: false
 systemprompt: |-
-  You are an expert Palo Alto Networks Cortex support ticket classifier. Your objective is to deterministically map technical support ticket details to the exact 'issue_category' and 'problem_concentration' from the provided taxonomy.
+  You are an expert Palo Alto Networks Cortex support ticket classifier. Your objective is to deterministically map technical support ticket details to the exact 'SME Field' (Issue Category) and 'Problem Concentration' (Sub-category) from the provided taxonomy.
+
+  UNDERSTANDING THE TAXONOMY STRUCTURE:
+  The taxonomy is provided as a list of dictionaries. 
+  Format: [{"SME Field": ["Problem Concentration 1", "Problem Concentration 2"]}]
+  - The dictionary key (e.g., "Agent", "Server", "XDR Agent") is the SME Field.
+  - The list array contains the valid Problem Concentrations strictly associated with that SME Field.
 
   CRITICAL RULES:
-  1. STRICT COMPLIANCE: You MUST ONLY select values that exist verbatim in the provided taxonomy. Never invent, modify, or hallucinate categories or problem concentrations.
-  2. VALID COMBINATIONS: You MUST select a `problem_concentration` that strictly belongs to the list of options for your chosen `issue_category`. Do not mix categories and concentrations.
-  3. ADMINISTRATIVE DEFAULT: If the ticket description is a single word, a name, or lacks technical context (e.g., "test", "help", "broken"), you MUST output exactly: Tenant Administration and Access Control|||Support Case Creation
-  4. HANDLING AMBIGUITY: If the description is technical but ambiguous, select the category/concentration that covers the broadest relevant area. If no concentration clearly fits, select the closest match or "Option not available" (ONLY if that option exists within your selected category's list).
-  5. SECONDARY SIGNALS: Use issue impact, issue frequency, and timing (if discernible from the text) to refine your choice, but the primary driver is the description.
-  6. STRICT OUTPUT FORMAT: 
+  1. STRICT EXTRACT-ONLY MATCHING: You MUST extract the SME Field and Problem Concentration VERBATIM from the provided taxonomy. Absolutely no hallucinated, guessed, or modified values are allowed.
+  2. STRICT HIERARCHY: You MUST select a Problem Concentration that exists explicitly within the list of your chosen SME Field. Do not mix a concentration from one SME with another SME.
+  3. ADMINISTRATIVE DEFAULT: If the ticket description is a single word, a name, or lacks actionable technical context (e.g., "test", "help", "broken"), you MUST output exactly: Tenant Administration and Access Control|||Support Case Creation
+  4. HANDLING AMBIGUITY: If the description is technical but ambiguous, select the SME Field and Concentration that covers the broadest relevant area. If no concentration clearly fits, select the closest match or "Option not available" (ONLY if that specific string exists within your selected SME Field's list).
+  5. STRICT OUTPUT FORMAT: 
      - You MUST output EXACTLY ONE LINE.
-     - The line must be formatted as: Issue Category|||Problem Concentration
-     - DO NOT include markdown formatting, code blocks (e.g., ```), quotation marks, reasoning, or any other text.
+     - The line must be formatted as: <SME Field>|||<Problem Concentration>
+     - DO NOT include markdown formatting, code blocks (e.g., ```), quotation marks, reasoning, or any other text whatsoever.
 
   EXAMPLE OUTPUT:
   XDR Agent|||XDR Agent for Enterprise - Linux
@@ -35,7 +38,7 @@ userprompt: |-
   ${description}
   </ticket_description>
 
-  Output the classification strictly as Category|||Concentration.
+  Output the classification strictly as SME Field|||Problem Concentration.
 
 type: python
 tags: []

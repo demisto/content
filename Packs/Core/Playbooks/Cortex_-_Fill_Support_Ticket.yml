@@ -261,7 +261,7 @@ tasks:
       description:
         simple: ${description}
       taxonomy:
-        simple: '{Core.SupportTicketTaxonomy}'
+        simple: ${Core.SupportTicketTaxonomy}
     separatecontext: false
     continueonerrortype: ""
     view: |-

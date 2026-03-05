@@ -25,6 +25,9 @@ TAXONOMY_DATA = [
 
 TAXONOMY_JSON = json.dumps(TAXONOMY_DATA)
 
+# Python repr with single quotes — the format actually received at runtime
+TAXONOMY_SINGLE_QUOTES = str(TAXONOMY_DATA)
+
 
 class TestParseTaxonomy:
     """Tests for the ``parse_taxonomy`` helper."""
@@ -38,6 +41,13 @@ class TestParseTaxonomy:
         result = parse_taxonomy(TAXONOMY_JSON)
         assert "XDR Agent" in result
         assert "XDR Agent for Enterprise - Linux" in result["XDR Agent"]
+
+    def test_parse_from_single_quote_string(self):
+        """Taxonomy passed as Python repr (single quotes) should be parsed correctly."""
+        result = parse_taxonomy(TAXONOMY_SINGLE_QUOTES)
+        assert "Agent" in result
+        assert "Communication" in result["Agent"]
+        assert "XDR Agent" in result
 
     def test_parse_invalid_type_raises(self):
         with pytest.raises(ValueError, match="must be a list"):
@@ -58,15 +68,21 @@ class TestValidateAgainstTaxonomy:
         assert conc == "Communication"
         assert warnings == []
 
-    def test_invalid_category(self):
+    def test_invalid_category_returns_none(self):
+        """An invalid category should return None for both fields."""
         taxonomy = parse_taxonomy(TAXONOMY_DATA)
-        _, _, warnings = validate_against_taxonomy("NonExistent", "Communication", taxonomy)
+        cat, conc, warnings = validate_against_taxonomy("NonExistent", "Communication", taxonomy)
+        assert cat is None
+        assert conc is None
         assert len(warnings) == 1
         assert "not a valid category" in warnings[0]
 
-    def test_invalid_concentration(self):
+    def test_invalid_concentration_returns_none_concentration(self):
+        """An invalid concentration should return None for concentration only."""
         taxonomy = parse_taxonomy(TAXONOMY_DATA)
-        _, _, warnings = validate_against_taxonomy("Agent", "NonExistent", taxonomy)
+        cat, conc, warnings = validate_against_taxonomy("Agent", "NonExistent", taxonomy)
+        assert cat == "Agent"
+        assert conc is None
         assert len(warnings) == 1
         assert "not valid for category" in warnings[0]
 
@@ -118,7 +134,7 @@ class TestParseAndValidate:
         assert outputs["ProblemConcentration"] is None
 
     def test_invalid_category_in_taxonomy(self):
-        """An invalid category should produce a warning."""
+        """An invalid category should produce a warning and return None fields."""
         args = {
             "classification_result": "FakeCategory|||Communication",
             "taxonomy": TAXONOMY_JSON,
@@ -126,11 +142,13 @@ class TestParseAndValidate:
         result = parse_and_validate(args)
         outputs = result.outputs
         assert outputs["IsValid"] is False
+        assert outputs["IssueCategory"] is None
+        assert outputs["ProblemConcentration"] is None
         assert len(outputs["Warnings"]) == 1
         assert "not a valid category" in outputs["Warnings"][0]
 
     def test_invalid_concentration_in_taxonomy(self):
-        """An invalid concentration should produce a warning."""
+        """An invalid concentration should produce a warning and return None concentration."""
         args = {
             "classification_result": "Agent|||FakeConcentration",
             "taxonomy": TAXONOMY_JSON,
@@ -138,6 +156,8 @@ class TestParseAndValidate:
         result = parse_and_validate(args)
         outputs = result.outputs
         assert outputs["IsValid"] is False
+        assert outputs["IssueCategory"] == "Agent"
+        assert outputs["ProblemConcentration"] is None
         assert len(outputs["Warnings"]) == 1
         assert "not valid for category" in outputs["Warnings"][0]
 
@@ -151,6 +171,18 @@ class TestParseAndValidate:
         outputs = result.outputs
         assert outputs["IssueCategory"] is None
         assert outputs["ProblemConcentration"] is None
+
+    def test_single_quote_taxonomy(self):
+        """Taxonomy passed as Python repr (single quotes) should work."""
+        args = {
+            "classification_result": "Agent|||Communication",
+            "taxonomy": TAXONOMY_SINGLE_QUOTES,
+        }
+        result = parse_and_validate(args)
+        outputs = result.outputs
+        assert outputs["IssueCategory"] == "Agent"
+        assert outputs["ProblemConcentration"] == "Communication"
+        assert outputs["IsValid"] is True
 
     def test_readable_output_valid(self):
         """Readable output should indicate valid classification."""
@@ -182,3 +214,16 @@ class TestParseAndValidate:
         assert outputs["IssueCategory"] == "Tenant Administration and Access Control"
         assert outputs["ProblemConcentration"] == "Support Case Creation"
         assert outputs["IsValid"] is True
+
+    def test_globalprotect_not_in_taxonomy(self):
+        """GlobalProtect is not in the taxonomy — should return None and a warning."""
+        args = {
+            "classification_result": "GlobalProtect|||GlobalProtect - Portal/Gateway Connection Issues",
+            "taxonomy": TAXONOMY_SINGLE_QUOTES,
+        }
+        result = parse_and_validate(args)
+        outputs = result.outputs
+        assert outputs["IsValid"] is False
+        assert outputs["IssueCategory"] is None
+        assert outputs["ProblemConcentration"] is None
+        assert "not a valid category" in outputs["Warnings"][0]

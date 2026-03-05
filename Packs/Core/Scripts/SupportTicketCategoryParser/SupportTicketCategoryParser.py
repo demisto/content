@@ -1,3 +1,6 @@
+import ast
+import json
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -8,15 +11,20 @@ def parse_taxonomy(taxonomy_raw: str | list) -> dict[str, list[str]]:
     """Parse the taxonomy argument into a dict mapping category -> list of concentrations.
 
     Args:
-        taxonomy_raw: Either a JSON string or a list of single-key dicts
-            (e.g. [{"Agent": ["Communication", ...]}, ...]).
+        taxonomy_raw: Either a JSON string, a Python repr string, or a list of
+            single-key dicts (e.g. [{"Agent": ["Communication", ...]}, ...]).
 
     Returns:
         A dict where keys are issue categories and values are lists of valid
         problem concentrations.
     """
     if isinstance(taxonomy_raw, str):
-        taxonomy_raw = json.loads(taxonomy_raw)
+        # Try JSON first (double-quoted), fall back to Python literal (single-quoted)
+        try:
+            taxonomy_raw = json.loads(taxonomy_raw)
+        except json.JSONDecodeError:
+            demisto.debug("taxonomy is not valid JSON, trying ast.literal_eval")
+            taxonomy_raw = ast.literal_eval(taxonomy_raw)
 
     if not isinstance(taxonomy_raw, list):
         raise ValueError("taxonomy must be a list of single-key dictionaries.")
@@ -55,6 +63,8 @@ def validate_against_taxonomy(
             f"Valid categories: {list(taxonomy.keys())}"
         )
 
+        return None, None, warnings
+
     if issue_category and problem_concentration and issue_category in taxonomy:
         valid_concentrations = taxonomy[issue_category]
         if problem_concentration not in valid_concentrations:
@@ -63,6 +73,7 @@ def validate_against_taxonomy(
                 f'category "{issue_category}". '
                 f"Valid concentrations: {valid_concentrations}"
             )
+            problem_concentration = None
 
     return issue_category, problem_concentration, warnings
 
