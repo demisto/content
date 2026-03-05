@@ -10,15 +10,15 @@ TEST_IAM_POLICY = [
         "Contents": {
             "bindings": [
                 {
-                    "members": ["user:kball@paloaltonetworks.com", "user:ptoman@paloaltonetworks.com"],
+                    "members": ["user:kball@paloaltonetworks.com", "user:ptoman@example.com"],
                     "role": "projects/expanse-afr-sbx/roles/CustomRole180",
                 },
                 {
                     "members": [
-                        "user:adm.aalshaea@paloaltonetworks.com",
-                        "user:callu@paloaltonetworks.com",
-                        "user:janny@paloaltonetworks.com",
-                        "user:jwilkes@paloaltonetworks.com",
+                        "user:adm.aalshaea@example.com",
+                        "user:callu@example.com",
+                        "user:janny@example.com",
+                        "user:jwilkes@example.com",
                         "user:pparikh@paloaltonetworks.com",
                     ],
                     "role": "roles/owner",
@@ -87,10 +87,10 @@ def test_get_iam_policy(mocker):
         (
             TEST_IAM_POLICY,
             [
-                "adm.aalshaea@paloaltonetworks.com",
-                "callu@paloaltonetworks.com",
-                "janny@paloaltonetworks.com",
-                "jwilkes@paloaltonetworks.com",
+                "adm.aalshaea@example.com",
+                "callu@example.com",
+                "janny@example.com",
+                "jwilkes@example.com",
                 "pparikh@paloaltonetworks.com",
             ],
             does_not_raise(),
@@ -102,7 +102,7 @@ def test_get_iam_policy(mocker):
                     "Contents": {
                         "bindings": [
                             {
-                                "members": ["user:kball@paloaltonetworks.com", "user:ptoman@paloaltonetworks.com"],
+                                "members": ["user:kball@paloaltonetworks.com", "user:ptoman@example.com"],
                                 "role": "projects/expanse-afr-sbx/roles/CustomRole180",
                             },
                         ],
