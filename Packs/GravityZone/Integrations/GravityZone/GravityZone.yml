@@ -125,6 +125,9 @@ script:
 
   - name: gz-endpoint-get
     description: Retrieves endpoint details by endpoint ID.
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
     arguments:
     - name: id
       isArray: false
@@ -175,6 +178,9 @@ script:
 
   - name: gz-endpoint-download-investigation-package
     description: Collects and downloads an investigation package from an endpoint.
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
     polling: true
     arguments:
     - name: id
@@ -244,6 +250,9 @@ script:
 
   - name: gz-endpoint-download-file
     description: Downloads a file from an endpoint.
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
     polling: true
     arguments:
     - name: id
@@ -319,6 +328,9 @@ script:
 
   - name: gz-endpoint-isolate
     description: Isolates an endpoint from the network.
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
     polling: true
     arguments:
     - name: id
@@ -358,6 +370,9 @@ script:
 
   - name: gz-endpoint-deisolate
     description: Restores an isolated endpoint to the network.
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
     polling: true
     arguments:
     - name: id
@@ -397,6 +412,9 @@ script:
 
   - name: gz-endpoint-kill-process
     description: Terminates a process on an endpoint by process ID.
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
     polling: true
     arguments:
     - name: id
@@ -448,6 +466,9 @@ script:
 
   - name: gz-endpoint-run-command
     description: Runs a command on the endpoint. The applied policy must have remote shell enabled for this action to work.
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
     execution: true
     polling: true
     arguments:
@@ -491,6 +512,9 @@ script:
 
   - name: gz-endpoint-upload-file
     description: Uploads a file to an endpoint.
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
     polling: true
     arguments:
     - name: id
@@ -569,6 +593,9 @@ script:
 
   - name: gz-endpoint-get-process-tree-by-hash
     description: Retrieves the process tree on an endpoint for a specified process hash. The applied policy must allow Live Search and the endpoint must be online.
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
     polling: true
     arguments:
     - name: id
@@ -602,6 +629,9 @@ script:
 
   - name: gz-incident-get
     description: Retrieves incident details by ID.
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
     arguments:
     - name: id
       isArray: false
@@ -688,6 +718,8 @@ script:
 
   - name: gz-incident-list
     description: Retrieves incidents from the last three days for all endpoints or for a specific endpoint.
+    compliantpolicies:
+    - EndPoint Isolation
     arguments:
     - name: from_date
       isArray: false
@@ -768,6 +800,9 @@ script:
 
   - name: gz-incident-add-note
     description: Adds a note to one or more incidents.
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
     arguments:
     - name: id
       isArray: true
@@ -794,6 +829,9 @@ script:
 
   - name: gz-incident-change-status
     description: Changes the status of one or more incidents.
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
     arguments:
     - name: id
       isArray: true
@@ -907,6 +945,9 @@ script:
 
   - name: get-remote-data
     description: Retrieves data from a remote incident without updating the current incident. This command is intended for debugging purposes.
+    compliantpolicies:
+    - EndPoint Isolation
+    - User Hard Remediation
     arguments:
     - name: id
       isArray: false
@@ -933,7 +974,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.7.117934
+  dockerimage: demisto/python3:3.12.13.7444307
   feed: false
   isfetch: true
   runonce: false
