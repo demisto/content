@@ -8385,6 +8385,67 @@ def test_update_case_command_status_resolved_with_reason(mocker: MockerFixture):
     assert call_args["caseResolvedComment"] == "This was a false alarm"
 
 
+def test_update_case_command_status_resolved_true_positive(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with status=resolved and resolve_reason=true_positive.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Case is updated with the correct backend enum value STATUS_090_TRUE_POSITIVE (not STATUS_090_RESOLVED_TRUE_POSITIVE).
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+
+    args = {
+        "case_id": "123",
+        "status": "resolved",
+        "resolve_reason": "true_positive",
+    }
+
+    update_case_command(client, args)
+
+    mock_update_case.assert_called_once()
+    call_args = mock_update_case.call_args[0][0]
+    assert call_args["status"] == "STATUS_025_RESOLVED"
+    assert call_args["resolve_reason"] == "STATUS_090_TRUE_POSITIVE"
+
+
+def test_update_case_command_status_resolved_security_testing(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with status=resolved and resolve_reason=security_testing.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Case is updated with the correct backend enum value STATUS_100_SECURITY_TESTING
+        (not STATUS_100_RESOLVED_SECURITY_TESTING).
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+
+    args = {
+        "case_id": "123",
+        "status": "resolved",
+        "resolve_reason": "security_testing",
+    }
+
+    update_case_command(client, args)
+
+    mock_update_case.assert_called_once()
+    call_args = mock_update_case.call_args[0][0]
+    assert call_args["status"] == "STATUS_025_RESOLVED"
+    assert call_args["resolve_reason"] == "STATUS_100_SECURITY_TESTING"
+
+
 def test_update_case_command_status_resolved_without_reason_raises_error(mocker: MockerFixture):
     """
     GIVEN:
@@ -9514,8 +9575,6 @@ def test_get_case_resolution_statuses_command(mocker):
     mock_client.get_case_resolution_statuses.return_value = {"done": {"caseTasks": []}}
     mock_client.get_playbooks_metadata.return_value = []
 
-    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="mock_table")
-
     args = {"case_id": "123,456"}
     result = get_case_resolution_statuses(mock_client, args)
 
@@ -9524,6 +9583,36 @@ def test_get_case_resolution_statuses_command(mocker):
     assert len(result.outputs) == 2
     assert len(result.raw_response) == 2
     assert mock_client.get_case_resolution_statuses.call_count == 2
+
+
+def test_get_case_resolution_statuses_command_with_data(mocker):
+    """
+    GIVEN:
+        - A mocked client and arguments with a case ID that has resolution data.
+    WHEN:
+        - get_case_resolution_statuses is called.
+    THEN:
+        - The readable output contains a properly formatted table with task data.
+    """
+    from CortexPlatformCore import get_case_resolution_statuses
+
+    mock_client = mocker.Mock()
+    mock_client.get_case_resolution_statuses.return_value = {
+        "done": {"caseTasks": [{"id": "pb1", "taskName": "Task 1"}]},
+        "inProgress": {"caseTasks": []},
+        "pending": {"caseTasks": []},
+        "recommended": {"caseTasks": []},
+    }
+    mock_client.get_playbooks_metadata.return_value = [
+        {"id": "pb1", "name": "Playbook 1", "comment": "Comment 1"},
+    ]
+
+    args = {"case_id": "123"}
+    result = get_case_resolution_statuses(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert len(result.outputs) == 1
+    assert len(result.outputs[0]) == 1  # Only one task in "done"
 
 
 def test_get_ai_model_activity_command_empty_response(mocker: MockerFixture):
@@ -9650,6 +9739,79 @@ def test_get_ai_model_activity_command_asset_id_list_format(mocker: MockerFixtur
     assert len(result.outputs) == 2
     assert result.outputs[0]["asset_id"] == "model-a"
     assert result.outputs[1]["asset_id"] == "model-b"
+
+
+def test_get_extra_data_for_case_id_command_missing_case_id(mocker: MockerFixture):
+    """
+    GIVEN:
+        No case_id is provided in args.
+    WHEN:
+        The get_extra_data_for_case_id_command function is called.
+    THEN:
+        A DemistoException is raised with a descriptive error message.
+    """
+    from CortexPlatformCore import get_extra_data_for_case_id_command
+
+    mock_client = mocker.Mock()
+    args = {}
+
+    with pytest.raises(DemistoException, match="case_id is required"):
+        get_extra_data_for_case_id_command(mock_client, args)
+
+
+def test_get_extra_data_for_case_id_command_invalid_case_id(mocker: MockerFixture):
+    """
+    GIVEN:
+        A non-numeric case_id is provided in args.
+    WHEN:
+        The get_extra_data_for_case_id_command function is called.
+    THEN:
+        A DemistoException is raised indicating the case_id must be numeric.
+    """
+    from CortexPlatformCore import get_extra_data_for_case_id_command
+
+    mock_client = mocker.Mock()
+    args = {"case_id": "invalid-id"}
+
+    with pytest.raises(DemistoException, match="must be a valid numeric identifier"):
+        get_extra_data_for_case_id_command(mock_client, args)
+
+
+def test_get_cases_command_enrichment_fallback_over_10_cases(mocker: MockerFixture):
+    """
+    GIVEN:
+        get_enriched_case_data=true and more than 10 cases are returned.
+    WHEN:
+        The get_cases_command function is called.
+    THEN:
+        - A warning entry (entry_type=1) is returned instead of an error (entry_type=4).
+        - Standard case data is still returned in the output.
+    """
+    from CortexPlatformCore import get_cases_command
+
+    mock_client = mocker.Mock()
+    # Return 11 cases to exceed the enrichment limit
+    cases_data = [{"CASE_ID": i} for i in range(1, 12)]
+    mock_client.get_webapp_data.return_value = {"reply": {"DATA": cases_data, "FILTER_COUNT": "11"}}
+    mapped_cases = [{"case_id": str(i)} for i in range(1, 12)]
+    mocker.patch("CortexPlatformCore.map_case_format", return_value=mapped_cases)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+
+    args = {"get_enriched_case_data": "true"}
+    result = get_cases_command(mock_client, args)
+
+    # Should have 3 results: metadata + warning entry + standard case data
+    assert len(result) == 3
+    # result[0] is CasesMetadata
+    assert result[0].outputs_prefix == "Core.CasesMetadata"
+    # result[1] is the warning (entry_type=1, not error entry_type=4)
+    assert result[1].entry_type == 1
+    assert "Note:" in result[1].readable_output
+    assert "standard case data" in result[1].readable_output
+    # result[2] contains the actual case data
+    assert result[2].outputs is not None
+    assert len(result[2].outputs) == 11
 
 
 class TestProfileCommands:
@@ -10209,3 +10371,47 @@ def test_decrypt_email_content_command_missing_message_id(mocker: MockerFixture)
 
     with pytest.raises(DemistoException, match="internet_message_id is required"):
         decrypt_email_content_command(mock_client, args)
+def test_send_endpoint_heartbeat_command_success(mocker):
+    """
+    Given:
+        - A client and valid arguments with an endpoint ID.
+    When:
+        - send_endpoint_heartbeat_command is called.
+    Then:
+        - The client's perform_endpoint_heartbeat method is called with the correct JSON data.
+        - A CommandResults object is returned with a success message.
+    """
+    from CortexPlatformCore import send_endpoint_heartbeat_command, Client
+
+    mock_client = mocker.Mock(spec=Client)
+    args = {"endpoint_id": "endpoint-123"}
+
+    result = send_endpoint_heartbeat_command(mock_client, args)
+
+    expected_json_data = {
+        "request_data": {
+            "endpoint_id": "endpoint-123",
+            "call_home_type": 6,
+        }
+    }
+
+    mock_client.send_endpoint_heartbeat.assert_called_once_with(expected_json_data)
+    assert result.readable_output == "Heartbeat sent successfully for endpoint endpoint-123"
+
+
+def test_send_endpoint_heartbeat_command_missing_id(mocker):
+    """
+    Given:
+        - A client and arguments missing the endpoint ID.
+    When:
+        - send_endpoint_heartbeat_command is called.
+    Then:
+        - A ValueError is raised indicating that endpoint_id is required.
+    """
+    from CortexPlatformCore import send_endpoint_heartbeat_command, Client
+
+    mock_client = mocker.Mock(spec=Client)
+    args = {}
+
+    with pytest.raises(ValueError, match="endpoint_id is required"):
+        send_endpoint_heartbeat_command(mock_client, args)
