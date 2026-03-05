@@ -1580,18 +1580,156 @@ def check_path_exists_between_nodes(client: Client, start_node: str, end_node: s
         }
 
 
+def bhe_path_exist_command(bhe_client: Client, args: dict) -> None:
+    """
+    Command function to check if a path exists between two nodes.
+
+    Args:
+        bhe_client: The BloodHound Enterprise client instance
+        args: Dictionary containing command arguments (from_principal, to_principal)
+    """
+    start_node = args.get("from_principal")
+    end_node = args.get("to_principal")
+
+    if not start_node and not end_node:
+        return_results(
+            CommandResults(
+                readable_output="### Error\n**Message:** Both 'from_principal' and 'to_principal' arguments are missing."
+            )
+        )
+        return
+
+    if not start_node:
+        return_results(CommandResults(readable_output="### Error\n**Message:** Missing required argument 'from_principal'."))
+        return
+
+    if not end_node:
+        return_results(CommandResults(readable_output="### Error\n**Message:** Missing required argument 'to_principal'."))
+        return
+
+    raw_result = check_path_exists_between_nodes(bhe_client, start_node, end_node)
+
+    table_data = [
+        {
+            "From Principal": start_node,
+            "To Principal": end_node,
+            "Status": raw_result.get("status", "unknown"),
+            "Message": raw_result.get("message", ""),
+            "Path Exists": raw_result.get("data", False),
+        }
+    ]
+
+    readable_output = tableToMarkdown(
+        "Path Check Result",
+        table_data,
+        headers=["From Principal", "To Principal", "Status", "Message", "Path Exists"],
+        removeNull=True,
+    )
+
+    return_results(
+        CommandResults(
+            outputs_prefix="SpecterOpsBHE.Path",
+            outputs=raw_result,
+            readable_output=readable_output,
+            raw_response=raw_result,
+        )
+    )
+
+
+def bhe_asset_info_get_command(bhe_client: Client, args: dict) -> None:
+    """
+    Command function to fetch asset information using object IDs.
+
+    Args:
+        bhe_client: The BloodHound Enterprise client instance
+        args: Dictionary containing command arguments (object_ids)
+    """
+    object_ids = argToList(args.get("object_ids"))
+    fetch_result = fetch_asset_info(bhe_client, object_ids)
+
+    readable_data = []
+    for obj_id, result_data in fetch_result.items():
+        asset_data = result_data.get("data", {})
+        raw_data_str = json.dumps(asset_data, indent=2) if asset_data else "No data available"
+
+        readable_data.append(
+            {
+                "Object ID": obj_id,
+                "Status": result_data.get("status", "unknown"),
+                "Message": result_data.get("message", ""),
+                "Raw Data": raw_data_str,
+            }
+        )
+
+    readable_output = tableToMarkdown(
+        "Asset Information Results",
+        readable_data,
+        headers=["Object ID", "Status", "Message", "Raw Data"],
+        removeNull=True,
+    )
+
+    return_results(
+        CommandResults(
+            outputs_prefix="SpecterOpsBHE.Asset",
+            outputs=fetch_result,
+            readable_output=readable_output,
+            raw_response=fetch_result,
+        )
+    )
+
+
+def bhe_object_id_get_command(bhe_client: Client, args: dict) -> None:
+    """
+    Command function to fetch object IDs using object names.
+
+    Args:
+        bhe_client: The BloodHound Enterprise client instance
+        args: Dictionary containing command arguments (object_names)
+    """
+    object_result = get_object_id(bhe_client, argToList(args.get("object_names")))
+    readable_data = []
+    for name, result_data in object_result.items():
+        obj_id = "N/A"
+        if result_data.get("data") and isinstance(result_data.get("data"), list) and len(result_data.get("data", [])) > 0:
+            obj_id = result_data.get("data", [{}])[0].get("objectid", "N/A")
+
+        readable_data.append(
+            {
+                "Object Name": name,
+                "Status": result_data.get("status", "unknown"),
+                "Message": result_data.get("message", ""),
+                "Object ID": obj_id,
+            }
+        )
+
+    readable_output = tableToMarkdown(
+        "Object ID Lookup Results",
+        readable_data,
+        headers=["Object Name", "Status", "Message", "Object ID"],
+        removeNull=True,
+    )
+    return_results(
+        CommandResults(
+            outputs_prefix="SpecterOpsBHE.Object",
+            outputs=object_result,
+            readable_output=readable_output,
+            raw_response=object_result,
+        )
+    )
+
+
 def test_module(bhe_client: Client) -> str:
     try:
         bhe_client.test_connection()
         return "ok"
     except BloodHoundUnauthorizedException:
-        return "Test failed: Unauthorized - Please verify that your " "Token ID and Token Key are correct."
+        return "Test failed: Unauthorized - Please verify that your Token ID and Token Key are correct."
     except BloodHoundBadRequestException:
-        return "Test failed: Bad Request - Invalid request parameters. " "Please verify your configuration."
+        return "Test failed: Bad Request - Invalid request parameters. Please verify your configuration."
     except BloodHoundForbiddenException:
         return (
-            "Test failed: Forbidden request. Please check your access "
-            "permissions and ensure you are using the correct credentials"
+            "Test failed: Forbidden request."
+            "Please check your access permissions and ensure you are using the correct credentials"
         )
     except BloodHoundServerErrorException as e:
         return (
@@ -1644,117 +1782,13 @@ def main():
             return_results(result)
 
         elif command == "bhe-object-id-get":
-            object_result = get_object_id(bhe_client, argToList(args.get("object_names")))
-            readable_data = []
-            for name, result_data in object_result.items():
-                obj_id = "N/A"
-                if result_data.get("data") and isinstance(result_data.get("data"), list) and len(result_data.get("data", [])) > 0:
-                    obj_id = result_data.get("data", [{}])[0].get("objectid", "N/A")
-
-                readable_data.append(
-                    {
-                        "Object Name": name,
-                        "Status": result_data.get("status", "unknown"),
-                        "Message": result_data.get("message", ""),
-                        "Object ID": obj_id,
-                    }
-                )
-
-            readable_output = tableToMarkdown(
-                "Object ID Lookup Results",
-                readable_data,
-                headers=["Object Name", "Status", "Message", "Object ID"],
-                removeNull=True,
-            )
-            return_results(
-                CommandResults(
-                    outputs_prefix="SpecterOpsBHE.Object",
-                    outputs=object_result,
-                    readable_output=readable_output,
-                    raw_response=object_result,
-                )
-            )
+            bhe_object_id_get_command(bhe_client, args)
 
         elif command == "bhe-asset-info-get":
-            object_ids = argToList(args.get("object_ids"))
-            fetch_result = fetch_asset_info(bhe_client, object_ids)
-
-            readable_data = []
-            for obj_id, result_data in fetch_result.items():
-                asset_data = result_data.get("data", {})
-                raw_data_str = json.dumps(asset_data, indent=2) if asset_data else "No data available"
-
-                readable_data.append(
-                    {
-                        "Object ID": obj_id,
-                        "Status": result_data.get("status", "unknown"),
-                        "Message": result_data.get("message", ""),
-                        "Raw Data": raw_data_str,
-                    }
-                )
-
-            readable_output = tableToMarkdown(
-                "Asset Information Results",
-                readable_data,
-                headers=["Object ID", "Status", "Message", "Raw Data"],
-                removeNull=True,
-            )
-
-            return_results(
-                CommandResults(
-                    outputs_prefix="SpecterOpsBHE.Asset",
-                    outputs=fetch_result,
-                    readable_output=readable_output,
-                    raw_response=fetch_result,
-                )
-            )
+            bhe_asset_info_get_command(bhe_client, args)
 
         elif command == "bhe-path-exist":
-            start_node = args.get("from_principal")
-            end_node = args.get("to_principal")
-            if not start_node and not end_node:
-                return_results(
-                    CommandResults(
-                        readable_output="### Error\n**Message:** Both 'from_principal' and 'to_principal' arguments are missing."
-                    )
-                )
-
-            elif not start_node:
-                return_results(
-                    CommandResults(readable_output="### Error\n**Message:** Missing required argument 'from_principal'.")
-                )
-            elif not end_node:
-                return_results(
-                    CommandResults(readable_output="### Error\n**Message:** Missing required argument 'to_principal'.")
-                )
-            else:
-                raw_result = check_path_exists_between_nodes(bhe_client, start_node, end_node)
-
-                table_data = [
-                    {
-                        "From Principal": start_node,
-                        "To Principal": end_node,
-                        "Status": raw_result.get("status", "unknown"),
-                        "Message": raw_result.get("message", ""),
-                        "Path Exists": raw_result.get("data", False),
-                    }
-                ]
-
-                readable_output = tableToMarkdown(
-                    "Path Check Result",
-                    table_data,
-                    headers=["From Principal", "To Principal", "Status", "Message", "Path Exists"],
-                    removeNull=True,
-                )
-
-                return_results(
-                    CommandResults(
-                        outputs_prefix="SpecterOpsBHE.Path",
-                        outputs=raw_result,
-                        readable_output=readable_output,
-                        raw_response=raw_result,
-                    )
-                )
+            bhe_path_exist_command(bhe_client, args)
 
         elif command == "fetch-incidents":
             result = fetch_incidents(bhe_client)
