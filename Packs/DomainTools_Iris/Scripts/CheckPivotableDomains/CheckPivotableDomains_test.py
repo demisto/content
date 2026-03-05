@@ -38,7 +38,7 @@ def test_check_pivotable_output(mocker):
                 "Org": {"value": "Palo Alto Networks, Inc.", "count": 200},
             },
             "Registrar": {"value": "MarkMonitor, Inc.", "count": 867819},
-            "SOAEmail": [{"value": "it-staff-sysadmin@paloaltonetworks.com", "count": 34}],
+            "SOAEmail": [{"value": "it-staff-sysadmin@example.com", "count": 34}],
             "SSLCertificateEmail": [],
             "AdminContact": {
                 "Country": {"value": "us", "count": 275572451},
@@ -222,7 +222,7 @@ def test_check_pivotable_output(mocker):
         "PivotableNameServerHost": {"pivotable": True, "items": [{"count": 200, "value": "pdns112.ultradns.net"}]},
         "PivotableNameServerIp": {"pivotable": True, "items": [{"count": 200, "value": "156.154.65.112"}]},
         "PivotableNameServerDomain": {"pivotable": True, "items": [{"count": 200, "value": "ultradns.net"}]},
-        "PivotableSoaEmail": {"pivotable": True, "items": [{"count": 34, "value": "it-staff-sysadmin@paloaltonetworks.com"}]},
+        "PivotableSoaEmail": {"pivotable": True, "items": [{"count": 34, "value": "it-staff-sysadmin@example.com"}]},
         "PivotableIpAddress": {"pivotable": True, "items": [{"count": 16, "value": "34.120.160.120"}]},
         "PivotableMxIp": {"pivotable": False},
         "PivotableMxHost": {"pivotable": False},
