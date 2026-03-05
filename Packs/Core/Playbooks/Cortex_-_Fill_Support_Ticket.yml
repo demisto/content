@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ec51c57c-fd21-4564-8b6d-81ca8cf09adf
+    taskid: 26ae3e29-da57-4655-8c7a-2bac328bdd3c
     type: start
     task:
-      id: ec51c57c-fd21-4564-8b6d-81ca8cf09adf
+      id: 26ae3e29-da57-4655-8c7a-2bac328bdd3c
       version: -1
       name: ""
       iscommand: false
@@ -37,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 3b808a08-5704-428d-8a7a-4d05ea0e54a4
+    taskid: ead09089-e6de-494c-839e-667acb11d3e7
     type: regular
     task:
-      id: 3b808a08-5704-428d-8a7a-4d05ea0e54a4
+      id: ead09089-e6de-494c-839e-667acb11d3e7
       version: -1
       name: Set Playbook Inputs to Context
       description: Set a value in context under the key you entered.
@@ -78,10 +78,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 1264a173-3fe1-4ade-85a3-ca94e8b6fc80
+    taskid: cb247125-6393-4fe0-be22-5c92c954e822
     type: regular
     task:
-      id: 1264a173-3fe1-4ade-85a3-ca94e8b6fc80
+      id: cb247125-6393-4fe0-be22-5c92c954e822
       version: -1
       name: Fill Support Ticket
       description: Returns fields for the completion of the support ticket
@@ -97,7 +97,7 @@ tasks:
       description:
         simple: ${inputs.description}
       issue_category:
-        simple: ${Core.SupportTicketClassification.result}
+        simple: ${Core.SupportTicketCategoryParser.IssueCategory}
       issue_frequency:
         simple: ${inputs.issue_impact}
       issue_impact:
@@ -105,14 +105,14 @@ tasks:
       most_recent_issue_start_time:
         simple: ${inputs.most_recent_issue_start_time}
       problem_concentration:
-        simple: ${Core.SupportTicketClassification.result}
+        simple: ${Core.SupportTicketCategoryParser.ProblemConcentration}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 830,
-          "y": 860
+          "y": 940
         }
       }
     note: false
@@ -124,10 +124,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: b134ec2e-1ebb-4be1-85a3-baea232fb5d2
+    taskid: 3343e454-b325-43f4-89c4-751323cc8d69
     type: regular
     task:
-      id: b134ec2e-1ebb-4be1-85a3-baea232fb5d2
+      id: 3343e454-b325-43f4-89c4-751323cc8d69
       version: -1
       name: Get Support Ticket Taxonomy
       description: Retrieves the complete support ticket taxonomy including all issue
@@ -159,10 +159,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 580702c4-36df-4f50-8a6a-51f72af79b09
+    taskid: 58de2ba6-445c-40f0-8ad9-8c5123ffc51c
     type: regular
     task:
-      id: 580702c4-36df-4f50-8a6a-51f72af79b09
+      id: 58de2ba6-445c-40f0-8ad9-8c5123ffc51c
       version: -1
       name: Verify support ticket permission
       description: Verifies whether the current user has the required permissions
@@ -194,10 +194,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 3ba59fa8-926e-41ee-839a-67f3c3fb11fa
+    taskid: 1415f406-0b13-4e3a-894d-928d66027c66
     type: condition
     task:
-      id: 3ba59fa8-926e-41ee-839a-67f3c3fb11fa
+      id: 1415f406-0b13-4e3a-894d-928d66027c66
       version: -1
       name: Check User Support Ticket Permissions
       description: Check whether the values provided in arguments are equal. If either
@@ -236,10 +236,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 7437fac4-42f0-499f-8741-9aa03e7411a0
+    taskid: f8299043-0117-44e8-87ef-497021a27ca3
     type: aiTask
     task:
-      id: 7437fac4-42f0-499f-8741-9aa03e7411a0
+      id: f8299043-0117-44e8-87ef-497021a27ca3
       version: -1
       name: SupportTicketClassification
       description: Classifies a support ticket by selecting the most appropriate issue
@@ -256,7 +256,7 @@ tasks:
       istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "4"
+      - "10"
     scriptarguments:
       description:
         simple: ${description}
@@ -278,6 +278,48 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a2a2df7e-8b4f-4015-92c0-1c518a4a36eb
+    type: regular
+    task:
+      id: a2a2df7e-8b4f-4015-92c0-1c518a4a36eb
+      version: -1
+      name: Support Ticket Category Parser
+      description: Parses a delimited support ticket classification string (issue_category|||problem_concentration)
+        into separate fields and validates both values against a provided taxonomy.
+        Designed to post-process the single-line output of the SupportTicketClassification
+        LLM script.
+      scriptName: SupportTicketCategoryParser
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      classification_result:
+        simple: ${Core.SupportTicketClassification.result}
+      taxonomy:
+        simple: ${Core.SupportTicketTaxonomy}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -285,8 +327,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1165,
-        "width": 380,
+        "height": 1245,
+        "width": 430,
         "x": 830,
         "y": -230
       }

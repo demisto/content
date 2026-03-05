@@ -4651,14 +4651,8 @@ def core_fill_support_ticket_command(args: dict[str, Any]) -> CommandResults:
 
     start_time = args.get("most_recent_issue_start_time")
 
-    delimiter  = "|||"
     issue_category = args.get("issue_category")
     problem_concentration = args.get("problem_concentration")
-
-    if issue_category == problem_concentration and delimiter in issue_category:
-        parts = issue_category.split("|||")
-        issue_category = parts[0] if len(parts) > 0 else None
-        problem_concentration = parts[1] if len(parts) > 1 else None
 
     start_time_dt = arg_to_datetime(start_time) if start_time else None
     data = {
@@ -4676,23 +4670,6 @@ def core_fill_support_ticket_command(args: dict[str, Any]) -> CommandResults:
         outputs=data,
         raw_response=data,
     )
-
-SUPPORT_TICKET_TAXONOMY_DATA = [
-    {"Agent": ["Communication", "Device Control", "Install/Upgrade/Uninstall", "Performance", "non-persistent VDI"]},
-    {"Attack Surface Management": ["Asset Inventory", "Attack Surface Issues", "Policies and Configuration"]},
-    {"Cases and Issues": ["Breach Assessment", "Custom Domain", "Health Domain", "Hunting Domain", "IT Domain", "Posture Domain", "Security Domain", "Threat Coverage Analysis"]},
-    {"Cloud Onboarding": ["CI/CD Security", "Cloud Scan", "Kubernetes Connectors", "Option not available", "Registry Configuration", "Scan with Outpost"]},
-    {"Data Collection, Integrations, and Marketplace": ["Broker VM", "Cloud Identitiy Engine", "Data Collection Configuration", "Data Management", "Engines", "Integrations Configuration", "Marketplace", "Public API"]},
-    {"Detection, Investigation and Inventory": ["Cases and Issues Configuration", "Dashboard and Reports", "Host Insights/Host Inventory", "Inventory - Assets", "Inventory - Endpoints", "Investigation and Response", "Threat Management"]},
-    {"Modules": ["AI Security", "Application Security", "Attack Surface Management", "Data Classification", "Data Security", "Identity Security"]},
-    {"Posture Management": ["Management", "Policies", "Rules"]},
-    {"Security Incidents": ["Breach Assessment", "Coverage Assessment", "Other Alert Source", "Security Incidents"]},
-    {"Server": ["Automation", "Broker VM", "Dashboard and Reports", "Data Ingestion", "Endpoint Management", "Marketplace", "Others", "TIM (Threat Intelligence Management)", "Tenant Performance"]},
-    {"Tenant Administration and Access Control": ["Access Management", "Add-ons", "Audit Logs and Health Issues", "Copilot", "Cortex Gateway", "Licensing, Onboarding and Access", "Support Case Creation", "Tenant Availability", "Tenant Configuration", "Tenant Migration"]},
-    {"Vulnerability and Compliance Management": ["Compliance Management", "Option not available", "Vulnerability Management"]},
-    {"Web Application and API Security": ["API Discovery", "API Gateway Configuration", "API Specifications", "In-Line Security"]},
-    {"XDR Agent": ["XDR Agent for Cloud - App-embedded", "XDR Agent for Cloud - Container", "XDR Agent for Cloud - Host", "XDR Agent for Cloud - Kubernetes", "XDR Agent for Cloud - Serverless", "XDR Agent for Enterprise - Android", "XDR Agent for Enterprise - Linux", "XDR Agent for Enterprise - Windows", "XDR Agent for Enterprise - iOS", "XDR Agent for Enterprise - macOS"]}
-]
 
 def get_support_ticket_taxonomy_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
@@ -4712,38 +4689,33 @@ def get_support_ticket_taxonomy_command(client: Client, args: dict[str, Any]) ->
     Returns:
         CommandResults: Object containing the full nested taxonomy data.
     """
-    try:
-        areas_response = client.get_sme_areas_and_sub_groups()
-        areas_reply = areas_response.get("reply", areas_response)
-        areas = areas_reply if isinstance(areas_reply, list) else []
+    areas_response = client.get_sme_areas_and_sub_groups()
+    areas_reply = areas_response.get("reply", areas_response)
+    areas = areas_reply if isinstance(areas_reply, list) else []
 
-        if areas:
-            taxonomy: list[dict] = []
-            for area in areas:
-                area_value = area.get("value", "")
-                suggested_values = area.get("suggestedValues", [])
+    taxonomy: list[dict] = []
+    for area in areas:
+        area_value = area.get("value", "")
+        suggested_values = area.get("suggestedValues", [])
 
-                # Extract only the 'value' string from each suggestedValue object
-                problem_concentrations = [
-                    sg.get("value") for sg in suggested_values if sg.get("value")
-                ]
+        # Extract only the 'value' string from each suggestedValue object
+        problem_concentrations = [
+            sg.get("value") for sg in suggested_values if sg.get("value")
+        ]
 
-                category_entry = {
-                    area_value : problem_concentrations
-                }
+        category_entry = {
+            area_value : problem_concentrations
+        }
 
-                taxonomy.append(category_entry)
+        taxonomy.append(category_entry)
 
-        else:
-            taxonomy = SUPPORT_TICKET_TAXONOMY_DATA
-    except Exception as e:
-        taxonomy = SUPPORT_TICKET_TAXONOMY_DATA
 
     return CommandResults(
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.SupportTicketTaxonomy",
         outputs=str(taxonomy),
         raw_response=taxonomy,
     )
+
 
 def init_client(api_type: str) -> Client:
     """
