@@ -2480,3 +2480,4 @@ marketplaces:
 - platform
 - marketplacev2
 - xsoar
+fromversion: 8.0.0

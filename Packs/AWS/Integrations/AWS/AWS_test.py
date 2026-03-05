@@ -4274,29 +4274,29 @@ def test_build_pagination_kwargs_with_limit_exceeding_maximum():
 
 def test_build_pagination_kwargs_with_zero_limit():
     """
-    Given: A limit argument of zero and minimum_limit=1.
+    Given: A limit argument of zero and the default minimum_limit=1.
     When: build_pagination_kwargs is called with zero limit.
-    Then: It should raise ValueError indicating limit must be greater than 1.
+    Then: It should raise ValueError indicating Limit must be at least 1.
     """
     from AWS import build_pagination_kwargs
 
     args = {"limit": "0"}
 
-    with pytest.raises(ValueError, match="Limit must be greater than 1"):
-        build_pagination_kwargs(args, minimum_limit=1)
+    with pytest.raises(ValueError, match="Limit must be at least 1"):
+        build_pagination_kwargs(args)
 
 
 def test_build_pagination_kwargs_with_negative_limit():
     """
     Given: A negative limit argument.
     When: build_pagination_kwargs is called with negative limit.
-    Then: It should raise ValueError indicating limit must be greater than 0.
+    Then: It should raise ValueError indicating limit must be at least the minimum (1 by default).
     """
     from AWS import build_pagination_kwargs
 
     args = {"limit": "-5"}
 
-    with pytest.raises(ValueError, match="Limit must be greater than 0"):
+    with pytest.raises(ValueError, match="Limit must be at least 1"):
         build_pagination_kwargs(args)
 
 
@@ -4403,13 +4403,13 @@ def test_build_pagination_kwargs_with_limit_less_than_minimum():
     """
     Given: A limit argument less than the minimum allowed value.
     When: build_pagination_kwargs is called with limit less than minimum.
-    Then: It should raise ValueError indicating limit must be greater than minimum.
+    Then: It should raise ValueError indicating limit must be at least the specified minimum.
     """
     from AWS import build_pagination_kwargs
 
     args = {"limit": "2"}
 
-    with pytest.raises(ValueError, match="Limit must be greater than 5"):
+    with pytest.raises(ValueError, match="Limit must be at least 5"):
         build_pagination_kwargs(args, minimum_limit=5)
 
 
@@ -13090,8 +13090,8 @@ def test_describe_fleet_instances_command_outputs_structure(mocker):
     """
     Given: A mocked EC2 client returning active instances with a FleetId and no NextToken.
     When: describe_fleet_instances_command is called.
-    Then: The outputs dict should contain the correct context keys, ResponseMetadata should be
-          excluded from response_data, and FleetInstancesNextToken should be None.
+    Then: The outputs dict should be a flat response_data dict (ResponseMetadata excluded),
+          FleetId should be present, and NextToken should be renamed to FleetInstancesNextToken.
     """
     from AWS import EC2
 
@@ -13114,19 +13114,20 @@ def test_describe_fleet_instances_command_outputs_structure(mocker):
     result = EC2.describe_fleet_instances_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    # ResponseMetadata must be stripped from the context output
-    fleet_output = result.outputs["AWS.EC2.Fleets(val.FleetId && val.FleetId == obj.FleetId)"]
-    assert "ResponseMetadata" not in fleet_output
-    assert fleet_output.get("FleetId") == "fleet-out-001"
-    # NextToken sentinel should be present but None
-    assert result.outputs["AWS.EC2.Fleets(true)"]["FleetInstancesNextToken"] is None
+    outputs = result.outputs  # type: ignore[index]
+    # ResponseMetadata must be stripped from the flat outputs dict
+    assert "ResponseMetadata" not in outputs
+    assert outputs["FleetId"] == "fleet-out-001"
+    # NextToken is renamed to FleetInstancesNextToken in the flat outputs
+    assert "NextToken" not in outputs
+    assert outputs["FleetInstancesNextToken"] is None
 
 
 def test_describe_fleet_instances_command_next_token_propagated(mocker):
     """
     Given: A mocked EC2 client returning 2 instances and a NextToken (limit=2 was reached).
     When: describe_fleet_instances_command is called with limit=2.
-    Then: FleetInstancesNextToken in the AWS.EC2.Fleets(true) output should match the response NextToken,
+    Then: The flat outputs dict should contain FleetInstancesNextToken matching the response NextToken,
           and MaxResults=2 should be passed to the API call.
     """
     from AWS import EC2
@@ -13153,7 +13154,8 @@ def test_describe_fleet_instances_command_next_token_propagated(mocker):
     result = EC2.describe_fleet_instances_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs["AWS.EC2.Fleets(true)"]["FleetInstancesNextToken"] == "next-token-xyz"
+    outputs = result.outputs  # type: ignore[index]
+    assert outputs["FleetInstancesNextToken"] == "next-token-xyz"
     call_kwargs = mock_client.describe_fleet_instances.call_args[1]
     assert call_kwargs.get("MaxResults") == 2
 
@@ -13188,13 +13190,10 @@ def test_describe_fleet_instances_command_readable_output_headers(mocker):
     result = EC2.describe_fleet_instances_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    # All four table headers must appear in the markdown output
     for header in ("Instance Id", "Instance Type", "Spot Instance Request Id", "Instance Health"):
         assert header in result.readable_output, f"Expected header '{header}' not found in readable_output"
-    # Instance values must appear
     assert "i-hdr001" in result.readable_output
     assert "unhealthy" in result.readable_output
-    # raw_response must be attached
     assert result.raw_response is not None
     assert result.raw_response.get("FleetId") == "fleet-hdr-001"
 
@@ -13292,6 +13291,7 @@ def test_modify_fleet_command_with_launch_template(mocker):
     call_kwargs = mock_client.modify_fleet.call_args[1]
     assert "LaunchTemplateConfigs" in call_kwargs
     assert call_kwargs["LaunchTemplateConfigs"][0]["LaunchTemplateSpecification"]["LaunchTemplateId"] == "lt-0newtemplate"
+
 
 
 def test_delete_vpc_command_success(mocker):
