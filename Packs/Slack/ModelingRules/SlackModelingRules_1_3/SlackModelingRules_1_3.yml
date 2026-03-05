@@ -1,5 +1,6 @@
 fromversion: 6.10.0
-id: slack_modeling_rule
+toversion: 8.13.0
+id: Slack_ModelingRule
 name: Slack Modeling Rule
 rules: ''
 schema: ''

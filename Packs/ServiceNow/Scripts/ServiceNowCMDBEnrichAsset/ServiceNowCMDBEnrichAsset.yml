@@ -86,7 +86,7 @@ outputs:
 commonfields:
   id: ServiceNowCMDBEnrichAsset
   version: -1
-dockerimage: demisto/python3:3.12.11.4819260
+dockerimage: demisto/python3:3.12.12.7090913
 enabled: true
 name: ServiceNowCMDBEnrichAsset
 runas: DBotWeakRole
@@ -95,6 +95,10 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
+dependson:
+  must:
+  - servicenow-cmdb-records-list
+  - servicenow-cmdb-record-get-by-id
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
