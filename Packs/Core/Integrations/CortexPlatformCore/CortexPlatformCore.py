@@ -75,6 +75,7 @@ WEBAPP_COMMANDS = [
     "core-update-windows-malware-profile",
     "core-update-windows-exploit-profile",
     "core-delete-profile",
+    "core-list-findings",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
