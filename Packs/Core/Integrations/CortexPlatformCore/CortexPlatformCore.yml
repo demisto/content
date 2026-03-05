@@ -3935,21 +3935,18 @@ script:
         - description: 'Time to look back for issues. Supports relative date (for example: "1 day", "3 weeks ago"). The default is 30 days.'
           name: timeframe
           defaultValue: '30'
-          required: false
         - description: "The source of the alerts to be clustered."
           name: detection_method
-          required: false
           auto: PREDEFINED
           predefined:
-            - EMAIL_ATTACHMENT
-            - ANALYTICS_BIOC
-            - MAGNIFIER
-            - AURL
-            - USER_REPORTED_PHISHING
-            - IOC
+            - Email Attachment
+            - Analytics Bioc
+            - Magnifier
+            - Aurl
+            - User Reported Phishing
+            - Ioc
         - description: "Minimum severity for all issues."
           name: min_severity
-          required: false
           defaultValue: info
           auto: PREDEFINED
           predefined:
@@ -3959,7 +3956,6 @@ script:
             - high
         - description: "Minimum severity for phishing-specific filtering."
           name: min_severity_phishing
-          required: false
           auto: PREDEFINED
           predefined:
             - info
@@ -3968,10 +3964,8 @@ script:
             - high
         - description: Number of results per page.
           name: page_size
-          required: false
         - description: Page number for pagination.
           name: page_number
-          required: false
           defaultValue: "1"
       name: core-get-email-investigation-summary
       description: Retrieves a summary of phishing email investigation campaigns from Cortex, grouping individual alerts by email message ID to help prioritize investigations based on impact and scale.

@@ -5110,12 +5110,12 @@ def get_email_investigation_summary_command(client: Client, args: dict) -> Comma
 
     timeframe = args.get("timeframe")
     days_timeframe = timeframe_to_days(timeframe) if timeframe else None
-
+    detection_method = args.get("detection_method","").replace(" ", "_").upper()
     params = assign_params(
         days_timeframe=days_timeframe,
-        detection_method=args.get("detection_method"),
-        min_severity=phishing_severity_mapping.get(min_severity, min_severity) if min_severity else None,
-        min_severity_phishing=phishing_severity_mapping.get(min_severity_phishing, min_severity_phishing)
+        detection_method=detection_method,
+        min_severity=phishing_severity_mapping.get(min_severity.lower(), min_severity) if min_severity else None,
+        min_severity_phishing=phishing_severity_mapping.get(min_severity_phishing.lower(), min_severity_phishing)
         if min_severity_phishing
         else None,
         page_size=arg_to_number(args.get("page_size")),
