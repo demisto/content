@@ -451,8 +451,8 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
             page_size = entries_left_to_fetch
         demisto.debug(
             f"search_with_paging: fetching page {page_num}. "
-            f"{search_filter=}, {search_base=}, {page_size=}, total_so_far={total_entries}, "
-            f"has_cookie={bool(cookie)}, elapsed={( datetime.now() - start).total_seconds():.2f}s"
+            f"{page_size=}, total_so_far={total_entries} "
+            f"has_cookie={bool(cookie)}, elapsed={(datetime.now() - start).total_seconds():.2f}s"
         )
         connection.search(
             search_base, search_filter, search_scope=SUBTREE, attributes=attributes, paged_size=page_size, paged_cookie=cookie
