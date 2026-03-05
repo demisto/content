@@ -241,15 +241,18 @@ class Client(CoreClient):
 
     @property
     def headers(self):
+        if FORWARD_USER_RUN_RBAC:
+            return {}
         return get_headers(self._params)
 
     def test_module(self, first_fetch_time):
         """
-        Performs basic get request to get item samples
+        Performs basic request to verify connectivity and authentication.
+        Uses list_users() (RBAC endpoint) which is available on all Cortex platforms
+        without requiring an XDR-specific license, matching the CortexCoreIR pattern.
         """
-        last_one_day, _ = parse_date_range(first_fetch_time, TIME_FORMAT)
         try:
-            self.get_incidents(lte_creation_time=last_one_day, limit=1)
+            self.list_users()
         except Exception as err:
             if "API request Unauthorized" in str(err):
                 # this error is received from the XDR server when the client clock is not in sync to the server
@@ -2770,7 +2773,11 @@ def main():  # pragma: no cover
     LOG(f"Command being called is {command}")
     # using two different credentials object as they both fields need to be encrypted
     first_fetch_time = params.get("fetch_time", "3 days")
-    base_url = urljoin(params.get("url"), "/public_api/v1")
+    if FORWARD_USER_RUN_RBAC:
+        url = "/api/webapp/"
+    else:
+        url = params.get("url")
+    base_url = urljoin(url, "/public_api/v1")
     proxy = params.get("proxy")
     verify_cert = not params.get("insecure", False)
     statuses = params.get("status")
