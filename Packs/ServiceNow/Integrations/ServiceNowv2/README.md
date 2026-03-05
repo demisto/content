@@ -2003,7 +2003,7 @@ Queries the sys_user table in ServiceNow.
             "Created": "2012-02-18 03:04:50",
             "Email": "sean.bonnet@example.com",
             "ID": "id",
-            "Name": "Sean Bonnet",
+            "Name": "Sean Testman",
             "Updated": "2020-04-25 19:01:46",
             "UserName": "sean.bonnet"
         }
@@ -2017,7 +2017,7 @@ Queries the sys_user table in ServiceNow.
 >
 >|ID|Name|User Name|Email|Created|Updated|
 >|---|---|---|---|---|---|
->| id | Sean Bonnet | sean.bonnet | <sean.bonnet@example.com> | 2012-02-18 03:04:50 | 2020-04-25 19:01:46 |
+>| id | Sean Testman | sean.bonnet | <sean.bonnet@example.com> | 2012-02-18 03:04:50 | 2020-04-25 19:01:46 |
 
 ### servicenow-get-table-name
 
