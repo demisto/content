@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 def _make_alarm(
     alarm_id=123,
     risk="HIGH",
-    asset="test.com",
+    asset="TESTSOCRadar",
     status="OPEN",
     main_type="Test Type",
     sub_type="Test Sub",
