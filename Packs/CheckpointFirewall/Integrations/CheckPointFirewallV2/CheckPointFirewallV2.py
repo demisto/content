@@ -126,6 +126,11 @@ class Client(BaseClient):
             body["details-level"] = details_level
         if domains_to_process:
             body["domains-to-process"] = domains_to_process
+        demisto.debug(
+            f"{demisto.command()}: endpoint='show-hosts', "
+            f"args=({limit=}, {offset=}, {details_level=}, "
+            f"{domains_to_process=}), body={body}"
+        )
         return self._http_request(
             method="POST",
             url_suffix="show-hosts",
@@ -138,6 +143,10 @@ class Client(BaseClient):
         body: dict = {"name": identifier}
         if details_level:
             body["details-level"] = details_level
+        demisto.debug(
+            f"{demisto.command()}: endpoint='show-host', "
+            f"args=({identifier=}, {details_level=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="show-host", headers=self.headers, json_data=body)
 
     def add_host(
@@ -171,6 +180,12 @@ class Client(BaseClient):
             body["interfaces"] = interfaces
         if tags:
             body["tags"] = tags
+        demisto.debug(
+            f"{demisto.command()}: endpoint='add-host', "
+            f"args=({name=}, {ip_address=}, {ignore_warnings=}, "
+            f"{ignore_errors=}, {groups=}, {comments=}, {color=}, "
+            f"{nat_settings=}, {interfaces=}, {tags=}), body={body}"
+        )
         return self._http_request(
             method="POST",
             url_suffix="add-host",
@@ -213,6 +228,12 @@ class Client(BaseClient):
             body["interfaces"] = interfaces
         if tags:
             body["tags"] = tags
+        demisto.debug(
+            f"{demisto.command()}: endpoint='set-host', "
+            f"args=({identifier=}, {ignore_warnings=}, {ignore_errors=}, "
+            f"{ip_address=}, {new_name=}, {comments=}, {groups=}, "
+            f"{color=}, {nat_settings=}, {interfaces=}, {tags=}), body={body}"
+        )
         response = self._http_request(method="POST", url_suffix="set-host", headers=self.headers, json_data=body)
         return response
 
@@ -239,12 +260,21 @@ class Client(BaseClient):
             body["domains-to-process"] = domains_to_process
         if filter_exp:
             body["filter"] = filter_exp
+        demisto.debug(
+            f"{demisto.command()}: endpoint='show-groups', "
+            f"args=({limit=}, {offset=}, {details_level=}, "
+            f"{domains_to_process=}, {filter_exp=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="show-groups", headers=self.headers, json_data=body)
 
     def get_group(self, identifier: str, details_level: str | None = None):
         body: dict = {"name": identifier}
         if details_level:
             body["details-level"] = details_level
+        demisto.debug(
+            f"{demisto.command()}: endpoint='show-group', "
+            f"args=({identifier=}, {details_level=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="show-group", headers=self.headers, json_data=body)
 
     def add_group(
@@ -270,6 +300,11 @@ class Client(BaseClient):
             body["color"] = color
         if tags:
             body["tags"] = tags
+        demisto.debug(
+            f"{demisto.command()}: endpoint='add-group', "
+            f"args=({name=}, {members=}, {comments=}, {color=}, "
+            f"{tags=}, {ignore_warnings=}, {ignore_errors=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="add-group", headers=self.headers, json_data=body)
 
     def update_group(
@@ -305,6 +340,12 @@ class Client(BaseClient):
         if details_level:
             body["details-level"] = details_level
 
+        demisto.debug(
+            f"{demisto.command()}: endpoint='set-group', "
+            f"args=({identifier=}, {ignore_warnings=}, {ignore_errors=}, "
+            f"{action=}, {members=}, {new_name=}, {comments=}, "
+            f"{color=}, {tags=}, {details_level=}), body={body}"
+        )
         response = self._http_request(method="POST", url_suffix="set-group", headers=self.headers, json_data=body)
         return response
 
@@ -323,6 +364,11 @@ class Client(BaseClient):
             body["details-level"] = details_level
         if domains_to_process:
             body["domains-to-process"] = domains_to_process
+        demisto.debug(
+            f"{demisto.command()}: endpoint='show-address-ranges', "
+            f"args=({limit=}, {offset=}, {details_level=}, "
+            f"{domains_to_process=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="show-address-ranges", headers=self.headers, json_data=body)
 
     def get_address_range(self, identifier: str):
@@ -362,6 +408,12 @@ class Client(BaseClient):
             body["nat-settings"] = nat_settings
         if tags:
             body["tags"] = tags
+        demisto.debug(
+            f"{demisto.command()}: endpoint='add-address-range', "
+            f"args=({name=}, {ip_address_first=}, {ip_address_last=}, "
+            f"{set_if_exists=}, {ignore_warnings=}, {ignore_errors=}, "
+            f"{groups=}, {comments=}, {color=}, {nat_settings=}, {tags=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="add-address-range", headers=self.headers, json_data=body)
 
     def update_address_range(
@@ -399,6 +451,12 @@ class Client(BaseClient):
             body["nat-settings"] = nat_settings
         if tags:
             body["tags"] = tags
+        demisto.debug(
+            f"{demisto.command()}: endpoint='set-address-range', "
+            f"args=({identifier=}, {ignore_warnings=}, {ignore_errors=}, "
+            f"{ip_address_first=}, {ip_address_last=}, {new_name=}, "
+            f"{comments=}, {groups=}, {color=}, {nat_settings=}, {tags=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="set-address-range", headers=self.headers, json_data=body)
 
     def delete_address_range(self, identifier: str):
@@ -421,6 +479,11 @@ class Client(BaseClient):
             body["details-level"] = details_level
         if filter_exp:
             body["filter"] = filter_exp
+        demisto.debug(
+            f"{demisto.command()}: endpoint='show-threat-indicators', "
+            f"args=({limit=}, {offset=}, {domain_names=}, "
+            f"{details_level=}, {filter_exp=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="show-threat-indicators", headers=self.headers, json_data=body)
 
     def get_threat_indicator(self, identifier):
@@ -452,6 +515,11 @@ class Client(BaseClient):
             body["action"] = action
         if profile_overrides:
             body["profile-overrides"] = profile_overrides
+        demisto.debug(
+            f"{demisto.command()}: endpoint='add-threat-indicator', "
+            f"args=({name=}, {observables=}, {comments=}, {color=}, "
+            f"{tags=}, {ignore_warnings=}, {action=}, {profile_overrides=}), body={body}"
+        )
         return self._http_request(
             method="POST",
             url_suffix="add-threat-indicator",
@@ -482,6 +550,11 @@ class Client(BaseClient):
             body["color"] = color
         if tags:
             body["tags"] = tags
+        demisto.debug(
+            f"{demisto.command()}: endpoint='set-threat-indicator', "
+            f"args=({identifier=}, {action=}, {new_name=}, {comments=}, "
+            f"{profile_overrides=}, {color=}, {tags=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="set-threat-indicator", headers=self.headers, json_data=body)
 
     def delete_threat_indicator(self, identifier: str):
@@ -502,6 +575,11 @@ class Client(BaseClient):
             body["details-level"] = details_level
         if show_hits is not None:
             body["show-hits"] = show_hits
+        demisto.debug(
+            f"{demisto.command()}: endpoint='show-access-rulebase', "
+            f"args=({identifier=}, {limit=}, {offset=}, "
+            f"{details_level=}, {show_hits=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="show-access-rulebase", headers=self.headers, json_data=body)
 
     def add_rule(
@@ -542,6 +620,12 @@ class Client(BaseClient):
             body["enabled"] = enabled
         if track:
             body["track"] = track
+        demisto.debug(
+            f"{demisto.command()}: endpoint='add-access-rule', "
+            f"args=({layer=}, {position=}, {action=}, {name=}, {vpn=}, "
+            f"{destination=}, {service=}, {source=}, {comments=}, "
+            f"{install_on=}, {enabled=}, {track=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="add-access-rule", headers=self.headers, json_data=body)
 
     def update_rule(
@@ -587,6 +671,12 @@ class Client(BaseClient):
             body["destination"] = destination
         if service:
             body["service"] = service
+        demisto.debug(
+            f"{demisto.command()}: endpoint='set-access-rule', "
+            f"args=({identifier=}, {layer=}, {ignore_warnings=}, {ignore_errors=}, "
+            f"{enabled=}, {action=}, {new_name=}, {new_position=}, {comments=}, "
+            f"{track=}, {install_on=}, {source=}, {destination=}, {service=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="set-access-rule", headers=self.headers, json_data=body)
 
     def delete_rule(self, identifier: str, layer: str):
@@ -606,6 +696,11 @@ class Client(BaseClient):
             body["details-level"] = details_level
         if domains_to_process:
             body["domains-to-process"] = domains_to_process
+        demisto.debug(
+            f"{demisto.command()}: endpoint='show-application-sites', "
+            f"args=({limit=}, {offset=}, {details_level=}, "
+            f"{domains_to_process=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="show-application-sites", headers=self.headers, json_data=body)
 
     def add_application_site(
@@ -630,6 +725,11 @@ class Client(BaseClient):
             body["color"] = color
         if tags:
             body["tags"] = tags
+        demisto.debug(
+            f"{demisto.command()}: endpoint='add-application-site', "
+            f"args=({name=}, {primary_category=}, {identifier=}, "
+            f"{groups=}, {description=}, {comments=}, {color=}, {tags=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="add-application-site", headers=self.headers, json_data=body)
 
     def update_application_site(
@@ -668,6 +768,13 @@ class Client(BaseClient):
             body["color"] = color
         if tags:
             body["tags"] = tags
+        demisto.debug(
+            f"{demisto.command()}: endpoint='set-application-site', "
+            f"args=({identifier=}, {urls_defined_as_regular_expression=}, "
+            f"{groups=}, {url_list=}, {description=}, {new_name=}, "
+            f"{primary_category=}, {application_signature=}, {comments=}, "
+            f"{color=}, {tags=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="set-application-site", headers=self.headers, json_data=body)
 
     def add_objects_batch(self, object_type, add_list):
