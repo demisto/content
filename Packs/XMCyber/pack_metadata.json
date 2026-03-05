@@ -1,10 +1,10 @@
 {
     "name": "XM Cyber",
-    "description": "The XM Cyber integration creates unique incidents with valuable data collected daily, and enriches your existing incidents with attack simulation context. This enables you to prioritize your responses based on XM Cyber's insights.",
+    "description": "XSOAR is a comprehensive SOAR platform that integrates different security tools to centralize incident management, driving better detection, investigation, and response to suspicious activity across your organization.The integration uses attack graph context and prioritization data that XSOAR receives from XM CEM, and also allows XSOAR to feed relevant entities back to CEM to be defined as breach points in CEM scenarios.",
     "support": "partner",
-    "currentVersion": "1.0.34",
+    "currentVersion": "2.0.0",
     "author": "XM Cyber",
-    "url": "https://www.xmcyber.com",
+    "url": "https://customers.xmcyber.com",
     "email": "support@xmcyber.com",
     "created": "2020-09-02T19:59:58Z",
     "categories": [
@@ -13,8 +13,23 @@
     "tags": [
         "Breach Simulation"
     ],
-    "useCases": [],
-    "keywords": [],
+    "useCases": [
+        "Breach and Attack Simulation",
+        "Compliance",
+        "Incident Response",
+        "Threat Intelligence Management",
+        "Vulnerability Management"
+    ],
+    "keywords": [
+        "Prioritization",
+        "Choke point",
+        "chokepoint Critical Assets",
+        "Exposure Management",
+        "Context",
+        "MITRE Attack",
+        "XM Cyber",
+        "Cortex"
+    ],
     "githubUser": [
         "matan-xmcyber",
         "MarkRachmanXMCyber"
