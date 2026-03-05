@@ -1,0 +1,115 @@
+{
+    "first_page": {
+        "type": "regular",
+        "response": {
+            "totalRecords": "3",
+            "returnedRecords": 2,
+            "startOffset": "0",
+            "endOffset": "2",
+            "results": [
+                {
+                    "id": "1",
+                    "uuid": "68262460-941b-4762-906e-47298f79911e",
+                    "tenableUUID": "58bd0909-f66d-4248-8c20-2501b208bb65",
+                    "name": "TestHost1",
+                    "ipAddress": "192.168.1.1",
+                    "os": "Linux",
+                    "firstSeen": "1709000000",
+                    "lastSeen": "1709500000",
+                    "macAddress": "00:50:56:be:27:da",
+                    "dns": "testhost1.example.com",
+                    "netBios": "",
+                    "source": [{"type": "Nessus Scan"}],
+                    "repository": {
+                        "id": "1",
+                        "name": "Repo1",
+                        "description": "",
+                        "dataFormat": "IPv4"
+                    },
+                    "systemType": "general_purpose",
+                    "createdTime": "1709000000",
+                    "modifiedTime": "1709500000"
+                },
+                {
+                    "id": "2",
+                    "uuid": "e9344880-c32f-458c-b78e-211ce81d10cb",
+                    "tenableUUID": "dce3a590-70f0-4530-9843-5d3c83666f75",
+                    "name": "TestHost2",
+                    "ipAddress": "192.168.1.2",
+                    "os": "Windows 10",
+                    "firstSeen": "1709000000",
+                    "lastSeen": "1709500000",
+                    "macAddress": "00:50:56:be:27:db",
+                    "dns": "testhost2.example.com",
+                    "netBios": "TESTHOST2",
+                    "source": [{"type": "Nessus Scan"}],
+                    "repository": {
+                        "id": "1",
+                        "name": "Repo1",
+                        "description": "",
+                        "dataFormat": "IPv4"
+                    },
+                    "systemType": "general_purpose",
+                    "createdTime": "1709000000",
+                    "modifiedTime": "1709500000"
+                }
+            ]
+        },
+        "error_code": 0,
+        "error_msg": "",
+        "warnings": [],
+        "timestamp": 1709500000
+    },
+    "last_page": {
+        "type": "regular",
+        "response": {
+            "totalRecords": "3",
+            "returnedRecords": 1,
+            "startOffset": "2",
+            "endOffset": "4",
+            "results": [
+                {
+                    "id": "3",
+                    "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "tenableUUID": "12345678-abcd-ef01-2345-67890abcdef0",
+                    "name": "TestHost3",
+                    "ipAddress": "192.168.1.3",
+                    "os": "macOS",
+                    "firstSeen": "1709000000",
+                    "lastSeen": "1709500000",
+                    "macAddress": "00:50:56:be:27:dc",
+                    "dns": "testhost3.example.com",
+                    "netBios": "",
+                    "source": [{"type": "Agent Scan"}],
+                    "repository": {
+                        "id": "1",
+                        "name": "Repo1",
+                        "description": "",
+                        "dataFormat": "IPv4"
+                    },
+                    "systemType": "general_purpose",
+                    "createdTime": "1709000000",
+                    "modifiedTime": "1709500000"
+                }
+            ]
+        },
+        "error_code": 0,
+        "error_msg": "",
+        "warnings": [],
+        "timestamp": 1709500000
+    },
+    "empty_response": {
+        "type": "regular",
+        "response": {
+            "totalRecords": "0",
+            "returnedRecords": 0,
+            "startOffset": "0",
+            "endOffset": "500",
+            "results": []
+        },
+        "error_code": 0,
+        "error_msg": "",
+        "warnings": [],
+        "timestamp": 1709500000
+    }
+}
