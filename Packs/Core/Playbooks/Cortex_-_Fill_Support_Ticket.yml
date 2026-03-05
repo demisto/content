@@ -1,7 +1,7 @@
-id: Test Upload Cortex - Fill Support Ticket
+id: Cortex - Fill Support Ticket
 version: 1
 vcShouldKeepItemLegacyProdMachine: false
-name: Test Upload Cortex - Fill Support Ticket
+name: Cortex - Fill Support Ticket
 starttaskid: "0"
 tasks:
   "0":
