@@ -5081,7 +5081,7 @@ class EC2:
         if not active_instances:
             return CommandResults(readable_output="No active instances were found.")
 
-        response["FleetInstancesNextToken"] = response.pop("NextToken")
+        response["FleetInstancesNextToken"] = response.pop("NextToken", None)
         response_data = {k: v for k, v in response.items() if k != "ResponseMetadata"}
 
         return CommandResults(

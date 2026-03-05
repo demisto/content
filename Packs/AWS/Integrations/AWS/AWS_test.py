@@ -4276,7 +4276,7 @@ def test_build_pagination_kwargs_with_zero_limit():
     """
     Given: A limit argument of zero and the default minimum_limit=1.
     When: build_pagination_kwargs is called with zero limit.
-    Then: It should raise ValueError indicating limit must be greater than 1.
+    Then: It should raise ValueError indicating Limit must be at least 1.
     """
     from AWS import build_pagination_kwargs
 
