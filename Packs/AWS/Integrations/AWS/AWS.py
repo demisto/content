@@ -4924,7 +4924,7 @@ class EC2:
                 outputs,
                 headers=["FleetId"],
                 removeNull=True,
-                headerTransform=pascalToSpace
+                headerTransform=pascalToSpace,
             ),
             raw_response=response,
         )
@@ -5086,6 +5086,7 @@ class EC2:
 
         return CommandResults(
             outputs=response_data,
+            outputs_key_field="FleetId",
             readable_output=tableToMarkdown(
                 f"AWS EC2 Fleet {args.get('fleet_id')} Instances",
                 active_instances,
