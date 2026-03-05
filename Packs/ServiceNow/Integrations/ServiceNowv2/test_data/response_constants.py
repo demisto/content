@@ -3496,7 +3496,8 @@ MIRROR_ENTRIES_WITH_EMPTY_USERNAME = [
 
 OAUTH_PARAMS = {
     "insecure": False,
-    "credentials": {"identifier": "user1", "password:": "12345"},
+    "username": "user1",
+    "password": "12345",
     "proxy": False,
     "client_id": "client_id",
     "client_secret": "client_secret",
