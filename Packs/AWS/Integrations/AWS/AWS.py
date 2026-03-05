@@ -5368,16 +5368,27 @@ class Redshift:
             "MasterUserPassword": args.get("master_user_password"),
             "ClusterParameterGroupName": args.get("cluster_parameter_group_name"),
             "AutomatedSnapshotRetentionPeriod": arg_to_number(args.get("automated_snapshot_retention_period")),
+            "ManualSnapshotRetentionPeriod": arg_to_number(args.get("manual_snapshot_retention_period")),
             "PreferredMaintenanceWindow": args.get("preferred_maintenance_window"),
             "ClusterVersion": args.get("cluster_version"),
             "AllowVersionUpgrade": arg_to_bool_or_none(args.get("allow_version_upgrade")),
-            "AutomatedSnapshotSchedule": args.get("automated_snapshot_schedule"),
+            "HsmClientCertificateIdentifier": args.get("hsm_client_certificate_identifier"),
+            "HsmConfigurationIdentifier": args.get("hsm_configuration_identifier"),
             "NewClusterIdentifier": args.get("new_cluster_identifier"),
             "PubliclyAccessible": arg_to_bool_or_none(args.get("publicly_accessible")),
             "ElasticIp": args.get("elastic_ip"),
             "EnhancedVpcRouting": arg_to_bool_or_none(args.get("enhanced_vpc_routing")),
             "MaintenanceTrackName": args.get("maintenance_track_name"),
+            "Encrypted": arg_to_bool_or_none(args.get("encrypted")),
             "KmsKeyId": args.get("kms_key_id"),
+            "AvailabilityZoneRelocation": arg_to_bool_or_none(args.get("availability_zone_relocation")),
+            "AvailabilityZone": args.get("availability_zone"),
+            "Port": arg_to_number(args.get("port")),
+            "ManageMasterPassword": arg_to_bool_or_none(args.get("manage_master_password")),
+            "MasterPasswordSecretKmsKeyId": args.get("master_password_secret_kms_key_id"),
+            "IpAddressType": args.get("ip_address_type"),
+            "MultiAZ": arg_to_bool_or_none(args.get("multi_az")),
+            "ExtraComputeForAutomaticOptimization": arg_to_bool_or_none(args.get("extra_compute_for_automatic_optimization"))
         }
         remove_nulls_from_dictionary(kwargs)
 
@@ -5386,6 +5397,7 @@ class Redshift:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
+        response = serialize_response_with_datetime_encoding(response)
         cluster_data = response.get("Cluster", {})
         readable_output = tableToMarkdown(
             f"Successfully modified Redshift cluster: {cluster_data.get('ClusterIdentifier')}",
@@ -5396,7 +5408,7 @@ class Redshift:
         )
 
         return CommandResults(
-            outputs_prefix="AWS.Redshift.Cluster",
+            outputs_prefix="AWS.Redshift.Clusters",
             outputs_key_field="ClusterIdentifier",
             outputs=cluster_data,
             readable_output=readable_output,
