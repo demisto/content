@@ -786,13 +786,17 @@ def test_fetch_incidents_no_alarms(mock_client, mocker):
     """Test fetch when API returns no alarms"""
     from SOCRadarIncidentsV4MultiTenant import fetch_incidents
 
-    mocker.patch.object(mock_client, "search_incidents", return_value={
-        "is_success": True,
-        "data": [],
-        "total_records": 0,
-        "total_pages": 0,
-        "current_page": 1,
-    })
+    mocker.patch.object(
+        mock_client,
+        "search_incidents",
+        return_value={
+            "is_success": True,
+            "data": [],
+            "total_records": 0,
+            "total_pages": 0,
+            "current_page": 1,
+        },
+    )
 
     next_run, incidents = fetch_incidents(
         client=mock_client,

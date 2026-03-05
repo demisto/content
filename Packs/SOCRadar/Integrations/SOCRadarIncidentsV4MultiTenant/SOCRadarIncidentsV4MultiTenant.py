@@ -771,6 +771,7 @@ def fetch_incidents(
             "exception": str(e),
         }, []
 
+
 def change_status_command(client: Client, args: dict[str, str]) -> CommandResults:
     """Change status of alarms"""
     alarm_ids_str = args.get("alarm_ids", "")

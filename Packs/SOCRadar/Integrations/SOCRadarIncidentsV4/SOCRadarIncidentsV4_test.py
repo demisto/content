@@ -141,7 +141,7 @@ def test_alarm_to_incident_basic():
     assert "Test Sub" in incident["name"]
     assert "TESTSOCRadar" in incident["name"]  # asset field value
     assert incident["CustomFields"]["socradaralarmid"] == "123"
-    assert incident["CustomFields"]["socradarasset"] == "test.com"
+    assert incident["CustomFields"]["socradarasset"] == "TESTSOCRadar"
     assert incident["CustomFields"]["socradarstatus"] == "OPEN"
     assert incident["CustomFields"]["socradaralarmtype"] == "Test Type"
 
