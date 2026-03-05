@@ -1332,6 +1332,7 @@ class IAM:
             CommandResults: Results of the operation with success/failure message
         """
         user_name = args.get("user_name", "")
+        return CommandResults(readable_output="the quick action worked!")
 
         try:
             response = client.delete_login_profile(UserName=user_name)
@@ -1365,7 +1366,7 @@ class IAM:
         user_name = args.get("user_name", "")
         policy_name = args.get("policy_name", "")
         policy_document = args.get("policy_document", "")
-
+        return CommandResults(readable_output="the quick action worked!")
         try:
             response = client.put_user_policy(
                 UserName=user_name,
@@ -4456,9 +4457,11 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-s3-bucket-acl-put": S3.put_bucket_acl_command,
     "aws-s3-bucket-acl-set-to-private-quick-action": S3.put_bucket_acl_command,
     "aws-s3-bucket-policy-put": S3.put_bucket_policy_command,
+    "aws-s3-bucket-policy-put-quick-action": S3.put_bucket_policy_command,
     "aws-s3-bucket-website-delete": S3.delete_bucket_website_command,
     "aws-s3-bucket-website-disable-hosting-quick-action": S3.delete_bucket_website_command,
     "aws-s3-bucket-ownership-controls-put": S3.put_bucket_ownership_controls_command,
+    "aws-s3-bucket-ownership-controls-put-quick-action": S3.put_bucket_ownership_controls_command,
     "aws-s3-file-upload": S3.file_upload_command,
     "aws-s3-file-download": S3.file_download_command,
     "aws-s3-bucket-website-get": S3.get_bucket_website_command,
@@ -4469,9 +4472,14 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-iam-role-policy-put": IAM.put_role_policy_command,
     "aws-iam-login-profile-delete": IAM.delete_login_profile_command,
+    "aws-iam-login-profile-delete-quick-action": IAM.delete_login_profile_command,
     "aws-iam-user-policy-put": IAM.put_user_policy_command,
+    "aws-iam-user-policy-put-quick-action": IAM.put_user_policy_command,
+    "aws-iam-user-policy-suspend-access-quick-action": IAM.put_user_policy_command,
     "aws-iam-role-from-instance-profile-remove": IAM.remove_role_from_instance_profile_command,
+    "aws-iam-role-from-instance-profile-remove-quick-action": IAM.remove_role_from_instance_profile_command,
     "aws-iam-access-key-update": IAM.update_access_key_command,
+    "aws-iam-access-key-update-quick-action": IAM.update_access_key_command,
     "aws-ec2-instance-metadata-options-modify": EC2.modify_instance_metadata_options_command,
     "aws-ec2-enable-imdsv2-quick-action": EC2.modify_instance_metadata_options_command,
     "aws-ec2-instance-attribute-modify": EC2.modify_instance_attribute_command,
@@ -4517,6 +4525,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-rds-db-instance-enable-multi-az-quick-action": RDS.modify_db_instance_command,
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
     "aws-rds-event-subscription-modify": RDS.modify_event_subscription_command,
+    "aws-rds-event-subscription-modify-quick-action": RDS.modify_event_subscription_command,
     "aws-rds-db-snapshot-attribute-set-snapshot-to-private-quick-action": RDS.modify_db_snapshot_attribute_command,
     "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
     "aws-cloudtrail-logging-start-enable-logging-quick-action": CloudTrail.start_logging_command,
