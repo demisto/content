@@ -212,6 +212,7 @@ def test_next_fetch(requests_mock, mocker):
         threat_status=["active", "cleared"],
         threat_type="",
         limit=50,
+        look_back_minutes=0,
     )
 
     assert len(incidents) == 4
@@ -236,6 +237,7 @@ def test_fetch_limit(requests_mock, mocker):
         threat_status=["active", "cleared"],
         threat_type="",
         limit=3,
+        look_back_minutes=0,
     )
 
     assert next_run["last_fetch"] == "2010-01-01T00:00:00Z"
@@ -251,6 +253,7 @@ def test_fetch_limit(requests_mock, mocker):
         threat_type="",
         limit=3,
         integration_context={"incidents": remained},
+        look_back_minutes=0,
     )
     assert next_run["last_fetch"] == "2010-01-01T00:00:00Z"
     assert len(incidents) == 1
@@ -301,6 +304,7 @@ def test_fetch_incidents_with_encoding(requests_mock, mocker):
         threat_status="",
         threat_type="",
         raw_json_encoding="latin-1",
+        look_back_minutes=0,
     )
 
     assert json.loads(incidents[0]["rawJSON"])["subject"] == "pérdida"
@@ -316,6 +320,57 @@ def test_get_fetch_times(mocker, mock_past, mock_now, expected):
     mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(mock_now, "%Y-%m-%dT%H:%M:%SZ"))
     times = get_fetch_times(mock_past)
     assert len(times) == expected
+
+
+def test_fetch_with_look_back_buffer(requests_mock, mocker):
+    """
+    Scenario: Fetch incidents with look-back buffer to account for Proofpoint API indexing delay.
+    Given:
+     - User has configured look_back_minutes=2 to prevent missing events
+     - Last fetch was at 2010-01-01T00:00:00Z
+     - Current time is 2010-01-01T00:05:00Z
+    When:
+     - fetch_incidents is called with look_back_minutes=2
+    Then:
+     - Ensure the fetch queries up to (now - 2 minutes) = 2010-01-01T00:03:00Z
+     - Ensure incidents are fetched correctly
+     - Ensure next_run checkpoint is set to the buffered time
+    """
+    from ProofpointTAP_v2 import fetch_incidents
+
+    last_fetch_time = "2010-01-01T00:00:00Z"
+    current_time = "2010-01-01T00:05:00Z"
+    # With 2-minute buffer, effective end time should be 00:03:00Z
+    expected_end_time = "2010-01-01T00:03:00Z"
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+
+    # Mock API call with the expected buffered interval (single interval since < 59 minutes)
+    requests_mock.get(
+        MOCK_URL
+        + f"/v2/siem/all?format=json&interval={last_fetch_time.replace(':', '%3A')}%2F{expected_end_time.replace(':', '%3A')}",
+        json=MOCK_ALL_EVENTS,
+    )
+
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+
+    next_run, incidents, _ = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": last_fetch_time},
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=2,
+    )
+
+    # Verify incidents were fetched
+    assert len(incidents) == 4
+    # Verify checkpoint is set to the buffered time (not current time)
+    assert next_run["last_fetch"] == expected_end_time
 
 
 class TestGetForensics:

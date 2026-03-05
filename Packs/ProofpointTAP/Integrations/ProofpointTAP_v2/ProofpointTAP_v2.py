@@ -18,33 +18,47 @@ BLOCKED_MESSAGES = "Blocked Messages"
 DELIVERED_MESSAGES = "Delivered Messages"
 
 DEFAULT_LIMIT = 50
+DEFAULT_LOOK_BACK_MINUTES = 0
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 def get_now():
-    """A wrapper function for datetime.now
+    """A wrapper function for datetime.utcnow
     helps handle tests
     Returns:
-        datetime: time right now
+        datetime: time right now in the UTC timezone.
     """
-    return datetime.now()
+    return datetime.utcnow()
 
 
-def get_fetch_times(last_fetch):
-    """Get list of every hour since last_fetch. last is now.
+def get_fetch_times(last_fetch, look_back_minutes: int = 0):
+    """Get list of every hour since last_fetch. Last time is now minus look-back buffer.
+
+    Applies a buffer to account for Proofpoint's API indexing delay (30-60 seconds).
+    This prevents querying for events that haven't been indexed yet, which would
+    cause them to be permanently missed in subsequent fetches.
+
     Args:
         last_fetch (datetime or str): last_fetch time
+        look_back_minutes (int): Buffer time in minutes to subtract from 'now'. Default is 0.
     Returns:
         List[str]: list of str represents every hour since last_fetch
     """
-    now = get_now()
-    times = []
+    # Apply indexing delay buffer: subtract buffer from 'now' to avoid querying
+    # for events that haven't been indexed yet by Proofpoint's API
+    now = get_now() - timedelta(minutes=look_back_minutes)
     time_format = DATE_FORMAT
     if isinstance(last_fetch, str):
-        times.append(last_fetch)
         last_fetch = datetime.strptime(last_fetch, time_format)
-    elif isinstance(last_fetch, datetime):
-        times.append(last_fetch.strftime(time_format))
+
+    # Guard against invalid intervals if polled too frequently
+    # If last_fetch is > now (with buffer), return empty list to skip this fetch cycle
+    if last_fetch > now:
+        demisto.debug(f"Skipping fetch: last_fetch ({last_fetch}) > now with buffer ({now})")
+        return []
+
+    times = []
+    times.append(last_fetch.strftime(time_format))
     while now - last_fetch > timedelta(minutes=59):
         last_fetch += timedelta(minutes=59)
         times.append(last_fetch.strftime(time_format))
@@ -523,7 +537,7 @@ def validate_first_fetch_time(first_fetch_time: str):
 
 
 def fetch_incidents(
-    client,
+    client: Client,
     last_run,
     first_fetch_time,
     event_type_filter,
@@ -532,6 +546,7 @@ def fetch_incidents(
     limit=DEFAULT_LIMIT,
     integration_context=None,
     raw_json_encoding: str | None = None,
+    look_back_minutes: int = 0,
 ) -> tuple[dict, list, list]:
     incidents = []
     end_query_time = ""
@@ -547,7 +562,14 @@ def fetch_incidents(
     # Handle first time fetch, fetch incidents retroactively
     if not start_query_time:
         start_query_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
-    fetch_times = get_fetch_times(start_query_time)
+    fetch_times = get_fetch_times(start_query_time, look_back_minutes)
+
+    # If fetch_times is empty (polled too frequently), skip this fetch cycle
+    # Keep last_run unchanged so the next cycle can try again
+    if not fetch_times:
+        demisto.debug("No fetch times generated - skipping this fetch cycle")
+        return last_run, [], []
+
     for i in range(len(fetch_times) - 1):
         start_query_time = fetch_times[i]
         end_query_time = fetch_times[i + 1]
@@ -1314,13 +1336,17 @@ def main():
     raw_json_encoding = params.get("raw_json_encoding")
 
     fetch_limit = min(int(params.get("limit", DEFAULT_LIMIT)), DEFAULT_LIMIT)
+
+    # Get look-back buffer parameter (default 0 for backward compatibility)
+    look_back_minutes = arg_to_number(params.get("look_back_minutes", DEFAULT_LOOK_BACK_MINUTES)) or DEFAULT_LOOK_BACK_MINUTES
+
     # Remove proxy if not set to true in params
     proxies = handle_proxy()
 
     command = demisto.command()
     args = demisto.args()
     demisto.info(f"Command being called is {command}")
-    demisto.debug(f"{fetch_time=}")
+    demisto.debug(f"{fetch_time=}, {look_back_minutes=}")
     try:
         client = Client(server_url, api_version, verify_certificate, service_principal, secret, proxies)
         commands = {"proofpoint-get-events": get_events_command, "proofpoint-get-forensics": get_forensic_command}
@@ -1340,6 +1366,7 @@ def main():
                 limit=fetch_limit,
                 integration_context=integration_context,
                 raw_json_encoding=raw_json_encoding,
+                look_back_minutes=look_back_minutes,
             )
             # Save last_run, incidents, remained incidents into integration
             demisto.setLastRun(next_run)
