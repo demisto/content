@@ -3290,8 +3290,10 @@ script:
         name: execution_id
       - description: The name of the widget to display the query results.
         name: widget_name
+        required: true
       - description: A description of the widget that displays the query results.
         name: widget_description
+        required: true
       description: |-
         Execute an XQL query and retrieve a link to the query in the query center.
         If set to wait for results, the command will be executed every 10 seconds until results are retrieved or until the timeout is reached.
@@ -3324,6 +3326,12 @@ script:
       - contextPath: GenericXQLQuery.widget_description
         description: A description of the widget that displays the query results.
         type: String
+      - contextPath: GenericXQLQuery.query_name
+        description: The name of the query, used for identification purposes.
+        type: String
+      - contextPath: GenericXQLQuery.timeframe
+        description: The timeframe used for the query execution.
+        type: Unknown
     - arguments:
         - description: A comma separated list of case ids to retrieve resolution statuses for.
           isArray: false

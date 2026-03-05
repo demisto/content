@@ -653,8 +653,9 @@ class Client(CoreClient):
         """
         data = json.dumps(json_data) if json_data is not None else data
 
+        demisto.debug(f"[Menachem test] {url_suffix=}, {data=}")
         response = demisto._platformAPICall(path=url_suffix, method=method, params=params, data=data, timeout=timeout)
-
+        demisto.debug(f"[Menachem test] {response=}")
         if ok_codes and response.get("status") not in ok_codes:
             self._handle_error(error_handler, response, with_metrics)
         try:
@@ -4477,7 +4478,8 @@ def get_xql_query_results_platform(client: Client, execution_id: str) -> dict:
     response = client.platform_http_request(
         method="POST", json_data=data, url_suffix="/xql_queries/results/info/", ok_codes=[200]
     )
-
+    # demisto.info(f"[Menachem test] call /xql_queries/results/info/ Body: {data}")
+    # demisto.info(f"[Menachem test] /xql_queries/results/info/ Response: {response}")
     response["execution_id"] = execution_id
     stream_id = response.get("stream_id")
     if response.get("status") != "PENDING" and stream_id:
@@ -4488,6 +4490,9 @@ def get_xql_query_results_platform(client: Client, execution_id: str) -> dict:
         query_data = client.platform_http_request(
             method="POST", json_data=data, url_suffix="/xql_queries/results/", ok_codes=[200]
         )
+        # demisto.info(f"[Menachem test] call /xql_queries/results/ Body: {data}")
+        # demisto.info(f"[Menachem test] /xql_queries/results/ Response: {query_data}")
+        demisto.debug(f"[Menachem] Query results received: {query_data=}")
         if isinstance(query_data, str):
             response["results"] = [json.loads(line) for line in query_data.split("\n") if line.strip()]
         else:
@@ -4503,6 +4508,7 @@ def get_xql_query_results_platform(client: Client, execution_id: str) -> dict:
             }
         }
         res = client._http_request(method="POST", url_suffix="/xql/get_query_results", json_data=data)
+        demisto.debug(f"status FAIL, res={res}")
         response["error_details"] = res.get("reply", "")
 
     return response
@@ -4663,12 +4669,15 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
         raise ValueError("query is not specified")
 
     MAX_QUERY_LIMIT = 1000
+    demisto.debug(f"query befor {query}")
     clean_query, view_graph_clause = remove_view_graph_clause(query)
+    demisto.debug(f"{clean_query=}, {view_graph_clause=}")
     query_with_limit = handle_xql_limit(clean_query, MAX_QUERY_LIMIT)
+    demisto.debug(f"{query_with_limit=}")
     full_query = query_with_limit + view_graph_clause
     timeframe = convert_timeframe_string_to_json(args.get("timeframe", "24 hours") or "24 hours")
 
-    execution_id = args.get("execution_id", "") or start_xql_query_platform(client, query_with_limit, timeframe)
+    execution_id = args.get("execution_id", "") or start_xql_query_platform(client, full_query, timeframe)
 
     if not execution_id:
         raise DemistoException("Failed to start query\n")
@@ -4678,12 +4687,9 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
         "execution_id": execution_id,
         "query_url": query_url,
         "query": full_query,
+        "timeframe": timeframe,
     }
 
-    if widget_name := args.get("widget_name"):
-        outputs["widget_name"] = widget_name
-    if widget_description := args.get("widget_description"):
-        outputs["widget_description"] = widget_description
     if query != query_with_limit:
         outputs["query_limit_modified"] = (
             f"Limit clauses larger than {MAX_QUERY_LIMIT} are currently not supported and have been reduced to {MAX_QUERY_LIMIT}"
@@ -4694,7 +4700,11 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
         timeout_in_secs = int(args.get("timeout_in_seconds", 180))
         outputs.update(get_xql_query_results_platform_polling(client, execution_id, timeout_in_secs))
 
-        if view_graph_clause:
+        if outputs.get("status") == "SUCCESS":
+            if widget_name := args.get("widget_name"):
+                outputs["widget_name"] = widget_name
+            if widget_description := args.get("widget_description"):
+                outputs["widget_description"] = widget_description
             demisto.debug("Getting additional query data for view graph")
             view_def_req = {
                 "table_name": "DDS",
@@ -4716,7 +4726,15 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
                 method="POST",
                 full_url="/api/webapp/get_graph_data/",
                 json_data=get_graph_data_req,
+            )            
+            single_execution_data = client._http_request(
+                method="POST",
+                full_url="/api/webapp/get_single_execution_data/",
+                json_data={"request_data": {"execution_id": execution_id}},
             )
+            execution_reply = single_execution_data.get("reply") or [{}]
+            outputs["query_name"] = execution_reply[0].get("EXECUTION_NAME", "")
+
 
     return CommandResults(
         outputs_prefix="GenericXQLQuery", outputs_key_field="execution_id", outputs=outputs, raw_response=outputs
