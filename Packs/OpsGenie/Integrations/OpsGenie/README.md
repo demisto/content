@@ -136,7 +136,7 @@ Use-cases:</h3>
 <tbody>
 <tr>
 <td>
-<p>OpsGenie      User Info<br>Key              Value<br>createdAt      2017-10-08T05:27:28.535Z<br>fullName       Gilad Shriki<br>id                 6297fa63-7816-4cd6-93e4-404a9ab6a3cf<br>locale           en_US<br>role.id          Owner<br>role.name     Owner<br>timeZone      Israel<br>username     shriki@demisto.com<br>verified         true</p>
+<p>OpsGenie      User Info<br>Key              Value<br>createdAt      2017-10-08T05:27:28.535Z<br>fullName       Gil Testman<br>id                 6297fa63-7816-4cd6-93e4-404a9ab6a3cf<br>locale           en_US<br>role.id          Owner<br>role.name     Owner<br>timeZone      Israel<br>username     shriki@demisto.com<br>verified         true</p>
 </td>
 </tr>
 </tbody>
