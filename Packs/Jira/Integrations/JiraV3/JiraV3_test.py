@@ -115,7 +115,7 @@ def test_v2_args_to_v3():
         "issue_key": "dummy_issue_key",
     }
     v3_args = map_v2_args_to_v3(args=v2_args)
-    assert v3_args == expected_v3_args
+    assert v3_args == 0
 
 
 # Helper functions unit tests
