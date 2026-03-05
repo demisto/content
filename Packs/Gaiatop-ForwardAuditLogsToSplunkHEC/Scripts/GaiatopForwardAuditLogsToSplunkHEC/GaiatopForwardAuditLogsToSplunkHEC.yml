@@ -1,0 +1,30 @@
+args:
+- name: AuditLogCountList
+  required: true
+- name: CoreRestInstanceName
+  required: true
+- name: SplunkInstanceName
+  required: true
+comment: This automation fetches the Management Audit Logs and forwards it to be Splunk HEC.
+commonfields:
+  id: Gaiatop_ForwardAuditLogsToSplunkHEC
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.12.12.6947692
+enabled: true
+engineinfo: {}
+name: Gaiatop_ForwardAuditLogsToSplunkHEC
+outputs:
+- contextPath: AuditLogs
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
