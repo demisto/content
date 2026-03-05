@@ -1023,6 +1023,15 @@ def checkpoint_add_host_command(
         "groups",
         "color",
         "comments",
+        "tags",
+        "nat-auto-rule",
+        "nat-method",
+        "nat-ipv4-address",
+        "nat-install-on",
+        "nat-hide-behind",
+        "interface-name",
+        "interfaces-subnet"
+        "interfaces-mask-length"
     ]
 
     if len(name) != len(ip_address):
@@ -3234,6 +3243,28 @@ def build_printable_result(headers: list, result: dict) -> dict:
                 }
             )
 
+        nat_data = result.get("nat-settings")
+        if nat_data:
+            printable_result.update(
+                {
+                    "nat-auto-rule": nat_data.get("auto-rule"),
+                    "nat-method": nat_data.get("method"),
+                    "nat-ipv4-address": nat_data.get("ipv4-address"),
+                    "nat-install-on": nat_data.get("install-on"),
+                    "nat-hide-behind": nat_data.get("hide-behind"),
+                }
+            )   
+
+        interface_data = result.get("interfaces")
+        if interface_data:
+            printable_result.update(
+                {
+                    "interface-name": interface_data.get("name"),
+                    "interfaces-subnet": interface_data.get("subnet4"),
+                    "interfaces-mask-length": interface_data.get("subnet-mask"),
+                }
+            )   
+     
         meta_info = result.get("meta-info")
         if meta_info:
             result.update(

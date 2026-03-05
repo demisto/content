@@ -117,12 +117,6 @@ script:
     - contextPath: CheckPoint.Host.tags
       description: Collection of tag objects associated with the host.
       type: Unknown
-    - contextPath: CheckPoint.Host.nat-settings
-      description: NAT settings for the host.
-      type: Unknown
-    - contextPath: CheckPoint.Host.interfaces
-      description: Host interfaces.
-      type: Unknown
     - contextPath: CheckPoint.Host.groups
       description: Collection of group identifiers.
       type: Unknown
@@ -188,12 +182,30 @@ script:
     - contextPath: CheckPoint.Host.tags
       description: Collection of tag objects associated with the host.
       type: Unknown
-    - contextPath: CheckPoint.Host.nat-settings
-      description: NAT settings for the host.
-      type: Unknown
-    - contextPath: CheckPoint.Host.interfaces
-      description: Host interfaces.
-      type: Unknown
+    - contextPath: CheckPoint.Host.nat-auto-rule
+      description: Whether NAT automatic rules are enabled.
+      type: Boolean
+    - contextPath: CheckPoint.Host.nat-method
+      description: NAT method (hide or static).
+      type: String
+    - contextPath: CheckPoint.Host.nat-ipv4-address
+      description: NAT IPv4 address.
+      type: String
+    - contextPath: CheckPoint.Host.nat-install-on
+      description: Gateway for NAT rule installation.
+      type: String
+    - contextPath: CheckPoint.Host.nat-hide-behind
+      description: Hide behind method (gateway or ip-address).
+      type: String
+    - contextPath: CheckPoint.Host.interface-name
+      description: Interface name.
+      type: String
+    - contextPath: CheckPoint.Host.interfaces-subnet
+      description: Interface subnet IPv4 address.
+      type: String
+    - contextPath: CheckPoint.Host.interfaces-mask-length
+      description: Interface subnet mask length.
+      type: Number
   - arguments:
     - description: The name of the new host.
       isArray: true
@@ -345,12 +357,30 @@ script:
     - contextPath: CheckPoint.Host.tags
       description: Collection of tag objects associated with the host.
       type: Unknown
-    - contextPath: CheckPoint.Host.nat-settings
-      description: NAT settings for the host.
-      type: Unknown
-    - contextPath: CheckPoint.Host.interfaces
-      description: Host interfaces.
-      type: Unknown
+    - contextPath: CheckPoint.Host.nat-auto-rule
+      description: Whether NAT automatic rules are enabled.
+      type: Boolean
+    - contextPath: CheckPoint.Host.nat-method
+      description: NAT method (hide or static).
+      type: String
+    - contextPath: CheckPoint.Host.nat-ipv4-address
+      description: NAT IPv4 address.
+      type: String
+    - contextPath: CheckPoint.Host.nat-install-on
+      description: Gateway for NAT rule installation.
+      type: String
+    - contextPath: CheckPoint.Host.nat-hide-behind
+      description: Hide behind method (gateway or ip-address).
+      type: String
+    - contextPath: CheckPoint.Host.interface-name
+      description: Interface name.
+      type: String
+    - contextPath: CheckPoint.Host.interfaces-subnet
+      description: Interface subnet IPv4 address.
+      type: String
+    - contextPath: CheckPoint.Host.interfaces-mask-length
+      description: Interface subnet mask length.
+      type: Number
   - arguments:
     - description: Object unique identifier (UID) or name.
       name: identifier
@@ -501,12 +531,30 @@ script:
     - contextPath: CheckPoint.Host.tags
       description: Collection of tag objects associated with the host.
       type: Unknown
-    - contextPath: CheckPoint.Host.nat-settings
-      description: NAT settings for the host.
-      type: Unknown
-    - contextPath: CheckPoint.Host.interfaces
-      description: Host interfaces.
-      type: Unknown
+    - contextPath: CheckPoint.Host.nat-auto-rule
+      description: Whether NAT automatic rules are enabled.
+      type: Boolean
+    - contextPath: CheckPoint.Host.nat-method
+      description: NAT method (hide or static).
+      type: String
+    - contextPath: CheckPoint.Host.nat-ipv4-address
+      description: NAT IPv4 address.
+      type: String
+    - contextPath: CheckPoint.Host.nat-install-on
+      description: Gateway for NAT rule installation.
+      type: String
+    - contextPath: CheckPoint.Host.nat-hide-behind
+      description: Hide behind method (gateway or ip-address).
+      type: String
+    - contextPath: CheckPoint.Host.interface-name
+      description: Interface name.
+      type: String
+    - contextPath: CheckPoint.Host.interfaces-subnet
+      description: Interface subnet IPv4 address.
+      type: String
+    - contextPath: CheckPoint.Host.interfaces-mask-length
+      description: Interface subnet mask length.
+      type: Number
   - arguments:
     - description: Object unique identifier (UID) or name.
       isArray: true
@@ -1098,6 +1146,21 @@ script:
     - contextPath: CheckPoint.AddressRange.groups
       description: Name of the group object.
       type: String
+    - contextPath: CheckPoint.AddressRange.nat-auto-rule
+      description: Whether NAT automatic rules are enabled.
+      type: Boolean
+    - contextPath: CheckPoint.AddressRange.nat-method
+      description: NAT method (hide or static).
+      type: String
+    - contextPath: CheckPoint.AddressRange.nat-ipv4-address
+      description: NAT IPv4 address.
+      type: String
+    - contextPath: CheckPoint.AddressRange.nat-install-on
+      description: Gateway for NAT rule installation.
+      type: String
+    - contextPath: CheckPoint.AddressRange.nat-hide-behind
+      description: Hide behind method (gateway or ip-address).
+      type: String
   - arguments:
     - description: Name for the new address range object.
       name: identifier
@@ -1241,9 +1304,21 @@ script:
     - contextPath: CheckPoint.AddressRange.tags
       description: Collection of tag objects associated with the address range.
       type: Unknown
-    - contextPath: CheckPoint.AddressRange.nat-settings
-      description: NAT settings for the address range.
-      type: Unknown
+    - contextPath: CheckPoint.AddressRange.nat-auto-rule
+      description: Whether NAT automatic rules are enabled.
+      type: Boolean
+    - contextPath: CheckPoint.AddressRange.nat-method
+      description: NAT method (hide or static).
+      type: String
+    - contextPath: CheckPoint.AddressRange.nat-ipv4-address
+      description: NAT IPv4 address.
+      type: String
+    - contextPath: CheckPoint.AddressRange.nat-install-on
+      description: Gateway for NAT rule installation.
+      type: String
+    - contextPath: CheckPoint.AddressRange.nat-hide-behind
+      description: Hide behind method (gateway or ip-address).
+      type: String
   - arguments:
     - description: Name for the new address range object.
       isArray: true
