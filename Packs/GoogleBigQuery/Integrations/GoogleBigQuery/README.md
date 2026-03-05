@@ -14,6 +14,7 @@
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Google service account JSON (a credentials JSON generated from Google API Manager or from GCP console)</strong></li>
+<li><strong>Region</strong>: The geographic location where the connectivity test should run.</li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
