@@ -743,14 +743,20 @@ def test_start_xql_query_polling_command_http_request_failure(mocker):
     When:
     - Calling start_xql_query_polling_command function.
     Then:
-    - Ensure the command will run again in the next polling interval instead of returning error.
+    - Ensure the command schedules xdr-xql-get-query-results (not xdr-xql-generic-query) with _query_not_started flag,
+      so the retry stays within the same polling chain and respects the timeout.
     """
     from CoreXQLApiModule import start_xql_query_polling_command
 
     query = "MOCK_QUERY"
     mocker.patch.object(CLIENT, "start_xql_query", return_value="FAILURE")
-    command_results = start_xql_query_polling_command(CLIENT, {"query": query, "query_name": "mock_name"})
+    mocker.patch.object(demisto, "command", return_value="xdr-xql-generic-query")
+    args = {"query": query, "query_name": "mock_name"}
+    command_results = start_xql_query_polling_command(CLIENT, args)
     assert command_results.scheduled_command
+    assert command_results.scheduled_command._command == "xdr-xql-get-query-results"
+    assert args.get("_query_not_started") == "true"
+    assert args.get("command_name") == "xdr-xql-generic-query"
     assert "The maximum allowed number of parallel running queries has been reached." in command_results.readable_output
 
 
@@ -1112,3 +1118,164 @@ def test_add_playbook_metadata_missing_context(mocker, callingContext):
     }
     assert data["request_data"]["playbook_metadata"] == expected_metadata
     demisto.debug.assert_called_once()
+
+
+# =========================================== Bug Fix Tests ===========================================#
+
+
+def test_get_xql_query_results_polling_command_fail_status(mocker):
+    """
+    Given:
+    - A query that returned status FAIL with an error message.
+
+    When:
+    - Calling get_xql_query_results_polling_command function.
+
+    Then:
+    - Ensure a DemistoException is raised with the error details.
+    """
+    mock_response = {
+        "status": "FAIL",
+        "number_of_results": 0,
+        "query_cost": {},
+        "remaining_quota": 1000.0,
+        "results": None,
+        "execution_id": "query_id_mock",
+        "error_message": "Syntax error in query",
+    }
+    mocker.patch("CoreXQLApiModule.get_xql_query_results", return_value=(mock_response, None))
+    mocker.patch.object(demisto, "command", return_value="xdr-xql-generic-query")
+    with pytest.raises(DemistoException, match="Syntax error in query"):
+        CoreXQLApiModule.get_xql_query_results_polling_command(
+            CLIENT,
+            {"query": "BAD_QUERY", "query_name": "failing_query", "query_id": "query_id_mock"},
+        )
+
+
+def test_get_xql_query_results_polling_command_fail_status_no_error_message(mocker):
+    """
+    Given:
+    - A query that returned status FAIL without an error_message field.
+
+    When:
+    - Calling get_xql_query_results_polling_command function.
+
+    Then:
+    - Ensure a DemistoException is raised with the 'Unknown error' fallback message.
+    """
+    mock_response = {
+        "status": "FAIL",
+        "number_of_results": 0,
+        "query_cost": {},
+        "remaining_quota": 1000.0,
+        "results": None,
+        "execution_id": "query_id_mock",
+    }
+    mocker.patch("CoreXQLApiModule.get_xql_query_results", return_value=(mock_response, None))
+    mocker.patch.object(demisto, "command", return_value="xdr-xql-generic-query")
+    with pytest.raises(DemistoException, match="Unknown error"):
+        CoreXQLApiModule.get_xql_query_results_polling_command(
+            CLIENT,
+            {"query": "BAD_QUERY", "query_name": "failing_query", "query_id": "query_id_mock"},
+        )
+
+
+def test_get_xql_query_results_polling_command_query_not_started_retry_failure(mocker):
+    """
+    Given:
+    - _query_not_started=true in args, and start_xql_query returns FAILURE again.
+
+    When:
+    - Calling get_xql_query_results_polling_command function.
+
+    Then:
+    - Returns CommandResults with scheduled_command targeting xdr-xql-get-query-results,
+      _query_not_started still in args.
+    """
+    mocker.patch("CoreXQLApiModule.start_xql_query", return_value="FAILURE")
+    mocker.patch.object(demisto, "command", return_value="xdr-xql-get-query-results")
+    args = {
+        "query": "MOCK_QUERY",
+        "query_name": "mock_name",
+        "_query_not_started": "true",
+        "command_name": "xdr-xql-generic-query",
+    }
+    command_results = CoreXQLApiModule.get_xql_query_results_polling_command(CLIENT, args)
+    assert command_results.scheduled_command
+    assert command_results.scheduled_command._command == "xdr-xql-get-query-results"
+    assert args.get("_query_not_started") == "true"
+    assert "The maximum allowed number of parallel running queries has been reached." in command_results.readable_output
+
+
+def test_get_xql_query_results_polling_command_query_not_started_success(mocker):
+    """
+    Given:
+    - _query_not_started=true in args, start_xql_query returns a valid execution_id,
+      and get_xql_query_results returns SUCCESS.
+
+    When:
+    - Calling get_xql_query_results_polling_command function.
+
+    Then:
+    - Returns successful results, _query_not_started flag removed from args, query_id set.
+    """
+    mock_response = {
+        "status": "SUCCESS",
+        "number_of_results": 1,
+        "query_cost": {"376699223": 0.003},
+        "remaining_quota": 1000.0,
+        "results": [{"x": "test1"}],
+        "execution_id": "new_exec_id",
+    }
+    mocker.patch("CoreXQLApiModule.start_xql_query", return_value="new_exec_id")
+    mocker.patch("CoreXQLApiModule.get_xql_query_results", return_value=(mock_response, None))
+    mocker.patch.object(demisto, "command", return_value="xdr-xql-get-query-results")
+    args = {
+        "query": "MOCK_QUERY",
+        "query_name": "mock_name",
+        "_query_not_started": "true",
+        "command_name": "xdr-xql-generic-query",
+    }
+    command_results = CoreXQLApiModule.get_xql_query_results_polling_command(CLIENT, args)
+    assert "_query_not_started" not in args
+    assert args["query_id"] == "new_exec_id"
+    assert command_results.outputs["status"] == "SUCCESS"
+    assert command_results.outputs["number_of_results"] == 1
+
+
+def test_get_xql_query_results_polling_command_query_not_started_pending(mocker):
+    """
+    Given:
+    - _query_not_started=true in args, start_xql_query returns a valid execution_id,
+      and get_xql_query_results returns PENDING.
+
+    When:
+    - Calling get_xql_query_results_polling_command function.
+
+    Then:
+    - Returns CommandResults with scheduled_command targeting xdr-xql-get-query-results,
+      _query_not_started flag removed.
+    """
+    mock_response = {
+        "status": "PENDING",
+        "number_of_results": 0,
+        "query_cost": {},
+        "remaining_quota": 1000.0,
+        "results": None,
+        "execution_id": "new_exec_id",
+    }
+    mocker.patch("CoreXQLApiModule.start_xql_query", return_value="new_exec_id")
+    mocker.patch("CoreXQLApiModule.get_xql_query_results", return_value=(mock_response, None))
+    mocker.patch.object(demisto, "command", return_value="xdr-xql-get-query-results")
+    args = {
+        "query": "MOCK_QUERY",
+        "query_name": "mock_name",
+        "_query_not_started": "true",
+        "command_name": "xdr-xql-generic-query",
+    }
+    command_results = CoreXQLApiModule.get_xql_query_results_polling_command(CLIENT, args)
+    assert "_query_not_started" not in args
+    assert args["query_id"] == "new_exec_id"
+    assert command_results.scheduled_command
+    assert command_results.scheduled_command._command == "xdr-xql-get-query-results"
+    assert command_results.readable_output == "Query is still running, it may take a little while..."
