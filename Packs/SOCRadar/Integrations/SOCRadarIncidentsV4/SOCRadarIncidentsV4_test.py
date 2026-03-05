@@ -1,11 +1,11 @@
 import pytest
-from unittest.mock import MagicMock
 from datetime import datetime, timedelta
 
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_alarm(
     alarm_id=123,
@@ -51,6 +51,7 @@ def _mock_response(alarms, total_pages=1, total_records=None):
 # Fixture
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def mock_client():
     from SOCRadarIncidentsV4 import Client
@@ -68,6 +69,7 @@ def mock_client():
 # ---------------------------------------------------------------------------
 # convert_to_demisto_severity
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.parametrize(
     "severity,expected_attr",
@@ -91,6 +93,7 @@ def test_convert_to_demisto_severity(severity, expected_attr):
 # ---------------------------------------------------------------------------
 # parse_alarm_date
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.parametrize(
     "date_str,description",
@@ -125,6 +128,7 @@ def test_parse_alarm_date_invalid(date_str, description):
 # ---------------------------------------------------------------------------
 # alarm_to_incident
 # ---------------------------------------------------------------------------
+
 
 def test_alarm_to_incident_basic():
     from SOCRadarIncidentsV4 import alarm_to_incident
@@ -179,6 +183,7 @@ def test_alarm_to_incident_raw_json():
 # ---------------------------------------------------------------------------
 # Client
 # ---------------------------------------------------------------------------
+
 
 class TestClient:
     def test_client_initialization(self, mock_client):
@@ -252,6 +257,7 @@ class TestClient:
 # test_module
 # ---------------------------------------------------------------------------
 
+
 def test_test_module_success(mock_client, mocker):
     from SOCRadarIncidentsV4 import test_module
 
@@ -260,40 +266,44 @@ def test_test_module_success(mock_client, mocker):
     assert result == "ok"
 
 
-def test_test_module_failure(mock_client, mocker):
+def test_test_module_failure(mock_client, mocker, capfd):
     from SOCRadarIncidentsV4 import test_module
 
     mocker.patch.object(
         mock_client, "search_incidents", return_value={"is_success": False, "message": "Authentication failed"}
     )
-    result = test_module(mock_client)
+    with capfd.disabled():
+        result = test_module(mock_client)
     assert "Test failed" in result
 
 
-def test_test_module_unauthorized(mock_client, mocker):
+def test_test_module_unauthorized(mock_client, mocker, capfd):
     from SOCRadarIncidentsV4 import test_module
     from CommonServerPython import DemistoException
 
     mocker.patch.object(mock_client, "search_incidents", side_effect=DemistoException("401 Unauthorized"))
-    result = test_module(mock_client)
+    with capfd.disabled():
+        result = test_module(mock_client)
     assert "Authorization Error" in result
 
 
-def test_test_module_forbidden(mock_client, mocker):
+def test_test_module_forbidden(mock_client, mocker, capfd):
     from SOCRadarIncidentsV4 import test_module
     from CommonServerPython import DemistoException
 
     mocker.patch.object(mock_client, "search_incidents", side_effect=DemistoException("403 Forbidden"))
-    result = test_module(mock_client)
+    with capfd.disabled():
+        result = test_module(mock_client)
     assert "Access Denied" in result
 
 
-def test_test_module_not_found(mock_client, mocker):
+def test_test_module_not_found(mock_client, mocker, capfd):
     from SOCRadarIncidentsV4 import test_module
     from CommonServerPython import DemistoException
 
     mocker.patch.object(mock_client, "search_incidents", side_effect=DemistoException("404 Not Found"))
-    result = test_module(mock_client)
+    with capfd.disabled():
+        result = test_module(mock_client)
     assert "Not Found" in result
 
 
@@ -301,13 +311,22 @@ def test_test_module_not_found(mock_client, mocker):
 # status_reason_map completeness
 # ---------------------------------------------------------------------------
 
+
 def test_status_reason_map_completeness():
     from SOCRadarIncidentsV4 import STATUS_REASON_MAP
 
     expected_statuses = [
-        "OPEN", "INVESTIGATING", "RESOLVED", "PENDING_INFO",
-        "LEGAL_REVIEW", "VENDOR_ASSESSMENT", "FALSE_POSITIVE",
-        "DUPLICATE", "PROCESSED_INTERNALLY", "MITIGATED", "NOT_APPLICABLE",
+        "OPEN",
+        "INVESTIGATING",
+        "RESOLVED",
+        "PENDING_INFO",
+        "LEGAL_REVIEW",
+        "VENDOR_ASSESSMENT",
+        "FALSE_POSITIVE",
+        "DUPLICATE",
+        "PROCESSED_INTERNALLY",
+        "MITIGATED",
+        "NOT_APPLICABLE",
     ]
     for status in expected_statuses:
         assert status in STATUS_REASON_MAP
@@ -316,6 +335,7 @@ def test_status_reason_map_completeness():
 # ---------------------------------------------------------------------------
 # fetch_incidents
 # ---------------------------------------------------------------------------
+
 
 def test_fetch_incidents_first_fetch(mock_client, mocker):
     """Test fetch incidents on first run"""
@@ -393,19 +413,20 @@ def test_fetch_incidents_no_alarms(mock_client, mocker):
     assert "last_alarm_ids" in next_run
 
 
-def test_fetch_incidents_error_handling(mock_client, mocker):
+def test_fetch_incidents_error_handling(mock_client, mocker, capfd):
     """Test fetch gracefully handles API errors"""
     from SOCRadarIncidentsV4 import fetch_incidents
 
     mocker.patch.object(mock_client, "search_incidents", side_effect=Exception("API Error"))
 
-    next_run, incidents = fetch_incidents(
-        client=mock_client,
-        max_results=100,
-        last_run={},
-        first_fetch_time="3 days",
-        fetch_interval_minutes=1,
-    )
+    with capfd.disabled():
+        next_run, incidents = fetch_incidents(
+            client=mock_client,
+            max_results=100,
+            last_run={},
+            first_fetch_time="3 days",
+            fetch_interval_minutes=1,
+        )
 
     assert incidents == []
     assert "last_fetch" in next_run
@@ -415,9 +436,7 @@ def test_fetch_incidents_with_filters(mock_client, mocker):
     """Test fetch passes filters correctly to search_incidents"""
     from SOCRadarIncidentsV4 import fetch_incidents
 
-    mock_search = mocker.patch.object(
-        mock_client, "search_incidents", return_value=_mock_response([_make_alarm()])
-    )
+    mock_search = mocker.patch.object(mock_client, "search_incidents", return_value=_mock_response([_make_alarm()]))
 
     fetch_incidents(
         client=mock_client,
@@ -440,6 +459,7 @@ def test_fetch_incidents_with_filters(mock_client, mocker):
 # change_status_command
 # ---------------------------------------------------------------------------
 
+
 def test_change_status_command_success(mock_client, mocker):
     from SOCRadarIncidentsV4 import change_status_command
 
@@ -459,6 +479,7 @@ def test_change_status_command_missing_params(mock_client):
 # ---------------------------------------------------------------------------
 # mark commands
 # ---------------------------------------------------------------------------
+
 
 def test_mark_false_positive_success(mock_client, mocker):
     from SOCRadarIncidentsV4 import mark_as_false_positive_command
@@ -486,6 +507,7 @@ def test_mark_resolved_success(mock_client, mocker):
 # ---------------------------------------------------------------------------
 # add_comment / add_assignee / add_tag commands
 # ---------------------------------------------------------------------------
+
 
 def test_add_comment_success(mock_client, mocker):
     from SOCRadarIncidentsV4 import add_comment_command
@@ -536,6 +558,7 @@ def test_add_tag_missing_tag(mock_client):
 # test_fetch_command
 # ---------------------------------------------------------------------------
 
+
 def test_test_fetch_success(mock_client, mocker):
     from SOCRadarIncidentsV4 import test_fetch_command
 
@@ -558,7 +581,7 @@ def test_test_fetch_no_incidents(mock_client, mocker):
     assert "No incidents found" in result.readable_output
 
 
-def test_client_search_incidents_error_response(mock_client, mocker):
+def test_client_search_incidents_error_response(mock_client, mocker, capfd):
     """Test that API error response raises DemistoException"""
     from CommonServerPython import DemistoException
 
@@ -571,5 +594,5 @@ def test_client_search_incidents_error_response(mock_client, mocker):
         },
     )
 
-    with pytest.raises(DemistoException, match="API Error"):
+    with capfd.disabled(), pytest.raises(DemistoException, match="API Error"):
         mock_client.search_incidents(limit=1, page=1)
