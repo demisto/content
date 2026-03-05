@@ -52,25 +52,15 @@ Show all host objects
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.Host.name | String | object name |
-| CheckPoint.Host.uid | String | object uid |
-| CheckPoint.Host.type | String | object type |
+| CheckPoint.Host.name | String | Object name. |
+| CheckPoint.Host.uid | String | Object UID. |
+| CheckPoint.Host.type | String | Object type. |
 | CheckPoint.Host.ipv4 | String | IPv4 address of the host. |
 | CheckPoint.Host.ipv6 | String | IPv6 address of the host. |
-| CheckPoint.Host.ipv4-address | String | IPv4 address of the host. |
-| CheckPoint.Host.ipv6-address | String | IPv6 address of the host. |
 | CheckPoint.Host.domain-name | String | Domain name. |
 | CheckPoint.Host.domain-uid | String | Domain UID. |
 | CheckPoint.Host.domain-type | String | Domain type. |
-| CheckPoint.Host.creator | String | The creator of the object. |
-| CheckPoint.Host.last-modifier | String | The user that last modified the object. |
-| CheckPoint.Host.read-only | Boolean | Indicates if the object is read-only. |
 | CheckPoint.Host.color | String | Color of the object. |
-| CheckPoint.Host.comments | String | Comments string. |
-| CheckPoint.Host.tags | Unknown | Collection of tag objects associated with the host. |
-| CheckPoint.Host.nat-settings | Unknown | NAT settings for the host. |
-| CheckPoint.Host.interfaces | Unknown | Host interfaces. |
-| CheckPoint.Host.groups | Unknown | Collection of group identifiers. |
 
 #### Command Example
 
@@ -185,22 +175,26 @@ get all data of a given host
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.Host.name | Unknown | host name |
-| CheckPoint.Host.uid | String | object uid |
-| CheckPoint.Host.type | Unknown | object type |
-| CheckPoint.Host.domain-name | String | domain name |
-| CheckPoint.Host.domain-uid | String | domain uid |
-| CheckPoint.Host.ipv4-address | String | IP address |
-| CheckPoint.Host.ipv6-address | String | IP address |
-| CheckPoint.Host.read-only | Boolean | indicates if the object is read only |
-| CheckPoint.Host.creator | String | indicates the creator of the object |
-| CheckPoint.Host.last-modifier | String | indicates the last user modified the object |
-| CheckPoint.Host.groups-name | String | Group object name linked to current host object. |
-| CheckPoint.Host.groups-uid | Unknown | Group object uid linked to current host object. |
-| CheckPoint.Host.nat-settings | Unknown | NAT settings for the host. |
+| CheckPoint.Host.name | Unknown | Host name. |
+| CheckPoint.Host.uid | String | Object UID. |
+| CheckPoint.Host.type | Unknown | Object type. |
+| CheckPoint.Host.domain-name | String | Domain name. |
+| CheckPoint.Host.domain-uid | String | Domain UID. |
+| CheckPoint.Host.ipv4-address | String | Host IPv4 address. |
+| CheckPoint.Host.ipv6-address | String | IP address. |
+| CheckPoint.Host.read-only | Boolean | Indicates if the object is read-only. |
+| CheckPoint.Host.creator | String | The creator of the object. |
+| CheckPoint.Host.last-modifier | String | The user that last modified the object. |
+| CheckPoint.Host.groups-name | String | The name of the group object linked to the current host object. |
+| CheckPoint.Host.groups-uid | Unknown | The UID of the group object linked to the current host object. |
 | CheckPoint.Host.color | String | Color of the object. |
 | CheckPoint.Host.comments | String | Comments string. |
 | CheckPoint.Host.tags | Unknown | Collection of tag objects associated with the host. |
+| CheckPoint.Host.nat-auto-rule | Boolean | Whether NAT automatic rules are enabled. |
+| CheckPoint.Host.nat-method | String | NAT method \(hide or static\). |
+| CheckPoint.Host.nat-ipv4-address | String | NAT IPv4 address. |
+| CheckPoint.Host.nat-install-on | String | Gateway for NAT rule installation. |
+| CheckPoint.Host.nat-hide-behind | String | Hide behind method \(gateway or ip-address\). |
 | CheckPoint.Host.interfaces | Unknown | Host interfaces. |
 
 #### Command Example
@@ -272,22 +266,26 @@ Add new host
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.Host.name | String | object name |
-| CheckPoint.Host.uid | String | object uid |
-| CheckPoint.Host.type | String | object type |
-| CheckPoint.Host.domain-name | String | domain name |
-| CheckPoint.Host.domain-uid | String | domain uid |
-| CheckPoint.Host.domain-type | String | domain type |
-| CheckPoint.Host.creator | String | indicates the creator of the object |
-| CheckPoint.Host.last-modifier | String | indicates the last user modifies the object |
-| CheckPoint.Host.ipv4-address | String | ip address |
-| CheckPoint.Host.ipv6-address | String | IP address |
-| CheckPoint.Host.read-only | String | indicates if the object is read only |
-| CheckPoint.Host.groups | String | Collection of group identifiers |
-| CheckPoint.Host.nat-settings | Unknown | NAT settings for the host. |
+| CheckPoint.Host.name | String | Object name. |
+| CheckPoint.Host.uid | String | Object UID. |
+| CheckPoint.Host.type | String | Object type. |
+| CheckPoint.Host.domain-name | String | Domain name. |
+| CheckPoint.Host.domain-uid | String | Domain UID. |
+| CheckPoint.Host.domain-type | String | Domain type. |
+| CheckPoint.Host.creator | String | The creator of the object. |
+| CheckPoint.Host.last-modifier | String | The user that last modified the object. |
+| CheckPoint.Host.ipv4-address | String | Host IPv4 address. |
+| CheckPoint.Host.ipv6-address | String | Host IPv6 address. |
+| CheckPoint.Host.read-only | String | Indicates if the object is read-only. |
+| CheckPoint.Host.groups | String | Collection of group identifiers. |
 | CheckPoint.Host.color | String | Color of the object. |
 | CheckPoint.Host.comments | String | Comments string. |
 | CheckPoint.Host.tags | Unknown | Collection of tag objects associated with the host. |
+| CheckPoint.Host.nat-auto-rule | Boolean | Whether NAT automatic rules are enabled. |
+| CheckPoint.Host.nat-method | String | NAT method \(hide or static\). |
+| CheckPoint.Host.nat-ipv4-address | String | NAT IPv4 address. |
+| CheckPoint.Host.nat-install-on | String | Gateway for NAT rule installation. |
+| CheckPoint.Host.nat-hide-behind | String | Hide behind method \(gateway or ip-address\). |
 | CheckPoint.Host.interfaces | Unknown | Host interfaces. |
 
 #### Command Example
@@ -361,22 +359,26 @@ update host changes
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.Host.name | String | object name |
-| CheckPoint.Host.uid | String | object uid |
-| CheckPoint.Host.type | String | object type |
-| CheckPoint.Host.domain-name | String | domain name |
-| CheckPoint.Host.domain-uid | String | domain uid |
-| CheckPoint.Host.domain-type | String | domain type |
-| CheckPoint.Host.creator | String | indicates the creator of the object |
-| CheckPoint.Host.last-modifier | String | indicates the last user modified the object |
-| CheckPoint.Host.ipv4-address | String | IP address |
-| CheckPoint.Host.read-only | Boolean | IP address |
-| CheckPoint.Host.group-name | String | Group object name linked to the host. |
-| CheckPoint.Host.group-uid | String | Group object name linked to the host |
-| CheckPoint.Host.nat-settings | Unknown | NAT settings for the host. |
+| CheckPoint.Host.name | String | Object name. |
+| CheckPoint.Host.uid | String | Object UID. |
+| CheckPoint.Host.type | String | Object type. |
+| CheckPoint.Host.domain-name | String | Domain name. |
+| CheckPoint.Host.domain-uid | String | Domain UID. |
+| CheckPoint.Host.domain-type | String | Domain type. |
+| CheckPoint.Host.creator | String | The creator of the object. |
+| CheckPoint.Host.last-modifier | String | The user that last modified the object. |
+| CheckPoint.Host.ipv4-address | String | Host IPv4 address. |
+| CheckPoint.Host.read-only | Boolean | Indicates if the object is read-only. |
+| CheckPoint.Host.group-name | String | The name of the group object linked to the host. |
+| CheckPoint.Host.group-uid | String | The UID of the group object linked to the host. |
 | CheckPoint.Host.color | String | Color of the object. |
 | CheckPoint.Host.comments | String | Comments string. |
 | CheckPoint.Host.tags | Unknown | Collection of tag objects associated with the host. |
+| CheckPoint.Host.nat-auto-rule | Boolean | Whether NAT automatic rules are enabled. |
+| CheckPoint.Host.nat-method | String | NAT method \(hide or static\). |
+| CheckPoint.Host.nat-ipv4-address | String | NAT IPv4 address. |
+| CheckPoint.Host.nat-install-on | String | Gateway for NAT rule installation. |
+| CheckPoint.Host.nat-hide-behind | String | Hide behind method \(gateway or ip-address\). |
 | CheckPoint.Host.interfaces | Unknown | Host interfaces. |
 
 #### Command Example
@@ -483,12 +485,15 @@ Show a list of all groups
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.Group.name | String | object's name |
-| CheckPoint.Group.uid | String | object's uid |
-| CheckPoint.Group.type | String | Type of the object |
-| CheckPoint.Group.tags | Unknown | Collection of tag objects associated with the group. |
-| CheckPoint.Group.comments | String | Comments string. |
+| CheckPoint.Group.name | String | Object name. |
+| CheckPoint.Group.uid | String | Object UID. |
+| CheckPoint.Group.type | String | Object type. |
+| CheckPoint.Group.domain-name | String | Domain name. |
+| CheckPoint.Group.domain-uid | String | Domain UID. |
+| CheckPoint.Group.domain-type | String | Domain type. |
 | CheckPoint.Group.color | String | Color of the object. |
+| CheckPoint.Group.comments | String | Comments string. |
+| CheckPoint.Group.tags | Unknown | Collection of tag objects associated with the group. |
 
 #### Command Example
 
@@ -679,19 +684,19 @@ add a group
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.Group.name | String | object's name |
-| CheckPoint.Group.uid | String | object uid |
-| CheckPoint.Group.type | Unknown | object type |
-| CheckPoint.Group.domain-name | String | domain name |
-| CheckPoint.Group.domain-uid | String | domain uid |
-| CheckPoint.Group.domain-type | String | domain type |
-| CheckPoint.Group.creator | String | Indicates the object creator |
-| CheckPoint.Group.last-modifier | String | Indicates the last user modified the object |
-| CheckPoint.Group.read-only | Boolean | Indicates whether the object is read-only |
-| CheckPoint.Group.groups-name | Unknown | groups name |
-| CheckPoint.Group.tags | Unknown | Collection of tag objects associated with the group. |
-| CheckPoint.Group.comments | String | Comments string. |
+| CheckPoint.Group.name | String | Object name. |
+| CheckPoint.Group.uid | String | Object UID. |
+| CheckPoint.Group.type | Unknown | Object type. |
+| CheckPoint.Group.domain-name | String | Domain name. |
+| CheckPoint.Group.domain-uid | String | Domain UID. |
+| CheckPoint.Group.domain-type | String | Domain type. |
+| CheckPoint.Group.creator | String | The creator of the object. |
+| CheckPoint.Group.last-modifier | String | The user that last modified the object. |
+| CheckPoint.Group.read-only | Boolean | Indicates if the object is read-only. |
+| CheckPoint.Group.groups-name | Unknown | Groups name. |
 | CheckPoint.Group.color | String | Color of the object. |
+| CheckPoint.Group.comments | String | Comments string. |
+| CheckPoint.Group.tags | Unknown | Collection of tag objects associated with the group. |
 
 #### Command Example
 
@@ -753,18 +758,18 @@ update group object
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.Group.name | String | object name |
-| CheckPoint.Group.uid | String | object uid |
-| CheckPoint.Group.type | String | object type |
-| CheckPoint.Group.domain-name | String | domain name |
-| CheckPoint.Group.domain-uid | String | domain uid |
-| CheckPoint.Group.domain-type | String | domain type |
-| CheckPoint.Group.creator | String | Indicates the creator of the object |
-| CheckPoint.Group.last-modifier | String | Indicates the lasr user modified the object |
-| CheckPoint.Group.read-only | Boolean | Indicates if the object is read only |
-| CheckPoint.Group.tags | Unknown | Collection of tag objects associated with the group. |
-| CheckPoint.Group.comments | String | Comments string. |
+| CheckPoint.Group.name | String | Object name. |
+| CheckPoint.Group.uid | String | Object UID. |
+| CheckPoint.Group.type | String | Object type. |
+| CheckPoint.Group.domain-name | String | Domain name. |
+| CheckPoint.Group.domain-uid | String | Domain UID. |
+| CheckPoint.Group.domain-type | String | Domain type. |
+| CheckPoint.Group.creator | String | The creator of the object. |
+| CheckPoint.Group.last-modifier | String | The user that last modified the object. |
+| CheckPoint.Group.read-only | Boolean | Indicates if the object is read-only. |
 | CheckPoint.Group.color | String | Color of the object. |
+| CheckPoint.Group.comments | String | Comments string. |
+| CheckPoint.Group.tags | Unknown | Collection of tag objects associated with the group. |
 
 #### Command Example
 
@@ -867,9 +872,12 @@ List all address range objects
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.AddressRange.name | String | Object's name |
-| CheckPoint.AddressRange.uid | String | Object's uid |
-| CheckPoint.AddressRange.type | String | Type of the object. |
+| CheckPoint.AddressRange.name | String | Object name. |
+| CheckPoint.AddressRange.uid | String | Object UID. |
+| CheckPoint.AddressRange.type | String | Object type. |
+| CheckPoint.AddressRange.domain-name | String | Domain name. |
+| CheckPoint.AddressRange.domain-uid | String | Domain UID. |
+| CheckPoint.AddressRange.domain-type | String | Domain type. |
 
 #### Command Example
 
@@ -992,20 +1000,28 @@ Add address range object
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.AddressRange.name | String | object name |
-| CheckPoint.AddressRange.uid | String | object uid |
-| CheckPoint.AddressRange.type | String | object type |
-| CheckPoint.AddressRange.domain-name | String | domain name |
-| CheckPoint.AddressRange.domain-uid | String | domain uid |
-| CheckPoint.AddressRange.domain-type | String | domain type |
-| CheckPoint.AddressRange.ipv4-address-first | String | First IPv4 address in the range |
-| CheckPoint.AddressRange.ipv4-address-last | String | Last IPv4 address in the range |
-| CheckPoint.AddressRange.ipv6-address-first | String | First IPv4 address in the range |
-| CheckPoint.AddressRange.ipv6-address-last | String | Last IPv6 address in the range |
-| CheckPoint.AddressRange.read-only | Boolean | Indicates whether the object is read-only. |
-| CheckPoint.AddressRange.creator | String | Indicates the creator of the object |
-| CheckPoint.AddressRange.last-modifier | String | Indicates the last user modified the object |
-| CheckPoint.AddressRange.groups | String | Name of the group object |
+| CheckPoint.AddressRange.name | String | Object name. |
+| CheckPoint.AddressRange.uid | String | Object UID. |
+| CheckPoint.AddressRange.type | String | Object type. |
+| CheckPoint.AddressRange.domain-name | String | Domain name. |
+| CheckPoint.AddressRange.domain-uid | String | Domain UID. |
+| CheckPoint.AddressRange.domain-type | String | Domain type. |
+| CheckPoint.AddressRange.ipv4-address-first | String | First IPv4 address in the range. |
+| CheckPoint.AddressRange.ipv4-address-last | String | Last IPv4 address in the range. |
+| CheckPoint.AddressRange.ipv6-address-first | String | First IPv6 address in the range. |
+| CheckPoint.AddressRange.ipv6-address-last | String | Last IPv6 address in the range. |
+| CheckPoint.AddressRange.read-only | Boolean | Indicates if the object is read-only. |
+| CheckPoint.AddressRange.creator | String | The creator of the object. |
+| CheckPoint.AddressRange.last-modifier | String | Indicates the user that last modified the object. |
+| CheckPoint.AddressRange.groups | String | Name of the group object. |
+| CheckPoint.AddressRange.color | String | Color of the object. |
+| CheckPoint.AddressRange.comments | String | Comments string. |
+| CheckPoint.AddressRange.tags | Unknown | Collection of tag objects associated with the address range. |
+| CheckPoint.AddressRange.nat-auto-rule | Boolean | Whether NAT automatic rules are enabled. |
+| CheckPoint.AddressRange.nat-method | String | NAT method \(hide or static\). |
+| CheckPoint.AddressRange.nat-ipv4-address | String | NAT IPv4 address. |
+| CheckPoint.AddressRange.nat-install-on | String | Gateway for NAT rule installation. |
+| CheckPoint.AddressRange.nat-hide-behind | String | Hide behind method \(gateway or ip-address\). |
 
 #### Command Example
 
@@ -1076,22 +1092,26 @@ Update an address range object
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.AddressRange.name | String | object name |
-| CheckPoint.AddressRange.uid | String | object uid |
-| CheckPoint.AddressRange.type | String | object type |
-| CheckPoint.AddressRange.domain-name | String | domain name |
-| CheckPoint.AddressRange.domain-uid | String | domain uid |
-| CheckPoint.AddressRange.domain-type | String | domain type |
-| CheckPoint.AddressRange.ipv4-address-first | String | First IPv4 address in the range |
-| CheckPoint.AddressRange.ipv4-address-last | String | Last IPv4 address in the range |
-| CheckPoint.AddressRange.ipv6-address-first | String | First IPv4 address in the range |
-| CheckPoint.AddressRange.ipv6-address-last | String | Last IPv6 address in the range |
-| CheckPoint.AddressRange.read-only | Boolean | Indicates whether the object is read-only. |
-| CheckPoint.AddressRange.groups | String | List of all groups the address range is linked to |
+| CheckPoint.AddressRange.name | String | Object name. |
+| CheckPoint.AddressRange.uid | String | Object UID. |
+| CheckPoint.AddressRange.type | String | Object type. |
+| CheckPoint.AddressRange.domain-name | String | Domain name. |
+| CheckPoint.AddressRange.domain-uid | String | Domain UID. |
+| CheckPoint.AddressRange.domain-type | String | Domain type. |
+| CheckPoint.AddressRange.ipv4-address-first | String | First IPv4 address in the range. |
+| CheckPoint.AddressRange.ipv4-address-last | String | Last IPv4 address in the range. |
+| CheckPoint.AddressRange.ipv6-address-first | String | First IPv6 address in the range. |
+| CheckPoint.AddressRange.ipv6-address-last | String | Last IPv6 address in the range. |
+| CheckPoint.AddressRange.read-only | Boolean | Indicates if the object is read-only. |
+| CheckPoint.AddressRange.groups | String | List of all groups the address range is linked to. |
 | CheckPoint.AddressRange.color | String | Color of the object. |
-| CheckPoint.AddressRange.nat-settings | Unknown | NAT settings for the address range. |
 | CheckPoint.AddressRange.comments | String | Comments string. |
 | CheckPoint.AddressRange.tags | Unknown | Collection of tag objects associated with the address range. |
+| CheckPoint.AddressRange.nat-auto-rule | Boolean | Whether NAT automatic rules are enabled. |
+| CheckPoint.AddressRange.nat-method | String | NAT method \(hide or static\). |
+| CheckPoint.AddressRange.nat-ipv4-address | String | NAT IPv4 address. |
+| CheckPoint.AddressRange.nat-install-on | String | Gateway for NAT rule installation. |
+| CheckPoint.AddressRange.nat-hide-behind | String | Hide behind method \(gateway or ip-address\). |
 
 #### Command Example
 
@@ -1197,9 +1217,12 @@ List all threat indicators
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.ThreatIndicator.name | String | object name |
-| CheckPoint.ThreatIndicator.uid | String | object uid |
-| CheckPoint.ThreatIndicator.type | String | object type |
+| CheckPoint.ThreatIndicator.name | String | Object name. |
+| CheckPoint.ThreatIndicator.uid | String | Object UID. |
+| CheckPoint.ThreatIndicator.type | String | Object type. |
+| CheckPoint.ThreatIndicator.domain-name | String | Domain name. |
+| CheckPoint.ThreatIndicator.domain-uid | String | Domain UID. |
+| CheckPoint.ThreatIndicator.domain-type | String | Domain type. |
 
 #### Command Example
 
@@ -1426,19 +1449,19 @@ Update a given indicator
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.ThreatIndicator.name | String | object name |
-| CheckPoint.ThreatIndicator.uid | String | object uid |
-| CheckPoint.ThreatIndicator.type | String | object type |
+| CheckPoint.ThreatIndicator.name | String | Object name. |
+| CheckPoint.ThreatIndicator.uid | String | Object UID. |
+| CheckPoint.ThreatIndicator.type | String | Object type. |
 | CheckPoint.ThreatIndicator.action | String | The indicator's action. |
-| CheckPoint.ThreatIndicator.domain-name | String | domain name |
-| CheckPoint.ThreatIndicator.domain-uid | String | domain uid |
-| CheckPoint.ThreatIndicator.domain-type | String | domain type |
-| CheckPoint.ThreatIndicator.creator | String | Indicates the creator of the object |
-| CheckPoint.ThreatIndicator.last-modifier | String | Indicates the last user modified the object |
-| CheckPoint.ThreatIndicator.read-only | Boolean | Indicates whether the object is read-only. |
+| CheckPoint.ThreatIndicator.domain-name | String | Domain name. |
+| CheckPoint.ThreatIndicator.domain-uid | String | Domain UID. |
+| CheckPoint.ThreatIndicator.domain-type | String | Domain type. |
+| CheckPoint.ThreatIndicator.creator | String | The creator of the object. |
+| CheckPoint.ThreatIndicator.last-modifier | String | The user that last modified the object. |
+| CheckPoint.ThreatIndicator.read-only | Boolean | Indicates if the object is read-only. |
 | CheckPoint.ThreatIndicator.color | String | Color of the object. |
-| CheckPoint.ThreatIndicator.profile | Unknown | Profile overrides for the threat indicator. |
-| CheckPoint.ThreatIndicator.tags | Unknown | Collection of tag objects associated with the threat indicator. |
+| CheckPoint.ThreatIndicator.tags | Unknown | Collection of tag objects associated with the indicator. |
+| CheckPoint.ThreatIndicator.profile-overrides | Unknown | A list of profiles where the default action of this indicator is overridden, along with the overriding action. |
 
 #### Command Example
 
@@ -1494,14 +1517,14 @@ Get all date of a given address range object
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.AddressRange.name | String | object name |
-| CheckPoint.AddressRange.uid | String | object uid |
-| CheckPoint.AddressRange.type | String | object type |
-| CheckPoint.AddressRange.domain-name | String | domain name |
-| CheckPoint.AddressRange.domain-uid | String | domain uid |
-| CheckPoint.AddressRange.domain-type | String | domain type |
-| CheckPoint.AddressRange.groups-name | String | Group object name linked to current host object |
-| CheckPoint.AddressRange.groups-uid | String | Group object uid linked to current host object |
+| CheckPoint.AddressRange.name | String | Object name. |
+| CheckPoint.AddressRange.uid | String | Object UID. |
+| CheckPoint.AddressRange.type | String | Object type. |
+| CheckPoint.AddressRange.domain-name | String | Domain name. |
+| CheckPoint.AddressRange.domain-uid | String | Domain UID. |
+| CheckPoint.AddressRange.domain-type | String | Domain type. |
+| CheckPoint.AddressRange.groups-name | String | The name of the group object linked to current host object. |
+| CheckPoint.AddressRange.groups-uid | String | The UID of the group object linked to current host object. |
 
 #### Command Example
 
@@ -1739,16 +1762,16 @@ Create new access rule
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.AccessRule.name | String | object name |
-| CheckPoint.AccessRule.uid | String | object uid |
-| CheckPoint.AccessRule.type | String | object type |
-| CheckPoint.AccessRule.domain-name | String | domain name |
-| CheckPoint.AccessRule.domain-uid | String | domain uid |
-| CheckPoint.AccessRule.domain-type | String | domain type |
-| CheckPoint.AccessRule.enabled | Boolean | Enable/Disable the rule. |
-| CheckPoint.AccessRule.layer | String | Layer that the rule belongs to identified by the name or UID. |
-| CheckPoint.AccessRule.creator | String | Indicated the object creator |
-| CheckPoint.AccessRule.last-modifier | String | Indicates the last user modofied the object |
+| CheckPoint.AccessRule.name | String | Object name. |
+| CheckPoint.AccessRule.uid | String | Object UID. |
+| CheckPoint.AccessRule.type | String | Object type. |
+| CheckPoint.AccessRule.domain-name | String | Domain name. |
+| CheckPoint.AccessRule.domain-uid | String | Domain UID. |
+| CheckPoint.AccessRule.domain-type | String | Domain type. |
+| CheckPoint.AccessRule.enabled | Boolean | Indicates if the rule is enabled or disabled. |
+| CheckPoint.AccessRule.layer | String | Layer to which the rule was assigned, identified by the name or UID. |
+| CheckPoint.AccessRule.creator | String | The object creator. |
+| CheckPoint.AccessRule.last-modifier | String | The user that last modofied the object. |
 
 #### Command Example
 
@@ -1821,21 +1844,21 @@ Edit existing access rule using object name or uid.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.AccessRule.name | String | object name |
-| CheckPoint.AccessRule.uid | String | object uid |
-| CheckPoint.AccessRule.type | String | object type |
-| CheckPoint.AccessRule.action-name | String | action name |
-| CheckPoint.AccessRule.action-uid | String | action uid |
-| CheckPoint.AccessRule.action-type | Unknown | action type |
-| CheckPoint.AccessRule.action-domain-name | String | action domain name |
-| CheckPoint.AccessRule.content-direction | String | On which direction the file types processing is applied. |
-| CheckPoint.AccessRule.domain-name | String | domain name |
-| CheckPoint.AccessRule.domain-uid | String | domain uid |
-| CheckPoint.AccessRule.domain-type | String | domain type |
-| CheckPoint.AccessRule.enabled | Boolean | Enable/Disable the rule. |
-| CheckPoint.AccessRule.layer | String | Layer that the rule belongs to identified by the name or UID. |
-| CheckPoint.AccessRule.creator | String | Indicates the creator of the object |
-| CheckPoint.AccessRule.last-modifier | String | Indicates the last user modified the object |
+| CheckPoint.AccessRule.name | String | Object name. |
+| CheckPoint.AccessRule.uid | String | Object UID. |
+| CheckPoint.AccessRule.type | String | Object type. |
+| CheckPoint.AccessRule.action-name | String | Action name. |
+| CheckPoint.AccessRule.action-uid | String | Action UID. |
+| CheckPoint.AccessRule.action-type | Unknown | Action type. |
+| CheckPoint.AccessRule.action-domain-name | String | Action domain name. |
+| CheckPoint.AccessRule.content-direction | String | The direction on which the file types processing is applied. |
+| CheckPoint.AccessRule.domain-name | String | Domain name. |
+| CheckPoint.AccessRule.domain-uid | String | Domain UID. |
+| CheckPoint.AccessRule.domain-type | String | Domain type. |
+| CheckPoint.AccessRule.enabled | Boolean | Indicates if the rule is enabled or disabled. |
+| CheckPoint.AccessRule.layer | String | Layer to which the rule belongs, identified by the name or UID. |
+| CheckPoint.AccessRule.creator | String | The creator of the object. |
+| CheckPoint.AccessRule.last-modifier | String | The user that last modified the object. |
 
 #### Command Example
 
@@ -1943,9 +1966,9 @@ Retrieve all objects.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.ApplicationSite.name | String | objects name |
-| CheckPoint.ApplicationSite.uid | String | objects uid |
-| CheckPoint.ApplicationSite.type | String | objects type |
+| CheckPoint.ApplicationSite.name | String | Object names. |
+| CheckPoint.ApplicationSite.uid | String | Objects UIDs. |
+| CheckPoint.ApplicationSite.type | String | Object types. |
 
 #### Command Example
 
@@ -2061,21 +2084,21 @@ Add application site
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.ApplicationSite.name | String | object name |
-| CheckPoint.ApplicationSite.uid | String | object uid |
-| CheckPoint.ApplicationSite.type | String | object type |
-| CheckPoint.ApplicationSite.application-id | Number | application ID |
-| CheckPoint.ApplicationSite.description | String | A description for the application. |
-| CheckPoint.ApplicationSite.domain-name | String | domain name |
-| CheckPoint.ApplicationSite.domain-uid | String | domain uid |
-| CheckPoint.ApplicationSite.domain-type | String | domain name |
-| CheckPoint.ApplicationSite.url-list | String | URLs that determine this particular application. |
-| CheckPoint.ApplicationSite.creator | String | Indicates the creator of the object |
-| CheckPoint.ApplicationSite.last-modifier | String | Indicates the last user modified this object |
-| CheckPoint.ApplicationSite.groups | Unknown | Collection of group identifiers |
+| CheckPoint.ApplicationSite.name | String | Object name. |
+| CheckPoint.ApplicationSite.uid | String | Object UID. |
+| CheckPoint.ApplicationSite.type | String | Object type. |
+| CheckPoint.ApplicationSite.application-id | Number | Application ID. |
+| CheckPoint.ApplicationSite.description | String | A description of the application. |
+| CheckPoint.ApplicationSite.domain-name | String | Domain name. |
+| CheckPoint.ApplicationSite.domain-uid | String | Domain UID. |
+| CheckPoint.ApplicationSite.domain-type | String | Domain type. |
+| CheckPoint.ApplicationSite.url-list | String | URLs that determine this application. |
+| CheckPoint.ApplicationSite.creator | String | The creator of the object. |
+| CheckPoint.ApplicationSite.last-modifier | String | The user that last modified this object. |
+| CheckPoint.ApplicationSite.groups | Unknown | Collection of group identifiers. |
+| CheckPoint.ApplicationSite.color | String | Color of the object. |
 | CheckPoint.ApplicationSite.comments | String | Comments string. |
 | CheckPoint.ApplicationSite.tags | Unknown | Collection of tag objects associated with the application site. |
-| CheckPoint.ApplicationSite.color | String | Color of the object. |
 
 #### Command Example
 
@@ -2145,20 +2168,20 @@ It's impossible to set  'application-signature' when the application was initial
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.ApplicationSite.name | String | object name |
-| CheckPoint.ApplicationSite.uid | String | object uid |
-| CheckPoint.ApplicationSite.type | String | object ty\[e |
-| CheckPoint.ApplicationSite.application-id | Number | application ID |
+| CheckPoint.ApplicationSite.name | String | Object name. |
+| CheckPoint.ApplicationSite.uid | String | Object UID. |
+| CheckPoint.ApplicationSite.type | String | Object type. |
+| CheckPoint.ApplicationSite.application-id | Number | Application ID. |
 | CheckPoint.ApplicationSite.description | String | A description for the application. |
-| CheckPoint.ApplicationSite.domain-name | String | domain name |
-| CheckPoint.ApplicationSite.domain-uid | String | domain uid |
-| CheckPoint.ApplicationSite.domain-type | String | domain type |
-| CheckPoint.ApplicationSite.url-list | String | URLs that determine this particular application. |
-| CheckPoint.ApplicationSite.groups | String | Collection of group identifiers |
+| CheckPoint.ApplicationSite.domain-name | String | Domain name. |
+| CheckPoint.ApplicationSite.domain-uid | String | Domain UID. |
+| CheckPoint.ApplicationSite.domain-type | String | Domain type. |
+| CheckPoint.ApplicationSite.url-list | String | URLs that determine this application. |
+| CheckPoint.ApplicationSite.groups | String | Collection of group identifiers. |
 | CheckPoint.ApplicationSite.primary-category | String | Objects primary category. |
+| CheckPoint.ApplicationSite.color | String | Color of the object. |
 | CheckPoint.ApplicationSite.comments | String | Comments string. |
 | CheckPoint.ApplicationSite.tags | Unknown | Collection of tag objects associated with the application site. |
-| CheckPoint.ApplicationSite.color | String | Color of the object. |
 
 #### Command Example
 

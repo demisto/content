@@ -84,12 +84,6 @@ script:
     - contextPath: CheckPoint.Host.ipv6
       description: IPv6 address of the host.
       type: String
-    - contextPath: CheckPoint.Host.ipv4-address
-      description: IPv4 address of the host.
-      type: String
-    - contextPath: CheckPoint.Host.ipv6-address
-      description: IPv6 address of the host.
-      type: String
     - contextPath: CheckPoint.Host.domain-name
       description: Domain name.
       type: String
@@ -99,27 +93,9 @@ script:
     - contextPath: CheckPoint.Host.domain-type
       description: Domain type.
       type: String
-    - contextPath: CheckPoint.Host.creator
-      description: The creator of the object.
-      type: String
-    - contextPath: CheckPoint.Host.last-modifier
-      description: The user that last modified the object.
-      type: String
-    - contextPath: CheckPoint.Host.read-only
-      description: Indicates if the object is read-only.
-      type: Boolean
     - contextPath: CheckPoint.Host.color
       description: Color of the object.
       type: String
-    - contextPath: CheckPoint.Host.comments
-      description: Comments string.
-      type: String
-    - contextPath: CheckPoint.Host.tags
-      description: Collection of tag objects associated with the host.
-      type: Unknown
-    - contextPath: CheckPoint.Host.groups
-      description: Collection of group identifiers.
-      type: Unknown
   - arguments:
     - description: Object unique identifier (UID) or name for which to get data.
       name: identifier
@@ -197,15 +173,9 @@ script:
     - contextPath: CheckPoint.Host.nat-hide-behind
       description: Hide behind method (gateway or ip-address).
       type: String
-    - contextPath: CheckPoint.Host.interface-name
-      description: Interface name.
-      type: String
-    - contextPath: CheckPoint.Host.interfaces-subnet
-      description: Interface subnet IPv4 address.
-      type: String
-    - contextPath: CheckPoint.Host.interfaces-mask-length
-      description: Interface subnet mask length.
-      type: Number
+    - contextPath: CheckPoint.Host.interfaces
+      description: Host interfaces.
+      type: Unknown
   - arguments:
     - description: The name of the new host.
       isArray: true
@@ -372,15 +342,9 @@ script:
     - contextPath: CheckPoint.Host.nat-hide-behind
       description: Hide behind method (gateway or ip-address).
       type: String
-    - contextPath: CheckPoint.Host.interface-name
-      description: Interface name.
-      type: String
-    - contextPath: CheckPoint.Host.interfaces-subnet
-      description: Interface subnet IPv4 address.
-      type: String
-    - contextPath: CheckPoint.Host.interfaces-mask-length
-      description: Interface subnet mask length.
-      type: Number
+    - contextPath: CheckPoint.Host.interfaces
+      description: Host interfaces.
+      type: Unknown
   - arguments:
     - description: Object unique identifier (UID) or name.
       name: identifier
@@ -546,15 +510,9 @@ script:
     - contextPath: CheckPoint.Host.nat-hide-behind
       description: Hide behind method (gateway or ip-address).
       type: String
-    - contextPath: CheckPoint.Host.interface-name
-      description: Interface name.
-      type: String
-    - contextPath: CheckPoint.Host.interfaces-subnet
-      description: Interface subnet IPv4 address.
-      type: String
-    - contextPath: CheckPoint.Host.interfaces-mask-length
-      description: Interface subnet mask length.
-      type: Number
+    - contextPath: CheckPoint.Host.interfaces
+      description: Host interfaces.
+      type: Unknown
   - arguments:
     - description: Object unique identifier (UID) or name.
       isArray: true
@@ -617,6 +575,15 @@ script:
       type: String
     - contextPath: CheckPoint.Group.type
       description: Object type.
+      type: String
+    - contextPath: CheckPoint.Group.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.Group.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.Group.domain-type
+      description: Domain type.
       type: String
     - contextPath: CheckPoint.Group.color
       description: Color of the object.
@@ -993,6 +960,15 @@ script:
     - contextPath: CheckPoint.AddressRange.type
       description: Object type.
       type: String
+    - contextPath: CheckPoint.AddressRange.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.AddressRange.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.AddressRange.domain-type
+      description: Domain type.
+      type: String
   - arguments:
     - description: Name for the new address range object.
       name: name
@@ -1146,6 +1122,15 @@ script:
     - contextPath: CheckPoint.AddressRange.groups
       description: Name of the group object.
       type: String
+    - contextPath: CheckPoint.AddressRange.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.AddressRange.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.AddressRange.tags
+      description: Collection of tag objects associated with the address range.
+      type: Unknown
     - contextPath: CheckPoint.AddressRange.nat-auto-rule
       description: Whether NAT automatic rules are enabled.
       type: Boolean
@@ -1367,6 +1352,15 @@ script:
       type: String
     - contextPath: CheckPoint.ThreatIndicator.type
       description: Object type.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.domain-type
+      description: Domain type.
       type: String
   - arguments:
     - description: Object unique identifier (UID) or name.
@@ -1592,8 +1586,8 @@ script:
     - contextPath: CheckPoint.ThreatIndicator.tags
       description: Collection of tag objects associated with the indicator.
       type: Unknown
-    - contextPath: CheckPoint.ThreatIndicator.profile
-      description: Profiles associated with the indicator.
+    - contextPath: CheckPoint.ThreatIndicator.profile-overrides
+      description: A list of profiles where the default action of this indicator is overridden, along with the overriding action.
       type: Unknown
   - arguments:
     - description: Object unique identifier (UID) or name.

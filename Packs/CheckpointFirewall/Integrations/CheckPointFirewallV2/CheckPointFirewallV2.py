@@ -13,6 +13,7 @@ DEFAULT_LIST_FIELD = [
     "ipv6-address",
     "domain-name",
     "domain-uid",
+    "domain-type",
     "groups",
     "read-only",
     "creator",
@@ -911,8 +912,15 @@ def checkpoint_list_hosts_command(
             result = result.get("objects")
             for element in result:
                 current_printable_result = {}
+
+                domain = element.get("domain", {})
+                current_printable_result["domain-name"] = domain.get("name")
+                current_printable_result["domain-uid"] = domain.get("uid")
+                current_printable_result["domain-type"] = domain.get("domain-type")
+
                 for endpoint in DEFAULT_LIST_FIELD:
-                    current_printable_result[endpoint] = element.get(endpoint)
+                    if endpoint not in ["domain-name", "domain-uid", "domain-type"]:
+                        current_printable_result[endpoint] = element.get(endpoint)
                 printable_result.extend([current_printable_result])
 
             readable_output = tableToMarkdown(
@@ -1029,9 +1037,6 @@ def checkpoint_add_host_command(
         "nat-ipv4-address",
         "nat-install-on",
         "nat-hide-behind",
-        "interface-name",
-        "interfaces-subnet"
-        "interfaces-mask-length"
     ]
 
     if len(name) != len(ip_address):
@@ -1147,6 +1152,8 @@ def checkpoint_update_host_command(
         "last-modifier",
         "read-only",
         "color",
+        "comments",
+        "tags",
     ]
     printable_result = build_printable_result(headers, result)
     readable_output = tableToMarkdown("CheckPoint data for updating a host:", printable_result, headers=headers, removeNull=True)
@@ -1223,8 +1230,15 @@ def checkpoint_list_groups_command(
     if result:
         for element in result:
             current_printable_result = {}
+
+            domain = element.get("domain", {})
+            current_printable_result["domain-name"] = domain.get("name")
+            current_printable_result["domain-uid"] = domain.get("uid")
+            current_printable_result["domain-type"] = domain.get("domain-type")
+
             for endpoint in DEFAULT_LIST_FIELD:
-                current_printable_result[endpoint] = element.get(endpoint)
+                if endpoint not in ["domain-name", "domain-uid", "domain-type"]:
+                    current_printable_result[endpoint] = element.get(endpoint)
             printable_result.append(current_printable_result)
 
         readable_output = tableToMarkdown(
@@ -1403,6 +1417,7 @@ def checkpoint_update_group_command(
         "read-only",
         "color",
         "comments",
+        "tags",
     ]
     printable_result = build_printable_result(headers, result)
     readable_output = tableToMarkdown("CheckPoint data for updating a group:", printable_result, headers=headers, removeNull=True)
@@ -1474,8 +1489,15 @@ def checkpoint_list_address_range_command(
     if result:
         for element in result:
             current_printable_result = {}
+
+            domain = element.get("domain", {})
+            current_printable_result["domain-name"] = domain.get("name")
+            current_printable_result["domain-uid"] = domain.get("uid")
+            current_printable_result["domain-type"] = domain.get("domain-type")
+
             for endpoint in DEFAULT_LIST_FIELD:
-                current_printable_result[endpoint] = element.get(endpoint)
+                if endpoint not in ["domain-name", "domain-uid", "domain-type"]:
+                    current_printable_result[endpoint] = element.get(endpoint)
             printable_result.append(current_printable_result)
 
         readable_output = tableToMarkdown(
@@ -1579,6 +1601,12 @@ def checkpoint_add_address_range_command(
         "read-only",
         "color",
         "comments",
+        "tags",
+        "nat-auto-rule",
+        "nat-method",
+        "nat-ipv4-address",
+        "nat-install-on",
+        "nat-hide-behind",
     ]
 
     result = client.add_address_range(
@@ -1680,6 +1708,12 @@ def checkpoint_update_address_range_command(
         "last-modifier",
         "read-only",
         "color",
+        "tags",
+        "nat-auto-rule",
+        "nat-method",
+        "nat-ipv4-address",
+        "nat-install-on",
+        "nat-hide-behind",
     ]
     printable_result = build_printable_result(headers, result)
     readable_output = tableToMarkdown(
@@ -1758,8 +1792,15 @@ def checkpoint_list_threat_indicator_command(
     if result:
         for element in result:
             current_printable_result = {}
+
+            domain = element.get("domain", {})
+            current_printable_result["domain-name"] = domain.get("name")
+            current_printable_result["domain-uid"] = domain.get("uid")
+            current_printable_result["domain-type"] = domain.get("domain-type")
+
             for endpoint in DEFAULT_LIST_FIELD:
-                current_printable_result[endpoint] = element.get(endpoint)
+                if endpoint not in ["domain-name", "domain-uid", "domain-type"]:
+                    current_printable_result[endpoint] = element.get(endpoint)
             printable_result.append(current_printable_result)
 
         readable_output = tableToMarkdown(
@@ -1919,6 +1960,9 @@ def checkpoint_update_threat_indicator_command(
         "ipv4-address",
         "last-modifier",
         "read-only",
+        "color",
+        "tags",
+        "profile-overrides",
     ]
     printable_result = build_printable_result(headers, result)
     readable_output = tableToMarkdown(
@@ -3239,9 +3283,13 @@ def build_printable_result(headers: list, result: dict) -> dict:
                 {
                     "domain-name": domain_data.get("name"),
                     "domain-uid": domain_data.get("uid"),
-                    "domain-type": domain_data.get("type"),
+                    "domain-type": domain_data.get("domain-type"),
                 }
             )
+
+        profile_overrides_data = result.get("profile-overrides")
+        if profile_overrides_data:
+            printable_result.update({"profile-overrides": profile_overrides_data})
 
         nat_data = result.get("nat-settings")
         if nat_data:
@@ -3253,18 +3301,12 @@ def build_printable_result(headers: list, result: dict) -> dict:
                     "nat-install-on": nat_data.get("install-on"),
                     "nat-hide-behind": nat_data.get("hide-behind"),
                 }
-            )   
+            )
 
         interface_data = result.get("interfaces")
         if interface_data:
-            printable_result.update(
-                {
-                    "interface-name": interface_data.get("name"),
-                    "interfaces-subnet": interface_data.get("subnet4"),
-                    "interfaces-mask-length": interface_data.get("subnet-mask"),
-                }
-            )   
-     
+            printable_result.update({"interfaces": interface_data})
+
         meta_info = result.get("meta-info")
         if meta_info:
             result.update(
