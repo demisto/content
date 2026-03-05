@@ -716,8 +716,8 @@ script:
         - contextPath: Core.Issue.issue_description
           description: The issue description.
           type: String
-        - contextPath: Core.Issue.agent_ids
-          description: The agent (endpoint) IDs associated with the issue.
+        - contextPath: Core.Issue.agent_id
+          description: The agent (endpoint) ID associated with the issue.
           type: List
         - contextPath: Core.Issue.asset_ids
           description: The asset IDs related to the issue.

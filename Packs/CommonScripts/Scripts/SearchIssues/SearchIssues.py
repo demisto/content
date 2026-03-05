@@ -3,6 +3,28 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 EQ = "EQ"
+OUTPUT_KEYS = [
+    "internal_id",
+    "severity",
+    "Identity_type",
+    "issue_name",
+    "issue_source",
+    "case_ids",
+    "agent_id",
+    "actor_process_image_sha256",
+    "causality_actor_process_image_sha256",
+    "action_process_image_sha256",
+    "issue_category",
+    "issue_domain",
+    "issue_description",
+    "os_actor_process_image_sha256",
+    "action_file_macro_sha256",
+    "status.progress",
+    "asset_ids",
+    "assigned_to_pretty",
+    "assigned_to",
+    "source_insert_ts",
+]
 
 SEARCH_SHA256_FIELDS = [
     "actor_process_image_sha256",
@@ -99,6 +121,8 @@ def prepare_sha256_custom_field(args: dict) -> Optional[str]:
 def main():  # pragma: no cover
     try:
         args: dict = demisto.args()
+        # Return only specific fields to the context.
+        args["output_keys"] = ",".join(OUTPUT_KEYS)
 
         sha256_custom_field = prepare_sha256_custom_field(args)
         if sha256_custom_field:
