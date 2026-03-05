@@ -8325,6 +8325,7 @@ def test_get_cases_data(mocker):
     Then:
         - Verify that the http_request is called with the correct arguments.
         - Verify that the function returns the correct total cases and ids.
+        - Verify that the filter is passed in the params dict for proper URL encoding.
     """
     from CrowdStrikeFalcon import get_cases_data
 
@@ -8337,7 +8338,62 @@ def test_get_cases_data(mocker):
     assert total == 10
     assert ids == ["case1", "case2"]
     http_request_mock.assert_called_with(
-        "GET", "/cases/queries/cases/v1?filter=some_filter", {"sort": "created_timestamp.asc", "offset": 0, "limit": 10}
+        "GET", "/cases/queries/cases/v1", {"sort": "created_timestamp.asc", "offset": 0, "limit": 10, "filter": "some_filter"}
+    )
+
+
+def test_get_cases_data_with_special_characters(mocker):
+    """
+    Given:
+        - Filter with special characters (e.g., '+' for AND operator in FQL).
+    When:
+        - Running get_cases_data with a filter containing special characters.
+    Then:
+        - Verify that the filter is passed in the params dict (not embedded in URL).
+        - Verify that http_request receives the filter as a parameter for proper encoding.
+    """
+    from CrowdStrikeFalcon import get_cases_data
+
+    http_request_mock = mocker.patch(
+        "CrowdStrikeFalcon.http_request", return_value={"meta": {"pagination": {"total": 5}}, "resources": ["case3", "case4"]}
+    )
+
+    # Test with a filter that includes the '+' operator (FQL AND)
+    filter_with_plus = "created_timestamp:>'2026-02-21T16:26:49.079836Z'+severity:>40"
+    total, ids = get_cases_data(filter_with_plus, 10, 0)
+
+    assert total == 5
+    assert ids == ["case3", "case4"]
+    # Verify the filter is in params dict, not in the URL path
+    http_request_mock.assert_called_with(
+        "GET",
+        "/cases/queries/cases/v1",
+        {"sort": "created_timestamp.asc", "offset": 0, "limit": 10, "filter": filter_with_plus},
+    )
+
+
+def test_get_cases_data_without_filter(mocker):
+    """
+    Given:
+        - No filter (empty string).
+    When:
+        - Running get_cases_data without a filter.
+    Then:
+        - Verify that the http_request is called without a filter parameter.
+    """
+    from CrowdStrikeFalcon import get_cases_data
+
+    http_request_mock = mocker.patch(
+        "CrowdStrikeFalcon.http_request", return_value={"meta": {"pagination": {"total": 3}}, "resources": ["case5"]}
+    )
+
+    total, ids = get_cases_data("", 10, 0)
+
+    assert total == 3
+    assert ids == ["case5"]
+    # Verify no filter parameter is passed when filter is empty
+    http_request_mock.assert_called_with(
+        "GET", "/cases/queries/cases/v1", {"sort": "created_timestamp.asc", "offset": 0, "limit": 10}
     )
 
 
