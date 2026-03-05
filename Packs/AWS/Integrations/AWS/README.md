@@ -4348,33 +4348,8 @@ Launches an EC2 Fleet.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AWS.EC2.Fleets.FleetId | string | The ID of the EC2 Fleet. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The ID of the launch template. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The name of the launch template. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The version number of the launch template. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The instance type. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The maximum price per unit hour that you are willing to pay for a Spot Instance. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The ID of the subnet in which to launch the instances. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The Availability Zone in which to launch the instances. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | number | The number of units provided by the specified instance type. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | number | The priority for the launch template override. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The name of the placement group the instance is in. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | Whether the instance that could not be launched was a Spot Instance or an on-demand instance. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The error code that indicates why the instance could not be launched. |
-| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | The error message that describes why the instance could not be launched. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The ID of the launch template. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The name of the launch template. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The version number of the launch template. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The instance type. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The maximum price per unit hour that you are willing to pay for a Spot Instance. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The ID of the subnet in which to launch the instances. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The Availability Zone in which to launch the instances. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | number | The number of units provided by the specified instance type. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | number | The priority for the launch template override. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The name of the placement group the instance is in. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | Whether the instance that was launched is a Spot Instance or an on-demand instance. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | array | The IDs of the instances. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The instance type. |
-| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The value is Windows for Windows instances; otherwise blank. |
+| AWS.EC2.Fleets.Errors.LaunchTemplateAndOverrides | string | Information about the instances that could not be launched by the fleet. |
+| AWS.EC2.Fleets.Instances.LaunchTemplateAndOverrides | string | The launch templates and overrides that were used for launching the instances. The values that you specify in the Overrides replace the values in of the launch template. |
 
 ### aws-ec2-fleet-delete
 
@@ -4401,8 +4376,7 @@ Deletes the specified EC2 Fleet.
 | AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.CurrentFleetState | string | The current state of the EC2 Fleet. |
 | AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.PreviousFleetState | string | The previous state of the EC2 Fleet. |
 | AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.FleetId | string | The ID of the EC2 Fleet. |
-| AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.Error | string | The error code. |
-| AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.Error | string | The description for the error code. |
+| AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.Error | string | Information about the EC2 Fleets that are not successfully deleted. |
 | AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.FleetId | string | The ID of the EC2 Fleet. |
 
 ### aws-ec2-fleets-describe
@@ -4437,16 +4411,7 @@ Describes one or more of your EC2 Fleets.
 | AWS.EC2.Fleets.ExcessCapacityTerminationPolicy | string | Whether running instances should be terminated if the target capacity of the EC2 Fleet is decreased below the current size of the EC2 Fleet. |
 | AWS.EC2.Fleets.FulfilledCapacity | number | The number of units fulfilled by this request compared to the set target capacity. |
 | AWS.EC2.Fleets.FulfilledOnDemandCapacity | number | The number of units fulfilled by this request compared to the set target On-Demand capacity. |
-| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The ID of the launch template. |
-| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The name of the launch template. |
-| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The version number of the launch template. |
-| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The instance type. |
-| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The maximum price per unit hour that you are willing to pay for a Spot Instance. |
-| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The ID of the subnet in which to launch the instances. |
-| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The Availability Zone in which to launch the instances. |
-| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | number | The number of units provided by the specified instance type. |
-| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | number | The priority for the launch template override. |
-| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | The name of the placement group the instance is in. |
+| AWS.EC2.Fleets.LaunchTemplateConfigs.LaunchTemplateSpecification | string | Describes a launch template and overrides. |
 | AWS.EC2.Fleets.TargetCapacitySpecification.TotalTargetCapacity | number | The number of units to request, filled using DefaultTargetCapacityType. |
 | AWS.EC2.Fleets.TargetCapacitySpecification.OnDemandTargetCapacity | number | The number of On-Demand units to request. |
 | AWS.EC2.Fleets.TargetCapacitySpecification.SpotTargetCapacity | number | The maximum number of Spot units to launch. |
@@ -4546,216 +4511,6 @@ Modifies the specified EC2 Fleet.
 | spot_target_capacity | The number of Spot units to request. | Optional |
 | default_target_capacity_type | The default TotalTargetCapacityType, which is either Spot or On-Demand. Possible values are: spot, on-demand, capacity-block. | Optional |
 | target_capacity_unit | The unit for the target capacity. Possible values are: vcpu, memory-mib, units. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
-
-### aws-ec2-vpc-delete
-
-***
-Deletes a specified VPC. You must detach or delete all gateways and resources that are associated with the VPC before you can delete it.
-
-#### Base Command
-
-`aws-ec2-vpc-delete`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| vpc_id | The ID of the VPC. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-### aws-ec2-vpc-endpoint-create
-
-***
-Creates a VPC endpoint for a specified service. An endpoint enables you to create a private connection between your VPC and the service.
-
-#### Base Command
-
-`aws-ec2-vpc-endpoint-create`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| vpc_id | The VPC ID where the endpoint is created. | Required |
-| service_name | The service name. For AWS services, the service name is usually in the form com.amazonaws.&lt;region&gt;.&lt;service&gt;. | Required |
-| service_network_arn | The service network Amazon Resource Name (ARN) to associate with the service-network VPC endpoint. | Optional |
-| service_region | The region where the service is hosted. Default is the current region. | Optional |
-| vpc_endpoint_type | The type of endpoint. Possible values are: Interface, Gateway, GatewayLoadBalancer, Resource, ServiceNetwork. | Optional |
-| policy_document | A policy to attach to the endpoint that controls access to the service. The policy must be in valid JSON format. | Optional |
-| route_table_ids | A comma-separated list of route table IDs. Applicable for Gateway endpoints only. | Optional |
-| subnet_ids | A comma-separated list of subnet IDs for an endpoint network interface. Applicable for Interface and GatewayLoadBalancer endpoints only. | Optional |
-| security_group_ids | A comma-separated list of security group IDs to associate with the endpoint network interface. Applicable for Interface and GatewayLoadBalancer endpoints only. | Optional |
-| ip_address_type | The IP address type for the endpoint. Possible values are: ipv4, dualstack, ipv6. | Optional |
-| dns_options_dns_record_ip_type | The DNS records created for the endpoint. Possible values are: ipv4, dualstack, ipv6, service-defined. | Optional |
-| dns_options_private_dns_only_for_inbound_resolver_endpoint | Whether to enable private DNS only for inbound endpoints. Possible values are: true, false. | Optional |
-| dns_options_private_dns_preference | The preference for creating and associating private hosted zones with a specified VPC. | Optional |
-| dns_options_private_dns_specified_domains | The private domains used for creating and associating private hosted zones with the VPC. | Optional |
-| private_dns_enabled | Whether to associate a private hosted zone with the specified VPC. Applicable for Interface endpoints only. Possible values are: true, false. | Optional |
-| resource_configuration_arn | The Amazon Resource Name (ARN) of a resource configuration that is associated with the VPC resource type endpoint. | Optional |
-| tags | The tags to apply to the VPC endpoint. Format key=&lt;key&gt;,value=&lt;value&gt;;key=&lt;key&gt;,value=&lt;value&gt;. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.EC2.VpcEndpoints.VpcEndpointId | string | The ID of the VPC endpoint. |
-| AWS.EC2.VpcEndpoints.VpcEndpointType | string | The type of endpoint. |
-| AWS.EC2.VpcEndpoints.VpcId | string | The ID of the VPC associated with the endpoint. |
-| AWS.EC2.VpcEndpoints.ServiceName | string | The name of the service associated with the endpoint. |
-| AWS.EC2.VpcEndpoints.State | string | The state of the VPC endpoint. |
-| AWS.EC2.VpcEndpoints.PolicyDocument | string | The policy document associated with the endpoint, if applicable. |
-| AWS.EC2.VpcEndpoints.RouteTableIds | array | One or more route tables associated with the endpoint. |
-| AWS.EC2.VpcEndpoints.SubnetIds | array | One or more subnets in which the endpoint is located. |
-| AWS.EC2.VpcEndpoints.Groups.GroupId | string | The ID of the security group. |
-| AWS.EC2.VpcEndpoints.Groups.GroupName | string | The name of the security group. |
-| AWS.EC2.VpcEndpoints.IpAddressType | string | The IP address type for the endpoint. |
-| AWS.EC2.VpcEndpoints.DnsOptions.DnsRecordIpType | string | The DNS records created for the endpoint. |
-| AWS.EC2.VpcEndpoints.DnsOptions.PrivateDnsOnlyForInboundResolverEndpoint | boolean | Whether to enable private DNS only for inbound endpoints. |
-| AWS.EC2.VpcEndpoints.PrivateDnsEnabled | boolean | Whether the VPC is associated with a private hosted zone. |
-| AWS.EC2.VpcEndpoints.RequesterManaged | boolean | Whether the VPC endpoint is being managed by its service. |
-| AWS.EC2.VpcEndpoints.NetworkInterfaceIds | array | One or more network interfaces for the endpoint. |
-| AWS.EC2.VpcEndpoints.DnsEntries.DnsName | string | The DNS name. |
-| AWS.EC2.VpcEndpoints.DnsEntries.HostedZoneId | string | The ID of the private hosted zone. |
-| AWS.EC2.VpcEndpoints.CreationTimestamp | date | The date and time that the VPC endpoint was created. |
-| AWS.EC2.VpcEndpoints.Tags.Key | string | The key of the tag. |
-| AWS.EC2.VpcEndpoints.Tags.Value | string | The value of the tag. |
-| AWS.EC2.VpcEndpoints.OwnerId | string | The ID of the AWS account that owns the VPC endpoint. |
-| AWS.EC2.VpcEndpoints.LastError.Message | string | The VCP endpoint error message. |
-| AWS.EC2.VpcEndpoints.LastError.Code | string | The VCP endpoint error code. |
-
-### aws-ec2-internet-gateway-describe
-
-***
-A description of one or more of your internet gateways.
-
-#### Base Command
-
-`aws-ec2-internet-gateway-describe`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;,values=&lt;values&gt;;name=&lt;name&gt;,values=&lt;values&gt;). See AWS documentation for filter details and options. | Optional |
-| internet_gateway_ids | A comma-separated list of internet gateway IDs. | Optional |
-| limit | The maximum number of results to return with a single call. Specify a value between 5 and 1000. | Optional |
-| next_token | The token for the next page of results. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.EC2.InternetGateways.InternetGatewayId | string | The ID of the internet gateway. |
-| AWS.EC2.InternetGateways.Attachments.State | string | The current state of the attachment. |
-| AWS.EC2.InternetGateways.Attachments.VpcId | string | The ID of the VPC. |
-| AWS.EC2.InternetGateways.Tags.Key | string | The key of the tag. |
-| AWS.EC2.InternetGateways.Tags.Value | string | The value of the tag. |
-| AWS.EC2.InternetGateways.OwnerId | string | The ID of the AWS account that owns the internet gateway. |
-| AWS.EC2.InternetGatewaysNextToken | string | The token used to retrieve the next page of results. |
-
-### aws-ec2-internet-gateway-detach
-
-***
-Detaches an internet gateway from a VPC, disabling connectivity between the internet and the VPC.
-
-#### Base Command
-
-`aws-ec2-internet-gateway-detach`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| internet_gateway_id | The ID of the internet gateway. | Required |
-| vpc_id | The ID of the VPC. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-### aws-ec2-internet-gateway-delete
-
-***
-Deletes the specified internet gateway. You must detach the internet gateway from the VPC before you can delete it.
-
-#### Base Command
-
-`aws-ec2-internet-gateway-delete`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| internet_gateway_id | The ID of the internet gateway. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-### aws-ec2-subnet-delete
-
-***
-Deletes the specified subnet. You must terminate all running instances in the subnet before you can delete the subnet.
-
-#### Base Command
-
-`aws-ec2-subnet-delete`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| subnet_id | The ID of the subnet. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-### aws-ec2-network-acl-entry-create
-
-***
-Creates an entry (a rule) in a network ACL with the specified rule number.
-
-#### Base Command
-
-`aws-ec2-network-acl-entry-create`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| network_acl_id | The ID of the network ACL. | Required |
-| rule_number | The rule number for the entry (Positive integer from 1 to 32766. The range 32767 to 65535 is reserved for internal use.). ACL entries are processed in ascending order by rule number. | Required |
-| protocol | The protocol number, where -1 or all specifies all protocols. Using all, -1, or any protocol other than tcp, udp, or icmp allows traffic on all ports, regardless other settings. Possible values are: tcp, udp, icmp, icmpv6, -1. | Required |
-| rule_action | Whether to allow the traffic that matches the rule. Possible values are: allow, deny. | Required |
-| egress | Whether it is an egress rule (a rule applied to traffic leaving the subnet). Possible values are: true, false. | Required |
-| cidr_block | The IPv4 network range to allow or deny, in CIDR notation (for example, 172.16.0.0/24). You must specify either cidr_block or ipv6_cidr_block. | Optional |
-| ipv6_cidr_block | The IPv6 network range to allow or deny, in CIDR notation (for example, 2001:db8:1234:1a00::/64). You must specify either cidr_block or ipv6_cidr_block. | Optional |
-| icmp_type_code_type | The ICMP type. A value of -1 means all types. Required if specifying icmp or icmpv6 for the protocol parameter. | Optional |
-| icmp_type_code_code | The ICMP code. A value of -1 means all codes for the specified ICMP type. Required if specifying icmp or icmpv6 for the protocol parameter. | Optional |
-| port_range_from | The first port in the range. Required if specifying tcp or udp for the protocol parameter. | Optional |
-| port_range_to | The last port in the range. Required if specifying tcp or udp for the protocol parameter. | Optional |
 
 #### Context Output
 
