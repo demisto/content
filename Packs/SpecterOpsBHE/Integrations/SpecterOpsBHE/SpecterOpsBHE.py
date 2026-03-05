@@ -382,7 +382,7 @@ class Client(BaseClient):
             )
         else:
             demisto.error(f"Max retries ({MAX_RETRIES + 1}) exceeded " f"for {endpoint_key}: {str(e)}")
-            raise
+            raise e
 
     def _handle_connection_error(self, e: Exception, error_type: str = "Connection"):
         """
@@ -1547,15 +1547,15 @@ def _update_primary_response(
 
 
 def fetch_asset_info(bhe_client: Client, object_ids: list[str]) -> dict:
-    try:
-        response_payload_asset: dict[str, dict] = {}
-        for object_id in object_ids:
+    response_payload_asset: dict[str, dict] = {}
+    for object_id in object_ids:
+        try:
             clean_object_id = object_id.strip()
             asset_info = _handle_fetch_asset_information(bhe_client, clean_object_id)
             response_payload_asset[object_id] = asset_info
-        return response_payload_asset
-    except Exception as e:
-        return {"status": "error", "message": f"Error: {str(e)}"}
+        except Exception as e:
+            response_payload_asset[object_id] = {"status": "error", "message": f"Error processing object {object_id}: {str(e)}"}
+    return response_payload_asset
 
 
 def check_path_exists_between_nodes(client: Client, start_node: str, end_node: str) -> dict:
