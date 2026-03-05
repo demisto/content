@@ -1,4 +1,4 @@
-Censys is a search engine that allows computer scientists to ask questions about the devices and networks that compose the internet. Driven by internet-wide scanning, Censys lets researchers find specific hosts and create aggregate reports on how devices, and certificates are configured and deployed.
+Built on the industry’s most comprehensive Internet Map, the Censys Platform delivers unmatched visibility into global internet assets, adversary infrastructure, and evolving threats.
 This integration was integrated and tested with version 2.0 of Censys.
 
 Some changes have been made that might affect your existing content.
