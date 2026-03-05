@@ -12803,90 +12803,90 @@ script:
       - units
 
   - name: aws-ec2-key-pairs-describe
-      description: Describes the specified key pairs or all of your key pairs.
-      arguments:
-        - name: account_id
-          description: The AWS account ID.
-          required: true
-        - name: region
-          description: The AWS region.
-          required: true
-          auto: PREDEFINED
-          predefined:
-            - us-east-1
-            - us-east-2
-            - us-west-1
-            - us-west-2
-            - af-south-1
-            - ap-east-1
-            - ap-south-2
-            - ap-southeast-3
-            - ap-southeast-5
-            - ap-southeast-4
-            - ap-south-1
-            - ap-northeast-3
-            - ap-northeast-2
-            - ap-southeast-1
-            - ap-southeast-2
-            - ap-southeast-7
-            - ap-northeast-1
-            - ca-central-1
-            - ca-west-1
-            - eu-central-1
-            - eu-west-1
-            - eu-west-2
-            - eu-south-1
-            - eu-west-3
-            - eu-south-2
-            - eu-north-1
-            - eu-central-2
-            - il-central-1
-            - mx-central-1
-            - me-south-1
-            - me-central-1
-            - sa-east-1
-            - us-gov-east-1
-            - us-gov-west-1
-        - name: key_pair_ids
-          description: A comma-separated list of key pair IDs.
-          required: false
-          isArray: true
-        - name: key_names
-          description: A comma-separated list of key pair names.
-          required: false
-          isArray: true
-        - name: filters
-          description: "One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options."
-          required: false
-        - name: include_public_key
-          description: If true, the public key material is included in the response.
-          required: false
-          auto: PREDEFINED
-          predefined:
-            - 'true'
-            - 'false'
-      outputs:
-        - contextPath: AWS.EC2.KeyPairs.KeyPairId
-          description: The ID of the key pair.
-          type: string
-        - contextPath: AWS.EC2.KeyPairs.KeyName
-          description: The name of the key pair.
-          type: string
-        - contextPath: AWS.EC2.KeyPairs.KeyType
-          description: The type of key pair (rsa or ed25519).
-          type: string
-        - contextPath: AWS.EC2.KeyPairs.KeyFingerprint
-          description: The SHA-1 digest of the DER encoded private key (CreateKeyPair) or MD5 public key fingerprint (ImportKeyPair).
-          type: string
-        - contextPath: AWS.EC2.KeyPairs.PublicKey
-          description: The public key material. Present only when include_public_key=true.
-          type: string
-        - contextPath: AWS.EC2.KeyPairs.CreateTime
-          description: The date and time the key pair was created.
-          type: date
-        - contextPath: AWS.EC2.KeyPairs.Tags
-          description: Any tags applied to the key pair.
-          type: array
+    description: Describes the specified key pairs or all of your key pairs.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: key_pair_ids
+        description: A comma-separated list of key pair IDs.
+        required: false
+        isArray: true
+      - name: key_names
+        description: A comma-separated list of key pair names.
+        required: false
+        isArray: true
+      - name: filters
+        description: "One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options."
+        required: false
+      - name: include_public_key
+        description: If true, the public key material is included in the response.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+    outputs:
+      - contextPath: AWS.EC2.KeyPairs.KeyPairId
+        description: The ID of the key pair.
+        type: string
+      - contextPath: AWS.EC2.KeyPairs.KeyName
+        description: The name of the key pair.
+        type: string
+      - contextPath: AWS.EC2.KeyPairs.KeyType
+        description: The type of key pair (rsa or ed25519).
+        type: string
+      - contextPath: AWS.EC2.KeyPairs.KeyFingerprint
+        description: The SHA-1 digest of the DER encoded private key (CreateKeyPair) or MD5 public key fingerprint (ImportKeyPair).
+        type: string
+      - contextPath: AWS.EC2.KeyPairs.PublicKey
+        description: The public key material. Present only when include_public_key=true.
+        type: string
+      - contextPath: AWS.EC2.KeyPairs.CreateTime
+        description: The date and time the key pair was created.
+        type: date
+      - contextPath: AWS.EC2.KeyPairs.Tags
+        description: Any tags applied to the key pair.
+        type: array
 
   - name: aws-ec2-hosts-allocate
     description: Allocates a Dedicated Host to your account. At a minimum, specify the supported instance type or instance family, the Availability Zone in which to allocate the host, and the number of hosts to allocate.
