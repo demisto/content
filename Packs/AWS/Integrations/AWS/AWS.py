@@ -5159,7 +5159,6 @@ class EC2:
                 "KeyNames": argToList(args.get("key_names")),
                 "Filters": parse_filter_field(args.get("filters")),
                 "IncludePublicKey": arg_to_bool_or_none(args.get("include_public_key")),
-
             }
         )
 
@@ -5209,12 +5208,12 @@ class EC2:
                 "HostMaintenance": args.get("host_maintenance"),
                 "OutpostArn": args.get("outpost_arn"),
                 "AssetIds": argToList(args.get("asset_ids")),
-                "TagSpecifications": [{"ResourceType": "dedicated-host", "Tags": parse_tag_field(args.get("tags"))}]
+                "TagSpecifications": [{"ResourceType": "dedicated-host", "Tags": parse_tag_field(args.get("tags"))}],
             }
         )
 
         if not kwargs.get("TagSpecifications"):
-            raise DemistoException("Tag specification must have at least one tag")
+            raise DemistoException("TagSpecifications must include at least one tag.")
 
         print_debug_logs(client, f"Allocating Dedicated Hosts with parameters: {kwargs}")
         response = client.allocate_hosts(**kwargs)
@@ -5224,7 +5223,7 @@ class EC2:
         host_ids = response.get("HostIds", [])
         return CommandResults(
             outputs_prefix="AWS.EC2.Hosts",
-            outputs={"HostIds": host_ids},
+            outputs=host_ids,
             readable_output=f"Successfully allocated {args.get('quantity')} Dedicated Host(s). Host IDs: {', '.join(host_ids)}",
             raw_response=response,
         )
@@ -5256,9 +5255,11 @@ class EC2:
         )
         readable_parts = []
         if outputs.get("Successful"):
-            readable_parts.append(f"Successfully released: {', '.join(outputs.get('Successful'))}")
+            successful_ids = ", ".join(h.get("HostId", "") for h in outputs.get("Successful", []))
+            readable_parts.append(f"Successfully released: {successful_ids}")
         if outputs.get("Unsuccessful"):
-            readable_parts.append(f"Failed to release: {', '.join(outputs.get('Unsuccessful'))}")
+            unsuccessful_ids = ", ".join(h.get("ResourceId", "") for h in outputs.get("Unsuccessful", []))
+            readable_parts.append(f"Failed to release: {unsuccessful_ids}")
         return CommandResults(
             outputs_prefix="AWS.EC2.ReleasedHosts",
             outputs=outputs,
@@ -5285,7 +5286,7 @@ class EC2:
                 "VirtualNetworkId": arg_to_number(args.get("virtual_network_id")),
                 "PacketLength": arg_to_number(args.get("packet_length")),
                 "Description": args.get("description"),
-                "TagSpecifications": [{"ResourceType": "traffic-mirror-session", "Tags": parse_tag_field(args.get("tags"))}]
+                "TagSpecifications": [{"ResourceType": "traffic-mirror-session", "Tags": parse_tag_field(args.get("tags"))}],
             }
         )
         print_debug_logs(client, f"Creating Traffic Mirror session with parameters: {kwargs}")

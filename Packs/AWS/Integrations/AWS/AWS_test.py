@@ -13377,14 +13377,37 @@ def test_describe_key_pairs_command_with_include_public_key(mocker):
     assert call_kwargs["IncludePublicKey"] is True
 
 
+def test_describe_key_pairs_command_failure(mocker):
+    """
+    Given: A mocked EC2 client that returns a non-200 HTTP status.
+    When: describe_key_pairs_command is called.
+    Then: It should invoke AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_key_pairs.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "KeyPairs": [],
+    }
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    EC2.describe_key_pairs_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()
+
+
 # ── aws-ec2-hosts-allocate ────────────────────────────────────────────────────
 
 
 def test_allocate_hosts_command_success(mocker):
     """
-    Given: A mocked EC2 client and valid allocation arguments.
+    Given: A mocked EC2 client and valid allocation arguments including tags (required by the implementation).
     When: allocate_hosts_command is called.
-    Then: It should return CommandResults with the allocated host IDs in outputs and readable output.
+    Then: It should return CommandResults with the allocated host IDs as a list in outputs and readable output,
+          and the API call should include AvailabilityZone, Quantity, InstanceType, and TagSpecifications.
     """
     from AWS import EC2
 
@@ -13400,13 +13423,15 @@ def test_allocate_hosts_command_success(mocker):
         "availability_zone": "us-east-1a",
         "quantity": "1",
         "instance_type": "m5.large",
+        "tags": "key=Name,value=my-host",
     }
 
     result = EC2.allocate_hosts_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "AWS.EC2.Hosts"
-    assert "h-0abc12345" in result.outputs["HostIds"]
+    # outputs is a list of host IDs (not a dict)
+    assert "h-0abc12345" in result.outputs
     assert "h-0abc12345" in result.readable_output
     call_kwargs = mock_client.allocate_hosts.call_args[1]
     assert call_kwargs["AvailabilityZone"] == "us-east-1a"
@@ -13416,9 +13441,10 @@ def test_allocate_hosts_command_success(mocker):
 
 def test_allocate_hosts_command_with_tags(mocker):
     """
-    Given: A mocked EC2 client and arguments including tags.
+    Given: A mocked EC2 client and arguments including tags and instance_family (instead of instance_type).
     When: allocate_hosts_command is called with tags.
-    Then: It should include TagSpecifications with resource type 'dedicated-host' in the API call.
+    Then: It should include TagSpecifications with resource type 'dedicated-host' in the API call,
+          and InstanceFamily should be passed instead of InstanceType.
     """
     from AWS import EC2
 
@@ -13447,6 +13473,35 @@ def test_allocate_hosts_command_with_tags(mocker):
     assert call_kwargs["InstanceFamily"] == "m5"
 
 
+def test_allocate_hosts_command_failure(mocker):
+    """
+    Given: A mocked EC2 client that returns a non-200 HTTP status.
+    When: allocate_hosts_command is called with tags.
+    Then: It should invoke AWSErrorHandler.handle_response_error.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.allocate_hosts.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "HostIds": [],
+    }
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "availability_zone": "us-east-1a",
+        "quantity": "1",
+        "instance_type": "m5.large",
+        "tags": "key=Name,value=my-host",
+    }
+
+    EC2.allocate_hosts_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()
+
+
 # ── aws-ec2-hosts-release ─────────────────────────────────────────────────────
 
 
@@ -13454,7 +13509,8 @@ def test_release_hosts_command_success(mocker):
     """
     Given: A mocked EC2 client and valid host IDs.
     When: release_hosts_command is called with a successful response.
-    Then: It should return CommandResults with the released host IDs in outputs and readable output.
+    Then: It should return CommandResults with the Successful list (of dicts) in outputs,
+          the host ID in the readable output, and the API called with the correct HostIds list.
     """
     from AWS import EC2
 
@@ -13471,7 +13527,8 @@ def test_release_hosts_command_success(mocker):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "AWS.EC2.ReleasedHosts"
-    assert "h-0abc12345" in result.outputs["Successful"]
+    # Successful is a list of dicts: [{"HostId": "h-0abc12345"}]
+    assert result.outputs["Successful"][0]["HostId"] == "h-0abc12345"
     assert "h-0abc12345" in result.readable_output
     mock_client.release_hosts.assert_called_once_with(HostIds=["h-0abc12345"])
 
@@ -13480,7 +13537,8 @@ def test_release_hosts_command_partial_failure(mocker):
     """
     Given: A mocked EC2 client where one host release succeeds and one fails.
     When: release_hosts_command is called with two host IDs.
-    Then: It should return CommandResults containing both successful and unsuccessful results.
+    Then: It should return CommandResults containing both Successful (list of dicts) and
+          Unsuccessful (list of dicts) in outputs, with both host IDs present in the readable output.
     """
     from AWS import EC2
 
@@ -13496,8 +13554,10 @@ def test_release_hosts_command_partial_failure(mocker):
     result = EC2.release_hosts_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert "h-success001" in result.outputs["Successful"]
+    # Successful and Unsuccessful are lists of dicts
+    assert result.outputs["Successful"][0]["HostId"] == "h-success001"
     assert len(result.outputs["Unsuccessful"]) == 1
+    assert result.outputs["Unsuccessful"][0]["ResourceId"] == "h-fail001"
     assert "h-success001" in result.readable_output
     assert "h-fail001" in result.readable_output
 
@@ -13507,9 +13567,12 @@ def test_release_hosts_command_partial_failure(mocker):
 
 def test_create_traffic_mirror_session_command_success(mocker):
     """
-    Given: A mocked EC2 client and valid Traffic Mirror session arguments.
+    Given: A mocked EC2 client and valid Traffic Mirror session arguments including all three
+           required fields: network_interface_id, traffic_mirror_target_id, traffic_mirror_filter_id,
+           and session_number.
     When: create_traffic_mirror_session_command is called.
-    Then: It should return CommandResults with the session ID in outputs and readable output.
+    Then: It should return CommandResults with the session ID in outputs and readable output,
+          and the API call should include all required fields.
     """
     from AWS import EC2
 
@@ -13548,6 +13611,8 @@ def test_create_traffic_mirror_session_command_success(mocker):
     assert "tms-0abc12345" in result.readable_output
     call_kwargs = mock_client.create_traffic_mirror_session.call_args[1]
     assert call_kwargs["NetworkInterfaceId"] == "eni-0abc12345"
+    assert call_kwargs["TrafficMirrorTargetId"] == "tmt-0abc12345"
+    assert call_kwargs["TrafficMirrorFilterId"] == "tmf-0abc12345"
     assert call_kwargs["SessionNumber"] == 1
 
 
@@ -13586,3 +13651,32 @@ def test_create_traffic_mirror_session_command_with_optional_params(mocker):
     assert call_kwargs["PacketLength"] == 100
     assert call_kwargs["VirtualNetworkId"] == 7777
     assert call_kwargs["Description"] == "My mirror session"
+
+
+def test_create_traffic_mirror_session_command_failure(mocker):
+    """
+    Given: A mocked EC2 client that returns a non-200 HTTP status.
+    When: create_traffic_mirror_session_command is called.
+    Then: It should invoke AWSErrorHandler.handle_response_error before any response serialization occurs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_traffic_mirror_session.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "TrafficMirrorSession": {},
+    }
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "network_interface_id": "eni-0abc12345",
+        "traffic_mirror_target_id": "tmt-0abc12345",
+        "traffic_mirror_filter_id": "tmf-0abc12345",
+        "session_number": "1",
+    }
+
+    EC2.create_traffic_mirror_session_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()

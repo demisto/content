@@ -12890,7 +12890,6 @@ script:
 
   - name: aws-ec2-hosts-allocate
     description: Allocates a Dedicated Host to your account. At a minimum, specify the supported instance type or instance family, the Availability Zone in which to allocate the host, and the number of hosts to allocate.
-    execution: true
     arguments:
       - name: account_id
         description: The AWS account ID.
