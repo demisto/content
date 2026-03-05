@@ -2,7 +2,6 @@ import json as js
 import threading
 from unittest.mock import MagicMock
 from datetime import datetime, UTC
-import aiohttp
 import pytest
 import slack_sdk
 from CommonServerPython import *
@@ -5059,11 +5058,11 @@ def test_list_channels(mocker):
 def test_conversation_history(mocker):
     """
     Given:
-        A set of conversations.
+        A set of conversations without pagination.
     When:
         Listing conversation history.
     Assert:
-        Conversations are returned.
+        Conversations are returned with proper CommandResults format.
     """
     import SlackV3
 
@@ -5073,25 +5072,28 @@ def test_conversation_history(mocker):
         "send_slack_request_sync",
         side_effect=[slack_response_mock, {"user": js.loads(USERS)[0]}, {"user": js.loads(USERS)[0]}],
     )
-    mocker.patch.object(demisto, "args", return_value={"channel_id": 1, "conversation_id": 1, "limit": 1})
+    mocker.patch.object(demisto, "args", return_value={"channel_id": "C12345", "limit": 10})
     mocker.patch.object(demisto, "setIntegrationContext", side_effect=set_integration_context)
-    mocker.patch.object(demisto, "results")
+    return_results_mock = mocker.patch("SlackV3.return_results")
 
     SlackV3.conversation_history()
 
-    assert (
-        demisto.results.call_args[0][0]["HumanReadable"] == "### Channel details from Channel ID "
-        "- 1\n|FullName|HasReplies|Name|Text|ThreadTimeStamp"
-        "|TimeStamp|Type|UserId|\n|---|---|---|---|---|"
-        "---|---|---|\n| spengler | No | spengler | There"
-        " are two types of people in this world, those"
-        " who can extrapolate from incomplete data... | N/A "
-        "| 1690479909.804939 | message | U047D5QSZD4 |\n|"
-        " spengler | Yes | spengler | Give me a fresh dad joke"
-        " | 1690479887.647239 | 1690479887.647239 | message "
-        "| U047D5QSZD4 |\n"
-    )
-    assert demisto.results.call_args[0][0]["ContentsFormat"] == "json"
+    # Assert return_results was called with a list of CommandResults
+    assert return_results_mock.call_count == 1
+    results = return_results_mock.call_args[0][0]
+
+    # Should have only 1 CommandResult (no pagination token)
+    assert len(results) == 1
+
+    # Verify the CommandResults structure
+    command_result = results[0]
+    assert command_result.outputs_prefix == "Slack.Messages"
+    assert len(command_result.outputs) == 2  # Two messages in MESSAGES
+    assert command_result.raw_response == json.loads(MESSAGES)
+
+    # Verify readable output contains expected content
+    assert "Channel details from Channel ID - C12345" in command_result.readable_output
+    assert "spengler" in command_result.readable_output
 
 
 @pytest.mark.parametrize(
@@ -5167,15 +5169,8 @@ def test_conversation_replies(mocker):
 SAMPLE_PAYLOAD = json.loads(load_test_data("./test_data/entitlement_response_payload.txt"))
 
 
-@pytest.fixture
-async def client_session():
-    session = aiohttp.ClientSession()
-    yield session
-    await session.close()
-
-
 @pytest.mark.asyncio
-async def test_listen(client_session):
+async def test_listen():
     """
     Unit test for the `listen` function in the `SlackV3` module. This test case verifies that the function handles
     Slack events correctly.
@@ -5199,7 +5194,8 @@ async def test_listen(client_session):
         '"selected_options": [{"text": {"type": "plain_text", "text": "*Option 3*", '
         '"emoji": true}, "value": "value-2"}]}}, "timepicker_1": {"timepicker1": '
         '{"type": "timepicker", "selected_time": "06:00"}}}, "xsoar-button-submit": '
-        '"Successful"}'
+        '"Successful", "submitting_user": {"id": "UAALZT5D2", "username": "andrew", '
+        '"name": "andrew", "team_id": "TABQMPKP0"}}'
     )
     req = SocketModeRequest(type="event", payload=SAMPLE_PAYLOAD, envelope_id=default_envelope_id)
     client = mock.MagicMock(spec=SocketModeClient)
@@ -5385,6 +5381,82 @@ def test_resolve_conversation_id_from_name_no_channel_found(mocker):
 
     with pytest.raises(DemistoException, match="Channel 'nonexistent' does not exist."):
         resolve_conversation_id_from_name("nonexistent")
+
+
+def test_conversation_history_with_pagination(mocker):
+    """
+    Given:
+        A set of conversations with pagination cursor.
+    When:
+        Listing conversation history with pagination.
+    Assert:
+        Conversations and pagination token are returned in separate CommandResults.
+    """
+    import SlackV3
+
+    slack_response_mock = {
+        "ok": True,
+        "messages": json.loads(MESSAGES),
+        "response_metadata": {"next_cursor": "dGVhbTpDQ0M3UENUTks="},
+    }
+    mocker.patch.object(
+        SlackV3,
+        "send_slack_request_sync",
+        side_effect=[slack_response_mock, {"user": js.loads(USERS)[0]}, {"user": js.loads(USERS)[0]}],
+    )
+    mocker.patch.object(demisto, "args", return_value={"channel_id": "C12345", "limit": 10})
+    mocker.patch.object(demisto, "setIntegrationContext", side_effect=set_integration_context)
+    return_results_mock = mocker.patch("SlackV3.return_results")
+
+    SlackV3.conversation_history()
+
+    # Assert return_results was called with a list of CommandResults
+    assert return_results_mock.call_count == 1
+    results = return_results_mock.call_args[0][0]
+
+    # Should have 2 CommandResults (messages + pagination token)
+    assert len(results) == 2
+
+    # Verify first CommandResult (messages)
+    messages_result = results[0]
+    assert messages_result.outputs_prefix == "Slack.Messages"
+    assert len(messages_result.outputs) == 2
+
+    # Verify second CommandResult (pagination token)
+    pagination_result = results[1]
+    assert pagination_result.outputs_prefix == "SlackConversationHistory"
+    assert pagination_result.outputs_key_field == "NextPageToken"
+    assert pagination_result.outputs == {"NextPageToken": "dGVhbTpDQ0M3UENUTks="}
+
+
+def test_conversation_history_with_page_token(mocker):
+    """
+    Given:
+        A pageToken parameter to continue pagination.
+    When:
+        Listing conversation history with a page token.
+    Assert:
+        The cursor is passed to the Slack API request.
+    """
+    import SlackV3
+
+    slack_response_mock = {"ok": True, "messages": json.loads(MESSAGES)}
+    send_request_mock = mocker.patch.object(
+        SlackV3,
+        "send_slack_request_sync",
+        side_effect=[slack_response_mock, {"user": js.loads(USERS)[0]}, {"user": js.loads(USERS)[0]}],
+    )
+    mocker.patch.object(demisto, "args", return_value={"channel_id": "C12345", "limit": 10, "page_token": "dGVhbTpDQ0M3UENUTks="})
+    mocker.patch.object(demisto, "setIntegrationContext", side_effect=set_integration_context)
+    mocker.patch("SlackV3.return_results")
+
+    SlackV3.conversation_history()
+
+    # Verify the cursor was passed in the API request
+    # Access kwargs from the first call to send_slack_request_sync
+    api_call_kwargs = send_request_mock.call_args_list[0].kwargs
+    assert "body" in api_call_kwargs
+    assert api_call_kwargs["body"]["cursor"] == "dGVhbTpDQ0M3UENUTks="
 
 
 class TestToUnixSecondsStr:
