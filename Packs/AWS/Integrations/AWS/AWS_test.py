@@ -4274,29 +4274,29 @@ def test_build_pagination_kwargs_with_limit_exceeding_maximum():
 
 def test_build_pagination_kwargs_with_zero_limit():
     """
-    Given: A limit argument of zero and minimum_limit=1.
+    Given: A limit argument of zero and the default minimum_limit=1.
     When: build_pagination_kwargs is called with zero limit.
-    Then: It should raise ValueError indicating limit must be greater than 1.
+    Then: It should raise ValueError indicating Limit must be at least 1.
     """
     from AWS import build_pagination_kwargs
 
     args = {"limit": "0"}
 
-    with pytest.raises(ValueError, match="Limit must be greater than 1"):
-        build_pagination_kwargs(args, minimum_limit=1)
+    with pytest.raises(ValueError, match="Limit must be at least 1"):
+        build_pagination_kwargs(args)
 
 
 def test_build_pagination_kwargs_with_negative_limit():
     """
     Given: A negative limit argument.
     When: build_pagination_kwargs is called with negative limit.
-    Then: It should raise ValueError indicating limit must be greater than 0.
+    Then: It should raise ValueError indicating limit must be at least the minimum (1 by default).
     """
     from AWS import build_pagination_kwargs
 
     args = {"limit": "-5"}
 
-    with pytest.raises(ValueError, match="Limit must be greater than 0"):
+    with pytest.raises(ValueError, match="Limit must be at least 1"):
         build_pagination_kwargs(args)
 
 
@@ -4403,13 +4403,13 @@ def test_build_pagination_kwargs_with_limit_less_than_minimum():
     """
     Given: A limit argument less than the minimum allowed value.
     When: build_pagination_kwargs is called with limit less than minimum.
-    Then: It should raise ValueError indicating limit must be greater than minimum.
+    Then: It should raise ValueError indicating limit must be at least the specified minimum.
     """
     from AWS import build_pagination_kwargs
 
     args = {"limit": "2"}
 
-    with pytest.raises(ValueError, match="Limit must be greater than 5"):
+    with pytest.raises(ValueError, match="Limit must be at least 5"):
         build_pagination_kwargs(args, minimum_limit=5)
 
 

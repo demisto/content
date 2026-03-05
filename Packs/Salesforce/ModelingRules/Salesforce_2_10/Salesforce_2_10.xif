@@ -1,0 +1,766 @@
+[RULE: salesforce_saas_audit_common_fields]
+alter
+    xdm.event.type = "saas audit",
+    xdm.event.original_event_type = api_object_type,
+    xdm.target.resource.type = api_object_type,
+    xdm.source.cloud.project_id = salesforce_domain,
+    xdm.source.user.identifier = UserId,
+    xdm.observer.type = "SalesForce CRM",
+    xdm.observer.sub_type = "Real Time Event Monitoring",
+    xdm.source.user.user_type = XDM_CONST.USER_TYPE_REGULAR,
+    xdm.source.user.scope = XDM_CONST.SCOPE_TYPE_SAAS;
+
+[MODEL: dataset="salesforce_realtime_raw"]
+
+//////////////////////////////
+// ApiEvent
+//////////////////////////////
+
+filter api_object_type ~= "ApiEvent|APIEvent"
+| call salesforce_saas_audit_common_fields
+// Extract Username parts for identity normalization
+| alter
+    get_Username = if(Username != null, split(Username, "@"))
+| alter //XDM mapping
+    xdm.event.id = EventIdentifier,
+    xdm.logon.logon_guid = LoginKey,
+    xdm.session_context_id = LoginKey,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_READ,
+    xdm.source.user.upn = Username,
+    xdm.source.user.full_domain_name = arrayindex(get_Username, 1),
+    xdm.source.user.identity_type = if(
+        ConnectedAppId != null, XDM_CONST.IDENTITY_TYPE_APPLICATION,
+        XDM_CONST.IDENTITY_TYPE_USER
+    ),
+    xdm.auth.privilege_level = if(ConnectedAppId != null, XDM_CONST.PRIVILEGE_LEVEL_USER),
+    xdm.intermediate.identity.username = if(
+        Application = "N/A", null,
+        Application != "N/A" and Application != null, Application,
+        ConnectedAppId != null, ConnectedAppId
+        ),
+    xdm.intermediate.identity.identifier = ConnectedAppId,
+    xdm.intermediate.identity.identity_type = if(ConnectedAppId != null, XDM_CONST.IDENTITY_TYPE_APPLICATION),
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.target.resource.id = Query,
+    xdm.target.resource.name = Query,
+    xdm.source.user_agent = UserAgent,
+    xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
+    xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
+    xdm.source.cloud.service = if(Client = "Unknown", null, Client),
+    xdm.source.host.os = if(Platform = "Unknown", null, Platform),
+    xdm.network.rule = PolicyId,
+    xdm.event.operation_sub_type = PolicyOutcome,
+    xdm.network.session_id = SessionKey;
+
+
+//////////////////////////////
+// LoginAsEvent
+//////////////////////////////
+
+filter api_object_type ~= "LoginAsEvent"
+| call salesforce_saas_audit_common_fields
+// Extract Username parts for identity normalization
+| alter
+    get_Username = if(Username != null, split(Username, "@"))
+
+| alter //xdm mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.session_context_id = LoginKey,
+    xdm.logon.logon_guid = LoginKey,
+    xdm.source.user.upn = Username,
+    xdm.source.user.full_domain_name = arrayindex(get_Username, 1),
+    xdm.auth.privilege_level = if(
+        UserType = "Guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST,
+        XDM_CONST.PRIVILEGE_LEVEL_USER),
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.target.resource.id = DelegatedUsername,
+    xdm.target.resource.name = DelegatedUsername,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
+    xdm.source.user_agent = Browser,
+    xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
+    xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.source.application.name = Application,
+    xdm.source.host.os = Platform,
+    xdm.network.session_id = SessionKey,
+    xdm.target.url = TargetUrl;
+
+//////////////////////////////
+// BulkApiResultEvent
+//////////////////////////////
+
+filter api_object_type ~= "BulkApi"
+| call salesforce_saas_audit_common_fields
+// Extract Username parts for identity normalization
+| alter
+    get_Username = if(Username != null, split(Username, "@"))
+
+| alter //XDM mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.session_context_id = LoginKey,
+    xdm.logon.logon_guid = LoginKey,
+    xdm.source.user.upn = Username,
+    xdm.source.user.full_domain_name = arrayindex(get_Username, 1),
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.target.resource.id = Query,
+    xdm.target.resource.name = Query,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_READ,
+    xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
+    xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.network.rule = PolicyId,
+    xdm.event.operation_sub_type = PolicyOutcome,
+    xdm.network.session_id = SessionKey;
+
+
+//////////////////////////////
+// FileEvent
+//////////////////////////////
+
+filter api_object_type ~= "FileEvent"
+| call salesforce_saas_audit_common_fields
+// Extract Username parts for identity normalization
+| alter
+    get_Username = if(Username != null, split(Username, "@"))
+
+| alter //XDM mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.session_context_id = LoginKey,
+    xdm.logon.logon_guid = LoginKey,
+    xdm.source.user.upn = Username,
+    xdm.source.user.full_domain_name = arrayindex(get_Username,1),
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.event.outcome = if(
+        PolicyOutcome IN("*Error*", "*Block*"), XDM_CONST.OUTCOME_FAILED,
+        XDM_CONST.OUTCOME_SUCCESS),
+    xdm.event.operation_sub_type = coalesce(FileAction, PolicyOutcome),
+    xdm.target.resource.id = FileName,
+    xdm.target.resource.name = FileName,
+    xdm.event.operation = if(
+        FileAction IN("*API_DOWNLOAD*", "*PREVIEW*", "*UI_DOWNLOAD*"), XDM_CONST.OPERATION_TYPE_READ, XDM_CONST.OPERATION_TYPE_CREATE),
+    xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
+    xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.target.file.filename = FileName,
+    xdm.target.file.size = to_number(ContentSize),
+    xdm.target.file.file_type = FileType,
+    xdm.target.file.extension = arrayindex(regextract(FileName, "\.(\w+)$"),0),
+    xdm.network.session_id = SessionKey;
+
+//////////////////////////////
+// LightningUriEventStream
+//////////////////////////////
+
+filter api_object_type ~= "LightningUriEventStream"
+| call salesforce_saas_audit_common_fields
+// Extract Username parts for identity normalization
+| alter
+    get_Username = if(Username != null, split(Username, "@"))
+
+| alter //XDM mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.session_context_id = LoginKey,
+    xdm.logon.logon_guid = LoginKey,
+    xdm.source.user.upn = Username,
+    xdm.source.user.full_domain_name = arrayindex(get_Username, 1),
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.target.resource.id = PageUrl,
+    xdm.target.resource.name = PageUrl,
+    xdm.alert.source_url = PageUrl,
+    xdm.event.operation =if(
+        Operation = "Read", XDM_CONST.OPERATION_TYPE_READ,
+        Operation = "Create", XDM_CONST.OPERATION_TYPE_CREATE,
+        Operation = "Update", XDM_CONST.OPERATION_TYPE_UPDATE,
+        Operation = "Delete", XDM_CONST.OPERATION_TYPE_DELETE,
+        "OTHER"),
+    xdm.event.operation_sub_type = Operation,
+    xdm.source.user_agent = UserAgent,
+    xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
+    xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.target.application.name = AppName,
+    xdm.source.host.device_id = DeviceId,
+    xdm.source.host.device_model = DeviceModel,
+    xdm.network.session_id = coalesce(SessionKey, DeviceSessionId),
+    xdm.event.duration = to_number(Duration),
+    xdm.event.outcome_reason = EffectivePageTimeDeviationReason,
+    xdm.source.host.os = OsName;
+
+
+//////////////////////////////
+// ReportEventStream
+//////////////////////////////
+
+filter api_object_type ~= "ReportEventStream"
+| call salesforce_saas_audit_common_fields
+// Extract Username parts for identity normalization
+| alter
+    get_Username = if(Username != null, split(Username, "@"))
+
+| alter //XDM mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.session_context_id = LoginKey,
+    xdm.logon.logon_guid = LoginKey,
+    xdm.source.user.upn = Username,
+    xdm.source.user.full_domain_name = arrayindex(get_Username,1),
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.target.resource.id = ReportId,
+    xdm.target.resource.name = Name,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_READ,
+    xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
+    xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.target.file.file_type = ExportFileFormat,
+    xdm.event.operation_sub_type = Operation,
+    xdm.network.rule = PolicyId,
+    xdm.network.session_id = SessionKey;
+
+
+//////////////////////////////
+// ListViewEventStream
+//////////////////////////////
+
+filter api_object_type ~= "ListViewEventStream"
+| call salesforce_saas_audit_common_fields
+// Extract Username parts for identity normalization
+| alter
+    get_Username = if(Username != null, split(Username, "@"))
+
+| alter //XDM mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.session_context_id = LoginKey,
+    xdm.logon.logon_guid = LoginKey,
+    xdm.source.user.upn = Username,
+    xdm.source.user.full_domain_name = arrayindex(get_Username,1),
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.event.outcome = if(
+        PolicyOutcome IN("*Error*", "*Block*", "*Failed*", "TwoFADenied", "TwoFAReportedDenied"), XDM_CONST.OUTCOME_FAILED,
+        XDM_CONST.OUTCOME_SUCCESS),
+    xdm.event.outcome_reason = PolicyOutcome,
+    xdm.event.operation_sub_type = PolicyOutcome,
+    xdm.target.resource.id = ListViewId,
+    xdm.target.resource.name = Name,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_READ,
+    xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
+    xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.network.rule = PolicyId,
+    xdm.network.session_id = SessionKey;
+
+//////////////////////////////
+// UriEventStream
+//////////////////////////////
+
+filter api_object_type ~= "UriEventStream"
+| call salesforce_saas_audit_common_fields
+// Extract Username parts for identity normalization
+| alter
+    get_Username = if(Username != null, split(Username, "@"))
+
+| alter //XDM mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.session_context_id = LoginKey,
+    xdm.logon.logon_guid = LoginKey,
+    xdm.source.user.upn = Username,
+    xdm.source.user.full_domain_name = arrayindex(get_Username,1),
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.event.outcome = if(
+        OperationStatus CONTAINS "Failure", XDM_CONST.OUTCOME_FAILED,
+        OperationStatus CONTAINS "Initiated",XDM_CONST.OUTCOME_PARTIAL,
+        OperationStatus CONTAINS "Success",XDM_CONST.OUTCOME_SUCCESS,
+        XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.event.outcome_reason = Message,
+    xdm.target.resource.id = RecordId,
+    xdm.target.resource.name = QueriedEntities,
+    xdm.event.operation = if(
+        Operation = "Read", XDM_CONST.OPERATION_TYPE_READ,
+        Operation = "Create", XDM_CONST.OPERATION_TYPE_CREATE,
+        Operation = "Update", XDM_CONST.OPERATION_TYPE_UPDATE,
+        Operation = "Delete", XDM_CONST.OPERATION_TYPE_DELETE,
+        "OTHER"),
+    xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
+    xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.network.session_id = SessionKey;
+
+
+//////////////////////////////
+// PermissionSetEvent
+//////////////////////////////
+
+filter api_object_type ~= "PermissionSetEvent"
+| call salesforce_saas_audit_common_fields
+// Extract Username parts for identity normalization
+| alter
+    get_Username = if(Username != null, split(Username, "@"))
+
+| alter //XDM mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.session_context_id = LoginKey,
+    xdm.logon.logon_guid = LoginKey,
+    xdm.source.user.upn = Username,
+    xdm.source.user.full_domain_name = arrayindex(get_Username,1),
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.event.outcome = if(
+        PolicyOutcome IN("*Error*", "*Block*", "*Failed*", "*Denied*", "*EndSession*"), XDM_CONST.OUTCOME_FAILED,
+        XDM_CONST.OUTCOME_SUCCESS),
+    xdm.target.resource.id = to_string(PermissionList),
+    xdm.target.resource.name = to_string(PermissionList),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_UPDATE,
+    xdm.event.operation_sub_type = Operation,
+    xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
+    xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.network.rule = PolicyId,
+    xdm.network.session_id = SessionKey,
+    xdm.target.resource.parent_id = to_string(ParentIdList);
+
+//////////////////////////////
+// IdentityVerificationEvent
+//////////////////////////////
+
+filter api_object_type ~= "IdentityVerificationEvent"
+| call salesforce_saas_audit_common_fields
+// Extract Username parts for identity normalization
+| alter
+    get_Username = if(Username != null, split(Username, "@"))
+
+| alter //XDM mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.session_context_id = LoginKey,
+    xdm.logon.logon_guid = LoginKey,
+    xdm.source.user.upn = Username,
+    xdm.source.user.full_domain_name = arrayindex(get_Username,1),
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.event.outcome = if(
+        Status IN("*Denied*", "Failed*"), XDM_CONST.OUTCOME_FAILED,
+        Status IN("*Initiated*", "*InProgress*"), XDM_CONST.OUTCOME_PARTIAL,
+        Status CONTAINS "Succeeded", XDM_CONST.OUTCOME_SUCCESS,
+        XDM_CONST.OUTCOME_UNKNOWN
+        ),
+    xdm.target.resource.id = UserId,
+    xdm.target.resource.name = Username,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTHENTICATION,
+    xdm.event.operation_sub_type = Activity,
+    xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
+    xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.source.location.city = City,
+    xdm.source.location.country = Country,
+    xdm.source.location.latitude = to_float(Latitude),
+    xdm.source.location.longitude = to_float(Longitude),
+    xdm.network.session_id = SessionKey;
+
+
+//////////////////////////////
+// IdentityProviderEventStore
+//////////////////////////////
+
+filter api_object_type ~= "IdentityProviderEventStore"
+| call salesforce_saas_audit_common_fields
+// Extract Username parts for identity normalization
+| alter
+    get_IdentityUsed = if(IdentityUsed != null, split(IdentityUsed, "@"))
+
+| alter //XDM mapping
+    xdm.event.id = EventIdentifier,
+    xdm.session_context_id = AuthSessionId,
+    xdm.source.user.upn = IdentityUsed,
+    xdm.source.user.full_domain_name = arrayindex(get_IdentityUsed, 1),
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.event.outcome = if(
+        ErrorCode = "Success", XDM_CONST.OUTCOME_SUCCESS,
+        ErrorCode IN("*Denied", "*Block*", "*Unapproved*", "*Expired*", "*Error*", "*Invalid*", "*NoAccess*", "*NoCustomAttrValue*", "*NoCustomField*", "*NoSpokeId*", "*UnableToResolve*"),XDM_CONST.OUTCOME_FAILED,
+        XDM_CONST.OUTCOME_UNKNOWN
+    ),
+    xdm.event.outcome_reason = ErrorCode,
+    xdm.target.resource.id = UserId,
+    xdm.target.resource.name = UserId,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTHENTICATION,
+    xdm.source.ipv4 = "",
+    xdm.source.ipv6 = "",
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.event.operation_sub_type = InitiatedBy,
+    xdm.target.application.bundle_id = AppId,
+    xdm.target.url = SamlEntityUrl;
+
+
+//////////////////////////////
+// CredentialStuffingEvent
+//////////////////////////////
+
+filter api_object_type ~= "CredentialStuffingEvent"
+| call salesforce_saas_audit_common_fields
+// Extract Username parts for identity normalization
+| alter
+    get_Username = if(Username != null, split(Username, "@"))
+
+| alter //XDM mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.session_context_id = LoginKey,
+    xdm.logon.logon_guid = LoginKey,
+    xdm.source.user.upn = Username,
+    xdm.source.user.full_domain_name = arrayindex(get_Username,1),
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.target.resource.id = UserId,
+    xdm.target.resource.name = Username,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
+    xdm.source.user_agent = UserAgent,
+    xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
+    xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.target.url = LoginUrl,
+    xdm.network.rule = PolicyId,
+    xdm.event.operation_sub_type = PolicyOutcome,
+    xdm.network.session_id = SessionKey,
+    xdm.event.description = Summary;
+
+
+//////////////////////////////
+// ApiAnomalyEvent
+//////////////////////////////
+
+filter api_object_type ~= "ApiAnomalyEvent"
+| call salesforce_saas_audit_common_fields
+// Extract Username parts for identity normalization
+| alter
+    get_Username = if(Username != null, split(Username, "@"))
+
+| alter //XDM mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.session_context_id = LoginKey,
+    xdm.logon.logon_guid = LoginKey,
+    xdm.source.user.upn = Username,
+    xdm.source.user.full_domain_name = arrayindex(get_Username,1),
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.event.outcome = if(
+        PolicyOutcome IN("Error", "ExemptNoAction", "MeteringBlock"), XDM_CONST.OUTCOME_FAILED,
+        XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.event.outcome_reason = PolicyOutcome,
+    xdm.target.resource.id = Uri,
+    xdm.target.resource.name = Uri,
+    xdm.event.operation = "OTHER",
+    xdm.event.operation_sub_type = Operation,
+    xdm.source.user_agent = UserAgent,
+    xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
+    xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.network.session_id = SessionKey,
+    xdm.event.description = Summary;
+
+
+//////////////////////////////
+// ReportAnomalyEvent
+//////////////////////////////
+
+filter api_object_type ~= "ReportAnomalyEvent"
+| call salesforce_saas_audit_common_fields
+// Extract Username parts for identity normalization
+| alter
+    get_Username = if(Username != null, split(Username, "@"))
+
+| alter //XDM mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.session_context_id = LoginKey,
+    xdm.logon.logon_guid = LoginKey,
+    xdm.source.user.upn = Username,
+    xdm.source.user.full_domain_name = arrayindex(get_Username,1),
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.event.outcome = if(
+        PolicyOutcome IN("Error", "ExemptNoAction", "MeteringBlock"), XDM_CONST.OUTCOME_FAILED,
+        XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.event.outcome_reason = PolicyOutcome,
+    xdm.target.resource.id = Report,
+    xdm.target.resource.name = Report,
+    xdm.event.operation = "OTHER",
+    xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
+    xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.network.rule = PolicyId,
+    xdm.event.description = Summary;
+
+//////////////////////////////
+// SessionHijackingEvent
+//////////////////////////////
+
+filter api_object_type ~= "SessionHijackingEvent"
+| call salesforce_saas_audit_common_fields
+// Extract Username parts for identity normalization
+| alter
+    get_Username = if(Username != null, split(Username, "@"))
+
+| alter //XDM mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.session_context_id = LoginKey,
+    xdm.logon.logon_guid = LoginKey,
+    xdm.source.user.upn = Username,
+    xdm.source.user.full_domain_name = arrayindex(get_Username,1),
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.event.outcome = if(
+        PolicyOutcome IN("Error", "ExemptNoAction", "MeteringBlock"), XDM_CONST.OUTCOME_FAILED,
+        XDM_CONST.OUTCOME_SUCCESS),
+    xdm.event.outcome_reason = PolicyOutcome,
+    xdm.target.resource.id = UserId,
+    xdm.target.resource.name = Username,
+    xdm.event.operation = "OTHER",
+    xdm.source.user_agent = UserAgent,
+    xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
+    xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.network.rule = PolicyId,
+    xdm.network.session_id = SessionKey,
+    xdm.event.description = Summary;
+
+
+//////////////////////////////
+// MobileEmailEvent
+//////////////////////////////
+
+filter api_object_type ~= "MobileEmailEvent"
+| call salesforce_saas_audit_common_fields
+| alter //XDM mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.target.resource.id = EmailAddress,
+    xdm.target.resource.name = EmailAddress,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUDIT,
+    xdm.source.ipv4 = "",
+    xdm.source.ipv6 = "",
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.source.application.bundle_id = AppPackageIdentifier,
+    xdm.source.application.version = AppVersion,
+    xdm.source.host.device_id = DeviceIdentifier,
+    xdm.source.host.device_model = DeviceModel,
+    xdm.email.recipients = if(
+        EmailAddress != null and EmailAddress ~= "\,", split(EmailAddress, ","),
+        EmailAddress != null, arraycreate(EmailAddress)),
+    xdm.event.description = EventDescription,
+    xdm.source.host.os = OsName;
+
+
+//////////////////////////////
+// MobileEnforcedPolicyEvent
+//////////////////////////////
+
+filter api_object_type ~= "MobileEnforcedPolicyEvent"
+| call salesforce_saas_audit_common_fields
+| alter //XDM mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.target.resource.id = DeviceIdentifier,
+    xdm.target.resource.name = DeviceIdentifier,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUDIT,
+    xdm.observer.action = EnforcedAction,
+    xdm.event.log_level = if(
+        EnforcedAction ~= "Warn", XDM_CONST.LOG_LEVEL_WARNING,
+        EnforcedAction ~= "Critical Error", XDM_CONST.LOG_LEVEL_CRITICAL,
+        EnforcedAction ~= "Error", XDM_CONST.LOG_LEVEL_ERROR),
+    xdm.source.ipv4 = "",
+    xdm.source.ipv6 = "",
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.source.application.bundle_id = AppPackageIdentifier,
+    xdm.source.application.version = AppVersion,
+    xdm.source.host.device_id = DeviceIdentifier,
+    xdm.source.host.device_model = DeviceModel,
+    xdm.event.description = EventDescription,
+    xdm.source.host.os = OsName;
+
+//////////////////////////////
+// MobileTelephonyEvent
+//////////////////////////////
+
+filter api_object_type ~= "MobileTelephonyEvent"
+| call salesforce_saas_audit_common_fields
+// Extract Username parts for identity normalization
+| alter
+    get_Username = if(Username != null, split(Username, "@"))
+
+| alter //XDM mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.source.user.upn = Username,
+    xdm.source.user.full_domain_name = arrayindex(get_Username,1),
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.target.resource.id = DeviceIdentifier,
+    xdm.target.resource.name = DeviceIdentifier,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUDIT,
+    xdm.event.operation_sub_type = Operation,
+    xdm.source.ipv4 = "",
+    xdm.source.ipv6 = "",
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.source.application.bundle_id = AppPackageIdentifier,
+    xdm.source.application.version = AppVersion,
+    xdm.source.host.device_id = DeviceIdentifier,
+    xdm.source.host.device_model = DeviceModel,
+    xdm.event.description = EventDescription,
+    xdm.source.host.os = OsName;
+
+
+//////////////////////////////
+// MobileScreenshotEvent
+//////////////////////////////
+
+filter api_object_type ~= "MobileScreenshotEvent"
+| call salesforce_saas_audit_common_fields
+| alter //XDM mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.target.resource.id = DeviceIdentifier,
+    xdm.target.resource.name = DeviceIdentifier,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUDIT,
+    xdm.source.ipv4 = "",
+    xdm.source.ipv6 = "",
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.source.application.bundle_id = AppPackageIdentifier,
+    xdm.source.application.version = AppVersion,
+    xdm.source.host.device_id = DeviceIdentifier,
+    xdm.source.host.device_model = DeviceModel,
+    xdm.event.description = EventDescription,
+    xdm.source.host.os = OsName,
+    xdm.target.resource.value = ScreenDescription;
+
+
+//////////////////////////////
+// LogoutEventStream
+//////////////////////////////
+
+filter api_object_type ~= "LogoutEventStream"
+| call salesforce_saas_audit_common_fields
+// Extract Username parts for identity normalization
+| alter
+    get_Username = if(Username != null, split(Username, "@"))
+
+| alter //XDM mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.session_context_id = LoginKey,
+    xdm.logon.logon_guid = LoginKey,
+    xdm.source.user.upn = Username,
+    xdm.source.user.full_domain_name = arrayindex(get_Username,1),
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.target.resource.id = UserId,
+    xdm.target.resource.name = Username,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUDIT,
+    xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
+    xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.network.session_id = SessionKey;
+
+//////////////////////////////
+// GuestUserAnomalyEvent
+//////////////////////////////
+
+filter api_object_type ~= "GuestUserAnomalyEvent"
+| call salesforce_saas_audit_common_fields
+// Extract Username parts for identity normalization
+| alter
+    get_Username = if(Username != null, split(Username, "@"))
+
+| alter //XDM mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.session_context_id = LoginKey,
+    xdm.logon.logon_guid = LoginKey,
+    xdm.source.user.upn = Username,
+    xdm.source.user.full_domain_name = arrayindex(get_Username,1),
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.event.outcome = if(
+        PolicyOutcome IN("*Error*", "*Block*", "*NoAction*"), XDM_CONST.OUTCOME_FAILED,
+        PolicyOutcome = "Notified", XDM_CONST.OUTCOME_SUCCESS,
+        XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.event.operation_sub_type = PolicyOutcome,
+    xdm.event.outcome_reason = Summary,
+    xdm.event.description = Summary,
+    xdm.target.resource.id = SoqlCommands,
+    xdm.target.resource.name = SoqlCommands,
+    xdm.event.operation = "OTHER",
+    xdm.source.user_agent = UserAgent,
+    xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
+    xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.network.rule = PolicyId,
+    xdm.network.session_id = SessionKey;
+
+//////////////////////////////
+// LoginAnomalyEvent
+//////////////////////////////
+
+filter api_object_type ~= "LoginAnomalyEvent"
+| call salesforce_saas_audit_common_fields
+// Extract Username parts for identity normalization
+| alter
+    get_Username = if(Username != null, split(Username, "@"))
+
+| alter //XDM mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.session_context_id = LoginKey,
+    xdm.logon.logon_guid = LoginKey,
+    xdm.source.user.upn = Username,
+    xdm.source.user.full_domain_name = arrayindex(get_Username,1),
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.event.outcome = if(
+        PolicyOutcome IN("*Error*", "*Block*", "*NoAction*"), XDM_CONST.OUTCOME_FAILED,
+        PolicyOutcome = "Notified", XDM_CONST.OUTCOME_SUCCESS,
+        XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.event.operation_sub_type = PolicyOutcome,
+    xdm.event.outcome_reason = Summary,
+    xdm.event.description = Summary,
+    xdm.target.resource.id = UserId,
+    xdm.target.resource.name = Username,
+    xdm.event.operation = "OTHER",
+    xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
+    xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.network.rule = PolicyId,
+    xdm.network.session_id = SessionKey;
+
+
+//////////////////////////////
+// LoginEvent
+//////////////////////////////
+
+filter api_object_type ~= "LoginEvent"
+| call salesforce_saas_audit_common_fields
+// Extract Username parts for identity normalization
+| alter
+    get_Username = if(Username != null, split(Username, "@"))
+
+| alter //XDM mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.session_context_id = LoginKey,
+    xdm.logon.logon_guid = LoginKey,
+    xdm.source.user.upn = Username,
+    xdm.source.user.full_domain_name = arrayindex(get_Username,1),
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.event.outcome = if(
+        Status = "Success", XDM_CONST.OUTCOME_SUCCESS,
+        XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = Status,
+    xdm.target.resource.id = UserId,
+    xdm.target.resource.name = Username,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
+    xdm.source.ipv4 = if(
+        is_ipv4(ForwardedForIp), ForwardedForIp,
+        is_ipv4(SourceIp), SourceIp,
+        ""),
+    xdm.source.ipv6 = if(
+        is_ipv6(ForwardedForIp), ForwardedForIp,
+        is_ipv6(SourceIp), SourceIp,
+        ""),
+    xdm.intermediate.ipv4 = if(ForwardedForIp != null AND is_ipv4(SourceIp), SourceIp),
+    xdm.intermediate.ipv6 = if(ForwardedForIp != null AND is_ipv6(SourceIp), SourceIp),
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.source.application.name = Application,
+    xdm.network.http.browser = Browser,
+    xdm.source.location.city = City,
+    xdm.source.location.country = Country,
+    xdm.source.location.latitude = to_float(LoginLatitude),
+    xdm.source.location.longitude = to_float(LoginLongitude),
+    xdm.target.url = LoginUrl,
+    xdm.network.session_id = SessionKey;
