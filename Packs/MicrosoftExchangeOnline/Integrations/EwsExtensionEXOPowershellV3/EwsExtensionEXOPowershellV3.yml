@@ -2821,6 +2821,9 @@ script:
       description: The mailbox that you want to modify.
       required: true
     description: Disable mail forwarding for a given user.
+  - name: ews-check-connection
+    arguments: []
+    description: Diagnostic command that tests the connection to Exchange Online by independently validating Azure AD token acquisition and Exchange Online REST endpoint connectivity. Unlike test-module, this command captures the real error from Azure AD or Exchange Online before Connect-ExchangeOnline has a chance to swallow it inside a JSON parsing error.
   script: ''
   type: powershell
   dockerimage: demisto/pwsh-exchangev3:1.0.0.4904712
