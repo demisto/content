@@ -20,7 +20,7 @@ _CONFIG = {
                 "NotPetya.+",
                 "PII transmission anomaly",
                 "Remote access.+Windows Security Account Manager.+",
-                "SamSam Ransomware SMB.+",
+                "SamSam Testmanware SMB.+",
                 "Win.Ransomware.+",
             ],
             "raci": {"r": "SOC", "i": ["IOT_OWNER"]},
