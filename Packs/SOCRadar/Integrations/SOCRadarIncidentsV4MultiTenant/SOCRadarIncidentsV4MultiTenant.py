@@ -721,8 +721,7 @@ def fetch_incidents(
                     f"Next run will start from the date of the latest run with skipping {next_run_incidents_to_skip} incidents"
                 )
                 break
-            else:
-                next_run_incidents_to_skip = 0
+            next_run_incidents_to_skip = 0
             if current_page >= total_pages:
                 demisto.debug(f"[SOCRadar-MT] Reached last page ({current_page}/{total_pages})")
                 break
@@ -773,7 +772,7 @@ def fetch_incidents(
             "last_fetch": start_date,
             "start_date": start_date,
             "end_date": end_date,
-            'exception': str(e),
+            "exception": str(e),
         }, []
 
 def change_status_command(client: Client, args: dict[str, str]) -> CommandResults:

@@ -276,6 +276,7 @@ class Client(BaseClient):
             method="POST", url_suffix=url_suffix, json_data=json_data, headers=self._get_headers(), timeout=60
         )
 
+
 def test_module(client: Client) -> str:
     """
     Test API connectivity and credentials.
@@ -663,8 +664,7 @@ def fetch_incidents(
                     f"Next run will start from the date of the latest run with skipping {next_run_incidents_to_skip} incidents"
                 )
                 break
-            else:
-                next_run_incidents_to_skip = 0
+            next_run_incidents_to_skip = 0
             if current_page >= total_pages:
                 demisto.debug(f"[SOCRadar] Reached last page ({current_page}/{total_pages})")
                 break
@@ -715,7 +715,7 @@ def fetch_incidents(
             "last_fetch": start_date,
             "start_date": start_date,
             "end_date": end_date,
-            'exception': str(e),
+            "exception": str(e),
         }, []
 
 
@@ -942,7 +942,6 @@ def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
         message += f"Full error:\n{traceback.format_exc()}"
 
         return CommandResults(readable_output=message, raw_response={"error": error_msg, "traceback": traceback.format_exc()})
-
 
 
 def main() -> None:
