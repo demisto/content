@@ -49,7 +49,19 @@ def convert_to_demisto_severity(severity: str) -> int:
 def fetch_incidents(client: Client, last_run: dict[str, Any]) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Fetches new incidents from Threatmon API using pagination and latest lastIncidentId logic."""
 
-    last_incident_id = last_run.get("last_incident_id", None) or demisto.params().get("lastIncidentId", None)
+    last_incident_id = last_run.get("last_incident_id")
+
+    if last_incident_id is None:
+        last_incident_id = demisto.params().get("lastIncidentId")
+
+    if last_incident_id is None:
+        last_incident_id = 0
+
+    try:
+        last_incident_id = int(last_incident_id)
+    except (ValueError, TypeError):
+        last_incident_id = 0
+
     page = int(last_run.get("page", 0))  # Get last stored page or default to 0
     incidents = []
 
@@ -63,7 +75,13 @@ def fetch_incidents(client: Client, last_run: dict[str, Any]) -> tuple[list[dict
             break  # No more data to fetch
 
         for alert in alerts:
-            incident_id = alert.get("alarmCode")
+            incident_id = 0
+            raw_alarm_code = alert.get("alarmCode")
+            if raw_alarm_code is not None:
+                try:
+                    incident_id = int(raw_alarm_code)
+                except (ValueError, TypeError):
+                    demisto.debug(f"Invalid alarmCode value received from API: {raw_alarm_code}. " "Defaulting incident_id to 0.")
             title = alert.get("title", "Unknown Threat")
             description = alert.get("description", "No description available")
             severity = alert.get("severity", "Low")

@@ -2259,6 +2259,55 @@ script:
       - description: The name of the rule to get.
         name: security_rule_name
         required: true
+  - name: azure-nsg-security-rules-list
+    description: Gets all security rules in a network security group.
+    arguments:
+      - description: The subscription ID.
+        name: subscription_id
+        type: String
+        required: true
+      - description: Resource group name.
+        name: resource_group_name
+        type: String
+        required: true
+      - description: The name of the network security group.
+        name: network_security_group_name
+        type: String
+        required: true
+    outputs:
+      - contextPath: Azure.NSGRule.name
+        description: The rule's name.
+        type: String
+      - contextPath: Azure.NSGRule.id
+        description: The rule's ID.
+        type: String
+      - contextPath: Azure.NSGRule.properties.provisioningState
+        description: The rule's provisioning state.
+        type: String
+      - contextPath: Azure.NSGRule.properties.protocol
+        description: The protocol, which can be "TCP", "UDP", "ICMP", or "*".
+        type: String
+      - contextPath: Azure.NSGRule.properties.sourcePortRange
+        description: For a single port, the source port or a range of ports.
+        type: String
+      - contextPath: Azure.NSGRule.properties.destinationPortRange
+        description: For a single port, the destination port or range of ports.
+        type: String
+      - contextPath: Azure.NSGRule.properties.sourceAddressPrefix
+        description: The source address.
+        type: String
+      - contextPath: Azure.NSGRule.properties.destinationAddressPrefix
+        description: The destination address.
+        type: String
+      - contextPath: Azure.NSGRule.properties.access
+        description: The rule's access. Can be "Allow" or "Deny".
+        type: String
+      - contextPath: Azure.NSGRule.properties.priority
+        description: The rule’s priority, ranging from 100 to 4096.
+        type: Number
+      - contextPath: Azure.NSGRule.properties.direction
+        description: The rule's direction, which can be "Inbound" or "Outbound".
+        type: String
   - name: azure-nsg-security-rule-create
     description: Create a security rule.
     outputs:
@@ -6090,7 +6139,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.5490413
+  dockerimage: demisto/crypto:1.0.0.6932158
 fromversion: 8.11.0
 supportsquickactions: true
 isCloudProviderIntegration: true
