@@ -78,6 +78,12 @@ script:
     - contextPath: CheckPoint.Host.type
       description: Object type.
       type: String
+    - contextPath: CheckPoint.Host.ipv4
+      description: IPv4 address of the host.
+      type: String
+    - contextPath: CheckPoint.Host.ipv6
+      description: IPv6 address of the host.
+      type: String
     - contextPath: CheckPoint.Host.ipv4-address
       description: IPv4 address of the host.
       type: String
@@ -284,10 +290,8 @@ script:
       - ip_address
     - description: Interface name.
       name: interfaces_name
-      required: true
     - description: IPv4.
       name: interfaces_subnet
-      required: true
     - description: IPv4.
       name: interfaces_mask_length
     - description: Tags to assign.
@@ -1346,7 +1350,7 @@ script:
       - Ask
       - Prevent
       - Detect
-    - description: <Profiles to apply this indicator to>_<The indicator's action in this profile.>
+    - description: <Profiles to apply this indicator to>_<The indicator's action in this profile.>.
       isArray: true
       name: profile_action
     - description: Comments string.
@@ -2721,7 +2725,7 @@ script:
     outputs:
     - contextPath: CheckPoint.DeletedThreatProtections
       description: ''
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.7444307
   runonce: false
   script: ''
   subtype: python3

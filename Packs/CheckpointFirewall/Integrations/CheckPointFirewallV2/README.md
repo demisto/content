@@ -55,8 +55,22 @@ Show all host objects
 | CheckPoint.Host.name | String | object name |
 | CheckPoint.Host.uid | String | object uid |
 | CheckPoint.Host.type | String | object type |
-| CheckPoint.Host.ipv4 | String | IP-v4 address of a spesific host |
-| CheckPoint.Host.ipv6 | String | IP-v4 address of a spesific host |
+| CheckPoint.Host.ipv4 | String | IPv4 address of the host. |
+| CheckPoint.Host.ipv6 | String | IPv6 address of the host. |
+| CheckPoint.Host.ipv4-address | String | IPv4 address of the host. |
+| CheckPoint.Host.ipv6-address | String | IPv6 address of the host. |
+| CheckPoint.Host.domain-name | String | Domain name. |
+| CheckPoint.Host.domain-uid | String | Domain UID. |
+| CheckPoint.Host.domain-type | String | Domain type. |
+| CheckPoint.Host.creator | String | The creator of the object. |
+| CheckPoint.Host.last-modifier | String | The user that last modified the object. |
+| CheckPoint.Host.read-only | Boolean | Indicates if the object is read-only. |
+| CheckPoint.Host.color | String | Color of the object. |
+| CheckPoint.Host.comments | String | Comments string. |
+| CheckPoint.Host.tags | Unknown | Collection of tag objects associated with the host. |
+| CheckPoint.Host.nat-settings | Unknown | NAT settings for the host. |
+| CheckPoint.Host.interfaces | Unknown | Host interfaces. |
+| CheckPoint.Host.groups | Unknown | Collection of group identifiers. |
 
 #### Command Example
 
@@ -183,6 +197,11 @@ get all data of a given host
 | CheckPoint.Host.last-modifier | String | indicates the last user modified the object |
 | CheckPoint.Host.groups-name | String | Group object name linked to current host object. |
 | CheckPoint.Host.groups-uid | Unknown | Group object uid linked to current host object. |
+| CheckPoint.Host.nat-settings | Unknown | NAT settings for the host. |
+| CheckPoint.Host.color | String | Color of the object. |
+| CheckPoint.Host.comments | String | Comments string. |
+| CheckPoint.Host.tags | Unknown | Collection of tag objects associated with the host. |
+| CheckPoint.Host.interfaces | Unknown | Host interfaces. |
 
 #### Command Example
 
@@ -244,8 +263,8 @@ Add new host
 | nat_ip | IPv4. This parameter is not required in case nat_method parameter is "hide" and nat_hide_behind parameter is "gateway". | Optional |
 | nat_install_on | Gateway for NAT rule. | Optional |
 | nat_hide_behind | Hide behind method. This parameter is forbidden in case "nat_method" parameter is "static". Possible values are: gateway, ip_address. | Optional |
-| interfaces_name | Interface name. | Required |
-| interfaces_subnet | IPv4. | Required |
+| interfaces_name | Interface name. | Optional |
+| interfaces_subnet | IPv4. | Optional |
 | interfaces_mask_length | IPv4. | Optional |
 | tags | Tags to assign. | Optional |
 
@@ -265,6 +284,11 @@ Add new host
 | CheckPoint.Host.ipv6-address | String | IP address |
 | CheckPoint.Host.read-only | String | indicates if the object is read only |
 | CheckPoint.Host.groups | String | Collection of group identifiers |
+| CheckPoint.Host.nat-settings | Unknown | NAT settings for the host. |
+| CheckPoint.Host.color | String | Color of the object. |
+| CheckPoint.Host.comments | String | Comments string. |
+| CheckPoint.Host.tags | Unknown | Collection of tag objects associated with the host. |
+| CheckPoint.Host.interfaces | Unknown | Host interfaces. |
 
 #### Command Example
 
@@ -349,6 +373,11 @@ update host changes
 | CheckPoint.Host.read-only | Boolean | IP address |
 | CheckPoint.Host.group-name | String | Group object name linked to the host. |
 | CheckPoint.Host.group-uid | String | Group object name linked to the host |
+| CheckPoint.Host.nat-settings | Unknown | NAT settings for the host. |
+| CheckPoint.Host.color | String | Color of the object. |
+| CheckPoint.Host.comments | String | Comments string. |
+| CheckPoint.Host.tags | Unknown | Collection of tag objects associated with the host. |
+| CheckPoint.Host.interfaces | Unknown | Host interfaces. |
 
 #### Command Example
 
@@ -457,6 +486,9 @@ Show a list of all groups
 | CheckPoint.Group.name | String | object's name |
 | CheckPoint.Group.uid | String | object's uid |
 | CheckPoint.Group.type | String | Type of the object |
+| CheckPoint.Group.tags | Unknown | Collection of tag objects associated with the group. |
+| CheckPoint.Group.comments | String | Comments string. |
+| CheckPoint.Group.color | String | Color of the object. |
 
 #### Command Example
 
@@ -657,6 +689,9 @@ add a group
 | CheckPoint.Group.last-modifier | String | Indicates the last user modified the object |
 | CheckPoint.Group.read-only | Boolean | Indicates whether the object is read-only |
 | CheckPoint.Group.groups-name | Unknown | groups name |
+| CheckPoint.Group.tags | Unknown | Collection of tag objects associated with the group. |
+| CheckPoint.Group.comments | String | Comments string. |
+| CheckPoint.Group.color | String | Color of the object. |
 
 #### Command Example
 
@@ -727,6 +762,9 @@ update group object
 | CheckPoint.Group.creator | String | Indicates the creator of the object |
 | CheckPoint.Group.last-modifier | String | Indicates the lasr user modified the object |
 | CheckPoint.Group.read-only | Boolean | Indicates if the object is read only |
+| CheckPoint.Group.tags | Unknown | Collection of tag objects associated with the group. |
+| CheckPoint.Group.comments | String | Comments string. |
+| CheckPoint.Group.color | String | Color of the object. |
 
 #### Command Example
 
@@ -1050,6 +1088,10 @@ Update an address range object
 | CheckPoint.AddressRange.ipv6-address-last | String | Last IPv6 address in the range |
 | CheckPoint.AddressRange.read-only | Boolean | Indicates whether the object is read-only. |
 | CheckPoint.AddressRange.groups | String | List of all groups the address range is linked to |
+| CheckPoint.AddressRange.color | String | Color of the object. |
+| CheckPoint.AddressRange.nat-settings | Unknown | NAT settings for the address range. |
+| CheckPoint.AddressRange.comments | String | Comments string. |
+| CheckPoint.AddressRange.tags | Unknown | Collection of tag objects associated with the address range. |
 
 #### Command Example
 
@@ -1394,6 +1436,9 @@ Update a given indicator
 | CheckPoint.ThreatIndicator.creator | String | Indicates the creator of the object |
 | CheckPoint.ThreatIndicator.last-modifier | String | Indicates the last user modified the object |
 | CheckPoint.ThreatIndicator.read-only | Boolean | Indicates whether the object is read-only. |
+| CheckPoint.ThreatIndicator.color | String | Color of the object. |
+| CheckPoint.ThreatIndicator.profile | Unknown | Profile overrides for the threat indicator. |
+| CheckPoint.ThreatIndicator.tags | Unknown | Collection of tag objects associated with the threat indicator. |
 
 #### Command Example
 
@@ -2028,6 +2073,9 @@ Add application site
 | CheckPoint.ApplicationSite.creator | String | Indicates the creator of the object |
 | CheckPoint.ApplicationSite.last-modifier | String | Indicates the last user modified this object |
 | CheckPoint.ApplicationSite.groups | Unknown | Collection of group identifiers |
+| CheckPoint.ApplicationSite.comments | String | Comments string. |
+| CheckPoint.ApplicationSite.tags | Unknown | Collection of tag objects associated with the application site. |
+| CheckPoint.ApplicationSite.color | String | Color of the object. |
 
 #### Command Example
 
@@ -2108,6 +2156,9 @@ It's impossible to set  'application-signature' when the application was initial
 | CheckPoint.ApplicationSite.url-list | String | URLs that determine this particular application. |
 | CheckPoint.ApplicationSite.groups | String | Collection of group identifiers |
 | CheckPoint.ApplicationSite.primary-category | String | Objects primary category. |
+| CheckPoint.ApplicationSite.comments | String | Comments string. |
+| CheckPoint.ApplicationSite.tags | Unknown | Collection of tag objects associated with the application site. |
+| CheckPoint.ApplicationSite.color | String | Color of the object. |
 
 #### Command Example
 

@@ -143,10 +143,7 @@ class Client(BaseClient):
         body: dict = {"name": identifier}
         if details_level:
             body["details-level"] = details_level
-        demisto.debug(
-            f"{demisto.command()}: endpoint='show-host', "
-            f"args=({identifier=}, {details_level=}), body={body}"
-        )
+        demisto.debug(f"{demisto.command()}: endpoint='show-host', " f"args=({identifier=}, {details_level=}), body={body}")
         return self._http_request(method="POST", url_suffix="show-host", headers=self.headers, json_data=body)
 
     def add_host(
@@ -271,10 +268,7 @@ class Client(BaseClient):
         body: dict = {"name": identifier}
         if details_level:
             body["details-level"] = details_level
-        demisto.debug(
-            f"{demisto.command()}: endpoint='show-group', "
-            f"args=({identifier=}, {details_level=}), body={body}"
-        )
+        demisto.debug(f"{demisto.command()}: endpoint='show-group', " f"args=({identifier=}, {details_level=}), body={body}")
         return self._http_request(method="POST", url_suffix="show-group", headers=self.headers, json_data=body)
 
     def add_group(
