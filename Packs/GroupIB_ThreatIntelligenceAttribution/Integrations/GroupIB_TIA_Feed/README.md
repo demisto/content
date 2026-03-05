@@ -74,7 +74,8 @@ Once the configuration is complete, the following collections become available i
 | Number of requests per collection | Number of API requests per collection in each fetch iteration (default: 2). Each request picks up to 100 (limit) objects with different amount of indicators. If you face runtime errors, lower the value. | False |
 | Limit (items per request) | Specifies the number of records fetched per API request (default: 100). This limit applies to all collections in the instance. For optimal performance, check the [official API Limitations documentation](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FStarting%20Guide%2FAPI%20Limitations%2FAPI%20Limitations) for recommended limit values per collection. Best practice: create separate integration instances for different collections or groups of collections with similar optimal limit values. | False |
 | Tags | Enter tags for indicators if needed. | False |
-| Traffic Light Protocol Color | Select the Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. Options: RED, AMBER, GREEN, WHITE (default: AMBER). | False |
+| Traffic Light Protocol Color | Select the Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. Options: RED, AMBER, GREEN, WHITE. When **Use TLP from source** is disabled, this value is applied to all indicators. When **Use TLP from source** is enabled, this value is used only as a fallback when Group-IB does not provide TLP for an indicator. | False |
+| Use TLP from source (per indicator) | When **enabled**, each indicator gets its TLP from Group-IB when the source provides it (see [TLP per indicator](#traffic-light-protocol-tlp-per-indicator) for the list of collections). For **ioc/common**, TLP is always set to **AMBER**. The **Traffic Light Protocol Color** setting is then used only as a fallback when the source has no TLP. When **disabled**, all indicators use the single **Traffic Light Protocol Color** selected above. | False |
 | Indicator Expiration Method | Configure how indicators expire. Options: Time Interval, Never Expire, When removed from the feed. | False |
 
 ## Additional Resources
@@ -82,6 +83,18 @@ Once the configuration is complete, the following collections become available i
 For detailed information about collections, their structure, available fields, and recommended date ranges, refer to the [official Collections Details documentation](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FCollections%20Info%2FCollections%20Details%2FCollections%20Details).
 
 For step-by-step configuration instructions including classifier and mapper setup, refer to the integration description file.
+
+### Traffic Light Protocol (TLP) per indicator
+
+By default, the integration applies a single **Traffic Light Protocol Color** to all indicators (the one selected in the integration settings). If you want each indicator to keep the TLP value provided by Group-IB for that record, enable **Use TLP from source (per indicator)**.
+
+**When Use TLP from source is enabled:**
+
+- **Collections that receive TLP from Group-IB** (when the source provides it): `compromised/account_group`, `compromised/bank_card_group`, `attacks/ddos`, `attacks/deface`, `attacks/phishing_kit`, `attacks/phishing_group`, `apt/threat`, `hi/threat`, `osi/vulnerability`, `osi/git_repository`, `suspicious_ip/tor_node`, `suspicious_ip/open_proxy`, `suspicious_ip/socks_proxy`, `suspicious_ip/vpn`, `suspicious_ip/scanner`.
+- **ioc/common**: TLP is always set to **AMBER** (Group-IB does not provide TLP for this collection).
+- If Group-IB does not provide TLP for an indicator, the **Traffic Light Protocol Color** setting is used as fallback for that indicator. So the integration-level TLP applies only when the source has no TLP for the given record.
+
+**When Use TLP from source is disabled:** All indicators receive the same TLP from the **Traffic Light Protocol Color** setting.
 
 ## Commands
 

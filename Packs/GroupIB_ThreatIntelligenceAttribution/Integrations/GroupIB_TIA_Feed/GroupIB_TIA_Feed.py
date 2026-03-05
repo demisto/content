@@ -50,6 +50,7 @@ COMMON_MAPPING = {
             "country_name": "events.client.ipv4.countryName",
             "region": "events.client.ipv4.region",
             "service_url": "service.url",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "compromised/bank_card_group": {
@@ -80,6 +81,7 @@ COMMON_MAPPING = {
             "cnc_ipv4_asn": "events.cnc.ipv4.asn",
             "cnc_ipv4_country_name": "events.cnc.ipv4.countryName",
             "cnc_ipv4_region": "events.cnc.ipv4.region",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "compromised/mule": {
@@ -153,6 +155,7 @@ COMMON_MAPPING = {
             "evaluation_credibility": "evaluation.credibility",
             "evaluation_admiralty_code": "evaluation.admiraltyCode",
             "evaluation_severity": "evaluation.severity",
+            "evaluation_tlp": "evaluation.tlp",
             "cnc_url": "cnc.url",
             "cnc_domain": "cnc.domain",
             "cnc_ipv4_ip": "cnc.ipv4.ip",
@@ -250,6 +253,7 @@ COMMON_MAPPING = {
             "target_ipv4_asn": "target.ipv4.asn",
             "target_ipv4_country_name": "target.ipv4.countryName",
             "target_ipv4_region": "target.ipv4.region",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "attacks/deface": {
@@ -304,6 +308,7 @@ COMMON_MAPPING = {
             "evaluation_credibility": "evaluation.credibility",
             "evaluation_admiralty_code": "evaluation.admiraltyCode",
             "evaluation_severity": "evaluation.severity",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "attacks/phishing_kit": {
@@ -330,6 +335,7 @@ COMMON_MAPPING = {
             "evaluation_credibility": "evaluation.credibility",
             "evaluation_admiralty_code": "evaluation.admiraltyCode",
             "evaluation_severity": "evaluation.severity",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "attacks/phishing_group": {
@@ -361,6 +367,7 @@ COMMON_MAPPING = {
             "evaluation_credibility": "evaluation.credibility",
             "evaluation_admiralty_code": "evaluation.admiraltyCode",
             "evaluation_severity": "evaluation.severity",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "apt/threat": {
@@ -448,6 +455,7 @@ COMMON_MAPPING = {
             "evaluation_credibility": "evaluation.credibility",
             "evaluation_admiralty_code": "evaluation.admiraltyCode",
             "evaluation_severity": "evaluation.severity",
+            "evaluation_tlp": "evaluation.tlp",
             "malware_list_names": "malwareList.name",
         },
     },
@@ -532,6 +540,7 @@ COMMON_MAPPING = {
             "evaluation_credibility": "evaluation.credibility",
             "evaluation_admiralty_code": "evaluation.admiraltyCode",
             "evaluation_severity": "evaluation.severity",
+            "evaluation_tlp": "evaluation.tlp",
             "indicators_params_name": "indicators.params.name",
             "indicators_params_hashes_sha1": "indicators.params.hashes.sha1",
             "indicators_params_hashes_sha256": "indicators.params.hashes.sha256",
@@ -607,6 +616,7 @@ COMMON_MAPPING = {
             "evaluation_credibility": "evaluation.credibility",
             "evaluation_admiralty_code": "evaluation.admiraltyCode",
             "evaluation_severity": "evaluation.severity",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "suspicious_ip/socks_proxy": {
@@ -639,6 +649,7 @@ COMMON_MAPPING = {
             "evaluation_credibility": "evaluation.credibility",
             "evaluation_admiralty_code": "evaluation.admiraltyCode",
             "evaluation_severity": "evaluation.severity",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "suspicious_ip/vpn": {
@@ -691,6 +702,7 @@ COMMON_MAPPING = {
             "ipv4_asn": "ipv4.asn",
             "ipv4_country_name": "ipv4.countryName",
             "ipv4_region": "ipv4.region",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "malware/cnc": {
@@ -787,6 +799,7 @@ COMMON_MAPPING = {
             "evaluation_credibility": "evaluation.credibility",
             "evaluation_admiralty_code": "evaluation.admiraltyCode",
             "evaluation_severity": "evaluation.severity",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "osi/git_repository": {
@@ -806,6 +819,7 @@ COMMON_MAPPING = {
             "id": "id",
             "hash": "files.revisions.hash",
             "contributors_emails": "contributors.authorEmail",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "ioc/common": {
@@ -881,15 +895,48 @@ class Client(BaseClient):
         apply_hunting_rules: int | str | None = None,
         limit: int | str | None = None,
     ):
+        sequpdate_for_generator = sequpdate
+        date_from_for_generator = date_from
+        if not sequpdate_for_generator and date_from_for_generator:
+            try:
+                demisto.debug(
+                    "[Client.create_update_generator_proxy_functions] Resolving initial seqUpdate via sequence_list: "
+                    f"collection={collection_name}, date_from={date_from_for_generator}, "
+                    f"apply_hunting_rules={apply_hunting_rules}",
+                )
+                seq_map = self.poller.get_seq_update_dict(
+                    date=date_from_for_generator,
+                    collection_name=collection_name,
+                    apply_hunting_rules=apply_hunting_rules,
+                )
+                resolved_seq = seq_map.get(collection_name)
+                if resolved_seq:
+                    sequpdate_for_generator = resolved_seq
+                    date_from_for_generator = None
+                    demisto.debug(
+                        f"[Client.create_update_generator_proxy_functions] "
+                        f"Using resolved seqUpdate={resolved_seq}; dropping date_from",
+                    )
+                else:
+                    demisto.debug(
+                        "[Client.create_update_generator_proxy_functions] "
+                        "sequence_list returned empty for collection; fallback to date_from",
+                    )
+            except Exception as e:
+                demisto.debug(
+                    f"[Client.create_update_generator_proxy_functions] "
+                    f"sequence_list resolution failed: {e}; fallback to date_from",
+                )
+
         demisto.debug(
             "[Client.create_update_generator_proxy_functions] Creating update generator: "
-            f"collection={collection_name}, date_from={date_from}, sequpdate={sequpdate}, "
+            f"collection={collection_name}, date_from={date_from_for_generator}, sequpdate={sequpdate_for_generator}, "
             f"apply_hunting_rules={apply_hunting_rules}, limit={limit}"
         )
         return self.poller.create_update_generator(
             collection_name=collection_name,
-            date_from=date_from,
-            sequpdate=sequpdate,
+            date_from=date_from_for_generator,
+            sequpdate=sequpdate_for_generator,
             apply_hunting_rules=apply_hunting_rules,
             limit=limit,
         )
@@ -914,6 +961,18 @@ def test_module(client: Client) -> str:
 
 
 """ Support functions """
+
+VALID_TLP_VALUES = ("RED", "AMBER", "GREEN", "WHITE")
+IOC_COMMON_COLLECTION = "ioc/common"
+DEFAULT_TLP_IOC_COMMON = "AMBER"
+
+
+def normalize_tlp(value: str | None) -> str | None:
+    """Normalize TLP from API (e.g. 'amber') to XSOAR format (e.g. 'AMBER')."""
+    if not value or not isinstance(value, str):
+        return None
+    normalized = value.strip().upper()
+    return normalized if normalized in VALID_TLP_VALUES else None
 
 
 class IndicatorBuilding:
@@ -940,6 +999,28 @@ class IndicatorBuilding:
         self.limit = limit
         self.collection_mapping = collection_mapping
         self.build_for_comand = build_for_comand
+
+    def get_tlp_for_indicator(self, feed: dict) -> str | None:
+        """
+        Resolve TLP for a single indicator. When use_tlp_from_source is enabled, use
+        evaluation.tlp from the feed item; for ioc/common use AMBER when missing; otherwise
+        use integration-level TLP as fallback. When disabled, use integration-level TLP for all.
+        """
+        use_tlp_from_source = self.common_fields.get("use_tlp_from_source") is True
+        fallback_tlp = self.common_fields.get("trafficlightprotocol")
+
+        if not use_tlp_from_source:
+            return fallback_tlp
+
+        raw_tlp = feed.get("evaluation_tlp")
+        raw_tlp = self.extract_single_value(raw_tlp) if raw_tlp is not None else None
+        tlp = normalize_tlp(raw_tlp)
+
+        if tlp:
+            return tlp
+        if self.collection_name == IOC_COMMON_COLLECTION:
+            return DEFAULT_TLP_IOC_COMMON
+        return fallback_tlp
 
     @staticmethod
     def clean_data(data):
@@ -1115,7 +1196,7 @@ class IndicatorBuilding:
 
                     add_fields.update(
                         {
-                            "trafficlightprotocol": self.common_fields.get("trafficlightprotocol"),
+                            "trafficlightprotocol": self.get_tlp_for_indicator(feed),
                             "gibcollection": self.collection_name,
                         }
                     )
@@ -1449,9 +1530,11 @@ def main():  # pragma: no cover
             # Set and define the fetch incidents command to run after activated via integration settings.
             tlp_color = params.get("tlp_color")
             tags = argToList(params.get("feedTags"))
+            use_tlp_from_source = params.get("use_tlp_from_source") is True
             common_fields = {
                 "trafficlightprotocol": tlp_color,
                 "tags": tags,
+                "use_tlp_from_source": use_tlp_from_source,
             }
             demisto.debug(
                 "[main] Launching fetch-indicators with: "

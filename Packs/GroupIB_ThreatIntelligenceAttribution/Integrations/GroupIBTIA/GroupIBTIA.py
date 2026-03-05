@@ -1964,9 +1964,7 @@ class IndicatorsHelper:
     ) -> dict[str, Any]:
         """Build scoring and graph IP enrichment block."""
         data: dict[str, Any] = {}
-        # Commented as an update is required: https://github.com/demisto/dockerfiles/pull/41838
-        # scoring = poller.scoring(indicator_value)
-        scoring = {"items": {indicator_value: {"ip": indicator_value, "riskScore": 35}}}
+        scoring = poller.scoring(indicator_value)
         score = scoring.get("items", {}).get(indicator_value, {}).get("riskScore")
         data.update({"scoring": {"score": score}})
 
