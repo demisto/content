@@ -1,6 +1,6 @@
 ## Obtain Authentication Parameters
 
-To successfully connect to the Censys Platform API v3, the integration requires a Personal Access Token (PAT) and an Organization ID.
+To connect to the Censys API v3 integration, you need your Personal Access Token (PAT) and Organization ID.
 
 ### Step 1: Create a Personal Access Token
 1. Log in to the [Censys Platform](https://platform.censys.io/).
