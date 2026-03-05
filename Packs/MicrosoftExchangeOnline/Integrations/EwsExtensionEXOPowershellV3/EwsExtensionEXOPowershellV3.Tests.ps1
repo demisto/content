@@ -162,10 +162,9 @@ Describe 'EXOGetQuarantineMessageCommand' {
 
 Describe 'TestModuleCommand' {
     It "Returns 'ok' on success" {
-        $mockDemisto = @{
-            results = { param($val) $script:testResult = $val }
-            Debug = { param($val) }
-        }
+        $mockDemisto = New-Object PSObject
+        $mockDemisto | Add-Member -MemberType ScriptMethod -Name "results" -Value { param($val) $script:testResult = $val }
+        $mockDemisto | Add-Member -MemberType ScriptMethod -Name "Debug" -Value { param($val) }
         $demisto = $mockDemisto
         $Demisto = $mockDemisto
 
@@ -175,9 +174,8 @@ Describe 'TestModuleCommand' {
     }
 
     It "Throws exception on failure" {
-        $mockDemisto = @{
-            Debug = { param($val) }
-        }
+        $mockDemisto = New-Object PSObject
+        $mockDemisto | Add-Member -MemberType ScriptMethod -Name "Debug" -Value { param($val) }
         $demisto = $mockDemisto
         $Demisto = $mockDemisto
         { TestModuleCommand -client $mockErrorClient } | Should -Throw "Connection failed"
