@@ -105,7 +105,7 @@ configuration:
   - WEB_UI
   additionalinfo: |-
     Used only when `Determine IP score by labels` is set.
-   Labels to define an IP as malicious.
+    Labels to define an IP as malicious.
     Labels can be grouped in an array or comma-separated.
   section: Collect
 - display: IP suspicious labels
@@ -168,7 +168,7 @@ configuration:
   additionalinfo: |-
     Used when `Determine IP score by labels` is set.
     Labels to define an IP as suspicious.
-   Labels can be grouped in an array or comma-separated.
+    Labels can be grouped in an array or comma-separated.
   section: Collect
 - display: Malicious labels threshold
   name: malicious_labels_threshold
@@ -196,7 +196,7 @@ configuration:
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data.
   section: Connect
-description: Censys is a search engine that allows computer scientists to ask questions about the devices and networks that compose the internet. Driven by internet-wide scanning, Censys lets researchers find specific hosts and create aggregate reports on how devices, and certificates are configured and deployed.
+description: Built on the industry’s most comprehensive Internet Map, the Censys Platform delivers unmatched visibility into global internet assets, adversary infrastructure, and evolving threats.
 display: Censys v2
 name: CensysV2
 script:
