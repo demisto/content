@@ -1,0 +1,149 @@
+args:
+- default: true
+  description: The phone number to send SMS to in E.164 format (e.g., +12345678900)
+  name: phone
+  required: true
+- description: The message to ask the user
+  name: message
+  required: true
+- description: First option for a user reply. "yes" is the default.
+  name: option1
+- description: Second option for the user reply. "no" is the default.
+  name: option2
+- description: Third option for a user reply (optional).
+  name: option3
+- description: Fourth option for a user reply (optional).
+  name: option4
+- description: Which task should we close with the reply. If none then no playbook tasks will be closed.
+  name: task
+- description: Tag to add on SMS reply entries
+  name: replyEntriesTag
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: Indicates whether to use one-time entitlement or a persistent one
+  name: persistent
+  predefined:
+  - "true"
+  - "false"
+comment: Ask a user a question via SMS and expect a response. The response can also close a task (might be conditional) in a playbook.
+commonfields:
+  id: SMSAskUser
+  version: -1
+dependson:
+  must:
+  - send-notification
+name: SMSAskUser
+runonce: false
+script: |-
+  # VERSION: 1.0.4
+  # CHANGELOG:
+  # v1.0.4 - Added support for option3 and option4 (2-4 options total)
+  # v1.0.3 - Fixed Python 2 compatibility (replaced f-strings with .format())
+  # v1.0.2 - Added debug logging for task ID parameter, explicit string conversion and whitespace handling
+  # v1.0.1 - Added versioning, comments, and improved code readability
+  # v1.0.0 - Initial release
+
+  """
+  SMSAskUser Automation Script
+
+  Ask a user a question via SMS using AWS SNS SMS Communication integration
+  and expect a response. This script is the ONLY supported way to implement
+  Ask-style functionality with SMS (built-in XSOAR Ask tasks show URLs which
+  don't work with SMS reply handling).
+
+  Supports 2-4 options via option1, option2, option3, option4 parameters.
+
+  How it works:
+  1. Creates an entitlement GUID via addEntitlement command
+  2. Formats message as: "Question - Reply option1 or option2 [or option3 [or option4]]: GUID@incident|task"
+  3. Integration extracts GUID and options, generates reply codes
+  4. Sends SMS: "Question\noption1 (1234) or option2 (5678) [or option3 (9012) [or option4 (3456)]]"
+  5. User replies with code number (e.g., "1234")
+  6. Integration maps code -> option -> entitlement -> task resumption
+  """
+
+  # Create entitlement for tracking the user's response
+  entitlement_args = {
+      'persistent': demisto.get(demisto.args(), 'persistent'),
+      'replyEntriesTag': demisto.get(demisto.args(), 'replyEntriesTag')
+  }
+  res = demisto.executeCommand('addEntitlement', entitlement_args)
+
+  # Check if entitlement creation failed
+  if isError(res[0]):
+      demisto.results(res)
+      sys.exit(0)
+
+  # Extract the entitlement GUID from the response
+  entitlement = demisto.get(res[0], 'Contents')
+
+  # Get user options (default to yes/no if not specified)
+  option1 = demisto.get(demisto.args(), 'option1')
+  if not option1:
+      option1 = 'yes'
+
+  option2 = demisto.get(demisto.args(), 'option2')
+  if not option2:
+      option2 = 'no'
+
+  option3 = demisto.get(demisto.args(), 'option3')
+  option4 = demisto.get(demisto.args(), 'option4')
+
+  # Build options list (2-4 options)
+  options = [option1, option2]
+  if option3:
+      options.append(option3)
+  if option4:
+      options.append(option4)
+
+  # Build entitlement string: GUID@incident_id|task_id
+  # Format: abc-123-def@42|task_001
+  incident_id = demisto.investigation()['id']
+  entitlement_string = entitlement + '@' + incident_id
+
+  # Append task ID if specified (used for closing specific playbook tasks)
+  task_id = demisto.get(demisto.args(), 'task')
+
+  # DEBUG: Log what we received
+  demisto.debug("SMSAskUser - Received task parameter: {}, type: {}".format(repr(task_id), type(task_id)))
+
+  # Convert to string and strip whitespace if present
+  if task_id:
+      task_id = str(task_id).strip()
+      if task_id:  # Check again after stripping
+          entitlement_string += '|' + task_id
+          demisto.debug("SMSAskUser - Appended task ID to entitlement: {}".format(entitlement_string))
+      else:
+          demisto.debug("SMSAskUser - Task ID was empty after stripping whitespace")
+  else:
+      demisto.debug("SMSAskUser - No task ID provided")
+
+  # Format message for SMS integration to parse
+  # Format: "Question - Reply option1 or option2 [or option3 [or option4]]: GUID@incident|task"
+  # Integration will extract options and GUID, then generate reply codes
+  user_message = demisto.args()['message']
+  options_text = ' or '.join(options)
+  formatted_message = '%s - Reply %s: %s' % (
+      user_message,
+      options_text,
+      entitlement_string
+  )
+
+  demisto.debug("SMSAskUser - Formatted message: {}".format(formatted_message))
+
+  # Send the notification via AWS SNS SMS Communication integration
+  phone_number = demisto.get(demisto.args(), 'phone')
+  send_args = {
+      'to': phone_number,
+      'message': formatted_message
+  }
+
+  # Execute send-notification command and return results to the user
+  demisto.results(demisto.executeCommand('send-notification', send_args))
+scripttarget: 0
+system: true
+tags:
+- sms
+- messaging
+type: python
+fromversion: 6.5.0
