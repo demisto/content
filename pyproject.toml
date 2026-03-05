@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "Cortex XSOAR content"
 authors = ["Cortex XSOAR"]
 license = "MIT"
-package-mode = false
 
 [[tool.poetry.source]]
 name = "pypi-public"
