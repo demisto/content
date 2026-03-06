@@ -1,31 +1,18 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GIB Compromised Card Group"
+        "GIB SPD"
     ],
     "caseInsensitive": true,
-    "cliName": "gibcompromisedeventstable",
-    "closeForm": true,
+    "cliName": "gibspdeventstable",
+    "closeForm": false,
     "columns": [
         {
-            "displayName": "CVV",
+            "displayName": "Compromised At",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "cvv",
-            "orgType": "shortText",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "Valid Thru Date",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "validthrudate",
+            "key": "compromisedat",
             "orgType": "date",
             "required": false,
             "script": "",
@@ -34,11 +21,37 @@
             "width": 150
         },
         {
-            "displayName": "Valid Thru",
+            "displayName": "Detected At",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "validthru",
+            "key": "detectedat",
+            "orgType": "date",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "date",
+            "width": 150
+        },
+        {
+            "displayName": "Source Name",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "sourcename",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 128
+        },
+        {
+            "displayName": "Source Type",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "sourcetype",
             "orgType": "shortText",
             "required": false,
             "script": "",
@@ -47,11 +60,24 @@
             "width": 150
         },
         {
-            "displayName": "Client IP",
+            "displayName": "Illegal Score",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "clientip",
+            "key": "illegalscore",
+            "orgType": "number",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "number",
+            "width": 150
+        },
+        {
+            "displayName": "Malware ID",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "malwareid",
             "orgType": "shortText",
             "required": false,
             "script": "",
@@ -60,11 +86,11 @@
             "width": 150
         },
         {
-            "displayName": "CNC",
+            "displayName": "Malware Name",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "cnc",
+            "key": "malwarename",
             "orgType": "shortText",
             "required": false,
             "script": "",
@@ -73,11 +99,11 @@
             "width": 150
         },
         {
-            "displayName": "CNC IP",
+            "displayName": "Threat Actor ID",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "cncip",
+            "key": "threatactorid",
             "orgType": "shortText",
             "required": false,
             "script": "",
@@ -97,71 +123,21 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150
-        },
-        {
-            "displayName": "Date Compromised",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "datecompromised",
-            "orgType": "date",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "date",
-            "width": 150
-        },
-        {
-            "displayName": "Victim Phone",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "victimphone",
-            "orgType": "shortText",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "Victim Name",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "victimname",
-            "orgType": "shortText",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "Malware",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "malware",
-            "orgType": "shortText",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
         }
     ],
     "content": true,
     "defaultRows": [
+        {},
+        {},
         {}
     ],
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_gibcompromisedeventstable",
+    "id": "incident_gibspdeventstable",
     "isReadOnly": false,
     "locked": false,
-    "name": "GIB Compromised Events Table",
+    "name": "GIB SPD Events Table",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
@@ -171,14 +147,11 @@
     "required": false,
     "sla": 0,
     "system": false,
-    "systemAssociatedTypes": [
-        "GIB Compromised Card Group"
-    ],
     "threshold": 72,
     "type": "grid",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.0.0"
 }

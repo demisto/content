@@ -28,13 +28,14 @@
         "GIB Suspicious IP Socks Proxy",
         "GIB Cybercriminal Threat Actor",
         "GIB Nation-State Cybercriminals Threat Actor",
-        "GIB Nation-State Cybercriminals Threat"
+        "GIB Nation-State Cybercriminals Threat",
+        "GIB SPD"
     ],
     "caseInsensitive": false,
     "cliName": "gibid",
     "closeForm": false,
     "content": true,
-    "description": "ID of event in GIB TIA",
+    "description": "ID of event in GIB TI",
     "editForm": true,
     "group": 0,
     "hidden": false,
@@ -84,6 +85,7 @@
         "GIB Suspicious IP Socks Proxy",
         "GIB Cybercriminal Threat Actor",
         "GIB Nation-State Cybercriminals Threat Actor",
-        "GIB Nation-State Cybercriminals Threat"
+        "GIB Nation-State Cybercriminals Threat",
+        "GIB SPD"
     ]
 }

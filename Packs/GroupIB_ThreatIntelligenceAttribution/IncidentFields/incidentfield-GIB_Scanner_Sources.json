@@ -10,7 +10,7 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "gibscannersources",
+    "id": "incident_gibscannersources",
     "isReadOnly": false,
     "itemVersion": "1.4.2",
     "locked": false,
