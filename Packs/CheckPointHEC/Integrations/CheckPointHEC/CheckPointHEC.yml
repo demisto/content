@@ -10,6 +10,7 @@ configuration:
   defaultvalue: ""
   type: 15
   options:
+  - https://smart-api-production-2-us.avanan.net
   - https://smart-api-production-1-us.avanan.net
   - https://smart-api-production-1-eu.avanan.net
   - https://smart-api-production-5-ap.avanan.net
@@ -1875,6 +1876,12 @@ script:
       - 'True'
       - 'False'
       required: false
+  - name: checkpointhec-download-large-email
+    description: Download large email file.
+    arguments:
+    - name: entity_id
+      description: Email entity id, currently available in the incident's mirror external id.
+      required: true
   isfetch: true
   runonce: false
   script: '-'

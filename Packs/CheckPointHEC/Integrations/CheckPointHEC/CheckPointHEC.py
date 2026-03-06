@@ -358,6 +358,12 @@ class Client(BaseClient):
             resp_type="content",
         )
 
+    def get_large_email_presigned_url(self, entity: str):
+        return self._call_api(
+            "GET",
+            f"download_large_email/entity/{entity}",
+        )
+
     def get_ap_exceptions(self, exc_type: str, exc_id: str = None):
         path = f"exceptions/{exc_type}/{exc_id}" if exc_id else f"exceptions/{exc_type}"
         return self._call_api("GET", path)
@@ -943,6 +949,23 @@ def checkpointhec_download_email(client: Client, args: dict) -> dict:
     entity: str = args["entity_id"]
     original: Optional[bool] = arg_to_bool(args.get("original"))
     eml = client.download_email(entity, original)
+
+    return fileResult(
+        filename=f"{entity}.eml",
+        data=eml,
+    )
+
+
+def checkpointhec_download_large_email(client: Client, args: dict) -> dict:
+    entity: str = args["entity_id"]
+
+    response = client.get_large_email_presigned_url(entity)
+    if url := response.get("responseData", {}).get("url"):
+        eml_response = requests.get(url)
+        if eml_response.status_code == 200:
+            eml = eml_response.content
+        else:
+            raise DemistoException(f"Error downloading email from presigned url, status code: {eml_response.status_code}")
 
     return fileResult(
         filename=f"{entity}.eml",
@@ -1594,6 +1617,8 @@ def main() -> None:  # pragma: no cover
             return_results(checkpointhec_report_mis_classification(client, args))
         elif command == "checkpointhec-download-email":
             return_results(checkpointhec_download_email(client, args))
+        elif command == "checkpointhec-download-large-email":
+            return_results(checkpointhec_download_large_email(client, args))
         elif command == "checkpointhec-get-ap-exceptions":
             return_results(checkpointhec_get_ap_exceptions(client, args))
         elif command == "checkpointhec-create-ap-exception":
