@@ -56,7 +56,10 @@ class RecoClient(BaseClient):
             base_url,
             verify=verify,
             proxy=proxy,
-            headers={"Authorization": f"Bearer {api_token}"},
+            headers={
+                "Authorization": f"Bearer {api_token}",
+                "User-Agent": f"xsoar/{get_pack_version()}",
+            },
         )
 
     def get_alerts(
