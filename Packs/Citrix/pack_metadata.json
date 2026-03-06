@@ -30,7 +30,6 @@
         "Citrix"
     ],
     "marketplaces": [
-        "marketplacev2",
-        "platform"
+        "xsoar"
     ]
 }
