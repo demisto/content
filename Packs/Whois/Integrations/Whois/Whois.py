@@ -9,7 +9,7 @@ import ipwhois
 from typing import Dict, List, Optional, Type
 import urllib
 import whois
-from whois.parser import PywhoisError  # pylint: disable=E0401,E0611
+from whois.parser import PywhoisError  # pylint:  disable=E0401,E0611
 import dateparser.search
 
 RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 0
