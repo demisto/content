@@ -154,6 +154,16 @@ script:
         - name: company_id
           description: Company ID for the alarm. If not provided, will be auto-fetched from alarm data. Can also use ${incident.socradarcompanyid} from incident fields.
           required: false
+        - name: update_related_finding_status
+          description: Decide whether to update related finding status.
+          auto: PREDEFINED
+          predefined:
+          - "True"
+          - "False"
+          required: false
+        - name: email
+          description: Email of action owner (required if update_related_finding_status is True).
+          required: false
       outputs:
         - contextPath: SOCRadar.Alarm.ID
           description: Alarm ID.
