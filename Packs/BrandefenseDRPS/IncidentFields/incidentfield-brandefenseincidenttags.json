@@ -1,0 +1,16 @@
+{
+    "id": "incident_brandefenseincidenttags",
+    "version": -1,
+    "name": "Brandefense Incident Tags",
+    "cliName": "brandefenseincidenttags",
+    "type": "grid",
+    "description": "Tags associated with the Brandefense incident.",
+    "group": 0,
+    "system": false,
+    "content": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Brandefense Incident"
+    ],
+    "fromVersion": "6.5.0"
+}

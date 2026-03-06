@@ -1,0 +1,1170 @@
+commonfields:
+  id: BrandefenseDRPS
+  version: -1
+name: BrandefenseDRPS
+display: Brandefense Digital Risk Protection Services
+category: Data Enrichment & Threat Intelligence
+description: 'Brandefense is a Cyber Intelligence Platform that responds directly
+  and effectively to today''s complex cyber threats.'
+detaileddescription: |-
+  Brandefense is a leading SaaS platform that offers innovative Digital Risk Protection Services (DRPS), External Attack Surface Management (EASM), and Actionable Threat Intelligence solutions. Our AI-driven technology helps organizations to significantly enhance their security posture and decrease response time to breaches.
+
+  Our next-generation technology continuously scans the online world, including the dark, deep, and surface web, to discover unknown events, automatically prioritize risks, and deliver actionable intelligence that can be used instantly to improve security. With our cutting-edge technology, you can rely on us to protect against cyber threats and safeguard your valuable digital assets.
+
+  To learn more about how Brandefense can help protect your organization from cyber threats, visit our website at www.brandefense.io
+defaultclassifier: Brandefense - Classifier
+defaultmapperin: Brandefense - Incoming Mapper
+configuration:
+- display: Server URL (e.g. https://api.brandefense.io)
+  name: url
+  defaultvalue: https://api.brandefense.io
+  type: 0
+  required: true
+- display: API Key
+  name: apikey
+  type: 4
+  required: true
+  additionalinfo: 'You can reach out your access token: https://brandefense.io/'
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "30"
+  type: 19
+  required: false
+  additionalinfo: Start fetching incidents from the specified time.
+- display: First time fetching
+  name: first_fetch
+  defaultvalue: 3 days
+  type: 0
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Max Results
+  name: MaxResults
+  defaultvalue: "30"
+  type: 0
+  required: false
+- display: Incident Category
+  name: IncidentCategory
+  type: 16
+  required: false
+  options:
+  - BRAND_MONITORING
+  - EXECUTIVE_PROTECTION
+  - EXPOSURE_MANAGEMENT
+  - INTELLIGENCE
+  - FRAUD_MONITORING
+  - INTELLIGENCE_SUPPORT
+  - INVESTIGATION
+  - THIRD_PARTY_RISK_MANAGEMENT
+  additionalinfo: This parameter will request and show the incident's related module
+    category.
+- display: Incident Module
+  name: IncidentModule
+  type: 16
+  required: false
+  options:
+  - SENSITIVE_FILE_DISCLOSURE
+  - BREACH_MONITORING
+  - PHISHING_MONITORING
+  - DARKWEB_INTELLIGENCE
+  - SOCIAL_MEDIA_MONITORING
+  - MALICIOUS_FILES
+  - EXECUTIVE_PROTECTION
+  - VULNERABILITY_MANAGEMENT
+  - ATTACK_SURFACE
+  - VULNERABILITY_INTELLIGENCE
+  - INTELLIGENCE
+  - THREAT_INTELLIGENCE
+  - CREDIT_CARD
+  - FRAUD_PROTECTION
+  - CUSTOM_INVESTIGATION
+  - MALWARE_ANALYZE
+  - INVESTIGATION
+  - THIRD_PARTY_RISK_MANAGEMENT
+  additionalinfo: This parameter will request and show the incident's related module.
+- display: Incident Status
+  name: IncidentStatus
+  defaultvalue: OPEN
+  type: 16
+  required: false
+  options:
+  - OPEN
+  - IN_PROGRESS
+  - CLOSED
+  - RISK_ACCEPTED
+  - REJECTED
+  additionalinfo: This parameter will request incident's by status.
+- display: Intelligence Category
+  name: IntelligenceCategory
+  type: 16
+  required: false
+  options:
+  - FRAUD_INTELLIGENCE
+  - STRATEGIC_INTELLIGENCE
+  - TACTICAL_INTELLIGENCE
+  - OPERATIONAL_INTELLIGENCE
+  - SECURITY_NEWS
+  - THREAT_REPORTS
+  additionalinfo: This parameter allows you to filter intelligence values by categories.
+- display: Intelligence Search
+  name: IntelligenceSearch
+  defaultvalue: CVE
+  type: 0
+  required: false
+  additionalinfo: This parameter allows you to filter intelligence values with keyword
+    search.
+- display: Fetching Issue Types
+  name: FetchingIssueTypes
+  defaultvalue: Incident,Intelligence
+  type: 16
+  required: true
+  options:
+  - Incident
+  - Intelligence
+  additionalinfo: This parameter allows you to filter fetching by issue type.
+- display: Incident Rules
+  name: IncidentRules
+  type: 16
+  required: false
+  options:
+  - Compromised Employee Account Detection
+  - Compromised Client Account Detection
+  - Executive Person Email Leak
+  - Compromised Device Detection
+  - Confirmed Phishing Address
+  - Potential Phishing Address
+  - Dark Web Intelligence
+  - Sensitive File Disclosure
+  - Confirmed Impersonated Account
+  - Potential Impersonated Account
+  - Vulnerable Technology Assessment
+  - Stolen Credit/Debit Card Detection
+  - Attack Surface
+  - Custom Investigation
+  - Malware Analysis
+  - Fraud Protection
+  - Other
+  - SSL/TLS Vulnerability Detection
+  - Vulnerability Detection
+  - Insecure Redirect Protocol (HTTP) Detection
+  - SSL/TLS Certificate Missing Domain Inclusion
+  - SSL/TLS Weak Cipher & Algorithm Detection
+  - Executive's Cyber Risk Assessment
+  - Open DNS Resolver Detection
+  - Malicious File Detection
+  - Unsecure Login Page Detection
+  - Exposed Redis Server
+  - Exposed Memcached System
+  - Vulnerable SSH Protocol Detection
+  - Externally Exploitable Vulnerability Detection
+  - DNS Server Allows Cache Snooping
+  - Disclosure of Important Technology Information
+  - Compromised Supply Chain Device
+  - Security Scan
+  - SMTP Open Relay Detection for Supplier Systems
+  - Expired Supply Chain Domain Detection
+  - Detection of Torrent Download Activity
+  - Potentially Exposed SCADA Services
+  - Credit Card
+  - Potentially Vulnerable Exposed Technology
+  - Domain Registrar Transfer Protection Not Enabled
+  - Suspected Dark Web Exposure of Organization Asset
+  - Data Sale Detection of Brand Accounts
+  - Your Company Attacked by a Ransomware Group
+  - Ransomware Attack Detected for Related Supply Chain Asset
+  - Daily Discovered Entity Updates
+  - Suspected Dark Web Exposure of Supply Chain Asset
+  - Entity Found in Threat Intelligence Feeds
+  - Malicious File Identified on Compromised Device
+  - Compromised Employee Accounts via Botnet Attack
+  - Unidentified Management Port Detection
+  - Filtered Statused Management Port Exposure
+  - Sensitive File Disclosure on GitHub Repositories
+  - Sensitive File Disclosure on Postman Collections
+  - Misconfigured AWS S3 Bucket Leading to Data Exposure
+  - Misconfigured Azure Blob Storage Container Leading to Data Exposure
+  - Misconfigured Google Cloud Storage Bucket Leading to Data Exposure
+  - Misconfigured IBM Cloud Object Storage Leading to Data Exposure
+  - Misconfigured Alibaba Cloud OSS Leading to Data Exposure
+  - Misconfigured Backblaze B2 Bucket Leading to Data Exposure
+  - Misconfigured DigitalOcean Space Leading to Data Exposure
+  - Misconfigured Oracle Cloud Object Storage Leading to Data Exposure
+  - DNS Zone Transfer Detection
+  - DNSSEC Not Found
+  - Shared Hosting Detection
+  - SPF Misconfiguration
+  - DMARC Not Found
+  - DMARC Policy Not Configured
+  - Domain Expires in 30 Days
+  - Expired Domain Detection
+  - SSL Expires in 30 Days
+  - LDAP Server Allows Anonymous Bindings
+  - Anonymous FTP Detection
+  - SSH Supports Weak MAC Algorithms
+  - SSH Supports Weak Ciphers
+  - Expired SSL/TLS Detection
+  - Blacklisted IP Address Detection
+  - Blacklisted Domain Address Detection
+  - Vulnerable HTTP Security Headers Detection
+  - SMTP Open Relay Detection
+  - Subdomain Takeover Detection
+  - Private IP Address Exposure
+  - Management Port Detection
+  - Hacker Search Engine Monitoring Detection
+  additionalinfo: This parameter will request and show the incident's related template.
+    Don't select any to get all alerts.
+script:
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.111039
+  isfetch: true
+  runonce: false
+  isremotesyncin: true
+  isremotesyncout: true
+  commands:
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP address to investigate.
+      isArray: true
+    outputs:
+    - contextPath: IP.Address
+      description: The IP address.
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: Vendor reporting the IP as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: Description of the malicious IP.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source.
+      type: String
+    - contextPath: Brandefense.IP.data
+      description: The IP address value.
+      type: String
+    - contextPath: Brandefense.IP.severity
+      description: Severity level.
+      type: String
+    - contextPath: Brandefense.IP.category
+      description: Category of the threat.
+      type: String
+    - contextPath: Brandefense.IP.first_seen
+      description: First seen date.
+      type: Date
+    - contextPath: Brandefense.IP.last_seen
+      description: Last seen date.
+      type: Date
+    description: Investigate an IP address against Brandefense threat intelligence.
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Domain name to investigate.
+      isArray: true
+    outputs:
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: Vendor reporting the domain as malicious.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: Description of the malicious domain.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source.
+      type: String
+    - contextPath: Brandefense.Domain.data
+      description: The domain value.
+      type: String
+    - contextPath: Brandefense.Domain.severity
+      description: Severity level.
+      type: String
+    - contextPath: Brandefense.Domain.category
+      description: Category of the threat.
+      type: String
+    - contextPath: Brandefense.Domain.first_seen
+      description: First seen date.
+      type: Date
+    - contextPath: Brandefense.Domain.last_seen
+      description: Last seen date.
+      type: Date
+    description: Investigate a domain against Brandefense threat intelligence.
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      description: URL address to investigate.
+      isArray: true
+    outputs:
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: Vendor reporting the URL as malicious.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: Description of the malicious URL.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source.
+      type: String
+    - contextPath: Brandefense.URL.data
+      description: The URL value.
+      type: String
+    - contextPath: Brandefense.URL.severity
+      description: Severity level.
+      type: String
+    - contextPath: Brandefense.URL.category
+      description: Category of the threat.
+      type: String
+    - contextPath: Brandefense.URL.first_seen
+      description: First seen date.
+      type: Date
+    - contextPath: Brandefense.URL.last_seen
+      description: Last seen date.
+      type: Date
+    description: Investigate a URL against Brandefense threat intelligence.
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: File hash to investigate (MD5, SHA1, or SHA256).
+      isArray: true
+    outputs:
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: Vendor reporting the file as malicious.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: Description of the malicious file.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source.
+      type: String
+    - contextPath: Brandefense.File.data
+      description: The hash value.
+      type: String
+    - contextPath: Brandefense.File.severity
+      description: Severity level.
+      type: String
+    - contextPath: Brandefense.File.category
+      description: Category of the threat.
+      type: String
+    - contextPath: Brandefense.File.first_seen
+      description: First seen date.
+      type: Date
+    - contextPath: Brandefense.File.last_seen
+      description: Last seen date.
+      type: Date
+    description: Investigate a file hash against Brandefense threat intelligence.
+  - name: brandefense_get_incidents
+    arguments:
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - OPEN
+      - IN_PROGRESS
+      - CLOSED
+      - RISK_ACCEPTED
+      - REJECTED
+      description: Filter incidents by status.
+      defaultValue: OPEN
+    - name: time_range
+      auto: PREDEFINED
+      predefined:
+      - Last 24 Hours
+      - Last 7 Days
+      - Last 30 Days
+      - Last 90 Days
+      - Last 6 Months
+      - Last 1 Year
+      - Custom
+      description: "Predefined time range. Overrides 'period' when set. Select 'Custom' to use created_at_range."
+    - name: created_at_range
+      description: "Custom date range (start,end). Example: 2020-10-10,2023-10-10. Used when time_range is 'Custom' or not set."
+    - name: period
+      default: true
+      description: "Fetch period in hours. Used as fallback when time_range is not set."
+      defaultValue: "1"
+    - name: module
+      auto: PREDEFINED
+      predefined:
+      - SENSITIVE_FILE_DISCLOSURE
+      - BREACH_MONITORING
+      - PHISHING_MONITORING
+      - DARKWEB_INTELLIGENCE
+      - SOCIAL_MEDIA_MONITORING
+      - MALICIOUS_FILES
+      - EXECUTIVE_PROTECTION
+      - SUPPLY_CHAIN_SECURITY
+      - VULNERABILITY_MANAGEMENT
+      - ATTACK_SURFACE
+      - VULNERABILITY_INTELLIGENCE
+      - INTELLIGENCE
+      - THREAT_INTELLIGENCE
+      - CREDIT_CARD
+      - FRAUD_PROTECTION
+      - CUSTOM_INVESTIGATION
+      - MALWARE_ANALYZE
+      - INVESTIGATION
+      description: Filter by incident module.
+    - name: module_category
+      auto: PREDEFINED
+      predefined:
+      - BRAND_MONITORING
+      - EXECUTIVE_PROTECTION
+      - SUPPLY_CHAIN_SECURITY
+      - EXPOSURE_MANAGEMENT
+      - INTELLIGENCE
+      - FRAUD_MONITORING
+      - INTELLIGENCE_SUPPORT
+      - INVESTIGATION
+      description: Filter by module category.
+    - name: MaxResults
+      description: Maximum number of incidents to return.
+      defaultValue: "100"
+    - name: search
+      description: Search keywords within incident title or code.
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - INFO
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+      description: Filter by incident severity.
+    - name: tags
+      description: Filter by tags (comma-separated).
+    - name: network_type
+      auto: PREDEFINED
+      predefined:
+      - DARK_WEB
+      - SURFACE_WEB
+      description: Filter by network type.
+    - name: mitre_tactics
+      auto: PREDEFINED
+      predefined:
+      - RECONNAISSANCE
+      - RESOURCE_DEVELOPMENT
+      - INITIAL_ACCESS
+      - EXECUTION
+      - PERSISTENCE
+      - PRIVILEGE_ESCALATION
+      - DEFENSE_EVASION
+      - CREDENTIAL_ACCESS
+      - DISCOVERY
+      - LATERAL_MOVEMENT
+      - COLLECTION
+      - COMMAND_AND_CONTROL
+      - EXFILTRATION
+      - IMPACT
+      description: Filter by MITRE ATT&CK tactics.
+    - name: ordering
+      auto: PREDEFINED
+      predefined:
+      - created_at
+      - -created_at
+      - severity
+      - -severity
+      description: Order results.
+    - name: has_indicator
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Filter incidents that have indicators.
+    - name: has_attachment
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Filter incidents that have attachments.
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - COMPROMISED_EMPLOYEE_ACCOUNT
+      - COMPROMISED_CLIENT_ACCOUNT
+      - EXECUTIVE_PERSON_EMAIL_LEAK
+      - COMPROMISED_DEVICE
+      - CONFIRMED_PHISHING_ADDRESS
+      - POTENTIAL_PHISHING_ADDRESS
+      - DARKWEB_INTELLIGENCE
+      - SENSITIVE_FILE_DISCLOSURE
+      - CONFIRMED_IMPERSONATED_ACCOUNT
+      - POTENTIAL_IMPERSONATED_ACCOUNT
+      - VULNERABLE_TECHNOLOGY_ASSESSMENT
+      - CREDIT_CARD
+      - ATTACK_SURFACE
+      - CUSTOM_INVESTIGATION
+      - MALWARE_ANALYZE
+      - FRAUD_PROTECTION
+      - VULNERABILITY_DETECTION
+      - OTHER
+      description: Filter by incident type.
+    outputs:
+    - contextPath: Brandefense.Incident.id
+      description: Incident ID.
+      type: Number
+    - contextPath: Brandefense.Incident.code
+      description: Incident code.
+      type: String
+    - contextPath: Brandefense.Incident.title
+      description: Incident title.
+      type: String
+    - contextPath: Brandefense.Incident.created_at
+      description: Incident creation date.
+      type: Date
+    - contextPath: Brandefense.Incident.status
+      description: Incident status.
+      type: String
+    - contextPath: Brandefense.Incident.severity
+      description: Incident severity.
+      type: String
+    - contextPath: Brandefense.Incident.reference_url
+      description: URL to view the incident in Brandefense.
+      type: String
+    - contextPath: Brandefense.Incident.indicators
+      description: List of indicators associated with the incident.
+      type: Unknown
+    description: Get Brandefense incidents with optional filtering by status, module, category, and time period.
+  - name: brandefense_get_incident_detail
+    arguments:
+    - name: code
+      required: true
+      description: Incident code identifier.
+    outputs:
+    - contextPath: Brandefense.IncidentDetail.code
+      description: Incident code.
+      type: String
+    - contextPath: Brandefense.IncidentDetail.title
+      description: Incident title.
+      type: String
+    - contextPath: Brandefense.IncidentDetail.description
+      description: Incident description.
+      type: String
+    - contextPath: Brandefense.IncidentDetail.severity
+      description: Incident severity.
+      type: String
+    - contextPath: Brandefense.IncidentDetail.status
+      description: Incident status.
+      type: String
+    - contextPath: Brandefense.IncidentDetail.created_at
+      description: Creation date.
+      type: Date
+    - contextPath: Brandefense.IncidentDetail.reference_url
+      description: URL to view in Brandefense.
+      type: String
+    description: Get detailed information for a specific Brandefense incident.
+  - name: brandefense_change_incident_status
+    arguments:
+    - name: code
+      required: true
+      description: Incident code identifier.
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - OPEN
+      - IN_PROGRESS
+      - CLOSED
+      - RISK_ACCEPTED
+      - REJECTED
+      description: New incident status.
+    outputs:
+    - contextPath: Brandefense.ChangingStatus.code
+      description: Incident code.
+      type: String
+    - contextPath: Brandefense.ChangingStatus.status
+      description: Updated incident status.
+      type: String
+    description: Change the status of a Brandefense incident.
+  - name: brandefense_incident_indicators
+    arguments:
+    - name: code
+      required: true
+      description: Incident code identifier.
+    outputs:
+    - contextPath: Brandefense.Incident.Indicators
+      description: List of indicators for the incident.
+      type: Unknown
+    description: Get indicators associated with a Brandefense incident.
+  - name: brandefense_get_incident_relatives
+    arguments:
+    - name: code
+      required: true
+      description: Incident code identifier.
+    outputs:
+    - contextPath: Brandefense.Incident.Relatives
+      description: List of related incidents.
+      type: Unknown
+    description: Get related incidents for a specific Brandefense incident.
+  - name: threat_search
+    arguments:
+    - name: value
+      required: true
+      description: Value to search for (domain, IP, hash, etc.).
+    - name: waitingtime
+      required: true
+      description: Polling interval in seconds to wait for results.
+      defaultValue: "20"
+    outputs:
+    - contextPath: Brandefense.ThreatSearch.uuid
+      description: Threat search UUID.
+      type: String
+    - contextPath: Brandefense.ThreatSearch.result
+      description: Threat search result data.
+      type: Unknown
+    description: Perform a CTI threat search and poll for results.
+  - name: brandefense_get_intelligences
+    arguments:
+    - name: category
+      auto: PREDEFINED
+      predefined:
+      - STRATEGIC_INTELLIGENCE
+      - FRAUD_INTELLIGENCE
+      - TACTICAL_INTELLIGENCE
+      - OPERATIONAL_INTELLIGENCE
+      - SECURITY_NEWS
+      - THREAT_REPORTS
+      description: Filter by intelligence category.
+    - name: time_range
+      auto: PREDEFINED
+      predefined:
+      - Last 24 Hours
+      - Last 7 Days
+      - Last 30 Days
+      - Last 90 Days
+      - Last 6 Months
+      - Last 1 Year
+      - Custom
+      description: "Predefined time range. Overrides 'period' when set. Select 'Custom' to use created_at_range."
+    - name: created_at_range
+      description: "Custom date range (start,end). Example: 2020-10-10,2023-10-10. Used when time_range is 'Custom' or not set."
+    - name: period
+      description: "Fetch period in hours. Used as fallback when time_range is not set."
+      defaultValue: "24"
+    - name: search
+      description: Keyword to filter intelligence by tag search.
+    - name: MaxResults
+      description: Maximum number of intelligence reports to return.
+      defaultValue: "100"
+    outputs:
+    - contextPath: Brandefense.Intelligence.code
+      description: Intelligence code.
+      type: String
+    - contextPath: Brandefense.Intelligence.title
+      description: Intelligence title.
+      type: String
+    - contextPath: Brandefense.Intelligence.severity
+      description: Intelligence severity.
+      type: String
+    - contextPath: Brandefense.Intelligence.created_at
+      description: Creation date.
+      type: Date
+    - contextPath: Brandefense.Intelligence.reference_url
+      description: URL to view in Brandefense.
+      type: String
+    description: Get Brandefense intelligence reports with optional filtering.
+  - name: brandefense_get_intelligence_detail
+    arguments:
+    - name: code
+      required: true
+      description: Intelligence code identifier.
+    outputs:
+    - contextPath: Brandefense.IntelligenceDetail.code
+      description: Intelligence code.
+      type: String
+    - contextPath: Brandefense.IntelligenceDetail.title
+      description: Intelligence title.
+      type: String
+    - contextPath: Brandefense.IntelligenceDetail.description
+      description: Intelligence description.
+      type: String
+    - contextPath: Brandefense.IntelligenceDetail.severity
+      description: Intelligence severity.
+      type: String
+    - contextPath: Brandefense.IntelligenceDetail.created_at
+      description: Creation date.
+      type: Date
+    - contextPath: Brandefense.IntelligenceDetail.reference_url
+      description: URL to view in Brandefense.
+      type: String
+    description: Get detailed information for a specific intelligence report.
+  - name: brandefense_intelligence_indicators
+    arguments:
+    - name: code
+      required: true
+      description: Intelligence code identifier.
+    outputs:
+    - contextPath: Brandefense.Intelligence.Indicators
+      description: List of indicators for the intelligence report.
+      type: Unknown
+    description: Get indicators associated with a Brandefense intelligence report.
+  - name: brandefense_get_intelligence_rules
+    arguments:
+    - name: code
+      required: true
+      description: Intelligence code identifier.
+    outputs:
+    - contextPath: Brandefense.Intelligence.Rules
+      description: Rules associated with the intelligence report.
+      type: Unknown
+    description: Get rules associated with a Brandefense intelligence report.
+  - name: brandefense_get_assets
+    arguments:
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - DOMAIN
+      - KEYWORD
+      - URL
+      - IP_ADDRESS
+      - CIDR
+      - EXECUTIVE_NAME
+      - EXECUTIVE_EMAIL
+      - EXECUTIVE_ACCOUNT
+      - EXECUTIVE_NICKNAME
+      - BIN_NUMBER
+      - PRODUCT
+      - GIT_REPO
+      - GIT_ACCOUNT
+      - PHISHING_RULE
+      - LOGIN_PAGES
+      - OFFICIAL_SOCIAL_MEDIA_ACCOUNTS
+      - OFFICIAL_MOBILE_APPS
+      - ADMIN_PAGES
+      description: Filter by asset type.
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - HIGH
+      - MEDIUM
+      - LOW
+      description: Filter by severity.
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - ACTIVE
+      - SUGGESTED
+      - REJECTED
+      - PASSIVE
+      description: Filter by status.
+    - name: search
+      description: Keyword search.
+    - name: module
+      description: Filter by module code.
+    - name: max_results
+      description: Maximum number of assets to return.
+      defaultValue: "50"
+    - name: ordering
+      description: Order results (e.g. -severity, -type, severity, type).
+    - name: time_range
+      auto: PREDEFINED
+      predefined:
+      - Last 24 Hours
+      - Last 7 Days
+      - Last 30 Days
+      - Last 90 Days
+      - Last 6 Months
+      - Last 1 Year
+      - Custom
+      description: "Predefined time range. Select 'Custom' to use created_at_range."
+    - name: created_at_range
+      description: "Custom date range (start,end). Example: 2020-10-10,2023-10-10. Used when time_range is 'Custom' or not set."
+    - name: threat_type
+      description: Filter by threat type.
+    - name: asset_ilike
+      description: Filter assets containing the given keyword.
+    - name: organization
+      description: Filter by organization code (comma-separated for multiple).
+    outputs:
+    - contextPath: Brandefense.Asset.id
+      description: Asset ID.
+      type: Number
+    - contextPath: Brandefense.Asset.asset
+      description: Asset value.
+      type: String
+    - contextPath: Brandefense.Asset.type
+      description: Asset type.
+      type: String
+    - contextPath: Brandefense.Asset.severity
+      description: Asset severity.
+      type: String
+    - contextPath: Brandefense.Asset.status
+      description: Asset status.
+      type: String
+    description: Get list of monitored assets from Brandefense.
+  - name: brandefense_get_iocs
+    arguments:
+    - name: ioc_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ip_address
+      - domain
+      - url
+      - hash
+      description: Type of IoC to retrieve.
+    - name: period
+      description: Time period for IoCs (e.g., 24h, 7d).
+      defaultValue: "24h"
+    - name: exclude_country
+      description: Exclude IoCs from specific countries (comma-separated country codes).
+    - name: include_country
+      description: Include IoCs only from specific countries (comma-separated country codes).
+    - name: module
+      description: Filter IoCs by module.
+    outputs:
+    - contextPath: Brandefense.IOC.data
+      description: IoC value.
+      type: String
+    - contextPath: Brandefense.IOC.type
+      description: IoC type.
+      type: String
+    - contextPath: Brandefense.IOC.severity
+      description: IoC severity.
+      type: String
+    - contextPath: Brandefense.IOC.first_seen
+      description: First seen date.
+      type: Date
+    - contextPath: Brandefense.IOC.last_seen
+      description: Last seen date.
+      type: Date
+    description: Get Indicators of Compromise from Brandefense threat intelligence feeds.
+  - name: brandefense_get_ioc_list
+    arguments:
+    - name: days
+      description: Number of days to look back (default 30, max 90).
+      defaultValue: "30"
+    - name: ioc_type
+      description: Comma-separated list of IoC types to fetch. Leave empty for all types.
+      isArray: true
+    - name: limit
+      description: Maximum total number of IoCs to return.
+      defaultValue: "5000"
+    outputs:
+    - contextPath: Brandefense.IOCList.data
+      description: IoC value.
+      type: String
+    - contextPath: Brandefense.IOCList.ioc_type
+      description: IoC type.
+      type: String
+    - contextPath: Brandefense.IOCList.ioc_type_display
+      description: Human-readable IoC type.
+      type: String
+    - contextPath: Brandefense.IOCList.severity
+      description: IoC severity.
+      type: String
+    - contextPath: Brandefense.IOCList.first_seen
+      description: First seen date.
+      type: Date
+    - contextPath: Brandefense.IOCList.last_seen
+      description: Last seen date.
+      type: Date
+    description: Fetch and consolidate all IoCs from the last N days (default 30). Pulls all IoC types and merges into a single list.
+  - name: brandefense_get_compromised_devices
+    arguments:
+    - name: botnet_id
+      description: Specific botnet/device ID to retrieve details for. Leave empty to list all.
+    - name: username
+      description: Filter by username (contains match).
+    - name: time_range
+      auto: PREDEFINED
+      predefined:
+      - Last 24 Hours
+      - Last 7 Days
+      - Last 30 Days
+      - Last 90 Days
+      - Last 6 Months
+      - Last 1 Year
+      - Custom
+      description: "Predefined time range for detection date. Select 'Custom' to use detection_date_range."
+    - name: detection_date_range
+      description: "Custom date range (start,end). Example: 2020-10-10,2023-10-11. Used when time_range is 'Custom' or not set."
+    - name: search
+      description: Search keyword to filter results.
+    - name: ordering
+      description: Order results. Valid values are detection_date, -detection_date.
+    - name: max_results
+      description: Maximum number of devices to return.
+      defaultValue: "10"
+    outputs:
+    - contextPath: Brandefense.CompromisedDevice.id
+      description: Device ID.
+      type: Number
+    - contextPath: Brandefense.CompromisedDevice
+      description: Compromised device data.
+      type: Unknown
+    description: Get compromised devices detected by Brandefense.
+  - name: brandefense_get_audit_logs
+    arguments:
+    - name: type
+      description: Filter by audit log type.
+    - name: search
+      description: Search keyword.
+    - name: time_range
+      auto: PREDEFINED
+      predefined:
+      - Last 24 Hours
+      - Last 7 Days
+      - Last 30 Days
+      - Last 90 Days
+      - Last 6 Months
+      - Last 1 Year
+      - Custom
+      description: "Predefined time range. Select 'Custom' to use created_at_range."
+    - name: created_at_range
+      description: "Custom date range (start,end). Example: 2020-10-10,2023-10-10. Used when time_range is 'Custom' or not set."
+    - name: max_results
+      description: Maximum number of logs to return.
+      defaultValue: "50"
+    - name: actor_object_id
+      description: Filter by user/actor ID (comma-separated for multiple).
+    - name: ip_address
+      description: Filter by user IP address.
+    - name: ordering
+      auto: PREDEFINED
+      predefined:
+      - id
+      - -id
+      description: Order results.
+    outputs:
+    - contextPath: Brandefense.AuditLog.id
+      description: Audit log ID.
+      type: Number
+    - contextPath: Brandefense.AuditLog
+      description: Audit log entry data.
+      type: Unknown
+    description: Get audit log entries from Brandefense.
+  - name: brandefense_get_domain_risk_assessment
+    arguments:
+    - name: uuid
+      description: Specific assessment UUID. Leave empty to list all.
+    outputs:
+    - contextPath: Brandefense.DomainRiskAssessment.uuid
+      description: Assessment UUID.
+      type: String
+    - contextPath: Brandefense.DomainRiskAssessment
+      description: Domain risk assessment data.
+      type: Unknown
+    description: Get third-party domain risk assessments from Brandefense.
+  - name: brandefense_create_confirmed_phishing
+    arguments:
+    - name: url
+      required: true
+      description: The phishing URL to report.
+    - name: title
+      description: Title for the phishing incident.
+    - name: network_type
+      auto: PREDEFINED
+      predefined:
+      - DARK_WEB
+      - SURFACE_WEB
+      description: Network type where phishing was found.
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+      description: Severity of the phishing incident.
+    - name: tags
+      description: Tags for the incident (comma-separated).
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - OPEN
+      - IN_PROGRESS
+      - CLOSED
+      description: Initial status of the incident.
+    - name: asset_ids
+      description: Associated asset IDs (comma-separated).
+    - name: data_source
+      description: Source of the phishing data.
+    outputs:
+    - contextPath: Brandefense.ConfirmedPhishing
+      description: Created confirmed phishing incident data.
+      type: Unknown
+    description: Create a confirmed phishing address incident in Brandefense.
+  - name: brandefense_takedown_request
+    arguments:
+    - name: url
+      required: true
+      description: The phishing URL to request takedown for.
+    outputs:
+    - contextPath: Brandefense.TakedownRequest
+      description: Takedown request response data.
+      type: Unknown
+    description: Request takedown for a confirmed phishing address.
+  - name: brandefense_get_indicators
+    arguments:
+    - name: indicator_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - leak
+      - phishing_site
+      - credit_card
+      - cve
+      - social_media
+      - sensitive_file_disclosure
+      - malicious-file
+      - malicious_ads
+      description: "Type of indicator to retrieve. Each type has a different response body."
+    - name: organization_code
+      description: "Organization code(s), comma-separated. Example: brandefense,other."
+    - name: time_range
+      auto: PREDEFINED
+      predefined:
+      - Last 24 Hours
+      - Last 7 Days
+      - Last 30 Days
+      - Last 90 Days
+      - Last 6 Months
+      - Last 1 Year
+      - Custom
+      description: "Predefined time range for filtering indicators. Select 'Custom' to use created_at_range instead."
+    - name: created_at_range
+      description: "Custom date range (comma-separated start,end). Example: 2020-10-10,2023-10-10. Only used when time_range is 'Custom' or not set."
+    - name: incident_status
+      description: "Filter by incident status(es), comma-separated."
+      auto: PREDEFINED
+      predefined:
+      - OPEN
+      - IN_PROGRESS
+      - CLOSED
+      - RISK_ACCEPTED
+      - REJECTED
+      isArray: true
+    - name: page
+      description: Page number within the paginated result set.
+    - name: page_size
+      description: "Number of results per page (default values: 10, 20, 50, 100)."
+    - name: limit
+      description: Maximum total number of results to return.
+      defaultValue: "50"
+    outputs:
+    - contextPath: Brandefense.Indicator.id
+      description: Indicator ID.
+      type: Number
+    - contextPath: Brandefense.Indicator.created_at
+      description: Indicator creation date.
+      type: Date
+    - contextPath: Brandefense.Indicator.content_object
+      description: Indicator content data (varies by indicator type).
+      type: Unknown
+    - contextPath: Brandefense.Indicator.content_object.data
+      description: Primary indicator value (URL, email, hash, etc.).
+      type: String
+    - contextPath: Brandefense.Indicator.content_object.username
+      description: Username associated with the indicator (leak type).
+      type: String
+    - contextPath: Brandefense.Indicator.content_object.password
+      description: Password associated with the indicator (leak type).
+      type: String
+    - contextPath: Brandefense.Indicator.content_object.source_platform
+      description: Source platform of the indicator.
+      type: String
+    - contextPath: Brandefense.Indicator.content_object.threat_actor
+      description: Threat actor associated with the indicator.
+      type: String
+    - contextPath: Brandefense.Indicator.content_object.breached_date
+      description: Date when the breach occurred.
+      type: Date
+    - contextPath: Brandefense.Indicator.threats
+      description: Associated threats.
+      type: Unknown
+    - contextPath: Brandefense.Indicator.threats.title
+      description: Threat title.
+      type: String
+    - contextPath: Brandefense.Indicator.threats.incidents.code
+      description: Incident code associated with the threat.
+      type: String
+    - contextPath: Brandefense.Indicator.threats.incidents.organization.name
+      description: Organization name associated with the incident.
+      type: String
+    description: "Get indicators from Brandefense. Retrieves Consolidated Data and Incident indicators by type and organization with optional date range and status filters."
+fromversion: 6.5.0
+tests:
+- No tests

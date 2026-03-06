@@ -1,0 +1,14 @@
+[file:unified_Brandefense.yml]
+ignore=auto-test
+
+[file:Brandefense_test.py]
+ignore=auto-test
+
+[file:conftest.py]
+ignore=auto-test
+
+[file:build_unified.py]
+ignore=auto-test
+
+[file:Brandefense.py]
+ignore=E9003
