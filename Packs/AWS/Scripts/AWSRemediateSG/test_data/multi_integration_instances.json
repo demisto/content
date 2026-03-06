@@ -1,0 +1,63 @@
+[
+    {
+        "Type": 4,
+        "Metadata": {
+            "instance": "AWS_instance_1"
+        },
+        "Contents": "Sample integration command error message"
+    },
+    {
+        "Type": 1,
+        "Metadata": {
+            "instance": "AWS_instance_2"
+        },
+        "Contents": {
+            "SecurityGroups": [
+                {
+                    "SecurityGroupArn": "arn:aws:ec2:us-east-1:123456789012:security-group/sg-00000000000000001",
+                    "IpPermissionsEgress": [
+                        {
+                            "IpProtocol": "-1",
+                            "PrefixListIds": [],
+                            "IpRanges": [
+                                {
+                                    "Description": "All outbound traffic",
+                                    "CidrIp": "0.0.0.0/0"
+                                }
+                            ],
+                            "UserIdGroupPairs": [],
+                            "Ipv6Ranges": []
+                        }
+                    ],
+                    "Description": "Sample security group",
+                    "Tags": [
+                        {
+                            "Value": "value1",
+                            "Key": "tag1"
+                        }
+                    ],
+                    "IpPermissions": [
+                        {
+                            "PrefixListIds": [],
+                            "FromPort": 443,
+                            "IpRanges": [
+                                {
+                                    "Description": "Allow TCP Port 443",
+                                    "CidrIp": "0.0.0.0/0"
+                                }
+                            ],
+                            "ToPort": 443,
+                            "IpProtocol": "tcp",
+                            "UserIdGroupPairs": [],
+                            "Ipv6Ranges": []
+                        }
+                    ],
+                    "GroupName": "sample-sg",
+                    "VpcId": "vpc-0123456789abcdefa",
+                    "OwnerId": "123456789012",
+                    "GroupId": "sg-00000000000000001"
+                }
+            ]
+        }
+    }
+]
