@@ -13,6 +13,7 @@ DEFAULT_LIST_FIELD = [
     "ipv6-address",
     "domain-name",
     "domain-uid",
+    "domain-type",
     "groups",
     "read-only",
     "creator",
@@ -114,30 +115,80 @@ class Client(BaseClient):
         demisto.debug(f"logout: sid={self.sid}, message={message}")
         return message
 
-    def list_hosts(self, limit: int, offset: int):
+    def list_hosts(
+        self,
+        limit: int,
+        offset: int,
+        details_level: str | None = None,
+        domains_to_process: list | None = None,
+    ):
+        body: dict = {"limit": limit, "offset": offset}
+        if details_level:
+            body["details-level"] = details_level
+        if domains_to_process:
+            body["domains-to-process"] = domains_to_process
+        demisto.debug(
+            f"{demisto.command()}: endpoint='show-hosts', "
+            f"args=({limit=}, {offset=}, {details_level=}, "
+            f"{domains_to_process=}), body={body}"
+        )
         return self._http_request(
             method="POST",
             url_suffix="show-hosts",
             headers=self.headers,
             resp_type="json",
-            json_data={"limit": limit, "offset": offset},
+            json_data=body,
         )
 
-    def get_host(self, identifier: str):
-        return self._http_request(method="POST", url_suffix="show-host", headers=self.headers, json_data={"name": identifier})
+    def get_host(self, identifier: str, details_level: str | None = None):
+        body: dict = {"name": identifier}
+        if details_level:
+            body["details-level"] = details_level
+        demisto.debug(f"{demisto.command()}: endpoint='show-host', " f"args=({identifier=}, {details_level=}), body={body}")
+        return self._http_request(method="POST", url_suffix="show-host", headers=self.headers, json_data=body)
 
-    def add_host(self, name, ip_address, ignore_warnings: bool, ignore_errors: bool, groups):
+    def add_host(
+        self,
+        name: str,
+        ip_address: str,
+        ignore_warnings: bool,
+        ignore_errors: bool,
+        groups: list | None = None,
+        comments: str | None = None,
+        color: str | None = None,
+        nat_settings: dict | None = None,
+        interfaces: list | None = None,
+        tags: list | None = None,
+    ):
+        body: dict = {
+            "name": name,
+            "ip-address": ip_address,
+            "ignore-warnings": ignore_warnings,
+            "ignore-errors": ignore_errors,
+        }
+        if groups:
+            body["groups"] = groups
+        if comments:
+            body["comments"] = comments
+        if color:
+            body["color"] = color
+        if nat_settings:
+            body["nat-settings"] = nat_settings
+        if interfaces:
+            body["interfaces"] = interfaces
+        if tags:
+            body["tags"] = tags
+        demisto.debug(
+            f"{demisto.command()}: endpoint='add-host', "
+            f"args=({name=}, {ip_address=}, {ignore_warnings=}, "
+            f"{ignore_errors=}, {groups=}, {comments=}, {color=}, "
+            f"{nat_settings=}, {interfaces=}, {tags=}), body={body}"
+        )
         return self._http_request(
             method="POST",
             url_suffix="add-host",
             headers=self.headers,
-            json_data={
-                "name": name,
-                "ip-address": ip_address,
-                "ignore-warnings": ignore_warnings,
-                "ignore-errors": ignore_errors,
-                "groups": groups,
-            },
+            json_data=body,
         )
 
     def update_host(
@@ -145,20 +196,42 @@ class Client(BaseClient):
         identifier: str,
         ignore_warnings: bool,
         ignore_errors: bool,
-        ip_address: Optional[str],
-        new_name: Optional[str],
-        comments: Optional[str],
-        groups,
+        ip_address: str | None = None,
+        new_name: str | None = None,
+        comments: str | None = None,
+        groups: list | None = None,
+        color: str | None = None,
+        nat_settings: dict | None = None,
+        interfaces: list | None = None,
+        tags: list | None = None,
     ):
-        body = {
+        body: dict = {
             "name": identifier,
-            "ip-address": ip_address,
-            "new-name": new_name,
-            "comments": comments,
             "ignore-warnings": ignore_warnings,
             "ignore-errors": ignore_errors,
-            "groups": groups,
         }
+        if ip_address:
+            body["ip-address"] = ip_address
+        if new_name:
+            body["new-name"] = new_name
+        if comments:
+            body["comments"] = comments
+        if groups:
+            body["groups"] = groups
+        if color:
+            body["color"] = color
+        if nat_settings:
+            body["nat-settings"] = nat_settings
+        if interfaces:
+            body["interfaces"] = interfaces
+        if tags:
+            body["tags"] = tags
+        demisto.debug(
+            f"{demisto.command()}: endpoint='set-host', "
+            f"args=({identifier=}, {ignore_warnings=}, {ignore_errors=}, "
+            f"{ip_address=}, {new_name=}, {comments=}, {groups=}, "
+            f"{color=}, {nat_settings=}, {interfaces=}, {tags=}), body={body}"
+        )
         response = self._http_request(method="POST", url_suffix="set-host", headers=self.headers, json_data=body)
         return response
 
@@ -170,16 +243,64 @@ class Client(BaseClient):
             json_data={"name": identifier, "ignore-warnings": ignore_warnings, "ignore-errors": ignore_errors},
         )
 
-    def list_groups(self, limit: int, offset: int):
-        return self._http_request(
-            method="POST", url_suffix="show-groups", headers=self.headers, json_data={"limit": limit, "offset": offset}
+    def list_groups(
+        self,
+        limit: int,
+        offset: int,
+        details_level: str | None = None,
+        domains_to_process: list | None = None,
+        filter_exp: str | None = None,
+    ):
+        body: dict = {"limit": limit, "offset": offset}
+        if details_level:
+            body["details-level"] = details_level
+        if domains_to_process:
+            body["domains-to-process"] = domains_to_process
+        if filter_exp:
+            body["filter"] = filter_exp
+        demisto.debug(
+            f"{demisto.command()}: endpoint='show-groups', "
+            f"args=({limit=}, {offset=}, {details_level=}, "
+            f"{domains_to_process=}, {filter_exp=}), body={body}"
         )
+        return self._http_request(method="POST", url_suffix="show-groups", headers=self.headers, json_data=body)
 
-    def get_group(self, identifier: str):
-        return self._http_request(method="POST", url_suffix="show-group", headers=self.headers, json_data={"name": identifier})
+    def get_group(self, identifier: str, details_level: str | None = None):
+        body: dict = {"name": identifier}
+        if details_level:
+            body["details-level"] = details_level
+        demisto.debug(f"{demisto.command()}: endpoint='show-group', " f"args=({identifier=}, {details_level=}), body={body}")
+        return self._http_request(method="POST", url_suffix="show-group", headers=self.headers, json_data=body)
 
-    def add_group(self, name: str):
-        return self._http_request(method="POST", url_suffix="add-group", headers=self.headers, json_data={"name": name})
+    def add_group(
+        self,
+        name: str,
+        members: list | None = None,
+        comments: str | None = None,
+        color: str | None = None,
+        tags: list | None = None,
+        ignore_warnings: bool = False,
+        ignore_errors: bool = False,
+    ):
+        body: dict = {
+            "name": name,
+            "ignore-warnings": ignore_warnings,
+            "ignore-errors": ignore_errors,
+        }
+        if members:
+            body["members"] = members
+        if comments:
+            body["comments"] = comments
+        if color:
+            body["color"] = color
+        if tags:
+            body["tags"] = tags
+        demisto.debug(
+            f"{demisto.command()}: endpoint='add-group', "
+            f"args=({name=}, {members=}, {comments=}, {color=}, "
+            f"{tags=}, {ignore_warnings=}, {ignore_errors=}), body={body}"
+        )
+        return self._http_request(method="POST", url_suffix="add-group", headers=self.headers, json_data=body)
 
     def update_group(
         self,
@@ -188,30 +309,62 @@ class Client(BaseClient):
         ignore_errors: bool,
         action: str,
         members,
-        new_name: Optional[str],
-        comments: Optional[str],
+        new_name: Optional[str] = None,
+        comments: Optional[str] = None,
+        color: str | None = None,
+        tags: list | None = None,
+        details_level: str | None = None,
     ):
         # If the desired action is to add or remove members, they should be specified differently.
         members_value = {action: members} if action in ["add", "remove"] else members
-        body = {
+        body: dict = {
             "name": identifier,
-            "new-name": new_name,
-            "members": members_value,
-            "comments": comments,
             "ignore-warnings": ignore_warnings,
             "ignore-errors": ignore_errors,
         }
+        if new_name:
+            body["new-name"] = new_name
+        if members_value:
+            body["members"] = members_value
+        if comments:
+            body["comments"] = comments
+        if color:
+            body["color"] = color
+        if tags:
+            body["tags"] = tags
+        if details_level:
+            body["details-level"] = details_level
 
+        demisto.debug(
+            f"{demisto.command()}: endpoint='set-group', "
+            f"args=({identifier=}, {ignore_warnings=}, {ignore_errors=}, "
+            f"{action=}, {members=}, {new_name=}, {comments=}, "
+            f"{color=}, {tags=}, {details_level=}), body={body}"
+        )
         response = self._http_request(method="POST", url_suffix="set-group", headers=self.headers, json_data=body)
         return response
 
     def delete_group(self, identifier: str):
         return self._http_request(method="POST", url_suffix="delete-group", headers=self.headers, json_data={"name": identifier})
 
-    def list_address_ranges(self, limit: int, offset: int):
-        return self._http_request(
-            method="POST", url_suffix="show-address-ranges", headers=self.headers, json_data={"limit": limit, "offset": offset}
+    def list_address_ranges(
+        self,
+        limit: int,
+        offset: int,
+        details_level: str | None = None,
+        domains_to_process: list | None = None,
+    ):
+        body: dict = {"limit": limit, "offset": offset}
+        if details_level:
+            body["details-level"] = details_level
+        if domains_to_process:
+            body["domains-to-process"] = domains_to_process
+        demisto.debug(
+            f"{demisto.command()}: endpoint='show-address-ranges', "
+            f"args=({limit=}, {offset=}, {details_level=}, "
+            f"{domains_to_process=}), body={body}"
         )
+        return self._http_request(method="POST", url_suffix="show-address-ranges", headers=self.headers, json_data=body)
 
     def get_address_range(self, identifier: str):
         return self._http_request(
@@ -226,17 +379,36 @@ class Client(BaseClient):
         set_if_exists: bool,
         ignore_warnings: bool,
         ignore_errors: bool,
-        groups,
+        groups=None,
+        comments: str | None = None,
+        color: str | None = None,
+        nat_settings: dict | None = None,
+        tags: list | None = None,
     ):
-        body = {
+        body: dict = {
             "name": name,
             "ip-address-first": ip_address_first,
             "ip-address-last": ip_address_last,
             "set-if-exists": set_if_exists,
             "ignore-warnings": ignore_warnings,
             "ignore-errors": ignore_errors,
-            "groups": groups,
         }
+        if groups:
+            body["groups"] = groups
+        if comments:
+            body["comments"] = comments
+        if color:
+            body["color"] = color
+        if nat_settings:
+            body["nat-settings"] = nat_settings
+        if tags:
+            body["tags"] = tags
+        demisto.debug(
+            f"{demisto.command()}: endpoint='add-address-range', "
+            f"args=({name=}, {ip_address_first=}, {ip_address_last=}, "
+            f"{set_if_exists=}, {ignore_warnings=}, {ignore_errors=}, "
+            f"{groups=}, {comments=}, {color=}, {nat_settings=}, {tags=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="add-address-range", headers=self.headers, json_data=body)
 
     def update_address_range(
@@ -244,22 +416,42 @@ class Client(BaseClient):
         identifier: str,
         ignore_warnings: bool,
         ignore_errors: bool,
-        ip_address_first: Optional[str],
-        ip_address_last: Optional[str],
-        new_name: Optional[str],
-        comments: Optional[str],
-        groups,
+        ip_address_first: Optional[str] = None,
+        ip_address_last: Optional[str] = None,
+        new_name: Optional[str] = None,
+        comments: Optional[str] = None,
+        groups=None,
+        color: str | None = None,
+        nat_settings: dict | None = None,
+        tags: list | None = None,
     ):
-        body = {
+        body: dict = {
             "name": identifier,
-            "ip-address-first": ip_address_first,
-            "ip-address-last": ip_address_last,
-            "new-name": new_name,
-            "comments": comments,
             "ignore-warnings": ignore_warnings,
             "ignore-errors": ignore_errors,
-            "groups": groups,
         }
+        if ip_address_first:
+            body["ip-address-first"] = ip_address_first
+        if ip_address_last:
+            body["ip-address-last"] = ip_address_last
+        if new_name:
+            body["new-name"] = new_name
+        if comments:
+            body["comments"] = comments
+        if groups:
+            body["groups"] = groups
+        if color:
+            body["color"] = color
+        if nat_settings:
+            body["nat-settings"] = nat_settings
+        if tags:
+            body["tags"] = tags
+        demisto.debug(
+            f"{demisto.command()}: endpoint='set-address-range', "
+            f"args=({identifier=}, {ignore_warnings=}, {ignore_errors=}, "
+            f"{ip_address_first=}, {ip_address_last=}, {new_name=}, "
+            f"{comments=}, {groups=}, {color=}, {nat_settings=}, {tags=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="set-address-range", headers=self.headers, json_data=body)
 
     def delete_address_range(self, identifier: str):
@@ -267,26 +459,97 @@ class Client(BaseClient):
             method="POST", url_suffix="delete-address-range", headers=self.headers, json_data={"name": identifier}
         )
 
-    def list_threat_indicators(self, limit: int, offset: int):
-        return self._http_request(
-            method="POST", url_suffix="show-threat-indicators", headers=self.headers, json_data={"limit": limit, "offset": offset}
+    def list_threat_indicators(
+        self,
+        limit: int,
+        offset: int,
+        domain_names: list | None = None,
+        details_level: str | None = None,
+        filter_exp: str | None = None,
+    ):
+        body: dict = {"limit": limit, "offset": offset}
+        if domain_names:
+            body["domains-to-process"] = domain_names
+        if details_level:
+            body["details-level"] = details_level
+        if filter_exp:
+            body["filter"] = filter_exp
+        demisto.debug(
+            f"{demisto.command()}: endpoint='show-threat-indicators', "
+            f"args=({limit=}, {offset=}, {domain_names=}, "
+            f"{details_level=}, {filter_exp=}), body={body}"
         )
+        return self._http_request(method="POST", url_suffix="show-threat-indicators", headers=self.headers, json_data=body)
 
     def get_threat_indicator(self, identifier):
         return self._http_request(
             method="POST", url_suffix="show-threat-indicator", headers=self.headers, json_data={"name": identifier}
         )
 
-    def add_threat_indicator(self, name: str, observables: list):
+    def add_threat_indicator(
+        self,
+        name: str,
+        observables: list,
+        comments: str | None = None,
+        color: str | None = None,
+        tags: list | None = None,
+        ignore_warnings: bool = False,
+        action: str | None = None,
+        profile_overrides: list | None = None,
+    ):
+        body: dict = {"name": name, "observables": observables}
+        if comments:
+            body["comments"] = comments
+        if color:
+            body["color"] = color
+        if tags:
+            body["tags"] = tags
+        if ignore_warnings:
+            body["ignore-warnings"] = ignore_warnings
+        if action:
+            body["action"] = action
+        if profile_overrides:
+            body["profile-overrides"] = profile_overrides
+        demisto.debug(
+            f"{demisto.command()}: endpoint='add-threat-indicator', "
+            f"args=({name=}, {observables=}, {comments=}, {color=}, "
+            f"{tags=}, {ignore_warnings=}, {action=}, {profile_overrides=}), body={body}"
+        )
         return self._http_request(
             method="POST",
             url_suffix="add-threat-indicator",
             headers=self.headers,
-            json_data={"name": name, "observables": observables},
+            json_data=body,
         )
 
-    def update_threat_indicator(self, identifier: str, action: str = None, new_name: str = None, comments: str = None):
-        body = {"name": identifier, "action": action, "new-name": new_name, "comments": comments}
+    def update_threat_indicator(
+        self,
+        identifier: str,
+        action: str | None = None,
+        new_name: str | None = None,
+        comments: str | None = None,
+        profile_overrides: list | None = None,
+        color: str | None = None,
+        tags: list | None = None,
+    ):
+        body: dict = {"name": identifier}
+        if action:
+            body["action"] = action
+        if new_name:
+            body["new-name"] = new_name
+        if comments:
+            body["comments"] = comments
+        if profile_overrides:
+            body["profile-overrides"] = profile_overrides
+        if color:
+            body["color"] = color
+        if tags:
+            body["tags"] = tags
+        demisto.debug(
+            f"{demisto.command()}: endpoint='set-threat-indicator', "
+            f"args=({identifier=}, {action=}, {new_name=}, {comments=}, "
+            f"{profile_overrides=}, {color=}, {tags=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="set-threat-indicator", headers=self.headers, json_data=body)
 
     def delete_threat_indicator(self, identifier: str):
@@ -294,21 +557,70 @@ class Client(BaseClient):
             method="POST", url_suffix="delete-threat-indicator", headers=self.headers, json_data={"name": identifier}
         )
 
-    def list_access_rule(self, identifier: str, limit: int, offset: int):
-        body = {"name": identifier, "limit": limit, "offset": offset}
+    def list_access_rule(
+        self,
+        identifier: str,
+        limit: int,
+        offset: int,
+        details_level: str | None = None,
+        show_hits: bool | None = None,
+    ):
+        body: dict = {"name": identifier, "limit": limit, "offset": offset}
+        if details_level:
+            body["details-level"] = details_level
+        if show_hits is not None:
+            body["show-hits"] = show_hits
+        demisto.debug(
+            f"{demisto.command()}: endpoint='show-access-rulebase', "
+            f"args=({identifier=}, {limit=}, {offset=}, "
+            f"{details_level=}, {show_hits=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="show-access-rulebase", headers=self.headers, json_data=body)
 
-    def add_rule(self, layer: str, position, action: str, name: Optional[str], vpn: Optional[str], destination, service, source):
-        body = {
+    def add_rule(
+        self,
+        layer: str,
+        position,
+        action: str,
+        name: Optional[str] = None,
+        vpn: Optional[str] = None,
+        destination=None,
+        service=None,
+        source=None,
+        comments: str | None = None,
+        install_on: list | None = None,
+        enabled: bool | None = None,
+        track: dict | None = None,
+    ):
+        body: dict = {
             "layer": layer,
             "position": position,
-            "name": name,
             "action": action,
-            "destination": destination,
-            "service": service,
-            "source": source,
-            "vpn": vpn,
         }
+        if name:
+            body["name"] = name
+        if vpn:
+            body["vpn"] = vpn
+        if destination:
+            body["destination"] = destination
+        if service:
+            body["service"] = service
+        if source:
+            body["source"] = source
+        if comments:
+            body["comments"] = comments
+        if install_on:
+            body["install-on"] = install_on
+        if enabled is not None:
+            body["enabled"] = enabled
+        if track:
+            body["track"] = track
+        demisto.debug(
+            f"{demisto.command()}: endpoint='add-access-rule', "
+            f"args=({layer=}, {position=}, {action=}, {name=}, {vpn=}, "
+            f"{destination=}, {service=}, {source=}, {comments=}, "
+            f"{install_on=}, {enabled=}, {track=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="add-access-rule", headers=self.headers, json_data=body)
 
     def update_rule(
@@ -317,21 +629,49 @@ class Client(BaseClient):
         layer: str,
         ignore_warnings: bool,
         ignore_errors: bool,
-        enabled: bool,
-        action: Optional[str],
-        new_name: Optional[str],
-        new_position,
+        enabled: bool | None = None,
+        action: Optional[str] = None,
+        new_name: Optional[str] = None,
+        new_position=None,
+        comments: str | None = None,
+        track: dict | None = None,
+        install_on: list | None = None,
+        source: dict | None = None,
+        destination: dict | None = None,
+        service: dict | None = None,
     ):
-        body = {
+        body: dict = {
             "name": identifier,
             "layer": layer,
-            "action": action,
-            "enabled": enabled,
-            "new-name": new_name,
-            "new-position": new_position,
             "ignore-warnings": ignore_warnings,
             "ignore-errors": ignore_errors,
         }
+        if action:
+            body["action"] = action
+        if enabled is not None:
+            body["enabled"] = enabled
+        if new_name:
+            body["new-name"] = new_name
+        if new_position:
+            body["new-position"] = new_position
+        if comments:
+            body["comments"] = comments
+        if track:
+            body["track"] = track
+        if install_on:
+            body["install-on"] = install_on
+        if source:
+            body["source"] = source
+        if destination:
+            body["destination"] = destination
+        if service:
+            body["service"] = service
+        demisto.debug(
+            f"{demisto.command()}: endpoint='set-access-rule', "
+            f"args=({identifier=}, {layer=}, {ignore_warnings=}, {ignore_errors=}, "
+            f"{enabled=}, {action=}, {new_name=}, {new_position=}, {comments=}, "
+            f"{track=}, {install_on=}, {source=}, {destination=}, {service=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="set-access-rule", headers=self.headers, json_data=body)
 
     def delete_rule(self, identifier: str, layer: str):
@@ -339,35 +679,97 @@ class Client(BaseClient):
             method="POST", url_suffix="delete-access-rule", headers=self.headers, json_data={"name": identifier, "layer": layer}
         )
 
-    def list_application_site(self, limit: int, offset: int):
-        body = {"limit": limit, "offset": offset}
+    def list_application_site(
+        self,
+        limit: int,
+        offset: int,
+        details_level: str | None = None,
+        domains_to_process: list | None = None,
+    ):
+        body: dict = {"limit": limit, "offset": offset}
+        if details_level:
+            body["details-level"] = details_level
+        if domains_to_process:
+            body["domains-to-process"] = domains_to_process
+        demisto.debug(
+            f"{demisto.command()}: endpoint='show-application-sites', "
+            f"args=({limit=}, {offset=}, {details_level=}, "
+            f"{domains_to_process=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="show-application-sites", headers=self.headers, json_data=body)
 
-    def add_application_site(self, name: str, primary_category: str, identifier, groups):
-        body = {"name": name, "primary-category": primary_category, "url-list": identifier, "groups": groups}
+    def add_application_site(
+        self,
+        name: str,
+        primary_category: str,
+        identifier,
+        groups=None,
+        description: str | None = None,
+        comments: str | None = None,
+        color: str | None = None,
+        tags: list | None = None,
+    ):
+        body: dict = {"name": name, "primary-category": primary_category, "url-list": identifier}
+        if groups:
+            body["groups"] = groups
+        if description:
+            body["description"] = description
+        if comments:
+            body["comments"] = comments
+        if color:
+            body["color"] = color
+        if tags:
+            body["tags"] = tags
+        demisto.debug(
+            f"{demisto.command()}: endpoint='add-application-site', "
+            f"args=({name=}, {primary_category=}, {identifier=}, "
+            f"{groups=}, {description=}, {comments=}, {color=}, {tags=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="add-application-site", headers=self.headers, json_data=body)
 
     def update_application_site(
         self,
         identifier: str,
         urls_defined_as_regular_expression: bool,
-        groups,
-        url_list,
-        description: Optional[str],
-        new_name: Optional[str],
-        primary_category: Optional[str],
-        application_signature: Optional[str],
+        groups=None,
+        url_list=None,
+        description: Optional[str] = None,
+        new_name: Optional[str] = None,
+        primary_category: Optional[str] = None,
+        application_signature: Optional[str] = None,
+        comments: str | None = None,
+        color: str | None = None,
+        tags: list | None = None,
     ):
-        body = {
+        body: dict = {
             "name": identifier,
-            "description": description,
-            "new-name": new_name,
-            "primary-category": primary_category,
             "urls-defined-as-regular-expression": urls_defined_as_regular_expression,
-            "groups": groups,
-            "application-signature": application_signature,
-            "url-list": url_list,
         }
+        if description:
+            body["description"] = description
+        if new_name:
+            body["new-name"] = new_name
+        if primary_category:
+            body["primary-category"] = primary_category
+        if groups:
+            body["groups"] = groups
+        if application_signature:
+            body["application-signature"] = application_signature
+        if url_list:
+            body["url-list"] = url_list
+        if comments:
+            body["comments"] = comments
+        if color:
+            body["color"] = color
+        if tags:
+            body["tags"] = tags
+        demisto.debug(
+            f"{demisto.command()}: endpoint='set-application-site', "
+            f"args=({identifier=}, {urls_defined_as_regular_expression=}, "
+            f"{groups=}, {url_list=}, {description=}, {new_name=}, "
+            f"{primary_category=}, {application_signature=}, {comments=}, "
+            f"{color=}, {tags=}), body={body}"
+        )
         return self._http_request(method="POST", url_suffix="set-application-site", headers=self.headers, json_data=body)
 
     def add_objects_batch(self, object_type, add_list):
@@ -462,7 +864,30 @@ class Client(BaseClient):
         return self._http_request(method="POST", url_suffix="set-threat-protection", headers=self.headers, json_data=args)
 
 
-def checkpoint_list_hosts_command(client: Client, limit: int, offset: int) -> CommandResults:
+def validate_domains_to_process(domains_to_process: str | None, details_level: str | None) -> None:
+    """Validate domains_to_process argument constraints.
+
+    Args:
+        domains_to_process: Indicates which domains to process the commands on.
+        details_level: The level of detail for returned objects.
+
+    Raises:
+        ValueError: If domains_to_process is used with details_level 'full'.
+    """
+    if domains_to_process and details_level == "full":
+        raise ValueError(
+            "The 'domains_to_process' argument cannot be used with 'details_level' set to 'full'. "
+            "Please change 'details_level' or remove 'domains_to_process'."
+        )
+
+
+def checkpoint_list_hosts_command(
+    client: Client,
+    limit: int,
+    offset: int,
+    details_level: str = None,
+    domains_to_process: str = None,
+) -> CommandResults:
     """
     Retrieve all host objects.
 
@@ -470,11 +895,15 @@ def checkpoint_list_hosts_command(client: Client, limit: int, offset: int) -> Co
         client (Client): CheckPoint client.
         limit (int): The maximal number of returned results. default is 50.
         offset (int): Number of the results to initially skip. default is 0.
+        details_level (str): The level of detail for returned objects.
+        domains_to_process (str): Indicates which domains to process the commands on.
     """
+    validate_domains_to_process(domains_to_process, details_level)
     printable_result = []
     readable_output = ""
+    domains_list = argToList(domains_to_process) if domains_to_process else None
 
-    result = client.list_hosts(limit, offset)
+    result = client.list_hosts(limit, offset, details_level=details_level, domains_to_process=domains_list)
     demisto.info(result)
     if result:
         if result.get("total") == 0:
@@ -483,8 +912,15 @@ def checkpoint_list_hosts_command(client: Client, limit: int, offset: int) -> Co
             result = result.get("objects")
             for element in result:
                 current_printable_result = {}
+
+                domain = element.get("domain", {})
+                current_printable_result["domain-name"] = domain.get("name")
+                current_printable_result["domain-uid"] = domain.get("uid")
+                current_printable_result["domain-type"] = domain.get("domain-type")
+
                 for endpoint in DEFAULT_LIST_FIELD:
-                    current_printable_result[endpoint] = element.get(endpoint)
+                    if endpoint not in ["domain-name", "domain-uid", "domain-type"]:
+                        current_printable_result[endpoint] = element.get(endpoint)
                 printable_result.extend([current_printable_result])
 
             readable_output = tableToMarkdown(
@@ -500,15 +936,16 @@ def checkpoint_list_hosts_command(client: Client, limit: int, offset: int) -> Co
     return command_results
 
 
-def checkpoint_get_host_command(client: Client, identifier: str) -> CommandResults:
+def checkpoint_get_host_command(client: Client, identifier: str, details_level: str = None) -> CommandResults:
     """
     Show existing host object using object name or uid.
 
     Args:
         client (Client): CheckPoint client.
         identifier(str): uid or name.
+        details_level (str): The level of detail for returned objects.
     """
-    result = client.get_host(identifier)
+    result = client.get_host(identifier, details_level=details_level)
     printable_result = build_printable_result(DEFAULT_LIST_FIELD, result)
     readable_output = tableToMarkdown(
         f"CheckPoint data of host object {identifier}:", printable_result, headers=DEFAULT_LIST_FIELD, removeNull=True
@@ -526,7 +963,23 @@ def checkpoint_get_host_command(client: Client, identifier: str) -> CommandResul
 
 
 def checkpoint_add_host_command(
-    client: Client, name, ip_address, ignore_warnings: Union[bool, str], ignore_errors: Union[bool, str], groups: str = None
+    client: Client,
+    name,
+    ip_address,
+    ignore_warnings: Union[bool, str] = "false",
+    ignore_errors: Union[bool, str] = "false",
+    groups: str = None,
+    comments: str = None,
+    color: str = None,
+    nat_auto_rule: str = None,
+    nat_method: str = None,
+    nat_ip: str = None,
+    nat_install_on: str = None,
+    nat_hide_behind: str = None,
+    interfaces_name: str = None,
+    interfaces_subnet: str = None,
+    interfaces_mask_length: str = None,
+    tags: str = None,
 ) -> CommandResults:
     """
     Add new host object.
@@ -538,12 +991,27 @@ def checkpoint_add_host_command(
         groups (str or list): Collection of group identifiers.
         ignore_warnings (str): Whether to ignore warnings when adding a host.
         ignore_errors (str): Whether to ignore errors when adding a host.
+        comments (str): Comments string.
+        color (str): Object color.
+        nat_auto_rule (str): Whether to enable automatic NAT rule generation.
+        nat_method (str): NAT translation method (hide or static).
+        nat_ip (str): NAT IPv4 or IPv6 address.
+        nat_install_on (str): Gateway for NAT install-on setting.
+        nat_hide_behind (str): Hide behind method (gateway or ip_address).
+        interfaces_name (str): Interface name.
+        interfaces_subnet (str): Interface subnet address.
+        interfaces_mask_length (str): Interface mask length.
+        tags (str or list): Collection of tag identifiers.
     """
     name = argToList(name)
     ip_address = argToList(ip_address)
-    groups = argToList(groups)
+    groups_list = argToList(groups) if groups else None
+    tags_list = argToList(tags) if tags else None
     ignore_warnings = argToBoolean(ignore_warnings)
     ignore_errors = argToBoolean(ignore_errors)
+
+    nat_settings = build_nat_settings(nat_auto_rule, nat_method, nat_ip, nat_install_on, nat_hide_behind)
+    interfaces = build_interfaces_list(interfaces_name, interfaces_subnet, interfaces_mask_length)
 
     result = []
     context = []
@@ -561,13 +1029,32 @@ def checkpoint_add_host_command(
         "ipv6-address",
         "read-only",
         "groups",
+        "color",
+        "comments",
+        "tags",
+        "nat-auto-rule",
+        "nat-method",
+        "nat-ipv4-address",
+        "nat-install-on",
+        "nat-hide-behind",
     ]
 
     if len(name) != len(ip_address):
         raise ValueError("Number of host-names and host-IP has to be equal")
     else:
         for index, item in enumerate(name):
-            current_result = client.add_host(item, ip_address[index], ignore_warnings, ignore_errors, groups)
+            current_result = client.add_host(
+                item,
+                ip_address[index],
+                ignore_warnings,
+                ignore_errors,
+                groups=groups_list,
+                comments=comments,
+                color=color,
+                nat_settings=nat_settings,
+                interfaces=interfaces,
+                tags=tags_list,
+            )
             printable_result = build_printable_result(headers, current_result)
             current_readable_output = tableToMarkdown(
                 "CheckPoint data for adding host:", printable_result, headers=headers, removeNull=True
@@ -588,12 +1075,22 @@ def checkpoint_add_host_command(
 def checkpoint_update_host_command(
     client: Client,
     identifier: str,
-    ignore_warnings: bool,
-    ignore_errors: bool,
+    ignore_warnings: Union[bool, str] = "false",
+    ignore_errors: Union[bool, str] = "false",
     ip_address: str = None,
     new_name: str = None,
     comments: str = None,
     groups=None,
+    color: str = None,
+    nat_auto_rule: str = None,
+    nat_method: str = None,
+    nat_ip: str = None,
+    nat_install_on: str = None,
+    nat_hide_behind: str = None,
+    interfaces_name: str = None,
+    interfaces_subnet: str = None,
+    interfaces_mask_length: str = None,
+    tags: str = None,
 ) -> CommandResults:
     """
     Edit existing host using object name or uid.
@@ -609,10 +1106,38 @@ def checkpoint_update_host_command(
         new_name(str): New name of the object.
         comments(str): Comments string.
         groups (str or list): Collection of group identifiers.
-
+        color (str): Object color.
+        nat_auto_rule (str): Whether to enable automatic NAT rule generation.
+        nat_method (str): NAT translation method (hide or static).
+        nat_ip (str): NAT IPv4 or IPv6 address.
+        nat_install_on (str): Gateway for NAT install-on setting.
+        nat_hide_behind (str): Hide behind method (gateway or ip_address).
+        interfaces_name (str): Interface name.
+        interfaces_subnet (str): Interface subnet address.
+        interfaces_mask_length (str): Interface mask length.
+        tags (str or list): Collection of tag identifiers.
     """
-    groups = argToList(groups)
-    result = client.update_host(identifier, ignore_warnings, ignore_errors, ip_address, new_name, comments, groups)
+    groups_list = argToList(groups) if groups else None
+    tags_list = argToList(tags) if tags else None
+    ignore_warnings = argToBoolean(ignore_warnings)
+    ignore_errors = argToBoolean(ignore_errors)
+
+    nat_settings = build_nat_settings(nat_auto_rule, nat_method, nat_ip, nat_install_on, nat_hide_behind)
+    interfaces = build_interfaces_list(interfaces_name, interfaces_subnet, interfaces_mask_length)
+
+    result = client.update_host(
+        identifier,
+        ignore_warnings,
+        ignore_errors,
+        ip_address=ip_address,
+        new_name=new_name,
+        comments=comments,
+        groups=groups_list,
+        color=color,
+        nat_settings=nat_settings,
+        interfaces=interfaces,
+        tags=tags_list,
+    )
 
     headers = [
         "name",
@@ -626,6 +1151,9 @@ def checkpoint_update_host_command(
         "ipv4-address",
         "last-modifier",
         "read-only",
+        "color",
+        "comments",
+        "tags",
     ]
     printable_result = build_printable_result(headers, result)
     readable_output = tableToMarkdown("CheckPoint data for updating a host:", printable_result, headers=headers, removeNull=True)
@@ -673,7 +1201,14 @@ def checkpoint_delete_host_command(client: Client, identifier, ignore_warnings: 
     return command_results
 
 
-def checkpoint_list_groups_command(client: Client, limit: int, offset: int) -> CommandResults:
+def checkpoint_list_groups_command(
+    client: Client,
+    limit: int,
+    offset: int,
+    details_level: str = None,
+    domains_to_process: str = None,
+    filter: str = None,
+) -> CommandResults:
     """
     Retrieve all group objects.
 
@@ -681,8 +1216,12 @@ def checkpoint_list_groups_command(client: Client, limit: int, offset: int) -> C
         client (Client): CheckPoint client.
         limit (int): The maximal number of returned results. default is 50.
         offset (int): Number of the results to initially skip. default is 0.
+        details_level (str): The level of detail for returned objects.
+        domains_to_process (str): Indicates which domains to process the commands on.
+        filter (str): Search expression to filter objects by.
     """
-    result = client.list_groups(limit, offset)
+    domains_list = argToList(domains_to_process) if domains_to_process else None
+    result = client.list_groups(limit, offset, details_level=details_level, domains_to_process=domains_list, filter_exp=filter)
     result = result.get("objects")
 
     printable_result = []
@@ -691,8 +1230,15 @@ def checkpoint_list_groups_command(client: Client, limit: int, offset: int) -> C
     if result:
         for element in result:
             current_printable_result = {}
+
+            domain = element.get("domain", {})
+            current_printable_result["domain-name"] = domain.get("name")
+            current_printable_result["domain-uid"] = domain.get("uid")
+            current_printable_result["domain-type"] = domain.get("domain-type")
+
             for endpoint in DEFAULT_LIST_FIELD:
-                current_printable_result[endpoint] = element.get(endpoint)
+                if endpoint not in ["domain-name", "domain-uid", "domain-type"]:
+                    current_printable_result[endpoint] = element.get(endpoint)
             printable_result.append(current_printable_result)
 
         readable_output = tableToMarkdown(
@@ -709,15 +1255,16 @@ def checkpoint_list_groups_command(client: Client, limit: int, offset: int) -> C
     return command_results
 
 
-def checkpoint_get_group_command(client: Client, identifier: str) -> CommandResults:
+def checkpoint_get_group_command(client: Client, identifier: str, details_level: str = None) -> CommandResults:
     """
     Show existing group object using object name or uid.
 
     Args:
         client (Client): CheckPoint client.
         identifier(str): uid or name.
+        details_level (str): The level of detail for returned objects.
     """
-    result = client.get_group(identifier)
+    result = client.get_group(identifier, details_level=details_level)
     printable_result = build_printable_result(DEFAULT_LIST_FIELD, result)
     readable_output = tableToMarkdown(
         f"CheckPoint for {identifier} group:", printable_result, headers=DEFAULT_LIST_FIELD, removeNull=True
@@ -734,13 +1281,28 @@ def checkpoint_get_group_command(client: Client, identifier: str) -> CommandResu
     return command_results
 
 
-def checkpoint_add_group_command(client: Client, name) -> CommandResults:
+def checkpoint_add_group_command(
+    client: Client,
+    name,
+    members: str = None,
+    comments: str = None,
+    color: str = None,
+    tags: str = None,
+    ignore_warnings: Union[bool, str] = "false",
+    ignore_errors: Union[bool, str] = "false",
+) -> CommandResults:
     """
     add group objects.
 
     Args:
         client (Client): CheckPoint client.
         name(str): Object name. Must be unique in the domain.
+        members (str or list): Collection of network objects identified by name or UID.
+        comments (str): Comments string.
+        color (str): Object color.
+        tags (str or list): Collection of tag identifiers.
+        ignore_warnings (str): Whether to ignore warnings when adding a group.
+        ignore_errors (str): Whether to ignore errors when adding a group.
     """
     headers = [
         "name",
@@ -755,14 +1317,28 @@ def checkpoint_add_group_command(client: Client, name) -> CommandResults:
         "ipv6-address",
         "read-only",
         "groups",
+        "color",
+        "comments",
     ]
     name = argToList(name)
+    members_list = argToList(members) if members else None
+    tags_list = argToList(tags) if tags else None
+    ignore_warnings_bool = argToBoolean(ignore_warnings)
+    ignore_errors_bool = argToBoolean(ignore_errors)
     result = []
     printable_result = {}
     readable_output = ""
 
     for item in enumerate(name):
-        current_result = client.add_group(item[1])
+        current_result = client.add_group(
+            item[1],
+            members=members_list,
+            comments=comments,
+            color=color,
+            tags=tags_list,
+            ignore_warnings=ignore_warnings_bool,
+            ignore_errors=ignore_errors_bool,
+        )
         printable_result = build_printable_result(headers, current_result)
         current_readable_output = tableToMarkdown(
             "CheckPoint data for adding group:", printable_result, headers=headers, removeNull=True
@@ -782,12 +1358,15 @@ def checkpoint_add_group_command(client: Client, name) -> CommandResults:
 def checkpoint_update_group_command(
     client: Client,
     identifier: str,
-    ignore_warnings: bool,
-    ignore_errors: bool,
+    ignore_warnings: Union[bool, str] = "true",
+    ignore_errors: Union[bool, str] = "false",
     action: str = "",
     members=None,
     new_name: str = None,
     comments: str = None,
+    color: str = None,
+    tags: str = None,
+    details_level: str = None,
 ) -> CommandResults:
     """
     Edit existing group using object name or uid.
@@ -803,12 +1382,43 @@ def checkpoint_update_group_command(
         members(object): Collection of Network objects identified by the name or UID.
         new_name(str): New name of the object.
         comments(str): Comments string.
+        color (str): Object color.
+        tags (str or list): Collection of tag identifiers.
+        details_level (str): The level of detail for returned objects.
     """
     if members:
         # noinspection PyTypeChecker
         members = argToList(members)
-    result = client.update_group(identifier, ignore_warnings, ignore_errors, action, members, new_name, comments)
-    headers = ["name", "uid", "type", "domain-name", "domain-type", "domain-uid", "creator", "last-modifier", "read-only"]
+    tags_list = argToList(tags) if tags else None
+    ignore_warnings_bool = argToBoolean(ignore_warnings)
+    ignore_errors_bool = argToBoolean(ignore_errors)
+
+    result = client.update_group(
+        identifier,
+        ignore_warnings_bool,
+        ignore_errors_bool,
+        action,
+        members,
+        new_name=new_name,
+        comments=comments,
+        color=color,
+        tags=tags_list,
+        details_level=details_level,
+    )
+    headers = [
+        "name",
+        "uid",
+        "type",
+        "domain-name",
+        "domain-type",
+        "domain-uid",
+        "creator",
+        "last-modifier",
+        "read-only",
+        "color",
+        "comments",
+        "tags",
+    ]
     printable_result = build_printable_result(headers, result)
     readable_output = tableToMarkdown("CheckPoint data for updating a group:", printable_result, headers=headers, removeNull=True)
 
@@ -852,7 +1462,13 @@ def checkpoint_delete_group_command(client: Client, identifier) -> CommandResult
     return command_results
 
 
-def checkpoint_list_address_range_command(client: Client, limit: int, offset: int) -> CommandResults:
+def checkpoint_list_address_range_command(
+    client: Client,
+    limit: int,
+    offset: int,
+    details_level: str = None,
+    domains_to_process: str = None,
+) -> CommandResults:
     """
     Retrieve all address range objects.
 
@@ -860,8 +1476,11 @@ def checkpoint_list_address_range_command(client: Client, limit: int, offset: in
         client (Client): CheckPoint client.
         limit (int): The maximal number of returned results. default is 50.
         offset (int): Number of the results to initially skip. default is 0.
+        details_level (str): The level of detail for returned objects.
+        domains_to_process (str): Indicates which domains to process the commands on.
     """
-    result = client.list_address_ranges(limit, offset)
+    domains_list = argToList(domains_to_process) if domains_to_process else None
+    result = client.list_address_ranges(limit, offset, details_level=details_level, domains_to_process=domains_list)
     result = result.get("objects")
 
     printable_result = []
@@ -870,8 +1489,15 @@ def checkpoint_list_address_range_command(client: Client, limit: int, offset: in
     if result:
         for element in result:
             current_printable_result = {}
+
+            domain = element.get("domain", {})
+            current_printable_result["domain-name"] = domain.get("name")
+            current_printable_result["domain-uid"] = domain.get("uid")
+            current_printable_result["domain-type"] = domain.get("domain-type")
+
             for endpoint in DEFAULT_LIST_FIELD:
-                current_printable_result[endpoint] = element.get(endpoint)
+                if endpoint not in ["domain-name", "domain-uid", "domain-type"]:
+                    current_printable_result[endpoint] = element.get(endpoint)
             printable_result.append(current_printable_result)
 
         readable_output = tableToMarkdown(
@@ -917,10 +1543,18 @@ def checkpoint_add_address_range_command(
     name: str,
     ip_address_first: str,
     ip_address_last: str,
-    set_if_exists: bool,
-    ignore_warnings: bool,
-    ignore_errors: bool,
+    set_if_exists: Union[bool, str] = "false",
+    ignore_warnings: Union[bool, str] = "true",
+    ignore_errors: Union[bool, str] = "false",
     groups=None,
+    comments: str = None,
+    color: str = None,
+    nat_auto_rule: str = None,
+    nat_method: str = None,
+    nat_ip: str = None,
+    nat_install_on: str = None,
+    nat_hide_behind: str = None,
+    tags: str = None,
 ) -> CommandResults:
     """
     add address range object.
@@ -935,9 +1569,22 @@ def checkpoint_add_address_range_command(
         ignore_warnings(bool): Apply changes ignoring warnings.
         ignore_errors(bool): Apply changes ignoring errors
         groups(str or list): Collection of group identifiers.
+        comments (str): Comments string.
+        color (str): Object color.
+        nat_auto_rule (str): Whether to enable automatic NAT rule generation.
+        nat_method (str): NAT translation method (hide or static).
+        nat_ip (str): NAT IPv4 or IPv6 address.
+        nat_install_on (str): Gateway for NAT install-on setting.
+        nat_hide_behind (str): Hide behind method (gateway or ip_address).
+        tags (str or list): Collection of tag identifiers.
     """
-    if groups:
-        groups = argToList(groups)
+    groups_list = argToList(groups) if groups else None
+    tags_list = argToList(tags) if tags else None
+    set_if_exists_bool = argToBoolean(set_if_exists)
+    ignore_warnings_bool = argToBoolean(ignore_warnings)
+    ignore_errors_bool = argToBoolean(ignore_errors)
+    nat_settings = build_nat_settings(nat_auto_rule, nat_method, nat_ip, nat_install_on, nat_hide_behind)
+
     headers = [
         "name",
         "uid",
@@ -952,10 +1599,28 @@ def checkpoint_add_address_range_command(
         "ipv6-address-last",
         "last-modifier",
         "read-only",
+        "color",
+        "comments",
+        "tags",
+        "nat-auto-rule",
+        "nat-method",
+        "nat-ipv4-address",
+        "nat-install-on",
+        "nat-hide-behind",
     ]
 
     result = client.add_address_range(
-        name, ip_address_first, ip_address_last, set_if_exists, ignore_warnings, ignore_errors, groups
+        name,
+        ip_address_first,
+        ip_address_last,
+        set_if_exists_bool,
+        ignore_warnings_bool,
+        ignore_errors_bool,
+        groups=groups_list,
+        comments=comments,
+        color=color,
+        nat_settings=nat_settings,
+        tags=tags_list,
     )
     printable_result = build_printable_result(headers, result)
     readable_output = tableToMarkdown(
@@ -975,13 +1640,19 @@ def checkpoint_add_address_range_command(
 def checkpoint_update_address_range_command(
     client: Client,
     identifier: str,
-    ignore_warnings: bool,
-    ignore_errors: bool,
+    ignore_warnings: Union[bool, str] = "true",
+    ignore_errors: Union[bool, str] = "false",
     ip_address_first: str = None,
     ip_address_last: str = None,
     new_name: str = None,
     comments: str = None,
     groups=None,
+    color: str = None,
+    nat_method: str = None,
+    nat_ip: str = None,
+    nat_install_on: str = None,
+    nat_hide_behind: str = None,
+    tags: str = None,
 ) -> CommandResults:
     """
     Edit existing address range object using object name or uid.
@@ -998,11 +1669,31 @@ def checkpoint_update_address_range_command(
         new_name(str): New name of the object.
         comments(str): Comments string.
         groups(str or list): Collection of group identifiers.
+        color (str): Object color.
+        nat_method (str): NAT translation method (hide or static).
+        nat_ip (str): NAT IPv4 or IPv6 address.
+        nat_install_on (str): Gateway for NAT install-on setting.
+        nat_hide_behind (str): Hide behind method (gateway or ip_address).
+        tags (str or list): Collection of tag identifiers.
     """
-    if groups:
-        groups = argToList(groups)
+    groups_list = argToList(groups) if groups else None
+    tags_list = argToList(tags) if tags else None
+    ignore_warnings_bool = argToBoolean(ignore_warnings)
+    ignore_errors_bool = argToBoolean(ignore_errors)
+    nat_settings = build_nat_settings(None, nat_method, nat_ip, nat_install_on, nat_hide_behind, require_auto_rule=False)
+
     result = client.update_address_range(
-        identifier, ignore_warnings, ignore_errors, ip_address_first, ip_address_last, new_name, comments, groups
+        identifier,
+        ignore_warnings_bool,
+        ignore_errors_bool,
+        ip_address_first=ip_address_first,
+        ip_address_last=ip_address_last,
+        new_name=new_name,
+        comments=comments,
+        groups=groups_list,
+        color=color,
+        nat_settings=nat_settings,
+        tags=tags_list,
     )
     headers = [
         "name",
@@ -1016,6 +1707,13 @@ def checkpoint_update_address_range_command(
         "ipv4-address",
         "last-modifier",
         "read-only",
+        "color",
+        "tags",
+        "nat-auto-rule",
+        "nat-method",
+        "nat-ipv4-address",
+        "nat-install-on",
+        "nat-hide-behind",
     ]
     printable_result = build_printable_result(headers, result)
     readable_output = tableToMarkdown(
@@ -1063,7 +1761,14 @@ def checkpoint_delete_address_range_command(client: Client, identifier) -> Comma
     return command_results
 
 
-def checkpoint_list_threat_indicator_command(client: Client, limit: int, offset: int) -> CommandResults:
+def checkpoint_list_threat_indicator_command(
+    client: Client,
+    limit: int,
+    offset: int,
+    domain_names: str = None,
+    details_level: str = None,
+    filter: str = None,
+) -> CommandResults:
     """
     Retrieve all threat indicator objects.
 
@@ -1071,8 +1776,14 @@ def checkpoint_list_threat_indicator_command(client: Client, limit: int, offset:
         client (Client): CheckPoint client.
         limit (int): The maximal number of returned results. default is 50.
         offset (int): Number of the results to initially skip. default is 0.
+        domain_names (str): Indicates which domains to process.
+        details_level (str): The level of detail for returned objects.
+        filter (str): Search expression to filter objects by.
     """
-    result = client.list_threat_indicators(limit, offset)
+    domains_list = argToList(domain_names) if domain_names else None
+    result = client.list_threat_indicators(
+        limit, offset, domain_names=domains_list, details_level=details_level, filter_exp=filter
+    )
     result["objects"] = result.pop("indicators")
     printable_result = []
     readable_output = ""
@@ -1081,8 +1792,15 @@ def checkpoint_list_threat_indicator_command(client: Client, limit: int, offset:
     if result:
         for element in result:
             current_printable_result = {}
+
+            domain = element.get("domain", {})
+            current_printable_result["domain-name"] = domain.get("name")
+            current_printable_result["domain-uid"] = domain.get("uid")
+            current_printable_result["domain-type"] = domain.get("domain-type")
+
             for endpoint in DEFAULT_LIST_FIELD:
-                current_printable_result[endpoint] = element.get(endpoint)
+                if endpoint not in ["domain-name", "domain-uid", "domain-type"]:
+                    current_printable_result[endpoint] = element.get(endpoint)
             printable_result.append(current_printable_result)
 
         readable_output = tableToMarkdown(
@@ -1124,17 +1842,55 @@ def checkpoint_get_threat_indicator_command(client: Client, identifier: str) -> 
     return command_results
 
 
-def checkpoint_add_threat_indicator_command(client: Client, name: str, observables: list) -> CommandResults:
+def checkpoint_add_threat_indicator_command(
+    client: Client,
+    name: str,
+    profile_action: str,
+    observables: list = None,
+    action: str = None,
+    comments: str = None,
+    color: str = None,
+    tags: str = None,
+    ignore_warnings: Union[bool, str] = "false",
+) -> CommandResults:
     """
     Create new threat indicator.
 
     Args:
         client (Client): CheckPoint client.
         name(str): Object name. Must be unique in the domain.
+        profile_action (str or list): List of profile-action pairs in the format 'profile_action'.
+            Each item is split by '_' to create a profile override with 'profile' and 'action' keys.
+            example: ["p1_a1", "p2_a2", "p3_a3"]
         observables(list): The indicator's observables.
+        action (str): Action for the indicator.
+        comments (str): Comments string.
+        color (str): Object color.
+        tags (str or list): Collection of tag identifiers.
+        ignore_warnings (str): Whether to ignore warnings.
     """
-    observables = argToList(observables)
-    result = client.add_threat_indicator(name, observables)
+    observables_list = argToList(observables) if observables else []
+    tags_list = argToList(tags) if tags else None
+    profile_action_list = argToList(profile_action)
+    profile_overrides = []
+    for item in profile_action_list:
+        parts = item.split("_", 1)
+        if len(parts) == 2:
+            profile_overrides.append({"profile": parts[0], "action": parts[1]})
+        else:
+            profile_overrides.append({"profile": parts[0], "action": ""})
+    ignore_warnings_bool = argToBoolean(ignore_warnings)
+
+    result = client.add_threat_indicator(
+        name,
+        observables_list,
+        comments=comments,
+        color=color,
+        tags=tags_list,
+        ignore_warnings=ignore_warnings_bool,
+        action=action,
+        profile_overrides=profile_overrides,
+    )
     printable_result = {"task-id": result.get("task-id")}
     readable_output = tableToMarkdown("CheckPoint data for adding an threat indicator:", printable_result)
     command_results = CommandResults(
@@ -1148,7 +1904,14 @@ def checkpoint_add_threat_indicator_command(client: Client, name: str, observabl
 
 
 def checkpoint_update_threat_indicator_command(
-    client: Client, identifier: str, action: str = None, new_name: str = None, comments: str = None
+    client: Client,
+    identifier: str,
+    profile_action: str,
+    action: str = None,
+    new_name: str = None,
+    comments: str = None,
+    color: str = None,
+    tags: str = None,
 ) -> CommandResults:
     """
     Edit existing threat indicator object using object name or uid.
@@ -1156,14 +1919,35 @@ def checkpoint_update_threat_indicator_command(
     Args:
         client (Client): CheckPoint client.
         identifier(str): uid or name.
+        profile_action (str or list): List of profile-action pairs in the format 'profile_action'.
+            Each item is split by '_' to create a profile override with 'profile' and 'action' keys.
+            example: ["p1_a1", "p2_a2", "p3_a3"]
         action (str): the action to set. available options:
-                            "Accept", "Drop", "Ask", "Inform", "Reject", "User Auth",
-                            "Client Auth", "Apply Layer".
+                            "Inactive", "Ask", "Prevent", "Detect".
         new_name(str): New name of the object.
         comments(str): Comments string.
+        color (str): Object color.
+        tags (str or list): Collection of tag identifiers.
     """
+    profile_action_list = argToList(profile_action)
+    profile_overrides = []
+    for item in profile_action_list:
+        parts = item.split("_", 1)
+        if len(parts) == 2:
+            profile_overrides.append({"profile": parts[0], "action": parts[1]})
+        else:
+            profile_overrides.append({"profile": parts[0], "action": ""})
+    tags_list = argToList(tags) if tags else None
 
-    result = client.update_threat_indicator(identifier, action, new_name, comments)
+    result = client.update_threat_indicator(
+        identifier,
+        action=action,
+        new_name=new_name,
+        comments=comments,
+        profile_overrides=profile_overrides,
+        color=color,
+        tags=tags_list,
+    )
     headers = [
         "name",
         "uid",
@@ -1176,6 +1960,9 @@ def checkpoint_update_threat_indicator_command(
         "ipv4-address",
         "last-modifier",
         "read-only",
+        "color",
+        "tags",
+        "profile-overrides",
     ]
     printable_result = build_printable_result(headers, result)
     readable_output = tableToMarkdown(
@@ -1221,7 +2008,14 @@ def checkpoint_delete_threat_indicator_command(client: Client, identifier) -> Co
     return command_results
 
 
-def checkpoint_list_access_rule_command(client: Client, identifier: str, limit: int, offset: int) -> CommandResults:
+def checkpoint_list_access_rule_command(
+    client: Client,
+    identifier: str,
+    limit: int,
+    offset: int,
+    details_level: str = None,
+    show_hits: str = None,
+) -> CommandResults:
     """
     Show existing access rule base objects using object name or uid.
 
@@ -1230,11 +2024,14 @@ def checkpoint_list_access_rule_command(client: Client, identifier: str, limit: 
         identifier(str): uid or name.
         limit (int): The maximal number of returned results.
         offset (int): Number of the results to initially skip.
+        details_level (str): The level of detail for returned objects.
+        show_hits (str): Whether to include hit count data in the output.
     """
     printable_result = []
     readable_output = ""
+    show_hits_bool = argToBoolean(show_hits) if show_hits is not None else None
 
-    result = client.list_access_rule(identifier, limit, offset)
+    result = client.list_access_rule(identifier, limit, offset, details_level=details_level, show_hits=show_hits_bool)
     result = result.get("rulebase")
 
     if result:
@@ -1261,12 +2058,18 @@ def checkpoint_add_access_rule_command(
     client: Client,
     layer: str,
     position,
-    action: str,
+    action: str = "Drop",
     name: str = None,
     vpn: str = None,
     destination=None,
     service=None,
     source=None,
+    comments: str = None,
+    install_on: str = None,
+    enabled: str = None,
+    track_type: str = None,
+    track_accounting: str = None,
+    track_per_session: str = None,
 ) -> CommandResults:
     """
     Add new access rule object.
@@ -1274,21 +2077,50 @@ def checkpoint_add_access_rule_command(
     Args:
         client (Client): CheckPoint client.
         layer(str): Layer that the rule belongs to identified by the name or UID.
-        position(int or str): IPosition in the rulebase.
-                              int - add rule at a specific position
-                              str - add rule at the position. vaild value: top, bottom
+        position(int or str): Position in the rulebase.
         name(str): rule name
         action(str): Action settings. valid values are: Accept, Drop, Apply Layer, Ask and Info
-                     default value is Drop.
-
         vpn(str): Communities or Directional. Valid values: Any, All_GwToGw.
         destination(str or list): Collection of Network objects identified by the name or UID.
         service(str or list): Collection of Network objects identified by the name or UID.
         source(str or list): Collection of Network objects identified by the name or UID.
+        comments (str): Comments string.
+        install_on (str or list): Which gateways to install the policy on.
+        enabled (str): Enable/Disable the rule.
+        track_type (str): Track settings (Log, Extended Log, Detailed Log, None).
+        track_accounting (str): Turns accounting for track on and off.
+        track_per_session (str): Determines whether to perform the log per session.
     """
+    install_on_list = argToList(install_on) if install_on else None
+    enabled_bool = argToBoolean(enabled) if enabled is not None else None
+
+    # Build track settings dict
+    track = None
+    if track_type or track_accounting or track_per_session:
+        track = {}
+        if track_type:
+            track["type"] = track_type
+        if track_accounting is not None:
+            track["accounting"] = argToBoolean(track_accounting)
+        if track_per_session is not None:
+            track["per-session"] = argToBoolean(track_per_session)
+
     headers = ["name", "uid", "type", "domain-name", "domain-type", "domain-uid", "enabled", "layer", "creator", "last-modifier"]
 
-    result = client.add_rule(layer, position, action, name, vpn, destination, service, source)
+    result = client.add_rule(
+        layer,
+        position,
+        action,
+        name=name,
+        vpn=vpn,
+        destination=destination,
+        service=service,
+        source=source,
+        comments=comments,
+        install_on=install_on_list,
+        enabled=enabled_bool,
+        track=track,
+    )
     printable_result = build_printable_result(headers, result)
     readable_output = tableToMarkdown(
         "CheckPoint data for adding access rule:", printable_result, headers=headers, removeNull=True
@@ -1308,12 +2140,23 @@ def checkpoint_update_access_rule_command(
     client: Client,
     identifier: str,
     layer: str,
-    ignore_warnings: bool,
-    ignore_errors: bool,
-    enabled: bool,
+    ignore_warnings: Union[bool, str] = "true",
+    ignore_errors: Union[bool, str] = "false",
+    enabled: str = None,
     action: str = None,
     new_name: str = None,
     new_position=None,
+    comments: str = None,
+    track_type: str = None,
+    track_accounting: str = None,
+    track_per_session: str = None,
+    install_on: str = None,
+    source_add: str = None,
+    source_remove: str = None,
+    service_add: str = None,
+    service_remove: str = None,
+    destination_add: str = None,
+    destination_remove: str = None,
 ) -> CommandResults:
     """
     Edit existing access rule object using object name or uid.
@@ -1322,20 +2165,81 @@ def checkpoint_update_access_rule_command(
         client (Client): CheckPoint client.
         identifier (str): uid, name or rule-number.
         layer (str): Layer that the rule belongs to identified by the name or UID.
-        ignore_warnings(bool):Apply changes ignoring warnings.
-        ignore_errors(bool): Apply changes ignoring errors. You won't be able to publish such
-        a changes. If ignore-warnings flag was omitted- warnings will also be ignored
-        enabled(bool): Enable/Disable the rule
-        action (str): the action to set. available options:
-                                    "Accept", "Drop", "Ask", "Inform", "Reject", "User Auth",
-                                    "Client Auth", "Apply Layer".
+        ignore_warnings(bool): Apply changes ignoring warnings.
+        ignore_errors(bool): Apply changes ignoring errors.
+        enabled(str): Enable/Disable the rule.
+        action (str): the action to set.
         new_name(str): New name of the object.
-        new_position(int or str): New position in the rulebase. value can be int or str:
-                                int- add rule at the specific position
-                                str- add rule at the position. valid values: top, bottom.
+        new_position: New position in the rulebase.
+        comments (str): Comments string.
+        track_type (str): Track settings (Log, Extended Log, Detailed Log, None).
+        track_accounting (str): Turns accounting for track on and off.
+        track_per_session (str): Determines whether to perform the log per session.
+        install_on (str or list): Which gateways to install the policy on.
+        source_add (str or list): Adds to the collection of source network objects.
+        source_remove (str or list): Removes from the collection of source network objects.
+        service_add (str or list): Adds to the collection of service objects.
+        service_remove (str or list): Removes from the collection of service objects.
+        destination_add (str or list): Adds to the collection of destination network objects.
+        destination_remove (str or list): Removes from the collection of destination network objects.
     """
+    ignore_warnings_bool = argToBoolean(ignore_warnings)
+    ignore_errors_bool = argToBoolean(ignore_errors)
+    enabled_bool = argToBoolean(enabled) if enabled is not None else None
+    install_on_list = argToList(install_on) if install_on else None
 
-    result = client.update_rule(identifier, layer, ignore_warnings, ignore_errors, enabled, action, new_name, new_position)
+    # Build track settings dict
+    track = None
+    if track_type or track_accounting or track_per_session:
+        track = {}
+        if track_type:
+            track["type"] = track_type
+        if track_accounting is not None:
+            track["accounting"] = argToBoolean(track_accounting)
+        if track_per_session is not None:
+            track["per-session"] = argToBoolean(track_per_session)
+
+    # Build incremental source/destination/service dicts
+    source_obj = None
+    if source_add or source_remove:
+        source_obj = {}
+        if source_add:
+            source_obj["add"] = argToList(source_add)
+        if source_remove:
+            source_obj["remove"] = argToList(source_remove)
+
+    destination_obj = None
+    if destination_add or destination_remove:
+        destination_obj = {}
+        if destination_add:
+            destination_obj["add"] = argToList(destination_add)
+        if destination_remove:
+            destination_obj["remove"] = argToList(destination_remove)
+
+    service_obj = None
+    if service_add or service_remove:
+        service_obj = {}
+        if service_add:
+            service_obj["add"] = argToList(service_add)
+        if service_remove:
+            service_obj["remove"] = argToList(service_remove)
+
+    result = client.update_rule(
+        identifier,
+        layer,
+        ignore_warnings_bool,
+        ignore_errors_bool,
+        enabled=enabled_bool,
+        action=action,
+        new_name=new_name,
+        new_position=new_position,
+        comments=comments,
+        track=track,
+        install_on=install_on_list,
+        source=source_obj,
+        destination=destination_obj,
+        service=service_obj,
+    )
     headers = [
         "name",
         "uid",
@@ -1405,7 +2309,13 @@ def checkpoint_delete_access_rule_command(client: Client, identifier, layer: str
     return command_results
 
 
-def checkpoint_list_application_site_command(client: Client, limit: int, offset: int) -> CommandResults:
+def checkpoint_list_application_site_command(
+    client: Client,
+    limit: int,
+    offset: int,
+    details_level: str = None,
+    domains_to_process: str = None,
+) -> CommandResults:
     """
     Show existing application site objects using object name or uid.
 
@@ -1413,11 +2323,14 @@ def checkpoint_list_application_site_command(client: Client, limit: int, offset:
         client (Client): CheckPoint client.
         limit (int): The maximal number of returned results.
         offset (int): Number of the results to initially skip.
+        details_level (str): The level of detail for returned objects.
+        domains_to_process (str): Indicates which domains to process the commands on.
     """
     printable_result = []
     readable_output = ""
+    domains_list = argToList(domains_to_process) if domains_to_process else None
 
-    result = client.list_application_site(limit, offset)
+    result = client.list_application_site(limit, offset, details_level=details_level, domains_to_process=domains_list)
     result = result.get("objects")
     if result:
         for element in result:
@@ -1438,7 +2351,17 @@ def checkpoint_list_application_site_command(client: Client, limit: int, offset:
     return command_results
 
 
-def checkpoint_add_application_site_command(client: Client, name: str, primary_category: str, identifier, groups=None):
+def checkpoint_add_application_site_command(
+    client: Client,
+    name: str,
+    primary_category: str,
+    identifier=None,
+    groups=None,
+    description: str = None,
+    comments: str = None,
+    color: str = None,
+    tags: str = None,
+):
     """
     Add application site objects.
 
@@ -1453,9 +2376,14 @@ def checkpoint_add_application_site_command(client: Client, name: str, primary_c
                                application-signature(str): Application signature generated by
                                                             Signature Tool.
         groups(str or list): Collection of group identifiers.
+        description (str): A description of the application site.
+        comments (str): Comments string.
+        color (str): Object color.
+        tags (str or list): Collection of tag identifiers.
     """
     identifier = argToList(identifier)
-    groups = argToList(groups)
+    groups = argToList(groups) if groups else None
+    tags_list = argToList(tags) if tags else None
     headers = [
         "name",
         "uid",
@@ -1471,7 +2399,16 @@ def checkpoint_add_application_site_command(client: Client, name: str, primary_c
         "groups",
     ]
 
-    result = client.add_application_site(name, primary_category, identifier, groups)
+    result = client.add_application_site(
+        name,
+        primary_category,
+        identifier,
+        groups=groups,
+        description=description,
+        comments=comments,
+        color=color,
+        tags=tags_list,
+    )
     printable_result = build_printable_result(headers, result)
     readable_output = tableToMarkdown(
         "CheckPoint data for adding application site:", printable_result, headers=headers, removeNull=True
@@ -1490,7 +2427,7 @@ def checkpoint_add_application_site_command(client: Client, name: str, primary_c
 def checkpoint_update_application_site_command(
     client: Client,
     identifier: str,
-    urls_defined_as_regular_expression: bool,
+    urls_defined_as_regular_expression: bool = True,
     groups=None,
     url_list=None,
     url_list_to_add=None,
@@ -1499,6 +2436,9 @@ def checkpoint_update_application_site_command(
     new_name: str = None,
     primary_category: str = None,
     application_signature: str = None,
+    comments: str = None,
+    color: str = None,
+    tags: str = None,
 ):
     """
     Edit existing application site object using object name or uid.
@@ -1534,15 +2474,19 @@ def checkpoint_update_application_site_command(
 
     if groups:
         groups = argToList(groups)
+    tags_list = argToList(tags) if tags else None
     result = client.update_application_site(
         identifier,
         urls_defined_as_regular_expression,
-        groups,
-        url_list_object,
-        description,
-        new_name,
-        primary_category,
-        application_signature,
+        groups=groups,
+        url_list=url_list_object,
+        description=description,
+        new_name=new_name,
+        primary_category=primary_category,
+        application_signature=application_signature,
+        comments=comments,
+        color=color,
+        tags=tags_list,
     )
     headers = [
         "name",
@@ -2218,6 +3162,114 @@ def build_member_data(result: dict, readable_output: str, printable_result: dict
     return readable_output, printable_result
 
 
+def build_nat_settings(
+    nat_auto_rule: str | None = None,
+    nat_method: str | None = None,
+    nat_ip: str | None = None,
+    nat_install_on: str | None = None,
+    nat_hide_behind: str | None = None,
+    require_auto_rule: bool = True,
+) -> dict | None:
+    """Build the nat-settings dict for the Check Point API from individual arguments.
+
+    Returns None if no NAT arguments are provided.
+
+    Args:
+        require_auto_rule: When True, raises ValueError if nat_auto_rule is missing
+            when other nat_* arguments are provided. Set to False for commands that
+            do not expose nat_auto_rule (e.g. checkpoint-address-range-update).
+
+    Raises:
+        ValueError: If nat_auto_rule is missing when other nat_* arguments are provided
+            and require_auto_rule is True.
+        ValueError: If nat_hide_behind is provided when nat_method is 'static'.
+        ValueError: If nat_ip is missing when nat_method is 'hide' and nat_hide_behind is 'ip_address'.
+        ValueError: If nat_ip is provided when nat_method is 'hide' and nat_hide_behind is 'gateway'.
+    """
+    has_any_nat_arg = any([nat_method, nat_ip, nat_install_on, nat_hide_behind])
+
+    # nat_auto_rule is required when any other nat_* argument is provided
+    if require_auto_rule and has_any_nat_arg and nat_auto_rule is None:
+        raise ValueError(
+            "The 'nat_auto_rule' argument is required when any NAT argument "
+            "(nat_method, nat_ip, nat_install_on, nat_hide_behind) is provided. "
+            "Please provide 'nat_auto_rule'."
+        )
+
+    # nat_hide_behind is forbidden when nat_method is 'static'
+    if nat_method == "static" and nat_hide_behind:
+        raise ValueError(
+            "The 'nat_hide_behind' argument is forbidden when 'nat_method' is 'static'. "
+            "Please remove 'nat_hide_behind' or change 'nat_method'."
+        )
+
+    # When nat_method is 'hide' and nat_hide_behind is 'gateway', nat_ip must not be provided
+    if nat_method == "hide" and nat_hide_behind == "gateway" and nat_ip:
+        raise ValueError(
+            "The 'nat_ip' argument must not be provided when 'nat_method' is 'hide' and "
+            "'nat_hide_behind' is 'gateway'. Please remove 'nat_ip' or change 'nat_hide_behind'."
+            " This prevents ambiguity and matches SmartConsole behavior"
+        )
+
+    # When nat_method is 'hide' and nat_hide_behind is 'ip_address', nat_ip is required
+    if nat_method == "hide" and nat_hide_behind == "ip_address" and not nat_ip:
+        raise ValueError(
+            "The 'nat_ip' argument is required when 'nat_method' is 'hide' and "
+            "'nat_hide_behind' is 'ip_address'. Please provide 'nat_ip'."
+            " This prevents ambiguity and matches SmartConsole behavior."
+        )
+
+    nat_settings: dict = {}
+    if nat_auto_rule is not None:
+        nat_settings["auto-rule"] = argToBoolean(nat_auto_rule)
+    if nat_method:
+        nat_settings["method"] = nat_method
+    if nat_ip:
+        nat_settings["ipv4-address"] = nat_ip
+    if nat_install_on:
+        nat_settings["install-on"] = nat_install_on
+    if nat_hide_behind:
+        nat_settings["hide-behind"] = nat_hide_behind
+    return nat_settings if nat_settings else None
+
+
+def build_interfaces_list(
+    interfaces_name: str | None = None,
+    interfaces_subnet: str | None = None,
+    interfaces_mask_length: str | None = None,
+) -> list | None:
+    """Build the interfaces list for the Check Point API from individual arguments.
+
+    Returns None if no interface arguments are provided.
+
+    Raises:
+        ValueError: If any interfaces_* argument is provided but interfaces_name,
+            interfaces_subnet, or interfaces_mask_length is missing.
+    """
+    has_any_interface_arg = any([interfaces_name, interfaces_subnet, interfaces_mask_length])
+    if not has_any_interface_arg:
+        return None
+
+    missing = []
+    if not interfaces_name:
+        missing.append("interfaces_name")
+    if not interfaces_subnet:
+        missing.append("interfaces_subnet")
+    if not interfaces_mask_length:
+        missing.append("interfaces_mask_length")
+    if missing:
+        raise ValueError(f"When defining interfaces, all interface arguments are required. " f"Missing: {', '.join(missing)}.")
+
+    interface: dict = {}
+    if interfaces_name:
+        interface["name"] = interfaces_name
+    if interfaces_subnet:
+        interface["subnet4"] = interfaces_subnet
+    if interfaces_mask_length:
+        interface["mask-length4"] = int(interfaces_mask_length)
+    return [interface]
+
+
 def build_printable_result(headers: list, result: dict) -> dict:
     """helper function. Builds the printable results."""
 
@@ -2231,9 +3283,29 @@ def build_printable_result(headers: list, result: dict) -> dict:
                 {
                     "domain-name": domain_data.get("name"),
                     "domain-uid": domain_data.get("uid"),
-                    "domain-type": domain_data.get("type"),
+                    "domain-type": domain_data.get("domain-type"),
                 }
             )
+
+        profile_overrides_data = result.get("profile-overrides")
+        if profile_overrides_data:
+            printable_result.update({"profile-overrides": profile_overrides_data})
+
+        nat_data = result.get("nat-settings")
+        if nat_data:
+            printable_result.update(
+                {
+                    "nat-auto-rule": nat_data.get("auto-rule"),
+                    "nat-method": nat_data.get("method"),
+                    "nat-ipv4-address": nat_data.get("ipv4-address"),
+                    "nat-install-on": nat_data.get("install-on"),
+                    "nat-hide-behind": nat_data.get("hide-behind"),
+                }
+            )
+
+        interface_data = result.get("interfaces")
+        if interface_data:
+            printable_result.update({"interfaces": interface_data})
 
         meta_info = result.get("meta-info")
         if meta_info:

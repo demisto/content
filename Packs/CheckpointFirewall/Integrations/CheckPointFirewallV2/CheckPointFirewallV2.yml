@@ -56,6 +56,16 @@ script:
     - defaultValue: None
       description: Executes the command with the specified session ID.
       name: session_id
+    - auto: PREDEFINED
+      description: details_level.
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
+    - description: 'Indicates which domains to process the commands on. It cannot be used with the details-level full, must be run from the System Domain only and with ignore-warnings true. Valid values are: CURRENT_DOMAIN, ALL_DOMAINS_ON_THIS_SERVER.'
+      isArray: true
+      name: domains_to_process
     description: Returns all host objects.
     name: checkpoint-host-list
     outputs:
@@ -69,11 +79,23 @@ script:
       description: Object type.
       type: String
     - contextPath: CheckPoint.Host.ipv4
-      description: IPv4 address of the specifie host.
+      description: IPv4 address of the host.
       type: String
     - contextPath: CheckPoint.Host.ipv6
-      description: IPv6 address of the specifie host.
-      type: string
+      description: IPv6 address of the host.
+      type: String
+    - contextPath: CheckPoint.Host.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.Host.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.Host.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.Host.color
+      description: Color of the object.
+      type: String
   - arguments:
     - description: Object unique identifier (UID) or name for which to get data.
       name: identifier
@@ -81,6 +103,13 @@ script:
     - defaultValue: None
       description: Executes the command with the specified session ID.
       name: session_id
+    - auto: PREDEFINED
+      description: details_level.
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
     description: Gets full data for the specified host.
     name: checkpoint-host-get
     outputs:
@@ -120,6 +149,33 @@ script:
     - contextPath: CheckPoint.Host.groups-uid
       description: The UID of the group object linked to the current host object.
       type: Unknown
+    - contextPath: CheckPoint.Host.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.Host.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.Host.tags
+      description: Collection of tag objects associated with the host.
+      type: Unknown
+    - contextPath: CheckPoint.Host.nat-auto-rule
+      description: Whether NAT automatic rules are enabled.
+      type: Boolean
+    - contextPath: CheckPoint.Host.nat-method
+      description: NAT method (hide or static).
+      type: String
+    - contextPath: CheckPoint.Host.nat-ipv4-address
+      description: NAT IPv4 address.
+      type: String
+    - contextPath: CheckPoint.Host.nat-install-on
+      description: Gateway for NAT rule installation.
+      type: String
+    - contextPath: CheckPoint.Host.nat-hide-behind
+      description: Hide behind method (gateway or ip-address).
+      type: String
+    - contextPath: CheckPoint.Host.interfaces
+      description: Host interfaces.
+      type: Unknown
   - arguments:
     - description: The name of the new host.
       isArray: true
@@ -150,6 +206,79 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      description: Required only when any nat_* argument is provided; otherwise omitted.
+      name: nat_auto_rule
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Object color.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - auto: PREDEFINED
+      description: NAT method.
+      name: nat_method
+      predefined:
+      - hide
+      - static
+    - description: IPv4. This parameter is not required in case nat_method parameter is "hide" and nat_hide_behind parameter is "gateway".
+      name: nat_ip
+    - description: Gateway for NAT rule.
+      name: nat_install_on
+    - auto: PREDEFINED
+      description: Hide behind method. This parameter is forbidden in case "nat_method" parameter is "static".
+      name: nat_hide_behind
+      predefined:
+      - gateway
+      - ip_address
+    - description: Interface name.
+      name: interfaces_name
+    - description: IPv4.
+      name: interfaces_subnet
+    - description: IPv4.
+      name: interfaces_mask_length
+    - description: Tags to assign.
+      isArray: true
+      name: tags
     description: Adds a new host.
     name: checkpoint-host-add
     outputs:
@@ -189,6 +318,33 @@ script:
     - contextPath: CheckPoint.Host.groups
       description: Collection of group identifiers.
       type: String
+    - contextPath: CheckPoint.Host.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.Host.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.Host.tags
+      description: Collection of tag objects associated with the host.
+      type: Unknown
+    - contextPath: CheckPoint.Host.nat-auto-rule
+      description: Whether NAT automatic rules are enabled.
+      type: Boolean
+    - contextPath: CheckPoint.Host.nat-method
+      description: NAT method (hide or static).
+      type: String
+    - contextPath: CheckPoint.Host.nat-ipv4-address
+      description: NAT IPv4 address.
+      type: String
+    - contextPath: CheckPoint.Host.nat-install-on
+      description: Gateway for NAT rule installation.
+      type: String
+    - contextPath: CheckPoint.Host.nat-hide-behind
+      description: Hide behind method (gateway or ip-address).
+      type: String
+    - contextPath: CheckPoint.Host.interfaces
+      description: Host interfaces.
+      type: Unknown
   - arguments:
     - description: Object unique identifier (UID) or name.
       name: identifier
@@ -220,6 +376,77 @@ script:
       description: Executes the command with the specified session ID.
       name: session_id
       required: true
+    - auto: PREDEFINED
+      description: Required only when any nat_* argument is provided; otherwise omitted.
+      name: nat_auto_rule
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Object color.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - auto: PREDEFINED
+      description: NAT method.
+      name: nat_method
+      predefined:
+      - hide
+      - static
+    - description: IPv4. This parameter is not required in case nat_method parameter is "hide" and nat_hide_behind parameter is "gateway".
+      name: nat_ip
+    - description: Gateway for NAT rule.
+      name: nat_install_on
+    - auto: PREDEFINED
+      description: Hide behind method. This parameter is forbidden in case "nat_method" parameter is "static".
+      name: nat_hide_behind
+      predefined:
+      - gateway
+      - ip_address
+    - description: Interface name. Required only when defining interfaces (when any interfaces_* arg is provided).
+      name: interfaces_name
+    - description: IPv4. Required only when defining interfaces (when any interfaces_* arg is provided).
+      name: interfaces_subnet
+    - description: IPv4 network mask length. Required only when defining interfaces (when any interfaces_* arg is provided).
+      name: interfaces_mask_length
+    - description: Tags to assign.
+      isArray: true
+      name: tags
     description: Updates the specified host.
     name: checkpoint-host-update
     outputs:
@@ -259,6 +486,33 @@ script:
     - contextPath: CheckPoint.Host.group-uid
       description: The UID of the group object linked to the host.
       type: String
+    - contextPath: CheckPoint.Host.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.Host.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.Host.tags
+      description: Collection of tag objects associated with the host.
+      type: Unknown
+    - contextPath: CheckPoint.Host.nat-auto-rule
+      description: Whether NAT automatic rules are enabled.
+      type: Boolean
+    - contextPath: CheckPoint.Host.nat-method
+      description: NAT method (hide or static).
+      type: String
+    - contextPath: CheckPoint.Host.nat-ipv4-address
+      description: NAT IPv4 address.
+      type: String
+    - contextPath: CheckPoint.Host.nat-install-on
+      description: Gateway for NAT rule installation.
+      type: String
+    - contextPath: CheckPoint.Host.nat-hide-behind
+      description: Hide behind method (gateway or ip-address).
+      type: String
+    - contextPath: CheckPoint.Host.interfaces
+      description: Host interfaces.
+      type: Unknown
   - arguments:
     - description: Object unique identifier (UID) or name.
       isArray: true
@@ -298,6 +552,18 @@ script:
     - defaultValue: None
       description: Executes the command with the specified session ID.
       name: session_id
+    - auto: PREDEFINED
+      description: Level of detail for the results.
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
+    - description: Indicates which domains to process the commands on.
+      isArray: true
+      name: domains_to_process
+    - description: Search expression to filter objects by. The provided text should be exactly the same as it would be given in SmartConsole Object Explorer. The logical operators in the expression ('AND', 'OR') should be provided in capital letters. The search involves both a IP search and a textual search in name, comment, tags etc.
+      name: filter
     description: Gets a list of all groups.
     name: checkpoint-group-list
     outputs:
@@ -310,6 +576,24 @@ script:
     - contextPath: CheckPoint.Group.type
       description: Object type.
       type: String
+    - contextPath: CheckPoint.Group.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.Group.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.Group.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.Group.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.Group.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.Group.tags
+      description: Collection of tag objects associated with the group.
+      type: Unknown
   - arguments:
     - description: Object unique identifier (UID) or name.
       name: identifier
@@ -317,6 +601,13 @@ script:
     - defaultValue: None
       description: Executes the command with the specified session ID.
       name: session_id
+    - auto: PREDEFINED
+      description: Level of detail for the results.
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
     description: Gets full data for the specified group.
     name: checkpoint-group-get
     outputs:
@@ -389,6 +680,68 @@ script:
       description: Executes the command with the specified session ID.
       name: session_id
       required: true
+    - description: Collection of group identifiers (names or UIDs).
+      isArray: true
+      name: members
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      description: 'Valid values: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default: black.'
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: Tags to assign.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Apply changes ignoring warnings.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Apply changes ignoring errors.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
     description: Adds a group.
     name: checkpoint-group-add
     outputs:
@@ -422,13 +775,22 @@ script:
     - contextPath: CheckPoint.Group.groups-name
       description: Groups name.
       type: Unknown
+    - contextPath: CheckPoint.Group.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.Group.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.Group.tags
+      description: Collection of tag objects associated with the group.
+      type: Unknown
   - arguments:
     - description: Object unique identifier (UID) or name.
       name: identifier
       required: true
-    - description: New name of the group object.
+    - description: New name of the object.
       name: new_name
-    - description: Comments for the group object.
+    - description: Update comments.
       name: comments
     - auto: PREDEFINED
       defaultValue: 'true'
@@ -462,6 +824,56 @@ script:
       - add
       - remove
       - modify
+    - auto: PREDEFINED
+      description: 'Valid values: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default: black.'
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: Update tags.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      description: details_level.
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
     description: Updates the specified group object.
     name: checkpoint-group-update
     outputs:
@@ -484,7 +896,7 @@ script:
       description: Domain type.
       type: String
     - contextPath: CheckPoint.Group.creator
-      description: Rhe creator of the object.
+      description: The creator of the object.
       type: String
     - contextPath: CheckPoint.Group.last-modifier
       description: The user that last modified the object.
@@ -492,6 +904,15 @@ script:
     - contextPath: CheckPoint.Group.read-only
       description: Indicates if the object is read-only.
       type: Boolean
+    - contextPath: CheckPoint.Group.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.Group.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.Group.tags
+      description: Collection of tag objects associated with the group.
+      type: Unknown
   - arguments:
     - description: Object unique identifier (UID) or name.
       isArray: true
@@ -517,6 +938,16 @@ script:
     - defaultValue: None
       description: Executes the command with the specified session ID.
       name: session_id
+    - auto: PREDEFINED
+      description: Level of detail for the results.
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
+    - description: Indicates which domains to process the commands on.
+      isArray: true
+      name: domains_to_process
     description: Gets a list all address range objects.
     name: checkpoint-address-range-list
     outputs:
@@ -528,6 +959,15 @@ script:
       type: String
     - contextPath: CheckPoint.AddressRange.type
       description: Object type.
+      type: String
+    - contextPath: CheckPoint.AddressRange.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.AddressRange.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.AddressRange.domain-type
+      description: Domain type.
       type: String
   - arguments:
     - description: Name for the new address range object.
@@ -570,6 +1010,73 @@ script:
     - description: Collection of group identifiers.
       isArray: true
       name: groups
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      description: Object color.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - auto: PREDEFINED
+      description: Required only when any nat_* argument is provided; otherwise omitted.
+      name: nat_auto_rule
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: NAT method.
+      name: nat_method
+      predefined:
+      - hide
+      - static
+    - description: NAT IP.
+      name: nat_ip
+    - description: NAT gateway.
+      name: nat_install_on
+    - auto: PREDEFINED
+      description: Hide behind method. This parameter is forbidden in case "nat_method" parameter is "static".
+      name: nat_hide_behind
+      predefined:
+      - gateway
+      - ip_address
+    - description: Tags to assign.
+      isArray: true
+      name: tags
     description: Adds an address range object.
     name: checkpoint-address-range-add
     outputs:
@@ -615,6 +1122,30 @@ script:
     - contextPath: CheckPoint.AddressRange.groups
       description: Name of the group object.
       type: String
+    - contextPath: CheckPoint.AddressRange.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.AddressRange.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.AddressRange.tags
+      description: Collection of tag objects associated with the address range.
+      type: Unknown
+    - contextPath: CheckPoint.AddressRange.nat-auto-rule
+      description: Whether NAT automatic rules are enabled.
+      type: Boolean
+    - contextPath: CheckPoint.AddressRange.nat-method
+      description: NAT method (hide or static).
+      type: String
+    - contextPath: CheckPoint.AddressRange.nat-ipv4-address
+      description: NAT IPv4 address.
+      type: String
+    - contextPath: CheckPoint.AddressRange.nat-install-on
+      description: Gateway for NAT rule installation.
+      type: String
+    - contextPath: CheckPoint.AddressRange.nat-hide-behind
+      description: Hide behind method (gateway or ip-address).
+      type: String
   - arguments:
     - description: Name for the new address range object.
       name: identifier
@@ -625,7 +1156,7 @@ script:
       name: ip_address_last
     - description: New name of the object.
       name: new_name
-    - description: Comments for the object.
+    - description: Update comments.
       name: comments
     - auto: PREDEFINED
       defaultValue: 'true'
@@ -651,6 +1182,65 @@ script:
       description: Executes the command with the specified session ID.
       name: session_id
       required: true
+    - auto: PREDEFINED
+      description: Update color.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - auto: PREDEFINED
+      description: Update NAT method.
+      name: nat_method
+      predefined:
+      - hide
+      - static
+    - description: Update NAT IP.
+      name: nat_ip
+    - description: Update NAT gateway.
+      name: nat_install_on
+    - auto: PREDEFINED
+      description: Hide behind method. This parameter is forbidden in case "nat_method" parameter is "static".
+      name: nat_hide_behind
+      predefined:
+      - gateway
+      - ip_address
+    - description: Update tags.
+      isArray: true
+      name: tags
     description: Updates the specified address range object.
     name: checkpoint-address-range-update
     outputs:
@@ -690,6 +1280,30 @@ script:
     - contextPath: CheckPoint.AddressRange.groups
       description: List of all groups the address range is linked to.
       type: String
+    - contextPath: CheckPoint.AddressRange.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.AddressRange.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.AddressRange.tags
+      description: Collection of tag objects associated with the address range.
+      type: Unknown
+    - contextPath: CheckPoint.AddressRange.nat-auto-rule
+      description: Whether NAT automatic rules are enabled.
+      type: Boolean
+    - contextPath: CheckPoint.AddressRange.nat-method
+      description: NAT method (hide or static).
+      type: String
+    - contextPath: CheckPoint.AddressRange.nat-ipv4-address
+      description: NAT IPv4 address.
+      type: String
+    - contextPath: CheckPoint.AddressRange.nat-install-on
+      description: Gateway for NAT rule installation.
+      type: String
+    - contextPath: CheckPoint.AddressRange.nat-hide-behind
+      description: Hide behind method (gateway or ip-address).
+      type: String
   - arguments:
     - description: Name for the new address range object.
       isArray: true
@@ -715,6 +1329,18 @@ script:
     - defaultValue: None
       description: Executes the command with the specified session ID.
       name: session_id
+    - description: Indicates which domains to process.
+      isArray: true
+      name: domain_names
+    - auto: PREDEFINED
+      description: details_level.
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
+    - description: Search expression to filter objects by. The provided text should be exactly the same as it would be given in SmartConsole Object Explorer. The logical operators in the expression ('AND', 'OR') should be provided in capital letters. The search involves both a IP search and a textual search in name, comment, tags etc.
+      name: filter
     description: Gets a list of all threat indicators.
     name: checkpoint-threat-indicator-list
     outputs:
@@ -726,6 +1352,15 @@ script:
       type: String
     - contextPath: CheckPoint.ThreatIndicator.type
       description: Object type.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.domain-type
+      description: Domain type.
       type: String
   - arguments:
     - description: Object unique identifier (UID) or name.
@@ -776,6 +1411,69 @@ script:
       description: Executes the command with the specified session ID.
       name: session_id
       required: true
+    - auto: PREDEFINED
+      description: Action for the indicator.
+      name: action
+      predefined:
+      - Inactive
+      - Ask
+      - Prevent
+      - Detect
+    - description: <Profiles to apply this indicator to>_<The indicator's action in this profile.>.
+      isArray: true
+      name: profile_action
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      description: Object color.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: Tags to assign.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Apply changes ignoring warnings.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
     description: Adds a threat indicator.
     name: checkpoint-threat-indicator-add
     outputs:
@@ -803,6 +1501,52 @@ script:
       description: Executes the command with the specified session ID.
       name: session_id
       required: true
+    - description: <Profiles to apply this indicator to>_<The indicator's action in this profile.>.
+      isArray: true
+      name: profile_action
+    - auto: PREDEFINED
+      description: Update color.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: Update tags.
+      isArray: true
+      name: tags
     description: Updates the specified indicator.
     name: checkpoint-threat-indicator-update
     outputs:
@@ -836,6 +1580,15 @@ script:
     - contextPath: CheckPoint.ThreatIndicator.read-only
       description: Indicates if the object is read-only.
       type: Boolean
+    - contextPath: CheckPoint.ThreatIndicator.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.tags
+      description: Collection of tag objects associated with the indicator.
+      type: Unknown
+    - contextPath: CheckPoint.ThreatIndicator.profile-overrides
+      description: A list of profiles where the default action of this indicator is overridden, along with the overriding action.
+      type: Unknown
   - arguments:
     - description: Object unique identifier (UID) or name.
       name: identifier
@@ -898,6 +1651,19 @@ script:
     - defaultValue: None
       description: Executes the command with the specified session ID.
       name: session_id
+    - auto: PREDEFINED
+      description: Level of detail for the results.
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
+    - auto: PREDEFINED
+      description: Include hit count data in the output.
+      name: show_hits
+      predefined:
+      - 'true'
+      - 'false'
     description: Returns the entire Access Rules layer.
     name: checkpoint-access-rule-list
     outputs:
@@ -969,6 +1735,38 @@ script:
       description: Executes the command with the specified session ID.
       name: session_id
       required: true
+    - description: Comments string.
+      name: comments
+    - description: Install targets.
+      isArray: true
+      name: install_on
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Enable/Disable the rule.
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: 'Track settings for the rule. Valid values: Log, Extended Log, Detailed Log, None.'
+      name: track_type
+      predefined:
+      - Log
+      - Extended Log
+      - Detailed Log
+      - None
+    - auto: PREDEFINED
+      description: Turns accounting for track on and off.
+      name: track_accounting
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Determines whether to perform the log per session.
+      name: track_per_session
+      predefined:
+      - 'true'
+      - 'false'
     description: Creates a new access rule.
     name: checkpoint-access-rule-add
     outputs:
@@ -1051,6 +1849,49 @@ script:
       description: Executes the command with the specified session ID.
       name: session_id
       required: true
+    - description: Update comments.
+      name: comments
+    - auto: PREDEFINED
+      description: 'Track settings for the rule. Valid values: Log, Extended Log, Detailed Log, None.'
+      name: track_type
+      predefined:
+      - Log
+      - Extended Log
+      - Detailed Log
+      - None
+    - auto: PREDEFINED
+      description: Turns accounting for track on and off.
+      name: track_accounting
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Determines whether to perform the log per session.
+      name: track_per_session
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Update targets.
+      isArray: true
+      name: install_on
+    - description: Adds to collection of values.
+      isArray: true
+      name: source_add
+    - description: Removes from collection of values.
+      isArray: true
+      name: source_remove
+    - description: Adds to collection of values.
+      isArray: true
+      name: service_add
+    - description: Removes from collection of values.
+      isArray: true
+      name: service_remove
+    - description: Adds to collection of values.
+      isArray: true
+      name: destination_add
+    - description: Removes from collection of values.
+      isArray: true
+      name: destination_remove
     description: Modifies an existing access rule, using object name or UID.
     name: checkpoint-access-rule-update
     outputs:
@@ -1127,7 +1968,17 @@ script:
     - defaultValue: None
       description: Executes the command with the specified session ID.
       name: session_id
-    description: Retrieves all objects.
+    - auto: PREDEFINED
+      description: Level of detail for results.
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
+    - description: Domains to process.
+      isArray: true
+      name: domains_to_process
+    description: Retrieves all application site objects.
     name: checkpoint-application-site-list
     outputs:
     - contextPath: CheckPoint.ApplicationSite.name
@@ -1160,6 +2011,53 @@ script:
     - description: Collection of group identifiers.
       isArray: true
       name: groups
+    - description: Description of the application site.
+      name: description
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      description: Object color.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: Tags to assign.
+      isArray: true
+      name: tags
     description: Adds an application site.
     name: checkpoint-application-site-add
     outputs:
@@ -1185,7 +2083,7 @@ script:
       description: Domain UID.
       type: String
     - contextPath: CheckPoint.ApplicationSite.domain-type
-      description: Domain name.
+      description: Domain type.
       type: String
     - contextPath: CheckPoint.ApplicationSite.url-list
       description: URLs that determine this application.
@@ -1198,6 +2096,15 @@ script:
       type: String
     - contextPath: CheckPoint.ApplicationSite.groups
       description: Collection of group identifiers.
+      type: Unknown
+    - contextPath: CheckPoint.ApplicationSite.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.tags
+      description: Collection of tag objects associated with the application site.
       type: Unknown
   - arguments:
     - description: Object unique identifier (UID) or name.
@@ -1228,12 +2135,57 @@ script:
     - description: Removes from collection of URLs.
       isArray: true
       name: url_list_to_remove
-    - description: Collection of group identifiers. Can be a single group or a list of groups.
+    - description: Update group membership.
       isArray: true
       name: groups
     - description: Executes the command with the specified session ID.
       name: session_id
       required: true
+    - description: Update comments.
+      name: comments
+    - auto: PREDEFINED
+      description: Update color.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: Update tags.
+      isArray: true
+      name: tags
     description: "Edits an existing application using the object name or UID. \nIt's impossible to set 'application-signature' when the application was initialized with 'url-list' and vice-versa."
     name: checkpoint-application-site-update
     outputs:
@@ -1270,6 +2222,15 @@ script:
     - contextPath: CheckPoint.ApplicationSite.primary-category
       description: Objects primary category.
       type: String
+    - contextPath: CheckPoint.ApplicationSite.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.tags
+      description: Collection of tag objects associated with the application site.
+      type: Unknown
   - arguments:
     - description: Object unique identifier (UID) or name.
       isArray: true
@@ -1833,7 +2794,7 @@ script:
     outputs:
     - contextPath: CheckPoint.DeletedThreatProtections
       description: ''
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.7444307
   runonce: false
   script: ''
   subtype: python3
