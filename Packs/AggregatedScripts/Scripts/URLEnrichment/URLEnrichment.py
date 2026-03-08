@@ -99,34 +99,39 @@ def url_enrichment_script(
         context_output_mapping=indicator_mapping,
     )
 
-    # --- Command Batch 1: create indicators (BUILTIN) ---
-    demisto.debug("Creating commands - Batch 1: Creating new indicators")
-    command_batch1: list[Command] = [
-        Command(
-            name="CreateNewIndicatorsOnly",
-            args={"indicator_values": valid_inputs, "type": "URL"},
-            command_type=CommandType.BUILTIN,
-            context_output_mapping=None,
-            ignore_using_brand=True,
-        )
-    ]
+    # Only create command batches if there are valid inputs to process
+    if valid_inputs:
+        # --- Command Batch 1: create indicators (BUILTIN) ---
+        demisto.debug("Creating commands - Batch 1: Creating new indicators")
+        command_batch1: list[Command] = [
+            Command(
+                name="CreateNewIndicatorsOnly",
+                args={"indicator_values": valid_inputs, "type": "URL"},
+                command_type=CommandType.BUILTIN,
+                context_output_mapping=None,
+                ignore_using_brand=True,
+            )
+        ]
 
-    # --- Command Batch 2: external enrichment ---
-    demisto.debug("Creating commands - Batch 2: Enriching indicators")
-    command_batch2: list[Command] = [
-        Command(
-            name="enrichIndicators",
-            args={"indicatorsValues": valid_inputs},
-            command_type=CommandType.EXTERNAL,
-        )
-    ]
+        # --- Command Batch 2: external enrichment ---
+        demisto.debug("Creating commands - Batch 2: Enriching indicators")
+        command_batch2: list[Command] = [
+            Command(
+                name="enrichIndicators",
+                args={"indicatorsValues": valid_inputs},
+                command_type=CommandType.EXTERNAL,
+            )
+        ]
 
-    commands = [command_batch1, command_batch2]
-    demisto.debug("Commands: ")
-    for i, batch in enumerate(commands):
-        demisto.debug(f"Batch {i}")
-        for j, cmd in enumerate(batch):
-            demisto.debug(f"Command {j}: {cmd}")
+        commands = [command_batch1, command_batch2]
+        demisto.debug("Commands: ")
+        for i, batch in enumerate(commands):
+            demisto.debug(f"Batch {i}")
+            for j, cmd in enumerate(batch):
+                demisto.debug(f"Command {j}: {cmd}")
+    else:
+        demisto.debug("No valid URL inputs found. Skipping command batches.")
+        commands = []
 
     url_reputation = ReputationAggregatedCommand(
         brands=enrichment_brands,

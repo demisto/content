@@ -1545,7 +1545,7 @@ def create_and_extract_indicators(
         full_hr.append(hr)
 
     if not valid_set:
-        raise ValueError("No valid indicators found in the input data.")
+        demisto.debug("No valid indicators found in the input data. Returning invalid instances only.")
 
     demisto.debug(f"Valid Inputs: {valid_set}")
     demisto.debug(f"Invalid Inputs: {invalid_set}")
