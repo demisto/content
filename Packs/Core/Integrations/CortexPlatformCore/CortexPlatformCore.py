@@ -75,6 +75,7 @@ WEBAPP_COMMANDS = [
     "core-update-windows-malware-profile",
     "core-update-windows-exploit-profile",
     "core-delete-profile",
+    "core-list-findings",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -88,6 +89,7 @@ APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 CASES_TABLE = "CASE_MANAGER_TABLE"
 SCRIPTS_TABLE = "SCRIPTS_TABLE"
 AI_MODEL_ACTIVITY_TABLE = "AISPM_MODEL_ACTIVITY"
+FINDINGS_TABLE = "FINDINGS"
 
 
 class Profile:
@@ -190,8 +192,8 @@ class CaseManagement:
         "known_issue": "STATUS_040_RESOLVED_KNOWN_ISSUE",
         "duplicate": "STATUS_050_RESOLVED_DUPLICATE",
         "false_positive": "STATUS_060_RESOLVED_FALSE_POSITIVE",
-        "true_positive": "STATUS_090_RESOLVED_TRUE_POSITIVE",
-        "security_testing": "STATUS_100_RESOLVED_SECURITY_TESTING",
+        "true_positive": "STATUS_090_TRUE_POSITIVE",
+        "security_testing": "STATUS_100_SECURITY_TESTING",
         "other": "STATUS_070_RESOLVED_OTHER",
     }
 
@@ -4766,6 +4768,97 @@ def get_case_resolution_statuses(client, args):
     )
 
 
+def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    """
+    Retrieves findings from the Cortex platform filtered by asset ID and asset name.
+
+    Args:
+        client: The client instance used to send the request.
+        args: Dictionary containing the arguments for the command.
+              Expected to include:
+                  - asset_id (str, optional): Filter by asset ID (supports comma-separated list).
+                  - asset_name (str, optional): Filter by asset name (supports comma-separated list).
+                  - page (int, optional): Page number for pagination. Default is 0.
+                  - page_size (int, optional): Number of findings to return per page. Default is 100.
+
+    Returns:
+        list[CommandResults]: List containing:
+            - CommandResults with findings data
+            - CommandResults with metadata (filtered_count, returned_count)
+    """
+    asset_ids = argToList(args.get("asset_id"))
+    asset_names = argToList(args.get("asset_name"))
+    asset_category = argToList(args.get("asset_category"))
+    asset_class = argToList(args.get("asset_class"))
+    category = [c.replace(" ", "_").upper() for c in argToList(args.get("category"))]
+    finding_source = [c.replace(" ", "_").upper() for c in argToList(args.get("finding_source"))]
+    page = arg_to_number(args.get("page")) or 0
+    page_size = arg_to_number(args.get("page_size")) or 100
+
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("XDM_FINDING_ASSET_ID", FilterType.WILDCARD, asset_ids)
+    filter_builder.add_field("XDM_FINDING_ASSET_NAME", FilterType.CONTAINS, asset_names)
+    filter_builder.add_field("XDM_FINDING_ASSET_CLASS", FilterType.EQ, asset_class)
+    filter_builder.add_field("XDM_FINDING_ASSET_CATEGORY", FilterType.EQ, asset_category)
+    filter_builder.add_field("XDM_FINDING_CATEGORY", FilterType.EQ, category)
+    filter_builder.add_field("xdm.finding_sources", FilterType.ARRAY_CONTAINS, finding_source)
+
+    start_index = page * page_size
+    end_index = start_index + page_size
+
+    request_data = build_webapp_request_data(
+        table_name=FINDINGS_TABLE,
+        filter_dict=filter_builder.to_dict(),
+        limit=end_index,
+        sort_field="XDM_FINDING_LAST_OBSERVED",
+        sort_order="DESC",
+        start_page=start_index,
+    )
+
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+
+    counts_request_data = build_webapp_counts_request_data(
+        table_name=FINDINGS_TABLE,
+        filter_dict=filter_builder.to_dict(),
+    )
+
+    counts_response = client.get_webapp_counts(counts_request_data)
+    counts_reply = counts_response.get("reply", {})
+    filtered_count = counts_reply.get("FILTER_COUNT", 0)
+
+    def map_findings(findings):
+        return [{k.replace("XDM_FINDING_", "").lower(): v for k, v in finding.items()} for finding in findings]
+
+    findings = map_findings(data)
+
+    metadata = {
+        "filtered_count": filtered_count,
+        "returned_count": len(findings),
+    }
+
+    command_results = []
+
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Finding",
+            outputs_key_field="id",
+            outputs=findings,
+            raw_response=response,
+        )
+    )
+
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.FindingMetadata",
+            outputs=metadata,
+        )
+    )
+
+    return command_results
+
+
 def verify_platform_version(version: str = "8.13.0"):
     if not is_demisto_version_ge(version):
         raise DemistoException("This command is not available for this platform version")
@@ -5175,6 +5268,9 @@ def main():  # pragma: no cover
 
         elif command == "core-delete-profile":
             return_results(delete_profile_command(client, args))
+
+        elif command == "core-list-findings":
+            return_results(list_findings_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
