@@ -1,0 +1,162 @@
+[
+  {
+    "request": {
+      "url": "/api/v1.1/jsonrpc/incidents",
+      "method": "createIsolateEndpointTask",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "createIsolateEndpointTask",
+        "params": {
+          "endpointId": "ENDPOINT_ID"
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": [
+        "6941bbc98ba450a5c10e5a16"
+      ]
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.1/jsonrpc/network",
+      "method": "getTaskStatus",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getTaskStatus",
+        "params": {
+          "taskId": "6941bbc98ba450a5c10e5a16",
+          "options": {
+            "returnSubtasks": true
+          }
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "name": "Isolate endpoint 2025-12-16",
+        "startDate": "2025-12-16T22:06:33",
+        "status": 1,
+        "type": 16,
+        "owner": {
+          "id": "6941466eda1158ec9f0ecb5d",
+          "userName": "USER_EMAIL"
+        },
+        "company": {
+          "id": "COMPANY_ID",
+          "name": "COMPANY_NAME"
+        },
+        "hasMoreSubtasks": false,
+        "subtasks": [
+          {
+            "endpointId": "ENDPOINT_ID",
+            "endpointName": "ENDPOINT_NAME",
+            "endpointType": 262,
+            "startDate": "2025-12-16T22:06:33",
+            "status": 0
+          }
+        ],
+        "totalTargetsCount": 1
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.1/jsonrpc/network",
+      "method": "getTaskStatus",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getTaskStatus",
+        "params": {
+          "taskId": "6941bbc98ba450a5c10e5a16",
+          "options": {
+            "returnSubtasks": true
+          }
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "name": "Isolate endpoint 2025-12-16",
+        "startDate": "2025-12-16T22:06:33",
+        "status": 1,
+        "type": 16,
+        "owner": {
+          "id": "6941466eda1158ec9f0ecb5d",
+          "userName": "USER_EMAIL"
+        },
+        "company": {
+          "id": "COMPANY_ID",
+          "name": "COMPANY_NAME"
+        },
+        "hasMoreSubtasks": false,
+        "subtasks": [
+          {
+            "endpointId": "ENDPOINT_ID",
+            "endpointName": "ENDPOINT_NAME",
+            "endpointType": 262,
+            "startDate": "2025-12-16T22:06:33",
+            "status": 0
+          }
+        ],
+        "totalTargetsCount": 1
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.1/jsonrpc/network",
+      "method": "getTaskStatus",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getTaskStatus",
+        "params": {
+          "taskId": "6941bbc98ba450a5c10e5a16",
+          "options": {
+            "returnSubtasks": true
+          }
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "name": "Isolate endpoint 2025-12-16",
+        "startDate": "2025-12-16T22:06:33",
+        "status": 3,
+        "type": 16,
+        "owner": {
+          "id": "6941466eda1158ec9f0ecb5d",
+          "userName": "USER_EMAIL"
+        },
+        "company": {
+          "id": "COMPANY_ID",
+          "name": "COMPANY_NAME"
+        },
+        "hasMoreSubtasks": false,
+        "subtasks": [
+          {
+            "endpointId": "ENDPOINT_ID",
+            "endpointName": "ENDPOINT_NAME",
+            "endpointType": 262,
+            "startDate": "2025-12-16T22:06:33",
+            "status": 3,
+            "endDate": "2025-12-16T22:06:33"
+          }
+        ],
+        "totalTargetsCount": 1
+      }
+    }
+  }
+]
