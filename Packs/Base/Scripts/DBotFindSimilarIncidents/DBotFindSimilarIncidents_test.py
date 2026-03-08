@@ -10,6 +10,8 @@ from CommonServerPython import DemistoException
 
 # Mock GetIncidentsApiModule before importing DBotFindSimilarIncidents
 mock_get_incidents = MagicMock()
+
+
 def get_incidents_by_query_mock(args):
     global FETCHED_INCIDENT, CURRENT_INCIDENT
     if "-id:" in args.get("query", ""):
@@ -17,8 +19,9 @@ def get_incidents_by_query_mock(args):
     else:
         return CURRENT_INCIDENT
 
+
 mock_get_incidents.get_incidents_by_query = get_incidents_by_query_mock
-sys.modules['GetIncidentsApiModule'] = mock_get_incidents
+sys.modules["GetIncidentsApiModule"] = mock_get_incidents
 
 CURRENT_INCIDENT_NOT_EMPTY = [
     {
@@ -173,16 +176,14 @@ def test_main_regular(mocker):
     }
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
-    
+
     finder = SimilarIncidentFinder(args)
     res, _ = finder.run()
-    
+
     assert "empty_current_incident_field" not in res.columns
     assert res.loc["3", "Identical indicators"] == "ind_2"
     assert res.loc["2", "Identical indicators"] == ""
-    assert check_exist_dataframe_columns(
-        "similarity indicators", "similarity incident", "id", "created", "name", df=res
-    )
+    assert check_exist_dataframe_columns("similarity indicators", "similarity incident", "id", "created", "name", df=res)
     assert res.loc["3", "similarity indicators"] == 0.4
     assert res.loc["2", "similarity indicators"] == 0.0
 
@@ -212,15 +213,13 @@ def test_main_no_indicators_found(mocker):
     }
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
-    
+
     finder = SimilarIncidentFinder(args)
     res, _ = finder.run()
-    
+
     assert "empty_current_incident_field" not in res.columns
     assert (res["Identical indicators"] == ["", "", ""]).all()
-    assert check_exist_dataframe_columns(
-        "similarity indicators", "similarity incident", "id", "created", "name", df=res
-    )
+    assert check_exist_dataframe_columns("similarity indicators", "similarity incident", "id", "created", "name", df=res)
     assert (res["similarity indicators"] == [0.0, 0.0, 0.0]).all()
 
 
@@ -249,7 +248,7 @@ def test_main_no_fetched_incidents_found(mocker):
     }
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
-    
+
     finder = SimilarIncidentFinder(args)
     res = finder.run()
     assert not res[0]
@@ -298,7 +297,7 @@ def test_main_all_incorrect_field(mocker):
     }
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
-    
+
     finder = SimilarIncidentFinder(args)
     df, msg = finder.run()
     assert df is None
@@ -333,12 +332,17 @@ def test_main_incident_truncated(mocker):
     }
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
-    
+
     finder = SimilarIncidentFinder(args)
     df, msg = finder.run()
     limit = args["limit"]
-    assert df is not None and not df.empty
-    assert f"- Incident fetched have been truncated to {limit}, please either add incident fields in fieldExactMatch, enlarge the time period or increase the limit argument to more than {limit}." in msg
+    assert df is not None
+    assert df is not df.empty
+    expected_message = (
+        f"- Incident fetched have been truncated to {limit}, please either add incident fields in fieldExactMatch, "
+        f"enlarge the time period or increase the limit argument to more than {limit}."
+    )
+    assert expected_message in msg
 
 
 def test_main_incident_nested(mocker):
@@ -368,10 +372,11 @@ def test_main_incident_nested(mocker):
     }
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
-    
+
     finder = SimilarIncidentFinder(args)
     df, _ = finder.run()
-    assert df is not None and not df.empty
+    assert df is not None
+    assert df is not df.empty
     assert (df[f"similarity {nested_field}"] > 0).all()
 
 
@@ -408,12 +413,12 @@ def test_remove_empty_or_short_fields(sample_data):
     assert my_instance.field_for_command_line == expected_results
     assert should_proceed
     assert all("created" not in reason for reason in all_skip_reasons)
-    assert f"  - Value of the 'Name' field in incident: 't' has length of 1" in all_skip_reasons
-    assert f"  - Value of the 'Id' field in incident: '['123']' has length of 1" in all_skip_reasons
-    assert f"  - The 'test' field has a falsy value in current incident: 'None'" in all_skip_reasons
-    assert f"  - The 'test2' field has a falsy value in current incident: ''" in all_skip_reasons
-    assert f"  - The 'xdralerts' field has a falsy value in current incident: 'N/A'" in all_skip_reasons
-    assert f"  - The 'hello' field does not exist in incident" in all_skip_reasons
+    assert "  - Value of the 'Name' field in incident: 't' has length of 1" in all_skip_reasons
+    assert "  - Value of the 'Id' field in incident: '['123']' has length of 1" in all_skip_reasons
+    assert "  - The 'test' field has a falsy value in current incident: 'None'" in all_skip_reasons
+    assert "  - The 'test2' field has a falsy value in current incident: ''" in all_skip_reasons
+    assert "  - The 'xdralerts' field has a falsy value in current incident: 'N/A'" in all_skip_reasons
+    assert "  - The 'hello' field does not exist in incident" in all_skip_reasons
 
 
 def test_predict_without_similarity_fields(sample_data):
