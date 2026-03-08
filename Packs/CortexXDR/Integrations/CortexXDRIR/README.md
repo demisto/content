@@ -4801,7 +4801,7 @@ Retrieve issues based on filters. Issues with an 'INFO' severity level are filte
 ### xdr-issue-create
 
 ***
-Create a new issue. Issues with an 'INFO' severity level will not be displayed in the UI
+Creates a new issue. Issues with an 'INFO' severity level are not displayed in the UI.
 
 #### Base Command
 
