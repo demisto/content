@@ -5471,7 +5471,7 @@ script:
     - contextPath: CrowdStrike.NGSiemEvent.timestamp
       description: Event timestamp.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.7186534
+  dockerimage: demisto/py3-tools:1.0.0.7436613
   isfetch: true
   isfetch:marketplacev2: false
   isfetch:platform: false
