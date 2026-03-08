@@ -1,5 +1,8 @@
 category: Data Enrichment & Threat Intelligence
 provider: TrendAI™
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Trend Micro Vision One
   version: -1
@@ -727,7 +730,7 @@ script:
       type: string
     description: Updates the status of a workbench alert.
     name: trendmicro-visionone-update-status
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.7444307
   isFetchSamples: true
   isfetch: true
   script: ''
