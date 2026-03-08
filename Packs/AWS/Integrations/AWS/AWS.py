@@ -5200,6 +5200,7 @@ class EC2:
         kwargs = remove_empty_elements(
             {
                 "AvailabilityZone": args.get("availability_zone"),
+                "AvailabilityZoneId": args.get("availability_zone_id"),
                 "Quantity": arg_to_number(args.get("quantity")),
                 "InstanceType": args.get("instance_type"),
                 "InstanceFamily": args.get("instance_family"),

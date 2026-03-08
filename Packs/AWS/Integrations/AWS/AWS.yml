@@ -12936,6 +12936,9 @@ script:
       - name: availability_zone
         description: The Availability Zone in which to allocate the Dedicated Host.
         required: true
+      - name: availability_zone_id
+        description: The ID of the Availability Zone.
+        required: false
       - name: quantity
         description: The number of Dedicated Hosts to allocate to your account with these parameters.
         required: true
