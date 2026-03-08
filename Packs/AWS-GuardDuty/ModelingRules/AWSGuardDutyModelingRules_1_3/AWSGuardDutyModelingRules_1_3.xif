@@ -93,7 +93,7 @@ alter // init aliases for root level & common objects for supporting both camelC
     service_action_api_call_remote_isp_org = coalesce(finding_aws_api -> RemoteIpDetails.Organization.Org, finding_aws_api -> remoteIpDetails.organization.org), // The name of the internet provider.
     service_action_api_call_remote_account_id = coalesce(finding_aws_api -> RemoteAccountDetails.AccountId, finding_aws_api -> remoteAccountDetails.accountId), // The AWS account ID of the remote API caller.
     service_action_api_call_error_code = coalesce(finding_aws_api -> ErrorCode, finding_aws_api -> errorCode), // The error code of the failed AWS API action.
-    service_action_api_call_api = coalesce(finding_aws_api -> api, finding_aws_api -> Api)
+    service_action_api_call_api = coalesce(finding_aws_api -> api, finding_aws_api -> Api),
 
     // extract service dns request action (DNS_REQUEST) fields: https://docs.aws.amazon.com/guardduty/latest/APIReference/API_DnsRequestAction.html
     service_action_dns_request_action_domain = coalesce(finding_service -> Action.DnsRequestAction.Domain, service -> action.dnsRequestAction.domain), // The domain information for the DNS query.
