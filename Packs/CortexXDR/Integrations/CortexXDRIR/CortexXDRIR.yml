@@ -5247,7 +5247,7 @@ script:
       description: The issue description.
       required: true
     - name: observation_time
-      description: The observation time. Should support english expressions like "one year".
+      description: The observation time. Supports natural language expressions such as "one year".
       required: true
     - name: domain
       description: The domain.
@@ -5311,7 +5311,7 @@ script:
       description: The issue detection method.
       type: String
   - name: xdr-issue-update
-    description: Update an existing issue.
+    description: Updates an existing issue.
     arguments:
     - name: issue_id
       description: The issue ID.

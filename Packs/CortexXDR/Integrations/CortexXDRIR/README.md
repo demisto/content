@@ -4841,7 +4841,7 @@ Create a new issue. Issues with an 'INFO' severity level will not be displayed i
 ### xdr-issue-update
 
 ***
-Update an existing issue.
+Updates an existing issue.
 
 #### Base Command
 
