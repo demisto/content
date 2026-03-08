@@ -557,12 +557,22 @@ def test_fetch_events_multiple_types(mocker, mock_client, event_types, expected_
             [],
             id="empty_events_list",
         ),
+        pytest.param(
+            [
+                {"timeStamp": "2024-05-25T18:00:00Z", "eventID": 1},
+                {"timeStamp": "2024-05-25T19:00:00Z", "eventID": 2},
+            ],
+            1,
+            [2],
+            id="cybersecurity_camelCase_timeStamp_field",
+        ),
     ],
 )
 def test_filter_old_events(events, expected_count, expected_ids):
     """
     Given:
     - Various event lists with different timestamp scenarios (frozen time is 19:30, cutoff is 18:30)
+      including both 'timestamp' (InSync) and 'timeStamp' (Cybersecurity) field formats
 
     When:
     - Calling _filter_old_events
@@ -573,27 +583,6 @@ def test_filter_old_events(events, expected_count, expected_ids):
     result = _filter_old_events(events)
     assert len(result) == expected_count
     assert [e["eventID"] for e in result] == expected_ids
-
-
-@freeze_time(datetime(2024, 5, 26, 11, 0, 0))
-def test_filter_old_events_cybersecurity_timestamp_format():
-    """
-    Given:
-    - Cybersecurity events using 'timeStamp' (camelCase) field
-
-    When:
-    - Calling _filter_old_events
-
-    Then:
-    - Events are correctly filtered using the 'timeStamp' field
-    """
-    events = [
-        {"timeStamp": "2024-05-26T09:00:00Z", "id": 1},  # older than 1h - dropped
-        {"timeStamp": "2024-05-26T10:30:00Z", "id": 2},  # within 1h - kept
-    ]
-    result = _filter_old_events(events)
-    assert len(result) == 1
-    assert result[0]["id"] == 2
 
 
 @freeze_time(datetime(2024, 5, 25, 19, 30, 0))
