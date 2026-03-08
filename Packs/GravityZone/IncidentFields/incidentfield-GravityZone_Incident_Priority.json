@@ -1,0 +1,34 @@
+{
+    "id": "incident_gravityzone_incident_priority",
+    "version": -1,
+    "name": "GravityZone Incident Priority",
+    "ownerOnly": false,
+    "description": "Specifies the priority assigned to the incident.",
+    "cliName": "gravityzoneincidentpriority",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "GravityZone EDR",
+        "GravityZone XDR"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0",
+    "marketplaces": [
+        "xsoar"
+    ]
+}
