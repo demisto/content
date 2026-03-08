@@ -1,0 +1,15 @@
+{
+    "fromVersion": "6.10.0",
+    "name": "GravityZone - Classifier",
+    "type": "classification",
+    "id": "GravityZone - Classifier",
+    "description": "Classifies incoming GravityZone incidents in Cortex XSOAR.",
+    "keyTypeMap": {
+        "incident": "GravityZone EDR",
+        "extendedIncident": "GravityZone XDR"
+    },
+    "transformer": {
+        "simple": "incidentType"
+    },
+    "version": -1
+}

@@ -1,0 +1,174 @@
+{
+    "incidentId": "6942404716491034acd30418",
+    "incidentNumber": 476,
+    "status": "open",
+    "mainAction": "blocked",
+    "created": "2025-12-17T07:30:24+02:00",
+    "lastUpdated": "2025-12-17T07:30:24+02:00",
+    "lastProcessed": "2025-12-17T07:32:11+02:00",
+    "severityScore": 51,
+    "incidentLink": "https://localhost/#!/incidents/view/6942404716491034acd30418",
+    "assignee": null,
+    "priority": "high",
+    "attackTypes": [],
+    "company": {
+        "id": "COMPANY_ID",
+        "name": "COMPANY_NAME"
+    },
+    "incidentType": "extendedIncident",
+    "details": {
+        "counters": {
+            "endpoints": 1,
+            "servers": 0,
+            "mobileDevices": 0,
+            "printers": 0,
+            "routers": 0,
+            "IoTs": 0,
+            "identities": 0,
+            "emails": 0,
+            "IPs": 0,
+            "domains": 1,
+            "DNSs": 0,
+            "DGAs": 0,
+            "cloudStorages": 0,
+            "torNodes": 0,
+            "externalDrives": 0,
+            "externalSources": 1,
+            "exfiltratedFiles": 0,
+            "internalIPs": 0,
+            "internalEmails": 0,
+            "users": 0,
+            "virtualDesktops": 0,
+            "containers": 0,
+            "databases": 0,
+            "storages": 0,
+            "office365Instances": 0,
+            "ADInstances": 0,
+            "azureADInstances": 0,
+            "AWSInstances": 0,
+            "GCPInstances": 0,
+            "googleWorkspaceInstances": 0,
+            "atlassianInstances": 0,
+            "atlassianBitbucketProducts": 0,
+            "atlassianJiraProducts": 0,
+            "atlassianConfluenceProducts": 0,
+            "bitbucketProjects": 0,
+            "confluenceSpaces": 0
+        },
+        "contains": [],
+        "partOf": [],
+        "cves": [],
+        "suspectedActors": [],
+        "killChainPhases": [
+            "initial_access"
+        ],
+        "lastKillChainPhase": "initial_access",
+        "alerts": [
+            {
+                "id": "6942404716491034acd30419",
+                "name": "Cloud Virus",
+                "date": "2025-12-17T07:30:24+02:00",
+                "sensors": [
+                    "EDR"
+                ],
+                "tactic": "initial_access",
+                "transitions": [
+                    {
+                        "from": "6942404716491034acd3041a",
+                        "to": "6942404716491034acd3041b",
+                        "resources": [
+                            {
+                                "name": "localhost/malware",
+                                "type": "url",
+                                "details": {
+                                    "url": "localhost/malware"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "nodes": [
+            {
+                "id": "6942404716491034acd3041a",
+                "name": "HOST_NAME",
+                "isExternal": false,
+                "type": "endpoint",
+                "details": {
+                    "hardwareId": "c68a3142-6a22-742e-e470-e056e3a12ebc-005056b1ef97",
+                    "ips": [
+                        "IP_158"
+                    ],
+                    "macs": [
+                        "00:50:56:B1:EF:97"
+                    ],
+                    "endpointId": "67c87017f3e11f09dc9143e8"
+                }
+            },
+            {
+                "id": "6942404716491034acd3041b",
+                "name": "localhost",
+                "isExternal": false,
+                "type": "domain",
+                "details": {
+                    "domainName": "localhost",
+                    "ips": [
+                        "DEST_IP"
+                    ]
+                }
+            }
+        ],
+        "mitreTags": [
+            {
+                "category": "Initial Access",
+                "techniques": [
+                    {
+                        "name": "Phishing",
+                        "id": "T1566",
+                        "subtechniques": [
+                            {
+                                "name": "Spearphishing Link",
+                                "id": "T1566.002"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "category": "Execution",
+                "techniques": [
+                    {
+                        "name": "Exploitation for Client Execution",
+                        "id": "T1203",
+                        "subtechniques": []
+                    },
+                    {
+                        "name": "User Execution",
+                        "id": "T1204",
+                        "subtechniques": [
+                            {
+                                "name": "Malicious Link",
+                                "id": "T1204.001"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Command and Scripting Interpreter",
+                        "id": "T1059",
+                        "subtechniques": []
+                    }
+                ]
+            }
+        ]
+    },
+    "notes": [
+        {
+            "id": "6942467777da33b6380e36f5",
+            "userId": "67bd91935c3fc939320cdae3",
+            "userName": "USER_NAME",
+            "text": "changed the priority to high for testing purpose",
+            "created": "2025-12-17T07:58:15+02:00"
+        }
+    ]
+}
