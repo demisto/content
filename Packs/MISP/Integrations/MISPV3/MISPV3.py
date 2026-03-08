@@ -682,7 +682,7 @@ def add_attribute(
     attributes_args.update({"sharing_group_id": sharing_group_id}) if sharing_group_id else None
 
     if not new_event:
-        response = PYMISP.search(eventid=event_id, pythonify=True)
+        response = PYMISP.search(eventid=event_id, pythonify=True, metadata=True)
         if not response:
             raise DemistoException(
                 f"Error: An event with the given id: {event_id} was not found in MISP. please check it once again"

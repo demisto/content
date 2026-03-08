@@ -90,13 +90,13 @@ Command to get messages from PhishER
                 }
             ],
             "created at": "2021-07-07T15:18:58+00:00",
-            "from": "ekatsenelson@paloaltonetworks.com",
+            "from": "ekatsenelson@example.com",
             "id": "00a43d65-5802-4df6-9c3c-f7d2024ddb0b",
             "links":[],
             "phishmlReport": null,
             "pipelineStatus": "PROCESSED",
             "rawUrl": "https://phisher.example.com",
-            "reportedBy": "ekatsenelson@paloaltonetworks.com",
+            "reportedBy": "ekatsenelson@example.com",
             "rules": [],
             "severity": "MEDIUM",
             "subject": "Fwd: Your next career opportunity is... Right Here!",
@@ -137,7 +137,7 @@ Command to get messages from PhishER
 >
 >|ID|Status|Category|From|Severity|Created At|
 >|---|---|---|---|---|---|
->| 00a43d65-5802-4df6-9c3c-f7d2024ddb0b | IN_REVIEW | CLEAN | ekatsenelson@paloaltonetworks.com | MEDIUM | 2021-07-07T15:18:58+00:00 |
+>| 00a43d65-5802-4df6-9c3c-f7d2024ddb0b | IN_REVIEW | CLEAN | ekatsenelson@example.com | MEDIUM | 2021-07-07T15:18:58+00:00 |
 
 ### phisher-create-comment
 
