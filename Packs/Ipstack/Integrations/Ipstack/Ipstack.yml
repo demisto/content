@@ -5,6 +5,9 @@ name: Ipstack
 display: ipstack
 category: Data Enrichment & Threat Intelligence
 provider: Idera Inc.
+sectionorder:
+  - Connect
+  - Collect
 description: "One of the leading IP to geolocation \nAPIs and global IP database services."
 configuration:
 - display: API Key
@@ -13,15 +16,18 @@ configuration:
   type: 4
   hidden: true
   required: false
+  section: Connect
 - name: credentials
   display: ""
   type: 9
   displaypassword: API Key
   hiddenusername: true
   required: false
+  section: Connect
 - display: Source Reliability
   name: integrationReliability
   type: 15
+  section: Connect
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   options:
@@ -37,6 +43,7 @@ configuration:
   name: proxy
   type: 8
   required: false
+  section: Connect
 script:
   script: '-'
   type: python
@@ -91,7 +98,7 @@ script:
       type: String
     description: Queries an IP address in ipstack.
   runonce: false
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.7090913
 tests:
 - Ipstack_Test
 fromversion: 5.0.0
