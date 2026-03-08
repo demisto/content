@@ -225,7 +225,9 @@ def _filter_old_events(events: list[dict]) -> list[dict]:
             else:
                 dropped_count += 1
         else:
-            dropped_count += 1
+            # Keep events with unparseable timestamps to avoid silent data loss; log for visibility
+            demisto.debug(f"Could not parse timestamp for event {event.get('eventID', 'unknown')}, keeping it.")
+            filtered_events.append(event)
 
     if dropped_count:
         demisto.debug(

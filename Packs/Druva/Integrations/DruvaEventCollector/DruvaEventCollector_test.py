@@ -566,6 +566,15 @@ def test_fetch_events_multiple_types(mocker, mock_client, event_types, expected_
             [2],
             id="cybersecurity_camelCase_timeStamp_field",
         ),
+        pytest.param(
+            [
+                {"timestamp": "not-a-valid-timestamp", "eventID": 1},
+                {"timestamp": "2024-05-25T19:00:00Z", "eventID": 2},
+            ],
+            2,
+            [1, 2],
+            id="unparseable_timestamp_kept_not_dropped",
+        ),
     ],
 )
 def test_filter_old_events(events, expected_count, expected_ids):
