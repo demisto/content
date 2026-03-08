@@ -32,10 +32,15 @@ CREDENTIAL = "credential"
 IDENTIFIER = "identifier"
 PASSWORD = "password"
 
+# Internal (private) incident fields
+ID_KEY = "__id"
+TIMESTAMP_KEY = "__timestamp"
+
 # Last run
 START_TIMESTAMP_KEY = "start_timestamp"
 LAST_IDS_KEY = "last_ids"
-LOCAL_LAST_RUN = {}  # In memory last run object during long running execution
+LOCAL_LAST_RUN: dict[str, Any] = {}  # In memory last run object during long running execution
+
 
 class FeedbackStatus(Enum):
     PENDING_RESPONSE = "PENDING_RESPONSE"
@@ -200,7 +205,12 @@ class Client(BaseClient):
 
         return self._get_dlp_api_call(url)
 
-    def get_dlp_incidents(self, regions: str, start_time: int | None = None, end_time: int | None = None) -> tuple[dict[str, Any], int]:
+    def get_dlp_incidents(
+        self,
+        regions: str,
+        start_time: int | None = None,
+        end_time: int | None = None,
+    ) -> tuple[dict[str, Any], int]:
         url = INCIDENTS_URL
         params = {}
         if regions:
@@ -427,8 +437,8 @@ def create_incident(notification: dict, region: str, incident_type: str = "Data 
         "rawJSON": event_dump,
         "details": event_dump,
         # Internal fields, will be popped before creating the incident
-        "__id": raw_incident["incidentId"],
-        "__timestamp": int(incident_creation_time.timestamp()),
+        ID_KEY: raw_incident["incidentId"],
+        TIMESTAMP_KEY: int(incident_creation_time.timestamp()),
     }
 
 
@@ -458,7 +468,7 @@ def get_last_run() -> dict[str, Any]:
     Get the last run state for incident fetching.
     Uses in-memory `LOCAL_LAST_RUN` during long running execution for performance and consistency.
     Falls back to `demisto.getLastRun()` if container is freshly deployed.
-    
+
     Returns:
         dict[str, Any]: Dictionary containing optional start_timestamp and last_ids from previous fetch.
     """
@@ -470,7 +480,7 @@ def set_last_run(last_run: dict[str, Any]) -> None:
     Set the last run state for incident fetching.
     Updates both in-memory `LOCAL_LAST_RUN` and persisted state via `demisto.setLastRun()`.
     The persisted state serves as a backup in case long running execution gets interrupted.
-    
+
     Args:
         last_run (dict[str, Any]): Dictionary containing start_timestamp and last_ids for next fetch.
     """
@@ -483,27 +493,27 @@ def compute_next_run(incidents: list[dict], last_run: dict[str, Any]) -> dict[st
     """
     Compute the next run state based on fetched incidents.
     Removes internal __id and __timestamp fields from incidents as a side effect.
-    
+
     Args:
         incidents: List of incident objects with __id and __timestamp fields
         last_run: Previous last run state to return if no incidents
-        
+
     Returns:
         Dictionary with start_timestamp and last_ids for next run
-        
+
     Side Effects:
         Modifies incidents list by removing __id and __timestamp fields
     """
     if not incidents:
         return last_run
 
-    last_timestamp = incidents[-1]["__timestamp"]
-    last_incident_ids = [incident["__id"] for incident in incidents if incident["__timestamp"] == last_timestamp]
+    last_timestamp = incidents[-1][TIMESTAMP_KEY]
+    last_incident_ids = [incident[ID_KEY] for incident in incidents if incident[TIMESTAMP_KEY] == last_timestamp]
 
     # Clean private internal fields before creating incidents
     for incident in incidents:
-        incident.pop("__id")
-        incident.pop("__timestamp")
+        incident.pop(ID_KEY)
+        incident.pop(TIMESTAMP_KEY)
 
     return {START_TIMESTAMP_KEY: last_timestamp, LAST_IDS_KEY: last_incident_ids}
 
@@ -516,7 +526,7 @@ def fetch_notifications(
 ):
     """
     Fetch notifications from DLP API and filter out duplicates.
-    
+
     Args:
         client: DLP API client
         regions: Regions to fetch from
@@ -550,7 +560,7 @@ def fetch_notifications(
             new_incidents.append(incident)
             all_incident_ids.add(incident_id)
 
-    new_incidents = sorted(new_incidents, key=lambda inc: inc["__timestamp"])
+    new_incidents = sorted(new_incidents, key=lambda inc: inc[TIMESTAMP_KEY])
     next_run = compute_next_run(new_incidents, last_run)
 
     if not is_reset_triggered():
@@ -678,7 +688,7 @@ def main():
 
         demisto.info(f"Command being called is {command}.")
         client = Client(base_url, auth_url, credentials, verify, proxy)
-        
+
         if command == "pan-dlp-get-report":
             report_id = args.get("report_id")
             fetch_snippets = argToBoolean(args.get("fetch_snippets"))
