@@ -1663,7 +1663,7 @@ class AssistantMessagingHandler:
             message_type: The message type (from AssistantMessageType)
             message_id: Optional message ID for feedback tracking
             agent_name: Optional agent name to display
-            user_id: Optional user ID to mention in model responses
+            user_id: Optional user ID to mention in model and error responses
             completed: Whether this is the final response
         """
         # Prepare blocks and attachments using platform-specific method
@@ -1671,16 +1671,16 @@ class AssistantMessagingHandler:
         if not blocks:
             blocks = []
 
-        # Handle different message types
-        if AssistantMessageType.is_model_type(message_type):
-            # Add user mention at the beginning so the user gets notified
-            if user_id:
-                user_mention_block = {
-                    "type": "section",
-                    "text": {"type": "mrkdwn", "text": self.format_user_mention(user_id)},
-                }
-                blocks.insert(0, user_mention_block)
+        # Add user mention for model and error types so the user gets notified
+        if user_id and completed:
+            user_mention_block = {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": self.format_user_mention(user_id)},
+            }
+            blocks.insert(0, user_mention_block)
 
+        # Handle model-specific UI elements
+        if AssistantMessageType.is_model_type(message_type):
             if AssistantMessageType.is_approval_type(message_type):
                 blocks.extend(self.create_approval_ui())
 

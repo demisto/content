@@ -617,6 +617,35 @@ def test_send_agent_response_error_releases_lock(mocker: MockerFixture):
     assert "conv1" not in result
 
 
+def test_send_agent_response_error_adds_user_mention(mocker: MockerFixture):
+    """
+    Given:
+    	Error message type with a user_id provided.
+    When:
+    	Sending agent response.
+    Then:
+    	Inserts a user mention block at the beginning of the blocks list.
+    """
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "results")
+    handler = MockMessagingHandler()
+    assistant = {"conv1": {"status": "awaiting_backend_response"}}
+
+    handler.send_agent_response(
+        channel_id="channel123",
+        thread_id="thread123",
+        messages=[{"content": "Request can't be processed at the moment", "response_type": AssistantMessageType.ERROR.value, "is_final": True}],
+        assistant_context=assistant,
+        assistant_id_key="conv1",
+        user_id="U123",
+    )
+
+    assert handler.last_posted_blocks[0] == {
+        "type": "section",
+        "text": {"type": "mrkdwn", "text": "<@U123>"},
+    }
+
+
 def test_send_agent_response_deletes_thinking_indicator(mocker: MockerFixture):
     """
     Given:
