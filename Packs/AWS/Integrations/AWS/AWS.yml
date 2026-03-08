@@ -12985,7 +12985,7 @@ script:
         type: array
 
   - name: aws-ec2-hosts-release
-    description: Releases the specified Dedicated Hosts. On-Demand billing is stopped and the host goes into released state.
+    description: Releases the specified Dedicated Hosts.
     execution: true
     arguments:
       - name: account_id

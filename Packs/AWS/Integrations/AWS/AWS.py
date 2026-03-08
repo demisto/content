@@ -5240,11 +5240,9 @@ class EC2:
             CommandResults: Results containing successful and unsuccessful release information.
         """
         host_ids = argToList(args.get("host_ids"))
-        demisto.info(f"{host_ids=}")
         print_debug_logs(client, f"Releasing Dedicated Hosts: {host_ids}")
 
         response = client.release_hosts(HostIds=host_ids)
-        demisto.info(f"{response=}")
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
