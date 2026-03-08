@@ -126,7 +126,7 @@
             "type": "user",
             "object": {
                 "email": "bob.wilson@company.com",
-                "name": "Bob Wilson", 
+                "name": "Bob Testson", 
                 "role": "devops-engineer",
                 "department": "engineering",
                 "team": "devops"
