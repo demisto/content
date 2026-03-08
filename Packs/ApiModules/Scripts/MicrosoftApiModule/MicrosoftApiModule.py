@@ -669,8 +669,17 @@ def get_azure_cloud(params, integration_name):
     return AZURE_CLOUDS.get(AZURE_CLOUD_NAME_MAPPING.get(azure_cloud_arg), AZURE_WORLDWIDE_CLOUD)  # type: ignore[arg-type]
 
 
-# use before creating the Microsoft client
-def get_auth_type_flow(auth_flow: str) -> None | str:
+def get_auth_type_flow(auth_flow: str) -> str | None:
+    """Maps a human-readable auth flow name to the corresponding auth type or grant type constant.
+
+    Should be called before creating the MicrosoftClient to determine the grant_type parameter.
+
+    Args:
+        auth_flow: The human-readable auth flow name (e.g., "Client Credentials", "Device Code").
+
+    Returns:
+        The corresponding constant string, or None if "Not Selected" or unrecognized.
+    """
     auth_flow_dict = {
         "Not Selected": None,
         "Cortex App": OPROXY_AUTH_TYPE,
@@ -682,13 +691,22 @@ def get_auth_type_flow(auth_flow: str) -> None | str:
     return auth_flow_dict.get(auth_flow, None)
 
 
-# use before creating the Microsoft client
 def is_self_deployed_flow(auth_flow: str) -> bool:
-    if auth_flow in ("Device Code", "Authorization Code", "Client Credentials", "Azure Managed Identities"):
-        return True
-    if auth_flow in (DEVICE_CODE, AUTHORIZATION_CODE, CLIENT_CREDENTIALS, MANAGED_IDENTITIES):
-        return True
-    return False
+    """Determines whether the given auth flow represents a self-deployed authentication flow.
+
+    Should be called before creating the MicrosoftClient to determine the self_deployed parameter.
+
+    Args:
+        auth_flow: The human-readable auth flow name or grant type constant.
+
+    Returns:
+        True if the auth flow is self-deployed, False otherwise.
+    """
+    self_deployed_flows = {
+        "Device Code", "Authorization Code", "Client Credentials", "Azure Managed Identities",
+        DEVICE_CODE, AUTHORIZATION_CODE, CLIENT_CREDENTIALS, MANAGED_IDENTITIES,
+    }
+    return auth_flow in self_deployed_flows
 
 
 class MicrosoftClient(BaseClient):
@@ -932,7 +950,7 @@ class MicrosoftClient(BaseClient):
         def require_fields(fields: list[str], message_prefix: str):
             """Helper to validate required fields."""
             for field in fields:
-                if not getattr(self, field):
+                if not getattr(self, field, None):
                     raise DemistoException(f"{message_prefix} enter {field.replace('_', ' ').title()}.")
 
         if self.auth_type == OPROXY_AUTH_TYPE:
@@ -973,7 +991,7 @@ class MicrosoftClient(BaseClient):
             )
 
         elif self.grant_type == AUTHORIZATION_CODE:
-            demisto.debug("Running test-module for DEVICE_CODE grant type.")
+            demisto.debug("Running test-module for AUTHORIZATION_CODE grant type.")
             if not demisto.params().get("redirect_uri"):  # this is taken from demisto.params because we have a default
                 # value for this parameter in MicrosoftClient class
                 raise DemistoException(
@@ -992,7 +1010,7 @@ class MicrosoftClient(BaseClient):
             )
 
         else:
-            raise DemistoException(f"Unsupported grant type")
+            raise DemistoException(f"Unsupported grant type: {self.grant_type}")
 
     def get_access_token(self, resource: str = "", scope: str | None = None) -> str:
         """
@@ -1628,7 +1646,7 @@ def get_azure_managed_identities_client_id(params: dict) -> str | None:
 
     """
     auth_type = params.get("auth_type") or params.get("authentication_type") or params.get("auth_flow")
-    if params and (argToBoolean(params.get("use_managed_identities") or auth_type == "Azure Managed Identities")):
+    if params and (argToBoolean(params.get("use_managed_identities")) or auth_type == "Azure Managed Identities"):
         client_id = params.get("managed_identities_client_id", {}).get("password")
         return client_id or MANAGED_IDENTITIES_SYSTEM_ASSIGNED
     return None
