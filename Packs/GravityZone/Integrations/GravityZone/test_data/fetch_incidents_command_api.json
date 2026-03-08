@@ -1,0 +1,2550 @@
+[
+  {
+    "request": {
+      "url": "/api/v1.2/jsonrpc/incidents",
+      "method": "getIncidentsList",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getIncidentsList",
+        "params": {
+          "filters": {
+            "startDate": "2025-12-13T12:50:00+0000",
+            "endDate": "2025-12-20T13:00:00+0000"
+          },
+          "options": {
+            "includeChildCompanies": true
+          },
+          "page": 1,
+          "perPage": 1000
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "total": 11,
+        "page": 1,
+        "perPage": 1000,
+        "pagesCount": 1,
+        "items": [
+          {
+            "incidentId": "INCIDENT_ID_1",
+            "incidentNumber": 477,
+            "status": "closed",
+            "mainAction": "reported",
+            "created": "2025-12-17T09:02:03+02:00",
+            "lastUpdated": "2025-12-17T09:02:03+02:00",
+            "lastProcessed": "2025-12-17T09:02:13+02:00",
+            "severityScore": 33,
+            "incidentLink": "https://localhost/#!/incidents/view/INCIDENT_ID_1",
+            "assignee": null,
+            "priority": "unknown",
+            "attackTypes": [
+              "Malware"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "incident",
+            "details": {
+              "detectionName": "RegSecurityDump",
+              "counters": {
+                "endpoints": 1,
+                "files": 0,
+                "processes": 2,
+                "domains": 0,
+                "registries": 0,
+                "events": 6,
+                "storages": 0
+              },
+              "computerId": "ENDPOINT_ID",
+              "computerName": "ENDPOINT_NAME",
+              "computerFqdn": "ENDPOINT_FQDN",
+              "computerIp": "ENDPOINT_IP",
+              "computerMacAddresses": [
+                "ENDPOINT_MAC"
+              ],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "69424023997e9c48ed12d11c",
+            "incidentNumber": 475,
+            "status": "in_progress",
+            "mainAction": "blocked",
+            "created": "2025-12-17T07:30:43+02:00",
+            "lastUpdated": "2025-12-17T07:30:43+02:00",
+            "lastProcessed": "2025-12-17T07:31:15+02:00",
+            "severityScore": 1,
+            "incidentLink": "https://localhost/#!/incidents/view/69424023997e9c48ed12d11c",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [
+              "Other"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "incident",
+            "details": {
+              "detectionName": "Cloud Virus",
+              "counters": {
+                "endpoints": 1,
+                "files": 0,
+                "processes": 17,
+                "domains": 2,
+                "registries": 1,
+                "events": 32,
+                "storages": 0
+              },
+              "computerId": "67c87017f3e11f09dc9143e8",
+              "computerName": "HOST_NAME",
+              "computerFqdn": "HOST_NAME",
+              "computerIp": "IP_158",
+              "computerMacAddresses": [
+                "005056b1ef97"
+              ],
+              "partOf": [
+                {
+                  "incidentId": "6942404716491034acd30418",
+                  "incidentLink": "https://localhost/#!/incidents/view/6942404716491034acd30418"
+                }
+              ]
+            }
+          },
+          {
+            "incidentId": "6942404716491034acd30418",
+            "incidentNumber": 476,
+            "status": "open",
+            "mainAction": "blocked",
+            "created": "2025-12-17T07:30:24+02:00",
+            "lastUpdated": "2025-12-17T07:30:24+02:00",
+            "lastProcessed": "2025-12-17T07:32:11+02:00",
+            "severityScore": 51,
+            "incidentLink": "https://localhost/#!/incidents/view/6942404716491034acd30418",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 1,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 0,
+                "emails": 0,
+                "IPs": 0,
+                "domains": 1,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 1,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 0,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "694217c0aa87b3d57af0950b",
+            "incidentNumber": 474,
+            "status": "open",
+            "mainAction": "reported",
+            "created": "2025-12-17T04:35:21+02:00",
+            "lastUpdated": "2025-12-17T04:35:21+02:00",
+            "lastProcessed": "2025-12-17T04:38:56+02:00",
+            "severityScore": 63,
+            "incidentLink": "https://localhost/#!/incidents/view/694217c0aa87b3d57af0950b",
+            "assignee": null,
+            "priority": "unknown",
+            "attackTypes": [
+              "Defense Evasion"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 0,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 1,
+                "emails": 0,
+                "IPs": 0,
+                "domains": 0,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 0,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 1,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "69415c9d5f5c8b75247c58d1",
+            "incidentNumber": 473,
+            "status": "open",
+            "mainAction": "blocked",
+            "created": "2025-12-16T15:20:21+02:00",
+            "lastUpdated": "2025-12-16T15:21:38+02:00",
+            "lastProcessed": "2025-12-16T15:21:48+02:00",
+            "severityScore": 43,
+            "incidentLink": "https://localhost/#!/incidents/view/69415c9d5f5c8b75247c58d1",
+            "assignee": null,
+            "priority": "unknown",
+            "attackTypes": [
+              "Malware"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "incident",
+            "details": {
+              "detectionName": "BAT.Trojan.FormatC.Z",
+              "counters": {
+                "endpoints": 1,
+                "files": 3,
+                "processes": 4,
+                "domains": 0,
+                "registries": 0,
+                "events": 17,
+                "storages": 0
+              },
+              "computerId": "ENDPOINT_ID",
+              "computerName": "ENDPOINT_NAME",
+              "computerFqdn": "ENDPOINT_FQDN",
+              "computerIp": "ENDPOINT_IP",
+              "computerMacAddresses": [
+                "ENDPOINT_MAC"
+              ],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "6940ee975f5c8b75247c3f38",
+            "incidentNumber": 471,
+            "status": "in_progress",
+            "mainAction": "blocked",
+            "created": "2025-12-16T07:30:29+02:00",
+            "lastUpdated": "2025-12-16T07:34:27+02:00",
+            "lastProcessed": "2025-12-16T07:35:02+02:00",
+            "severityScore": 52,
+            "incidentLink": "https://localhost/#!/incidents/view/6940ee975f5c8b75247c3f38",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [
+              "Other"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "incident",
+            "details": {
+              "detectionName": "Cloud Virus",
+              "counters": {
+                "endpoints": 1,
+                "files": 0,
+                "processes": 10,
+                "domains": 15,
+                "registries": 1,
+                "events": 36,
+                "storages": 0
+              },
+              "computerId": "67c87017f3e11f09dc9143e8",
+              "computerName": "HOST_NAME",
+              "computerFqdn": "HOST_NAME",
+              "computerIp": "IP_158",
+              "computerMacAddresses": [
+                "005056b1ef97"
+              ],
+              "partOf": [
+                {
+                  "incidentId": "6940eeadaa87b3d57af088aa",
+                  "incidentLink": "https://localhost/#!/incidents/view/6940eeadaa87b3d57af088aa"
+                }
+              ]
+            }
+          },
+          {
+            "incidentId": "6940eeadaa87b3d57af088aa",
+            "incidentNumber": 472,
+            "status": "open",
+            "mainAction": "blocked",
+            "created": "2025-12-16T07:30:17+02:00",
+            "lastUpdated": "2025-12-16T07:30:17+02:00",
+            "lastProcessed": "2025-12-16T07:35:02+02:00",
+            "severityScore": 51,
+            "incidentLink": "https://localhost/#!/incidents/view/6940eeadaa87b3d57af088aa",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 1,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 0,
+                "emails": 0,
+                "IPs": 0,
+                "domains": 1,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 1,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 0,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "693ba8ad997e9c48ed123303",
+            "incidentNumber": 464,
+            "status": "in_progress",
+            "mainAction": "blocked",
+            "created": "2025-12-12T07:30:56+02:00",
+            "lastUpdated": "2025-12-15T07:28:17+02:00",
+            "lastProcessed": "2025-12-15T07:28:51+02:00",
+            "severityScore": 52,
+            "incidentLink": "https://localhost/#!/incidents/view/693ba8ad997e9c48ed123303",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [
+              "Other"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "incident",
+            "details": {
+              "detectionName": "Cloud Virus",
+              "counters": {
+                "endpoints": 1,
+                "files": 33,
+                "processes": 28,
+                "domains": 53,
+                "registries": 3,
+                "events": 155,
+                "storages": 0
+              },
+              "computerId": "67c87017f3e11f09dc9143e8",
+              "computerName": "HOST_NAME",
+              "computerFqdn": "HOST_NAME",
+              "computerIp": "IP_158",
+              "computerMacAddresses": [
+                "005056b1ef97"
+              ],
+              "partOf": [
+                {
+                  "incidentId": "693ba8baaa87b3d57af0749a",
+                  "incidentLink": "https://localhost/#!/incidents/view/693ba8baaa87b3d57af0749a"
+                },
+                {
+                  "incidentId": "693cfa4416491034acd2e891",
+                  "incidentLink": "https://localhost/#!/incidents/view/693cfa4416491034acd2e891"
+                },
+                {
+                  "incidentId": "693e4b6616491034acd2e90b",
+                  "incidentLink": "https://localhost/#!/incidents/view/693e4b6616491034acd2e90b"
+                },
+                {
+                  "incidentId": "693f9ca716491034acd2ea1e",
+                  "incidentLink": "https://localhost/#!/incidents/view/693f9ca716491034acd2ea1e"
+                }
+              ]
+            }
+          },
+          {
+            "incidentId": "693f9ca716491034acd2ea1e",
+            "incidentNumber": 470,
+            "status": "open",
+            "mainAction": "blocked",
+            "created": "2025-12-15T07:28:05+02:00",
+            "lastUpdated": "2025-12-15T07:28:05+02:00",
+            "lastProcessed": "2025-12-15T07:29:31+02:00",
+            "severityScore": 51,
+            "incidentLink": "https://localhost/#!/incidents/view/693f9ca716491034acd2ea1e",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 1,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 0,
+                "emails": 0,
+                "IPs": 0,
+                "domains": 1,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 1,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 0,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "693e4b6616491034acd2e90b",
+            "incidentNumber": 469,
+            "status": "open",
+            "mainAction": "blocked",
+            "created": "2025-12-14T07:29:07+02:00",
+            "lastUpdated": "2025-12-14T07:29:07+02:00",
+            "lastProcessed": "2025-12-15T07:28:51+02:00",
+            "severityScore": 51,
+            "incidentLink": "https://localhost/#!/incidents/view/693e4b6616491034acd2e90b",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 1,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 0,
+                "emails": 0,
+                "IPs": 0,
+                "domains": 1,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 1,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 0,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "693d81a816491034acd2e8c5",
+            "incidentNumber": 468,
+            "status": "open",
+            "mainAction": "reported",
+            "created": "2025-12-13T17:05:06+02:00",
+            "lastUpdated": "2025-12-13T17:05:06+02:00",
+            "lastProcessed": "2025-12-13T17:09:28+02:00",
+            "severityScore": 67,
+            "incidentLink": "https://localhost/#!/incidents/view/693d81a816491034acd2e8c5",
+            "assignee": null,
+            "priority": "unknown",
+            "attackTypes": [
+              "Defense Evasion",
+              "Collection"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 0,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 3,
+                "emails": 0,
+                "IPs": 1,
+                "domains": 0,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 1,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 3,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.2/jsonrpc/incidents",
+      "method": "getIncidentsList",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getIncidentsList",
+        "params": {
+          "filters": {
+            "startDate": "2025-12-13T12:50:00+0000",
+            "endDate": "2025-12-20T13:00:00+0000"
+          },
+          "options": {
+            "includeChildCompanies": true
+          },
+          "page": 1,
+          "perPage": 1000
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "total": 11,
+        "page": 1,
+        "perPage": 1000,
+        "pagesCount": 1,
+        "items": [
+          {
+            "incidentId": "INCIDENT_ID_1",
+            "incidentNumber": 477,
+            "status": "closed",
+            "mainAction": "reported",
+            "created": "2025-12-17T09:02:03+02:00",
+            "lastUpdated": "2025-12-17T09:02:03+02:00",
+            "lastProcessed": "2025-12-17T09:02:13+02:00",
+            "severityScore": 33,
+            "incidentLink": "https://localhost/#!/incidents/view/INCIDENT_ID_1",
+            "assignee": null,
+            "priority": "unknown",
+            "attackTypes": [
+              "Malware"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "incident",
+            "details": {
+              "detectionName": "RegSecurityDump",
+              "counters": {
+                "endpoints": 1,
+                "files": 0,
+                "processes": 2,
+                "domains": 0,
+                "registries": 0,
+                "events": 6,
+                "storages": 0
+              },
+              "computerId": "ENDPOINT_ID",
+              "computerName": "ENDPOINT_NAME",
+              "computerFqdn": "ENDPOINT_FQDN",
+              "computerIp": "ENDPOINT_IP",
+              "computerMacAddresses": [
+                "ENDPOINT_MAC"
+              ],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "69424023997e9c48ed12d11c",
+            "incidentNumber": 475,
+            "status": "in_progress",
+            "mainAction": "blocked",
+            "created": "2025-12-17T07:30:43+02:00",
+            "lastUpdated": "2025-12-17T07:30:43+02:00",
+            "lastProcessed": "2025-12-17T07:31:15+02:00",
+            "severityScore": 1,
+            "incidentLink": "https://localhost/#!/incidents/view/69424023997e9c48ed12d11c",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [
+              "Other"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "incident",
+            "details": {
+              "detectionName": "Cloud Virus",
+              "counters": {
+                "endpoints": 1,
+                "files": 0,
+                "processes": 17,
+                "domains": 2,
+                "registries": 1,
+                "events": 32,
+                "storages": 0
+              },
+              "computerId": "67c87017f3e11f09dc9143e8",
+              "computerName": "HOST_NAME",
+              "computerFqdn": "HOST_NAME",
+              "computerIp": "IP_158",
+              "computerMacAddresses": [
+                "005056b1ef97"
+              ],
+              "partOf": [
+                {
+                  "incidentId": "6942404716491034acd30418",
+                  "incidentLink": "https://localhost/#!/incidents/view/6942404716491034acd30418"
+                }
+              ]
+            }
+          },
+          {
+            "incidentId": "6942404716491034acd30418",
+            "incidentNumber": 476,
+            "status": "open",
+            "mainAction": "blocked",
+            "created": "2025-12-17T07:30:24+02:00",
+            "lastUpdated": "2025-12-17T07:30:24+02:00",
+            "lastProcessed": "2025-12-17T07:32:11+02:00",
+            "severityScore": 51,
+            "incidentLink": "https://localhost/#!/incidents/view/6942404716491034acd30418",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 1,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 0,
+                "emails": 0,
+                "IPs": 0,
+                "domains": 1,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 1,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 0,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "694217c0aa87b3d57af0950b",
+            "incidentNumber": 474,
+            "status": "open",
+            "mainAction": "reported",
+            "created": "2025-12-17T04:35:21+02:00",
+            "lastUpdated": "2025-12-17T04:35:21+02:00",
+            "lastProcessed": "2025-12-17T04:38:56+02:00",
+            "severityScore": 63,
+            "incidentLink": "https://localhost/#!/incidents/view/694217c0aa87b3d57af0950b",
+            "assignee": null,
+            "priority": "unknown",
+            "attackTypes": [
+              "Defense Evasion"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 0,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 1,
+                "emails": 0,
+                "IPs": 0,
+                "domains": 0,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 0,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 1,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "69415c9d5f5c8b75247c58d1",
+            "incidentNumber": 473,
+            "status": "open",
+            "mainAction": "blocked",
+            "created": "2025-12-16T15:20:21+02:00",
+            "lastUpdated": "2025-12-16T15:21:38+02:00",
+            "lastProcessed": "2025-12-16T15:21:48+02:00",
+            "severityScore": 43,
+            "incidentLink": "https://localhost/#!/incidents/view/69415c9d5f5c8b75247c58d1",
+            "assignee": null,
+            "priority": "unknown",
+            "attackTypes": [
+              "Malware"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "incident",
+            "details": {
+              "detectionName": "BAT.Trojan.FormatC.Z",
+              "counters": {
+                "endpoints": 1,
+                "files": 3,
+                "processes": 4,
+                "domains": 0,
+                "registries": 0,
+                "events": 17,
+                "storages": 0
+              },
+              "computerId": "ENDPOINT_ID",
+              "computerName": "ENDPOINT_NAME",
+              "computerFqdn": "ENDPOINT_FQDN",
+              "computerIp": "ENDPOINT_IP",
+              "computerMacAddresses": [
+                "ENDPOINT_MAC"
+              ],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "6940ee975f5c8b75247c3f38",
+            "incidentNumber": 471,
+            "status": "in_progress",
+            "mainAction": "blocked",
+            "created": "2025-12-16T07:30:29+02:00",
+            "lastUpdated": "2025-12-16T07:34:27+02:00",
+            "lastProcessed": "2025-12-16T07:35:02+02:00",
+            "severityScore": 52,
+            "incidentLink": "https://localhost/#!/incidents/view/6940ee975f5c8b75247c3f38",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [
+              "Other"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "incident",
+            "details": {
+              "detectionName": "Cloud Virus",
+              "counters": {
+                "endpoints": 1,
+                "files": 0,
+                "processes": 10,
+                "domains": 15,
+                "registries": 1,
+                "events": 36,
+                "storages": 0
+              },
+              "computerId": "67c87017f3e11f09dc9143e8",
+              "computerName": "HOST_NAME",
+              "computerFqdn": "HOST_NAME",
+              "computerIp": "IP_158",
+              "computerMacAddresses": [
+                "005056b1ef97"
+              ],
+              "partOf": [
+                {
+                  "incidentId": "6940eeadaa87b3d57af088aa",
+                  "incidentLink": "https://localhost/#!/incidents/view/6940eeadaa87b3d57af088aa"
+                }
+              ]
+            }
+          },
+          {
+            "incidentId": "6940eeadaa87b3d57af088aa",
+            "incidentNumber": 472,
+            "status": "open",
+            "mainAction": "blocked",
+            "created": "2025-12-16T07:30:17+02:00",
+            "lastUpdated": "2025-12-16T07:30:17+02:00",
+            "lastProcessed": "2025-12-16T07:35:02+02:00",
+            "severityScore": 51,
+            "incidentLink": "https://localhost/#!/incidents/view/6940eeadaa87b3d57af088aa",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 1,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 0,
+                "emails": 0,
+                "IPs": 0,
+                "domains": 1,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 1,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 0,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "693ba8ad997e9c48ed123303",
+            "incidentNumber": 464,
+            "status": "in_progress",
+            "mainAction": "blocked",
+            "created": "2025-12-12T07:30:56+02:00",
+            "lastUpdated": "2025-12-15T07:28:17+02:00",
+            "lastProcessed": "2025-12-15T07:28:51+02:00",
+            "severityScore": 52,
+            "incidentLink": "https://localhost/#!/incidents/view/693ba8ad997e9c48ed123303",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [
+              "Other"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "incident",
+            "details": {
+              "detectionName": "Cloud Virus",
+              "counters": {
+                "endpoints": 1,
+                "files": 33,
+                "processes": 28,
+                "domains": 53,
+                "registries": 3,
+                "events": 155,
+                "storages": 0
+              },
+              "computerId": "67c87017f3e11f09dc9143e8",
+              "computerName": "HOST_NAME",
+              "computerFqdn": "HOST_NAME",
+              "computerIp": "IP_158",
+              "computerMacAddresses": [
+                "005056b1ef97"
+              ],
+              "partOf": [
+                {
+                  "incidentId": "693ba8baaa87b3d57af0749a",
+                  "incidentLink": "https://localhost/#!/incidents/view/693ba8baaa87b3d57af0749a"
+                },
+                {
+                  "incidentId": "693cfa4416491034acd2e891",
+                  "incidentLink": "https://localhost/#!/incidents/view/693cfa4416491034acd2e891"
+                },
+                {
+                  "incidentId": "693e4b6616491034acd2e90b",
+                  "incidentLink": "https://localhost/#!/incidents/view/693e4b6616491034acd2e90b"
+                },
+                {
+                  "incidentId": "693f9ca716491034acd2ea1e",
+                  "incidentLink": "https://localhost/#!/incidents/view/693f9ca716491034acd2ea1e"
+                }
+              ]
+            }
+          },
+          {
+            "incidentId": "693f9ca716491034acd2ea1e",
+            "incidentNumber": 470,
+            "status": "open",
+            "mainAction": "blocked",
+            "created": "2025-12-15T07:28:05+02:00",
+            "lastUpdated": "2025-12-15T07:28:05+02:00",
+            "lastProcessed": "2025-12-15T07:29:31+02:00",
+            "severityScore": 51,
+            "incidentLink": "https://localhost/#!/incidents/view/693f9ca716491034acd2ea1e",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 1,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 0,
+                "emails": 0,
+                "IPs": 0,
+                "domains": 1,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 1,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 0,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "693e4b6616491034acd2e90b",
+            "incidentNumber": 469,
+            "status": "open",
+            "mainAction": "blocked",
+            "created": "2025-12-14T07:29:07+02:00",
+            "lastUpdated": "2025-12-14T07:29:07+02:00",
+            "lastProcessed": "2025-12-15T07:28:51+02:00",
+            "severityScore": 51,
+            "incidentLink": "https://localhost/#!/incidents/view/693e4b6616491034acd2e90b",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 1,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 0,
+                "emails": 0,
+                "IPs": 0,
+                "domains": 1,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 1,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 0,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "693d81a816491034acd2e8c5",
+            "incidentNumber": 468,
+            "status": "open",
+            "mainAction": "reported",
+            "created": "2025-12-13T17:05:06+02:00",
+            "lastUpdated": "2025-12-13T17:05:06+02:00",
+            "lastProcessed": "2025-12-13T17:09:28+02:00",
+            "severityScore": 67,
+            "incidentLink": "https://localhost/#!/incidents/view/693d81a816491034acd2e8c5",
+            "assignee": null,
+            "priority": "unknown",
+            "attackTypes": [
+              "Defense Evasion",
+              "Collection"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 0,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 3,
+                "emails": 0,
+                "IPs": 1,
+                "domains": 0,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 1,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 3,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.2/jsonrpc/incidents",
+      "method": "getIncidentsList",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getIncidentsList",
+        "params": {
+          "filters": {
+            "startDate": "2025-12-13T12:50:00+0000",
+            "endDate": "2025-12-20T13:00:00+0000"
+          },
+          "options": {
+            "includeChildCompanies": true
+          },
+          "page": 1,
+          "perPage": 1000
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "total": 11,
+        "page": 1,
+        "perPage": 1000,
+        "pagesCount": 1,
+        "items": [
+          {
+            "incidentId": "INCIDENT_ID_1",
+            "incidentNumber": 477,
+            "status": "closed",
+            "mainAction": "reported",
+            "created": "2025-12-17T09:02:03+02:00",
+            "lastUpdated": "2025-12-17T09:02:03+02:00",
+            "lastProcessed": "2025-12-17T09:02:13+02:00",
+            "severityScore": 33,
+            "incidentLink": "https://localhost/#!/incidents/view/INCIDENT_ID_1",
+            "assignee": null,
+            "priority": "unknown",
+            "attackTypes": [
+              "Malware"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "incident",
+            "details": {
+              "detectionName": "RegSecurityDump",
+              "counters": {
+                "endpoints": 1,
+                "files": 0,
+                "processes": 2,
+                "domains": 0,
+                "registries": 0,
+                "events": 6,
+                "storages": 0
+              },
+              "computerId": "ENDPOINT_ID",
+              "computerName": "ENDPOINT_NAME",
+              "computerFqdn": "ENDPOINT_FQDN",
+              "computerIp": "ENDPOINT_IP",
+              "computerMacAddresses": [
+                "ENDPOINT_MAC"
+              ],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "69424023997e9c48ed12d11c",
+            "incidentNumber": 475,
+            "status": "in_progress",
+            "mainAction": "blocked",
+            "created": "2025-12-17T07:30:43+02:00",
+            "lastUpdated": "2025-12-17T07:30:43+02:00",
+            "lastProcessed": "2025-12-17T07:31:15+02:00",
+            "severityScore": 1,
+            "incidentLink": "https://localhost/#!/incidents/view/69424023997e9c48ed12d11c",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [
+              "Other"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "incident",
+            "details": {
+              "detectionName": "Cloud Virus",
+              "counters": {
+                "endpoints": 1,
+                "files": 0,
+                "processes": 17,
+                "domains": 2,
+                "registries": 1,
+                "events": 32,
+                "storages": 0
+              },
+              "computerId": "67c87017f3e11f09dc9143e8",
+              "computerName": "HOST_NAME",
+              "computerFqdn": "HOST_NAME",
+              "computerIp": "IP_158",
+              "computerMacAddresses": [
+                "005056b1ef97"
+              ],
+              "partOf": [
+                {
+                  "incidentId": "6942404716491034acd30418",
+                  "incidentLink": "https://localhost/#!/incidents/view/6942404716491034acd30418"
+                }
+              ]
+            }
+          },
+          {
+            "incidentId": "6942404716491034acd30418",
+            "incidentNumber": 476,
+            "status": "open",
+            "mainAction": "blocked",
+            "created": "2025-12-17T07:30:24+02:00",
+            "lastUpdated": "2025-12-17T07:30:24+02:00",
+            "lastProcessed": "2025-12-17T07:32:11+02:00",
+            "severityScore": 51,
+            "incidentLink": "https://localhost/#!/incidents/view/6942404716491034acd30418",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 1,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 0,
+                "emails": 0,
+                "IPs": 0,
+                "domains": 1,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 1,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 0,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "694217c0aa87b3d57af0950b",
+            "incidentNumber": 474,
+            "status": "open",
+            "mainAction": "reported",
+            "created": "2025-12-17T04:35:21+02:00",
+            "lastUpdated": "2025-12-17T04:35:21+02:00",
+            "lastProcessed": "2025-12-17T04:38:56+02:00",
+            "severityScore": 63,
+            "incidentLink": "https://localhost/#!/incidents/view/694217c0aa87b3d57af0950b",
+            "assignee": null,
+            "priority": "unknown",
+            "attackTypes": [
+              "Defense Evasion"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 0,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 1,
+                "emails": 0,
+                "IPs": 0,
+                "domains": 0,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 0,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 1,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "69415c9d5f5c8b75247c58d1",
+            "incidentNumber": 473,
+            "status": "open",
+            "mainAction": "blocked",
+            "created": "2025-12-16T15:20:21+02:00",
+            "lastUpdated": "2025-12-16T15:21:38+02:00",
+            "lastProcessed": "2025-12-16T15:21:48+02:00",
+            "severityScore": 43,
+            "incidentLink": "https://localhost/#!/incidents/view/69415c9d5f5c8b75247c58d1",
+            "assignee": null,
+            "priority": "unknown",
+            "attackTypes": [
+              "Malware"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "incident",
+            "details": {
+              "detectionName": "BAT.Trojan.FormatC.Z",
+              "counters": {
+                "endpoints": 1,
+                "files": 3,
+                "processes": 4,
+                "domains": 0,
+                "registries": 0,
+                "events": 17,
+                "storages": 0
+              },
+              "computerId": "ENDPOINT_ID",
+              "computerName": "ENDPOINT_NAME",
+              "computerFqdn": "ENDPOINT_FQDN",
+              "computerIp": "ENDPOINT_IP",
+              "computerMacAddresses": [
+                "ENDPOINT_MAC"
+              ],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "6940ee975f5c8b75247c3f38",
+            "incidentNumber": 471,
+            "status": "in_progress",
+            "mainAction": "blocked",
+            "created": "2025-12-16T07:30:29+02:00",
+            "lastUpdated": "2025-12-16T07:34:27+02:00",
+            "lastProcessed": "2025-12-16T07:35:02+02:00",
+            "severityScore": 52,
+            "incidentLink": "https://localhost/#!/incidents/view/6940ee975f5c8b75247c3f38",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [
+              "Other"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "incident",
+            "details": {
+              "detectionName": "Cloud Virus",
+              "counters": {
+                "endpoints": 1,
+                "files": 0,
+                "processes": 10,
+                "domains": 15,
+                "registries": 1,
+                "events": 36,
+                "storages": 0
+              },
+              "computerId": "67c87017f3e11f09dc9143e8",
+              "computerName": "HOST_NAME",
+              "computerFqdn": "HOST_NAME",
+              "computerIp": "IP_158",
+              "computerMacAddresses": [
+                "005056b1ef97"
+              ],
+              "partOf": [
+                {
+                  "incidentId": "6940eeadaa87b3d57af088aa",
+                  "incidentLink": "https://localhost/#!/incidents/view/6940eeadaa87b3d57af088aa"
+                }
+              ]
+            }
+          },
+          {
+            "incidentId": "6940eeadaa87b3d57af088aa",
+            "incidentNumber": 472,
+            "status": "open",
+            "mainAction": "blocked",
+            "created": "2025-12-16T07:30:17+02:00",
+            "lastUpdated": "2025-12-16T07:30:17+02:00",
+            "lastProcessed": "2025-12-16T07:35:02+02:00",
+            "severityScore": 51,
+            "incidentLink": "https://localhost/#!/incidents/view/6940eeadaa87b3d57af088aa",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 1,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 0,
+                "emails": 0,
+                "IPs": 0,
+                "domains": 1,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 1,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 0,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "693ba8ad997e9c48ed123303",
+            "incidentNumber": 464,
+            "status": "in_progress",
+            "mainAction": "blocked",
+            "created": "2025-12-12T07:30:56+02:00",
+            "lastUpdated": "2025-12-15T07:28:17+02:00",
+            "lastProcessed": "2025-12-15T07:28:51+02:00",
+            "severityScore": 52,
+            "incidentLink": "https://localhost/#!/incidents/view/693ba8ad997e9c48ed123303",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [
+              "Other"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "incident",
+            "details": {
+              "detectionName": "Cloud Virus",
+              "counters": {
+                "endpoints": 1,
+                "files": 33,
+                "processes": 28,
+                "domains": 53,
+                "registries": 3,
+                "events": 155,
+                "storages": 0
+              },
+              "computerId": "67c87017f3e11f09dc9143e8",
+              "computerName": "HOST_NAME",
+              "computerFqdn": "HOST_NAME",
+              "computerIp": "IP_158",
+              "computerMacAddresses": [
+                "005056b1ef97"
+              ],
+              "partOf": [
+                {
+                  "incidentId": "693ba8baaa87b3d57af0749a",
+                  "incidentLink": "https://localhost/#!/incidents/view/693ba8baaa87b3d57af0749a"
+                },
+                {
+                  "incidentId": "693cfa4416491034acd2e891",
+                  "incidentLink": "https://localhost/#!/incidents/view/693cfa4416491034acd2e891"
+                },
+                {
+                  "incidentId": "693e4b6616491034acd2e90b",
+                  "incidentLink": "https://localhost/#!/incidents/view/693e4b6616491034acd2e90b"
+                },
+                {
+                  "incidentId": "693f9ca716491034acd2ea1e",
+                  "incidentLink": "https://localhost/#!/incidents/view/693f9ca716491034acd2ea1e"
+                }
+              ]
+            }
+          },
+          {
+            "incidentId": "693f9ca716491034acd2ea1e",
+            "incidentNumber": 470,
+            "status": "open",
+            "mainAction": "blocked",
+            "created": "2025-12-15T07:28:05+02:00",
+            "lastUpdated": "2025-12-15T07:28:05+02:00",
+            "lastProcessed": "2025-12-15T07:29:31+02:00",
+            "severityScore": 51,
+            "incidentLink": "https://localhost/#!/incidents/view/693f9ca716491034acd2ea1e",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 1,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 0,
+                "emails": 0,
+                "IPs": 0,
+                "domains": 1,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 1,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 0,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "693e4b6616491034acd2e90b",
+            "incidentNumber": 469,
+            "status": "open",
+            "mainAction": "blocked",
+            "created": "2025-12-14T07:29:07+02:00",
+            "lastUpdated": "2025-12-14T07:29:07+02:00",
+            "lastProcessed": "2025-12-15T07:28:51+02:00",
+            "severityScore": 51,
+            "incidentLink": "https://localhost/#!/incidents/view/693e4b6616491034acd2e90b",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 1,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 0,
+                "emails": 0,
+                "IPs": 0,
+                "domains": 1,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 1,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 0,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "693d81a816491034acd2e8c5",
+            "incidentNumber": 468,
+            "status": "open",
+            "mainAction": "reported",
+            "created": "2025-12-13T17:05:06+02:00",
+            "lastUpdated": "2025-12-13T17:05:06+02:00",
+            "lastProcessed": "2025-12-13T17:09:28+02:00",
+            "severityScore": 67,
+            "incidentLink": "https://localhost/#!/incidents/view/693d81a816491034acd2e8c5",
+            "assignee": null,
+            "priority": "unknown",
+            "attackTypes": [
+              "Defense Evasion",
+              "Collection"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 0,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 3,
+                "emails": 0,
+                "IPs": 1,
+                "domains": 0,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 1,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 3,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.2/jsonrpc/incidents",
+      "method": "getIncidentsList",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getIncidentsList",
+        "params": {
+          "filters": {
+            "startDate": "2025-12-13T12:50:00+0000",
+            "endDate": "2025-12-20T13:00:00+0000"
+          },
+          "options": {
+            "includeChildCompanies": true
+          },
+          "page": 1,
+          "perPage": 1000
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "total": 11,
+        "page": 1,
+        "perPage": 1000,
+        "pagesCount": 1,
+        "items": [
+          {
+            "incidentId": "INCIDENT_ID_1",
+            "incidentNumber": 477,
+            "status": "closed",
+            "mainAction": "reported",
+            "created": "2025-12-17T09:02:03+02:00",
+            "lastUpdated": "2025-12-17T09:02:03+02:00",
+            "lastProcessed": "2025-12-17T09:02:13+02:00",
+            "severityScore": 33,
+            "incidentLink": "https://localhost/#!/incidents/view/INCIDENT_ID_1",
+            "assignee": null,
+            "priority": "unknown",
+            "attackTypes": [
+              "Malware"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "incident",
+            "details": {
+              "detectionName": "RegSecurityDump",
+              "counters": {
+                "endpoints": 1,
+                "files": 0,
+                "processes": 2,
+                "domains": 0,
+                "registries": 0,
+                "events": 6,
+                "storages": 0
+              },
+              "computerId": "ENDPOINT_ID",
+              "computerName": "ENDPOINT_NAME",
+              "computerFqdn": "ENDPOINT_FQDN",
+              "computerIp": "ENDPOINT_IP",
+              "computerMacAddresses": [
+                "ENDPOINT_MAC"
+              ],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "69424023997e9c48ed12d11c",
+            "incidentNumber": 475,
+            "status": "in_progress",
+            "mainAction": "blocked",
+            "created": "2025-12-17T07:30:43+02:00",
+            "lastUpdated": "2025-12-17T07:30:43+02:00",
+            "lastProcessed": "2025-12-17T07:31:15+02:00",
+            "severityScore": 1,
+            "incidentLink": "https://localhost/#!/incidents/view/69424023997e9c48ed12d11c",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [
+              "Other"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "incident",
+            "details": {
+              "detectionName": "Cloud Virus",
+              "counters": {
+                "endpoints": 1,
+                "files": 0,
+                "processes": 17,
+                "domains": 2,
+                "registries": 1,
+                "events": 32,
+                "storages": 0
+              },
+              "computerId": "67c87017f3e11f09dc9143e8",
+              "computerName": "HOST_NAME",
+              "computerFqdn": "HOST_NAME",
+              "computerIp": "IP_158",
+              "computerMacAddresses": [
+                "005056b1ef97"
+              ],
+              "partOf": [
+                {
+                  "incidentId": "6942404716491034acd30418",
+                  "incidentLink": "https://localhost/#!/incidents/view/6942404716491034acd30418"
+                }
+              ]
+            }
+          },
+          {
+            "incidentId": "6942404716491034acd30418",
+            "incidentNumber": 476,
+            "status": "open",
+            "mainAction": "blocked",
+            "created": "2025-12-17T07:30:24+02:00",
+            "lastUpdated": "2025-12-17T07:30:24+02:00",
+            "lastProcessed": "2025-12-17T07:32:11+02:00",
+            "severityScore": 51,
+            "incidentLink": "https://localhost/#!/incidents/view/6942404716491034acd30418",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 1,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 0,
+                "emails": 0,
+                "IPs": 0,
+                "domains": 1,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 1,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 0,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "694217c0aa87b3d57af0950b",
+            "incidentNumber": 474,
+            "status": "open",
+            "mainAction": "reported",
+            "created": "2025-12-17T04:35:21+02:00",
+            "lastUpdated": "2025-12-17T04:35:21+02:00",
+            "lastProcessed": "2025-12-17T04:38:56+02:00",
+            "severityScore": 63,
+            "incidentLink": "https://localhost/#!/incidents/view/694217c0aa87b3d57af0950b",
+            "assignee": null,
+            "priority": "unknown",
+            "attackTypes": [
+              "Defense Evasion"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 0,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 1,
+                "emails": 0,
+                "IPs": 0,
+                "domains": 0,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 0,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 1,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "69415c9d5f5c8b75247c58d1",
+            "incidentNumber": 473,
+            "status": "open",
+            "mainAction": "blocked",
+            "created": "2025-12-16T15:20:21+02:00",
+            "lastUpdated": "2025-12-16T15:21:38+02:00",
+            "lastProcessed": "2025-12-16T15:21:48+02:00",
+            "severityScore": 43,
+            "incidentLink": "https://localhost/#!/incidents/view/69415c9d5f5c8b75247c58d1",
+            "assignee": null,
+            "priority": "unknown",
+            "attackTypes": [
+              "Malware"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "incident",
+            "details": {
+              "detectionName": "BAT.Trojan.FormatC.Z",
+              "counters": {
+                "endpoints": 1,
+                "files": 3,
+                "processes": 4,
+                "domains": 0,
+                "registries": 0,
+                "events": 17,
+                "storages": 0
+              },
+              "computerId": "ENDPOINT_ID",
+              "computerName": "ENDPOINT_NAME",
+              "computerFqdn": "ENDPOINT_FQDN",
+              "computerIp": "ENDPOINT_IP",
+              "computerMacAddresses": [
+                "ENDPOINT_MAC"
+              ],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "6940ee975f5c8b75247c3f38",
+            "incidentNumber": 471,
+            "status": "in_progress",
+            "mainAction": "blocked",
+            "created": "2025-12-16T07:30:29+02:00",
+            "lastUpdated": "2025-12-16T07:34:27+02:00",
+            "lastProcessed": "2025-12-16T07:35:02+02:00",
+            "severityScore": 52,
+            "incidentLink": "https://localhost/#!/incidents/view/6940ee975f5c8b75247c3f38",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [
+              "Other"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "incident",
+            "details": {
+              "detectionName": "Cloud Virus",
+              "counters": {
+                "endpoints": 1,
+                "files": 0,
+                "processes": 10,
+                "domains": 15,
+                "registries": 1,
+                "events": 36,
+                "storages": 0
+              },
+              "computerId": "67c87017f3e11f09dc9143e8",
+              "computerName": "HOST_NAME",
+              "computerFqdn": "HOST_NAME",
+              "computerIp": "IP_158",
+              "computerMacAddresses": [
+                "005056b1ef97"
+              ],
+              "partOf": [
+                {
+                  "incidentId": "6940eeadaa87b3d57af088aa",
+                  "incidentLink": "https://localhost/#!/incidents/view/6940eeadaa87b3d57af088aa"
+                }
+              ]
+            }
+          },
+          {
+            "incidentId": "6940eeadaa87b3d57af088aa",
+            "incidentNumber": 472,
+            "status": "open",
+            "mainAction": "blocked",
+            "created": "2025-12-16T07:30:17+02:00",
+            "lastUpdated": "2025-12-16T07:30:17+02:00",
+            "lastProcessed": "2025-12-16T07:35:02+02:00",
+            "severityScore": 51,
+            "incidentLink": "https://localhost/#!/incidents/view/6940eeadaa87b3d57af088aa",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 1,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 0,
+                "emails": 0,
+                "IPs": 0,
+                "domains": 1,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 1,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 0,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "693ba8ad997e9c48ed123303",
+            "incidentNumber": 464,
+            "status": "in_progress",
+            "mainAction": "blocked",
+            "created": "2025-12-12T07:30:56+02:00",
+            "lastUpdated": "2025-12-15T07:28:17+02:00",
+            "lastProcessed": "2025-12-15T07:28:51+02:00",
+            "severityScore": 52,
+            "incidentLink": "https://localhost/#!/incidents/view/693ba8ad997e9c48ed123303",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [
+              "Other"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "incident",
+            "details": {
+              "detectionName": "Cloud Virus",
+              "counters": {
+                "endpoints": 1,
+                "files": 33,
+                "processes": 28,
+                "domains": 53,
+                "registries": 3,
+                "events": 155,
+                "storages": 0
+              },
+              "computerId": "67c87017f3e11f09dc9143e8",
+              "computerName": "HOST_NAME",
+              "computerFqdn": "HOST_NAME",
+              "computerIp": "IP_158",
+              "computerMacAddresses": [
+                "005056b1ef97"
+              ],
+              "partOf": [
+                {
+                  "incidentId": "693ba8baaa87b3d57af0749a",
+                  "incidentLink": "https://localhost/#!/incidents/view/693ba8baaa87b3d57af0749a"
+                },
+                {
+                  "incidentId": "693cfa4416491034acd2e891",
+                  "incidentLink": "https://localhost/#!/incidents/view/693cfa4416491034acd2e891"
+                },
+                {
+                  "incidentId": "693e4b6616491034acd2e90b",
+                  "incidentLink": "https://localhost/#!/incidents/view/693e4b6616491034acd2e90b"
+                },
+                {
+                  "incidentId": "693f9ca716491034acd2ea1e",
+                  "incidentLink": "https://localhost/#!/incidents/view/693f9ca716491034acd2ea1e"
+                }
+              ]
+            }
+          },
+          {
+            "incidentId": "693f9ca716491034acd2ea1e",
+            "incidentNumber": 470,
+            "status": "open",
+            "mainAction": "blocked",
+            "created": "2025-12-15T07:28:05+02:00",
+            "lastUpdated": "2025-12-15T07:28:05+02:00",
+            "lastProcessed": "2025-12-15T07:29:31+02:00",
+            "severityScore": 51,
+            "incidentLink": "https://localhost/#!/incidents/view/693f9ca716491034acd2ea1e",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 1,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 0,
+                "emails": 0,
+                "IPs": 0,
+                "domains": 1,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 1,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 0,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "693e4b6616491034acd2e90b",
+            "incidentNumber": 469,
+            "status": "open",
+            "mainAction": "blocked",
+            "created": "2025-12-14T07:29:07+02:00",
+            "lastUpdated": "2025-12-14T07:29:07+02:00",
+            "lastProcessed": "2025-12-15T07:28:51+02:00",
+            "severityScore": 51,
+            "incidentLink": "https://localhost/#!/incidents/view/693e4b6616491034acd2e90b",
+            "assignee": null,
+            "priority": "high",
+            "attackTypes": [],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 1,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 0,
+                "emails": 0,
+                "IPs": 0,
+                "domains": 1,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 1,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 0,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          },
+          {
+            "incidentId": "693d81a816491034acd2e8c5",
+            "incidentNumber": 468,
+            "status": "open",
+            "mainAction": "reported",
+            "created": "2025-12-13T17:05:06+02:00",
+            "lastUpdated": "2025-12-13T17:05:06+02:00",
+            "lastProcessed": "2025-12-13T17:09:28+02:00",
+            "severityScore": 67,
+            "incidentLink": "https://localhost/#!/incidents/view/693d81a816491034acd2e8c5",
+            "assignee": null,
+            "priority": "unknown",
+            "attackTypes": [
+              "Defense Evasion",
+              "Collection"
+            ],
+            "company": {
+              "id": "COMPANY_ID",
+              "name": "COMPANY_NAME"
+            },
+            "incidentType": "extendedIncident",
+            "details": {
+              "counters": {
+                "endpoints": 0,
+                "servers": 0,
+                "mobileDevices": 0,
+                "printers": 0,
+                "routers": 0,
+                "IoTs": 0,
+                "identities": 3,
+                "emails": 0,
+                "IPs": 1,
+                "domains": 0,
+                "DNSs": 0,
+                "DGAs": 0,
+                "cloudStorages": 0,
+                "torNodes": 0,
+                "externalDrives": 0,
+                "externalSources": 1,
+                "exfiltratedFiles": 0,
+                "internalIPs": 0,
+                "internalEmails": 0,
+                "users": 3,
+                "virtualDesktops": 0,
+                "containers": 0,
+                "databases": 0,
+                "storages": 0,
+                "office365Instances": 0,
+                "ADInstances": 0,
+                "azureADInstances": 0,
+                "AWSInstances": 0,
+                "GCPInstances": 0,
+                "googleWorkspaceInstances": 0,
+                "atlassianInstances": 0,
+                "atlassianBitbucketProducts": 0,
+                "atlassianJiraProducts": 0,
+                "atlassianConfluenceProducts": 0,
+                "bitbucketProjects": 0,
+                "confluenceSpaces": 0
+              },
+              "contains": [],
+              "partOf": []
+            }
+          }
+        ]
+      }
+    }
+  }
+]
