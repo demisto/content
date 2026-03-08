@@ -4,6 +4,60 @@ from CommonServerUserPython import *
 from AggregatedCommandApiModule import *
 
 
+def normalize_urls(url_list: list[str]) -> list[str]:
+    """
+    Normalize URL inputs by ensuring they have a scheme where appropriate.
+
+    The server's extractIndicators command recognizes URLs by matching patterns
+    that start with a protocol (http://, https://, ftp://, hxxps://) or common
+    URL prefixes (www., ftp.) even without a protocol.
+
+    This function prepends 'https://' to inputs that look like URLs but lack a
+    scheme — specifically values starting with 'www.' or 'ftp.' (matching the
+    server's URL regex behavior), as well as values containing a path separator
+    '/' (e.g., 'example.com/path') which clearly indicate URL intent.
+
+    Bare domains without these signals (e.g., 'example.com', 'openclaw.ai') are
+    left as-is so extractIndicators correctly classifies them as domains, and the
+    action reports them as invalid URL inputs.
+
+    Args:
+        url_list (list[str]): Raw URL inputs from the user.
+
+    Returns:
+        list[str]: Normalized URL list.
+    """
+    # Prefixes that the server's URL regex recognizes without a protocol
+    URL_PREFIXES = ('www.', 'www[.]', 'ftp.', 'ftp[.]')
+    SCHEME_PREFIXES = ('http://', 'https://', 'ftp://', 'hxxp://', 'hxxps://')
+
+    normalized = []
+    for url in url_list:
+        url = url.strip()
+        if not url:
+            continue
+
+        url_lower = url.lower()
+
+        # If it already has a scheme, keep as-is
+        if url_lower.startswith(SCHEME_PREFIXES):
+            normalized.append(url)
+        # If it starts with a known URL prefix (www., ftp.), add https://
+        elif url_lower.startswith(URL_PREFIXES):
+            demisto.debug(f"Normalizing URL '{url}' by prepending 'https://'")
+            normalized.append(f'https://{url}')
+        # If it contains a path separator, it's likely a URL without a scheme
+        # e.g., 'example.com/path/to/page'
+        elif '/' in url:
+            demisto.debug(f"Normalizing URL '{url}' (contains path) by prepending 'https://'")
+            normalized.append(f'https://{url}')
+        else:
+            # Keep as-is — let extractIndicators decide the type
+            # Bare domains like 'example.com' will be classified as domains, not URLs
+            normalized.append(url)
+    return normalized
+
+
 def url_enrichment_script(
     url_list: list[str],
     external_enrichment: bool = False,
@@ -23,6 +77,10 @@ def url_enrichment_script(
     Returns:
         CommandResult: The result of the command.
     """
+    demisto.debug("Normalizing URL inputs")
+    url_list = normalize_urls(url_list)
+    demisto.debug(f"Normalized URL list: {url_list}")
+
     demisto.debug("Extracting indicators")
     url_instances, extract_verbose = create_and_extract_indicators(url_list, "url")
     valid_inputs = [url_instance.extracted_value for url_instance in url_instances if url_instance.extracted_value]
