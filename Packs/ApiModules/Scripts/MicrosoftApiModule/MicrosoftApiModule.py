@@ -703,8 +703,14 @@ def is_self_deployed_flow(auth_flow: str) -> bool:
         True if the auth flow is self-deployed, False otherwise.
     """
     self_deployed_flows = {
-        "Device Code", "Authorization Code", "Client Credentials", "Azure Managed Identities",
-        DEVICE_CODE, AUTHORIZATION_CODE, CLIENT_CREDENTIALS, MANAGED_IDENTITIES,
+        "Device Code",
+        "Authorization Code",
+        "Client Credentials",
+        "Azure Managed Identities",
+        DEVICE_CODE,
+        AUTHORIZATION_CODE,
+        CLIENT_CREDENTIALS,
+        MANAGED_IDENTITIES,
     }
     return auth_flow in self_deployed_flows
 
@@ -1340,6 +1346,7 @@ class MicrosoftClient(BaseClient):
             err = f"{e!s}"
 
         return_error(f"Error in Microsoft authorization with Azure Managed Identities: {err}")
+        return None  # return_error calls sys.exit, this is unreachable but satisfies the linter
 
     def _get_token_device_code(
         self, refresh_token: str = "", scope: str | None = None, integration_context: dict | None = None
@@ -1646,7 +1653,10 @@ def get_azure_managed_identities_client_id(params: dict) -> str | None:
 
     """
     auth_type = params.get("auth_type") or params.get("authentication_type") or params.get("auth_flow")
-    if params and (argToBoolean(params.get("use_managed_identities")) or auth_type == "Azure Managed Identities"):
+    use_managed_identities = params.get("use_managed_identities")
+    if params and (
+        (use_managed_identities is not None and argToBoolean(use_managed_identities)) or auth_type == "Azure Managed Identities"
+    ):
         client_id = params.get("managed_identities_client_id", {}).get("password")
         return client_id or MANAGED_IDENTITIES_SYSTEM_ASSIGNED
     return None
