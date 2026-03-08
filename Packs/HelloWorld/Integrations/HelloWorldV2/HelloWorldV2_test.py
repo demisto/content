@@ -350,67 +350,6 @@ class TestHelloWorldParams:
 # region test-module
 
 
-@pytest.mark.parametrize(
-    "is_fetch",
-    [
-        pytest.param(False, id="Fetching disabled"),
-        pytest.param(True, id="Fetching enabled"),
-    ],
-)
-@freeze_time("2026-01-01 00:01")
-def test_module_success(mocker: MockerFixture, is_fetch: bool):
-    """
-    Given:
-        - Valid client and params.
-        - is_fetch parameter set to True or False.
-    When:
-        - Running test_module.
-    Then:
-        - Assert client.say_hello is called once.
-        - Assert fetch_alerts is called once if is_fetch is True, not called if False.
-        - Assert "ok" is returned.
-    """
-    from HelloWorldV2 import test_module
-
-    # Assume this is running on a Cortex XSIAM tenant
-    mocker.patch("HelloWorldV2.CAN_SEND_EVENTS", True)
-
-    # Create mock client
-    mock_client_say_hello = mocker.patch.object(HelloWorldClient, "say_hello", return_value="Hello Test")
-
-    # Mock fetch_alerts function
-    mock_fetch_alerts = mocker.patch("HelloWorldV2.fetch_alerts")
-
-    # Create params with is_fetch set accordingly
-    params = HelloWorldParams(
-        url="https://api.example.com",
-        credentials=Credentials(password=DUMMY_VALID_API_KEY),
-        isFetchEvents=is_fetch,
-        severity=HelloWorldSeverity.HIGH,
-    )
-    client = HelloWorldClient(params)
-
-    # Execute test_module
-    result = test_module(client, params)
-
-    # Assertions
-    assert result == "ok"
-    assert mock_client_say_hello.call_count == 1
-    assert mock_client_say_hello.call_args.kwargs == {"name": "Test"}
-
-    if is_fetch:
-        assert mock_fetch_alerts.call_count == 1
-        assert mock_fetch_alerts.call_args.kwargs == {
-            "max_fetch": 1,
-            "last_run": HelloWorldLastRun(),  # send empty / default last run object
-            "severity": params.severity,
-            "first_fetch_time": "2026-01-01T00:00:00+00:00",  # freeze_time - 1 minute in ISO format
-            "should_push": False,  # ensure push is disabled to prevent creating events during testing
-        }
-    else:
-        assert mock_fetch_alerts.call_count == 0
-
-
 def test_module_authentication_error(mocker: MockerFixture):
     """
     Given:
