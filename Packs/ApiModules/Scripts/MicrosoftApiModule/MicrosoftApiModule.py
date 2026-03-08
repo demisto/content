@@ -1321,7 +1321,7 @@ class MicrosoftClient(BaseClient):
         except Exception as e:
             err = f"{e!s}"
 
-        raise DemistoException(f"Error in Microsoft authorization with Azure Managed Identities: {err}")
+        return_error(f"Error in Microsoft authorization with Azure Managed Identities: {err}")
 
     def _get_token_device_code(
         self, refresh_token: str = "", scope: str | None = None, integration_context: dict | None = None
