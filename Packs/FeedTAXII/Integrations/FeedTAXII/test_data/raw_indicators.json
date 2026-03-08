@@ -343,10 +343,10 @@
     "share_level": "white"
   },
   {
-    "indicator": "http://111.90.149.220/banks/Desjardins/a40b89886fe5eb23fc134a53e1bd0af2",
+    "indicator": "http://111.90.149.220/banks/TestFinance/a40b89886fe5eb23fc134a53e1bd0af2",
     "type": "URL",
-    "stix_title": "URL: http://111.90.149.220/banks/Desjardins/a40b89886fe5eb23fc134a53e1bd0af...",
-    "stix_description": "URL: http://111.90.149.220/banks/Desjardins/a40b89886fe5eb23fc134a53e1bd0af2| isOnline:yes| dateVerified:2020-01-06T10:30:01+00:00",
+    "stix_title": "URL: http://111.90.149.220/banks/TestFinance/a40b89886fe5eb23fc134a53e1bd0af...",
+    "stix_description": "URL: http://111.90.149.220/banks/TestFinance/a40b89886fe5eb23fc134a53e1bd0af2| isOnline:yes| dateVerified:2020-01-06T10:30:01+00:00",
     "share_level": "white"
   }
 ]

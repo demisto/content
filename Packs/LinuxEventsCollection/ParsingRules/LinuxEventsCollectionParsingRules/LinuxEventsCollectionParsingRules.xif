@@ -27,7 +27,7 @@ filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s[A-Z]{3
 | alter 
     tmp_timestamp_without_offset = arrayindex(regextract(_raw_log ,"\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?"),0) 
 | alter 
-    _time =parse_timestamp("%Y-%m-%d %H:%M:%S%Ez",concat(tmp_timestamp_without_offset,"-00:00")) // Here you can adjust your timezone offset preferences for example change "-00:00" to "-05:00".
+    _time = parse_timestamp("%Y-%m-%d %H:%M:%E*S%Ez",concat(tmp_timestamp_without_offset,"-00:00")) // Here you can adjust your timezone offset preferences for example change "-00:00" to "-05:00".
 | fields -tmp*;
 
 /* Filter applies to RFC 3164 style syslog records (logs timestamp does not contain an explicit timezone nor year), which are ingested via the Broker VM syslog applet 

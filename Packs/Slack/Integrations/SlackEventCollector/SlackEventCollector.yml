@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-provider: Salesforce
+provider: Slack
 sectionorder:
 - Connect
 - Collect

@@ -1,5 +1,6 @@
 import json
 import os
+import asyncio
 from unittest.mock import ANY
 from urllib.parse import unquote
 
@@ -7413,13 +7414,16 @@ def test_http_request_get_token_request_429(mocker, requests_mock):
 
 
 class ResMocker:
-    def __init__(self, http_response, status_code, reason):
+    def __init__(self, http_response, status_code, reason, text=None):
         self.http_response = http_response
         self.status_code = status_code
         self.reason = reason
         self.ok = False
+        self.text = text
 
     def json(self):
+        if self.http_response is None:
+            raise ValueError("No JSON object could be decoded")
         return self.http_response
 
 
@@ -7451,6 +7455,30 @@ def test_error_handler():
         error_handler(arg_res)
     except DemistoException as e:
         assert e.message == f"Error in API call to CrowdStrike Falcon: code: {status_code} - reason: {reason}"
+
+
+def test_error_handler_non_json_response():
+    """
+    Given:
+        - A response from the API that returns a non-JSON body (e.g., text/plain from NGSIEM errors).
+    When:
+        - Running error_handler
+    Then:
+        - Validate that the error message contains the status code, reason, and the plain-text body content.
+        - Validate that the body is truncated to 4000 characters.
+    """
+    from CrowdStrikeFalcon import error_handler
+
+    status_code = 500
+    reason = "Internal Server Error"
+    plain_text_body = "SearchQueryParsingError: Error parsing query at line 1:0"
+
+    arg_res = ResMocker(None, status_code, reason, text=plain_text_body)
+    with pytest.raises(DemistoException) as e:
+        error_handler(arg_res)
+    assert e.value.message == (
+        f"Error in API call to CrowdStrike Falcon: code: {status_code} - reason: {reason}\n{plain_text_body}"
+    )
 
 
 @pytest.mark.parametrize(
@@ -8091,6 +8119,7 @@ class TestFetchAssetsFlow:
         mock_send_data_to_xsiam = mocker.patch("CrowdStrikeFalcon.send_data_to_xsiam")
         mock_update_module_health = mocker.patch("CrowdStrikeFalcon.demisto.updateModuleHealth")
         mocker.patch.object(time, "time", return_value=123.123)
+        mocker.patch.object(demisto, "params", return_value={"fetch_assets_type": "CNAPP Alerts"})
 
         # --- First Call ---
         # Initial last_run for the first call
@@ -8296,6 +8325,7 @@ def test_get_cases_data(mocker):
     Then:
         - Verify that the http_request is called with the correct arguments.
         - Verify that the function returns the correct total cases and ids.
+        - Verify that the filter is passed in the params dict for proper URL encoding.
     """
     from CrowdStrikeFalcon import get_cases_data
 
@@ -8308,7 +8338,62 @@ def test_get_cases_data(mocker):
     assert total == 10
     assert ids == ["case1", "case2"]
     http_request_mock.assert_called_with(
-        "GET", "/cases/queries/cases/v1?filter=some_filter", {"sort": "created_timestamp.asc", "offset": 0, "limit": 10}
+        "GET", "/cases/queries/cases/v1", {"sort": "created_timestamp.asc", "offset": 0, "limit": 10, "filter": "some_filter"}
+    )
+
+
+def test_get_cases_data_with_special_characters(mocker):
+    """
+    Given:
+        - Filter with special characters (e.g., '+' for AND operator in FQL).
+    When:
+        - Running get_cases_data with a filter containing special characters.
+    Then:
+        - Verify that the filter is passed in the params dict (not embedded in URL).
+        - Verify that http_request receives the filter as a parameter for proper encoding.
+    """
+    from CrowdStrikeFalcon import get_cases_data
+
+    http_request_mock = mocker.patch(
+        "CrowdStrikeFalcon.http_request", return_value={"meta": {"pagination": {"total": 5}}, "resources": ["case3", "case4"]}
+    )
+
+    # Test with a filter that includes the '+' operator (FQL AND)
+    filter_with_plus = "created_timestamp:>'2026-02-21T16:26:49.079836Z'+severity:>40"
+    total, ids = get_cases_data(filter_with_plus, 10, 0)
+
+    assert total == 5
+    assert ids == ["case3", "case4"]
+    # Verify the filter is in params dict, not in the URL path
+    http_request_mock.assert_called_with(
+        "GET",
+        "/cases/queries/cases/v1",
+        {"sort": "created_timestamp.asc", "offset": 0, "limit": 10, "filter": filter_with_plus},
+    )
+
+
+def test_get_cases_data_without_filter(mocker):
+    """
+    Given:
+        - No filter (empty string).
+    When:
+        - Running get_cases_data without a filter.
+    Then:
+        - Verify that the http_request is called without a filter parameter.
+    """
+    from CrowdStrikeFalcon import get_cases_data
+
+    http_request_mock = mocker.patch(
+        "CrowdStrikeFalcon.http_request", return_value={"meta": {"pagination": {"total": 3}}, "resources": ["case5"]}
+    )
+
+    total, ids = get_cases_data("", 10, 0)
+
+    assert total == 3
+    assert ids == ["case5"]
+    # Verify no filter parameter is passed when filter is empty
+    http_request_mock.assert_called_with(
+        "GET", "/cases/queries/cases/v1", {"sort": "created_timestamp.asc", "offset": 0, "limit": 10}
     )
 
 
@@ -8599,3 +8684,926 @@ def test_resolve_case_command(requests_mock):
     # Test case 4: Missing ID
     with pytest.raises(ValueError, match="The 'id' argument is required"):
         resolve_case_command({"status": "new"})
+
+
+# ============== NGSIEM Search Events Tests ==============
+@pytest.mark.parametrize(
+    "events, expected_rawstring",
+    [
+        # \& in string is replaced with &
+        ([{"@rawstring": "foo\\&bar"}], "foo&bar"),
+        # Multiple \& occurrences are all replaced
+        ([{"@rawstring": "a\\&b\\&c"}], "a&b&c"),
+        # String without \& is left unchanged
+        ([{"@rawstring": "plain text no escape"}], "plain text no escape"),
+        # Empty string stays empty
+        ([{"@rawstring": ""}], ""),
+        # Non-string @rawstring (dict) is left unchanged
+        ([{"@rawstring": {"already": "parsed"}}], {"already": "parsed"}),
+        # Event without @rawstring is left unchanged
+        ([{"some_field": "value"}], None),
+    ],
+)
+def test_clean_ngsiem_rawstring_field(events, expected_rawstring):
+    """
+    Given:
+        - A list of events with various @rawstring values.
+    When:
+        - Running clean_ngsiem_rawstring_field.
+    Then:
+        - Literal '\\&' sequences in string @rawstring values are replaced with '&'.
+        - Non-string or missing @rawstring values are left unchanged.
+    """
+    from CrowdStrikeFalcon import clean_ngsiem_rawstring_field
+
+    result = clean_ngsiem_rawstring_field(events)
+    if expected_rawstring is None:
+        assert "@rawstring" not in result[0]
+    else:
+        assert result[0]["@rawstring"] == expected_rawstring
+
+
+@pytest.mark.parametrize(
+    "query, limit, expected",
+    [
+        ("event_simpleName=ProcessRollup2", 100, "event_simpleName=ProcessRollup2 | tail(100)"),
+        ("event_simpleName=ProcessRollup2 | tail(50)", 100, "event_simpleName=ProcessRollup2 | tail(50)"),
+    ],
+)
+def test_build_ngsiem_query_with_limit(query, limit, expected):
+    """
+    Given:
+        - A query string and a limit.
+    When:
+        - Running build_ngsiem_query_with_limit.
+    Then:
+        - tail(limit) is appended only if not already present (case-insensitive).
+    """
+    from CrowdStrikeFalcon import build_ngsiem_query_with_limit
+
+    assert build_ngsiem_query_with_limit(query, limit) == expected
+
+
+@pytest.mark.parametrize(
+    "val, expected",
+    [
+        (None, None),
+        ("", None),
+        (1700000000, 1700000000000),
+        (1700000000000, 1700000000000),
+        ("1700000000", 1700000000000),
+        ("2023-11-14T00:00:00Z", 1699920000000),
+    ],
+)
+def test_arg_to_timestamp(val, expected):
+    """
+    Given:
+        - A raw time argument in one of the supported formats (None,
+          epoch seconds/milliseconds, or ISO-8601 string).
+    When:
+        - Converting it via arg_to_timestamp.
+    Then:
+        - Returns None for None.
+        - Returns the expected epoch-milliseconds int for all other valid inputs.
+    """
+    from CrowdStrikeFalcon import arg_to_timestamp
+
+    assert arg_to_timestamp(val) == expected
+
+
+@freeze_time("2023-11-15T00:00:00Z")
+def test_arg_to_timestamp_relative():
+    """
+    Given:
+        - A relative time expression ("24 hours").
+    When:
+        - Converting it via arg_to_timestamp with time frozen at 2023-11-15T00:00:00Z.
+    Then:
+        - Returns the epoch-milliseconds timestamp for 24 hours before the frozen time.
+    """
+    from CrowdStrikeFalcon import arg_to_timestamp
+
+    assert arg_to_timestamp("24 hours") == 1699920000000
+
+
+@pytest.mark.parametrize(
+    "events, expected_count, expected_hr_contains",
+    [
+        (
+            [{"timestamp": "2023-01-01T00:00:00Z", "id": "evt1"}, {"timestamp": "2023-01-01T00:01:00Z", "id": "evt2"}],
+            2,
+            "NGSIEM Events (Total: 2)",
+        ),
+        ([], 0, "No events found"),
+    ],
+)
+def test_process_ngsiem_search_completion(events, expected_count, expected_hr_contains):
+    """
+    Given:
+        - A response with events or no events.
+    When:
+        - Running process_ngsiem_search_completion.
+    Then:
+        - Returns a PollResult with continue_to_poll=False and correct outputs/HR.
+    """
+    from CrowdStrikeFalcon import process_ngsiem_search_completion
+
+    response = {"events": events, "done": True}
+    args = {"wait_for_result": True}
+    result = process_ngsiem_search_completion(response, args)
+
+    assert result.continue_to_poll is False
+    assert expected_hr_contains in result.response.readable_output
+    if expected_count > 0:
+        assert len(result.response.outputs) == expected_count
+        assert result.response.outputs_prefix == "CrowdStrike.NGSiemEvent"
+
+
+def test_initiate_ngsiem_search_request(requests_mock):
+    """
+    Given:
+        - A repository and search body.
+    When:
+        - Running initiate_ngsiem_search_request.
+    Then:
+        - The correct API endpoint is called and the response is returned.
+    """
+    from CrowdStrikeFalcon import initiate_ngsiem_search_request
+
+    requests_mock.post(
+        f"{SERVER_URL}/humio/api/v1/repositories/search-all/queryjobs",
+        json={"id": "job123"},
+        status_code=200,
+    )
+    result = initiate_ngsiem_search_request("search-all", {"queryString": "test"})
+    assert result["id"] == "job123"
+    assert requests_mock.last_request.json() == {"queryString": "test"}
+
+
+def test_get_ngsiem_search_results_request(requests_mock):
+    """
+    Given:
+        - A repository and job ID.
+    When:
+        - Running get_ngsiem_search_results_request.
+    Then:
+        - The correct API endpoint is called and the response is returned.
+    """
+    from CrowdStrikeFalcon import get_ngsiem_search_results_request
+
+    requests_mock.get(
+        f"{SERVER_URL}/humio/api/v1/repositories/search-all/queryjobs/job123",
+        json={"done": True, "events": [{"id": "evt1"}]},
+        status_code=200,
+    )
+    result = get_ngsiem_search_results_request("search-all", "job123")
+    assert result["done"] is True
+    assert len(result["events"]) == 1
+
+
+@pytest.mark.parametrize(
+    "args, initiate_ret, poll_ret, expect_raise, raise_match, expect_continue, expect_hr, expect_job_id",
+    [
+        # 1) First call: should initiate, set job_id, and continue polling
+        (
+            {"query": "test", "repository": "search-all", "wait_for_result": True},
+            {"id": "job123"},
+            {"done": False, "cancelled": False},
+            False,
+            None,
+            True,
+            None,
+            "job123",
+        ),
+        # 2) First call but initiate returns no id: should raise
+        (
+            {"query": "test", "repository": "search-all", "wait_for_result": True},
+            {},
+            None,
+            True,
+            "Failed to initiate",
+            None,
+            None,
+            None,
+        ),
+        # 3) Poll: in progress
+        (
+            {"query": "test", "job_id": "job123", "repository": "search-all", "wait_for_result": True},
+            None,
+            {"done": False, "cancelled": False},
+            False,
+            None,
+            True,
+            "Searching NGSIEM events:",
+            None,
+        ),
+        # 4) Poll: done with events
+        (
+            {"query": "test", "job_id": "job123", "repository": "search-all", "wait_for_result": True},
+            None,
+            {"done": True, "events": [{"id": "evt1", "timestamp": "2023-01-01T00:00:00Z"}]},
+            False,
+            None,
+            False,
+            "NGSIEM Events",
+            None,
+        ),
+        # 5) Poll: done no events
+        (
+            {"query": "test", "job_id": "job123", "repository": "search-all", "wait_for_result": True},
+            None,
+            {"done": True, "events": []},
+            False,
+            None,
+            False,
+            "No events found",
+            None,
+        ),
+        # 6) Poll: cancelled -> raise
+        (
+            {"query": "test", "job_id": "job123", "repository": "search-all", "wait_for_result": True},
+            None,
+            {"done": False, "cancelled": True},
+            True,
+            "cancelled",
+            None,
+            None,
+            None,
+        ),
+    ],
+)
+def test_cs_falcon_search_ngsiem_events_command_merged(
+    mocker,
+    args,
+    initiate_ret,
+    poll_ret,
+    expect_raise,
+    raise_match,
+    expect_continue,
+    expect_hr,
+    expect_job_id,
+):
+    """
+    Given:
+        - Args that represent either:
+          * First call (no job_id) -> build body + initiate search
+          * Polling call (job_id exists) -> only fetch results
+        - Mocked initiate/poll responses (including error cases)
+    When:
+        - Running cs_falcon_search_ngsiem_events_command(args)
+    Then:
+        - Raises DemistoException when expected (match raise_match)
+        - Otherwise returns a PollResult with expected continue_to_poll and HR content
+        - Sets args["job_id"] on first-call successful initiation when expected
+    """
+    from CrowdStrikeFalcon import cs_falcon_search_ngsiem_events_command
+
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
+
+    # If this is the "first call" flow, cs_falcon_search_ngsiem_events_command will build body + initiate.
+    if "job_id" not in args:
+        mocker.patch("CrowdStrikeFalcon.build_ngsiem_search_body", return_value={"queryString": "test | tail(50)"})
+        mocker.patch("CrowdStrikeFalcon.initiate_ngsiem_search_request", return_value=initiate_ret)
+
+        # After initiate, the command typically does a first "get results" call too (for polling).
+        if poll_ret is not None:
+            mocker.patch("CrowdStrikeFalcon.get_ngsiem_search_results_request", return_value=poll_ret)
+    else:
+        # Polling flow (job_id exists): only get results is used.
+        mocker.patch("CrowdStrikeFalcon.get_ngsiem_search_results_request", return_value=poll_ret)
+
+    if expect_raise:
+        with pytest.raises(DemistoException, match=raise_match):
+            cs_falcon_search_ngsiem_events_command(args)
+        return
+
+    result = cs_falcon_search_ngsiem_events_command(args)
+
+    if expect_continue:
+        # When polling should continue, the decorator wraps the result with a ScheduledCommand
+        assert result.scheduled_command is not None
+    else:
+        # When polling is done, the decorator returns the final CommandResults directly
+        assert result.scheduled_command is None
+    if expect_hr is not None:
+        assert expect_hr in result.readable_output
+    if expect_job_id is not None:
+        assert args["job_id"] == expect_job_id
+
+
+@pytest.mark.parametrize(
+    "events, hr_keys, expected_rows",
+    [
+        # Bare key preferred over @key and #key
+        ([{"id": "bare", "@id": "at", "#id": "hash"}], ["id"], [{"id": "bare"}]),
+        # Falls back to @key when bare key missing
+        ([{"@id": "at_val"}], ["id"], [{"id": "at_val"}]),
+        # Missing key entirely → None
+        ([{"other": "x"}], ["id"], [{"id": None}]),
+        # Timestamp int epoch-ms → date string
+        ([{"timestamp": 1700000000000}], ["timestamp"], "date_str"),
+        # Timestamp numeric string → date string
+        ([{"timestamp": "1700000000000"}], ["timestamp"], "date_str"),
+        # Timestamp float epoch-ms → date string
+        ([{"#timestamp": 1700000000000.0}], ["timestamp"], "date_str"),
+        # Timestamp non-numeric string → passthrough
+        ([{"@timestamp": "2023-01-01T00:00:00Z"}], ["timestamp"], [{"timestamp": "2023-01-01T00:00:00Z"}]),
+    ],
+)
+def test_build_ngsiem_hr_rows(events, hr_keys, expected_rows):
+    """
+    Given:
+        - Events with various key patterns (bare, @-prefixed, #-prefixed, missing)
+          and timestamp values (int, float, numeric string, non-numeric string).
+    When:
+        - Running build_ngsiem_hr_rows.
+    Then:
+        - Key resolution: bare key > @key > #key > None.
+        - Timestamp conversion: int/float/numeric-string epoch-ms → ISO date string;
+          non-numeric string passes through unchanged.
+    """
+    from CrowdStrikeFalcon import build_ngsiem_hr_rows
+
+    rows = build_ngsiem_hr_rows(events, hr_keys)
+    if expected_rows == "date_str":
+        # For epoch-ms inputs, just verify it was converted to a date string containing the year
+        assert isinstance(rows[0]["timestamp"], str)
+        assert "2023" in rows[0]["timestamp"]
+    else:
+        assert rows == expected_rows
+
+
+def test_build_ngsiem_hr_rows_multiple_events_and_keys():
+    """
+    Given:
+        - Multiple events with mixed key resolution and timestamp formats.
+    When:
+        - Running build_ngsiem_hr_rows with several hr_keys.
+    Then:
+        - Each event row resolves keys correctly and timestamps are handled per type.
+    """
+    from CrowdStrikeFalcon import build_ngsiem_hr_rows
+
+    events = [
+        {"id": "evt1", "@timestamp": 1700000000000, "#event_simpleName": "DNS"},
+        {"#id": "evt2", "timestamp": "not-a-number", "event_simpleName": "HTTP"},
+    ]
+    rows = build_ngsiem_hr_rows(events, ["id", "timestamp", "event_simpleName"])
+    assert len(rows) == 2
+    assert rows[0]["id"] == "evt1"
+    assert isinstance(rows[0]["timestamp"], str)
+    assert "2023" in rows[0]["timestamp"]
+    assert rows[0]["event_simpleName"] == "DNS"
+    assert rows[1]["id"] == "evt2"
+    assert rows[1]["timestamp"] == "not-a-number"
+    assert rows[1]["event_simpleName"] == "HTTP"
+
+
+""" Fetch Assets Spotlight """
+
+
+class TestSpotlightFetchAssets:
+    """
+    Tests for the Spotlight fetch-assets flow, including vulnerability fetching,
+    device handler enrichment, batch sending, and state persistence.
+    """
+
+    @pytest.mark.asyncio
+    async def test_fetch_spotlight_assets_success_single_page(self, mocker):
+        """
+        Tests that a single-page fetch of Spotlight vulnerabilities works end-to-end.
+
+        Given:
+            - A Spotlight API that returns one page of vulnerabilities with no pagination token.
+        When:
+            - fetch_spotlight_assets is called.
+        Then:
+            - The fetch batch function is called exactly once.
+            - The extracted AIDs are passed to the device handler.
+            - An XSIAM send task is created with the correct product and data.
+            - The handler's flush_remaining is called to process any remaining AIDs.
+        """
+        import CrowdStrikeFalcon
+        from CrowdStrikeFalcon import fetch_spotlight_assets, SPOTLIGHT_VULN_PRODUCT
+
+        # 1. Mock
+        mock_client = mocker.AsyncMock()
+        mocker.patch("CrowdStrikeFalcon.create_spotlight_client", return_value=mock_client)
+
+        mock_handler_cls = mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
+        mock_handler = mock_handler_cls.return_value
+        mock_handler.receive_new_aids = mocker.AsyncMock()
+        mock_handler.flush_remaining = mocker.AsyncMock()
+        mock_handler.processed_aids = set()
+
+        mock_vulns = [{"id": "v1", "aid": "aid1"}, {"id": "v2", "aid": "aid2"}]
+        mock_response_data = {"meta": {"pagination": {"after": None}}}
+
+        mock_fetch_batch = mocker.patch("CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_batch", new_callable=mocker.AsyncMock)
+        mock_fetch_batch.return_value = (mock_vulns, mock_response_data)
+
+        def create_task_side_effect(*args, **kwargs):
+            f = asyncio.Future()
+            f.set_result(1)
+            return f
+
+        mock_create_task = mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context", side_effect=create_task_side_effect
+        )
+
+        # 2. Execute
+        await fetch_spotlight_assets()
+
+        # 3. Verify
+        CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_batch.assert_awaited_once()
+        mock_handler.receive_new_aids.assert_awaited_once_with({"aid1", "aid2"})
+
+        mock_create_task.assert_called()
+        call_kwargs = mock_create_task.call_args.kwargs
+        assert call_kwargs["product"] == SPOTLIGHT_VULN_PRODUCT
+        assert call_kwargs["data"] == mock_vulns
+        assert call_kwargs["items_count"] == 2
+
+        mock_handler.flush_remaining.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    async def test_fetch_spotlight_assets_empty_response(self, mocker):
+        """
+        Tests behavior when the API returns no vulnerabilities.
+
+        Given:
+            - A Spotlight API that returns an empty list of vulnerabilities.
+        When:
+            - fetch_spotlight_assets is called.
+        Then:
+            - The handler receives an empty set of AIDs.
+            - An XSIAM task is created with 0 items (to ensure state is updated).
+            - The handler's flush_remaining is still called.
+            - The state is updated with a count of 0.
+        """
+        import CrowdStrikeFalcon
+        from CrowdStrikeFalcon import fetch_spotlight_assets
+
+        # 1. Setup Mocks
+        mock_client = mocker.AsyncMock()
+        mocker.patch("CrowdStrikeFalcon.create_spotlight_client", return_value=mock_client)
+
+        mock_handler_cls = mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
+        mock_handler = mock_handler_cls.return_value
+        mock_handler.receive_new_aids = mocker.AsyncMock()
+        mock_handler.flush_remaining = mocker.AsyncMock()
+
+        # Mock fetch_spotlight_vulnerabilities_batch to return empty list
+        mock_vulns = []
+        mock_response_data = {"meta": {"pagination": {"after": None}}}
+
+        mocker.patch("CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_batch", return_value=(mock_vulns, mock_response_data))
+
+        def create_task_side_effect(*args, **kwargs):
+            f = asyncio.Future()
+            f.set_result(1)
+            return f
+
+        mock_create_task = mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context", side_effect=create_task_side_effect
+        )
+        mock_update_state = mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
+        mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
+
+        # 2. Execute
+        await fetch_spotlight_assets()
+
+        # 3. Verify
+        CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_batch.assert_awaited_once()
+        mock_handler.receive_new_aids.assert_awaited_once_with(set())
+
+        mock_create_task.assert_called_once()
+        call_kwargs = mock_create_task.call_args.kwargs
+        assert call_kwargs["data"] == []
+        assert call_kwargs["items_count"] == 0
+
+        mock_handler.flush_remaining.assert_awaited_once()
+
+        assert mock_update_state.call_count >= 1
+        last_call_kwargs = mock_update_state.call_args_list[-1].kwargs
+        assert last_call_kwargs["cursor"] is None
+        assert last_call_kwargs["total_fetched"] == 0
+
+    @pytest.mark.asyncio
+    async def test_fetch_spotlight_assets_error_handling(self, mocker):
+        """
+        Tests error handling when the fetch loop encounters an exception.
+
+        Given:
+            - The API raises an exception (e.g., 'API Error') during the fetch loop.
+        When:
+            - fetch_spotlight_assets is called.
+        Then:
+            - The exception is caught by the error handler.
+            - The error handler re-raises the exception (as configured in this test).
+            - The correct exception type and message are propagated.
+        """
+        from CrowdStrikeFalcon import fetch_spotlight_assets
+
+        # 1. Setup Mocks
+        mock_client = mocker.AsyncMock()
+        mocker.patch("CrowdStrikeFalcon.create_spotlight_client", return_value=mock_client)
+
+        mock_context_store = mocker.Mock()
+        mocker.patch("CrowdStrikeFalcon.ContentClientContextStore", return_value=mock_context_store)
+
+        mock_state = mocker.Mock()
+        mock_state.cursor = None
+        mocker.patch("CrowdStrikeFalcon.load_spotlight_state", return_value=(mock_state, "test_snapshot_id", 0, set(), set()))
+
+        mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
+
+        # Mock fetch to raise exception
+        mocker.patch("CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_batch", side_effect=Exception("API Error"))
+
+        def raise_error_side_effect(*args, **kwargs):
+            # Extract the error from kwargs (how it's called in code) or args
+            error = kwargs.get("error") or (args[0] if args else Exception("Unknown"))
+            raise error
+
+        mock_handle_error = mocker.patch("CrowdStrikeFalcon.handle_spotlight_fetch_error", side_effect=raise_error_side_effect)
+
+        # 2. Execute & Verify
+        with pytest.raises(Exception, match="API Error"):
+            await fetch_spotlight_assets()
+
+        mock_handle_error.assert_called_once()
+        call_kwargs = mock_handle_error.call_args.kwargs
+        assert isinstance(call_kwargs["error"], Exception)
+        assert str(call_kwargs["error"]) == "API Error"
+
+    @pytest.mark.asyncio
+    async def test_fetch_spotlight_assets_crash_mid_execution_preserves_state(self, mocker):
+        """
+        Tests that state is preserved if the integration crashes midway through fetching.
+
+        Given:
+            - Page 1 is fetched successfully.
+            - Page 2 raises an exception ("Crash on Page 2").
+        When:
+            - fetch_spotlight_assets is called.
+        Then:
+            - The state is updated with the cursor for Page 2 (the next token) before the crash.
+            - The processed AIDs and total fetched count are saved correctly.
+        """
+        from CrowdStrikeFalcon import fetch_spotlight_assets
+
+        # 1. Setup Mocks
+        mock_client = mocker.AsyncMock()
+        mocker.patch("CrowdStrikeFalcon.create_spotlight_client", return_value=mock_client)
+
+        mock_context_store = mocker.Mock()
+        mocker.patch("CrowdStrikeFalcon.ContentClientContextStore", return_value=mock_context_store)
+
+        mock_state = mocker.Mock()
+        mock_state.cursor = None
+        mocker.patch("CrowdStrikeFalcon.load_spotlight_state", return_value=(mock_state, "test_snapshot_id", 0, set(), set()))
+
+        mock_handler_cls = mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
+        mock_handler = mock_handler_cls.return_value
+        mock_handler.receive_new_aids = mocker.AsyncMock()
+        mock_handler.processed_aids = {"aid1"}
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        # Mock fetch: Page 1 success, Page 2 crash
+        page1_vulns = [{"id": "v1", "aid": "aid1"}]
+        page1_resp = {"meta": {"pagination": {"after": "token_page_2"}}}
+
+        mocker.patch(
+            "CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_batch",
+            side_effect=[(page1_vulns, page1_resp), Exception("Crash on Page 2")],
+        )
+
+        def create_task_side_effect(*args, **kwargs):
+            f = asyncio.Future()
+            f.set_result(1)
+            return f
+
+        _ = mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context", side_effect=create_task_side_effect
+        )
+
+        mock_save_state = mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
+
+        def _track_state_update(spotlight_state, cursor, **kwargs):
+            """Allow the mock to propagate state updates to the mock_state object,
+            mirroring the real update_spotlight_state_and_metadata behavior."""
+            spotlight_state.cursor = cursor
+            spotlight_state.metadata = {
+                "snapshot_id": kwargs.get("snapshot_id", ""),
+                "total_fetched_until_now": kwargs.get("total_fetched", 0),
+                "unique_aids": list(kwargs.get("unique_aids", set())),
+                "processed_aids": list(kwargs.get("processed_aids", set())),
+            }
+
+        mock_update_state = mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata", side_effect=_track_state_update)
+
+        # 2. Execute
+        with pytest.raises(Exception, match="Crash on Page 2"):
+            await fetch_spotlight_assets()
+
+        # 3. Verify
+        # Verify update_spotlight_state_and_metadata called with correct state BEFORE crash
+        assert mock_update_state.call_count >= 2
+
+        error_save_call = mock_update_state.call_args_list[-1].kwargs
+        assert error_save_call["cursor"] == "token_page_2"
+        assert error_save_call["total_fetched"] == 1
+        assert error_save_call["processed_aids"] == {"aid1"}
+        assert error_save_call["snapshot_id"] == "test_snapshot_id"
+
+        mock_save_state.assert_called()
+
+    @pytest.mark.asyncio
+    async def test_fetch_spotlight_assets_background_task_failure(self, mocker):
+        """
+        Tests that failure in a background fire-and-forget task bubbles up to the main thread.
+
+        Given:
+            - A background task (XSIAM send) that raises a ValueError.
+        When:
+            - fetch_spotlight_assets awaits completion of all tasks.
+        Then:
+            - The main execution raises the exception from the background task.
+        """
+        from CrowdStrikeFalcon import fetch_spotlight_assets
+
+        # 1. Setup Mocks
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        mock_client = mocker.AsyncMock()
+        mocker.patch("CrowdStrikeFalcon.create_spotlight_client", return_value=mock_client)
+        mocker.patch("CrowdStrikeFalcon.ContentClientContextStore")
+
+        mocker.patch(
+            "CrowdStrikeFalcon.load_spotlight_state", return_value=(mocker.Mock(cursor=None), "test_snapshot_id", 0, set(), set())
+        )
+
+        mock_handler_cls = mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
+        mock_handler_instance = mock_handler_cls.return_value
+        mock_handler_instance.receive_new_aids = mocker.AsyncMock()
+
+        mocker.patch(
+            "CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_batch",
+            return_value=([{"id": "v1", "aid": "aid1"}], {"meta": {"pagination": {"after": None}}}),
+        )
+
+        async def failing_task():
+            # Ensure the task yields control so the loop runs
+            await asyncio.sleep(0.01)
+            raise ValueError("XSIAM Send Failed")
+
+        # Create the task inside the test loop
+        mock_task = asyncio.create_task(failing_task())
+
+        mocker.patch("CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context", return_value=mock_task)
+
+        mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
+        mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
+
+        # 2. Execute & Verify
+        with pytest.raises(ValueError, match="XSIAM Send Failed"):
+            await fetch_spotlight_assets()
+
+    @pytest.mark.asyncio
+    async def test_handler_trigger_enrichment(self, mocker):
+        """
+        Tests that the AssetsDeviceHandler triggers enrichment when the batch limit is exceeded.
+
+        Given:
+            - A handler with a batch limit of 5.
+            - 7 unique AIDs are received.
+        When:
+            - receive_aids is called.
+        Then:
+            - Enrichment is triggered once for the first 5 AIDs.
+            - 2 AIDs remain in the pending buffer.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        # Setup
+        mock_client = mocker.AsyncMock()
+        handler = AssetsDeviceHandler(
+            client=mock_client,
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=5,
+        )
+
+        handler.enrich_and_ingest_batch = mocker.AsyncMock()
+
+        # Execute
+        await handler.receive_new_aids({f"aid{i}" for i in range(7)})
+
+        # Verify
+        assert len(handler.pending_buffer) == 2
+        handler.enrich_and_ingest_batch.assert_called_once()
+        args, _ = handler.enrich_and_ingest_batch.call_args
+        assert len(args[0]) == 5
+
+    @pytest.mark.asyncio
+    async def test_handler_deduplication(self, mocker):
+        """
+        Tests that the AssetsDeviceHandler correctly deduplicates AIDs.
+
+        Given:
+            - A handler with "processed_1" in processed_aids and "buffer_1" in the buffer.
+        When:
+            - receive_aids is called with duplicate and new AIDs.
+        Then:
+            - Only the new AIDs are added to the buffer.
+            - Existing processed and buffered AIDs are ignored.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        # Setup
+        handler = AssetsDeviceHandler(
+            client=mocker.AsyncMock(),
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(),
+            snapshot_id="snap1",
+            processed_aids={"processed_1"},
+            batch_limit=10,
+        )
+
+        # Pre-fill buffer
+        handler.pending_buffer = {"buffer_1"}
+
+        # Execute
+        await handler.receive_new_aids({"processed_1", "buffer_1", "new_1"})
+
+        # Verify
+        assert handler.pending_buffer == {"buffer_1", "new_1"}
+
+    @pytest.mark.asyncio
+    async def test_handler_flush_remaining(self, mocker):
+        """
+        Tests that flush_remaining processes any items left in the buffer.
+
+        Given:
+            - A handler with AIDs in the pending buffer.
+        When:
+            - flush_remaining is called.
+        Then:
+            - Enrichment is triggered for the remaining items.
+            - The buffer is cleared.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        # Setup
+        handler = AssetsDeviceHandler(
+            client=mocker.AsyncMock(),
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=10,
+        )
+        handler.pending_buffer = {"aid1", "aid2"}
+        handler.enrich_and_ingest_batch = mocker.AsyncMock()
+
+        # Execute
+        await handler.flush_remaining(total_items_count=100)
+
+        # Verify
+        handler.enrich_and_ingest_batch.assert_called_once()
+        args, kwargs = handler.enrich_and_ingest_batch.call_args
+        assert set(args[0]) == {"aid1", "aid2"}
+        assert kwargs["final_items_count"] == 100
+        assert len(handler.pending_buffer) == 0
+
+    @pytest.mark.asyncio
+    async def test_handler_enrichment_empty_response(self, mocker):
+        """
+        Tests behavior when the Device enrichment API returns no results.
+
+        Given:
+            - The Device API returns an empty list for the requested AIDs.
+        When:
+            - enrich_and_ingest_batch is called.
+        Then:
+            - No XSIAM task is created (preventing ingestion of empty data).
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        # Setup
+        mock_client = mocker.AsyncMock()
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = {"resources": []}
+        mock_client._request.return_value = mock_response
+
+        handler = AssetsDeviceHandler(
+            client=mock_client,
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=10,
+        )
+
+        mock_create_task = mocker.patch("CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context")
+
+        # Execute
+        await handler.enrich_and_ingest_batch(["d1"])
+
+        # Verify
+        mock_client._request.assert_awaited_once()
+        mock_create_task.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_send_batch_out_of_order_completion(self, mocker):
+        """
+        Tests that state is only saved if the completing batch is newer than the last saved batch.
+
+        Given:
+            - Two concurrent batches where Batch 2 finishes before Batch 1.
+        When:
+            - The callback runs for Batch 2, then for Batch 1.
+        Then:
+            - State is saved for Batch 2.
+            - State is NOT saved for Batch 1 (avoiding regression).
+        """
+        from CrowdStrikeFalcon import send_batch_to_xsiam_and_save_context
+
+        # Setup
+        mock_save_callback = mocker.Mock()
+        mocker.patch("CrowdStrikeFalcon.send_data_to_xsiam_async", return_value=[])
+        mocker.patch("asyncio.gather", new_callable=mocker.AsyncMock)
+
+        # Scenario: Batch 2 finishes first.
+        res2 = await send_batch_to_xsiam_and_save_context(
+            data=[],
+            vendor="v",
+            product="p",
+            snapshot_id="s",
+            items_count=1,
+            batch_number=2,
+            last_saved_batch_number=0,
+            context_store=mocker.Mock(),
+            state=mocker.Mock(),
+            save_state_callback=mock_save_callback,
+            data_type="assets",
+        )
+
+        assert res2 == 2
+        mock_save_callback.assert_called()
+        mock_save_callback.reset_mock()
+
+        # Scenario: Batch 1 finishes later.
+        res1 = await send_batch_to_xsiam_and_save_context(
+            data=[],
+            vendor="v",
+            product="p",
+            snapshot_id="s",
+            items_count=1,
+            batch_number=1,
+            last_saved_batch_number=2,
+            context_store=mocker.Mock(),
+            state=mocker.Mock(),
+            save_state_callback=mock_save_callback,
+            data_type="assets",
+        )
+
+        assert res1 == 2
+        mock_save_callback.assert_not_called()
+
+    def test_state_persistence_structure(self, mocker):
+        """
+        Tests that the state is serialized into the correct JSON structure for the Context Store.
+
+        Given:
+            - A populated ContentClientState object.
+        When:
+            - save_spotlight_state is called.
+        Then:
+            - The integration context is updated with a 'spotlight_assets' key.
+            - Existing context data is preserved.
+        """
+        from CrowdStrikeFalcon import save_spotlight_state, ContentClientState
+
+        # Setup
+        mock_context_store = mocker.Mock()
+        integration_context = {"existing_key": "val"}
+        mock_context_store.read.return_value = integration_context
+        state = ContentClientState()
+        state.cursor = "token123"
+        state.metadata = {"snapshot_id": "snap1", "processed_aids": ["a1", "a2"]}
+
+        # Execute
+        save_spotlight_state(mock_context_store, state)
+
+        # Verify
+        mock_context_store.write.assert_called_once()
+        saved_context = mock_context_store.write.call_args[0][0]
+
+        assert "spotlight_assets" in saved_context
+        assert saved_context["spotlight_assets"]["cursor"] == "token123"
+        assert saved_context["spotlight_assets"]["metadata"]["snapshot_id"] == "snap1"
+        assert "existing_key" in saved_context
