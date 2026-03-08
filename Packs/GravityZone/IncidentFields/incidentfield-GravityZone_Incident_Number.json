@@ -1,0 +1,34 @@
+{
+    "id": "incident_gravityzone_incident_number",
+    "version": -1,
+    "name": "GravityZone Incident Number",
+    "ownerOnly": false,
+    "description": "Identifies the incident number, which is unique within the company and associated with a specific endpoint.",
+    "cliName": "gravityzoneincidentnumber",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "GravityZone EDR",
+        "GravityZone XDR"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0",
+    "marketplaces": [
+        "xsoar"
+    ]
+}
