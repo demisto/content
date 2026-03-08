@@ -774,7 +774,7 @@ The authentication process is conducted on behalf of the specific user who initi
 | start_time        | The meeting start time in ISO 8601 format e.g., "2019-07-12T14:30:34.2444915-07:00". | Optional     |
 | end_time          | The meeting end time in ISO 8601 format e.g., "2019-07-12T14:30:34.2444915-07:00".   | Optional     |
 | subject           | The meeting subject.                                                                 | Required     |
-| member            | Display name/mail/UPN of user who created the meeting, e.g., Adam Smith.             | Required     |
+| member            | Display name/mail/UPN of user who created the meeting, e.g., Adam Testman.             | Required     |
 
 ##### Context Output
 
