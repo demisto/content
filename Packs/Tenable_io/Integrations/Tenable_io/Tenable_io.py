@@ -2199,8 +2199,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
             vulns_fetch_in_progress = is_vulns_fetch_in_progress(assets_last_run)
             if not assets_fetch_in_progress and not vulns_fetch_in_progress:
                 demisto.debug(
-                    "Entire fetch cycle complete (assets + vulns). "
-                    "Cleaning up snapshot_id and total_assets for next cycle."
+                    "Entire fetch cycle complete (assets + vulns). " "Cleaning up snapshot_id and total_assets for next cycle."
                 )
                 assets_last_run.pop("snapshot_id", None)
                 assets_last_run.pop("total_assets", None)
