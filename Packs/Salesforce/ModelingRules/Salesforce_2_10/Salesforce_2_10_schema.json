@@ -288,6 +288,34 @@
         "EventDate": {
             "type": "datetime",
             "is_array": false
+        },
+        "PreviousPlatform":{
+            "type": "string",
+            "is_array": false
+        },
+        "CurrentPlatform":{
+            "type": "string",
+            "is_array": false
+        },
+        "PreviousUserAgent":{
+            "type": "string",
+            "is_array": false
+        },
+        "CurrentUserAgent":{
+            "type": "string",
+            "is_array": false
+        },
+        "CurrentIp":{
+            "type": "string",
+            "is_array": false
+        },
+        "Subdivision":{
+            "type": "string",
+            "is_array": false
+        },
+        "LoginType":{
+            "type": "string",
+            "is_array": false
         }
     }
 }
