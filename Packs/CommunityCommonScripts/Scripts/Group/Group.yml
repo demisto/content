@@ -6,10 +6,7 @@ script: ''
 type: python
 tags:
 - Utilities
-comment: |-
-  Splits a list into group.
-
-  e.g. [1,2,3,4] -> ["1,2", "3,4"].
+comment: Splits a list into smaller groups (chunks) of a specified size.
 enabled: true
 args:
 - name: input
@@ -35,7 +32,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.12.12.7090913
+dockerimage: demisto/python3:3.12.13.7444307
 runas: DBotWeakRole
 fromversion: 6.10.0
 tests:
