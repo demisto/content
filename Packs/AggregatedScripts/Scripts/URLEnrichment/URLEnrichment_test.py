@@ -1,11 +1,224 @@
 import json
+import pytest
 import demistomock as demisto
-from URLEnrichment import url_enrichment_script
+from URLEnrichment import url_enrichment_script, normalize_urls, _is_cidr
 
 
 def util_load_json(path: str):
     with open(path, encoding="utf-8") as f:
         return json.load(f)
+
+
+# =================================================================================================
+# == Tests for _is_cidr
+# =================================================================================================
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        # IPv4 CIDRs
+        ("1.1.1.0/24", True),
+        ("10.0.0.0/8", True),
+        ("192.168.1.0/32", True),
+        ("0.0.0.0/0", True),
+        # IPv6 CIDRs
+        ("::1/128", True),
+        ("2001:db8::/32", True),
+        # Not CIDRs
+        ("example.com/path", False),
+        ("example.com/24", False),
+        ("www.example.com/page", False),
+        ("not-a-cidr", False),
+        ("1.1.1.1", False),
+        ("", False),
+        # Edge cases
+        ("1.1.1.0/200", False),  # mask > 128
+        ("abc/24", False),  # left side not IP-like
+    ],
+)
+def test_is_cidr(value: str, expected: bool):
+    """
+    Given:
+        - Various string inputs that may or may not be CIDR notation.
+    When:
+        - _is_cidr is called.
+    Then:
+        - Returns True for valid CIDR-like patterns, False otherwise.
+    """
+    assert _is_cidr(value) == expected
+
+
+# =================================================================================================
+# == Tests for normalize_urls
+# =================================================================================================
+
+
+class TestNormalizeUrls:
+    """Tests for the normalize_urls function."""
+
+    def test_urls_with_scheme_unchanged(self):
+        """
+        Given:
+            - URLs that already have a scheme (http://, https://, ftp://, hxxp://, hxxps://).
+        When:
+            - normalize_urls is called.
+        Then:
+            - URLs are returned unchanged.
+        """
+        urls = [
+            "https://example.com",
+            "http://example.com/path",
+            "ftp://files.example.com",
+            "hxxp://malicious.com",
+            "hxxps://defanged.com/page",
+        ]
+        result = normalize_urls(urls)
+        assert result == urls
+
+    def test_www_prefix_gets_scheme(self):
+        """
+        Given:
+            - URLs starting with 'www.' without a scheme.
+        When:
+            - normalize_urls is called.
+        Then:
+            - 'https://' is prepended.
+        """
+        result = normalize_urls(["www.example.com", "www.example.com/path"])
+        assert result == ["https://www.example.com", "https://www.example.com/path"]
+
+    def test_ftp_prefix_gets_scheme(self):
+        """
+        Given:
+            - URLs starting with 'ftp.' without a scheme.
+        When:
+            - normalize_urls is called.
+        Then:
+            - 'https://' is prepended.
+        """
+        result = normalize_urls(["ftp.example.com"])
+        assert result == ["https://ftp.example.com"]
+
+    def test_defanged_prefixes_left_as_is(self):
+        """
+        Given:
+            - Defanged URLs with 'www[.]' or 'ftp[.]' prefixes.
+        When:
+            - normalize_urls is called.
+        Then:
+            - They are NOT prepended with https:// (would create malformed URLs).
+        """
+        defanged = ["www[.]example[.]com", "ftp[.]files[.]example[.]com"]
+        result = normalize_urls(defanged)
+        assert result == defanged
+
+    def test_domain_with_path_gets_scheme(self):
+        """
+        Given:
+            - A domain with a path separator (e.g., 'example.com/path').
+        When:
+            - normalize_urls is called.
+        Then:
+            - 'https://' is prepended since the path indicates URL intent.
+        """
+        result = normalize_urls(["example.com/path/to/page"])
+        assert result == ["https://example.com/path/to/page"]
+
+    def test_cidr_notation_left_as_is(self):
+        """
+        Given:
+            - CIDR notation strings (e.g., '1.1.1.0/24', '10.0.0.0/8').
+        When:
+            - normalize_urls is called.
+        Then:
+            - They are NOT prepended with https:// (they are not URLs).
+        """
+        cidrs = ["1.1.1.0/24", "10.0.0.0/8", "192.168.0.0/16"]
+        result = normalize_urls(cidrs)
+        assert result == cidrs
+
+    def test_bare_domains_left_as_is(self):
+        """
+        Given:
+            - Bare domain names without scheme, prefix, or path.
+        When:
+            - normalize_urls is called.
+        Then:
+            - They are returned unchanged (extractIndicators will classify them as domains).
+        """
+        domains = ["example.com", "openclaw.ai", "google.com"]
+        result = normalize_urls(domains)
+        assert result == domains
+
+    def test_empty_and_whitespace_filtered(self):
+        """
+        Given:
+            - A list containing empty strings and whitespace-only entries.
+        When:
+            - normalize_urls is called.
+        Then:
+            - Empty/whitespace entries are filtered out.
+        """
+        result = normalize_urls(["", "  ", "https://example.com", "  "])
+        assert result == ["https://example.com"]
+
+    def test_whitespace_stripped(self):
+        """
+        Given:
+            - URLs with leading/trailing whitespace.
+        When:
+            - normalize_urls is called.
+        Then:
+            - Whitespace is stripped before processing.
+        """
+        result = normalize_urls(["  https://example.com  ", "  www.example.com  "])
+        assert result == ["https://example.com", "https://www.example.com"]
+
+    def test_case_insensitive_scheme_detection(self):
+        """
+        Given:
+            - URLs with uppercase scheme prefixes.
+        When:
+            - normalize_urls is called.
+        Then:
+            - They are recognized as having a scheme and left unchanged.
+        """
+        result = normalize_urls(["HTTPS://EXAMPLE.COM", "HTTP://example.com"])
+        assert result == ["HTTPS://EXAMPLE.COM", "HTTP://example.com"]
+
+    def test_mixed_inputs(self):
+        """
+        Given:
+            - A mix of URLs with schemes, www prefixes, paths, CIDRs, bare domains, and defanged.
+        When:
+            - normalize_urls is called.
+        Then:
+            - Each input is handled correctly according to its type.
+        """
+        inputs = [
+            "https://already-has-scheme.com",
+            "www.needs-scheme.com",
+            "example.com/has/path",
+            "1.1.1.0/24",
+            "bare-domain.com",
+            "www[.]defanged[.]com",
+        ]
+        expected = [
+            "https://already-has-scheme.com",
+            "https://www.needs-scheme.com",
+            "https://example.com/has/path",
+            "1.1.1.0/24",
+            "bare-domain.com",
+            "www[.]defanged[.]com",
+        ]
+        result = normalize_urls(inputs)
+        assert result == expected
+
+
+# =================================================================================================
+# == End-to-end test
+# =================================================================================================
 
 
 def test_url_enrichment_script_end_to_end_with_files(mocker):

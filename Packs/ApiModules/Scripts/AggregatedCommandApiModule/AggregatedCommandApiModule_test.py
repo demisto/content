@@ -174,37 +174,43 @@ def test_extract_input_success_sets_data(mocker, data, indicator_type, extracted
         (["https://a.com", "https://b.com"], "URL", {}),
     ],
 )
-def test_create_and_extract_indicators_raises_when_no_valid_indicators(mocker, data, indicator_type, extracted):
+def test_create_and_extract_indicators_returns_invalid_when_no_valid_indicators(mocker, data, indicator_type, extracted):
     """
     Given:
         - extractIndicators returns no items for the requested indicator type.
     When:
         - Calling create_and_extract_indicators.
     Then:
-        - Raises ValueError("No valid indicators found in the input data.").
+        - Returns instances with no valid extracted values (all invalid).
+        - Does not raise an exception.
     """
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",
         return_value=[{"EntryContext": {"ExtractedIndicators": extracted}}],
     )
 
-    with pytest.raises(ValueError, match="No valid indicators found in the input data."):
-        data, _ = create_and_extract_indicators(data, indicator_type)
+    instances, _ = create_and_extract_indicators(data, indicator_type)
+    # All instances should have no extracted value (invalid)
+    assert all(instance.extracted_value is None for instance in instances)
+    # Should have at least one instance per input
+    assert len(instances) == len(data)
 
 
-def test_create_and_extract_indicators_raises_on_empty_result(mocker):
+def test_create_and_extract_indicators_returns_invalid_on_empty_result(mocker):
     """
     Given:
-        - execute_command('extractIndicators', ...) returns a empty result.
+        - execute_command('extractIndicators', ...) returns an empty result.
     When:
         - Calling create_and_extract_indicators.
     Then:
-        - Raises DemistoException with a validation failure message.
+        - Returns instances with no valid extracted values (all invalid).
+        - Does not raise an exception.
     """
     mocker.patch("AggregatedCommandApiModule.execute_command", return_value=[])
 
-    with pytest.raises(ValueError, match="No valid indicators found in the input data."):
-        create_and_extract_indicators(["https://a.com"], "url")
+    instances, _ = create_and_extract_indicators(["https://a.com"], "url")
+    assert all(instance.extracted_value is None for instance in instances)
+    assert len(instances) == 1
 
 
 def test_mismatched_types_allowed_when_flag_false(mocker):
@@ -1025,6 +1031,73 @@ def test_create_indicator_failure_scenarios(valid, created, enriched, found, exp
     # Check that the specific error logic path was taken
     actual_msg = res.get("Message", "")
     assert expected_msg_part in actual_msg
+
+
+
+def test_failure_context_includes_new_fields():
+    """
+    Given:
+        - An indicator instance that failed processing (invalid input).
+    When:
+        - ContextBuilder builds the indicator context.
+    Then:
+        - The failure context includes MaxScore=None, MaxVerdict=None, TIMScore=None,
+          ModifiedTime=None, Results=[], and IndicatorExists=False.
+    """
+    instance = IndicatorInstance(
+        raw_input="invalid_input",
+        extracted_value=None,
+        hr_message="",
+    )
+    schema = IndicatorSchema("ip", "Address", "IP(", {})
+    builder = ContextBuilder(schema, "IPEnrichment")
+    builder.add_indicator_instances([instance])
+
+    results = builder.build_indicators_context()
+    assert len(results) == 1
+    res = results[0]
+
+    assert res["Status"] == "Error"
+    assert res["MaxScore"] is None
+    assert res["MaxVerdict"] is None
+    assert res["TIMScore"] is None
+    assert res["ModifiedTime"] is None
+    assert res["Results"] == []
+    assert res["IndicatorExists"] is False
+
+
+def test_success_context_includes_indicator_exists_true():
+    """
+    Given:
+        - An indicator instance that was successfully processed.
+    When:
+        - ContextBuilder builds the indicator context.
+    Then:
+        - The success context includes IndicatorExists=True.
+    """
+    tim_data = {
+        "Brand": "TIM",
+        "Score": 2,
+        "Status": "Fresh",
+        "ModifiedTime": "2025-01-01T00:00:00Z",
+    }
+    instance = IndicatorInstance(
+        raw_input="8.8.8.8",
+        extracted_value="8.8.8.8",
+        created=True,
+        enriched=True,
+        tim_context=[tim_data],
+    )
+    schema = IndicatorSchema("ip", "Address", "IP(", {})
+    builder = ContextBuilder(schema, "IPEnrichment")
+    builder.add_indicator_instances([instance])
+
+    results = builder.build_indicators_context()
+    assert len(results) == 1
+    res = results[0]
+
+    assert res["IndicatorExists"] is True
+    assert res["Results"] == [tim_data]
 
 
 # --- Tests for the build() method and its helpers ---

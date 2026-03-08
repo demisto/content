@@ -4,6 +4,30 @@ from CommonServerUserPython import *
 from AggregatedCommandApiModule import *
 
 
+def _is_cidr(value: str) -> bool:
+    """Check if a value looks like a CIDR notation (e.g., 1.1.1.0/24, 10.0.0.0/8).
+
+    Args:
+        value: The string to check.
+
+    Returns:
+        True if the value matches CIDR-like patterns, False otherwise.
+    """
+    if '/' not in value:
+        return False
+    parts = value.split('/', 1)
+    # CIDR: left side is an IP-like pattern, right side is a small number (mask)
+    try:
+        mask = int(parts[1])
+        if 0 <= mask <= 128:  # valid for both IPv4 (/0-/32) and IPv6 (/0-/128)
+            left = parts[0]
+            if all(c in '0123456789.:' for c in left) and ('.' in left or ':' in left):
+                return True
+    except ValueError:
+        pass
+    return False
+
+
 def normalize_urls(url_list: list[str]) -> list[str]:
     """
     Normalize URL inputs by ensuring they have a scheme where appropriate.
@@ -14,8 +38,13 @@ def normalize_urls(url_list: list[str]) -> list[str]:
 
     This function prepends 'https://' to inputs that look like URLs but lack a
     scheme — specifically values starting with 'www.' or 'ftp.' (matching the
-    server's URL regex behavior), as well as values containing a path separator
-    '/' (e.g., 'example.com/path') which clearly indicate URL intent.
+    server's URL regex behavior), as well as values containing a path component
+    (e.g., 'example.com/path') which clearly indicate URL intent.
+
+    Defanged inputs (e.g., 'www[.]example[.]com') are left as-is since prepending
+    a scheme would create malformed URLs.
+
+    CIDR notations (e.g., '1.1.1.0/24') are left as-is since they are not URLs.
 
     Bare domains without these signals (e.g., 'example.com', 'openclaw.ai') are
     left as-is so extractIndicators correctly classifies them as domains, and the
@@ -27,8 +56,9 @@ def normalize_urls(url_list: list[str]) -> list[str]:
     Returns:
         list[str]: Normalized URL list.
     """
-    # Prefixes that the server's URL regex recognizes without a protocol
-    URL_PREFIXES = ('www.', 'www[.]', 'ftp.', 'ftp[.]')
+    # Only non-defanged prefixes — defanged variants (www[.], ftp[.]) are excluded
+    # because prepending https:// to them creates malformed URLs (e.g., https://www[.]example[.]com)
+    URL_PREFIXES = ('www.', 'ftp.')
     SCHEME_PREFIXES = ('http://', 'https://', 'ftp://', 'hxxp://', 'hxxps://')
 
     normalized = []
@@ -46,9 +76,9 @@ def normalize_urls(url_list: list[str]) -> list[str]:
         elif url_lower.startswith(URL_PREFIXES):
             demisto.debug(f"Normalizing URL '{url}' by prepending 'https://'")
             normalized.append(f'https://{url}')
-        # If it contains a path separator, it's likely a URL without a scheme
-        # e.g., 'example.com/path/to/page'
-        elif '/' in url:
+        # If it contains a path separator and is not a CIDR notation, it's likely a URL
+        # e.g., 'example.com/path/to/page' but NOT '1.1.1.0/24' or '10.0.0.0/8'
+        elif '/' in url and not _is_cidr(url):
             demisto.debug(f"Normalizing URL '{url}' (contains path) by prepending 'https://'")
             normalized.append(f'https://{url}')
         else:
