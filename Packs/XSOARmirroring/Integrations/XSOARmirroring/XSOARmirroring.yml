@@ -154,6 +154,12 @@ script:
     - name: lastUpdate
       description: Retrieve entries that were created after the last update.
     description: Get remote data from a remote incident. Note that this method will not update the current incident. It is used for debugging purposes only.
+  - name: get-modified-remote-data
+    arguments:
+    - name: lastUpdate
+      description: ISO8601 timestamp of the last time the integration was synced. Only incidents modified after this time are returned.
+      required: true
+    description: Returns a list of incident IDs that were modified since the last sync. Used to enable incremental mirroring and avoid full blind syncs.
   - name: get-mapping-fields
     arguments: []
     description: Retrieves the mapping schema from a remote incident.

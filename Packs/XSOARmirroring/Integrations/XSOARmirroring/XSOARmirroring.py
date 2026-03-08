@@ -105,6 +105,25 @@ class Client(BaseClient):
     def get_incident_types(self) -> list[dict[str, Any]]:
         return self._http_request(method="GET", url_suffix="/incidenttype")
 
+    def get_modified_incidents(self, from_timestamp: int, to_timestamp: int | None = None) -> list[str]:
+        """Calls the /incidents/modified endpoint to get IDs of incidents modified in the given time range.
+
+        Args:
+            from_timestamp: Start of the time range (epoch seconds).
+            to_timestamp: End of the time range (epoch seconds). Defaults to current time if not provided.
+
+        Returns:
+            A list of modified incident IDs.
+        """
+        params: dict[str, Any] = {"fromTimeStamp": from_timestamp}
+        if to_timestamp is not None:
+            params["toTimeStamp"] = to_timestamp
+        response = self._http_request(method="GET", url_suffix="/incidents/modified", params=params)
+        # The API returns a map of incident IDs to objects; we only need the keys.
+        if isinstance(response, dict):
+            return list(response.keys())
+        return []
+
     def update_incident(self, incident: dict[str, Any]) -> dict[str, Any]:
         return self._http_request(method="POST", url_suffix="/incident", json_data=incident)
 
@@ -792,6 +811,37 @@ def update_remote_system_command(client: Client, args: dict[str, Any], mirror_ta
     return new_incident_id
 
 
+def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> GetModifiedRemoteDataResponse:
+    """get-modified-remote-data command: Returns a list of incident IDs that were modified since the last check.
+
+    This command enables incremental mirroring by allowing the XSOAR engine to fetch only
+    the incidents that changed since the last sync, rather than performing a full blind sync.
+
+    :type client: ``Client``
+    :param client: XSOAR client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['lastUpdate']`` ISO8601 timestamp of the last successful sync
+
+    :return:
+        A ``GetModifiedRemoteDataResponse`` containing the list of modified incident IDs.
+
+    :rtype: ``GetModifiedRemoteDataResponse``
+    """
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update_utc = remote_args.last_update  # datetime object in UTC
+
+    from_timestamp = int(last_update_utc.timestamp())
+    demisto.debug(f"get-modified-remote-data: fetching incidents modified since {last_update_utc} (epoch: {from_timestamp})")
+
+    modified_incident_ids = client.get_modified_incidents(from_timestamp=from_timestamp)
+    demisto.debug(f"get-modified-remote-data: found {len(modified_incident_ids)} modified incident(s): {modified_incident_ids}")
+
+    return GetModifiedRemoteDataResponse(modified_incident_ids)
+
+
 def get_and_dedup_incidents(
     client: Client, last_fetched_incidents: list[Any], query: str, max_results: int, last_fetch: Union[str, int]
 ) -> tuple[list[dict], list[dict], Optional[datetime]]:
@@ -935,6 +985,9 @@ def main() -> None:  # pragma: no cover
 
         elif demisto.command() == "update-remote-system":
             return_results(update_remote_system_command(client, demisto.args(), mirror_tags))
+
+        elif demisto.command() == "get-modified-remote-data":
+            return_results(get_modified_remote_data_command(client, demisto.args()))
 
         else:
             raise NotImplementedError("Command not implemented")

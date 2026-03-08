@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import dateparser
 import pytest
@@ -8,6 +8,7 @@ from XSOARmirroring import (
     Client,
     fetch_incidents,
     get_mapping_fields_command,
+    get_modified_remote_data_command,
     update_remote_system_command,
     validate_and_prepare_basic_params,
 )
@@ -565,4 +566,132 @@ def test_get_incident_entries_without_entries(mocker):
         tags=None,
     )
     assert result is not None
+    assert result == []
+
+
+# ── get-modified-remote-data tests ────────────────────────────────────────────
+
+
+def test_get_modified_remote_data_returns_ids(mocker):
+    """
+    Given:
+        - A lastUpdate timestamp and a remote server that returns two modified incident IDs.
+
+    When:
+        - Running get_modified_remote_data_command.
+
+    Then:
+        - The response contains exactly those two incident IDs.
+    """
+    last_update = datetime(2026, 3, 1, 12, 0, 0, tzinfo=timezone.utc)
+    args = {"lastUpdate": last_update.isoformat()}
+
+    mocker.patch.object(
+        Client,
+        "get_modified_incidents",
+        return_value=["101", "202"],
+    )
+
+    client = Client(base_url="https://test.com")
+    result = get_modified_remote_data_command(client, args)
+
+    assert result.modified_incident_ids == ["101", "202"]
+
+
+def test_get_modified_remote_data_empty_response(mocker):
+    """
+    Given:
+        - A lastUpdate timestamp and a remote server that returns no modified incidents.
+
+    When:
+        - Running get_modified_remote_data_command.
+
+    Then:
+        - The response contains an empty list of incident IDs.
+    """
+    last_update = datetime(2026, 3, 1, 12, 0, 0, tzinfo=timezone.utc)
+    args = {"lastUpdate": last_update.isoformat()}
+
+    mocker.patch.object(
+        Client,
+        "get_modified_incidents",
+        return_value=[],
+    )
+
+    client = Client(base_url="https://test.com")
+    result = get_modified_remote_data_command(client, args)
+
+    assert result.modified_incident_ids == []
+
+
+def test_get_modified_remote_data_passes_correct_timestamp(mocker):
+    """
+    Given:
+        - A specific lastUpdate ISO8601 timestamp.
+
+    When:
+        - Running get_modified_remote_data_command.
+
+    Then:
+        - The client's get_modified_incidents is called with the correct epoch seconds derived from lastUpdate.
+    """
+    last_update = datetime(2026, 3, 1, 12, 0, 0, tzinfo=timezone.utc)
+    expected_epoch = int(last_update.timestamp())
+    args = {"lastUpdate": last_update.isoformat()}
+
+    mock_get_modified = mocker.patch.object(
+        Client,
+        "get_modified_incidents",
+        return_value=["999"],
+    )
+
+    client = Client(base_url="https://test.com")
+    get_modified_remote_data_command(client, args)
+
+    mock_get_modified.assert_called_once_with(from_timestamp=expected_epoch)
+
+
+def test_get_modified_incidents_client_method(mocker):
+    """
+    Given:
+        - A mock HTTP response from /incidents/modified returning a dict of incident IDs.
+
+    When:
+        - Calling client.get_modified_incidents with a from_timestamp.
+
+    Then:
+        - The method returns a list of the dict keys (incident IDs).
+    """
+    client = Client(base_url="https://test.com")
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_value={"101": {}, "202": {}, "303": {}},
+    )
+
+    result = client.get_modified_incidents(from_timestamp=1740830400)
+
+    assert sorted(result) == ["101", "202", "303"]
+
+
+def test_get_modified_incidents_client_method_empty_response(mocker):
+    """
+    Given:
+        - A mock HTTP response from /incidents/modified returning an empty dict.
+
+    When:
+        - Calling client.get_modified_incidents.
+
+    Then:
+        - The method returns an empty list.
+    """
+    client = Client(base_url="https://test.com")
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_value={},
+    )
+
+    result = client.get_modified_incidents(from_timestamp=1740830400)
+
     assert result == []
