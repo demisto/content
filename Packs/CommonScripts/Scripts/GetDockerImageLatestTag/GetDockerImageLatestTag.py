@@ -3,7 +3,7 @@ import re
 import demistomock as demisto
 import requests
 from CommonServerPython import *
-from pkg_resources import parse_version
+from packaging.version import parse as parse_version
 
 from CommonServerUserPython import *
 
