@@ -1,12 +1,12 @@
 CONTEXT_RESULTS = (
-    '[{"Comment":"hello","Created":"2023-05-12T20:08:00.595+0300","Id":"18461","UpdateUser":"Tomer Malache",'
-    '"Updated":"2023-05-12T20:08:00.595+0300","User":"Tomer Malache"}]'
+    '[{"Comment":"hello","Created":"2023-05-12T20:08:00.595+0300","Id":"18461","UpdateUser":"Tom Testman",'
+    '"Updated":"2023-05-12T20:08:00.595+0300","User":"Tom Testman"}]'
 )
 
 EXPECTED_TABLE = (
     "|Comment|Created|Id|Update User|Updated|User|\n|---|---|---|---|---|---|\n"
-    "| hello | 2023-05-12T20:08:00.595+0300 | 18461 | Tomer Malache |"
-    " 2023-05-12T20:08:00.595+0300 | Tomer Malache |\n"
+    "| hello | 2023-05-12T20:08:00.595+0300 | 18461 | Tom Testman |"
+    " 2023-05-12T20:08:00.595+0300 | Tom Testman |\n"
 )
 
 
