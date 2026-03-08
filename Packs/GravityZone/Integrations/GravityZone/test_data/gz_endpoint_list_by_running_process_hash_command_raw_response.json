@@ -1,0 +1,9 @@
+[
+    {
+        "_id": "69426a6e13c064502ed212f6",
+        "companyId": "COMPANY_ID",
+        "protectedEntityId": "ENDPOINT_ID",
+        "results": "{\"hostname\":\"ENDPOINT_NAME\",\"path\":\"C:\\\\Windows\\\\System32\\\\notepad.exe\"}",
+        "taskId": "69426a35cc0596b3d506e3dc"
+    }
+]
