@@ -15,5 +15,5 @@ Fetches indicators from the Cisco Webex Feed according to the applied filters.
 
 ### Acknowledgements
 
-Special Thanks to Scott Brumley for his significant code contribution to developing this content pack.
+Special Thanks to Scott Testman for his significant code contribution to developing this content pack.
 Thank you!
