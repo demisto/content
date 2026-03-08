@@ -2225,6 +2225,8 @@ script:
     - name: sender_address
       description: Filters by the sender email address.
     - name: teams_conversation_types
+      hidden: true
+      deprecated: true
       auto: PREDEFINED
       predefined:
       - ResultNotFound
@@ -2271,10 +2273,11 @@ script:
     - name: policy_types
       auto: PREDEFINED
       predefined:
-      - HostedContentFilterPolicy
-      - MalwareFilterPolicy
       - SafeAttachmentPolicy
-      - SafeLinksPolicy
+      - HostedContentFilterPolicy
+      - ExchangeTransportRule
+      - DataLossPreventionRule
+      - AntiMalwarePolicy
       - AntiPhishPolicy
       description: Filter by types of policies.
       isArray: true
@@ -2283,34 +2286,32 @@ script:
       predefined:
       - Spam
       - TransportRule
-      - Malware
+      - Bulk
       - Phish
       - HighConfPhish
-      - Bulk
-      - SPO
-      - Teams
-      - CustomerBlockList
-      - MalwareFilterPolicy
-      - SafeAttachmentPolicy
-      - SenderAuthFailure
-      - ZeroHourAutoPurge
+      - Malware
+      - SPOMalware
+      - DataLossPrevention
+      - FileTypeBlock
+      - AdminTriggered
+      - PPI
       description: Filters by one or more quarantine types.
       isArray: true
     - name: recipient_tag
       auto: PREDEFINED
       predefined:
-      - Priority
-      - NonPriority
+      - "Priority Account"
       description: Filters by the priority tag associated with the recipient.
     - name: release_status
       auto: PREDEFINED
       predefined:
-      - All
-      - Needed
+      - Approved
+      - Denied
+      - Error
+      - NotReleased
+      - PreparingToRelease
       - Released
       - Requested
-      - Ignored
-      - FalsePositive
       description: Filters by the message release status.
     - name: reported
       auto: PREDEFINED
