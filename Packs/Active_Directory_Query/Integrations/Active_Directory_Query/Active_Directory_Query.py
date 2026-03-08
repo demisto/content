@@ -444,13 +444,13 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
 
     entries: list[Entry] = []
     entries_left_to_fetch = size_limit
-    page_num = 0
+    page_num_debug = 0
     while True:
-        page_num += 1
+        page_num_debug += 1
         if 0 < entries_left_to_fetch < page_size:
             page_size = entries_left_to_fetch
         demisto.debug(
-            f"search_with_paging: fetching page {page_num}. "
+            f"search_with_paging: fetching page {page_num_debug}. "
             f"{page_size=}, total_so_far={total_entries} "
             f"has_cookie={bool(cookie)}, elapsed={(datetime.now() - start).total_seconds():.2f}s"
         )
@@ -467,7 +467,7 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
         # stop when: 1.reached size limit 2.reached time limit 3. no cookie
         if (size_limit and size_limit <= total_entries) or (time_limit and time_diff >= time_limit) or (not cookie):
             demisto.debug(
-                f"search_with_paging: stopping after {page_num} page(s). "
+                f"search_with_paging: stopping after {page_num_debug} page(s). "
                 f"total_entries={total_entries}, size_limit={size_limit}, time_limit={time_limit}, "
                 f"time_elapsed={time_diff}s, has_more_pages={bool(cookie)}"
             )
