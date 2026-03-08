@@ -23,7 +23,15 @@ PRODUCT = "Druva"
 
 
 class Client(BaseClient):
-    def __init__(self, base_url: str, client_id: str, secret_key: str, max_fetch: int, verify: bool, proxy: bool):
+    def __init__(
+        self,
+        base_url: str,
+        client_id: str,
+        secret_key: str,
+        max_fetch: int,
+        verify: bool,
+        proxy: bool,
+    ):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.credentials = f"{client_id}:{secret_key}"
         self.max_fetch = max_fetch
@@ -200,7 +208,7 @@ def _filter_old_events(events: list[dict]) -> list[dict]:
     Returns:
         list of events that are newer than or equal to the cutoff time.
     """
-    cutoff = datetime.utcnow() - FIRST_FETCH_TIMEDELTA
+    cutoff = datetime.now(tz=timezone.utc) - FIRST_FETCH_TIMEDELTA
     filtered_events: list[dict] = []
     dropped_count = 0
 
@@ -210,9 +218,9 @@ def _filter_old_events(events: list[dict]) -> list[dict]:
         event_time = arg_to_datetime(timestamp_value)
 
         if event_time:
-            # Normalize to naive UTC for comparison with cutoff (datetime.utcnow())
-            naive_utc = event_time.astimezone(timezone.utc).replace(tzinfo=None) if event_time.tzinfo else event_time
-            if naive_utc >= cutoff:
+            # Normalize to aware UTC for comparison with cutoff
+            aware_utc = event_time.astimezone(timezone.utc) if event_time.tzinfo else event_time.replace(tzinfo=timezone.utc)
+            if aware_utc >= cutoff:
                 filtered_events.append(event)
             else:
                 dropped_count += 1
@@ -387,7 +395,10 @@ def main() -> None:  # pragma: no cover
 
         elif command == "fetch-events":
             events, next_run = fetch_events(
-                client=client, last_run=demisto.getLastRun(), max_fetch=max_fetch, event_types=event_types_param
+                client=client,
+                last_run=demisto.getLastRun(),
+                max_fetch=max_fetch,
+                event_types=event_types_param,
             )
 
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
