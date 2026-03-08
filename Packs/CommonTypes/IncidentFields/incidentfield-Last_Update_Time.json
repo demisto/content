@@ -46,7 +46,9 @@
         "CrowdStrike Falcon NGSIEM Detection",
         "CrowdStrike Falcon NGSIEM Incident",
         "CrowdStrike Falcon NGSIEM Automated Lead",
-        "CrowdStrike Falcon NGSIEM Case"
+        "CrowdStrike Falcon NGSIEM Case",
+        "GravityZone EDR",
+        "GravityZone XDR"
     ],
     "breachScript": "",
     "caseInsensitive": true,
