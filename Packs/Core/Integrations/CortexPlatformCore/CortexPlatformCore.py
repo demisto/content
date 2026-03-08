@@ -4664,12 +4664,14 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults: The command results with execution_id, query_url, and optionally status and results.
     """
+    demisto.debug(f"args ={args}")
+    demisto.debug(f"execution_id={args.get('execution_id')}" if args.get('execution_id') else "No execution_id provided, starting new query")
     query = args.get("query", "")
     if not query:
         raise ValueError("query is not specified")
 
     MAX_QUERY_LIMIT = 1000
-    demisto.debug(f"query befor {query}")
+    # demisto.debug(f"query befor {query}")
     clean_query, view_graph_clause = remove_view_graph_clause(query)
     demisto.debug(f"{clean_query=}, {view_graph_clause=}")
     query_with_limit = handle_xql_limit(clean_query, MAX_QUERY_LIMIT)
