@@ -1,6 +1,6 @@
 args:
 - name: value
-  description: The name of the List to open
+  description: The name of the List to open.
 - name: type
   auto: PREDEFINED
   predefined:

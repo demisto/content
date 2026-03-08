@@ -16,7 +16,7 @@ Returns the content of the List with the given Name as a string or JSON object, 
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| value | The name of the List to open |
+| value | The name of the List to open. |
 | type | The format to return the list content in, such as 'json' or 'string'. The Type does not have to match the format configured in the list, but controls how the content of the list is handled. |
 
 ## Outputs
