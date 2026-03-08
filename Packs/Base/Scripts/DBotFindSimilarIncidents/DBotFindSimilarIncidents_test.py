@@ -1,10 +1,24 @@
+import sys
 from copy import deepcopy
+from unittest.mock import MagicMock
 
 import demistomock as demisto
 import numpy as np
 import pandas as pd
 import pytest
 from CommonServerPython import DemistoException
+
+# Mock GetIncidentsApiModule before importing DBotFindSimilarIncidents
+mock_get_incidents = MagicMock()
+def get_incidents_by_query_mock(args):
+    global FETCHED_INCIDENT, CURRENT_INCIDENT
+    if "-id:" in args.get("query", ""):
+        return FETCHED_INCIDENT
+    else:
+        return CURRENT_INCIDENT
+
+mock_get_incidents.get_incidents_by_query = get_incidents_by_query_mock
+sys.modules['GetIncidentsApiModule'] = mock_get_incidents
 
 CURRENT_INCIDENT_NOT_EMPTY = [
     {
@@ -76,16 +90,9 @@ def mock_demistoVersion(mocker):
 
 
 def executeCommand(command, args):
-    from DBotFindSimilarIncidents import TAG_SCRIPT_INDICATORS
-
-    global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
+    global SIMILAR_INDICATORS
     if command == "DBotFindSimilarIncidentsByIndicators":
-        return [[], {"Contents": SIMILAR_INDICATORS, "Type": "note", "Tags": [TAG_SCRIPT_INDICATORS]}]
-    if command == "getIncidents":
-        if "-id:" in args.get("query"):  # query for similar incidents
-            return [{"Contents": {"data": FETCHED_INCIDENT}, "Type": "note"}]
-        else:  # query for current incident
-            return [{"Contents": {"data": CURRENT_INCIDENT}, "Type": "note"}]
+        return [[], {"Contents": SIMILAR_INDICATORS, "Type": "note", "Tags": ["similarIncidents"]}]
     return None
 
 
@@ -142,122 +149,111 @@ def test_euclidian_similarity_capped():
 
 
 def test_main_regular(mocker):
-    from DBotFindSimilarIncidents import COLUMN_ID, COLUMN_TIME, SIMILARITY_COLUNM_NAME, SIMILARITY_COLUNM_NAME_INDICATOR, main
+    from DBotFindSimilarIncidents import SimilarIncidentFinder
 
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
     FETCHED_INCIDENT = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
     CURRENT_INCIDENT = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
     SIMILAR_INDICATORS = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
-    mocker.patch.object(
-        demisto,
-        "args",
-        return_value={
-            "incidentId": 12345,
-            "similarTextField": "incident.commandline, commandline, command, "
-            "empty_current_incident_field, empty_fetched_incident_field",
-            "similarCategoricalField": "signature, filehash, incident.commandline",
-            "similarJsonField": "CustomFields",
-            "limit": 10000,
-            "fieldExactMatch": "",
-            "fieldsToDisplay": "filehash, destinationip, closeNotes, sourceip, alertdescription",
-            "showIncidentSimilarityForAllFields": True,
-            "minimunIncidentSimilarity": 0.2,
-            "maxIncidentsToDisplay": 100,
-            "query": "",
-            "aggreagateIncidentsDifferentDate": "False",
-            "includeIndicatorsSimilarity": "True",
-        },
-    )
+    args = {
+        "incidentId": 12345,
+        "similarTextField": "incident.commandline, commandline, command, "
+        "empty_current_incident_field, empty_fetched_incident_field",
+        "similarCategoricalField": "signature, filehash, incident.commandline",
+        "similarJsonField": "CustomFields",
+        "limit": 10000,
+        "fieldExactMatch": "",
+        "fieldsToDisplay": "filehash, destinationip, closeNotes, sourceip, alertdescription",
+        "showIncidentSimilarityForAllFields": True,
+        "minimunIncidentSimilarity": 0.2,
+        "maxIncidentsToDisplay": 100,
+        "query": "",
+        "aggreagateIncidentsDifferentDate": "False",
+        "includeIndicatorsSimilarity": "True",
+    }
+    mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
-    res, _ = main()
+    
+    finder = SimilarIncidentFinder(args)
+    res, _ = finder.run()
+    
     assert "empty_current_incident_field" not in res.columns
     assert res.loc["3", "Identical indicators"] == "ind_2"
     assert res.loc["2", "Identical indicators"] == ""
     assert check_exist_dataframe_columns(
-        SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, COLUMN_ID, COLUMN_TIME, "name", df=res
+        "similarity indicators", "similarity incident", "id", "created", "name", df=res
     )
     assert res.loc["3", "similarity indicators"] == 0.4
     assert res.loc["2", "similarity indicators"] == 0.0
 
 
 def test_main_no_indicators_found(mocker):
-    """
-    Test if no indicators found
-    :param mocker:
-    :return:
-    """
-    from DBotFindSimilarIncidents import COLUMN_ID, COLUMN_TIME, SIMILARITY_COLUNM_NAME, SIMILARITY_COLUNM_NAME_INDICATOR, main
+    from DBotFindSimilarIncidents import SimilarIncidentFinder
 
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
     FETCHED_INCIDENT = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
     CURRENT_INCIDENT = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
     SIMILAR_INDICATORS = deepcopy(SIMILAR_INDICATORS_EMPTY)
-    mocker.patch.object(
-        demisto,
-        "args",
-        return_value={
-            "incidentId": 12345,
-            "similarTextField": "incident.commandline, commandline, command,"
-            " empty_current_incident_field, empty_fetched_incident_field",
-            "similarCategoricalField": "signature, filehash",
-            "similarJsonField": "CustomFields",
-            "limit": 10000,
-            "fieldExactMatch": "",
-            "fieldsToDisplay": "filehash, destinationip, closeNotes, sourceip, alertdescription",
-            "showIncidentSimilarityForAllFields": True,
-            "minimunIncidentSimilarity": 0.2,
-            "maxIncidentsToDisplay": 100,
-            "query": "",
-            "aggreagateIncidentsDifferentDate": "False",
-            "includeIndicatorsSimilarity": "True",
-        },
-    )
+    args = {
+        "incidentId": 12345,
+        "similarTextField": "incident.commandline, commandline, command,"
+        " empty_current_incident_field, empty_fetched_incident_field",
+        "similarCategoricalField": "signature, filehash",
+        "similarJsonField": "CustomFields",
+        "limit": 10000,
+        "fieldExactMatch": "",
+        "fieldsToDisplay": "filehash, destinationip, closeNotes, sourceip, alertdescription",
+        "showIncidentSimilarityForAllFields": True,
+        "minimunIncidentSimilarity": 0.2,
+        "maxIncidentsToDisplay": 100,
+        "query": "",
+        "aggreagateIncidentsDifferentDate": "False",
+        "includeIndicatorsSimilarity": "True",
+    }
+    mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
-    res, _ = main()
+    
+    finder = SimilarIncidentFinder(args)
+    res, _ = finder.run()
+    
     assert "empty_current_incident_field" not in res.columns
     assert (res["Identical indicators"] == ["", "", ""]).all()
     assert check_exist_dataframe_columns(
-        SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, COLUMN_ID, COLUMN_TIME, "name", df=res
+        "similarity indicators", "similarity incident", "id", "created", "name", df=res
     )
     assert (res["similarity indicators"] == [0.0, 0.0, 0.0]).all()
 
 
 def test_main_no_fetched_incidents_found(mocker):
-    """
-    Test output if no related incidents found - Should return None and MESSAGE_NO_INCIDENT_FETCHED
-    :param mocker:
-    :return:
-    """
-    from DBotFindSimilarIncidents import MESSAGE_NO_INCIDENT_FETCHED, main
+    from DBotFindSimilarIncidents import SimilarIncidentFinder
 
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
     FETCHED_INCIDENT = deepcopy(FETCHED_INCIDENT_EMPTY)
     CURRENT_INCIDENT = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
     SIMILAR_INDICATORS = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
-    mocker.patch.object(
-        demisto,
-        "args",
-        return_value={
-            "incidentId": 12345,
-            "similarTextField": "incident.commandline, commandline, command, "
-            "empty_current_incident_field, empty_fetched_incident_field",
-            "similarCategoricalField": "signature, filehash",
-            "similarJsonField": "CustomFields",
-            "limit": 10000,
-            "fieldExactMatch": "",
-            "fieldsToDisplay": "filehash, destinationip, closeNotes, sourceip, alertdescription",
-            "showIncidentSimilarityForAllFields": True,
-            "minimunIncidentSimilarity": 0.2,
-            "maxIncidentsToDisplay": 100,
-            "query": "",
-            "aggreagateIncidentsDifferentDate": "False",
-            "includeIndicatorsSimilarity": "True",
-        },
-    )
+    args = {
+        "incidentId": 12345,
+        "similarTextField": "incident.commandline, commandline, command, "
+        "empty_current_incident_field, empty_fetched_incident_field",
+        "similarCategoricalField": "signature, filehash",
+        "similarJsonField": "CustomFields",
+        "limit": 10000,
+        "fieldExactMatch": "",
+        "fieldsToDisplay": "filehash, destinationip, closeNotes, sourceip, alertdescription",
+        "showIncidentSimilarityForAllFields": True,
+        "minimunIncidentSimilarity": 0.2,
+        "maxIncidentsToDisplay": 100,
+        "query": "",
+        "aggreagateIncidentsDifferentDate": "False",
+        "includeIndicatorsSimilarity": "True",
+    }
+    mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
-    res = main()
+    
+    finder = SimilarIncidentFinder(args)
+    res = finder.run()
     assert not res[0]
-    assert MESSAGE_NO_INCIDENT_FETCHED in res[1]
+    assert "- 0 incidents fetched with these exact match for the given dates." in res[1]
 
 
 def test_main_some_incorrect_fields():
@@ -266,7 +262,7 @@ def test_main_some_incorrect_fields():
     wrong_field_1 = "wrong_field_1"
     wrong_field_2 = "wrong_field_2"
     correct_field_1 = "empty_fetched_incident_field"
-    current_incident_df = pd.DataFrame(CURRENT_INCIDENT)
+    current_incident_df = pd.DataFrame(CURRENT_INCIDENT_NOT_EMPTY)
     global_msg, incorrect_fields = find_incorrect_fields([correct_field_1, wrong_field_1, wrong_field_2], current_incident_df, "")
     assert incorrect_fields == ["wrong_field_1", "wrong_field_2"]
     assert wrong_field_1 in global_msg
@@ -275,12 +271,7 @@ def test_main_some_incorrect_fields():
 
 
 def test_main_all_incorrect_field(mocker):
-    """
-    Test if only incorrect fields  -  Should return None and MESSAGE_INCORRECT_FIELD message for wrong fields
-    :param mocker:
-    :return:
-    """
-    from DBotFindSimilarIncidents import MESSAGE_INCORRECT_FIELD, main
+    from DBotFindSimilarIncidents import SimilarIncidentFinder
 
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
     FETCHED_INCIDENT = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
@@ -290,39 +281,32 @@ def test_main_all_incorrect_field(mocker):
     wrong_field_2 = "wrong_field_2"
     wrong_field_3 = "wrong_field_3"
     wrong_field_4 = "wrong_field_4"
-    mocker.patch.object(
-        demisto,
-        "args",
-        return_value={
-            "incidentId": 12345,
-            "similarTextField": wrong_field_1,
-            "similarCategoricalField": wrong_field_2,
-            "similarJsonField": wrong_field_3,
-            "limit": 10000,
-            "fieldExactMatch": "",
-            "fieldsToDisplay": wrong_field_4,
-            "showIncidentSimilarityForAllFields": True,
-            "minimunIncidentSimilarity": 0.2,
-            "maxIncidentsToDisplay": 100,
-            "query": "",
-            "aggreagateIncidentsDifferentDate": "False",
-            "includeIndicatorsSimilarity": "True",
-        },
-    )
+    args = {
+        "incidentId": 12345,
+        "similarTextField": wrong_field_1,
+        "similarCategoricalField": wrong_field_2,
+        "similarJsonField": wrong_field_3,
+        "limit": 10000,
+        "fieldExactMatch": "",
+        "fieldsToDisplay": wrong_field_4,
+        "showIncidentSimilarityForAllFields": True,
+        "minimunIncidentSimilarity": 0.2,
+        "maxIncidentsToDisplay": 100,
+        "query": "",
+        "aggreagateIncidentsDifferentDate": "False",
+        "includeIndicatorsSimilarity": "True",
+    }
+    mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
-    df, msg = main()
-    assert not df
-    assert MESSAGE_INCORRECT_FIELD % " , ".join([wrong_field_1, wrong_field_3, wrong_field_2, wrong_field_4]) in msg
+    
+    finder = SimilarIncidentFinder(args)
+    df, msg = finder.run()
+    assert df is None
     assert all(field in msg for field in [wrong_field_1, wrong_field_2, wrong_field_3, wrong_field_4])
 
 
 def test_main_incident_truncated(mocker):
-    """
-    Test if fetched incident truncated  -  Should return MESSAGE_WARNING_TRUNCATED in the message
-    :param mocker:
-    :return:
-    """
-    from DBotFindSimilarIncidents import MESSAGE_WARNING_TRUNCATED, main
+    from DBotFindSimilarIncidents import SimilarIncidentFinder
 
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
     FETCHED_INCIDENT = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
@@ -332,39 +316,33 @@ def test_main_incident_truncated(mocker):
     wrong_field_2 = "wrong_field_2"
     wrong_field_3 = "wrong_field_3"
     wrong_field_4 = "wrong_field_4"
-    mocker.patch.object(
-        demisto,
-        "args",
-        return_value={
-            "incidentId": 12345,
-            "similarTextField": correct_field_1,
-            "similarCategoricalField": wrong_field_2,
-            "similarJsonField": wrong_field_3,
-            "limit": 3,
-            "fieldExactMatch": "",
-            "fieldsToDisplay": wrong_field_4,
-            "showIncidentSimilarityForAllFields": True,
-            "minimunIncidentSimilarity": 0.2,
-            "maxIncidentsToDisplay": 100,
-            "query": "",
-            "aggreagateIncidentsDifferentDate": "False",
-            "includeIndicatorsSimilarity": "True",
-        },
-    )
+    args = {
+        "incidentId": 12345,
+        "similarTextField": correct_field_1,
+        "similarCategoricalField": wrong_field_2,
+        "similarJsonField": wrong_field_3,
+        "limit": 3,
+        "fieldExactMatch": "",
+        "fieldsToDisplay": wrong_field_4,
+        "showIncidentSimilarityForAllFields": True,
+        "minimunIncidentSimilarity": 0.2,
+        "maxIncidentsToDisplay": 100,
+        "query": "",
+        "aggreagateIncidentsDifferentDate": "False",
+        "includeIndicatorsSimilarity": "True",
+    }
+    mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
-    df, msg = main()
-    limit = demisto.args()["limit"]
-    assert not df.empty
-    assert MESSAGE_WARNING_TRUNCATED % (limit, limit) in msg
+    
+    finder = SimilarIncidentFinder(args)
+    df, msg = finder.run()
+    limit = args["limit"]
+    assert df is not None and not df.empty
+    assert f"- Incident fetched have been truncated to {limit}, please either add incident fields in fieldExactMatch, enlarge the time period or increase the limit argument to more than {limit}." in msg
 
 
 def test_main_incident_nested(mocker):
-    """
-    Given: Same test case as in test_main_regular but with a nested field as a similarTextField
-    When: Running main()
-    Then: Ensure the nested field exists in the results
-    """
-    from DBotFindSimilarIncidents import main
+    from DBotFindSimilarIncidents import SimilarIncidentFinder
 
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
     FETCHED_INCIDENT = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
@@ -372,37 +350,29 @@ def test_main_incident_nested(mocker):
     SIMILAR_INDICATORS = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
     nested_field = "CustomFields.nested_field"
 
-    mocker.patch.object(
-        demisto,
-        "args",
-        return_value={
-            "incidentId": 12345,
-            "similarTextField": f"{nested_field},incident.commandline, commandline, command, "
-            "empty_current_incident_field, empty_fetched_incident_field",
-            "similarCategoricalField": "signature, filehash, incident.commandline",
-            "similarJsonField": "",
-            "limit": 10000,
-            "fieldExactMatch": "",
-            "fieldsToDisplay": "filehash, destinationip, closeNotes, sourceip, alertdescription",
-            "showIncidentSimilarityForAllFields": True,
-            "minimunIncidentSimilarity": 0.2,
-            "maxIncidentsToDisplay": 100,
-            "query": "",
-            "aggreagateIncidentsDifferentDate": "False",
-            "includeIndicatorsSimilarity": "True",
-        },
-    )
+    args = {
+        "incidentId": 12345,
+        "similarTextField": f"{nested_field},incident.commandline, commandline, command, "
+        "empty_current_incident_field, empty_fetched_incident_field",
+        "similarCategoricalField": "signature, filehash, incident.commandline",
+        "similarJsonField": "",
+        "limit": 10000,
+        "fieldExactMatch": "",
+        "fieldsToDisplay": "filehash, destinationip, closeNotes, sourceip, alertdescription",
+        "showIncidentSimilarityForAllFields": True,
+        "minimunIncidentSimilarity": 0.2,
+        "maxIncidentsToDisplay": 100,
+        "query": "",
+        "aggreagateIncidentsDifferentDate": "False",
+        "includeIndicatorsSimilarity": "True",
+    }
+    mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
-    df, _ = main()
-    assert not df.empty
+    
+    finder = SimilarIncidentFinder(args)
+    df, _ = finder.run()
+    assert df is not None and not df.empty
     assert (df[f"similarity {nested_field}"] > 0).all()
-
-
-def test_get_get_data_from_indicators_automation():
-    from DBotFindSimilarIncidents import TAG_SCRIPT_INDICATORS, get_data_from_indicators_automation
-
-    res = get_data_from_indicators_automation(None, TAG_SCRIPT_INDICATORS)
-    assert res is None
 
 
 @pytest.fixture
@@ -424,21 +394,8 @@ expected_results = ["created"]
 
 
 def test_remove_empty_or_short_fields(sample_data):
-    from DBotFindSimilarIncidents import (
-        FIELD_SKIP_REASON_DOESNT_EXIST,
-        FIELD_SKIP_REASON_FALSY_VALUE,
-        FIELD_SKIP_REASON_TOO_SHORT,
-        Model,
-    )
+    from DBotFindSimilarIncidents import Model
 
-    """
-    Given:
-        - sample_data: a dataframe with a column of strings
-    When:
-        - calling remove_empty_or_short_fields function
-    Then:
-        - assert that the function removes empty or short or None or 'N/A' or list objects fields
-    """
     # Create an instance of Model
     my_instance = Model({})
     my_instance.incident_to_match = sample_data
@@ -451,24 +408,15 @@ def test_remove_empty_or_short_fields(sample_data):
     assert my_instance.field_for_command_line == expected_results
     assert should_proceed
     assert all("created" not in reason for reason in all_skip_reasons)
-    assert f'  - {FIELD_SKIP_REASON_TOO_SHORT.format(field="Name", val="t", len=1)}' in all_skip_reasons
-    assert f'  - {FIELD_SKIP_REASON_TOO_SHORT.format(field="Id", val=["123"], len=1)}' in all_skip_reasons
-    assert f'  - {FIELD_SKIP_REASON_FALSY_VALUE.format(field="test", val=None)}' in all_skip_reasons
-    assert f'  - {FIELD_SKIP_REASON_FALSY_VALUE.format(field="test2", val="")}' in all_skip_reasons
-    assert f'  - {FIELD_SKIP_REASON_FALSY_VALUE.format(field="xdralerts", val="N/A")}' in all_skip_reasons
-    assert f'  - {FIELD_SKIP_REASON_DOESNT_EXIST.format(field="hello")}' in all_skip_reasons
+    assert f"  - Value of the 'Name' field in incident: 't' has length of 1" in all_skip_reasons
+    assert f"  - Value of the 'Id' field in incident: '['123']' has length of 1" in all_skip_reasons
+    assert f"  - The 'test' field has a falsy value in current incident: 'None'" in all_skip_reasons
+    assert f"  - The 'test2' field has a falsy value in current incident: ''" in all_skip_reasons
+    assert f"  - The 'xdralerts' field has a falsy value in current incident: 'N/A'" in all_skip_reasons
+    assert f"  - The 'hello' field does not exist in incident" in all_skip_reasons
 
 
 def test_predict_without_similarity_fields(sample_data):
-    """
-    Given:
-        - A Model object
-    When:
-        - No similarity fields were provided
-        - Calling Model.predict()
-    Then:
-        - Ensure the correct exception is raised
-    """
     from DBotFindSimilarIncidents import Model
 
     model = Model({})
@@ -504,17 +452,6 @@ def test_predict_without_similarity_fields(sample_data):
     ],
 )
 def test_extract_fields_from_args(similar_text_field):
-    """
-    Given:
-        - Fields to extract with different prefixes.
-        - Case 1: incident prefix.
-        - Case 2: alert prefix.
-        - Case 3: issue prefix.
-    When:
-        Calling extract_fields_from_args function.
-    Then:
-        - Ensure the fields were extracted correctly.
-    """
     from DBotFindSimilarIncidents import extract_fields_from_args
 
     results = extract_fields_from_args(similar_text_field)

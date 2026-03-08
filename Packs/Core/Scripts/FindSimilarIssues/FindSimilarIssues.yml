@@ -62,20 +62,13 @@ args:
   - 'False'
 - description: "A custom filter. When using this argument, other filter arguments are not relevant. example: {\"OR\":[\"SEARCH_FIELD\":\"actor_process_command_line\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"path_to_file\"}]}`."
   name: custom_filter
-# - auto: PREDEFINED
-#   defaultValue: 'False'
-#   description: Whether to include similarity of indicators from DBotFindSimilarIssuesByIndicators in the final score.
-#   name: include_indicators_similarity
-#   predefined:
-#   - 'True'
-#   - 'False'
-# - description: The minimum number of indicators required related to the issue before running the model. Relevant if include_indicators_similarity is "True".
-#   name: min_number_of_indicators
-# - auto: PREDEFINED
-#   description: Comma-separated list of indicator types to take into account. If empty, uses all indicators types. Relevant if include_indicators_similarity is "True".
-#   name: indicators_types
-# - description: Help to filter out indicators that appear in many issues. Relevant if include_indicators_similarity is "True".
-#   name: max_issues_in_indicators_for_white_list
+- auto: PREDEFINED
+  defaultValue: 'False'
+  description: Whether to display the similarity score for each of the issue fields.
+  name: show_issue_fields_similarity
+  predefined:
+  - 'True'
+  - 'False'
 comment: |-
   Searches past similar issues based on issue fields' similarity. Includes an option to also display indicators similarity.
   Note: For the similarity calculation, at least one field must be provided in one of the "text_similarity_fields", "json_similarity_fields", "discrete_match_fields" or "use_all_fields" arguments.
