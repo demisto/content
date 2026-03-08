@@ -29,7 +29,7 @@ EXPLOIT_TYPE = "Exploit"
 WINDOWS_PLATFORM = "Windows"
 # Include USER_AGENT_HEADER to identify the request as originating from Agentix,
 # allowing the backend to apply specialized handling.
-EMAIL_SECURITY_USER_AGENT_HEADER = {"userAgent" : "Agentix"}
+EMAIL_SECURITY_USER_AGENT_HEADER = {"userAgent": "Agentix"}
 
 
 ASSET_FIELDS = {
@@ -1153,7 +1153,7 @@ class Client(CoreClient):
             json_data=body,
         )
 
-    def execute_email_security_remediation(self, internet_message_id: list[str], issue_id: str, action: str) -> dict:
+    def execute_email_security_remediation(self, internet_message_id: str, issue_id: str, action: str) -> dict:
         """
         Execute automated email security remediation action.
 
@@ -1172,12 +1172,9 @@ class Client(CoreClient):
         return self._http_request(
             method="POST",
             url_suffix="/email-security/actions/on-demand",
-            headers={
-                **self._headers,
-                **EMAIL_SECURITY_USER_AGENT_HEADER
-            },
+            headers={**self._headers, **EMAIL_SECURITY_USER_AGENT_HEADER},
             json_data={
-                "internet_message_ids": internet_message_id,
+                "internet_message_ids": [internet_message_id],
                 "alert_id": issue_id,
                 "action": {"id": action, "attributes": {}},
             },
@@ -5022,7 +5019,7 @@ def execute_email_security_remediation_command(client: Client, args: dict[str, A
         CommandResults object with action execution status
     """
     action = args.get("action", "")
-    internet_message_id = argToList(args.get("internet_message_id", ""))
+    internet_message_id = args.get("internet_message_id", "")
     issue_id = args.get("issue_id", "")
 
     valid_actions = [
@@ -5110,7 +5107,7 @@ def get_email_investigation_summary_command(client: Client, args: dict) -> Comma
 
     timeframe = args.get("timeframe")
     days_timeframe = timeframe_to_days(timeframe) if timeframe else None
-    detection_method = args.get("detection_method","").replace(" ", "_").upper()
+    detection_method = args.get("detection_method", "").replace(" ", "_").upper()
     params = assign_params(
         days_timeframe=days_timeframe,
         detection_method=detection_method,

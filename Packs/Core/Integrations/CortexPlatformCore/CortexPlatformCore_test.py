@@ -10371,6 +10371,8 @@ def test_decrypt_email_content_command_missing_message_id(mocker: MockerFixture)
 
     with pytest.raises(DemistoException, match="internet_message_id is required"):
         decrypt_email_content_command(mock_client, args)
+
+
 def test_send_endpoint_heartbeat_command_success(mocker):
     """
     Given:
