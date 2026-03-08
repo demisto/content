@@ -93,6 +93,7 @@ alter // init aliases for root level & common objects for supporting both camelC
     service_action_api_call_remote_isp_org = coalesce(finding_aws_api -> RemoteIpDetails.Organization.Org, finding_aws_api -> remoteIpDetails.organization.org), // The name of the internet provider.
     service_action_api_call_remote_account_id = coalesce(finding_aws_api -> RemoteAccountDetails.AccountId, finding_aws_api -> remoteAccountDetails.accountId), // The AWS account ID of the remote API caller.
     service_action_api_call_error_code = coalesce(finding_aws_api -> ErrorCode, finding_aws_api -> errorCode), // The error code of the failed AWS API action.
+    service_action_api_call_api = coalesce(finding_aws_api -> api, finding_aws_api -> Api)
 
     // extract service dns request action (DNS_REQUEST) fields: https://docs.aws.amazon.com/guardduty/latest/APIReference/API_DnsRequestAction.html
     service_action_dns_request_action_domain = coalesce(finding_service -> Action.DnsRequestAction.Domain, service -> action.dnsRequestAction.domain), // The domain information for the DNS query.
@@ -176,7 +177,8 @@ alter // init aliases for root level & common objects for supporting both camelC
         to_string(finding_severity)),
     xdm.alert.subcategory = finding_type,
     xdm.auth.auth_method = resource_rdsDbUserDetails_auth_method,
-    xdm.event.operation_sub_type = service_action_type,
+    xdm.event.operation = service_action_type,
+    xdm.event.operation_sub_type = service_action_api_call_api,
     xdm.event.outcome = if(service_action_network_connection_is_blocked or service_action_dns_request_action_blocked or service_action_api_call_error_code != null, XDM_CONST.OUTCOME_FAILED),
     xdm.event.outcome_reason = service_action_api_call_error_code,
     xdm.network.application_protocol = if(network_application_protocol != "Unknown", network_application_protocol),
