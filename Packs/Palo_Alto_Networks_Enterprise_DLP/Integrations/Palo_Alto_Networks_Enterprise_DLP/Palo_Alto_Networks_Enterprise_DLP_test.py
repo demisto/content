@@ -3,10 +3,9 @@ import json
 import demistomock as demisto
 import pytest
 from Palo_Alto_Networks_Enterprise_DLP import (
-    PAN_AUTH_URL,
+    DEFAULT_AUTH_URL,
     Client,
     exemption_eligible_command,
-    fetch_incidents,
     fetch_notifications,
     main,
     parse_dlp_report,
@@ -279,7 +278,7 @@ def test_refresh_token_with_client_credentials(requests_mock):
         "password": "test-pass",
         "passwordChanged": False,
     }
-    requests_mock.post(PAN_AUTH_URL, json={"access_token": "abc"})
+    requests_mock.post(DEFAULT_AUTH_URL, json={"access_token": "abc"})
     client = Client(DLP_URL, credentials, False, None)
     assert client.access_token == "abc"
 
@@ -308,7 +307,7 @@ def test_handle_4xx_errors(requests_mock, mocker, error_code):
         "password": "test-pass",
         "passwordChanged": False,
     }
-    requests_mock.post(PAN_AUTH_URL, json={"access_token": "abc"})
+    requests_mock.post(DEFAULT_AUTH_URL, json={"access_token": "abc"})
     client = Client(DLP_URL, credentials, False, None)
     response_mock = mocker.MagicMock()
     response_mock.status_code = error_code  # mocker.PropertyMock(return_value=error_code)
@@ -319,16 +318,6 @@ def test_handle_4xx_errors(requests_mock, mocker, error_code):
     tokens_mocker = mocker.patch.object(client, "_refresh_token")
     client._handle_4xx_errors(response_mock)
     tokens_mocker.assert_called_with()
-
-
-def test_fetch_incidents(requests_mock, mocker):
-    requests_mock.get(
-        f"{DLP_URL}/public/incident-notifications?regions=us",
-        json={"us": [{"incident": INCIDENT_JSON, "previous_notifications": []}]},
-    )
-    client = Client(DLP_URL, CREDENTIALS, False, None)
-    incidents = fetch_incidents(client=client, regions="us")
-    assert len(incidents) == 1
 
 
 def test_exemption_eligible(mocker):
