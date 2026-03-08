@@ -3,13 +3,13 @@ args:
   name: issue_id
   required: true
 - auto: PREDEFINED
-  description: 'Comma-separated free-text fields compared using semantic similarity scoring. Suitable for longer descriptive fields where partial matches are meaningful. For example: name, details, remediation.'
+  description: 'Comma-separated free-text fields compared using semantic similarity scoring. Suitable for longer descriptive fields where partial matches are meaningful. For example: name, description, remediation.'
   name: text_similarity_fields
 - auto: PREDEFINED
-  description: 'Comma-separated fields representing discrete identifiers. Each field contributes 1 if values are equal, or 0 if not. The average of all selected fields affects the overall similarity score. For example: status, type, assignee, severity, starred, category.'
+  description: 'Comma-separated fields representing discrete identifiers. Each field contributes 1 if values are equal, or 0 if not. The average of all selected fields affects the overall similarity score. For example: status, type, assignee, severity, starred, category, domain, source.'
   name: discrete_match_fields
 - auto: PREDEFINED
-  description: 'Comma-separated fields containing structured data. Each is compared using element-level similarity. For example: CustomFields.'
+  description: 'Comma-separated fields containing structured data. Each is compared using element-level similarity.'
   name: json_similarity_fields
 - auto: PREDEFINED
   description: Comma-separated list of additional issue fields to display, but which will not be taken into account when computing similarity.
@@ -17,13 +17,27 @@ args:
 - auto: PREDEFINED
   description: Comma-separated issue fields that must exactly match the current issue before any similarity scoring is applied. Acts as a strict pre-filter.
   name: filter_equal_fields
+  predefined:
+  - severity
+  - starred
+  - status ## (status.progress output)
+  - assignee ## (assigned_to output)
+  - category
+  - domain
+  - description
+  - name
+  - source
+  # - Identity_type ### return as a list
+  # - asset_ids
+  # - rule_id
+  # - rule_name
 - defaultValue: 1 months ago
   description: The start date by which to filter issues. Date format will be the same as in the issues query page, for example, "3 days ago", "2019-01-01T00:00:00 +0200".
   name: from_date
 - defaultValue: now
   description: The end date by which to filter issues. Date format will be the same as in the issues query page, for example, "3 days ago", "2019-01-01T00:00:00 +0200".
   name: to_date
-- defaultValue: '300'
+- defaultValue: '1500'
   description: The maximum number of issues to query.
   name: limit
 - auto: PREDEFINED

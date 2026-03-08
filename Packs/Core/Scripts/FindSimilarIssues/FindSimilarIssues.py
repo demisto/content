@@ -2,7 +2,6 @@ import demistomock as demisto
 import pandas as pd
 from CommonServerPython import *
 from SimilarObjectApiModule import *  # noqa: E402
-from AggregatedCommandApiModule import *  # noqa: E402
 from CommonServerUserPython import *
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -71,7 +70,7 @@ def replace_fields(args: dict, replacements: dict) -> dict:
 
         updated_fields = []
         for f in fields:
-            if key == "filter_equal_fields" and f == "status":
+            if key == "filter_equal_fields" and (f == "status" or f == "assignee"):
                 updated_fields.append(f)
             else:
                 updated_fields.append(replacements.get(f, f))
@@ -158,27 +157,25 @@ def get_all_issues_for_time_window_and_exact_match(
         else:
             msg += f"{MESSAGE_NO_FIELD % exact_match_field} \n"
 
+    demisto.debug(f"Base args sent to core-get-issues to filter by: {base_args}")
     all_issues: list[dict] = []
     page_size = 50
     current_issue_id = str(issue.get("internal_id"))
 
-    # Prepare batch commands using AggregatedCommandApiModule's Command class
+    # Prepare batch commands
     commands = []
     for offset in range(0, limit, page_size):
         current_batch_limit = min(limit, offset + page_size)
         args = {**base_args, "offset": offset, "limit": current_batch_limit}
-        commands.append(Command(name="core-get-issues", args=args))
+        commands.append({"core-get-issues": args})
 
-    demisto.debug(f"Calling core-get-issues in batch with {len(commands)} commands using BatchExecutor.")
-    batch_executor = BatchExecutor()
-    # execute_batch returns list[CommandProcessResults], where CommandProcessResults is list[tuple[result, hr, error]]
-    batch_results = batch_executor.execute_batch(commands)
+    demisto.debug(f"Calling core-get-issues in batch with {len(commands)} commands.")
+    batch_results = demisto.executeCommandBatch(commands)
 
-    for processed_results_list in batch_results:
-        for res_tuple in processed_results_list:
-            res, _, error = res_tuple
-            if error:
-                return_error(error)
+    for results_list in batch_results:
+        for res in results_list:
+            if is_error(res):
+                return_error(get_error(res))
 
             batch_issues = []
             if res and isinstance(res, dict) and (contents := res.get("Contents")):
@@ -204,6 +201,10 @@ def get_all_issues_for_time_window_and_exact_match(
     if not all_issues:
         msg += f"{MESSAGE_NO_INCIDENT_FETCHED} \n"
         return None, msg
+    
+    if len(all_issues) == limit:
+        all_issues.pop()
+    
     return all_issues, msg
 
 
@@ -366,11 +367,14 @@ def main():
     # Apply mappings from SearchSimilarIssues
     replacements = {
         "status": "resolution_status",
+        "assignee": "assigned_to_pretty",
         "type": "issue_type",
         "category": "issue_category",
         "name": "issue_name",
         "description": "issue_description",
-        "id": "issue_id"
+        "id": "issue_id",
+        "domain": "issue_domain",
+        "source": "issue_source"
     }
     args = replace_fields(args, replacements)
     args = update_args(args)
@@ -398,7 +402,7 @@ def main():
     confidence = float(args.get("minimunIncidentSimilarity") or 0.2)
     max_issues = int(args.get("maxIncidentsToDisplay") or 100)
     aggregate = args.get("aggreagateIncidentsDifferentDate") or "False"
-    limit = int(args.get("limit") or 300)
+    limit = int(args.get("limit") or 1500) + 1
     show_actual_issue = args.get("showCurrentIncident")
     issue_id = args.get("incidentId")
     include_indicators_similarity = args.get("includeIndicatorsSimilarity") or "False"
