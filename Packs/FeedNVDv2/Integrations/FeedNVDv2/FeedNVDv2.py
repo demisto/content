@@ -14,9 +14,10 @@ from dateparser import parse
 urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-# NVD API severity filter parameter names (camelCase as required by the API).
-# The API supports filtering by CVSS v4, v3, and v2 severity independently.
-CVSS_SEVERITY_PARAMS = ["cvssV4Severity", "cvssV3Severity", "cvssV2Severity"]
+# NVD API severity filter parameter name (camelCase as required by the API).
+# Note: cvssV2Severity, cvssV3Severity, and cvssV4Severity are mutually exclusive in the API.
+# cvssV3Severity is used as it supports CRITICAL severity and covers the majority of CVEs.
+CVSS_SEVERITY_PARAM = "cvssV3Severity"
 DEFAULT_MAX_INDICATORS_PER_FETCH = 10000
 
 
@@ -70,10 +71,9 @@ class Client(BaseClient):
     def build_param_string(self, params: dict) -> str:
         """Builds a string out of the URL parameters to allow duplication of Severity keys.
 
-        The NVD API supports filtering by CVSS severity for each CVSS version independently
-        (cvssV4Severity, cvssV3Severity, cvssV2Severity). We append the severity filter for
-        all supported CVSS versions so that CVEs are matched regardless of which CVSS version
-        they have been scored with.
+        The NVD API severity parameters (cvssV2Severity, cvssV3Severity, cvssV4Severity) are
+        mutually exclusive — only one can be used per request. cvssV3Severity is used as it
+        supports CRITICAL severity and covers the vast majority of CVEs in the database.
 
         Args:
             params (dict): The URL parameters.
@@ -86,9 +86,8 @@ class Client(BaseClient):
         param_string = param_string.replace("noRejected=None", "noRejected")
         param_string = param_string.replace("hasKev=True", "hasKev")
 
-        for severity_param in CVSS_SEVERITY_PARAMS:
-            for value in self.cvss_severity:
-                param_string += f"&{severity_param}={value}"
+        for value in self.cvss_severity:
+            param_string += f"&{CVSS_SEVERITY_PARAM}={value}"
 
         return param_string
 

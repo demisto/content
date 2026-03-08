@@ -41,7 +41,7 @@ configuration:
   hidden: true
 - name: cvss_severity
   display: CVSS Severity Filter
-  additionalinfo: Select the severities you wish to get back from the feed. The filter is applied across all CVSS versions (V2, V3, and V4).
+  additionalinfo: Select the severities you wish to get back from the feed. Filters by CVSS v3 severity (cvssV3Severity), which covers the majority of CVEs and supports CRITICAL severity.
   options:
   - CRITICAL
   - HIGH

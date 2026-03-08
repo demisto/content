@@ -14,7 +14,7 @@ from FeedNVDv2 import (
     get_cvss_version_and_score,
     parse_cpe_command,
     retrieve_cves,
-    CVSS_SEVERITY_PARAMS,
+    CVSS_SEVERITY_PARAM,
 )
 
 BASE_URL = "https://services.nvd.nist.gov"  # disable-secrets-detection
@@ -138,15 +138,15 @@ def test_parse_cpe(cpe, expected_output, expected_relationships):
     [
         (
             {"param1": "value1", "noRejected": "None"},
-            "param1=value1&noRejected" + "".join(f"&{p}=LOW&{p}=MEDIUM" for p in CVSS_SEVERITY_PARAMS),
+            f"param1=value1&noRejected&{CVSS_SEVERITY_PARAM}=LOW&{CVSS_SEVERITY_PARAM}=MEDIUM",
         ),
         (
             {"noRejected": "None"},
-            "noRejected" + "".join(f"&{p}=LOW&{p}=MEDIUM" for p in CVSS_SEVERITY_PARAMS),
+            f"noRejected&{CVSS_SEVERITY_PARAM}=LOW&{CVSS_SEVERITY_PARAM}=MEDIUM",
         ),
         (
             {"hasKev": "True"},
-            "hasKev" + "".join(f"&{p}=LOW&{p}=MEDIUM" for p in CVSS_SEVERITY_PARAMS),
+            f"hasKev&{CVSS_SEVERITY_PARAM}=LOW&{CVSS_SEVERITY_PARAM}=MEDIUM",
         ),
     ],
 )
@@ -192,8 +192,7 @@ def test_build_param_string_no_severity():
     client.cvss_severity = []
     result = client.build_param_string({"noRejected": "None"})
     assert result == "noRejected"
-    for param in CVSS_SEVERITY_PARAMS:
-        assert param not in result
+    assert CVSS_SEVERITY_PARAM not in result
 
 
 def test_build_param_string_single_severity():
@@ -203,12 +202,11 @@ def test_build_param_string_single_severity():
     When:
         build_param_string is called.
     Then:
-        The severity should be appended for all CVSS version parameters.
+        The severity should be appended using the correct cvssV3Severity parameter.
     """
     client.cvss_severity = ["CRITICAL"]
     result = client.build_param_string({"noRejected": "None"})
-    for param in CVSS_SEVERITY_PARAMS:
-        assert f"{param}=CRITICAL" in result
+    assert f"{CVSS_SEVERITY_PARAM}=CRITICAL" in result
 
 
 def test_build_param_string_severity_uses_camel_case():
@@ -218,13 +216,11 @@ def test_build_param_string_severity_uses_camel_case():
     When:
         build_param_string is called.
     Then:
-        The severity parameters should use camelCase (cvssV4Severity, cvssV3Severity, cvssV2Severity).
+        The severity parameter should use camelCase cvssV3Severity (not lowercase cvssv4severity).
     """
     client.cvss_severity = ["HIGH"]
     result = client.build_param_string({"noRejected": "None"})
-    assert "cvssV4Severity=HIGH" in result
     assert "cvssV3Severity=HIGH" in result
-    assert "cvssV2Severity=HIGH" in result
     # Ensure the old lowercase parameter is NOT used
     assert "cvssv4severity" not in result
 
