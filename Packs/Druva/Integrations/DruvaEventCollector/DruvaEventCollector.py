@@ -8,6 +8,7 @@ from CommonServerPython import *
 MIN_FETCH = 1
 MAX_FETCH = 10_000
 MAX_EVENTS_API_CALL = 500  # As a limitation of the API, we can only retrieve 500 events at a time
+FIRST_FETCH_TIMEDELTA = timedelta(hours=1)
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -187,6 +188,41 @@ def get_events(client: Client, event_type: str, tracker: Optional[str] = None) -
     return response["events"], response["tracker"]
 
 
+def _filter_old_events(events: list[dict]) -> list[dict]:
+    """
+    Filters out events older than FIRST_FETCH_TIMEDELTA (1 hour) from now.
+    Used on the first fetch (no tracker) or after a last-run reset to avoid
+    ingesting a large volume of historical events.
+
+    Args:
+        events: list of events to filter.
+
+    Returns:
+        list of events that are newer than or equal to the cutoff time.
+    """
+    cutoff = datetime.utcnow() - FIRST_FETCH_TIMEDELTA
+    filtered_events: list[dict] = []
+    dropped_count = 0
+
+    for event in events:
+        # Handle both timestamp formats: "timestamp" (InSync events) and "timeStamp" (Cybersecurity events)
+        timestamp_value = event.get("timestamp") or event.get("timeStamp")
+        event_time = arg_to_datetime(timestamp_value)
+
+        if event_time and event_time.replace(tzinfo=None) >= cutoff:
+            filtered_events.append(event)
+        else:
+            dropped_count += 1
+
+    if dropped_count:
+        demisto.debug(
+            f"First fetch (no tracker): dropped {dropped_count} events older than "
+            f"{cutoff.strftime(DATE_FORMAT)}. Kept {len(filtered_events)} events."
+        )
+
+    return filtered_events
+
+
 def fetch_events(
     client: Client, last_run: dict[str, str], max_fetch: int, event_types: list[str]
 ) -> tuple[list[dict], dict[str, str]]:
@@ -237,6 +273,11 @@ def fetch_events(
 
             # Add source_log_type to events before extending
             add_time_and_source_to_events(events, event_type)
+
+            # On first fetch (no tracker), filter out events older than 1 hour to avoid ingesting historical data
+            if not tracker:
+                events = _filter_old_events(events)
+
             type_events.extend(events)
 
             # Check if we've reached the per-type max_fetch limit
