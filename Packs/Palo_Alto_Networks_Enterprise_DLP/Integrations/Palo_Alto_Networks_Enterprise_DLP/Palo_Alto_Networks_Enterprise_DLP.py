@@ -4,7 +4,7 @@ import math
 import urllib.parse
 from enum import Enum
 from string import Template
-
+from datetime import UTC
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
@@ -16,8 +16,8 @@ urllib3.disable_warnings()
 
 """ GLOBALS/PARAMS """
 MAX_ATTEMPTS = 3
-BASE_URL = "https://api.dlp.paloaltonetworks.com/v1/"
-PAN_AUTH_URL = "https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token"
+DEFAULT_BASE_URL = "https://api.dlp.paloaltonetworks.com/v1/"
+DEFAULT_AUTH_URL = "https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token"
 REPORT_URL = "public/report/{}"
 INCIDENTS_URL = "public/incident-notifications"
 REFRESH_TOKEN_URL = "public/oauth/refreshToken"
@@ -32,6 +32,10 @@ CREDENTIAL = "credential"
 IDENTIFIER = "identifier"
 PASSWORD = "password"
 
+# Last run
+START_TIMESTAMP_KEY = "start_timestamp"
+LAST_IDS_KEY = "last_ids"
+LOCAL_LAST_RUN = {}  # In memory last run object during long running execution
 
 class FeedbackStatus(Enum):
     PENDING_RESPONSE = "PENDING_RESPONSE"
@@ -46,9 +50,10 @@ class FeedbackStatus(Enum):
 
 
 class Client(BaseClient):
-    def __init__(self, url, credentials, insecure, proxy):
-        super().__init__(base_url=url, headers=None, verify=not insecure, proxy=proxy)
+    def __init__(self, base_url: str, auth_url: str, credentials, verify: bool, proxy: bool):
+        super().__init__(base_url=base_url, headers=None, verify=verify, proxy=proxy)
         self.credentials = credentials
+        self.auth_url = auth_url
         credential_name = credentials[CREDENTIAL]
         if not credential_name:
             self.access_token = credentials[IDENTIFIER]
@@ -83,7 +88,7 @@ class Client(BaseClient):
 
         payload = "grant_type=client_credentials"
         try:
-            r = self._http_request(full_url=PAN_AUTH_URL, method="POST", headers=headers, data=payload, ok_codes=[200, 201, 204])
+            r = self._http_request(full_url=self.auth_url, method="POST", headers=headers, data=payload, ok_codes=[200, 201, 204])
             new_token = r.get("access_token")
             if new_token:
                 self.access_token = new_token
@@ -111,7 +116,7 @@ class Client(BaseClient):
         except Exception:
             pass
 
-    def _get_dlp_api_call(self, url_suffix: str):
+    def _get_dlp_api_call(self, url_suffix: str) -> tuple[dict[str, Any], int]:
         """
         Makes a HTTPS Get call on the DLP API
         Args:
@@ -195,7 +200,7 @@ class Client(BaseClient):
 
         return self._get_dlp_api_call(url)
 
-    def get_dlp_incidents(self, regions: str, start_time: int = None, end_time: int = None) -> tuple:
+    def get_dlp_incidents(self, regions: str, start_time: int | None = None, end_time: int | None = None) -> tuple[dict[str, Any], int]:
         url = INCIDENTS_URL
         params = {}
         if regions:
@@ -404,7 +409,7 @@ def create_incident(notification: dict, region: str, incident_type: str = "Data 
     previous_notifications = notification["previous_notifications"]
     raw_incident["region"] = region
     raw_incident["previousNotification"] = previous_notifications[0] if len(previous_notifications) > 0 else None
-    incident_creation_time = dateparser.parse(raw_incident["createdAt"])
+    incident_creation_time = cast(datetime, dateparser.parse(raw_incident["createdAt"]))
     parsed_details = parse_incident_details(raw_incident["incidentDetails"])
     raw_incident["incidentDetails"] = parsed_details
     if not raw_incident.get("userId"):
@@ -415,32 +420,16 @@ def create_incident(notification: dict, region: str, incident_type: str = "Data 
                 raw_incident["userId"] = attribute_value
 
     event_dump = json.dumps(raw_incident)
-    incident = {
+    return {
         "name": f'Palo Alto Networks DLP Incident {raw_incident["incidentId"]}',
         "type": incident_type,
-        "occurred": incident_creation_time.isoformat(),  # type: ignore
+        "occurred": incident_creation_time.isoformat(),
         "rawJSON": event_dump,
         "details": event_dump,
+        # Internal fields, will be popped before creating the incident
+        "__id": raw_incident["incidentId"],
+        "__timestamp": int(incident_creation_time.timestamp()),
     }
-    return incident
-
-
-def fetch_incidents(
-    client: Client, regions: str, start_time: int = None, end_time: int = None, incident_type: str = "Data Loss Prevention"
-):
-    if start_time and end_time:
-        print_debug_msg(f"Start fetching incidents between {start_time} and {end_time}.")
-    else:
-        print_debug_msg("Start fetching most recent incidents")
-
-    notification_map, _ = client.get_dlp_incidents(regions=regions, start_time=start_time, end_time=end_time)
-    incidents = []
-    for region, notifications in notification_map.items():
-        demisto.debug(f"Received {len(notifications)} raw notifications from {region=}.")
-        for notification in notifications:
-            incident = create_incident(notification, region, incident_type)
-            incidents.append(incident)
-    return incidents
 
 
 def is_reset_triggered():
@@ -459,44 +448,153 @@ def is_reset_triggered():
     if ctx and RESET_KEY in ctx:
         print_debug_msg("Reset fetch-incidents.")
         set_integration_context({"samples": "[]"})
+        set_last_run({})
         return True
     return False
 
 
-def fetch_notifications(client: Client, regions: str, incident_type: str = "Data Loss Prevention"):
+def get_last_run() -> dict[str, Any]:
+    """
+    Get the last run state for incident fetching.
+    Uses in-memory `LOCAL_LAST_RUN` during long running execution for performance and consistency.
+    Falls back to `demisto.getLastRun()` if container is freshly deployed.
+    
+    Returns:
+        dict[str, Any]: Dictionary containing optional start_timestamp and last_ids from previous fetch.
+    """
+    return LOCAL_LAST_RUN or demisto.getLastRun()
+
+
+def set_last_run(last_run: dict[str, Any]) -> None:
+    """
+    Set the last run state for incident fetching.
+    Updates both in-memory `LOCAL_LAST_RUN` and persisted state via `demisto.setLastRun()`.
+    The persisted state serves as a backup in case long running execution gets interrupted.
+    
+    Args:
+        last_run (dict[str, Any]): Dictionary containing start_timestamp and last_ids for next fetch.
+    """
+    global LOCAL_LAST_RUN
+    LOCAL_LAST_RUN = last_run
+    demisto.setLastRun(last_run)
+
+
+def compute_next_run(incidents: list[dict], last_run: dict[str, Any]) -> dict[str, Any]:
+    """
+    Compute the next run state based on fetched incidents.
+    Removes internal __id and __timestamp fields from incidents as a side effect.
+    
+    Args:
+        incidents: List of incident objects with __id and __timestamp fields
+        last_run: Previous last run state to return if no incidents
+        
+    Returns:
+        Dictionary with start_timestamp and last_ids for next run
+        
+    Side Effects:
+        Modifies incidents list by removing __id and __timestamp fields
+    """
+    if not incidents:
+        return last_run
+
+    last_timestamp = incidents[-1]["__timestamp"]
+    last_incident_ids = [incident["__id"] for incident in incidents if incident["__timestamp"] == last_timestamp]
+
+    # Clean private internal fields before creating incidents
+    for incident in incidents:
+        incident.pop("__id")
+        incident.pop("__timestamp")
+
+    return {START_TIMESTAMP_KEY: last_timestamp, LAST_IDS_KEY: last_incident_ids}
+
+
+def fetch_notifications(
+    client: Client,
+    regions: str,
+    first_fetch_timestamp: int,
+    incident_type: str = "Data Loss Prevention",
+):
+    """
+    Fetch notifications from DLP API and filter out duplicates.
+    
+    Args:
+        client: DLP API client
+        regions: Regions to fetch from
+        first_fetch_timestamp: Timestamp to use for first fetch (unix seconds)
+        incident_type: Type of incident to create
+
+    """
+    last_run = get_last_run()
+    last_incident_ids = last_run.get(LAST_IDS_KEY) or []
+    start_timestamp = last_run.get(START_TIMESTAMP_KEY) or first_fetch_timestamp
+    end_timestamp = int(datetime.now(tz=UTC).timestamp())
+
     integration_context = demisto.getIntegrationContext()
     access_token = integration_context.get(ACCESS_TOKEN)
     if access_token:
         client.set_access_token(access_token)
 
-    incidents = fetch_incidents(client=client, regions=regions, incident_type=incident_type)
-    print_debug_msg(f"Received {len(incidents)} incidents from raw notifications.")
+    new_incidents = []
+    all_incident_ids = set(last_incident_ids)
+
+    notification_map, _ = client.get_dlp_incidents(regions=regions, start_time=start_timestamp, end_time=end_timestamp)
+    for region, notifications in notification_map.items():
+        demisto.debug(f"Received {len(notifications)} raw notifications from {region=}.")
+        for notification in notifications:
+            incident_id = notification["incident"]["incidentId"]
+            if incident_id in all_incident_ids:
+                print_debug_msg(f"Skipping duplicate {incident_id=} in {region=}.")
+                continue
+
+            incident = create_incident(notification, region, incident_type)
+            new_incidents.append(incident)
+            all_incident_ids.add(incident_id)
+
+    new_incidents = sorted(new_incidents, key=lambda inc: inc["__timestamp"])
+    next_run = compute_next_run(new_incidents, last_run)
+
     if not is_reset_triggered():
-        demisto.createIncidents(incidents)
-        demisto.debug(f"Created {len(incidents)} incidents: {[incident.get('name') for incident in incidents]}.")
-        new_ctx = {ACCESS_TOKEN: client.access_token, "samples": incidents}
+        demisto.debug(f"Creating {len(new_incidents)} incidents: {[inc.get('name') for inc in new_incidents]}.")
+        demisto.createIncidents(new_incidents)
+
+        demisto.debug(f"Setting {next_run=}.")
+        set_last_run(next_run)
+
+        demisto.debug(f"Updating integration context with access token and {len(new_incidents)} sample incidents.")
+        new_ctx = {ACCESS_TOKEN: client.access_token, "samples": new_incidents}
         demisto.setIntegrationContext(new_ctx)
-    elif len(incidents) > 0:
-        print_debug_msg(f"Skipped {len(incidents)} incidents because of reset")
+
+    elif new_incidents:
+        print_debug_msg(f"Skipped {len(new_incidents)} incidents because of reset")
 
 
 def long_running_execution_command(client: Client, params: dict):
     """
     Long running execution of fetching incidents from Palo Alto Networks Enterprise DLP.
-    Will continue to fetch in an infinite loop.
+    Will continue to fetch in an infinite loop using time-based queries and deduplication.
     Args:
         params (Dict): Demisto params.
 
     """
     demisto.setIntegrationContext({ACCESS_TOKEN: ""})
-    regions = demisto.get(params, "dlp_regions", "")
+    regions = params.get("dlp_regions", "")
     incident_type = params.get("incidentType", "Data Loss Prevention")
     sleep_time = FETCH_SLEEP
     last_time_sleep_interval_queries = math.floor(datetime.now().timestamp())
+
+    first_fetch = params.get("first_fetch") or DEFAULT_FIRST_FETCH
+    first_fetch_datetime = arg_to_datetime(first_fetch, settings={"TIMEZONE": "UTC"})
+    first_fetch_timestamp = int(first_fetch_datetime.timestamp())  # type: ignore
+
     while True:
         try:
             current_time = math.floor(datetime.now().timestamp())
-            fetch_notifications(client, regions, incident_type=incident_type)
+            fetch_notifications(
+                client=client,
+                regions=regions,
+                first_fetch_timestamp=first_fetch_timestamp,
+                incident_type=incident_type,
+            )
 
             if current_time - last_time_sleep_interval_queries > 5 * 60:
                 overriden_sleep_time = client.query_for_sleep_time()
@@ -566,36 +664,45 @@ def reset_last_run_command() -> str:
 
 def main():
     """Main Function"""
-    try:
-        demisto.info(f"Command is {demisto.command()}")
-        params = demisto.params()
-        print_debug_msg(f'Received parameters: {",".join(params.keys())}.')
-        credentials = params.get("credentials")
+    params = demisto.params()
+    args = demisto.args()
+    command = demisto.command()
 
-        client = Client(BASE_URL, credentials, params.get("insecure"), params.get("proxy"))
-        args = demisto.args()
-        if demisto.command() == "pan-dlp-get-report":
+    try:
+        print_debug_msg(f'Received parameters: {",".join(params.keys())}.')
+        credentials = params.get("credentials", {})
+        base_url = params.get("base_url") or DEFAULT_BASE_URL
+        auth_url = params.get("auth_url") or DEFAULT_AUTH_URL
+        verify = not params.get("insecure", True)
+        proxy = params.get("proxy", False)
+
+        demisto.info(f"Command being called is {command}.")
+        client = Client(base_url, auth_url, credentials, verify, proxy)
+        
+        if command == "pan-dlp-get-report":
             report_id = args.get("report_id")
             fetch_snippets = argToBoolean(args.get("fetch_snippets"))
-            report_json, status_code = client.get_dlp_report(report_id, fetch_snippets)
+            report_json, _ = client.get_dlp_report(report_id, fetch_snippets)
             return_results(parse_dlp_report(report_json))
-        elif demisto.command() == "fetch-incidents":
+        elif command == "fetch-incidents":
             demisto.incidents(fetch_incidents_command())
-        elif demisto.command() == "long-running-execution":
+        elif command == "long-running-execution":
             long_running_execution_command(client, params)
-        elif demisto.command() == "pan-dlp-update-incident":
+        elif command == "pan-dlp-update-incident":
             return_results(update_incident_command(client, args))
-        elif demisto.command() == "pan-dlp-exemption-eligible":
+        elif command == "pan-dlp-exemption-eligible":
             return_results(exemption_eligible_command(args, params))
-        elif demisto.command() == "pan-dlp-slack-message":
+        elif command == "pan-dlp-slack-message":
             return_results(slack_bot_message_command(args, params))
-        elif demisto.command() == "pan-dlp-reset-last-run":
+        elif command == "pan-dlp-reset-last-run":
             return_results(reset_last_run_command())
-        elif demisto.command() == "test-module":
+        elif command == "test-module":
             test(client, params)
+        else:
+            raise NotImplementedError(f"Unknown command {command}.")
 
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 if __name__ in ["__builtin__", "builtins", "__main__"]:
