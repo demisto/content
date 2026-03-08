@@ -132,7 +132,7 @@ def process_instance_data(instance: Dict[str, Any]) -> Dict[str, Any]:
 
 def build_pagination_kwargs(
     args: Dict[str, Any],
-    minimum_limit: int = 0,
+    minimum_limit: int = 1,
     max_limit: int = MAX_LIMIT_VALUE,
     next_token_name: str = "NextToken",
     limit_name: str = "MaxResults",
@@ -5198,6 +5198,11 @@ class EC2:
                     ),
                     "PrivateDnsPreference": args.get("dns_options_private_dns_preference"),
                     "PrivateDnsSpecifiedDomains": argToList(args.get("dns_options_private_dns_specified_domains")),
+                },
+                "SubnetConfiguration": {
+                    "Ipv4": "subnet_configuration_ipv4",
+                    "Ipv6": "subnet_configuration_ipv6",
+                    "SubnetId": "subnet_configuration_subnet_id",
                 },
                 "TagSpecifications": [{"ResourceType": "vpc-endpoint", "Tags": parse_tag_field(args.get("tags"))}],
             }

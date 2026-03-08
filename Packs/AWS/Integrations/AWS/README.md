@@ -4516,7 +4516,6 @@ Modifies the specified EC2 Fleet.
 
 There is no context output for this command.
 
-
 ### aws-ec2-vpc-delete
 
 ***
@@ -4567,6 +4566,9 @@ Creates a VPC endpoint for a specified service. An endpoint enables you to creat
 | dns_options_private_dns_only_for_inbound_resolver_endpoint | Whether to enable private DNS only for inbound endpoints. Possible values are: true, false. | Optional |
 | dns_options_private_dns_preference | The preference for creating and associating private hosted zones with a specified VPC. | Optional |
 | dns_options_private_dns_specified_domains | The private domains used for creating and associating private hosted zones with the VPC. | Optional |
+| subnet_configuration_ipv4 | The IPv4 address to assign to the endpoint network interface in the subnet. | Optional |
+| subnet_configuration_ipv6 | The IPv6 address to assign to the endpoint network interface in the subnet. | Optional |
+| subnet_configuration_subnet_id | The ID of the subnet. | Optional |
 | private_dns_enabled | Whether to associate a private hosted zone with the specified VPC. Applicable for Interface endpoints only. Possible values are: true, false. | Optional |
 | resource_configuration_arn | The Amazon Resource Name (ARN) of a resource configuration that is associated with the VPC resource type endpoint. | Optional |
 | tags | The tags to apply to the VPC endpoint. Format key=&lt;key&gt;,value=&lt;value&gt;;key=&lt;key&gt;,value=&lt;value&gt;. | Optional |
@@ -4579,6 +4581,8 @@ Creates a VPC endpoint for a specified service. An endpoint enables you to creat
 | AWS.EC2.VpcEndpoints.VpcEndpointType | string | The type of endpoint. |
 | AWS.EC2.VpcEndpoints.VpcId | string | The ID of the VPC associated with the endpoint. |
 | AWS.EC2.VpcEndpoints.ServiceName | string | The name of the service associated with the endpoint. |
+| AWS.EC2.VpcEndpoints.ServiceNetworkArn | string | The Amazon Resource Name \(ARN\) of the service network. |
+| AWS.EC2.VpcEndpoints.ServiceRegion | string | The Region where the service is hosted. |
 | AWS.EC2.VpcEndpoints.State | string | The state of the VPC endpoint. |
 | AWS.EC2.VpcEndpoints.PolicyDocument | string | The policy document associated with the endpoint, if applicable. |
 | AWS.EC2.VpcEndpoints.RouteTableIds | array | One or more route tables associated with the endpoint. |
@@ -4588,6 +4592,8 @@ Creates a VPC endpoint for a specified service. An endpoint enables you to creat
 | AWS.EC2.VpcEndpoints.IpAddressType | string | The IP address type for the endpoint. |
 | AWS.EC2.VpcEndpoints.DnsOptions.DnsRecordIpType | string | The DNS records created for the endpoint. |
 | AWS.EC2.VpcEndpoints.DnsOptions.PrivateDnsOnlyForInboundResolverEndpoint | boolean | Whether to enable private DNS only for inbound endpoints. |
+| AWS.EC2.VpcEndpoints.DnsOptions.PrivateDnsPreference | string | The preference for which private domains have a private hosted zone created for and associated with the specified VPC. |
+| AWS.EC2.VpcEndpoints.DnsOptions.PrivateDnsSpecifiedDomainSet | array | Indicates which of the private domains to create private hosted zones for and associate with the specified VPC. |
 | AWS.EC2.VpcEndpoints.PrivateDnsEnabled | boolean | Whether the VPC is associated with a private hosted zone. |
 | AWS.EC2.VpcEndpoints.RequesterManaged | boolean | Whether the VPC endpoint is being managed by its service. |
 | AWS.EC2.VpcEndpoints.NetworkInterfaceIds | array | One or more network interfaces for the endpoint. |
@@ -4599,6 +4605,12 @@ Creates a VPC endpoint for a specified service. An endpoint enables you to creat
 | AWS.EC2.VpcEndpoints.OwnerId | string | The ID of the AWS account that owns the VPC endpoint. |
 | AWS.EC2.VpcEndpoints.LastError.Message | string | The VCP endpoint error message. |
 | AWS.EC2.VpcEndpoints.LastError.Code | string | The VCP endpoint error code. |
+| AWS.EC2.VpcEndpoints.FailureReason | string | Reason for the failure. |
+| AWS.EC2.VpcEndpoints.Ipv4Prefixes.IpPrefixes | array | Array of IPv4 prefixes. |
+| AWS.EC2.VpcEndpoints.Ipv4Prefixes.SubnetId | array | ID of the subnet. |
+| AWS.EC2.VpcEndpoints.Ipv6Prefixes.IpPrefixes | array | Array of IPv6 prefixes. |
+| AWS.EC2.VpcEndpoints.Ipv6Prefixes.SubnetId | array | ID of the subnet. |
+| AWS.EC2.VpcEndpoints.ResourceConfigurationArn | array | The Amazon Resource Name \(ARN\) of the resource configuration. |
 
 ### aws-ec2-internet-gateway-describe
 

@@ -13293,7 +13293,6 @@ def test_modify_fleet_command_with_launch_template(mocker):
     assert call_kwargs["LaunchTemplateConfigs"][0]["LaunchTemplateSpecification"]["LaunchTemplateId"] == "lt-0newtemplate"
 
 
-
 def test_delete_vpc_command_success(mocker):
     """
     Given: A mocked EC2 client and a valid vpc_id argument.

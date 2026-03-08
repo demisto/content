@@ -12963,6 +12963,15 @@ script:
     - name: dns_options_private_dns_specified_domains
       description: The private domains used for creating and associating private hosted zones with the VPC
       required: false
+    - name: subnet_configuration_ipv4
+      description: The IPv4 address to assign to the endpoint network interface in the subnet.
+      required: false
+    - name: subnet_configuration_ipv6
+      description: The IPv6 address to assign to the endpoint network interface in the subnet.
+      required: false
+    - name: subnet_configuration_subnet_id
+      description: The ID of the subnet.
+      required: false
     - name: private_dns_enabled
       description: Whether to associate a private hosted zone with the specified VPC. Applicable for Interface endpoints only.
       required: false
@@ -12988,6 +12997,12 @@ script:
       type: string
     - contextPath: AWS.EC2.VpcEndpoints.ServiceName
       description: The name of the service associated with the endpoint.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.ServiceNetworkArn
+      description: The Amazon Resource Name (ARN) of the service network.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.ServiceRegion
+      description: The Region where the service is hosted.
       type: string
     - contextPath: AWS.EC2.VpcEndpoints.State
       description: The state of the VPC endpoint.
@@ -13016,6 +13031,12 @@ script:
     - contextPath: AWS.EC2.VpcEndpoints.DnsOptions.PrivateDnsOnlyForInboundResolverEndpoint
       description: Whether to enable private DNS only for inbound endpoints.
       type: boolean
+    - contextPath: AWS.EC2.VpcEndpoints.DnsOptions.PrivateDnsPreference
+      description: The preference for which private domains have a private hosted zone created for and associated with the specified VPC.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.DnsOptions.PrivateDnsSpecifiedDomainSet
+      description: Indicates which of the private domains to create private hosted zones for and associate with the specified VPC.
+      type: array
     - contextPath: AWS.EC2.VpcEndpoints.PrivateDnsEnabled
       description: Whether the VPC is associated with a private hosted zone.
       type: boolean
@@ -13049,6 +13070,24 @@ script:
     - contextPath: AWS.EC2.VpcEndpoints.LastError.Code
       description: The VCP endpoint error code.
       type: string
+    - contextPath: AWS.EC2.VpcEndpoints.FailureReason
+      description: Reason for the failure.
+      type: string
+    - contextPath: AWS.EC2.VpcEndpoints.Ipv4Prefixes.IpPrefixes
+      description: Array of IPv4 prefixes.
+      type: array
+    - contextPath: AWS.EC2.VpcEndpoints.Ipv4Prefixes.SubnetId
+      description: ID of the subnet.
+      type: array
+    - contextPath: AWS.EC2.VpcEndpoints.Ipv6Prefixes.IpPrefixes
+      description: Array of IPv6 prefixes.
+      type: array
+    - contextPath: AWS.EC2.VpcEndpoints.Ipv6Prefixes.SubnetId
+      description: ID of the subnet.
+      type: array
+    - contextPath: AWS.EC2.VpcEndpoints.ResourceConfigurationArn
+      description: The Amazon Resource Name (ARN) of the resource configuration.
+      type: array
 
   - name: aws-ec2-internet-gateway-describe
     description: A description of one or more of your internet gateways.
