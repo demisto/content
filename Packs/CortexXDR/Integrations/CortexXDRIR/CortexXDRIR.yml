@@ -5238,7 +5238,7 @@ script:
       description: Whether this observation is excluded from standard views.
       type: Boolean
   - name: xdr-issue-create
-    description: Create a new issue. Issues with an 'INFO' severity level will not be displayed in the UI.
+    description: Creates a new issue. Issues with an 'INFO' severity level are not displayed in the UI.
     arguments:
     - name: name
       description: The issue name.
