@@ -14,7 +14,7 @@ from FeedNVDv2 import (
     get_cvss_version_and_score,
     parse_cpe_command,
     retrieve_cves,
-    LATEST_CVSS_VERSION_SEVERITY,
+    CVSS_SEVERITY_PARAMS,
 )
 
 BASE_URL = "https://services.nvd.nist.gov"  # disable-secrets-detection
@@ -138,10 +138,16 @@ def test_parse_cpe(cpe, expected_output, expected_relationships):
     [
         (
             {"param1": "value1", "noRejected": "None"},
-            f"param1=value1&noRejected&{LATEST_CVSS_VERSION_SEVERITY}=LOW&{LATEST_CVSS_VERSION_SEVERITY}=MEDIUM",
+            "param1=value1&noRejected" + "".join(f"&{p}=LOW&{p}=MEDIUM" for p in CVSS_SEVERITY_PARAMS),
         ),
-        ({"noRejected": "None"}, f"noRejected&{LATEST_CVSS_VERSION_SEVERITY}=LOW&{LATEST_CVSS_VERSION_SEVERITY}=MEDIUM"),
-        ({"hasKev": "True"}, f"hasKev&{LATEST_CVSS_VERSION_SEVERITY}=LOW&{LATEST_CVSS_VERSION_SEVERITY}=MEDIUM"),
+        (
+            {"noRejected": "None"},
+            "noRejected" + "".join(f"&{p}=LOW&{p}=MEDIUM" for p in CVSS_SEVERITY_PARAMS),
+        ),
+        (
+            {"hasKev": "True"},
+            "hasKev" + "".join(f"&{p}=LOW&{p}=MEDIUM" for p in CVSS_SEVERITY_PARAMS),
+        ),
     ],
 )
 def test_build_param_string(input_params, expected_param_string):
@@ -172,3 +178,124 @@ def test_fetch_indicators_command():
         demisto_mock.getArg.return_value = "130 days"
         fetch_indicators_command(client)
         assert mock_retrieve_cves.call_count == 2
+
+
+def test_build_param_string_no_severity():
+    """
+    Given:
+        A client with no CVSS severity filters configured.
+    When:
+        build_param_string is called.
+    Then:
+        No severity parameters should be appended.
+    """
+    client.cvss_severity = []
+    result = client.build_param_string({"noRejected": "None"})
+    assert result == "noRejected"
+    for param in CVSS_SEVERITY_PARAMS:
+        assert param not in result
+
+
+def test_build_param_string_single_severity():
+    """
+    Given:
+        A client with a single CVSS severity filter (CRITICAL).
+    When:
+        build_param_string is called.
+    Then:
+        The severity should be appended for all CVSS version parameters.
+    """
+    client.cvss_severity = ["CRITICAL"]
+    result = client.build_param_string({"noRejected": "None"})
+    for param in CVSS_SEVERITY_PARAMS:
+        assert f"{param}=CRITICAL" in result
+
+
+def test_build_param_string_severity_uses_camel_case():
+    """
+    Given:
+        A client with CVSS severity filters.
+    When:
+        build_param_string is called.
+    Then:
+        The severity parameters should use camelCase (cvssV4Severity, cvssV3Severity, cvssV2Severity).
+    """
+    client.cvss_severity = ["HIGH"]
+    result = client.build_param_string({"noRejected": "None"})
+    assert "cvssV4Severity=HIGH" in result
+    assert "cvssV3Severity=HIGH" in result
+    assert "cvssV2Severity=HIGH" in result
+    # Ensure the old lowercase parameter is NOT used
+    assert "cvssv4severity" not in result
+
+
+def test_retrieve_cves_respects_limit():
+    """
+    Given:
+        A remaining_limit of 1 and a response with 1 CVE.
+    When:
+        retrieve_cves is called.
+    Then:
+        It should stop fetching after reaching the limit.
+    """
+    with patch("FeedNVDv2.Client.get_cves") as mock_get_cves:
+        response = open_json("./test_data/nist_response.json")
+        # Simulate a response with totalResults > resultsPerPage to test limit stops early
+        response["totalResults"] = 5000
+        mock_get_cves.return_value = response
+        raw_cves = retrieve_cves(client, parse("2024-01-01T00:00:00Z"), parse("2024-01-04T00:00:00Z"), True, remaining_limit=1)
+        assert len(raw_cves) >= 1
+        # Should only call get_cves once since limit is reached
+        assert mock_get_cves.call_count == 1
+
+
+def test_retrieve_cves_no_limit():
+    """
+    Given:
+        A remaining_limit of 0 (no limit).
+    When:
+        retrieve_cves is called.
+    Then:
+        It should fetch all available CVEs.
+    """
+    with patch("FeedNVDv2.Client.get_cves") as mock_get_cves:
+        response = open_json("./test_data/nist_response.json")
+        mock_get_cves.return_value = response
+        raw_cves = retrieve_cves(client, parse("2024-01-01T00:00:00Z"), parse("2024-01-04T00:00:00Z"), True, remaining_limit=0)
+        assert len(raw_cves) == 1
+
+
+def test_fetch_indicators_saves_first_fetch_flag():
+    """
+    Given:
+        A first fetch with max_indicators limit that gets reached.
+    When:
+        fetch_indicators_command is called.
+    Then:
+        The lastRun should include isFirstFetch=True so the next run continues with publish_date.
+    """
+    limited_client = Client(
+        base_url=BASE_URL,
+        proxy=False,
+        api_key="",
+        tlp_color="",
+        has_kev=False,
+        feed_tags=[],
+        first_fetch="1000 days",
+        cvss_severity=[],
+        keyword_search="",
+        max_indicators=1,
+    )
+    with (
+        patch("FeedNVDv2.retrieve_cves") as mock_retrieve_cves,
+        patch("FeedNVDv2.demisto") as demisto_mock,
+        patch("FeedNVDv2.set_feed_last_run") as mock_set_last_run,
+    ):
+        expected_result = open_json("./test_data/nist_response.json")["vulnerabilities"][0]
+        mock_retrieve_cves.return_value = [expected_result]
+        demisto_mock.command.return_value = "fetch-indicators"
+        demisto_mock.getLastRun.return_value = {}
+        fetch_indicators_command(limited_client)
+        # Verify isFirstFetch is saved
+        last_run_call = mock_set_last_run.call_args[0][0]
+        assert last_run_call.get("isFirstFetch") is True
