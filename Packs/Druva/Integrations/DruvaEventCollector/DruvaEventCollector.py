@@ -209,8 +209,13 @@ def _filter_old_events(events: list[dict]) -> list[dict]:
         timestamp_value = event.get("timestamp") or event.get("timeStamp")
         event_time = arg_to_datetime(timestamp_value)
 
-        if event_time and event_time.replace(tzinfo=None) >= cutoff:
-            filtered_events.append(event)
+        if event_time:
+            # Normalize to naive UTC for comparison with cutoff (datetime.utcnow())
+            naive_utc = event_time.astimezone(timezone.utc).replace(tzinfo=None) if event_time.tzinfo else event_time
+            if naive_utc >= cutoff:
+                filtered_events.append(event)
+            else:
+                dropped_count += 1
         else:
             dropped_count += 1
 
@@ -246,6 +251,9 @@ def fetch_events(
         done_fetching: bool = False
         type_events: list[dict] = []
 
+        # Determine if this is a first fetch (no tracker) before the pagination loop,
+        is_first_fetch = f"tracker_{event_type}" not in last_run and "tracker" not in last_run
+
         while not done_fetching:
             # Backward compatibility: Migrate from old format {"tracker": "..."} to new format {"tracker_<event_type>": "..."}
             # Only "InSync events" (original type) inherits the old tracker; new types start fresh
@@ -271,12 +279,12 @@ def fetch_events(
             # Save the next_run as a dict with the last_fetch key to be stored
             last_run[f"tracker_{event_type}"] = new_tracker or ""
 
+            # On first fetch (no tracker), filter out events older than 1 hour to avoid ingesting historical data
+            if is_first_fetch:
+                events = _filter_old_events(events)
+
             # Add source_log_type to events before extending
             add_time_and_source_to_events(events, event_type)
-
-            # On first fetch (no tracker), filter out events older than 1 hour to avoid ingesting historical data
-            if not tracker:
-                events = _filter_old_events(events)
 
             type_events.extend(events)
 
