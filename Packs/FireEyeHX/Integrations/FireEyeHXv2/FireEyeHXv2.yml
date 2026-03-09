@@ -1800,6 +1800,37 @@ script:
     - contextPath: FireEyeHX.HostSets.deleted
       description: Was the host set deleted.
       type: Boolean
+  - name: fireeye-hx-get-triage-acquistition-package
+    arguments:
+    - name: acquisitionId
+      required: true
+    outputs:
+    - contextPath: FireEyeHX.Acquisitions.Triage
+  - name: fireeye-hx-get-triage-acquistition
+    arguments:
+    - name: acquisitionId
+      required: true
+      description: the acquisition Id
+    outputs:
+    - contextPath: FireEyeHX.Acquisitions.Triage
+  - name: fireeye-hx-delete-triage-acquistion
+    arguments:
+    - name: acquisitionId
+      required: true
+      description: acquisitionId
+  - name: fireeye-hx-triage-acquistition
+    arguments:
+    - name: hostName
+    - name: agentId
+    outputs:
+    - contextPath: FireEyeHX.Acquisitions.Triage
+    description: Starts a triage acquistition
+  - name: fireeye-hx-host-get-acuistitions
+    arguments:
+    - name: hostName
+    - name: agentId
+    outputs:
+    - contextPath: FireEyeHX.Host.Acquisitions
   isfetch: true
   script: '-'
   type: python
