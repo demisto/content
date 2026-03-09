@@ -100,7 +100,7 @@ tasks:
       issue_category:
         simple: ${Core.SupportTicketCategoryParser.IssueCategory}
       issue_frequency:
-        simple: ${inputs.issue_impact}
+        simple: ${inputs.issue_frequency}
       issue_impact:
         simple: ${inputs.issue_impact}
       most_recent_issue_start_time:
