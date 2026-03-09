@@ -313,12 +313,13 @@ def get_bucket_encryption(args: Dict[str, Any], aws_client: AWSClient) -> Comman
     )
 
 
-def test_module(aws_client: AWSClient) -> str | CommandResults:
+def test_module(aws_client: AWSClient, bucket: str) -> str | CommandResults:
     """
-    test tje integration connectivity.
+    test the integration connectivity.
 
     Args:
         aws_client: A Boto3 AWS S3 client.
+        bucket(str): The bucket name.
 
     Returns:
         A string whether the connectivity test was successful.
@@ -331,11 +332,9 @@ def test_module(aws_client: AWSClient) -> str | CommandResults:
             return "ok"
         else:
             demisto.debug(f"list_buckets failed with {response=}")
-            raise response
+            raise
 
-    except Exception as e:
-        params = demisto.params()
-        bucket = params.get("bucket")
+    except Exception:
         if bucket:
             demisto.debug(f"executing list_objects_v2 with {bucket=}")
             response_objects = client.list_objects_v2(Bucket=bucket)
@@ -349,7 +348,7 @@ def test_module(aws_client: AWSClient) -> str | CommandResults:
                 )
         else:
             demisto.debug("No bucket provided, raising an error.")
-            raise e
+            raise
 
 
 def main():  # pragma: no cover
@@ -366,6 +365,7 @@ def main():  # pragma: no cover
     retries = params.get("retries") or 5
     sts_endpoint_url = params.get("sts_endpoint_url") or None
     endpoint_url = params.get("endpoint_url") or None
+    bucket = params.get("bucket", "")
 
     try:
         command = demisto.command()
@@ -390,7 +390,7 @@ def main():  # pragma: no cover
 
         demisto.info(f"Command being called is {demisto.command()}")
         if command == "test-module":
-            return_results(test_module(aws_client))
+            return_results(test_module(aws_client, bucket))
 
         elif command == "aws-s3-create-bucket":
             return_results(create_bucket_command(args, aws_client))
