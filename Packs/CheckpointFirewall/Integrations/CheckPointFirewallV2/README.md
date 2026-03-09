@@ -175,9 +175,9 @@ get all data of a given host
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.Host.name | Unknown | Host name. |
+| CheckPoint.Host.name | String | Host name. |
 | CheckPoint.Host.uid | String | Object UID. |
-| CheckPoint.Host.type | Unknown | Object type. |
+| CheckPoint.Host.type | String | Object type. |
 | CheckPoint.Host.domain-name | String | Domain name. |
 | CheckPoint.Host.domain-uid | String | Domain UID. |
 | CheckPoint.Host.ipv4-address | String | Host IPv4 address. |
@@ -282,10 +282,10 @@ Add new host
 | CheckPoint.Host.comments | String | Comments string. |
 | CheckPoint.Host.tags | Unknown | Collection of tag objects associated with the host. |
 | CheckPoint.Host.nat-auto-rule | Boolean | Whether NAT automatic rules are enabled. |
-| CheckPoint.Host.nat-method | String | NAT method \(hide or static\). |
+| CheckPoint.Host.nat-method | String | NAT method (hide or static). |
 | CheckPoint.Host.nat-ipv4-address | String | NAT IPv4 address. |
 | CheckPoint.Host.nat-install-on | String | Gateway for NAT rule installation. |
-| CheckPoint.Host.nat-hide-behind | String | Hide behind method \(gateway or ip-address\). |
+| CheckPoint.Host.nat-hide-behind | String | Hide behind method (gateway or ip-address). |
 | CheckPoint.Host.interfaces | Unknown | Host interfaces. |
 
 #### Command Example
@@ -1777,7 +1777,7 @@ Create new access rule
 | CheckPoint.AccessRule.enabled | Boolean | Indicates if the rule is enabled or disabled. |
 | CheckPoint.AccessRule.layer | String | Layer to which the rule was assigned, identified by the name or UID. |
 | CheckPoint.AccessRule.creator | String | The object creator. |
-| CheckPoint.AccessRule.last-modifier | String | The user that last modofied the object. |
+| CheckPoint.AccessRule.last-modifier | String | The user that last modified the object. |
 
 #### Command Example
 

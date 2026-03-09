@@ -1711,7 +1711,7 @@ script:
       name: name
     - auto: PREDEFINED
       defaultValue: Drop
-      description: 'Action settings. Valid values are: Accept, Drop, Apply Layer, Ask and Info. Default value is Drop.'
+      description: 'Action settings.'
       name: action
       predefined:
       - Accept
@@ -1798,7 +1798,7 @@ script:
       description: The object creator.
       type: String
     - contextPath: CheckPoint.AccessRule.last-modifier
-      description: The user that last modofied the object.
+      description: The user that last modified the object.
       type: String
   - arguments:
     - description: Object unique identifier (UID), rule name, or rule number.

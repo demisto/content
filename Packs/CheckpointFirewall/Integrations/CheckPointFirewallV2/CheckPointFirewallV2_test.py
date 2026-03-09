@@ -960,6 +960,25 @@ def test_list_hosts_without_new_args(mocker):
     assert call_args[1]["domains_to_process"] is None
 
 
+def test_list_hosts_with_details_level_full_and_domains_to_process_raises(mocker):
+    """
+    Given
+        details_level set to 'full' and domains_to_process provided
+    When
+        calling checkpoint_list_hosts_command
+    Then
+        validate a ValueError is raised by validate_domains_to_process
+    """
+    from CheckPointFirewallV2 import checkpoint_list_hosts_command
+
+    mocked_client = mocker.Mock()
+
+    with pytest.raises(ValueError, match="cannot be used with 'details_level' set to 'full'"):
+        checkpoint_list_hosts_command(mocked_client, 50, 0, details_level="full", domains_to_process="domain1,domain2")
+
+    mocked_client.list_hosts.assert_not_called()
+
+
 def test_get_host_with_details_level(mocker):
     from CheckPointFirewallV2 import checkpoint_get_host_command
 
