@@ -501,7 +501,9 @@ class Client(BaseClient):
             acquisition_id (str): The unique Triage ID
         """
         self._headers["Accept"] = "text/plain"
-        self._http_request(method="DELETE", url_suffix=f"acqs/triages/{acquisition_id}", return_empty_response=True,resp_type="text")
+        self._http_request(
+            method="DELETE", url_suffix=f"acqs/triages/{acquisition_id}", return_empty_response=True, resp_type="text"
+        )
 
     def triage_acquisition_package_request(self, acquisition_id):
         """API Call to return the triage collection file
@@ -1977,10 +1979,19 @@ def get_host_acqs(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     acquisition_info = client.host_acquisition_information_request(agent_id)
     headers_for_table = ["_id", "acq_type", "request_time", "state"]
-    md_table = tableToMarkdown(name="FireEye HX Acquisitions", t=acquisition_info, headers=headers_for_table, removeNull=True, date_fields=["request_time"])
+    md_table = tableToMarkdown(
+        name="FireEye HX Acquisitions",
+        t=acquisition_info,
+        headers=headers_for_table,
+        removeNull=True,
+        date_fields=["request_time"],
+    )
 
     return CommandResults(
-        outputs_prefix="FireEyeHX.Host.Acquisitions.All", outputs=acquisition_info, readable_output=md_table, outputs_key_field="_id"
+        outputs_prefix="FireEyeHX.Host.Acquisitions.All",
+        outputs=acquisition_info,
+        readable_output=md_table,
+        outputs_key_field="_id",
     )
 
 
@@ -2010,9 +2021,22 @@ def get_triage_acquisition_information(client: Client, args: Dict[str, Any]) -> 
     acquisition_info["host"]["hostname"] = hostname
     # Add Integration Instance to the acquisition_info
     acquisition_info["instance"] = demisto.integrationInstance()
-    
-    headers_for_table = ["host","_id", "state","request_time","finish_time","instance",]
-    md_table = tableToMarkdown(name="FireEye HX Triage", t=acquisition_info, headers=headers_for_table, removeNull=True, date_fields=["request_time","finish_time"])
+
+    headers_for_table = [
+        "host",
+        "_id",
+        "state",
+        "request_time",
+        "finish_time",
+        "instance",
+    ]
+    md_table = tableToMarkdown(
+        name="FireEye HX Triage",
+        t=acquisition_info,
+        headers=headers_for_table,
+        removeNull=True,
+        date_fields=["request_time", "finish_time"],
+    )
     return CommandResults(
         outputs_prefix="FireEyeHX.Acquisitions.Triage",
         outputs=acquisition_info,
@@ -2064,7 +2088,7 @@ def get_triage_acquisition_package(client: Client, args: Dict[str, Any]) -> list
     if not args.get("acquisitionId"):
         raise ValueError("Please provide acquisitionId")
 
-    acquisition_id = args.get("acquisitionId")
+    acquisition_id = str(args.get("acquisitionId"))
 
     acquisition_info = client.triage_acquisition_information_request(acquisition_id)
 
