@@ -53,7 +53,7 @@ configuration:
   display: Max Indicators Per Fetch
   additionalinfo: Maximum number of indicators to fetch per interval. A lower value prevents timeouts during the initial sync with large lookback windows. The feed will resume from where it left off in the next interval. Without an API key, the recommended maximum is 40000. With an API key, values up to 200000 are safe.
   defaultvalue: '10000'
-  required: false
+  required: true
   type: 0
   section: Collect
 - defaultvalue: 90 days

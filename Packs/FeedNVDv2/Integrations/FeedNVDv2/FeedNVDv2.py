@@ -348,7 +348,6 @@ def test_module(client: Client):
 
     Args:
         client: An instance of the BaseClient connection class
-        params: A dictionary containing HTTP parameters
 
     Returns:
         'ok' if a successful HTTP 200 message is returned
@@ -357,16 +356,14 @@ def test_module(client: Client):
     try:
         interval = parse_date_range("1 day", DATE_FORMAT)
         parse_date_range(client.first_fetch, DATE_FORMAT)
-        # TODO - check if 2.0 is correct
         client.get_cves("/rest/json/cves/2.0/", params={"pubStartDate": interval[0], "pubEndDate": interval[1]})
+
+        max_indicators = arg_to_number(demisto.params().get("max_indicators"))
+        if not isinstance(max_indicators, int) or max_indicators <= 0:
+            return_error("Invalid 'Max Indicators Per Fetch' value. Please enter a positive integer.")
+
         return_results("ok")
 
-        # If fetch-indicators is selected, make sure max_indicators exists and is a positive integer.
-        # TODO
-        if params.get("fetch_indicators"):
-            max_indicators = arg_to_number(params.get("max_indicators"))
-            if not isinstance(max_indicators, int) or max_indicators <= 0:
-                return_error("Invalid 'Max Indicators Per Fetch' value. Please enter a positive integer.")
     except Exception as e:  # pylint: disable=broad-except
         return_error("Invalid API key specified in integration instance configuration" + "\nError Message: " + str(e))
 
@@ -517,34 +514,34 @@ def retrieve_cves(client: Client, start_date: Any, end_date: Any, publish_date: 
 def _resolve_fetch_dates(
     client: Client,
     last_run_data: dict,
-    command: str,
-) -> tuple[datetime | None, bool, int | None]:
-    """Determine start date, publish_date flag, and remaining limit.
+    manual_fetch: bool,
+) -> tuple[datetime | None, int | None]:
+    """Determine start date and remaining limit for the current fetch.
 
     Args:
         client: Client instance.
         last_run_data: Previous lastRun data.
-        command: Current command name.
+        manual_fetch: Whether this fetch is triggered by the nvd-get-indicators command (manual) or by the scheduled fetch.
 
     Returns:
-        Tuple of (start_date, publish_date, remaining_limit).
+        Tuple of (start_date, remaining_limit).
     """
-    if command == "nvd-get-indicators":
+    if manual_fetch:
         history = parse_date_range(f'{demisto.getArg("history")}', DATE_FORMAT)
         client.keyword_search = f'{demisto.getArg("keyword")}'
         start_date = parse(history[0])
         demisto.debug(f'Retrieving last {demisto.getArg("history")} days of CVEs using nvd-get-indicators')
-        return start_date, True, None
+        return start_date, None
 
     if last_run_data:
         start_date = parse(last_run_data.get("lastRun", ""))
-        publish_date = last_run_data.get("isFirstFetch", False)
-        return start_date, publish_date, client.max_indicators
-
+        return start_date, client.max_indicators
+    
+    # No last_run_date exist, this is the first fetch - use the first_fetch parameter as the start date
     first_fetch = parse_date_range(client.first_fetch, DATE_FORMAT)
     start_date = parse(first_fetch[0])
     demisto.debug(f"Running Feed NVD for the first time catching CVEs since {first_fetch}")
-    return start_date, True, client.max_indicators
+    return start_date, client.max_indicators
 
 
 def _create_indicators(client: Client, raw_cves: list, command: str) -> int:
@@ -568,17 +565,17 @@ def _create_indicators(client: Client, raw_cves: list, command: str) -> int:
     return len(indicators)
 
 
-def fetch_indicators_command(client: Client, command: str = "fetch-indicators") -> list[dict]:
+def fetch_indicators_command(client: Client, manual_fetch: bool = False) -> list[dict]:
     """Fetch CVEs from NVD API, create indicators, and persist lastRun state.
 
     Args:
         client: An instance of the BaseClient connection class.
-        command: The command name triggering this fetch.
+        manual_fetch: Whether this fetch is triggered by the nvd-get-indicators command (manual) or by the scheduled fetch (automatic). Affects date range handling and whether indicators are created.
 
     Returns:
         List of raw CVE objects fetched.
     """
-    start_date, publish_date, remaining_limit = _resolve_fetch_dates(client, demisto.getLastRun(), command)
+    start_date, remaining_limit = _resolve_fetch_dates(client, demisto.getLastRun(), manual_fetch)
 
     now = datetime.now(timezone.utc)
     window_start, end_date = start_date, now
@@ -594,9 +591,10 @@ def fetch_indicators_command(client: Client, command: str = "fetch-indicators") 
 
         demisto.debug(
             f'Fetching CVEs from {window_start:%Y-%m-%d} to {end_date:%Y-%m-%d}, '
-            f'Using {"Publish date" if publish_date else "Updated date"}'
-        )
-        raw_cves = retrieve_cves(client, window_start, end_date, publish_date=publish_date, remaining_limit=remaining_limit)
+            f'{f"with keyword search \"{client.keyword_search}\", " if client.keyword_search else ""}'
+            f'{f"and CVSS severity filter {client.cvss_severity}"}'
+            
+        raw_cves = retrieve_cves(client, window_start, end_date, remaining_limit=remaining_limit)
         all_raw_cves.extend(raw_cves)
         total_created += _create_indicators(client, raw_cves, command)
 
@@ -641,7 +639,7 @@ def main():  # pragma: no cover
     has_kev = params.get("hasKev", False)
     first_fetch = params.get("first_fetch", "")
     feed_tags = params.get("feedTags", [])
-    max_indicators = arg_to_number(params.get("max_indicators"))
+    max_indicators = arg_to_number(params.get("max_indicators")) or DEFAULT_MAX_INDICATORS
     cvss_versions = params.get("cvss_versions", [])
     
     command = demisto.command()
@@ -665,9 +663,9 @@ def main():  # pragma: no cover
         if command == "test-module":
             test_module(client)
         elif command == "fetch-indicators":
-            fetch_indicators_command(client, command=command)
+            fetch_indicators_command(client)
         elif command == "nvd-get-indicators":
-            return_results(cves_to_war_room(fetch_indicators_command(client, command=command)))
+            return_results(cves_to_war_room(fetch_indicators_command(client, manual_fetch=True)))
 
     except Exception as e:  # pylint: disable=broad-except
         return_error(f"Failed to execute {demisto.command()} command.\nError: \n{e!s}")
