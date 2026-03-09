@@ -79,8 +79,11 @@ def main() -> None:
 
         demisto.debug(f"Command being called is {command}")
         if command == "test-module":
-            client.connect_sync()
-            client.close_sync()
+            with client as session:
+                if not fetch_schema_from_transport:
+                    # When schema fetching is disabled, the connection alone doesn't verify
+                    # the GraphQL endpoint. Execute an introspection query to confirm connectivity.
+                    session.execute(gql("{__typename}"))
             return_results("ok")
         elif command == "graphql-query":
             return_results(execute_query(client, demisto.args()))
