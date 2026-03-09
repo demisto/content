@@ -1825,12 +1825,12 @@ script:
     outputs:
     - contextPath: FireEyeHX.Acquisitions.Triage
     description: Starts a triage acquistition
-  - name: fireeye-hx-host-get-acuistitions
+  - name: fireeye-hx-host-get-acquisitions
     arguments:
     - name: hostName
     - name: agentId
     outputs:
-    - contextPath: FireEyeHX.Host.Acquisitions
+    - contextPath: FireEyeHX.Host.Acquisitions.All
   isfetch: true
   script: '-'
   type: python
