@@ -2364,6 +2364,8 @@ Update the incident with the given ID.
 | assigned_to | Owner of the incident. | Optional |
 | determination | Determination of the incident. Possible values are: unknown, apt, malware, securityPersonnel, unwantedSoftware, other, multiStagedAttack, compromisedUser, phishing, maliciousUserActivity, notMalicious. | Optional |
 | classification | The specification for the incident. Possible values are: unknown, falsePositive, truePositive, informationalExpectedActivity, unknownFutureValue. | Optional |
+| severity | Indicates the possible impact on assets. The higher the severity, the bigger the impact. Typically, higher severity items require the most immediate attention. The possible values are: unknown, informational, low, medium, high, unknownFutureValue. | Optional |
+| resolving_comment | User input that explains the resolution of the incident and the classification choice. It contains free editable text. | Optional |
 | custom_tags | Array of custom tags associated with an incident. | Optional |
 | timeout | The time limit in seconds for the http request to run. Default is 50. | Optional |
 

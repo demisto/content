@@ -677,7 +677,8 @@ class Client(BaseClient):
 
         if self.use_oauth:  # if user selected the `Use OAuth` checkbox, OAuth2 authentication should be used
             self.snow_client: ServiceNowClient = ServiceNowClient(
-                credentials=oauth_params.get("credentials", {}),
+                username=username,
+                password=password,
                 use_oauth=self.use_oauth,
                 client_id=oauth_params.get("client_id", ""),
                 client_secret=oauth_params.get("client_secret", ""),
@@ -2748,12 +2749,6 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any]
     """
     Test the instance configurations when using basic authorization.
     """
-    # Notify the user that test button can't be used when using OAuth 2.0:
-    if client.use_oauth and not client.use_jwt:
-        raise Exception(
-            "Test button cannot be used when using OAuth 2.0. Please use the !servicenow-oauth-login "
-            "command followed by the !servicenow-oauth-test command to test the instance."
-        )
 
     if client._version == "v2" and client.get_attachments:
         raise DemistoException("Retrieving incident attachments is not supported when using the V2 API.")
@@ -3776,13 +3771,16 @@ def main():
     elif use_jwt:
         use_oauth = True
     jwt_params: dict = {}
+    basic_auth_creds = params.get("basic_credentials", {})
+    username = basic_auth_creds.get("identifier", "")
+    password = basic_auth_creds.get("password", "")
+
+    oauth_creds = params.get("credentials", {})
+
     if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
-        username = ""
-        password = ""
-        client_id = params.get("credentials", {}).get("identifier")
-        client_secret = params.get("credentials", {}).get("password")
+        client_id = oauth_creds.get("identifier", "")
+        client_secret = oauth_creds.get("password", "")
         oauth_params = {
-            "credentials": {"identifier": username, "password": password},
             "client_id": client_id,
             "client_secret": client_secret,
             "url": params.get("url"),
@@ -3803,8 +3801,11 @@ def main():
             }
 
     else:  # use basic authentication
-        username = params.get("credentials", {}).get("identifier")
-        password = params.get("credentials", {}).get("password")
+        # if are none - fallback to legacy which populates the oauth credentials
+        if not username or not password:
+            demisto.debug("Using legacy parameters for username and password")
+            username = oauth_creds.get("identifier", "")
+            password = oauth_creds.get("password", "")
 
     version = params.get("api_version")
 
