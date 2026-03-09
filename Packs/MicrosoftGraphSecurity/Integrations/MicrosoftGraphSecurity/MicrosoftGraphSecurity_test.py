@@ -875,6 +875,8 @@ def test_update_incident_command(mocker):
         "classification": "unknown",
         "determination": "unknown",
         "assigned_to": "",
+        "severity": "unknown",
+        "resolving_comment": "resolve_test",
         "timeout": 50,
     }
 
