@@ -1953,7 +1953,7 @@ def initiate_triage_acquisition_command(client: Client, args: Dict[str, Any]) ->
         outputs_prefix="FireEyeHX.Acquisitions.Triage",
         outputs=acquisition_info,
         outputs_key_field="_id",
-        readable_output=f'Triage Acquisition ID: {acquisition_info.get("_id")} on Instance: {acquisition_info.get("instance")} created.'
+        readable_output=f'Triage Acquisition ID: {acquisition_info.get("_id")} on Instance: {acquisition_info.get("instance")} created.',
     )
 
 
@@ -2009,7 +2009,7 @@ def get_triage_acquisition_information(client: Client, args: Dict[str, Any]) -> 
         _type_: _description_
     """
     if not args.get("acquisitionId"):
-        raise ValueError("Please provide acquisitionId")
+        raise ValueError("Acquisition Id is required")
     acquisition_id = str(args.get("acquisitionId"))
 
     acquisition_info = client.triage_acquisition_information_request(acquisition_id)
