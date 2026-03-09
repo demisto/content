@@ -807,7 +807,7 @@ class Client(CoreClient):
                 **self._headers,
                 **EMAIL_SECURITY_USER_AGENT_HEADER,
             },
-            json_data={"internet_message_id": internet_message_id},
+            json_data={"internet_message_id": internet_message_id, "enforce_severity_check": True,},
         )
 
     def enable_scanners(self, payload: dict, repository_id: str) -> dict:
@@ -5149,6 +5149,8 @@ def decrypt_email_content_command(client: Client, args: dict) -> CommandResults:
         CommandResults: The command results containing the decrypted email content.
     """
     internet_message_ids = argToList(args.get("internet_message_id"))
+    issue_severity = args.get("issue_severity")
+
     if not internet_message_ids:
         raise DemistoException("internet_message_id is required.")
 
