@@ -8384,6 +8384,67 @@ def test_update_case_command_status_resolved_with_reason(mocker: MockerFixture):
     assert call_args["caseResolvedComment"] == "This was a false alarm"
 
 
+def test_update_case_command_status_resolved_true_positive(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with status=resolved and resolve_reason=true_positive.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Case is updated with the correct backend enum value STATUS_090_TRUE_POSITIVE (not STATUS_090_RESOLVED_TRUE_POSITIVE).
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+
+    args = {
+        "case_id": "123",
+        "status": "resolved",
+        "resolve_reason": "true_positive",
+    }
+
+    update_case_command(client, args)
+
+    mock_update_case.assert_called_once()
+    call_args = mock_update_case.call_args[0][0]
+    assert call_args["status"] == "STATUS_025_RESOLVED"
+    assert call_args["resolve_reason"] == "STATUS_090_TRUE_POSITIVE"
+
+
+def test_update_case_command_status_resolved_security_testing(mocker: MockerFixture):
+    """
+    GIVEN:
+        Client instance and arguments with status=resolved and resolve_reason=security_testing.
+    WHEN:
+        The update_case_command function is called.
+    THEN:
+        Case is updated with the correct backend enum value STATUS_100_SECURITY_TESTING
+        (not STATUS_100_RESOLVED_SECURITY_TESTING).
+    """
+    from CortexPlatformCore import update_case_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_case = mocker.patch.object(client, "update_case", return_value={"reply": {"caseId": "123"}})
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.demisto.info")
+
+    args = {
+        "case_id": "123",
+        "status": "resolved",
+        "resolve_reason": "security_testing",
+    }
+
+    update_case_command(client, args)
+
+    mock_update_case.assert_called_once()
+    call_args = mock_update_case.call_args[0][0]
+    assert call_args["status"] == "STATUS_025_RESOLVED"
+    assert call_args["resolve_reason"] == "STATUS_100_SECURITY_TESTING"
+
+
 def test_update_case_command_status_resolved_without_reason_raises_error(mocker: MockerFixture):
     """
     GIVEN:
@@ -9966,6 +10027,140 @@ class TestProfileCommands:
 
         assert "Your request was sent successfully." in result.readable_output
         mock_client.delete_profile.assert_called_once_with(["12345", "67890"])
+
+
+def test_list_findings_command_multiple_findings(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client that returns multiple finding records.
+    When:
+        The list_findings_command function is called.
+    Then:
+        All finding records are properly processed and returned.
+    """
+    from CortexPlatformCore import Client, list_findings_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_data_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "XDM_FINDING_ID": "finding-001",
+                    "XDM_FINDING_CATEGORY": "Vulnerability",
+                    "XDM_FINDING_NAME": "CVE-2024-1234",
+                    "XDM_FINDING_ASSET_ID": "asset-123",
+                    "XDM_FINDING_ASSET_NAME": "server-01",
+                },
+                {
+                    "XDM_FINDING_ID": "finding-002",
+                    "XDM_FINDING_CATEGORY": "Misconfiguration",
+                    "XDM_FINDING_NAME": "Open Port 22",
+                    "XDM_FINDING_ASSET_ID": "asset-456",
+                    "XDM_FINDING_ASSET_NAME": "server-02",
+                },
+                {
+                    "XDM_FINDING_ID": "finding-003",
+                    "XDM_FINDING_CATEGORY": "Compliance",
+                    "XDM_FINDING_NAME": "Missing Encryption",
+                    "XDM_FINDING_ASSET_ID": "asset-789",
+                    "XDM_FINDING_ASSET_NAME": "database-01",
+                },
+            ]
+        }
+    }
+    mock_counts_response = {"reply": {"FILTER_COUNT": 3}}
+
+    mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_data_response)
+    mocker.patch.object(mock_client, "get_webapp_counts", return_value=mock_counts_response)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Findings Table")
+
+    args = {"category": "Vulnerability,Misconfiguration,Compliance"}
+
+    result = list_findings_command(mock_client, args)
+
+    assert len(result[0].outputs) == 3
+    assert result[0].outputs[0]["id"] == "finding-001"
+    assert result[0].outputs[1]["id"] == "finding-002"
+    assert result[0].outputs[2]["id"] == "finding-003"
+    assert result[1].outputs["filtered_count"] == 3
+    assert result[1].outputs["returned_count"] == 3
+
+
+def test_list_findings_command_with_all_filters(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and arguments with all possible filter combinations.
+    When:
+        The list_findings_command function is called.
+    Then:
+        All filters are properly applied and the request is built correctly.
+    """
+    from CortexPlatformCore import Client, list_findings_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_data_response = {"reply": {"DATA": []}}
+    mock_counts_response = {"reply": {"FILTER_COUNT": 0}}
+
+    mock_get_webapp_data = mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_data_response)
+    mocker.patch.object(mock_client, "get_webapp_counts", return_value=mock_counts_response)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Empty Table")
+
+    args = {
+        "asset_id": "asset-123,asset-456",
+        "asset_name": "server-01,server-02",
+        "asset_category": "Compute,Storage",
+        "asset_class": "Server,Database",
+        "category": "Vulnerability,Misconfiguration",
+        "finding_source": "AWS,Azure",
+        "page": "1",
+        "page_size": "50",
+    }
+
+    list_findings_command(mock_client, args)
+
+    # Verify get_webapp_data was called
+    mock_get_webapp_data.assert_called_once()
+    call_args = mock_get_webapp_data.call_args[0][0]
+
+    # Verify request structure
+    assert call_args["table_name"] == "FINDINGS"
+    assert call_args["filter_data"]["paging"]["from"] == 50  # page 1 * page_size 50
+    assert call_args["filter_data"]["paging"]["to"] == 100  # from + page_size
+    assert call_args["filter_data"]["sort"][0]["FIELD"] == "XDM_FINDING_LAST_OBSERVED"
+    assert call_args["filter_data"]["sort"][0]["ORDER"] == "DESC"
+
+
+def test_list_findings_command_comma_separated_values(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and arguments with comma-separated filter values.
+    When:
+        The list_findings_command function is called.
+    Then:
+        Comma-separated values are properly parsed into lists and applied as filters.
+    """
+    from CortexPlatformCore import Client, list_findings_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_data_response = {"reply": {"DATA": []}}
+    mock_counts_response = {"reply": {"FILTER_COUNT": 0}}
+
+    mock_get_webapp_data = mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_data_response)
+    mocker.patch.object(mock_client, "get_webapp_counts", return_value=mock_counts_response)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Table")
+
+    args = {
+        "asset_id": "asset-1,asset-2,asset-3",
+        "asset_name": "server-1,server-2",
+        "category": "Vulnerability,Misconfiguration,Compliance",
+    }
+
+    list_findings_command(mock_client, args)
+
+    # Verify the filter contains multiple values
+    call_args = mock_get_webapp_data.call_args[0][0]
+    filter_dict = call_args["filter_data"]["filter"]
+    assert "AND" in filter_dict
 
 
 def test_send_endpoint_heartbeat_command_success(mocker):

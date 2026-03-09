@@ -132,10 +132,9 @@ def find_latest_tag_by_date(tags):
 
 def main():
     if demisto.args().get("use_system_proxy") == "no":
-        del os.environ["HTTP_PROXY"]
-        del os.environ["HTTPS_PROXY"]
-        del os.environ["http_proxy"]
-        del os.environ["https_proxy"]
+        # Remove proxy environment variables if they exist
+        for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
+            os.environ.pop(proxy_var, None)
     verify_ssl = demisto.args().get("trust_any_certificate") != "yes"
     docker_full_name = demisto.args()["docker_image"]
     gateway_creds = demisto.args().get("creds_for_opp", "")

@@ -292,6 +292,20 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+- display: 'Fetch Asset types'
+  name: fetch_assets_type
+  defaultvalue: 'Spotlight,CNAPP Alerts'
+  type: 16
+  section: Collect
+  advanced: false
+  required: false
+  additionalinfo: |-
+      The asset sources to ingest into the Cortex Unified Asset Inventory.
+  options:
+  - Spotlight
+  - CNAPP Alerts
+  hidden:
+  - xsoar
 - display: 'Reopen Statuses'
   additionalinfo: CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination.
   defaultvalue: 'New,In progress,True positive,False positive,Reopened,Ignored'
@@ -593,7 +607,7 @@ script:
       - in_progress
       - closed
       - reopened
-    - description: 'A user ID, for example: 1234567891234567891. username and assigned_to_uuid are mutually exclusive.'
+    - description: 'A user ID, for example: 1234567855512345678. username and assigned_to_uuid are mutually exclusive.'
       name: assigned_to_uuid
     - description: Optional comment to add to the detection. Comments are displayed with the detection in CrowdStrike Falcon and provide context or notes for other Falcon users.
       name: comment
@@ -5457,7 +5471,7 @@ script:
     - contextPath: CrowdStrike.NGSiemEvent.timestamp
       description: Event timestamp.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.6308650
+  dockerimage: demisto/py3-tools:1.0.0.7436613
   isfetch: true
   isfetch:marketplacev2: false
   isfetch:platform: false
