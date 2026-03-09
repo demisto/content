@@ -11,7 +11,10 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "KnowBe4"
+    ],
+    "created": "2020-05-20T00:00:00Z",
     "githubUser": [],
     "marketplaces": [
         "xsoar",
