@@ -5987,7 +5987,7 @@ def main():  # pragma: no cover
         elif command == "core-xql-generic-query-platform":
             verify_platform_version()
             return_results(xql_query_platform_command(client, args))
-            
+
         elif command == "core-get-ai-model-activity":
             return_results(get_ai_model_activity_command(client, args))
 

@@ -4132,7 +4132,7 @@ script:
       outputs: []
     - name: core-create-endpoint-policy
       description: Creates a new endpoint policy and applies it to specified endpoints. Automatically handles priority conflicts by shifting existing policies when needed.
-      hidden: false
+      hidden: true
       arguments:
         - name: policy_name
           description: The name for the new endpoint policy.
@@ -4211,7 +4211,7 @@ script:
           type: String
     - name: core-delete-endpoint-policy
       description: Deletes one or more existing endpoint policies from the policy table.
-      hidden: false
+      hidden: true
       arguments:
         - name: policy_name
           description: A comma-separated list of the policy names to delete. Either this or policy_id must be provided.
