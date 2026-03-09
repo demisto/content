@@ -8,6 +8,7 @@ from Tenable_sc import (
     VULNS_PAGE_SIZE,
     XSIAM_EVENT_CHUNK_SIZE_LIMIT,
     Client,
+    convert_unix_to_iso,
     create_asset_command,
     create_get_device_request_params_and_path,
     create_policy_request_body,
@@ -47,6 +48,7 @@ from Tenable_sc import (
     list_zones_command,
     parse_vulnerabilities,
     skip_fetch_assets,
+    transform_record_timestamps,
     update_asset_command,
     validate_create_scan_inputs,
     validate_user_body_params,
@@ -1450,7 +1452,8 @@ def test_parse_vulnerabilities_normal():
     - Calling parse_vulnerabilities.
 
     Then:
-    - Should add _time field from lastSeen.
+    - Should add _time field from lastSeen (converted to ISO 8601).
+    - Should convert firstSeen and lastSeen to ISO 8601 format.
     - Should set isTruncated to False for normal-sized entries.
     """
     vulns = [
@@ -1472,9 +1475,13 @@ def test_parse_vulnerabilities_normal():
     result = parse_vulnerabilities(vulns)
 
     assert len(result) == 2
-    assert result[0]["_time"] == "1709654400"
+    assert result[0]["_time"] == "2024-03-05T16:00:00.000Z"
+    assert result[0]["lastSeen"] == "2024-03-05T16:00:00.000Z"
+    assert result[0]["firstSeen"] == "2024-03-04T16:00:00.000Z"
     assert result[0]["isTruncated"] is False
-    assert result[1]["_time"] == "1709654400"
+    assert result[1]["_time"] == "2024-03-05T16:00:00.000Z"
+    assert result[1]["lastSeen"] == "2024-03-05T16:00:00.000Z"
+    assert result[1]["firstSeen"] == "2024-03-04T16:00:00.000Z"
     assert result[1]["isTruncated"] is False
 
 
@@ -1487,7 +1494,7 @@ def test_parse_vulnerabilities_uses_firstseen_fallback():
     - Calling parse_vulnerabilities.
 
     Then:
-    - Should use firstSeen as the _time field.
+    - Should use firstSeen (converted to ISO 8601) as the _time field.
     """
     vulns = [
         {
@@ -1499,7 +1506,8 @@ def test_parse_vulnerabilities_uses_firstseen_fallback():
     ]
     result = parse_vulnerabilities(vulns)
 
-    assert result[0]["_time"] == "1709568000"
+    assert result[0]["_time"] == "2024-03-04T16:00:00.000Z"
+    assert result[0]["firstSeen"] == "2024-03-04T16:00:00.000Z"
 
 
 def test_fetch_vulnerabilities_analysis_client_method(mocker):
@@ -1547,3 +1555,102 @@ def test_fetch_vulnerabilities_analysis_client_method(mocker):
         },
     )
     assert result == mock_response
+
+
+def test_convert_unix_to_iso_valid():
+    """
+    Given:
+    - A valid unix timestamp string.
+
+    When:
+    - Calling convert_unix_to_iso.
+
+    Then:
+    - Should return the timestamp in ISO 8601 format with milliseconds.
+    """
+    assert convert_unix_to_iso("1709654400") == "2024-03-05T16:00:00.000Z"
+    assert convert_unix_to_iso("1709568000") == "2024-03-04T16:00:00.000Z"
+    assert convert_unix_to_iso("0") is None
+    assert convert_unix_to_iso("-1") is None
+    assert convert_unix_to_iso(None) is None
+    assert convert_unix_to_iso("") is None
+
+
+def test_transform_record_timestamps():
+    """
+    Given:
+    - A record dict with unix timestamp fields (firstSeen, lastSeen, createdTime, modifiedTime).
+
+    When:
+    - Calling transform_record_timestamps.
+
+    Then:
+    - Should convert all timestamp fields to ISO 8601 format.
+    - Should leave non-timestamp fields unchanged.
+    """
+    record = {
+        "id": "12345",
+        "name": "Test Host",
+        "firstSeen": "1709568000",
+        "lastSeen": "1709654400",
+        "createdTime": "1709568000",
+        "modifiedTime": "1709654400",
+        "ipAddress": "10.0.0.1",
+    }
+    result = transform_record_timestamps(record)
+
+    assert result["firstSeen"] == "2024-03-04T16:00:00.000Z"
+    assert result["lastSeen"] == "2024-03-05T16:00:00.000Z"
+    assert result["createdTime"] == "2024-03-04T16:00:00.000Z"
+    assert result["modifiedTime"] == "2024-03-05T16:00:00.000Z"
+    assert result["id"] == "12345"
+    assert result["name"] == "Test Host"
+    assert result["ipAddress"] == "10.0.0.1"
+
+
+def test_transform_record_timestamps_partial_fields():
+    """
+    Given:
+    - A record dict with only some timestamp fields present.
+
+    When:
+    - Calling transform_record_timestamps.
+
+    Then:
+    - Should convert only the present timestamp fields.
+    - Should not add missing fields.
+    """
+    record = {
+        "id": "12345",
+        "firstSeen": "1709568000",
+        "lastSeen": "1709654400",
+    }
+    result = transform_record_timestamps(record)
+
+    assert result["firstSeen"] == "2024-03-04T16:00:00.000Z"
+    assert result["lastSeen"] == "2024-03-05T16:00:00.000Z"
+    assert "createdTime" not in result
+    assert "modifiedTime" not in result
+
+
+def test_transform_record_timestamps_empty_values():
+    """
+    Given:
+    - A record dict with empty or zero timestamp values.
+
+    When:
+    - Calling transform_record_timestamps.
+
+    Then:
+    - Should not convert empty or zero values.
+    """
+    record = {
+        "firstSeen": "",
+        "lastSeen": "0",
+        "createdTime": "-1",
+    }
+    result = transform_record_timestamps(record)
+
+    assert result["firstSeen"] == ""
+    assert result["lastSeen"] == "0"
+    assert result["createdTime"] == "-1"

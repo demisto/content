@@ -66,9 +66,10 @@ class Client(BaseClient):
     ):
         if not proxy:
             try:
-                # Remove proxy environment variables if they exist
-                for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
-                    os.environ.pop(proxy_var, None)
+                del os.environ["HTTP_PROXY"]
+                del os.environ["HTTPS_PROXY"]
+                del os.environ["http_proxy"]
+                del os.environ["https_proxy"]
             except Exception as e:
                 demisto.debug(f"encountered the following issue: {e}")
 
@@ -1075,6 +1076,49 @@ def timestamp_to_utc(timestamp_str, default_returned_value=""):
     if timestamp_str and (int(timestamp_str) > 0):  # no value is when timestamp_str == '-1'
         return datetime.utcfromtimestamp(int(timestamp_str)).strftime("%Y-%m-%dT%H:%M:%SZ")
     return default_returned_value
+
+
+def convert_unix_to_iso(timestamp_str: str | None) -> str | None:
+    """
+    Convert a unix timestamp string to ISO 8601 format with milliseconds.
+
+    Args:
+        timestamp_str: Unix timestamp as a string (e.g., "1709654400").
+
+    Returns:
+        ISO 8601 formatted string (e.g., "2024-03-05T16:00:00.000Z"), or None if input is invalid.
+    """
+    if not timestamp_str or int(timestamp_str) <= 0:
+        return None
+    return datetime.utcfromtimestamp(int(timestamp_str)).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+
+
+# Mapping of Tenable.sc API field names to the timestamp fields that should be converted.
+TIMESTAMP_FIELDS = ("firstSeen", "lastSeen", "createdTime", "modifiedTime")
+
+
+def transform_record_timestamps(record: dict[str, Any]) -> dict[str, Any]:
+    """
+    Transform unix timestamp fields in a record to ISO 8601 format.
+
+    Converts the following fields (if present) from unix timestamps to ISO 8601:
+    - firstSeen  (first_seen)
+    - lastSeen   (last_seen)
+    - createdTime (created_at)
+    - modifiedTime (modified_at)
+
+    Args:
+        record: A single asset or vulnerability record dict.
+
+    Returns:
+        The record with timestamp fields converted to ISO 8601 format.
+    """
+    for field in TIMESTAMP_FIELDS:
+        if field in record and record[field]:
+            converted = convert_unix_to_iso(record[field])
+            if converted:
+                record[field] = converted
+    return record
 
 
 def scan_duration_to_demisto_format(duration, default_returned_value=""):
@@ -3021,7 +3065,7 @@ def fetch_assets_page(client: Client, last_run: dict) -> list:
     )
 
     if not response or "response" not in response:
-        demisto.error("No response received from hosts/search endpoint.")
+        demisto.debug("No response received from hosts/search endpoint.")
         # Clear fetch state on error
         last_run.pop("current_offset", None)
         last_run.pop("total_records", None)
@@ -3062,6 +3106,10 @@ def fetch_assets_page(client: Client, last_run: dict) -> list:
         demisto.info(
             f"Asset fetch complete. Total assets fetched: {cumulative}"
         )
+
+    # Convert unix timestamp fields to ISO 8601 format
+    for record in results:
+        transform_record_timestamps(record)
 
     return results
 
@@ -3146,7 +3194,7 @@ def fetch_vulnerabilities_page(client: Client, last_run: dict) -> list:
     )
 
     if not response or "response" not in response:
-        demisto.error("No response received from analysis endpoint for vulnerabilities.")
+        demisto.debug("No response received from analysis endpoint for vulnerabilities.")
         # Clear vuln fetch state on error
         last_run.pop("vuln_current_offset", None)
         last_run.pop("total_vulns_fetched", None)
@@ -3202,6 +3250,8 @@ def parse_vulnerabilities(vulns: list) -> list:
         demisto.debug(f"result is of type: {type(vulns)}")
         vulns = list(vulns)
     for vuln in vulns:
+        # Convert unix timestamp fields to ISO 8601 format
+        transform_record_timestamps(vuln)
         # Set _time from lastSeen or firstSeen (Tenable.sc uses these fields)
         vuln["_time"] = vuln.get("lastSeen") or vuln.get("firstSeen")
         vuln_str = json.dumps(vuln)
