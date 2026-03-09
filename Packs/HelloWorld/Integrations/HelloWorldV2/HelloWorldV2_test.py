@@ -57,7 +57,6 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 import json
 import pytest
 from pytest_mock import MockerFixture
-from freezegun import freeze_time
 from unittest.mock import AsyncMock
 from CommonServerPython import DemistoException, Common, arg_to_datetime
 from HelloWorldV2 import (
