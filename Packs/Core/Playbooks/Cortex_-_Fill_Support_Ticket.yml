@@ -1,7 +1,6 @@
 id: Cortex - Fill Support Ticket
 version: 1
 vcShouldKeepItemLegacyProdMachine: false
-hidden: true
 name: Cortex - Fill Support Ticket
 starttaskid: "0"
 tasks:

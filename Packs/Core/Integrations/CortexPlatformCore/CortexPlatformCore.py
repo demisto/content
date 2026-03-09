@@ -5215,38 +5215,6 @@ def delete_profile_command(client, args):
     client.delete_profile(profile_ids)
     return CommandResults(readable_output="Your request was sent successfully.")
 
-
-def verify_support_ticket_permission(client: Client):
-    """
-    Verify that the current user has permission to manage support tickets
-    by calling the sfdc_support/check_permission endpoint.
-
-    The expected response is:
-        {"reply": {"user_csp_permission": true, "tenant_entitlement_check": true}}
-
-    Both user_csp_permission and tenant_entitlement_check must be true for the user to have permissions.
-    If the API call fails, it also means the user does not have permissions.
-
-    Args:
-        client (Client): The client instance used to send the request.
-
-    Raises:
-        DemistoException: If the user does not have the required permissions or the API call fails.
-    """
-    try:
-        response = client.check_support_permission()
-    except Exception as e:
-        demisto.debug(f"Support ticket permission check failed: {e}")
-        raise DemistoException("You do not have the required permissions to manage support tickets.")
-
-    reply = response.get("reply", {})
-    user_csp_permission = reply.get("user_csp_permission", False)
-    tenant_entitlement_check = reply.get("tenant_entitlement_check", False)
-
-    if not user_csp_permission or not tenant_entitlement_check:
-        raise DemistoException("You do not have the required permissions to manage support tickets.")
-
-
 def verify_support_ticket_permission_command(client: Client) -> CommandResults:
     """
     Command wrapper for verify_support_ticket_permission.
@@ -5263,6 +5231,7 @@ def verify_support_ticket_permission_command(client: Client) -> CommandResults:
 
     response = client.check_support_permission()
     reply = response.get("reply", {})
+    demisto.debug(f"Support ticket permission check: {reply}")
     user_csp_permission = reply.get("user_csp_permission", False)
     tenant_entitlement_check = reply.get("tenant_entitlement_check", False)
 
@@ -5275,9 +5244,10 @@ def verify_support_ticket_permission_command(client: Client) -> CommandResults:
     }
 
     if not has_permission:
-        raise DemistoException("You do not have the required permissions to manage support tickets.")
+        readable_output = "You do not have the required permissions to manage support tickets."
 
-    readable_output = tableToMarkdown(
+    else:
+        readable_output = tableToMarkdown(
         "Support Ticket Permission",
         output,
         headerTransform=string_to_table_header,
