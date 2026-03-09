@@ -1,8 +1,8 @@
 {
     "name": "SOCRadar",
-    "description": "Streamline remediation of alerts and incidents. Make quick, automated queries on ThreatFusion to get a risk reputation score.",
+    "description": "Streamline remediation of alerts and incidents with enhanced multi-tenant capabilities. Easily manage and automate security operations across multiple tenants, including quick, automated queries on ThreatFusion to get a risk reputation score.",
     "support": "partner",
-    "currentVersion": "2.1.3",
+    "currentVersion": "2.2.1",
     "author": "SOCRadar Cyber Intelligence Inc.",
     "defaultDataSource": "SOCRadarIncidentsV4",
     "url": "www.socradar.io",
