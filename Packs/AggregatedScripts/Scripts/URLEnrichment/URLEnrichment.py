@@ -5,7 +5,7 @@ from AggregatedCommandApiModule import *
 
 
 def _is_cidr(value: str) -> bool:
-    """Check if a value looks like a CIDR notation (e.g., 1.1.1.0/24, 10.0.0.0/8).
+    """Check if a value looks like a CIDR notation (e.g., 1.1.1.0/24, 10.0.0.0/8, 2001:db8::/32).
 
     Args:
         value: The string to check.
@@ -21,7 +21,7 @@ def _is_cidr(value: str) -> bool:
         mask = int(parts[1])
         if 0 <= mask <= 128:  # valid for both IPv4 (/0-/32) and IPv6 (/0-/128)
             left = parts[0]
-            if all(c in '0123456789.:' for c in left) and ('.' in left or ':' in left):
+            if all(c in '0123456789.:abcdefABCDEF' for c in left) and ('.' in left or ':' in left):
                 return True
     except ValueError:
         pass
