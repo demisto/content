@@ -1,5 +1,8 @@
 category: Utilities
 provider: Open Source
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: GraphQL
   version: -1
@@ -8,13 +11,16 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Username / Header Name
   name: credentials
   type: 9
   required: false
+  section: Connect
 - display: Fetch the schema from the transport
   name: fetch_schema_from_transport
   type: 8
+  section: Connect
   defaultvalue: 'true'
   additionalinfo: Whether to fetch the schema from the transport using an introspection query. When set to false, schema validation will not be performed.
   required: false
@@ -22,8 +28,10 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
+  section: Connect
   type: 8
   required: false
 description: The Generic GraphQL client can interact with any GraphQL server API.
