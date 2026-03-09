@@ -523,8 +523,8 @@ def test_similar_issue_finder_get_dates():
     args = {"fromDate": "2023-01-01T00:00:00Z", "toDate": "2023-12-31T23:59:59Z"}
     finder = SimilarIssueFinder(args)
     from_date, to_date = finder.get_dates()
-    assert from_date == "2023-01-01T00:00:00"
-    assert to_date == "2023-12-31T23:59:59"
+    assert from_date == "1672524000000"
+    assert to_date == "1704059999000"
 
 
 def test_similar_issue_finder_load_current_incident(mocker):
@@ -534,7 +534,7 @@ def test_similar_issue_finder_load_current_incident(mocker):
 
     mock_execute_command = mocker.patch.object(demisto, "executeCommand")
     mock_execute_command.return_value = [
-        {"Contents": {"alerts": [{"alert_fields": {"internal_id": "123", "issue_name": "test"}}]}}]
+        {"Type": 1, "Contents": {"alerts": [{"alert_fields": {"internal_id": "123", "issue_name": "test"}}]}}]
 
     issue, incident_id = finder.load_current_incident("123", [], [], [], [], [], "2023-01-01", "2023-12-31")
 
@@ -551,7 +551,7 @@ def test_similar_issue_finder_get_all_incidents(mocker):
 
     mock_execute_command_batch = mocker.patch.object(demisto, "executeCommandBatch")
     mock_execute_command_batch.return_value = [
-        [{"Contents": {"alerts": [{"alert_fields": {"internal_id": "456", "issue_name": "test2"}}]}}]]
+        [{"Type": 1, "Contents": {"alerts": [{"alert_fields": {"internal_id": "456", "issue_name": "test2"}}]}}]]
 
     incident = {"internal_id": "123", "issue_name": "test", "status": "Open"}
     exact_match_fields = ["status"]
