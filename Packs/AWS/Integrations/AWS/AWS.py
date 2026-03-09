@@ -768,9 +768,9 @@ class S3:
             Exception: If there's an error while applying the bucket policy
         """
         kwargs = {"Bucket": args.get("bucket", ""), "Policy": json.dumps(args.get("policy"))}
-        return CommandResults(readable_output="the quick action worked!")
 
         try:
+            demisto.debug(f"calling put_bucket_policy with {kwargs=}")
             response = client.put_bucket_policy(**kwargs)
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 return CommandResults(readable_output=f"Successfully applied bucket policy to {args.get('bucket')} bucket")
@@ -972,10 +972,10 @@ class S3:
         """
         ownership_controls = {"Rules": [{"ObjectOwnership": args.get("ownership_controls_rule")}]}
         kwargs = {"Bucket": args.get("bucket"), "OwnershipControls": ownership_controls}
-        return CommandResults(readable_output="the quick action worked!")
 
         remove_nulls_from_dictionary(kwargs)
         try:
+            demisto.debug(f"calling put_bucket_ownership_controls with {kwargs=}")
             response = client.put_bucket_ownership_controls(**kwargs)
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 return CommandResults(readable_output=f"Bucket Ownership Controls successfully updated for {args.get('bucket')}")
@@ -1335,9 +1335,9 @@ class IAM:
             CommandResults: Results of the operation with success/failure message
         """
         user_name = args.get("user_name", "")
-        return CommandResults(readable_output="the quick action worked!")
 
         try:
+            demisto.debug(f"calling delete_login_profile with {user_name=}")
             response = client.delete_login_profile(UserName=user_name)
 
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
@@ -1369,8 +1369,8 @@ class IAM:
         user_name = args.get("user_name", "")
         policy_name = args.get("policy_name", "")
         policy_document = args.get("policy_document", "")
-        return CommandResults(readable_output="the quick action worked!")
         try:
+            demisto.debug(f"calling put_user_policy with {user_name=}, {policy_name=}, {policy_document=}")
             response = client.put_user_policy(
                 UserName=user_name,
                 PolicyName=policy_name,
@@ -1404,9 +1404,9 @@ class IAM:
         """
         instance_profile_name = args.get("instance_profile_name", "")
         role_name = args.get("role_name", "")
-        return CommandResults(readable_output="the quick action worked!")
 
         try:
+            demisto.debug(f"calling remove_role_from_instance_profile with {instance_profile_name=}, {role_name}")
             response = client.remove_role_from_instance_profile(InstanceProfileName=instance_profile_name, RoleName=role_name)
 
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
@@ -1443,12 +1443,12 @@ class IAM:
         user_name = args.get("user_name")
 
         kwargs = {"AccessKeyId": access_key_id, "Status": status}
-        return CommandResults(readable_output="the quick action worked!")
 
         if user_name:
             kwargs["UserName"] = user_name
 
         try:
+            demisto.debug(f"calling update_access_key with {kwargs=}")
             response = client.update_access_key(**kwargs)
 
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
@@ -3259,9 +3259,9 @@ class RDS:
             "SourceType": args.get("source_type"),
         }
         remove_nulls_from_dictionary(kwargs)
-        return CommandResults(readable_output="the quick action worked!")
 
         try:
+            demisto.debug(f"calling modify_event_subscription with {kwargs=}")
             response = client.modify_event_subscription(**kwargs)
 
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
