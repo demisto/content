@@ -4551,7 +4551,7 @@ Describes the specified key pairs or all of your key pairs.
 ### aws-ec2-hosts-allocate
 
 ***
-Allocates a Dedicated Host to your account. At a minimum, specify the supported instance type or instance family, the Availability Zone in which to allocate the host, and the number of hosts to allocate.
+Allocates Dedicated Hosts to your account. Requires the instance type or family, the Availability Zone, and the quantity of hosts to allocate.
 
 #### Base Command
 
@@ -4565,12 +4565,12 @@ Allocates a Dedicated Host to your account. At a minimum, specify the supported 
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
 | availability_zone | The Availability Zone in which to allocate the Dedicated Host. | Required |
 | availability_zone_id | The ID of the Availability Zone. | Optional |
-| quantity | The number of Dedicated Hosts to allocate to your account with these parameters. | Required |
+| quantity | The number of Dedicated Hosts with these parameters to allocate to your account. | Required |
 | instance_type | Specifies the instance type to be supported by the Dedicated Hosts. Mutually exclusive with instance_family. | Optional |
 | instance_family | Specifies the instance family to be supported by the Dedicated Hosts. Mutually exclusive with instance_type. | Optional |
-| auto_placement | Indicates whether the host accepts any untargeted instance launches that match its instance type configuration, or if it only accepts Host tenancy instance launches that specify its unique host ID. Possible values are: on, off. | Optional |
-| host_recovery | Indicates whether to enable or disable host recovery for the Dedicated Host. Host recovery is disabled by default. Possible values are: on, off. | Optional |
-| host_maintenance | Indicates whether to enable or disable host maintenance for the Dedicated Host. Possible values are: on, off. | Optional |
+| auto_placement | Whether the host accepts untargeted instance launches matching its configuration or only accepts instance launches specifying its unique host ID. Possible values are: on, off. | Optional |
+| host_recovery | Whether to enable or disable host recovery for the Dedicated Host. Host recovery is disabled by default. Possible values are: on, off. | Optional |
+| host_maintenance | Whether to enable or disable host maintenance for the Dedicated Host. Possible values are: on, off. | Optional |
 | outpost_arn | The Amazon Resource Name (ARN) of the Amazon Web Services Outpost on which to allocate the Dedicated Host. | Optional |
 | asset_ids | A comma-separated list of IDs of the Outpost hardware assets on which to allocate the Dedicated Hosts. | Optional |
 | tags | The tags to apply to the Dedicated Host during creation. Format: key=&lt;key&gt;,value=&lt;value&gt;;key=&lt;key&gt;,value=&lt;value&gt;. | Optional |
@@ -4585,7 +4585,7 @@ Allocates a Dedicated Host to your account. At a minimum, specify the supported 
 ### aws-ec2-hosts-release
 
 ***
-Releases the specified Dedicated Hosts. On-Demand billing is stopped and the host goes into released state.
+Releases the specified Dedicated Hosts.
 
 #### Base Command
 
@@ -4624,7 +4624,7 @@ Creates a Traffic Mirror session. A Traffic Mirror session actively copies packe
 | network_interface_id | The ID of the source network interface. | Required |
 | traffic_mirror_target_id | The ID of the Traffic Mirror target. | Required |
 | traffic_mirror_filter_id | The ID of the Traffic Mirror filter. | Required |
-| session_number | The session number determines the order in which sessions are evaluated when an interface is used by multiple sessions. Valid values are 1-32766. | Required |
+| session_number | The order in which sessions are evaluated when an interface is used by multiple sessions. Possible values are 1-32766. | Required |
 | virtual_network_id | The VXLAN ID for the Traffic Mirror session. If you do not specify a VirtualNetworkId, an account-wide unique ID is chosen at random. | Optional |
 | packet_length | The number of bytes in each packet to mirror. These are bytes after the VXLAN header. Do not specify this parameter when you want to mirror the entire packet. | Optional |
 | description | The description of the Traffic Mirror session. | Optional |
@@ -4641,7 +4641,7 @@ Creates a Traffic Mirror session. A Traffic Mirror session actively copies packe
 | AWS.EC2.TrafficMirrorSessions.NetworkInterfaceId | string | The ID of the Traffic Mirror session's network interface. |
 | AWS.EC2.TrafficMirrorSessions.OwnerId | string | The ID of the account that owns the Traffic Mirror session. |
 | AWS.EC2.TrafficMirrorSessions.PacketLength | number | The number of bytes in each packet to mirror. |
-| AWS.EC2.TrafficMirrorSessions.SessionNumber | number | The session number determines the order in which sessions are evaluated when an interface is used by multiple sessions. |
+| AWS.EC2.TrafficMirrorSessions.SessionNumber | number | The order in which sessions are evaluated when an interface is used by multiple sessions. |
 | AWS.EC2.TrafficMirrorSessions.VirtualNetworkId | number | The virtual network ID associated with the Traffic Mirror session. |
 | AWS.EC2.TrafficMirrorSessions.Description | string | The description of the Traffic Mirror session. |
 | AWS.EC2.TrafficMirrorSessions.Tags | array | The tags assigned to the Traffic Mirror session. |
