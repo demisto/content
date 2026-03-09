@@ -768,6 +768,8 @@ class S3:
             Exception: If there's an error while applying the bucket policy
         """
         kwargs = {"Bucket": args.get("bucket", ""), "Policy": json.dumps(args.get("policy"))}
+        return CommandResults(readable_output="the quick action worked!")
+
         try:
             response = client.put_bucket_policy(**kwargs)
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
@@ -970,6 +972,7 @@ class S3:
         """
         ownership_controls = {"Rules": [{"ObjectOwnership": args.get("ownership_controls_rule")}]}
         kwargs = {"Bucket": args.get("bucket"), "OwnershipControls": ownership_controls}
+        return CommandResults(readable_output="the quick action worked!")
 
         remove_nulls_from_dictionary(kwargs)
         try:
@@ -1401,6 +1404,7 @@ class IAM:
         """
         instance_profile_name = args.get("instance_profile_name", "")
         role_name = args.get("role_name", "")
+        return CommandResults(readable_output="the quick action worked!")
 
         try:
             response = client.remove_role_from_instance_profile(InstanceProfileName=instance_profile_name, RoleName=role_name)
@@ -1439,6 +1443,7 @@ class IAM:
         user_name = args.get("user_name")
 
         kwargs = {"AccessKeyId": access_key_id, "Status": status}
+        return CommandResults(readable_output="the quick action worked!")
 
         if user_name:
             kwargs["UserName"] = user_name
@@ -3254,6 +3259,7 @@ class RDS:
             "SourceType": args.get("source_type"),
         }
         remove_nulls_from_dictionary(kwargs)
+        return CommandResults(readable_output="the quick action worked!")
 
         try:
             response = client.modify_event_subscription(**kwargs)

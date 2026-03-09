@@ -510,18 +510,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: bucket
         description: The name of the bucket to which the policy will be applied.
         prettyname: Bucket Name
         required: true
+        defaultValue: Bucket Name
         prettypredefined:
           Bucket Name: ${asset.xdm.asset.name}
       - name: policy
@@ -670,18 +673,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: bucket
         description: The name of the Amazon S3 bucket for which to configure Ownership Controls.
         prettyname: Bucket Name
         required: true
+        defaultValue: Bucket Name
         prettypredefined:
           Bucket Name: ${asset.xdm.asset.name}
       - name: ownership_controls_rule
@@ -1044,18 +1050,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: user_name
         description: The name of the user whose console access you want to remove.
         prettyname: User Name
         required: true
+        defaultValue: User Name
         prettypredefined:
           User Name: ${asset.xdm.asset.name}
 
@@ -1122,18 +1131,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: user_name
         description: The name of the user to block all actions for.
         prettyname: User Name
         required: true
+        defaultValue: User Name
         prettypredefined:
           User Name: ${asset.xdm.asset.name}
       - name: policy_name
@@ -1145,38 +1157,6 @@ script:
         defaultValue: '{"Version":"2012-10-17","Statement":[{"Effect":"Deny","Action":"*","Resource":"*"}]}'
         hidden: true
 
-  - name: aws-iam-user-policy-suspend-access-quick-action
-    description: Suspends access for an IAM user by attaching a "Deny All" inline policy that blocks all actions on all resources.
-    prettyname: Suspend User Access
-    hidden: true
-    quickaction: true
-    arguments:
-      - name: account_id
-        description: The AWS account ID.
-        prettyname: Account ID
-        required: true
-        prettypredefined:
-          Account ID: ${asset.xdm.asset.realm}
-      - name: region
-        description: The AWS region.
-        prettyname: Region
-        required: true
-        prettypredefined:
-          Region: ${asset.xdm.asset.cloud.region}
-      - name: user_name
-        description: The name of the user to suspend access for.
-        prettyname: User Name
-        required: true
-        prettypredefined:
-          User Name: ${asset.xdm.asset.name}
-      - name: policy_name
-        description: The name of the deny-all policy document.
-        defaultValue: 'DenyAllPolicy'
-        hidden: true
-      - name: policy_document
-        description: The policy document in JSON format.
-        defaultValue: '{"Version":"2012-10-17","Statement":[{"Effect":"Deny","Action":"*","Resource":"*"}]}'
-        hidden: true
 
   - name: aws-iam-role-from-instance-profile-remove
     description: Removes the specified IAM role from the specified EC2 instance profile.
@@ -1238,18 +1218,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: instance_profile_name
         description: The name of the instance profile to update.
         prettyname: Instance Profile
         required: true
+        defaultValue: Instance Profile
         prettypredefined:
           Instance Profile: ${asset.xdm.asset.name}
 
@@ -1320,18 +1303,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: user_name
         description: The name of the user whose access key you want to deactivate.
         prettyname: User Name
         required: true
+        defaultValue: User Name
         prettypredefined:
           User Name: ${asset.xdm.asset.name}
       - name: status
@@ -2399,18 +2385,21 @@ script:
         description: The AWS account ID.
         prettyname: Account ID
         required: true
+        defaultValue: Account ID
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
       - name: region
         description: The AWS region.
         prettyname: Region
         required: true
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: subscription_name
         description: The name of the RDS event notification subscription.
         prettyname: RDS Instance
         required: true
+        defaultValue: RDS Instance
         prettypredefined:
           RDS Instance: ${asset.xdm.asset.name}
       - name: enabled
