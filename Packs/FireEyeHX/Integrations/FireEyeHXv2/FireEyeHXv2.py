@@ -2055,6 +2055,8 @@ def delete_triage_acquisition_command(client: Client, args: Dict[str, Any]) -> C
     Returns:
         CommandResults: _description_
     """
+    if "acquisitionId" not in args:
+        raise ValueError("Acquisition Id is required")
     acquisition_id = str(args.get("acquisitionId"))
     client.delete_triage_acquisition_request(acquisition_id)
     # successful request
@@ -2086,7 +2088,7 @@ def get_triage_acquisition_package(client: Client, args: Dict[str, Any]) -> list
     """
 
     if not args.get("acquisitionId"):
-        raise ValueError("Please provide acquisitionId")
+        raise ValueError("Acquisition Id is required")
 
     acquisition_id = str(args.get("acquisitionId"))
 
