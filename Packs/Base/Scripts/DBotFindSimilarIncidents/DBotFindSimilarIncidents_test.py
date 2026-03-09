@@ -262,7 +262,9 @@
 #     wrong_field_2 = "wrong_field_2"
 #     correct_field_1 = "empty_fetched_incident_field"
 #     current_incident_df = pd.DataFrame(CURRENT_INCIDENT_NOT_EMPTY)
-#     global_msg, incorrect_fields = find_incorrect_fields([correct_field_1, wrong_field_1, wrong_field_2], current_incident_df, "")
+#     global_msg, incorrect_fields = find_incorrect_fields(
+#         [correct_field_1, wrong_field_1, wrong_field_2], current_incident_df, ""
+#     )
 #     assert incorrect_fields == ["wrong_field_1", "wrong_field_2"]
 #     assert wrong_field_1 in global_msg
 #     assert wrong_field_2 in global_msg

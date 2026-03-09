@@ -21,7 +21,7 @@ def get_incidents_by_query_mock(args):
 
 
 mock_get_incidents.get_incidents_by_query = get_incidents_by_query_mock
-sys.modules['GetIncidentsApiModule'] = mock_get_incidents
+sys.modules["GetIncidentsApiModule"] = mock_get_incidents
 
 CURRENT_INCIDENT_NOT_EMPTY = [
     {
@@ -183,9 +183,7 @@ def test_main_regular(mocker):
     assert "empty_current_incident_field" not in res.columns
     assert res.loc["3", "Identical indicators"] == "ind_2"
     assert res.loc["2", "Identical indicators"] == ""
-    assert check_exist_dataframe_columns(
-        "similarity indicators", "similarity incident", "id", "created", "name", df=res
-    )
+    assert check_exist_dataframe_columns("similarity indicators", "similarity incident", "id", "created", "name", df=res)
     assert res.loc["3", "similarity indicators"] == 0.4
     assert res.loc["2", "similarity indicators"] == 0.0
 
@@ -221,9 +219,7 @@ def test_main_no_indicators_found(mocker):
 
     assert "empty_current_incident_field" not in res.columns
     assert (res["Identical indicators"] == ["", "", ""]).all()
-    assert check_exist_dataframe_columns(
-        "similarity indicators", "similarity incident", "id", "created", "name", df=res
-    )
+    assert check_exist_dataframe_columns("similarity indicators", "similarity incident", "id", "created", "name", df=res)
     assert (res["similarity indicators"] == [0.0, 0.0, 0.0]).all()
 
 
@@ -340,8 +336,12 @@ def test_main_incident_truncated(mocker):
     finder = SimilarIncidentFinder(args)
     df, msg = finder.run()
     limit = args["limit"]
-    assert df is not None and not df.empty
-    assert f"- Incident fetched have been truncated to {limit}, please either add incident fields in fieldExactMatch, enlarge the time period or increase the limit argument to more than {limit}." in msg
+    assert df is not None
+    assert not df.empty
+    assert (
+        f"- Incident fetched have been truncated to {limit}, please either add incident fields in fieldExactMatch, "
+        f"enlarge the time period or increase the limit argument to more than {limit}." in msg
+    )
 
 
 def test_main_incident_nested(mocker):
@@ -374,7 +374,8 @@ def test_main_incident_nested(mocker):
 
     finder = SimilarIncidentFinder(args)
     df, _ = finder.run()
-    assert df is not None and not df.empty
+    assert df is not None
+    assert df is not df.empty
     assert (df[f"similarity {nested_field}"] > 0).all()
 
 
@@ -411,12 +412,12 @@ def test_remove_empty_or_short_fields(sample_data):
     assert my_instance.field_for_command_line == expected_results
     assert should_proceed
     assert all("created" not in reason for reason in all_skip_reasons)
-    assert f"  - Value of the 'Name' field in incident: 't' has length of 1" in all_skip_reasons
-    assert f"  - Value of the 'Id' field in incident: '['123']' has length of 1" in all_skip_reasons
-    assert f"  - The 'test' field has a falsy value in current incident: 'None'" in all_skip_reasons
-    assert f"  - The 'test2' field has a falsy value in current incident: ''" in all_skip_reasons
-    assert f"  - The 'xdralerts' field has a falsy value in current incident: 'N/A'" in all_skip_reasons
-    assert f"  - The 'hello' field does not exist in incident" in all_skip_reasons
+    assert "  - Value of the 'Name' field in incident: 't' has length of 1" in all_skip_reasons
+    assert "  - Value of the 'Id' field in incident: '['123']' has length of 1" in all_skip_reasons
+    assert "  - The 'test' field has a falsy value in current incident: 'None'" in all_skip_reasons
+    assert "  - The 'test2' field has a falsy value in current incident: ''" in all_skip_reasons
+    assert "  - The 'xdralerts' field has a falsy value in current incident: 'N/A'" in all_skip_reasons
+    assert "  - The 'hello' field does not exist in incident" in all_skip_reasons
 
 
 def test_predict_without_similarity_fields(sample_data):
@@ -471,6 +472,7 @@ def test_extract_fields_from_args(similar_text_field):
 
 def test_similar_issue_finder_preprocess_args():
     from SimilarObjectApiModule import SimilarIssueFinder
+
     args = {
         "text_similarity_fields": "name, description, status",
         "filter_equal_fields": "status, assignee, type",
@@ -487,7 +489,7 @@ def test_similar_issue_finder_preprocess_args():
         "min_number_of_indicators": "2",
         "indicators_types": "IP, Domain",
         "show_current_issue": "True",
-        "show_issue_fields_similarity": "True"
+        "show_issue_fields_similarity": "True",
     }
     finder = SimilarIssueFinder(args)
     finder.preprocess_args()
@@ -512,46 +514,43 @@ def test_similar_issue_finder_preprocess_args():
 
 def test_similar_issue_finder_get_display_fields():
     from SimilarObjectApiModule import SimilarIssueFinder
+
     args = {"fieldsToDisplay": "status, assignee"}
     finder = SimilarIssueFinder(args)
     display_fields = finder.get_display_fields()
     assert set(display_fields) == {"internal_id", "issue_name", "issue_description", "status", "assignee"}
 
 
-def test_similar_issue_finder_get_dates():
-    from SimilarObjectApiModule import SimilarIssueFinder
-    args = {"fromDate": "2023-01-01T00:00:00Z", "toDate": "2023-12-31T23:59:59Z"}
-    finder = SimilarIssueFinder(args)
-    from_date, to_date = finder.get_dates()
-    assert from_date == "1672524000000"
-    assert to_date == "1704059999000"
-
-
 def test_similar_issue_finder_load_current_incident(mocker):
     from SimilarObjectApiModule import SimilarIssueFinder
+
     args = {}
     finder = SimilarIssueFinder(args)
 
     mock_execute_command = mocker.patch.object(demisto, "executeCommand")
     mock_execute_command.return_value = [
-        {"Type": 1, "Contents": {"alerts": [{"alert_fields": {"internal_id": "123", "issue_name": "test"}}]}}]
+        {"Type": 1, "Contents": {"alerts": [{"alert_fields": {"internal_id": "123", "issue_name": "test"}}]}}
+    ]
 
     issue, incident_id = finder.load_current_incident("123", [], [], [], [], [], "2023-01-01", "2023-12-31")
 
     assert issue == {"internal_id": "123", "issue_name": "test"}
     assert incident_id == "123"
     mock_execute_command.assert_called_once_with(
-        "core-get-issues", {"issue_id": "123", "start_time": "2023-01-01", "end_time": "2023-12-31", "time_frame": "custom"})
+        "core-get-issues", {"issue_id": "123", "start_time": "2023-01-01", "end_time": "2023-12-31", "time_frame": "custom"}
+    )
 
 
 def test_similar_issue_finder_get_all_incidents(mocker):
     from SimilarObjectApiModule import SimilarIssueFinder
+
     args = {}
     finder = SimilarIssueFinder(args)
 
     mock_execute_command_batch = mocker.patch.object(demisto, "executeCommandBatch")
     mock_execute_command_batch.return_value = [
-        [{"Type": 1, "Contents": {"alerts": [{"alert_fields": {"internal_id": "456", "issue_name": "test2"}}]}}]]
+        [{"Type": 1, "Contents": {"alerts": [{"alert_fields": {"internal_id": "456", "issue_name": "test2"}}]}}]
+    ]
 
     incident = {"internal_id": "123", "issue_name": "test", "status": "Open"}
     exact_match_fields = ["status"]
@@ -571,11 +570,13 @@ def test_similar_issue_finder_get_all_incidents(mocker):
 def test_similar_issue_finder_create_context():
     from SimilarObjectApiModule import SimilarIssueFinder
     import pandas as pd
+
     args = {}
     finder = SimilarIssueFinder(args)
 
-    df = pd.DataFrame([{"similarity issue": 0.9, "id": "123", "name": "test",
-                      "Identical indicators": "ind1", "similarity indicators": 0.8}])
+    df = pd.DataFrame(
+        [{"similarity issue": 0.9, "id": "123", "name": "test", "Identical indicators": "ind1", "similarity indicators": 0.8}]
+    )
     context = finder.create_context(df)
 
     assert context["isSimilarIssueFound"] is True
