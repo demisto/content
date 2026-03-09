@@ -413,7 +413,7 @@ script:
     - description: Maximum number of vulnerabilities to retrieve.
       name: limit
       defaultValue: "10"
-  dockerimage: demisto/fastapi:0.123.5.6111791
+  dockerimage: demisto/fastapi:0.125.0.7194517
   # Fetch Incidents
   isfetch: true
   isfetch:marketplacev2: false  # Depending on the integration, you may optionally disable "fetch-incidents" on Cortex XSIAM (legacy and platform)
