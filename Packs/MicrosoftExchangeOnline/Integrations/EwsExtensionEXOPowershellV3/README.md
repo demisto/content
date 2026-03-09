@@ -832,32 +832,32 @@ Retrieve quarantine messages.
 
 #### Input
 
-| **Argument Name** | **Description**                                                           | **Required** |
-| --- |---------------------------------------------------------------------------| --- |
-| identity | The identity of a single message to retrieve.                             | Optional |
-| entity_type | Filters by entity workload type.                              | Optional |
-| recipient_address | Filters by the recipient email address.                              | Optional |
-| sender_address | Filters by the sender email address.                                 | Optional |
-| teams_conversation_types | Filters by one or more Teams conversation types.                                       | Optional |
-| direction | The message direction (inbound or outbound).                                                 | Optional |
-| domain | Domain associated with the message.                                       | Optional |
-| end_expires_date | End date for the message expiration.                                      | Optional |
-| end_received_date | The end of the received message date range. Supports the format 'MM/dd/yyyy HH:mm:ss'.   | Optional |
-| include_messages_from_blocked_sender_address | Whether to include messages from blocked sender addresses.                | Optional |
-| message_id | The internet message ID (client ID) found in the email headers.           | Optional |
-| my_items | Include only items belonging to the user.                                 | Optional |
-| page | Page number for pagination.                                               | Optional |
-| page_size | The number of items per page. Maximum is 1000. Default is 50.                               | Optional |
-| policy_name | Name of the policy associated with the message.                           | Optional |
-| policy_types | Filter by types of policies.                                              | Optional |
-| quarantine_types | Filters by one or more quarantine types.                                      | Optional |
-| recipient_tag | Filters by the priority tag associated with the recipient.                     | Optional |
-| release_status | Filters by the message release status.                              | Optional |
-| reported | Whether to include only reported messages.                                | Optional |
-| start_expires_date | Start date for the message expiration.                                    | Optional |
-| start_received_date | The start of the received message date range. Supported format  'MM/dd/yyyy HH:mm:ss'. | Optional |
-| subject | Subject of the message.                                                   | Optional |
-| type | Type of the message.                                                      | Optional |
+| **Argument Name** | **Description**                                                                                                                                  | **Required** |
+| --- |--------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| identity | The identity of a single message to retrieve.                                                                                                    | Optional |
+| entity_type | Filters by entity workload type.                                                                                                                 | Optional |
+| recipient_address | Filters by the recipient email address.                                                                                                          | Optional |
+| sender_address | Filters by the sender email address.                                                                                                             | Optional |
+| teams_conversation_types | Filters by one or more Teams conversation types. Deprecated, as this parameter is not available in the PowerShell type used in this integration. | Optional |
+| direction | The message direction (inbound or outbound).                                                                                                     | Optional |
+| domain | Domain associated with the message.                                                                                                              | Optional |
+| end_expires_date | End date for the message expiration.                                                                                                             | Optional |
+| end_received_date | The end of the received message date range. Supports the format 'MM/dd/yyyy HH:mm:ss'.                                                           | Optional |
+| include_messages_from_blocked_sender_address | Whether to include messages from blocked sender addresses.                                                                                       | Optional |
+| message_id | The internet message ID (client ID) found in the email headers.                                                                                  | Optional |
+| my_items | Include only items belonging to the user.                                                                                                        | Optional |
+| page | Page number for pagination.                                                                                                                      | Optional |
+| page_size | The number of items per page. Maximum is 1000. Default is 50.                                                                                    | Optional |
+| policy_name | Name of the policy associated with the message.                                                                                                  | Optional |
+| policy_types | Filter by types of policies.                                                                                                                     | Optional |
+| quarantine_types | Filters by one or more quarantine types.                                                                                                         | Optional |
+| recipient_tag | Filters by the priority tag associated with the recipient.                                                                                       | Optional |
+| release_status | Filters by the message release status.                                                                                                           | Optional |
+| reported | Whether to include only reported messages.                                                                                                       | Optional |
+| start_expires_date | Start date for the message expiration.                                                                                                           | Optional |
+| start_received_date | The start of the received message date range. Supported format  'MM/dd/yyyy HH:mm:ss'.                                                           | Optional |
+| subject | Subject of the message.                                                                                                                          | Optional |
+| type | Type of the message.                                                                                                                             | Optional |
 
 #### Context Output
 
@@ -2124,7 +2124,7 @@ List all mail flow rules (transport rules) in the organization.
 >
 >| Name | State | Priority | Comment | WhenChanged | CreatedBy |
 >| --- | --- | --- | --- | --- | --- |
->| demisto | Disabled | 1 | comment | 2019-10-14T07:25:04+00:00 | Edwin Becker |
+>| demisto | Disabled | 1 | comment | 2019-10-14T07:25:04+00:00 | Ed Testmaner |
 >| demisto-2 | Enabled | 2 | comment | 2019-11-15T010:21:45+00:00 | Kemp Kimmons |
 >| demisto-3 | Enabled | 3 | comment | 2019-11-16T016:26:46+00:00 | Barbara Wagner |
 
@@ -2173,7 +2173,7 @@ Get a mail flow rule (transport rules) in the organization.
 >
 >| Name | State | Priority | Comment | WhenChanged | CreatedBy |
 >| --- | --- | --- | --- | --- | --- |
->| demisto | Disabled | 1 | comment | 2019-10-14T07:25:04+00:00 | Edwin Becker |
+>| demisto | Disabled | 1 | comment | 2019-10-14T07:25:04+00:00 | Ed Testmaner |
 
 ### ews-mail-flow-rule-remove
 

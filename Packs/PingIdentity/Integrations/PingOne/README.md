@@ -285,7 +285,7 @@ Returns a PingOne user. One of the following has to be given username or userId.
 {
     "Account": {
         "CreatedAt": "2021-09-03T18:04:03.916Z",
-        "DisplayName": "Emma Sharp",
+        "DisplayName": "Emma Testman",
         "Email": "emma.sharp@example.com",
         "Enabled": true,
         "ID": "a8890eb9-38ea-469a-bc00-b64be7903633",
