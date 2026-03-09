@@ -1944,7 +1944,8 @@ def initiate_triage_acquisition_command(client: Client, args: Dict[str, Any]) ->
     acquisition_info: Dict = get_triage_acquisition(client, args)
 
     # Add hostname to the host info of acquisition_info
-    acquisition_info["host"]["hostname"] = args.get("hostName")
+    if args.get("hostName",False):
+        acquisition_info["host"]["hostname"] = args.get("hostName")
 
     # Add Integration Instance to the acquisition_info
     acquisition_info["instance"] = demisto.integrationInstance()
@@ -2062,15 +2063,6 @@ def delete_triage_acquisition_command(client: Client, args: Dict[str, Any]) -> C
     # successful request
 
     return CommandResults(readable_output=f"Triage acquisition {acquisition_id} deleted successfully")
-
-
-def get_host_triage_acquisitions(client: Client, args: Dict[str, Any]) -> None:
-    host_name = args.get("hostName", "")
-    agent_id = args.get("agentId")
-    if not host_name and not agent_id:
-        raise ValueError("Please provide either agentId or hostName")
-    if not agent_id:
-        agent_id = get_agent_id_by_host_name(client, host_name)
 
 
 def get_triage_acquisition_package(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
