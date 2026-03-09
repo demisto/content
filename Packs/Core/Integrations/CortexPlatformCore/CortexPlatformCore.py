@@ -32,6 +32,14 @@ WINDOWS_PLATFORM = "Windows"
 EMAIL_SECURITY_USER_AGENT_HEADER = {"userAgent": "Agentix"}
 
 
+EMAIL_SECURITY_SEVERITY_MAPPING = {
+    "info": "SEV_010_INFO",
+    "low": "SEV_020_LOW",
+    "medium": "SEV_030_MEDIUM",
+    "high": "SEV_040_HIGH",
+    "critical": "SEV_050_CRITICAL",
+}
+
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
     "asset_types": "xdm.asset.type.name",
@@ -793,15 +801,19 @@ class Client(CoreClient):
             params=params,
         )
 
-    def decrypt_email_content(self, internet_message_id: str) -> dict:
+    def decrypt_email_content(self, internet_message_id: str, issue_severity: str | None) -> dict:
         """Decrypts the encrypted subject and body of an email.
 
         Args:
             internet_message_id (str): The unique internet message ID of the email to decrypt.
+            issue_severity (str): The severity of the issue.
 
         Returns:
             dict: The API response containing the decrypted body and subject.
         """
+        json_data = {"internet_message_id": internet_message_id, "enforce_severity_check": True}
+        if issue_severity:
+            json_data["issue_severity"] = issue_severity
         return self._http_request(
             method="POST",
             url_suffix="/email-security/investigation/decrypt_email/",
@@ -809,7 +821,7 @@ class Client(CoreClient):
                 **self._headers,
                 **EMAIL_SECURITY_USER_AGENT_HEADER,
             },
-            json_data={"internet_message_id": internet_message_id, "enforce_severity_check": True,},
+            json_data=json_data,
         )
 
     def enable_scanners(self, payload: dict, repository_id: str) -> dict:
@@ -5188,13 +5200,6 @@ def get_email_investigation_summary_command(client: Client, args: dict) -> Comma
     Returns:
         CommandResults: The command results containing email investigation summaries.
     """
-    phishing_severity_mapping = {
-        "info": "SEV_010_INFO",
-        "low": "SEV_020_LOW",
-        "medium": "SEV_030_MEDIUM",
-        "high": "SEV_040_HIGH",
-    }
-
     min_severity = args.get("min_severity")
     min_severity_phishing = args.get("min_severity_phishing")
 
@@ -5204,8 +5209,8 @@ def get_email_investigation_summary_command(client: Client, args: dict) -> Comma
     params = assign_params(
         days_timeframe=days_timeframe,
         detection_method=detection_method,
-        min_severity=phishing_severity_mapping.get(min_severity.lower(), min_severity) if min_severity else None,
-        min_severity_phishing=phishing_severity_mapping.get(min_severity_phishing.lower(), min_severity_phishing)
+        min_severity=EMAIL_SECURITY_SEVERITY_MAPPING.get(min_severity.lower(), min_severity) if min_severity else None,
+        min_severity_phishing=EMAIL_SECURITY_SEVERITY_MAPPING.get(min_severity_phishing.lower(), min_severity_phishing)
         if min_severity_phishing
         else None,
         page_size=arg_to_number(args.get("page_size")),
@@ -5242,14 +5247,14 @@ def decrypt_email_content_command(client: Client, args: dict) -> CommandResults:
         CommandResults: The command results containing the decrypted email content.
     """
     internet_message_ids = argToList(args.get("internet_message_id"))
-    issue_severity = args.get("issue_severity")
+    issue_severity = EMAIL_SECURITY_SEVERITY_MAPPING.get(args.get("issue_severity", ""))
 
     if not internet_message_ids:
         raise DemistoException("internet_message_id is required.")
 
     all_results = []
     for message_id in internet_message_ids:
-        response = client.decrypt_email_content(message_id)
+        response = client.decrypt_email_content(message_id, issue_severity)
         result = response.get("reply", response)
         if isinstance(result, dict):
             result["internet_message_id"] = message_id

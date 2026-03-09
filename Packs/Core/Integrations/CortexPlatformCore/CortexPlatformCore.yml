@@ -4208,6 +4208,15 @@ script:
           name: internet_message_id
           required: true
           isArray: true
+        - description: The severity level of the the email to decrypt.
+          name: issue_severity
+          auto: PREDEFINED
+          predefined:
+            - info
+            - low
+            - medium
+            - high
+            - critical
       name: core-decrypt-email-content
       description: Decrypts the encrypted subject and body of a specific email identified by its internet message ID.
       hidden: true
