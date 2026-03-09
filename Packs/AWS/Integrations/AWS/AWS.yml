@@ -12978,7 +12978,7 @@ script:
         isArray: true
       - name: tags
         description: "The tags to apply to the Dedicated Host during creation. Format: key=<key>,value=<value>;key=<key>,value=<value>."
-        required: false
+        required: true
       - name: client_token
         description: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
         required: false
