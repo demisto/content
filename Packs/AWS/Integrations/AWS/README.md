@@ -4572,6 +4572,7 @@ Creates a VPC endpoint for a specified service. An endpoint enables you to creat
 | private_dns_enabled | Whether to associate a private hosted zone with the specified VPC. Applicable for Interface endpoints only. Possible values are: true, false. | Optional |
 | resource_configuration_arn | The Amazon Resource Name (ARN) of a resource configuration that is associated with the VPC resource type endpoint. | Optional |
 | tags | The tags to apply to the VPC endpoint. Format key=&lt;key&gt;,value=&lt;value&gt;;key=&lt;key&gt;,value=&lt;value&gt;. | Optional |
+| client_token | Unique, case-sensitive identifier that you provide to ensure the idempotency of the request. | Optional |
 
 #### Context Output
 

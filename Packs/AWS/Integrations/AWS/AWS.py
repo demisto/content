@@ -5183,6 +5183,7 @@ class EC2:
                 "VpcId": args.get("vpc_id"),
                 "ServiceName": args.get("service_name"),
                 "ServiceNetworkArn": args.get("service_network_arn"),
+                "ClientToken": args.get("client_token"),
                 "ServiceRegion": args.get("service_region"),
                 "VpcEndpointType": args.get("vpc_endpoint_type"),
                 "PolicyDocument": args.get("policy_document"),

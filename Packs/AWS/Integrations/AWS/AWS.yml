@@ -12985,6 +12985,9 @@ script:
     - name: tags
       description: "The tags to apply to the VPC endpoint. Format key=<key>,value=<value>;key=<key>,value=<value>."
       required: false
+    - name: client_token
+      description: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+      required: false
     outputs:
     - contextPath: AWS.EC2.VpcEndpoints.VpcEndpointId
       description: The ID of the VPC endpoint.

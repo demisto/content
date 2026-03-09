@@ -13378,6 +13378,10 @@ def test_create_vpc_endpoint_command_success(mocker):
     assert result.outputs_prefix == "AWS.EC2.VpcEndpoints"
     assert result.outputs["VpcEndpointId"] == "vpce-0abc12345"
     assert "vpce-0abc12345" in result.readable_output
+    call_kwargs = mock_client.create_vpc_endpoint.call_args[1]
+    assert call_kwargs["VpcId"] == args.get("vpc_id")
+    assert call_kwargs["ServiceName"] == args.get("service_name")
+    assert call_kwargs["VpcEndpointType"] == args.get("vpc_endpoint_type")
 
 
 def test_create_vpc_endpoint_command_with_dns_options(mocker):
@@ -13454,6 +13458,7 @@ def test_create_vpc_endpoint_command_with_tags(mocker):
     mock_client.create_vpc_endpoint.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "VpcEndpoint": {"VpcEndpointId": "vpce-tagged001", "State": "available"},
+        "Tags": [{"Key": "Env", "Value": "prod"}, {"Key": "Owner", "Value": "team"}],
     }
     mocker.patch(
         "AWS.serialize_response_with_datetime_encoding",
@@ -13635,6 +13640,7 @@ def test_describe_internet_gateways_command_next_token_propagated(mocker):
     call_kwargs = mock_client.describe_internet_gateways.call_args[1]
     assert call_kwargs.get("MaxResults") == 5
     assert call_kwargs.get("NextToken") == "prev-igw-token"
+    assert "InternetGatewayIds" not in call_kwargs
     assert result.outputs["AWS.EC2(true)"]["InternetGatewaysNextToken"] == "next-igw-token"
 
 
