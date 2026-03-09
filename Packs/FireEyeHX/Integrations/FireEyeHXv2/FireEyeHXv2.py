@@ -1944,7 +1944,7 @@ def initiate_triage_acquisition_command(client: Client, args: Dict[str, Any]) ->
     acquisition_info: Dict = get_triage_acquisition(client, args)
 
     # Add hostname to the host info of acquisition_info
-    if args.get("hostName",False):
+    if args.get("hostName", False):
         acquisition_info["host"]["hostname"] = args.get("hostName")
 
     # Add Integration Instance to the acquisition_info
@@ -1954,7 +1954,8 @@ def initiate_triage_acquisition_command(client: Client, args: Dict[str, Any]) ->
         outputs_prefix="FireEyeHX.Acquisitions.Triage",
         outputs=acquisition_info,
         outputs_key_field="_id",
-        readable_output=f'Triage Acquisition ID: {acquisition_info.get("_id")} on Instance: {acquisition_info.get("instance")} created.',
+        readable_output=
+            f'Triage Acquisition ID: {acquisition_info.get("_id")} on Instance: {acquisition_info.get("instance")} created.'
     )
 
 
