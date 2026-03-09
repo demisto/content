@@ -252,7 +252,8 @@ def parse_target_field(target_string: str | None):
             raise ValueError(
                 f"Could not parse target: {target}. Please make sure you provided "
                 "like so: key=<key>,values=<values>;key=<key>,values=<value1>,<value2>... And the key matches the regex "
-                "pattern (^[\\p{L}\\p{Z}\\p{N}_.:/=\-@]*$|resource-groups:ResourceTypeFilters|resource-groups:Name)"
+                "pattern required by AWS documentation. For more information see "
+                "https://docs.aws.amazon.com/systems-manager/latest/APIReference/API_Target.html#API_Target_Contents"
             )
         demisto.debug(
             f'Number of target values for {match_target.group(1)} is {len(match_target.group(2).split(","))}'

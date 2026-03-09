@@ -1,0 +1,12 @@
+{
+    "GravityZone.Command.UnknownLiveSearchType(val.EndpointID && val.EndpointID == obj.EndpointID)": [
+        {
+            "EndpointID": "ENDPOINT_ID",
+            "Cmdline": "C:\\WINDOWS\\Explorer.EXE",
+            "ParentPID": 5180,
+            "Path": "C:\\Windows\\explorer.exe",
+            "PID": 5212,
+            "ProcessHash": "process_hash"
+        }
+    ]
+}
