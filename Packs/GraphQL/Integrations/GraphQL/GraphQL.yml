@@ -2,7 +2,6 @@ category: Utilities
 provider: Open Source
 sectionorder:
 - Connect
-- Collect
 commonfields:
   id: GraphQL
   version: -1
