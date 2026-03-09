@@ -489,7 +489,7 @@ def retrieve_cves(client: Client, start_date: Any, end_date: Any, publish_date: 
 
     active_params = [
         CVSS_VERSION_TO_PARAM[v]
-        for v in client.cvss_versions
+        for v in (client.cvss_versions or list(CVSS_VERSION_TO_PARAM.keys()))
         if v in CVSS_VERSION_TO_PARAM
     ]
     for severity_param in active_params:
@@ -515,39 +515,52 @@ def retrieve_cves(client: Client, start_date: Any, end_date: Any, publish_date: 
 
 
 def _resolve_fetch_dates(
-    client: Client, last_run_data: dict, manual_fetch: bool = False,
+    client: Client,
+    last_run_data: dict,
+    command: str,
 ) -> tuple[datetime | None, bool, int | None]:
-    """Determine the appropriate start date for fetching CVEs based on last run data or manual fetch arguments.
+    """Determine start date, publish_date flag, and remaining limit.
 
     Args:
-        client: An instance of the BaseClient connection class.
-        last_run_data: The data from the last run, containing "lastRun" and "isFirstFetch" keys.
-        manual_fetch: Whether this fetch is triggered manually via nvd-get-indicators command.
+        client: Client instance.
+        last_run_data: Previous lastRun data.
+        command: Current command name.
+
+    Returns:
+        Tuple of (start_date, publish_date, remaining_limit).
     """
-    
-    if manual_fetch:
+    if command == "nvd-get-indicators":
         history = parse_date_range(f'{demisto.getArg("history")}', DATE_FORMAT)
         client.keyword_search = f'{demisto.getArg("keyword")}'
+        start_date = parse(history[0])
         demisto.debug(f'Retrieving last {demisto.getArg("history")} days of CVEs using nvd-get-indicators')
-        return parse(history[0]), True, None  # type: ignore[return-value]
+        return start_date, True, None
 
-    elif last_run_data:
-        return (
-            parse(last_run_data.get("lastRun", "")),
-            last_run_data.get("isFirstFetch", False),
-            client.max_indicators,
-        )
-    else:
-        # First run
-        first_fetch: tuple[Any, Any] = parse_date_range(client.first_fetch, DATE_FORMAT)
-        demisto.debug(f"Running Feed NVD for the first time catching CVEs since {first_fetch}")
-        return parse(first_fetch[0]), True, client.max_indicators  # type: ignore[return-value]
+    if last_run_data:
+        start_date = parse(last_run_data.get("lastRun", ""))
+        publish_date = last_run_data.get("isFirstFetch", False)
+        return start_date, publish_date, client.max_indicators
+
+    first_fetch = parse_date_range(client.first_fetch, DATE_FORMAT)
+    start_date = parse(first_fetch[0])
+    demisto.debug(f"Running Feed NVD for the first time catching CVEs since {first_fetch}")
+    return start_date, True, client.max_indicators
 
 
-def _create_indicators(client: Client, raw_cves: list, manual_fetch: bool) -> int:
-    """Build indicators from *raw_cves*, push them to XSOAR, and return the count created."""
-    if not raw_cves or manual_fetch:
+def _create_indicators(client: Client, raw_cves: list, command: str) -> int:
+    """Build indicators from raw CVEs and create them in XSOAR.
+
+    Args:
+        client: Client instance.
+        raw_cves: Raw CVE objects from NVD API.
+        command: Current command name.
+
+    Returns:
+        Number of indicators created.
+    """
+    if not raw_cves or command == "nvd-get-indicators":
         return 0
+
     indicators = build_indicators(client, raw_cves)
     demisto.debug(f'Creating {len(indicators)} using "createIndicators"')
     for batch_ in batch(indicators, batch_size=NVD_API_MAX_RESULTS_PER_PAGE):
@@ -555,33 +568,25 @@ def _create_indicators(client: Client, raw_cves: list, manual_fetch: bool) -> in
     return len(indicators)
 
 
-def _fetch_cve_batches(
-    client: Client,
-    start_date: datetime | None,
-    now: datetime,
-    publish_date: bool,
-    remaining_limit: int | None,
-    manual_fetch: bool,
-) -> tuple[list, int, datetime, bool]:
-    """
-    Iterate over NVD_API_MAX_DATE_RANGE_DAYS-day windows, fetch CVEs, and create indicators.
+def fetch_indicators_command(client: Client, command: str = "fetch-indicators") -> list[dict]:
+    """Fetch CVEs from NVD API, create indicators, and persist lastRun state.
+
     Args:
-        client: An instance of the NVD Client connection class.
-        start_date: The initial start date for fetching CVEs.
-        now: The current date and time.
-        publish_date: Whether to use publish date or last modified date for querying.
-        remaining_limit: Maximum number of CVEs to fetch. None means no limit.
-        manual_fetch: Whether this fetch is triggered manually via nvd-get-indicators command.
-    Returns (all_raw_cves, total_created, end_date, limit_reached).
+        client: An instance of the BaseClient connection class.
+        command: The command name triggering this fetch.
+
+    Returns:
+        List of raw CVE objects fetched.
     """
+    start_date, publish_date, remaining_limit = _resolve_fetch_dates(client, demisto.getLastRun(), command)
+
+    now = datetime.now(timezone.utc)
     window_start, end_date = start_date, now
-    total_results, limit_reached = 0, False
     all_raw_cves: list = []
+    total_created = 0
+    limit_reached = False
 
-    while window_start is not None and not limit_reached:
-        if window_start >= end_date:
-            break
-
+    while window_start is not None and not limit_reached and window_start < end_date:
         delta = (end_date - window_start).days
         if delta > NVD_API_MAX_DATE_RANGE_DAYS:
             demisto.debug(f"Fetching CVEs over a span of {delta} days, will run in {NVD_API_MAX_DATE_RANGE_DAYS} days batches")
@@ -593,33 +598,13 @@ def _fetch_cve_batches(
         )
         raw_cves = retrieve_cves(client, window_start, end_date, publish_date=publish_date, remaining_limit=remaining_limit)
         all_raw_cves.extend(raw_cves)
-        total_results += _create_indicators(client, raw_cves, manual_fetch)
+        total_created += _create_indicators(client, raw_cves, command)
 
         if remaining_limit is not None:
             remaining_limit -= len(raw_cves)
             limit_reached = remaining_limit <= 0
 
         window_start, end_date = end_date, now
-
-    return all_raw_cves, total_results, end_date, limit_reached
-
-
-def fetch_indicators_command(client: Client, manual_fetch: bool = False) -> list[dict]:
-    """Fetch CVEs from NVD API, create indicators, and persist lastRun state.
-
-    Args:
-        client: An instance of the BaseClient connection class.
-        manual_fetch: Whether this fetch is triggered manually via nvd-get-indicators command.
-
-    Returns:
-        List of raw CVE objects fetched.
-    """
-    start_date, publish_date, remaining_limit = _resolve_fetch_dates(client, demisto.getLastRun(), manual_fetch)
-
-    now = datetime.now(timezone.utc)
-    raw_cves, total_results, end_date, limit_reached = _fetch_cve_batches(
-        client, start_date, now, publish_date, remaining_limit, manual_fetch,
-    )
 
     if limit_reached:
         demisto.debug(
@@ -630,9 +615,9 @@ def fetch_indicators_command(client: Client, manual_fetch: bool = False) -> list
     set_feed_last_run({"lastRun": end_date.strftime(DATE_FORMAT), "isFirstFetch": bool(publish_date and limit_reached)})
     demisto.debug(
         f"({start_date.strftime(DATE_FORMAT)})-({end_date.strftime(DATE_FORMAT)}), "  # type: ignore[union-attr]
-        f"Fetched {total_results} indicators."
+        f"Fetched {total_created} indicators."
     )
-    return raw_cves
+    return all_raw_cves
 
 
 def main():  # pragma: no cover
@@ -680,9 +665,9 @@ def main():  # pragma: no cover
         if command == "test-module":
             test_module(client)
         elif command == "fetch-indicators":
-            fetch_indicators_command(client)
+            fetch_indicators_command(client, command=command)
         elif command == "nvd-get-indicators":
-            return_results(cves_to_war_room(fetch_indicators_command(client, manual_fetch=True)))
+            return_results(cves_to_war_room(fetch_indicators_command(client, command=command)))
 
     except Exception as e:  # pylint: disable=broad-except
         return_error(f"Failed to execute {demisto.command()} command.\nError: \n{e!s}")

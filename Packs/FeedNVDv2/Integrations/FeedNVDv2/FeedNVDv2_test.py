@@ -7,7 +7,6 @@ from CommonServerPython import *  # noqa: F401
 from dateparser import parse
 from FeedNVDv2 import (
     Client,
-    _fetch_cves_page,
     build_indicators,
     calculate_dbotscore,
     cves_to_war_room,
@@ -34,6 +33,8 @@ def client():
         first_fetch="1 day",
         cvss_severity=[],
         keyword_search="",
+        max_indicators=100,
+        cvss_versions=[],
     )
 
 
@@ -188,7 +189,7 @@ def test_fetch_indicators_command(client):
         mock_retrieve_cves.return_value = [expected_result]
         demisto_mock.command.return_value = "nvd-get-indicators"
         demisto_mock.getArg.return_value = "130 days"
-        fetch_indicators_command(client)
+        fetch_indicators_command(client, command="nvd-get-indicators")
         assert mock_retrieve_cves.call_count == 2
 
 
@@ -293,6 +294,7 @@ def test_fetch_indicators_saves_first_fetch_flag():
         cvss_severity=[],
         keyword_search="",
         max_indicators=1,
+        cvss_versions=[],
     )
     with (
         patch("FeedNVDv2.retrieve_cves") as mock_retrieve_cves,
@@ -331,6 +333,8 @@ def test_retrieve_cves_limit_exactly_reached():
         first_fetch="1 day",
         cvss_severity=["HIGH"],
         keyword_search="",
+        max_indicators=100,
+        cvss_versions=[],
     )
     fake_cves = [
         {"cve": {"id": "CVE-2024-0001"}},
@@ -367,7 +371,7 @@ def test_retrieve_cves_single_cvss_version():
         base_url=BASE_URL, proxy=False, api_key="", tlp_color="",
         has_kev=False, feed_tags=[], first_fetch="1 day",
         cvss_severity=["HIGH"], keyword_search="",
-        cvss_versions=["CVSS v3"],
+        max_indicators=100, cvss_versions=["CVSS v3"],
     )
     with patch("FeedNVDv2.Client.get_cves") as mock_get_cves:
         response = open_json("./test_data/nist_response.json")
@@ -392,6 +396,7 @@ def test_retrieve_cves_default_cvss_versions():
         base_url=BASE_URL, proxy=False, api_key="", tlp_color="",
         has_kev=False, feed_tags=[], first_fetch="1 day",
         cvss_severity=["HIGH"], keyword_search="",
+        max_indicators=100, cvss_versions=[],
     )
     with patch("FeedNVDv2.Client.get_cves") as mock_get_cves:
         response = open_json("./test_data/nist_response.json")
