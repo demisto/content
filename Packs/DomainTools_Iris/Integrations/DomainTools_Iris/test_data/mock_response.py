@@ -874,3 +874,5 @@ reverseNameserver_response = {
     ],
     "secondary_domains": [],
 }
+
+mock_domain_command_risk_result = {"domain": "domaintools.com", "risk_score": 50}
