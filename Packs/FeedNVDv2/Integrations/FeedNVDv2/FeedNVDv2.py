@@ -571,34 +571,37 @@ def _fetch_cve_batches(
         now: The current date and time.
         publish_date: Whether to use publish date or last modified date for querying.
         remaining_limit: Maximum number of CVEs to fetch. None means no limit.
-    Returns (last_raw_cves, total_created, end_date, limit_reached).
+        manual_fetch: Whether this fetch is triggered manually via nvd-get-indicators command.
+    Returns (all_raw_cves, total_created, end_date, limit_reached).
     """
-    start_index, end_date = start_date, now
+    window_start, end_date = start_date, now
     total_results, limit_reached = 0, False
-    raw_cves: list = []
+    all_raw_cves: list = []
 
-    while start_index and not limit_reached:
-        delta = (end_date - start_index).days
+    while window_start is not None and not limit_reached:
+        if window_start >= end_date:
+            break
+
+        delta = (end_date - window_start).days
         if delta > NVD_API_MAX_DATE_RANGE_DAYS:
             demisto.debug(f"Fetching CVEs over a span of {delta} days, will run in {NVD_API_MAX_DATE_RANGE_DAYS} days batches")
-            end_date = start_index + timedelta(days=NVD_API_MAX_DATE_RANGE_DAYS)
+            end_date = window_start + timedelta(days=NVD_API_MAX_DATE_RANGE_DAYS)
 
         demisto.debug(
-            f'Fetching CVEs from {start_index:%Y-%m-%d} to {end_date:%Y-%m-%d}, '
+            f'Fetching CVEs from {window_start:%Y-%m-%d} to {end_date:%Y-%m-%d}, '
             f'Using {"Publish date" if publish_date else "Updated date"}'
         )
-        raw_cves = retrieve_cves(client, start_index, end_date, publish_date=publish_date, remaining_limit=remaining_limit)
+        raw_cves = retrieve_cves(client, window_start, end_date, publish_date=publish_date, remaining_limit=remaining_limit)
+        all_raw_cves.extend(raw_cves)
         total_results += _create_indicators(client, raw_cves, manual_fetch)
 
         if remaining_limit is not None:
             remaining_limit -= len(raw_cves)
             limit_reached = remaining_limit <= 0
 
-        start_index, end_date = end_date, now
-        if start_index >= now:
-            break
+        window_start, end_date = end_date, now
 
-    return raw_cves, total_results, end_date, limit_reached
+    return all_raw_cves, total_results, end_date, limit_reached
 
 
 def fetch_indicators_command(client: Client, manual_fetch: bool = False) -> list[dict]:
