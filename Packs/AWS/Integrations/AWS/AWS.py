@@ -5214,9 +5214,6 @@ class EC2:
             }
         )
 
-        if not kwargs.get("TagSpecifications"):
-            raise DemistoException("The argument tag must include at least one key-value pair.")
-
         print_debug_logs(client, f"Allocating Dedicated Hosts with parameters: {kwargs}")
         response = client.allocate_hosts(**kwargs)
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
