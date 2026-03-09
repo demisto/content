@@ -126,9 +126,9 @@ def test_user_list_command(
         ),
         (
             "list_company_filter.json",
-            {"limit": "2", "company": "BMC Software, Inc."},
+            {"limit": "2", "company": "TestSoft, Inc."},
             1,
-            "BMC Software, Inc.",
+            "TestSoft, Inc.",
         ),
     ],
 )
