@@ -81,7 +81,7 @@ def mock_support_multithreading(mocker: MockerFixture):
     function which is called during ContentClient initialization. Without this mock,
     tests fail with: AttributeError: module 'demistomock' has no attribute '_Demisto__do'
     """
-    mocker.patch("CommonServerPython.support_multithreading")
+    mocker.patch("ContentClientApiModule.support_multithreading")
 
 
 def util_load_json(path: str):
