@@ -324,6 +324,29 @@ def add_millisecond_to_timestamp(timestamp: str) -> str:
         raise DemistoException(message=e) from e
 
 
+def deduplicate_events(events: list[dict[str, Any]], last_fetched_ids: list[str]) -> list[dict[str, Any]]:
+    """Remove already-processed events based on previously fetched IDs."""
+
+    if not last_fetched_ids:
+        demisto.debug("[Dedup] No deduplication needed (first run - no previous IDs)")
+        return events
+
+    demisto.debug(f"[Dedup] Checking {len(events)} events against {len(last_fetched_ids)} previously fetched IDs")
+
+    # Convert to set for O(1) lookup
+    fetched_ids_set = set(last_fetched_ids)
+
+    # Filter out events that were already fetched
+    new_events = [event for event in events if event.get("id") not in fetched_ids_set]
+
+    skipped_count = len(events) - len(new_events)
+    if skipped_count > 0:
+        demisto.debug(f"[Dedup] Skipped {skipped_count} duplicates. {len(new_events)} new events remain.")
+    else:
+        demisto.debug("[Dedup] No duplicates found.")
+
+    return new_events
+
 def get_events(
     client: Client, first_fetch_time: datetime, max_fetch: int, push_events_on_error: bool,
     search_log_query: str = ''
@@ -346,28 +369,42 @@ def get_events(
         tuple[list[dict[str, Any]], str]: A tuple of the events list and the last event time for next fetch cycle.
     """
     try:
+        last_searchlogs_ids=[]
         searchlogs_events = []
         searchlogs_time_start = '2026-01-01T11:05:00.000Z'
         searchlogs_time_end = '2026-01-01T11:45:00.000Z'
-        searchlogs_query = search_log_query
+        
+        
+        # last_searchlogs_ids = ['aaaa']
+        # searchlogs_time_start = '2026-01-01T11:06:55.362Z' 
+        searchlogs_limit =1
+        
         
         searchlogs_res = searchlogs_api_request(client=client,time_start=searchlogs_time_start,time_end=searchlogs_time_end,search_query=searchlogs_query)
 
         for result in json.loads(searchlogs_res.content).get('results', []):
-            log_content = result.get('data', {}).get('logContent', {})
-            event_data = log_content.get('data', {})
-            if event_data:
-                event_data['_time'] = log_content.get('time')
-                searchlogs_events.append(event_data)
+            event_data = result.get('data', {}).get('logContent', {})
+            event_data['_time'] = event_data.get('time')
+            searchlogs_events.append(event_data)
 
-        while len(searchlogs_events) < max_fetch and (next_page := searchlogs_res.headers._store.get("opc-next-page")):
+
+        while len(searchlogs_events) < searchlogs_limit and (next_page := searchlogs_res.headers._store.get("opc-next-page")):
             searchlogs_res = searchlogs_api_request(client=client,time_start=searchlogs_time_start,time_end=searchlogs_time_end,search_query=searchlogs_query,next_page=next_page[1])
 
             for result in json.loads(searchlogs_res.content).get('results', []):
-                event_data = result.get('data', {}).get('logContent', {}).get('data', {})
-                if event_data:
-                    searchlogs_events.append(event_data)
+                event_data = result.get('data', {}).get('logContent', {})
+                event_data['_time'] = event_data.get('time')
+                searchlogs_events.append(event_data)
 
+        if searchlogs_events:
+
+            # Deduplicate
+            searchlogs_events = deduplicate_events(searchlogs_events, last_searchlogs_ids)
+            searchlogs_events = searchlogs_events[:searchlogs_limit]
+
+        if searchlogs_events:
+            new_last_run = searchlogs_events[-1]['_time']   
+            last_searchlogs_ids = [event.get("id") for event in searchlogs_events if event.get("_time") == new_last_run and event.get("id")]
 
 
         #audit logs events
