@@ -4131,6 +4131,8 @@ script:
       hidden: true
       outputs: []
     - name: core-fill-support-ticket
+      hidden: true
+
       description: Returns fields for the completion of the support ticket
       arguments:
         - name: description
@@ -4219,6 +4221,7 @@ script:
           description: The specific problem concentration.
           type: String
     - name: core-get-support-ticket-taxonomy
+      hidden: true
       description: Retrieves the complete support ticket taxonomy including all issue categories and their associated problem concentrations.
       arguments: []
       outputs:
@@ -4226,6 +4229,7 @@ script:
           description: A mapping of support issue categories to their specific problem concentrations.Each key represents an 'issue_category', and its associated list represents the valid 'problem_concentrations' for that category.
           type: String
     - name: core-verify-support-ticket-permission
+      hidden: true
       description: Verifies whether the current user has the required permissions to manage support tickets. Checks both user CSP permission and tenant entitlement.
       arguments: []
       outputs:

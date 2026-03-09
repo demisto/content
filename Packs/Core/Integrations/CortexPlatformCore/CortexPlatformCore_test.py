@@ -10370,11 +10370,11 @@ def test_core_fill_support_ticket_command_success(mocker: MockerFixture):
 def test_get_support_ticket_taxonomy_command_success(mocker: MockerFixture):
     """
     GIVEN:
-        Mock API responses with SME areas, sub-groups, and questionnaire items.
+        Mock API response with SME areas and their sub-groups.
     WHEN:
         The get_support_ticket_taxonomy_command function is called.
     THEN:
-        It fetches all SME areas, iterates over all combinations, and returns the full aggregated taxonomy.
+        It fetches all SME areas and returns the taxonomy mapping each area to its problem concentrations.
     """
     from CortexPlatformCore import get_support_ticket_taxonomy_command, Client
 
@@ -10398,57 +10398,21 @@ def test_get_support_ticket_taxonomy_command_success(mocker: MockerFixture):
         ]
     }
 
-    questionnaire_responses = {
-        ("Agent", "Communication"): {
-            "reply": [
-                {"key": "1", "label": "Q1", "required": True, "type": "text", "questionType": "question"},
-            ]
-        },
-        ("Agent", "Performance"): {
-            "reply": [
-                {"key": "1", "label": "Q2", "required": False, "type": "text", "questionType": "question"},
-                {"key": "2", "label": "Upload logs", "required": False, "type": "file", "questionType": "log"},
-            ]
-        },
-        ("Server", "Automation"): {
-            "reply": [
-                {"key": "1", "label": "Q3", "required": True, "type": "text", "questionType": "question"},
-            ]
-        },
-    }
-
     mock_client = Client(base_url="", headers={})
     mocker.patch.object(mock_client, "get_sme_areas_and_sub_groups", return_value=areas_response)
-    mocker.patch.object(
-        mock_client,
-        "get_questionnaire_by_sme",
-        side_effect=lambda area, sg: questionnaire_responses[(area, sg)],
-    )
 
     result = get_support_ticket_taxonomy_command(mock_client, {})
 
     assert result.outputs_prefix == "Core.SupportTicketTaxonomy"
-    # Nested structure: 2 issue categories
-    assert len(result.outputs) == 2
 
-    # First category: Agent with 2 problem concentrations
-    agent = result.outputs[0]
-    assert agent["issue_category"] == "Agent"
-    assert len(agent["problem_concentrations"]) == 2
-    assert agent["problem_concentrations"][0]["problem_concentration"] == "Communication"
-    assert len(agent["problem_concentrations"][0]["questions"]) == 1
-    assert agent["problem_concentrations"][1]["problem_concentration"] == "Performance"
-    assert len(agent["problem_concentrations"][1]["questions"]) == 2
-
-    # Second category: Server with 1 problem concentration
-    server = result.outputs[1]
-    assert server["issue_category"] == "Server"
-    assert len(server["problem_concentrations"]) == 1
-    assert server["problem_concentrations"][0]["problem_concentration"] == "Automation"
-    assert len(server["problem_concentrations"][0]["questions"]) == 1
+    expected_taxonomy = [
+        {"Agent": ["Communication", "Performance"]},
+        {"Server": ["Automation"]},
+    ]
+    assert result.outputs == str(expected_taxonomy)
+    assert result.raw_response == expected_taxonomy
 
     assert mock_client.get_sme_areas_and_sub_groups.call_count == 1
-    assert mock_client.get_questionnaire_by_sme.call_count == 3
 
 
 def test_get_support_ticket_taxonomy_command_empty_areas(mocker: MockerFixture):
@@ -10458,29 +10422,28 @@ def test_get_support_ticket_taxonomy_command_empty_areas(mocker: MockerFixture):
     WHEN:
         The get_support_ticket_taxonomy_command function is called.
     THEN:
-        The response contains an empty list and no questionnaire calls are made.
+        The response contains an empty list.
     """
     from CortexPlatformCore import get_support_ticket_taxonomy_command, Client
 
     mock_client = Client(base_url="", headers={})
     mocker.patch.object(mock_client, "get_sme_areas_and_sub_groups", return_value={"reply": []})
-    mock_get_q = mocker.patch.object(mock_client, "get_questionnaire_by_sme")
 
     result = get_support_ticket_taxonomy_command(mock_client, {})
 
-    assert result.outputs == []
+    assert result.outputs == str([])
+    assert result.raw_response == []
     assert result.outputs_prefix == "Core.SupportTicketTaxonomy"
-    mock_get_q.assert_not_called()
 
 
-def test_get_support_ticket_taxonomy_command_skips_errors(mocker: MockerFixture):
+def test_get_support_ticket_taxonomy_command_empty_suggested_values(mocker: MockerFixture):
     """
     GIVEN:
-        One of the questionnaire API calls fails.
+        An SME area with empty suggestedValues.
     WHEN:
         The get_support_ticket_taxonomy_command function is called.
     THEN:
-        The failing combination is skipped and the rest are returned successfully.
+        The area is included with an empty list of problem concentrations.
     """
     from CortexPlatformCore import get_support_ticket_taxonomy_command, Client
 
@@ -10489,33 +10452,16 @@ def test_get_support_ticket_taxonomy_command_skips_errors(mocker: MockerFixture)
             {
                 "value": "Agent",
                 "label": "Agent",
-                "suggestedValues": [
-                    {"value": "Good", "label": "Good"},
-                    {"value": "Bad", "label": "Bad"},
-                ],
+                "suggestedValues": [],
             },
         ]
     }
 
-    def mock_get_questionnaire(area, sg):
-        if sg == "Bad":
-            raise Exception("API error")
-        return {"reply": [{"key": "1", "label": "Q1", "required": True, "type": "text", "questionType": "question"}]}
-
     mock_client = Client(base_url="", headers={})
     mocker.patch.object(mock_client, "get_sme_areas_and_sub_groups", return_value=areas_response)
-    mocker.patch.object(mock_client, "get_questionnaire_by_sme", side_effect=mock_get_questionnaire)
 
     result = get_support_ticket_taxonomy_command(mock_client, {})
 
-    # 1 category with 2 problem concentrations
-    assert len(result.outputs) == 1
-    assert result.outputs[0]["issue_category"] == "Agent"
-    concentrations = result.outputs[0]["problem_concentrations"]
-    assert len(concentrations) == 2
-    # Good has questions
-    assert concentrations[0]["problem_concentration"] == "Good"
-    assert len(concentrations[0]["questions"]) == 1
-    # Bad has empty questions (error was skipped)
-    assert concentrations[1]["problem_concentration"] == "Bad"
-    assert len(concentrations[1]["questions"]) == 0
+    expected_taxonomy = [{"Agent": []}]
+    assert result.outputs == str(expected_taxonomy)
+    assert result.raw_response == expected_taxonomy

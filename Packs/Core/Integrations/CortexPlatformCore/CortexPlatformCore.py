@@ -1039,24 +1039,6 @@ class Client(CoreClient):
             url_suffix="/sfdc_support/get_sme_areas_and_sub_groups",
         )
 
-    def get_questionnaire_by_sme(self, sme_area: str, sub_group: str) -> dict:
-        """
-        Retrieve questionnaire mappings by SME area and sub-group for the tenant's product type.
-
-        Args:
-            sme_area (str): The SME area (issue category) to fetch questions for.
-            sub_group (str): The sub-group (problem concentration) within the SME area.
-
-        Returns:
-            dict: The response containing questionnaire items (questions and log upload fields).
-        """
-        return self._http_request(
-            method="POST",
-            headers=self._headers,
-            url_suffix="/sfdc_support/get_questions_by_sme_area_and_sub_group/",
-            json_data={"request_data": {"sme_area": sme_area, "sub_group": sub_group}},
-        )
-
     def get_custom_fields_metadata(self) -> dict[str, Any]:
         """
         Retrieve custom fields metadata from the CUSTOM_FIELDS_CASE_TABLE.
@@ -4709,6 +4691,7 @@ def core_fill_support_ticket_command(args: dict[str, Any]) -> CommandResults:
     """
 
 
+    demisto.debug(f"core_fill_support_ticket_command: {args}")
     start_time = args.get("most_recent_issue_start_time")
 
     issue_category = args.get("issue_category")
@@ -4738,9 +4721,8 @@ def get_support_ticket_taxonomy_command(client: Client, args: dict[str, Any]) ->
 
     This is a single command that aggregates data from:
       1. /sfdc_support/get_sme_areas_and_sub_groups/
-      2. /sfdc_support/get_questions_by_sme_area_and_sub_group/ (for each combination)
 
-    Returns a nested structure grouped by issue_category → problem_concentration → questions.
+    Returns a nested structure grouped by issue_category → problem_concentration
 
     Args:
         client (Client): The client instance used to send the request.
