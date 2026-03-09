@@ -1141,11 +1141,11 @@ def test_get_xql_query_results_polling_command_fail_status(mocker):
         "remaining_quota": 1000.0,
         "results": None,
         "execution_id": "query_id_mock",
-        "error_message": "Syntax error in query",
+        "error": {"1001610318390": "ERR_000_GENERAL_ERROR", "validation_message": "unknown field username."},
     }
     mocker.patch("CoreXQLApiModule.get_xql_query_results", return_value=(mock_response, None))
     mocker.patch.object(demisto, "command", return_value="xdr-xql-generic-query")
-    with pytest.raises(DemistoException, match="Syntax error in query"):
+    with pytest.raises(DemistoException, match="unknown field username"):
         CoreXQLApiModule.get_xql_query_results_polling_command(
             CLIENT,
             {"query": "BAD_QUERY", "query_name": "failing_query", "query_id": "query_id_mock"},

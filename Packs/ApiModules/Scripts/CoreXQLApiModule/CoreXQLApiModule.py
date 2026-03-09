@@ -834,6 +834,7 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
         demisto.debug(f"Query started successfully on retry with {execution_id=}.")
 
     outputs, file_data = get_xql_query_results(client, args)  # get query results with query_id
+    demisto.debug(f"XQL query results raw outputs keys: {list(outputs.keys())}, full outputs: {outputs}")
     outputs.update({"query_name": args.get("query_name", "")})
     outputs_prefix = get_outputs_prefix(command_name)
     command_results = CommandResults(
@@ -866,11 +867,17 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
 
     # If the query failed, raise an error with the details from the API response.
     if outputs.get("status") == "FAIL":
-        error_message = outputs.get("error_message", "Unknown error")
+        raw_error = outputs.get("error") or outputs.get("error_message") or "Unknown error"
+        # The 'error' field from the API can be a dict (e.g. {"<id>": "ERR_...", "validation_message": "..."})
+        if isinstance(raw_error, dict):
+            error_parts = [f"{k}: {v}" for k, v in raw_error.items()]
+            error_message = "; ".join(error_parts)
+        else:
+            error_message = str(raw_error)
         query_id = args.get("query_id", "unknown")
         demisto.debug(f"Query {query_id} failed with error: {error_message}")
         raise DemistoException(
-            f"XQL query '{args.get('query_name', query_id)}' failed with status FAIL. " f"Error: {error_message}"
+            f"XQL query '{args.get('query_name', query_id)}' failed with status FAIL. Error: {error_message}"
         )
 
     demisto.debug(f"Returned status '{outputs.get('status')}' for {args.get('query_id', '')}.")
