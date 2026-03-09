@@ -11277,3 +11277,192 @@ class TestValidatePolicyDeletable:
 
         with pytest.raises(DemistoException, match="Cannot delete the default policy"):
             validate_policy_deletable(policy, "windows")
+
+
+class TestCalculatePolicyPriority:
+    """Direct unit tests for calculate_policy_priority."""
+
+    @pytest.mark.parametrize(
+        "current_policies, platform, requested_priority, expected",
+        [
+            # No existing policies → MIN_USER_POLICY_PRIORITY = 1
+            ([], "AGENT_OS_WINDOWS", None, 1),
+            # Auto-assign: max existing is 5 → returns 6
+            (
+                [
+                    {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1},
+                    {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 5},
+                    {"PLATFORM": "AGENT_OS_LINUX", "PRIORITY": 99},  # Different platform, ignored
+                ],
+                "AGENT_OS_WINDOWS",
+                None,
+                6,
+            ),
+            # Requested priority higher than max (3) → capped to max + 1 = 4
+            (
+                [{"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 3}],
+                "AGENT_OS_WINDOWS",
+                10,
+                4,
+            ),
+            # Requested priority within range → honored as-is
+            (
+                [
+                    {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1},
+                    {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 5},
+                ],
+                "AGENT_OS_WINDOWS",
+                2,
+                2,
+            ),
+        ],
+    )
+    def test_calculate_policy_priority(self, current_policies, platform, requested_priority, expected):
+        """
+        Given: Various combinations of existing policies and requested priorities.
+        When: calculate_policy_priority is called.
+        Then: Returns the correct priority value.
+        """
+        from CortexPlatformCore import calculate_policy_priority
+
+        result = calculate_policy_priority(current_policies, platform, requested_priority)
+        assert result == expected
+
+
+class TestShiftPolicyPriorities:
+    """Direct unit tests for shift_policy_priorities."""
+
+    def test_no_conflict_does_nothing(self):
+        """
+        Given: No existing policy has the requested priority.
+        When: shift_policy_priorities is called.
+        Then: Policies are unchanged.
+        """
+        from CortexPlatformCore import shift_policy_priorities
+
+        current_policies = [
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1, "NAME": "P1"},
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 3, "NAME": "P3"},
+        ]
+        shift_policy_priorities(current_policies, "AGENT_OS_WINDOWS", 2)
+
+        assert current_policies[0]["PRIORITY"] == 1
+        assert current_policies[1]["PRIORITY"] == 3
+
+    def test_conflict_shifts_all_policies_at_or_above_new_priority(self):
+        """
+        Given: Policies at priorities 1, 2, 3 for the platform; new priority = 2.
+        When: shift_policy_priorities is called.
+        Then: Policies at 2 and 3 are shifted to 3 and 4; policy at 1 and other platforms unchanged.
+        """
+        from CortexPlatformCore import shift_policy_priorities
+
+        current_policies = [
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1, "NAME": "P1"},
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 2, "NAME": "P2"},
+            {"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 3, "NAME": "P3"},
+            {"PLATFORM": "AGENT_OS_LINUX", "PRIORITY": 2, "NAME": "Linux-P2"},  # Different platform, not shifted
+        ]
+        shift_policy_priorities(current_policies, "AGENT_OS_WINDOWS", 2)
+
+        priorities = {p["NAME"]: p["PRIORITY"] for p in current_policies}
+        assert priorities["P1"] == 1  # Unchanged (below new priority)
+        assert priorities["P2"] == 3  # Shifted 2 → 3
+        assert priorities["P3"] == 4  # Shifted 3 → 4
+        assert priorities["Linux-P2"] == 2  # Different platform, unchanged
+
+    def test_shift_is_in_place_and_returns_none(self):
+        """
+        Given: A conflict at priority 1.
+        When: shift_policy_priorities is called.
+        Then: The original list is modified in-place and None is returned.
+        """
+        from CortexPlatformCore import shift_policy_priorities
+
+        current_policies = [{"PLATFORM": "AGENT_OS_WINDOWS", "PRIORITY": 1, "NAME": "P1"}]
+        result = shift_policy_priorities(current_policies, "AGENT_OS_WINDOWS", 1)
+
+        assert result is None
+        assert current_policies[0]["PRIORITY"] == 2
+
+
+class TestGetPlatformSpecificProfileDefaults:
+    """Direct unit tests for get_platform_specific_profile_defaults."""
+
+    @pytest.mark.parametrize(
+        "platform, expected",
+        [
+            # linux/mac/windows: all 'Default' except exceptions = 'Default (No Exceptions)'
+            (
+                "windows",
+                {
+                    "exploit": "Default",
+                    "malware": "Default",
+                    "agent_settings": "Default",
+                    "restrictions": "Default",
+                    "exceptions": "Default (No Exceptions)",
+                },
+            ),
+            (
+                "linux",
+                {
+                    "exploit": "Default",
+                    "malware": "Default",
+                    "agent_settings": "Default",
+                    "restrictions": "Default",
+                    "exceptions": "Default (No Exceptions)",
+                },
+            ),
+            (
+                "mac",
+                {
+                    "exploit": "Default",
+                    "malware": "Default",
+                    "agent_settings": "Default",
+                    "restrictions": "Default",
+                    "exceptions": "Default (No Exceptions)",
+                },
+            ),
+            # serverless: only restrictions defaults
+            (
+                "serverless",
+                {"exploit": None, "malware": None, "agent_settings": None, "restrictions": "Default", "exceptions": None},
+            ),
+            # android/ios: only malware + agent_settings default
+            (
+                "android",
+                {"exploit": None, "malware": "Default", "agent_settings": "Default", "restrictions": None, "exceptions": None},
+            ),
+            (
+                "ios",
+                {"exploit": None, "malware": "Default", "agent_settings": "Default", "restrictions": None, "exceptions": None},
+            ),
+        ],
+    )
+    def test_platform_defaults_no_user_args(self, platform, expected):
+        """
+        Given: A platform with no user-provided profile arguments.
+        When: get_platform_specific_profile_defaults is called.
+        Then: Returns the correct platform-specific defaults for all profile types.
+        """
+        from CortexPlatformCore import get_platform_specific_profile_defaults
+
+        result = get_platform_specific_profile_defaults(platform, {})
+        assert result == expected
+
+    def test_user_provided_values_override_defaults(self):
+        """
+        Given: Windows platform with user-provided exploit and malware profiles.
+        When: get_platform_specific_profile_defaults is called.
+        Then: User values override defaults; unspecified fields still get platform defaults.
+        """
+        from CortexPlatformCore import get_platform_specific_profile_defaults
+
+        args = {"exploit_profile": "Custom Exploit", "malware_profile": "Custom Malware"}
+        result = get_platform_specific_profile_defaults("windows", args)
+
+        assert result["exploit"] == "Custom Exploit"
+        assert result["malware"] == "Custom Malware"
+        assert result["agent_settings"] == "Default"  # Still defaults
+        assert result["restrictions"] == "Default"  # Still defaults
+        assert result["exceptions"] == "Default (No Exceptions)"  # Still defaults

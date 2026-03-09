@@ -5168,6 +5168,179 @@ def resolve_endpoint_names_to_ids(client: Client, endpoint_names: list[str]) -> 
     return endpoint_ids
 
 
+def calculate_policy_priority(current_policies: list[dict], platform_value: str, requested_priority: int | None) -> int:
+    """Calculate and validate policy priority, handling auto-assignment."""
+    MIN_USER_POLICY_PRIORITY = 1
+    platform_policies = [p for p in current_policies if p.get("PLATFORM") == platform_value]
+
+    if not platform_policies:
+        priority = MIN_USER_POLICY_PRIORITY
+    else:
+        max_existing_priority = max(p.get("PRIORITY", 0) for p in platform_policies)
+
+        if requested_priority is None:
+            priority = max_existing_priority + 1
+        elif requested_priority > max_existing_priority:
+            demisto.debug(
+                f"Priority {requested_priority} is higher than max ({max_existing_priority}). "
+                f"Setting to {max_existing_priority + 1}."
+            )
+            priority = max_existing_priority + 1
+        else:
+            priority = requested_priority
+
+    if priority < MIN_USER_POLICY_PRIORITY:
+        raise DemistoException(f"Priority must be at least {MIN_USER_POLICY_PRIORITY}.")
+
+    return priority
+
+
+def shift_policy_priorities(current_policies: list[dict], platform_value: str, new_priority: int) -> None:
+    """Shift existing policies with priority >= new_priority up by 1 (modifies in-place)."""
+    existing_priority_policy = next(
+        (p for p in current_policies if p.get("PLATFORM") == platform_value and p.get("PRIORITY") == new_priority), None
+    )
+
+    if not existing_priority_policy:
+        return
+
+    demisto.debug(f"Priority {new_priority} exists. Shifting policies.")
+
+    policies_to_shift = sorted(
+        [p for p in current_policies if p.get("PLATFORM") == platform_value and p.get("PRIORITY", 0) >= new_priority],
+        key=lambda p: p.get("PRIORITY", 0),
+        reverse=True,
+    )
+
+    for policy in policies_to_shift:
+        current_priority = policy.get("PRIORITY", 0)
+        new_priority_value = current_priority + 1
+        policy["PRIORITY"] = new_priority_value
+        demisto.debug(f"Shifted '{policy.get('NAME')}' from {current_priority} to {new_priority_value}")
+
+
+def get_identity_and_web_api_profile_defaults(platform_value: str) -> dict[str, Any]:
+    """
+    Get platform-specific default profile IDs for identity and web_and_api.
+    Note: identity and web_and_api are currently not supported, but the api expect to get them in the request.
+    """
+    WINDOWS_IDENTITY_PROFILE_ID = 17
+    LINUX_WEB_AND_API_PROFILE_ID = 12
+    if platform_value == "AGENT_OS_WINDOWS":
+        return {
+            "identity": "Default",
+            "identity_id": WINDOWS_IDENTITY_PROFILE_ID,
+            "web_and_api": None,
+            "web_and_api_id": None,
+        }
+    elif platform_value == "AGENT_OS_LINUX":
+        return {
+            "identity": None,
+            "identity_id": None,
+            "web_and_api": "Default",
+            "web_and_api_id": LINUX_WEB_AND_API_PROFILE_ID,
+        }
+    else:
+        return {
+            "identity": None,
+            "identity_id": None,
+            "web_and_api": None,
+            "web_and_api_id": None,
+        }
+
+
+def get_platform_specific_profile_defaults(platform: str, args: dict) -> dict[str, str | None]:
+    """
+    Get platform-specific default profile values.
+
+    Platform-specific default values:
+    - serverless: restrictions = 'Default', all others = None
+    - android, ios: malware, agent_settings = 'Default', all others = None
+    - linux, mac, windows: exceptions = 'Default (No Exceptions)', all others = 'Default'
+
+    Args:
+        platform: The platform type (e.g., 'serverless', 'android', 'linux')
+        args: Command arguments containing user-provided profile values
+
+    Returns:
+        dict: Profile arguments with platform-specific defaults applied
+    """
+    # Get user-provided values (None if not provided)
+    user_exploit = args.get("exploit_profile")
+    user_malware = args.get("malware_profile")
+    user_agent_settings = args.get("agent_settings_profile")
+    user_restrictions = args.get("restrictions_profile")
+    user_exceptions = args.get("exceptions_profile")
+
+    # Set platform-specific defaults
+    if platform == "serverless":
+        return {
+            "exploit": user_exploit,
+            "malware": user_malware,
+            "agent_settings": user_agent_settings,
+            "restrictions": user_restrictions or "Default",
+            "exceptions": user_exceptions,
+        }
+    elif platform in ["android", "ios"]:
+        return {
+            "exploit": user_exploit,
+            "malware": user_malware or "Default",
+            "agent_settings": user_agent_settings or "Default",
+            "restrictions": user_restrictions,
+            "exceptions": user_exceptions,
+        }
+    else:  # linux, mac, windows
+        return {
+            "exploit": user_exploit or "Default",
+            "malware": user_malware or "Default",
+            "agent_settings": user_agent_settings or "Default",
+            "restrictions": user_restrictions or "Default",
+            "exceptions": user_exceptions or "Default (No Exceptions)",
+        }
+
+
+def build_policy_object(
+    policy_name: str,
+    platform_value: str,
+    priority: int,
+    target_endpoint_ids: list[str],
+    profile_map: dict[str, dict[str, Any]],
+    description: str,
+) -> dict[str, Any]:
+    """Build the complete policy object with all required fields."""
+    identity_and_web_api_profiles = get_identity_and_web_api_profile_defaults(platform_value)
+    target_filter = build_target_filter_from_endpoint_ids(target_endpoint_ids)
+
+    # Extract profile data
+    policy = {
+        "IS_ANY": False,
+        "PLATFORM": platform_value,
+        "NAME": policy_name,
+        "IS_ENABLED": True,
+        "TARGET_FILTER": target_filter,
+        "TARGET_GROUP_TYPE": "STATIC",
+        "EXPLOIT": profile_map.get("EXPLOIT", {}).get("name"),
+        "EXPLOIT_ID": profile_map.get("EXPLOIT", {}).get("id"),
+        "MALWARE": profile_map.get("MALWARE", {}).get("name"),
+        "MALWARE_ID": profile_map.get("MALWARE", {}).get("id"),
+        "AGENT_SETTINGS": profile_map.get("AGENT_SETTINGS", {}).get("name"),
+        "AGENT_SETTINGS_ID": profile_map.get("AGENT_SETTINGS", {}).get("id"),
+        "RESTRICTIONS": profile_map.get("RESTRICTIONS", {}).get("name"),
+        "RESTRICTIONS_ID": profile_map.get("RESTRICTIONS", {}).get("id"),
+        "EXCEPTIONS": profile_map.get("EXCEPTIONS", {}).get("name"),
+        "EXCEPTIONS_ID": profile_map.get("EXCEPTIONS", {}).get("id"),
+        "IDENTITY_ID": identity_and_web_api_profiles["identity_id"],
+        "IDENTITY": identity_and_web_api_profiles["identity"],
+        "WEB_AND_API_ID": identity_and_web_api_profiles["web_and_api_id"],
+        "WEB_AND_API": identity_and_web_api_profiles["web_and_api"],
+        "TARGET": [],
+        "PRIORITY": priority,
+        "DESCRIPTION": description,
+    }
+
+    return policy
+
+
 def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults:
     """
     Creates a new endpoint policy and applies it to specified endpoints.
@@ -5204,175 +5377,6 @@ def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults
     Raises:
         DemistoException: If required parameters are missing or policy creation fails.
     """
-
-    def calculate_policy_priority(current_policies: list[dict], platform_value: str, requested_priority: int | None) -> int:
-        """Calculate and validate policy priority, handling auto-assignment."""
-        MIN_USER_POLICY_PRIORITY = 1
-        platform_policies = [p for p in current_policies if p.get("PLATFORM") == platform_value]
-
-        if not platform_policies:
-            priority = MIN_USER_POLICY_PRIORITY
-        else:
-            max_existing_priority = max(p.get("PRIORITY", 0) for p in platform_policies)
-
-            if requested_priority is None:
-                priority = max_existing_priority + 1
-            elif requested_priority > max_existing_priority:
-                demisto.debug(
-                    f"Priority {requested_priority} is higher than max ({max_existing_priority}). "
-                    f"Setting to {max_existing_priority + 1}."
-                )
-                priority = max_existing_priority + 1
-            else:
-                priority = requested_priority
-
-        if priority < MIN_USER_POLICY_PRIORITY:
-            raise DemistoException(f"Priority must be at least {MIN_USER_POLICY_PRIORITY}.")
-
-        return priority
-
-    def shift_policy_priorities(current_policies: list[dict], platform_value: str, new_priority: int) -> None:
-        """Shift existing policies with priority >= new_priority up by 1 (modifies in-place)."""
-        existing_priority_policy = next(
-            (p for p in current_policies if p.get("PLATFORM") == platform_value and p.get("PRIORITY") == new_priority), None
-        )
-
-        if not existing_priority_policy:
-            return
-
-        demisto.debug(f"Priority {new_priority} exists. Shifting policies.")
-
-        policies_to_shift = sorted(
-            [p for p in current_policies if p.get("PLATFORM") == platform_value and p.get("PRIORITY", 0) >= new_priority],
-            key=lambda p: p.get("PRIORITY", 0),
-            reverse=True,
-        )
-
-        for policy in policies_to_shift:
-            current_priority = policy.get("PRIORITY", 0)
-            new_priority_value = current_priority + 1
-            policy["PRIORITY"] = new_priority_value
-            demisto.debug(f"Shifted '{policy.get('NAME')}' from {current_priority} to {new_priority_value}")
-
-    def get_identity_and_web_api_profile_defaults(platform_value: str) -> dict[str, Any]:
-        """
-        Get platform-specific default profile IDs for identity and web_and_api.
-        Note: identity and web_and_api are currently not supported, but the api expect to get them in the request.
-        """
-        WINDOWS_IDENTITY_PROFILE_ID = 17
-        LINUX_WEB_AND_API_PROFILE_ID = 12
-        if platform_value == "AGENT_OS_WINDOWS":
-            return {
-                "identity": "Default",
-                "identity_id": WINDOWS_IDENTITY_PROFILE_ID,
-                "web_and_api": None,
-                "web_and_api_id": None,
-            }
-        elif platform_value == "AGENT_OS_LINUX":
-            return {
-                "identity": None,
-                "identity_id": None,
-                "web_and_api": "Default",
-                "web_and_api_id": LINUX_WEB_AND_API_PROFILE_ID,
-            }
-        else:
-            return {
-                "identity": None,
-                "identity_id": None,
-                "web_and_api": None,
-                "web_and_api_id": None,
-            }
-
-    def get_platform_specific_profile_defaults(platform: str, args: dict) -> dict[str, str | None]:
-        """
-        Get platform-specific default profile values.
-
-        Platform-specific default values:
-        - serverless: restrictions = 'Default', all others = None
-        - android, ios: malware, agent_settings = 'Default', all others = None
-        - linux, mac, windows: exceptions = 'Default (No Exceptions)', all others = 'Default'
-
-        Args:
-            platform: The platform type (e.g., 'serverless', 'android', 'linux')
-            args: Command arguments containing user-provided profile values
-
-        Returns:
-            dict: Profile arguments with platform-specific defaults applied
-        """
-        # Get user-provided values (None if not provided)
-        user_exploit = args.get("exploit_profile")
-        user_malware = args.get("malware_profile")
-        user_agent_settings = args.get("agent_settings_profile")
-        user_restrictions = args.get("restrictions_profile")
-        user_exceptions = args.get("exceptions_profile")
-
-        # Set platform-specific defaults
-        if platform == "serverless":
-            return {
-                "exploit": user_exploit,
-                "malware": user_malware,
-                "agent_settings": user_agent_settings,
-                "restrictions": user_restrictions or "Default",
-                "exceptions": user_exceptions,
-            }
-        elif platform in ["android", "ios"]:
-            return {
-                "exploit": user_exploit,
-                "malware": user_malware or "Default",
-                "agent_settings": user_agent_settings or "Default",
-                "restrictions": user_restrictions,
-                "exceptions": user_exceptions,
-            }
-        else:  # linux, mac, windows
-            return {
-                "exploit": user_exploit or "Default",
-                "malware": user_malware or "Default",
-                "agent_settings": user_agent_settings or "Default",
-                "restrictions": user_restrictions or "Default",
-                "exceptions": user_exceptions or "Default (No Exceptions)",
-            }
-
-    def build_policy_object(
-        policy_name: str,
-        platform_value: str,
-        priority: int,
-        target_endpoint_ids: list[str],
-        profile_map: dict[str, dict[str, Any]],
-        description: str,
-    ) -> dict[str, Any]:
-        """Build the complete policy object with all required fields."""
-        identity_and_web_api_profiles = get_identity_and_web_api_profile_defaults(platform_value)
-        target_filter = build_target_filter_from_endpoint_ids(target_endpoint_ids)
-
-        # Extract profile data
-        policy = {
-            "IS_ANY": False,
-            "PLATFORM": platform_value,
-            "NAME": policy_name,
-            "IS_ENABLED": True,
-            "TARGET_FILTER": target_filter,
-            "TARGET_GROUP_TYPE": "STATIC",
-            "EXPLOIT": profile_map.get("EXPLOIT", {}).get("name"),
-            "EXPLOIT_ID": profile_map.get("EXPLOIT", {}).get("id"),
-            "MALWARE": profile_map.get("MALWARE", {}).get("name"),
-            "MALWARE_ID": profile_map.get("MALWARE", {}).get("id"),
-            "AGENT_SETTINGS": profile_map.get("AGENT_SETTINGS", {}).get("name"),
-            "AGENT_SETTINGS_ID": profile_map.get("AGENT_SETTINGS", {}).get("id"),
-            "RESTRICTIONS": profile_map.get("RESTRICTIONS", {}).get("name"),
-            "RESTRICTIONS_ID": profile_map.get("RESTRICTIONS", {}).get("id"),
-            "EXCEPTIONS": profile_map.get("EXCEPTIONS", {}).get("name"),
-            "EXCEPTIONS_ID": profile_map.get("EXCEPTIONS", {}).get("id"),
-            "IDENTITY_ID": identity_and_web_api_profiles["identity_id"],
-            "IDENTITY": identity_and_web_api_profiles["identity"],
-            "WEB_AND_API_ID": identity_and_web_api_profiles["web_and_api_id"],
-            "WEB_AND_API": identity_and_web_api_profiles["web_and_api"],
-            "TARGET": [],
-            "PRIORITY": priority,
-            "DESCRIPTION": description,
-        }
-
-        return policy
-
     policy_name = args.get("policy_name", "")
     target_endpoint_names = argToList(args.get("target_endpoint_names", ""))
     target_endpoint_ids = argToList(args.get("target_endpoint_ids", ""))
