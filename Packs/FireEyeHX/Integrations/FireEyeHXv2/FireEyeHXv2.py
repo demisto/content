@@ -1949,13 +1949,12 @@ def initiate_triage_acquisition_command(client: Client, args: Dict[str, Any]) ->
 
     # Add Integration Instance to the acquisition_info
     acquisition_info["instance"] = demisto.integrationInstance()
-
+    readable = f'Triage Acquisition ID: {acquisition_info.get("_id")} on Instance: {acquisition_info.get("instance")} created.'
     return CommandResults(
         outputs_prefix="FireEyeHX.Acquisitions.Triage",
         outputs=acquisition_info,
         outputs_key_field="_id",
-        readable_output=
-            f'Triage Acquisition ID: {acquisition_info.get("_id")} on Instance: {acquisition_info.get("instance")} created.'
+        readable_output=readable,
     )
 
 
