@@ -12889,7 +12889,7 @@ script:
         type: array
 
   - name: aws-ec2-hosts-allocate
-    description: Allocates a Dedicated Host to your account. At a minimum, specify the supported instance type or instance family, the Availability Zone in which to allocate the host, and the number of hosts to allocate.
+    description: Allocates Dedicated Hosts to your account. Requires the instance type or family, the Availability Zone, and the quantity of hosts to allocate.
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -12940,7 +12940,7 @@ script:
         description: The ID of the Availability Zone.
         required: false
       - name: quantity
-        description: The number of Dedicated Hosts to allocate to your account with these parameters.
+        description: The number of Dedicated Hosts with these parameters to allocate to your account.
         required: true
       - name: instance_type
         description: Specifies the instance type to be supported by the Dedicated Hosts. Mutually exclusive with instance_family.
@@ -12949,21 +12949,21 @@ script:
         description: Specifies the instance family to be supported by the Dedicated Hosts. Mutually exclusive with instance_type.
         required: false
       - name: auto_placement
-        description: Indicates whether the host accepts any untargeted instance launches that match its instance type configuration, or if it only accepts Host tenancy instance launches that specify its unique host ID.
+        description: Whether the host accepts untargeted instance launches matching its configuration or only accepts instance launches specifying its unique host ID.
         required: false
         auto: PREDEFINED
         predefined:
           - 'on'
           - 'off'
       - name: host_recovery
-        description: Indicates whether to enable or disable host recovery for the Dedicated Host. Host recovery is disabled by default.
+        description: Whether to enable or disable host recovery for the Dedicated Host. Host recovery is disabled by default.
         required: false
         auto: PREDEFINED
         predefined:
           - 'on'
           - 'off'
       - name: host_maintenance
-        description: Indicates whether to enable or disable host maintenance for the Dedicated Host.
+        description: Whether to enable or disable host maintenance for the Dedicated Host.
         required: false
         auto: PREDEFINED
         predefined:
@@ -13101,7 +13101,7 @@ script:
         description: The ID of the Traffic Mirror filter.
         required: true
       - name: session_number
-        description: The session number determines the order in which sessions are evaluated when an interface is used by multiple sessions. Valid values are 1-32766.
+        description: The order in which sessions are evaluated when an interface is used by multiple sessions. Possible values are 1-32766.
         required: true
       - name: virtual_network_id
         description: The VXLAN ID for the Traffic Mirror session. If you do not specify a VirtualNetworkId, an account-wide unique ID is chosen at random.
@@ -13138,7 +13138,7 @@ script:
         description: The number of bytes in each packet to mirror.
         type: number
       - contextPath: AWS.EC2.TrafficMirrorSessions.SessionNumber
-        description: The session number determines the order in which sessions are evaluated when an interface is used by multiple sessions.
+        description: The order in which sessions are evaluated when an interface is used by multiple sessions.
         type: number
       - contextPath: AWS.EC2.TrafficMirrorSessions.VirtualNetworkId
         description: The virtual network ID associated with the Traffic Mirror session.
