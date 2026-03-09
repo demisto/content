@@ -945,6 +945,7 @@ def test_get_data_acquisition_command(mocker, demisto_args, state, call_count):
     get_data_acquisition_command(client, demisto_args)
     assert get_data_call.call_count == call_count["get_data"]
 
+
 """TRIAGES"""
 UPSERT_COMMAND_DATA_BAD_CASES = [
     (
@@ -953,6 +954,8 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
         "Please provide either agentId or hostName",
     )
 ]
+
+
 @pytest.mark.parametrize("demisto_args, expected_results", UPSERT_COMMAND_DATA_BAD_CASES)
 def test_get_host_acqs_failed(demisto_args, expected_results):
     from FireEyeHXv2 import get_host_acqs
@@ -963,6 +966,7 @@ def test_get_host_acqs_failed(demisto_args, expected_results):
         get_host_acqs(client, demisto_args)
     assert str(e.value) == expected_results
 
+
 UPSERT_COMMAND_DATA_BAD_CASES = [
     (
         # No arguments given
@@ -970,6 +974,8 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
         "Acquisition Id is required",
     )
 ]
+
+
 @pytest.mark.parametrize("demisto_args, expected_results", UPSERT_COMMAND_DATA_BAD_CASES)
 def test_get_triage_acquisition_information_failed(demisto_args, expected_results):
     from FireEyeHXv2 import get_triage_acquisition_information
@@ -988,6 +994,8 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
         "Acquisition Id is required",
     )
 ]
+
+
 @pytest.mark.parametrize("demisto_args, expected_results", UPSERT_COMMAND_DATA_BAD_CASES)
 def test_delete_triage_acquisition_command_failed(demisto_args, expected_results):
     from FireEyeHXv2 import delete_triage_acquisition_command
@@ -997,6 +1005,7 @@ def test_delete_triage_acquisition_command_failed(demisto_args, expected_results
     with pytest.raises(Exception) as e:
         delete_triage_acquisition_command(client, demisto_args)
     assert str(e.value) == expected_results
+
 
 UPSERT_COMMAND_DATA_BAD_CASES = [
     (
@@ -1017,6 +1026,7 @@ def test_get_host_triage_acquisitions_failed(demisto_args, expected_results):
         get_host_triage_acquisitions(client, demisto_args)
     assert str(e.value) == expected_results
 
+
 UPSERT_COMMAND_DATA_BAD_CASES = [
     (
         # No arguments given
@@ -1024,6 +1034,8 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
         "Acquisition Id is required",
     )
 ]
+
+
 @pytest.mark.parametrize("demisto_args, expected_results", UPSERT_COMMAND_DATA_BAD_CASES)
 def test_get_triage_acquisition_package_failed(demisto_args, expected_results):
     from FireEyeHXv2 import get_triage_acquisition_package

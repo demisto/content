@@ -2660,7 +2660,6 @@ Deletes a host set.
 
 >Host set 1001 was deleted successfully.
 
-
 ### fireeye-hx-delete-triage-acquistion
 
 ***
@@ -2753,12 +2752,12 @@ Gets information about a specified triage acquisition.
 
 >|   |   |
 >|---|---|
->|host|	_id: SomeHostID<br/>url: /hx/api/v3/hosts/SomeHostID<br />hostname: SomeHostname|
->|_id|	12345|
->|state|	COMPLETE|
->|request_time|	2026-03-09T15:31:49.000Z|
->|finish_time|	2026-03-09T15:37:32.836Z|
->|instance|	FireEyeHX v2_instance_1|
+>|host| _id: SomeHostID<br/>url: /hx/api/v3/hosts/SomeHostID<br />hostname: SomeHostname|
+>|_id| 12345|
+>|state| COMPLETE|
+>|request_time| 2026-03-09T15:31:49.000Z|
+>|finish_time| 2026-03-09T15:37:32.836Z|
+>|instance| FireEyeHX v2_instance_1|
 
 ### fireeye-hx-triage-acquistition
 
@@ -2792,7 +2791,6 @@ Starts a new triage request for a host.
 #### Human Readable Output
 
 >Triage Acquisition ID: 31032 on Instance: FireEyeHX v2_instance_1 created.
-
 
 ### fireeye-hx-host-get-acquisitions
 
@@ -2829,5 +2827,3 @@ Gets a list of all acquisitions for a host.
 >|---|---|---|---|
 >|12345 | triage | 2026-03-09T15:31:49.000Z | COMPLETE |
 >|12328 | triage | 2026-02-04T21:40:44.311Z | COMPLETE |
-
-
