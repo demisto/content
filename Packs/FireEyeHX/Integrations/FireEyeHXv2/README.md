@@ -2659,3 +2659,175 @@ Deletes a host set.
 #### Human Readable Output
 
 >Host set 1001 was deleted successfully.
+
+
+### fireeye-hx-delete-triage-acquistion
+
+***
+Deletes a specified triage request.
+
+#### Base Command
+
+`fireeye-hx-delete-triage-acquistion`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| acquisitionId | The acquisition ID. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!fireeye-hx-delete-triage-acquistion acquisitionId=12345```
+
+#### Human Readable Output
+
+>Triage acquisition 12345 deleted successfully
+
+### fireeye-hx-get-triage-acquistition-package
+
+***
+a
+
+#### Base Command
+
+`fireeye-hx-get-triage-acquistition-package`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| acquisitionId | The acquisition ID. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FireEyeHX.Acquisitions.Triage._id | String | The triage ID. |
+| FireEyeHX.Acquisitions.Triage.host._id | String | The host ID. |
+| FireEyeHX.Acquisitions.Triage.host.hostname | String | The hostname. |
+| FireEyeHX.Acquisitions.Triage.state | String | The acquistion state. |
+
+#### Command example
+
+```!fireeye-hx-get-triage-acquistition-package acquisitionId=12345```
+
+#### Human Readable Output
+
+>The triage completed with issues.</br>
+>Triage acquisition ID: 12345
+
+### fireeye-hx-get-triage-acquistition
+
+***
+Gets information about a specified triage acquisition.
+
+#### Base Command
+
+`fireeye-hx-get-triage-acquistition`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| acquisitionId | The acquisition ID. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FireEyeHX.Acquisitions.Triage._id | String | The triage ID. |
+| FireEyeHX.Acquisitions.Triage.host._id | String | The host ID. |
+| FireEyeHX.Acquisitions.Triage.host.hostname | String | The hostname. |
+| FireEyeHX.Acquisitions.Triage.state | String | The acquistion state. |
+
+#### Command example
+
+```!fireeye-hx-get-triage-acquistition acquisitionId=12345```
+
+#### Human Readable Output
+
+>|   |   |
+>|---|---|
+>|host|	_id: SomeHostID<br/>url: /hx/api/v3/hosts/SomeHostID<br />hostname: SomeHostname|
+>|_id|	12345|
+>|state|	COMPLETE|
+>|request_time|	2026-03-09T15:31:49.000Z|
+>|finish_time|	2026-03-09T15:37:32.836Z|
+>|instance|	FireEyeHX v2_instance_1|
+
+### fireeye-hx-triage-acquistition
+
+***
+Starts a new triage request for a host.
+
+#### Base Command
+
+`fireeye-hx-triage-acquistition`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| agentId | The agent ID. If the agent ID is not specified, the hostName must be specified. | Optional |
+| hostName | The host name. If the hostName is not specified, the agent ID must be specified. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FireEyeHX.Acquisitions.Triage._id | String | The triage ID. |
+| FireEyeHX.Acquisitions.Triage.host._id | String | The host ID. |
+| FireEyeHX.Acquisitions.Triage.host.hostname | String | The hostname. |
+| FireEyeHX.Acquisitions.Triage.state | String | The acquistion state. |
+
+#### Command example
+
+```!fireeye-hx-triage-acquistition agentId=SomeAgentID```
+
+#### Human Readable Output
+
+>Triage Acquisition ID: 31032 on Instance: FireEyeHX v2_instance_1 created.
+
+
+### fireeye-hx-host-get-acquisitions
+
+***
+Gets a list of all acquisitions for a host.
+
+#### Base Command
+
+`fireeye-hx-host-get-acquisitions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| agentId | The agent ID. If the agent ID is not specified, the hostName must be specified. | Optional |
+| hostName | The host name. If the hostName is not specified, the agent ID must be specified. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FireEyeHX.Host.Acquisitions.All._id | String | The acquisition ID. |
+| FireEyeHX.Host.Acquisitions.All.state | String | The state of the acquisition. |
+| FireEyeHX.Host.Acquisitions.All.acq_type | String | The type of acquisition. |
+| FireEyeHX.Host.Acquisitions.All.request_time | Date | The requested date of the acquisition. |
+
+#### Command example
+
+```!fireeye-hx-host-get-acquisitions agentId=SomeAgentID```
+
+#### Human Readable Output
+
+>| _id | acq_type | request_time | state |
+>|---|---|---|---|
+>|12345 | triage | 2026-03-09T15:31:49.000Z | COMPLETE |
+>|12328 | triage | 2026-02-04T21:40:44.311Z | COMPLETE |
+
+

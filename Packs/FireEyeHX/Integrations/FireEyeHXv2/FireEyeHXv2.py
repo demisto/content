@@ -1953,7 +1953,7 @@ def initiate_triage_acquisition_command(client: Client, args: Dict[str, Any]) ->
         outputs_prefix="FireEyeHX.Acquisitions.Triage",
         outputs=acquisition_info,
         outputs_key_field="_id",
-        readable_output=f'Triage Acquisition ID: {acquisition_info.get("_id")} on Instance: {acquisition_info.get("instance")}',
+        readable_output=f'Triage Acquisition ID: {acquisition_info.get("_id")} on Instance: {acquisition_info.get("instance")} created.',
     )
 
 
