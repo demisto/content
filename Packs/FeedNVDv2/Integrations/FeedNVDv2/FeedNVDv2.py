@@ -6,6 +6,7 @@ for threat intelligence management
 """
 
 import demistomock as demisto  # noqa: F401
+import traceback
 import urllib3
 from CommonServerPython import *  # noqa: F401
 from dateparser import parse
@@ -14,12 +15,21 @@ from dateparser import parse
 urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-# NVD API severity filter parameter name (camelCase as required by the API).
-# Note: cvssV2Severity, cvssV3Severity, and cvssV4Severity are mutually exclusive in the API.
-# cvssV3Severity is used as it supports CRITICAL severity and covers the majority of CVEs.
-CVSS_SEVERITY_PARAM = "cvssV3Severity"
-DEFAULT_MAX_INDICATORS_PER_FETCH = 10000
 
+# NVD API severity filter parameter names (camelCase as required by the API).
+# These parameters are mutually exclusive — only one can be used per request.
+# To cover all CVEs regardless of which CVSS version they were scored with,
+# retrieve_cves makes a separate API call per CVSS version and deduplicates results.
+# Note: cvssV2Severity does not support CRITICAL (only LOW, MEDIUM, HIGH).
+# Mapping from user-facing CVSS version names to NVD API parameter names.
+CVSS_VERSION_TO_PARAM: dict[str, str] = {
+    "CVSS v4": "cvssV4Severity",
+    "CVSS v3": "cvssV3Severity",
+    "CVSS v2": "cvssV2Severity",
+}
+NVD_API_MAX_RESULTS_PER_PAGE = 2000
+NVD_API_MAX_DATE_RANGE_DAYS = 120  # NVD API rejects date-range queries spanning more than 120 days.
+BASE_URL = "https://services.nvd.nist.gov"  # disable-secrets-detection
 
 class Client(BaseClient):
     """Client class to interact with the service API"""
@@ -35,7 +45,8 @@ class Client(BaseClient):
         feed_tags: list[str],
         cvss_severity: list[str],
         keyword_search: str,
-        max_indicators: int = DEFAULT_MAX_INDICATORS_PER_FETCH,
+        max_indicators: int,
+        cvss_versions: list[str] | None = None,
     ):
         super().__init__(base_url=base_url, proxy=proxy)
         self._base_url = base_url
@@ -48,19 +59,24 @@ class Client(BaseClient):
         self.cvss_severity = cvss_severity
         self.keyword_search = keyword_search
         self.max_indicators = max_indicators
+        self.cvss_versions = cvss_versions
 
-    def get_cves(self, path: str, params: dict):  # pragma: no cover
+    def get_cves(self, path: str, params: dict, cvss_severity_param: str = ""):  # pragma: no cover
         """
-        Perform a basic HTTP call using specified headers and parameters
+        Perform a basic HTTP call using specified headers and parameters.
+
+        Args:
+            path: The URL path suffix.
+            params: The query parameters dict.
+            cvss_severity_param: The CVSS severity parameter name to use (e.g. 'cvssV3Severity').
         """
 
         if self.api_key:
             headers = {"apiKey": self.api_key}
-
         else:
             headers = {}
 
-        param_string = self.build_param_string(params)
+        param_string = self.build_param_string(params, cvss_severity_param=cvss_severity_param)
 
         demisto.debug(f"Calling NIST NVD with the following parameters {param_string}")
 
@@ -68,28 +84,36 @@ class Client(BaseClient):
             "GET", url_suffix=path, headers=headers, params=param_string, resp_type="json", timeout=300, retries=3
         )
 
-    def build_param_string(self, params: dict) -> str:
-        """Builds a string out of the URL parameters to allow duplication of Severity keys.
+    def build_param_string(self, params: dict, cvss_severity_param: str = "") -> str:
+        """Builds a URL query string from parameters, handling boolean flags and severity filters.
 
         The NVD API severity parameters (cvssV2Severity, cvssV3Severity, cvssV4Severity) are
-        mutually exclusive — only one can be used per request. cvssV3Severity is used as it
-        supports CRITICAL severity and covers the vast majority of CVEs in the database.
+        mutually exclusive — only one can be used per request. When cvss_severity_param is
+        provided, the severity filter is appended for that specific CVSS version only.
 
         Args:
             params (dict): The URL parameters.
+            cvss_severity_param (str): The CVSS severity parameter name to use for filtering
+                (e.g. 'cvssV3Severity'). If empty, no severity filter is appended.
 
         Returns:
-            str: The parameters needed as a string.
+            str: The URL query string.
         """
+        # NVD API boolean flags that should appear as bare keys (no =value)
+        BOOLEAN_FLAGS = {"noRejected", "hasKev"}
 
-        param_string: str = "&".join([f"{key}={value}" for key, value in params.items()])
-        param_string = param_string.replace("noRejected=None", "noRejected")
-        param_string = param_string.replace("hasKev=True", "hasKev")
+        parts: list[str] = []
+        for key, value in params.items():
+            if key in BOOLEAN_FLAGS:
+                parts.append(key)
+            else:
+                parts.append(f"{key}={value}")
 
-        for value in self.cvss_severity:
-            param_string += f"&{CVSS_SEVERITY_PARAM}={value}"
+        if cvss_severity_param:
+            for severity in self.cvss_severity:
+                parts.append(f"{cvss_severity_param}={severity}")
 
-        return param_string
+        return "&".join(parts)
 
 
 def build_indicators(client: Client, raw_cves: List[dict]):
@@ -333,70 +357,62 @@ def test_module(client: Client):
     try:
         interval = parse_date_range("1 day", DATE_FORMAT)
         parse_date_range(client.first_fetch, DATE_FORMAT)
+        # TODO - check if 2.0 is correct
         client.get_cves("/rest/json/cves/2.0/", params={"pubStartDate": interval[0], "pubEndDate": interval[1]})
         return_results("ok")
 
+        # If fetch-indicators is selected, make sure max_indicators exists and is a positive integer.
+        # TODO
+        if params.get("fetch_indicators"):
+            max_indicators = arg_to_number(params.get("max_indicators"))
+            if not isinstance(max_indicators, int) or max_indicators <= 0:
+                return_error("Invalid 'Max Indicators Per Fetch' value. Please enter a positive integer.")
     except Exception as e:  # pylint: disable=broad-except
         return_error("Invalid API key specified in integration instance configuration" + "\nError Message: " + str(e))
 
 
-def retrieve_cves(client: Client, start_date: Any, end_date: Any, publish_date: bool, remaining_limit: int = 0):
+def _fetch_cves_page(
+    client: Client,
+    base_param: dict,
+    cvss_severity_param: str = "",
+    remaining_limit: int | None = None,
+) -> list:
     """
-    Iteratively retrieves CVEs from NVD from the specified modification date
-    through the date the fetch-indicators or nvd-get-indicators command is
-    called.
+    Paginates through NVD API results for a single set of query parameters.
 
     Args:
         client: An instance of the BaseClient connection class.
-        start_date: The start date for the query.
-        end_date: The end date for the query.
-        publish_date: Whether to use publish date or last modified date.
-        remaining_limit: Maximum number of CVEs to retrieve. 0 means no limit.
+        base_param: The base query parameters (dates, hasKev, etc.).
+        cvss_severity_param: The CVSS severity parameter name to use (e.g. 'cvssV3Severity').
+        remaining_limit: Maximum number of CVEs to retrieve. None means no limit.
 
     Returns:
-        List of raw CVE objects fetched.
+        List of raw CVE vulnerability objects.
     """
     url_suffix = "/rest/json/cves/2.0/"
-    results_per_page = 2000
-    param: dict[str, str | int] = {"startIndex": 0, "resultsPerPage": results_per_page, "noRejected": ""}
+    param = dict(base_param)
+    param["startIndex"] = 0
     raw_cves: list = []
     more_to_process = True
 
-    if publish_date:
-        param["pubStartDate"] = start_date.strftime(DATE_FORMAT)
-        param["pubEndDate"] = end_date.strftime(DATE_FORMAT)
-
-    else:
-        param["lastModStartDate"] = start_date.strftime(DATE_FORMAT)
-        param["lastModEndDate"] = end_date.strftime(DATE_FORMAT)
-
-    if client.has_kev:
-        param["hasKev"] = True
-
-    if client.keyword_search:
-        param["keywordSearch"] = client.keyword_search
-
-    # Collect all the indicators together
     while more_to_process:
         try:
-            res = client.get_cves(url_suffix, param)
+            res = client.get_cves(url_suffix, param, cvss_severity_param=cvss_severity_param)
             total_results = res.get("totalResults", 0)
 
             if total_results:
                 demisto.debug(
-                    f'Fetching {param["startIndex"]}-{int(param["startIndex"])+results_per_page} '
+                    f'Fetching {param["startIndex"]}-{int(param["startIndex"]) + NVD_API_MAX_RESULTS_PER_PAGE} '
                     f'out of {total_results} results.'
                 )
-
-                raw_cves += res.get("vulnerabilities")
-
-                param["startIndex"] += int(results_per_page)  # type: ignore
+                raw_cves.extend(res.get("vulnerabilities", []))
+                param["startIndex"] += NVD_API_MAX_RESULTS_PER_PAGE  # type: ignore
 
             if param["startIndex"] >= total_results:
                 more_to_process = False
 
             # Stop if we've reached the per-fetch limit
-            if remaining_limit and len(raw_cves) >= remaining_limit:
+            if remaining_limit is not None and len(raw_cves) >= remaining_limit:
                 demisto.debug(
                     f"Reached max indicators limit ({remaining_limit}). "
                     f"Collected {len(raw_cves)} CVEs so far, will resume in next fetch."
@@ -404,116 +420,215 @@ def retrieve_cves(client: Client, start_date: Any, end_date: Any, publish_date: 
                 more_to_process = False
 
         except Exception as e:  # pylint: disable=broad-except
-            demisto.debug(f"{e}")
+            demisto.error(f"Error fetching CVEs page (startIndex={param['startIndex']}): {e}\n{traceback.format_exc()}")
+            more_to_process = False
 
+    # Truncate to the requested limit to avoid returning more CVEs than requested
+    if remaining_limit is not None and len(raw_cves) > remaining_limit:
+        raw_cves = raw_cves[:remaining_limit]
     return raw_cves
 
 
-def fetch_indicators_command(client: Client) -> list[dict]:
-    """
-    Fetch CVEs from NVD API and create indicators in XSOAR.
+def _build_base_params(client: Client, start_date: Any, end_date: Any, publish_date: bool) -> dict[str, str | int | bool]:
+    """Build the base query parameters for NVD API calls.
 
-    Uses a max_indicators limit to prevent timeouts on large fetches.
-    When the limit is reached, the current position is saved in lastRun
-    so the next fetch resumes from where it left off.
+    Args:
+        client: Client instance.
+        start_date: Query start date.
+        end_date: Query end date.
+        publish_date: Whether to use publish date or last modified date.
+
+    Returns:
+        Base parameter dict for NVD API.
+    """
+    base_param: dict[str, str | int | bool] = {"resultsPerPage": NVD_API_MAX_RESULTS_PER_PAGE, "noRejected": True}
+
+    if publish_date:
+        base_param["pubStartDate"] = start_date.strftime(DATE_FORMAT)
+        base_param["pubEndDate"] = end_date.strftime(DATE_FORMAT)
+    else:
+        base_param["lastModStartDate"] = start_date.strftime(DATE_FORMAT)
+        base_param["lastModEndDate"] = end_date.strftime(DATE_FORMAT)
+
+    if client.has_kev:
+        base_param["hasKev"] = True
+
+    if client.keyword_search:
+        base_param["keywordSearch"] = client.keyword_search
+
+    return base_param
+
+
+def retrieve_cves(client: Client, start_date: Any, end_date: Any, publish_date: bool, remaining_limit: int | None = None):
+    """
+    Retrieves CVEs from NVD for the specified date range.
+
+    When a CVSS severity filter is configured, makes separate API calls for each
+    CVSS version (v4, v3, v2) since these parameters are mutually exclusive in the
+    NVD API. Results are deduplicated by CVE ID.
 
     Args:
         client: An instance of the BaseClient connection class.
+        start_date: The start date for the query.
+        end_date: The end date for the query.
+        publish_date: Whether to use publish date or last modified date.
+        remaining_limit: Maximum number of CVEs to retrieve. None means no limit.
 
     Returns:
-        List of CVE indicators fetched.
+        List of raw CVE objects fetched.
     """
+    base_param = _build_base_params(client, start_date, end_date, publish_date)
 
-    publish_date = False
-    total_results = 0
-    temp_cves: list = []
-    exceeds_span = True
-    iteration = 0
-    command = demisto.command()
-    last_run_data = demisto.getLastRun()
-    now = datetime.now(timezone.utc)
-    end_date = now
-    remaining_limit = client.max_indicators
-    limit_reached = False
+    if not client.cvss_severity:
+        # No severity filter — single call
+        return _fetch_cves_page(client, base_param, remaining_limit=remaining_limit)
 
-    if command == "nvd-get-indicators":
+    # Severity filter set: make one call per CVSS version (they are mutually exclusive).
+    seen_ids: set[str] = set()
+    raw_cves: list = []
+
+    active_params = [
+        CVSS_VERSION_TO_PARAM[v]
+        for v in client.cvss_versions
+        if v in CVSS_VERSION_TO_PARAM
+    ]
+    for severity_param in active_params:
+        page_limit = max(remaining_limit - len(raw_cves), 0) if remaining_limit is not None else None
+        if page_limit == 0:
+            demisto.debug("Limit already reached, skipping remaining CVSS version calls.")
+            break
+        page_cves = _fetch_cves_page(client, base_param, cvss_severity_param=severity_param, remaining_limit=page_limit)
+
+        # Deduplicate by CVE ID
+        for cve in page_cves:
+            cve_id = cve.get("cve", {}).get("id", "")
+            if cve_id not in seen_ids:
+                seen_ids.add(cve_id)
+                raw_cves.append(cve)
+
+        if remaining_limit is not None and len(raw_cves) >= remaining_limit:
+            demisto.debug(f"Reached max indicators limit ({remaining_limit}) across CVSS version calls.")
+            break
+
+    demisto.debug(f"retrieve_cves: {len(raw_cves)} unique CVEs after deduplication across CVSS versions.")
+    return raw_cves
+
+
+def _resolve_fetch_dates(
+    client: Client, last_run_data: dict, manual_fetch: bool = False,
+) -> tuple[datetime | None, bool, int | None]:
+    """Determine the appropriate start date for fetching CVEs based on last run data or manual fetch arguments.
+
+    Args:
+        client: An instance of the BaseClient connection class.
+        last_run_data: The data from the last run, containing "lastRun" and "isFirstFetch" keys.
+        manual_fetch: Whether this fetch is triggered manually via nvd-get-indicators command.
+    """
+    
+    if manual_fetch:
         history = parse_date_range(f'{demisto.getArg("history")}', DATE_FORMAT)
         client.keyword_search = f'{demisto.getArg("keyword")}'
-        start_date: datetime | None = parse(history[0])  # type: ignore
-        publish_date = True
-        remaining_limit = 0  # No limit for manual command
         demisto.debug(f'Retrieving last {demisto.getArg("history")} days of CVEs using nvd-get-indicators')
+        return parse(history[0]), True, None  # type: ignore[return-value]
 
     elif last_run_data:
-        # Interval run
-        start_date = parse(last_run_data.get("lastRun", ""))
-        # If the previous run was a first-fetch that didn't finish, continue with publish_date
-        publish_date = last_run_data.get("isFirstFetch", False)
-
+        return (
+            parse(last_run_data.get("lastRun", "")),
+            last_run_data.get("isFirstFetch", False),
+            client.max_indicators,
+        )
     else:
-        # First run for the feed
+        # First run
         first_fetch: tuple[Any, Any] = parse_date_range(client.first_fetch, DATE_FORMAT)
-        start_date = parse(first_fetch[0])  # type: ignore
-        publish_date = True
         demisto.debug(f"Running Feed NVD for the first time catching CVEs since {first_fetch}")
+        return parse(first_fetch[0]), True, client.max_indicators  # type: ignore[return-value]
 
-    start_index = start_date
 
-    while exceeds_span and start_index and not limit_reached:
-        temp_cves = []
-        raw_cves: list = []
+def _create_indicators(client: Client, raw_cves: list, manual_fetch: bool) -> int:
+    """Build indicators from *raw_cves*, push them to XSOAR, and return the count created."""
+    if not raw_cves or manual_fetch:
+        return 0
+    indicators = build_indicators(client, raw_cves)
+    demisto.debug(f'Creating {len(indicators)} using "createIndicators"')
+    for batch_ in batch(indicators, batch_size=NVD_API_MAX_RESULTS_PER_PAGE):
+        demisto.createIndicators(batch_)
+    return len(indicators)
 
-        iteration += 1
 
+def _fetch_cve_batches(
+    client: Client,
+    start_date: datetime | None,
+    now: datetime,
+    publish_date: bool,
+    remaining_limit: int | None,
+    manual_fetch: bool,
+) -> tuple[list, int, datetime, bool]:
+    """
+    Iterate over NVD_API_MAX_DATE_RANGE_DAYS-day windows, fetch CVEs, and create indicators.
+    Args:
+        client: An instance of the NVD Client connection class.
+        start_date: The initial start date for fetching CVEs.
+        now: The current date and time.
+        publish_date: Whether to use publish date or last modified date for querying.
+        remaining_limit: Maximum number of CVEs to fetch. None means no limit.
+    Returns (last_raw_cves, total_created, end_date, limit_reached).
+    """
+    start_index, end_date = start_date, now
+    total_results, limit_reached = 0, False
+    raw_cves: list = []
+
+    while start_index and not limit_reached:
         delta = (end_date - start_index).days
-
-        if delta > 120:
-            demisto.debug(f"Fetching CVEs over a span of {delta} days, will run in 120 days batches")
-            end_date = start_index + timedelta(days=120)
-        else:
-            exceeds_span = False
+        if delta > NVD_API_MAX_DATE_RANGE_DAYS:
+            demisto.debug(f"Fetching CVEs over a span of {delta} days, will run in {NVD_API_MAX_DATE_RANGE_DAYS} days batches")
+            end_date = start_index + timedelta(days=NVD_API_MAX_DATE_RANGE_DAYS)
 
         demisto.debug(
             f'Fetching CVEs from {start_index:%Y-%m-%d} to {end_date:%Y-%m-%d}, '
             f'Using {"Publish date" if publish_date else "Updated date"}'
         )
-
         raw_cves = retrieve_cves(client, start_index, end_date, publish_date=publish_date, remaining_limit=remaining_limit)
+        total_results += _create_indicators(client, raw_cves, manual_fetch)
 
-        if raw_cves and command != "nvd-get-indicators":
-            temp_cves = build_indicators(client, raw_cves)
-            demisto.debug(f'Creating {len(temp_cves)} using "createIndicators"')
-            for iter_ in batch(temp_cves, batch_size=2000):
-                demisto.createIndicators(iter_)
-            total_results += len(temp_cves)
-
-        # Update remaining limit
-        if remaining_limit:
+        if remaining_limit is not None:
             remaining_limit -= len(raw_cves)
-            if remaining_limit <= 0:
-                limit_reached = True
-                demisto.debug(
-                    f"Max indicators limit reached ({client.max_indicators}). "
-                    f"Will resume from {end_date.strftime(DATE_FORMAT)} in next fetch."
-                )
+            limit_reached = remaining_limit <= 0
 
-        start_index = end_date
-        end_date = now
+        start_index, end_date = end_date, now
+        if start_index >= now:
+            break
 
-    # Determine if we're still in a first-fetch that hasn't completed
-    is_first_fetch = publish_date and limit_reached
+    return raw_cves, total_results, end_date, limit_reached
 
-    last_run: dict[str, str | bool] = {"lastRun": end_date.strftime(DATE_FORMAT)}
-    if is_first_fetch:
-        last_run["isFirstFetch"] = True
-    set_feed_last_run(last_run)
 
+def fetch_indicators_command(client: Client, manual_fetch: bool = False) -> list[dict]:
+    """Fetch CVEs from NVD API, create indicators, and persist lastRun state.
+
+    Args:
+        client: An instance of the BaseClient connection class.
+        manual_fetch: Whether this fetch is triggered manually via nvd-get-indicators command.
+
+    Returns:
+        List of raw CVE objects fetched.
+    """
+    start_date, publish_date, remaining_limit = _resolve_fetch_dates(client, demisto.getLastRun(), manual_fetch)
+
+    now = datetime.now(timezone.utc)
+    raw_cves, total_results, end_date, limit_reached = _fetch_cve_batches(
+        client, start_date, now, publish_date, remaining_limit, manual_fetch,
+    )
+
+    if limit_reached:
+        demisto.debug(
+            f"Max indicators limit reached ({client.max_indicators}). "
+            f"Will resume from {end_date.strftime(DATE_FORMAT)} in next fetch."
+        )
+
+    set_feed_last_run({"lastRun": end_date.strftime(DATE_FORMAT), "isFirstFetch": bool(publish_date and limit_reached)})
     demisto.debug(
-        f"({start_date.strftime(DATE_FORMAT)})-({end_date.strftime(DATE_FORMAT)}), "  # type: ignore
+        f"({start_date.strftime(DATE_FORMAT)})-({end_date.strftime(DATE_FORMAT)}), "  # type: ignore[union-attr]
         f"Fetched {total_results} indicators."
     )
-    demisto.debug(f'Setting lastRun to "{end_date.strftime(DATE_FORMAT)}"')
-
     return raw_cves
 
 
@@ -531,19 +646,22 @@ def main():  # pragma: no cover
     """
 
     params = demisto.params()
-    base_url: str = "https://services.nvd.nist.gov"  # disable-secrets-detection
+    
     proxy = params.get("proxy", False)
     api_key = params.get("apiKey", {}).get("password", "")
     tlp_color = params.get("tlp_color", "")
     has_kev = params.get("hasKev", False)
     first_fetch = params.get("first_fetch", "")
     feed_tags = params.get("feedTags", [])
-    max_indicators = arg_to_number(params.get("max_indicators")) or DEFAULT_MAX_INDICATORS_PER_FETCH
+    max_indicators = arg_to_number(params.get("max_indicators"))
+    cvss_versions = params.get("cvss_versions", [])
+    
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
+    
     try:
         client = Client(
-            base_url=base_url,
+            base_url=BASE_URL,
             proxy=proxy,
             api_key=api_key,
             tlp_color=tlp_color,
@@ -553,6 +671,7 @@ def main():  # pragma: no cover
             cvss_severity=params.get("cvss_severity", []),
             keyword_search=params.get("keyword_search", ""),
             max_indicators=max_indicators,
+            cvss_versions=cvss_versions,
         )
 
         if command == "test-module":
@@ -560,7 +679,7 @@ def main():  # pragma: no cover
         elif command == "fetch-indicators":
             fetch_indicators_command(client)
         elif command == "nvd-get-indicators":
-            return_results(cves_to_war_room(fetch_indicators_command(client)))
+            return_results(cves_to_war_room(fetch_indicators_command(client, manual_fetch=True)))
 
     except Exception as e:  # pylint: disable=broad-except
         return_error(f"Failed to execute {demisto.command()} command.\nError: \n{e!s}")

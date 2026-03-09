@@ -26,9 +26,9 @@ configuration:
   additionalinfo: Returns only the CVEs where the word or phrase is found in the description.
   required: false
   section: Connect
-- name: cvssv3severity
-  display: CVSS 3 Severity Filter
-  additionalinfo: Select the severities you wish to get back from the feed.
+- name: cvss_severity
+  display: CVSS Severity Filter
+  additionalinfo: Filter CVEs by severity. Queries each CVSS version selected in 'CVSS Versions'.
   options:
   - CRITICAL
   - HIGH
@@ -38,16 +38,14 @@ configuration:
   required: false
   type: 16
   section: Connect
-  hidden: true
-- name: cvss_severity
-  display: CVSS Severity Filter
-  additionalinfo: Select the severities you wish to get back from the feed. Filters by CVSS v3 severity (cvssV3Severity), which covers the majority of CVEs and supports CRITICAL severity.
+- name: cvss_versions
+  display: CVSS Versions
+  additionalinfo: CVSS versions to query when severity filter is set. Default covers most modern CVEs.
   options:
-  - CRITICAL
-  - HIGH
-  - MEDIUM
-  - LOW
-  defaultvalue:
+  - CVSS v4
+  - CVSS v3
+  - CVSS v2
+  defaultvalue: CVSS v4,CVSS v3
   required: false
   type: 16
   section: Connect
