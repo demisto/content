@@ -4574,6 +4574,7 @@ Allocates a Dedicated Host to your account. At a minimum, specify the supported 
 | outpost_arn | The Amazon Resource Name (ARN) of the Amazon Web Services Outpost on which to allocate the Dedicated Host. | Optional |
 | asset_ids | A comma-separated list of IDs of the Outpost hardware assets on which to allocate the Dedicated Hosts. | Optional |
 | tags | The tags to apply to the Dedicated Host during creation. Format: key=&lt;key&gt;,value=&lt;value&gt;;key=&lt;key&gt;,value=&lt;value&gt;. | Optional |
+| client_token | Unique, case-sensitive identifier that you provide to ensure the idempotency of the request. | Optional |
 
 #### Context Output
 
@@ -4628,6 +4629,7 @@ Creates a Traffic Mirror session. A Traffic Mirror session actively copies packe
 | packet_length | The number of bytes in each packet to mirror. These are bytes after the VXLAN header. Do not specify this parameter when you want to mirror the entire packet. | Optional |
 | description | The description of the Traffic Mirror session. | Optional |
 | tags | The tags to assign to a Traffic Mirror session. Format: key=&lt;key&gt;,value=&lt;value&gt;;key=&lt;key&gt;,value=&lt;value&gt;. | Optional |
+| client_token | Unique, case-sensitive identifier that you provide to ensure the idempotency of the request. | Optional |
 
 #### Context Output
 

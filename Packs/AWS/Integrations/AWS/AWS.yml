@@ -12979,6 +12979,9 @@ script:
       - name: tags
         description: "The tags to apply to the Dedicated Host during creation. Format: key=<key>,value=<value>;key=<key>,value=<value>."
         required: false
+      - name: client_token
+        description: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+        required: false
     outputs:
       - contextPath: AWS.EC2.Hosts.HostIds
         description: The IDs of the allocated Dedicated Hosts.
@@ -13111,6 +13114,9 @@ script:
         required: false
       - name: tags
         description: "The tags to assign to a Traffic Mirror session. Format: key=<key>,value=<value>;key=<key>,value=<value>."
+        required: false
+      - name: client_token
+        description: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
         required: false
     outputs:
       - contextPath: AWS.EC2.TrafficMirrorSessions.TrafficMirrorSessionId

@@ -5202,6 +5202,7 @@ class EC2:
                 "AvailabilityZone": args.get("availability_zone"),
                 "AvailabilityZoneId": args.get("availability_zone_id"),
                 "Quantity": arg_to_number(args.get("quantity")),
+                "ClientToken": args.get("client_token"),
                 "InstanceType": args.get("instance_type"),
                 "InstanceFamily": args.get("instance_family"),
                 "AutoPlacement": args.get("auto_placement"),
@@ -5285,6 +5286,7 @@ class EC2:
                 "VirtualNetworkId": arg_to_number(args.get("virtual_network_id")),
                 "PacketLength": arg_to_number(args.get("packet_length")),
                 "Description": args.get("description"),
+                "ClientToken": args.get("client_token"),
                 "TagSpecifications": [{"ResourceType": "traffic-mirror-session", "Tags": parse_tag_field(args.get("tags"))}],
             }
         )
