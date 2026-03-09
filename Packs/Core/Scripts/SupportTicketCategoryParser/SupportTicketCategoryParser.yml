@@ -10,6 +10,7 @@ comment: Parses a delimited support ticket classification string (issue_category
   into separate fields and validates both values against a provided taxonomy. Designed
   to post-process the single-line output of the SupportTicketClassification LLM script.
 enabled: true
+hidden: true
 args:
 - name: classification_result
   required: true

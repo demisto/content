@@ -3,6 +3,7 @@ commonfields:
   version: -1
 name: SupportTicketClassification
 isllm: true
+hidden: true
 promptConfig:
   webSearch: false
 systemprompt: |-
