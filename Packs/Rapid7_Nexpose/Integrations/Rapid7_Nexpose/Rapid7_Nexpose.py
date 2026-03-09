@@ -526,7 +526,7 @@ class _AiohttpCompatResponse:
         self._response.close()
 
 
-class Client(ContentClient):
+class Client(ContentClient, BaseClient):
     """Client class for interactions with Rapid7 Nexpose API."""
 
     def __init__(
@@ -562,13 +562,28 @@ class Client(ContentClient):
         if token:
             headers["Token"] = token
 
-        super().__init__(
-            base_url=url.rstrip("/") + "/api/3",
+        api_base_url = url.rstrip("/") + "/api/3"
+
+        # Initialize ContentClient (async httpx stack, _headers, _base_url, etc.)
+        ContentClient.__init__(
+            self,
+            base_url=api_base_url,
             auth=(username, password),
             headers=headers,
             ok_codes=(200, 201),
             verify=verify,
         )
+
+        # Initialize BaseClient (creates self._session for sync requests.Session)
+        BaseClient.__init__(
+            self,
+            base_url=api_base_url,
+            auth=(username, password),
+            headers=headers,
+            ok_codes=(200, 201),
+            verify=verify,
+        )
+
         # Store headers for async http_request usage
         self._collector_headers = self._headers.copy()
 
@@ -8087,6 +8102,7 @@ def main():  # pragma: no cover
         elif command == "fetch-assets":
             demisto.info("Starting fetch-assets execution.")
             asyncio.run(fetch_assets_command(client))
+            return
         elif command == "nexpose-create-asset":
             results = create_asset_command(client=client, **args)
         elif command == "nexpose-create-assets-report":
