@@ -20,17 +20,13 @@ args:
   predefined:
   - severity
   - starred
-  - status ## (status.progress output)
-  - assignee ## (assigned_to output)
+  - status
+  - assignee
   - category
   - domain
   - description
   - name
   - source
-  # - Identity_type ### return as a list
-  # - asset_ids
-  # - rule_id
-  # - rule_name
 - defaultValue: 1 months ago
   description: The start date by which to filter issues. Date format will be the same as in the issues query page, for example, "3 days ago", "2019-01-01T00:00:00 +0200".
   name: from_date
