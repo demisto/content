@@ -1033,7 +1033,6 @@ def test_create_indicator_failure_scenarios(valid, created, enriched, found, exp
     assert expected_msg_part in actual_msg
 
 
-
 def test_failure_context_includes_new_fields():
     """
     Given:

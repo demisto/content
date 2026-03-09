@@ -516,7 +516,17 @@ class ContextBuilder:
 
         return remove_empty_elements_with_exceptions(
             final_context,
-            exceptions={"TIMCVSS", "Status", "ModifiedTime", "IndicatorExists", "MaxScore", "MaxVerdict", "TIMScore", "Results", "Message"},
+            exceptions={
+                "TIMCVSS",
+                "Status",
+                "ModifiedTime",
+                "IndicatorExists",
+                "MaxScore",
+                "MaxVerdict",
+                "TIMScore",
+                "Results",
+                "Message",
+            },
         )
 
     def build_indicators_context(self) -> list[dict]:

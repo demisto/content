@@ -13,15 +13,15 @@ def _is_cidr(value: str) -> bool:
     Returns:
         True if the value matches CIDR-like patterns, False otherwise.
     """
-    if '/' not in value:
+    if "/" not in value:
         return False
-    parts = value.split('/', 1)
+    parts = value.split("/", 1)
     # CIDR: left side is an IP-like pattern, right side is a small number (mask)
     try:
         mask = int(parts[1])
         if 0 <= mask <= 128:  # valid for both IPv4 (/0-/32) and IPv6 (/0-/128)
             left = parts[0]
-            if all(c in '0123456789.:abcdefABCDEF' for c in left) and ('.' in left or ':' in left):
+            if all(c in "0123456789.:abcdefABCDEF" for c in left) and ("." in left or ":" in left):
                 return True
     except ValueError:
         pass
@@ -58,8 +58,8 @@ def normalize_urls(url_list: list[str]) -> list[str]:
     """
     # Only non-defanged prefixes — defanged variants (www[.], ftp[.]) are excluded
     # because prepending https:// to them creates malformed URLs (e.g., https://www[.]example[.]com)
-    URL_PREFIXES = ('www.', 'ftp.')
-    SCHEME_PREFIXES = ('http://', 'https://', 'ftp://', 'hxxp://', 'hxxps://')
+    URL_PREFIXES = ("www.", "ftp.")
+    SCHEME_PREFIXES = ("http://", "https://", "ftp://", "hxxp://", "hxxps://")
 
     normalized = []
     for url in url_list:
@@ -75,12 +75,12 @@ def normalize_urls(url_list: list[str]) -> list[str]:
         # If it starts with a known URL prefix (www., ftp.), add https://
         elif url_lower.startswith(URL_PREFIXES):
             demisto.debug(f"Normalizing URL '{url}' by prepending 'https://'")
-            normalized.append(f'https://{url}')
+            normalized.append(f"https://{url}")
         # If it contains a path separator and is not a CIDR notation, it's likely a URL
         # e.g., 'example.com/path/to/page' but NOT '1.1.1.0/24' or '10.0.0.0/8'
-        elif '/' in url and not _is_cidr(url):
+        elif "/" in url and not _is_cidr(url):
             demisto.debug(f"Normalizing URL '{url}' (contains path) by prepending 'https://'")
-            normalized.append(f'https://{url}')
+            normalized.append(f"https://{url}")
         else:
             # Keep as-is — let extractIndicators decide the type
             # Bare domains like 'example.com' will be classified as domains, not URLs
