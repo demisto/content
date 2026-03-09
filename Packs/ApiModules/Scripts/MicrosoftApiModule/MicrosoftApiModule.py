@@ -1252,7 +1252,7 @@ class MicrosoftClient(BaseClient):
         except Exception as e:
             return_error(
                 f"Error in Microsoft authorization."
-                f" If you are using a self-deployed app, make sure the checkbox of self-deployed is selected if exists."
+                f" For self-deployed apps, ensure the 'Self-deployed' checkbox is selected.\n"
                 f" Error: {e!s}"
             )
 
@@ -1308,7 +1308,7 @@ class MicrosoftClient(BaseClient):
         except Exception as e:
             return_error(
                 f"Error in Microsoft authorization."
-                f" If you are using a self-deployed app, make sure the checkbox of self-deployed is selected if exists."
+                f" For self-deployed apps, ensure the 'Self-deployed' checkbox is selected.\n"
                 f" Error: {e!s}"
             )
 
@@ -1378,7 +1378,7 @@ class MicrosoftClient(BaseClient):
         except Exception as e:
             return_error(
                 f"Error in Microsoft authorization."
-                f" If you are using a self-deployed app, make sure the checkbox of self-deployed is selected if exists."
+                f" For self-deployed apps, ensure the 'Self-deployed' checkbox is selected. \n"
                 f" Error: {e!s}"
             )
 
