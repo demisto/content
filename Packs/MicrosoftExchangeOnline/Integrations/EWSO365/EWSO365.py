@@ -1734,16 +1734,22 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
         ids = (excluded_ids or {}) | current_fetch_ids
         demisto.debug(f"IDs merge: {excluded_ids_count} excluded + {len(current_fetch_ids)} current = {len(ids)} merged")
 
-        # Prune IDs older than the new lastRunTime — they won't appear in future EWS queries
-        # (which use datetime_received__gte or last_modified_time__gte with lastRunTime).
+        # Prune IDs that are outside the query window to prevent unbounded growth.
+        # Only prune when time actually progresses (last_incident_run_time > last_fetch_time).
+        # We prune against last_fetch_time (the previous cycle's time), not last_incident_run_time,
+        # because ids_dict stores datetime_created which can be slightly earlier than datetime_received
+        # (used for lastRunTime via incident["occurred"]). Pruning against last_fetch_time is safe
+        # because the EWS query uses datetime_received__gte=lastRunTime, so any email with
+        # datetime_created < last_fetch_time won't appear in future queries.
         # Legacy entries (empty/None timestamps from old list-based format) are preserved.
-        if last_incident_run_time:
+        if last_incident_run_time and last_fetch_time and last_incident_run_time > last_fetch_time:
             pre_prune_count = len(ids)
-            ids = {msg_id: ts for msg_id, ts in ids.items() if not ts or ts >= last_incident_run_time}
+            ids = {msg_id: ts for msg_id, ts in ids.items() if not ts or ts >= last_fetch_time}
             pruned_count = pre_prune_count - len(ids)
             if pruned_count > 0:
                 demisto.debug(
-                    f"IDs pruned: removed {pruned_count} entries older than {last_incident_run_time}. " f"Remaining: {len(ids)}"
+                    f"IDs pruned: removed {pruned_count} entries older than {last_fetch_time}. "
+                    f"Remaining: {len(ids)}"
                 )
 
         # Hard cap to prevent extreme edge cases from causing unbounded growth.
