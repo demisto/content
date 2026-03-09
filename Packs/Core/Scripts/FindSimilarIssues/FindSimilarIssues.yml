@@ -67,7 +67,7 @@ args:
   - 'False'
 comment: |-
   Searches past similar issues based on issue fields' similarity. Includes an option to also display indicators similarity.
-  Note: For the similarity calculation, at least one field must be provided in one of the "text_similarity_fields", "json_similarity_fields", "discrete_match_fields" or "use_all_fields" arguments.
+  Note: For the similarity calculation, at least one field must be provided in one of the "text_similarity_fields", "json_similarity_fields" or "discrete_match_fields" arguments.
 commonfields:
   id: FindSimilarIssues
   version: -1
