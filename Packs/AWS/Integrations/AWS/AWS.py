@@ -654,20 +654,21 @@ def build_kwargs_lambda_function_config_update(args: dict) -> dict:
         A dict of kwargs.
     """
     function_name = args.get("function_name")
+    execution_env_memory_per_cpu = args.get("execution_env_memory_per_cpu")
     kwargs = {
         "FunctionName": function_name,
         "Role": args.get("role"),
         "Handler": args.get("handler"),
         "Description": args.get("description"),
-        "Timeout": args.get("timeout"),
-        "MemorySize": args.get("memory_size"),
+        "Timeout": arg_to_number(args.get("timeout")),
+        "MemorySize": arg_to_number(args.get("memory_size")),
         "VpcConfig": {
             "SubnetIds": argToList(args.get("subnet_ids")),
             "SecurityGroupIds": argToList(args.get("security_group_ids")),
             "Ipv6AllowedForDualStack": arg_to_bool_or_none(args.get("ipv6_allowed_for_dualstack")),
         },
         "Environment": {"Variables": parse_key_1_value_to_dict(args.get("environment", ""))},
-        "Runtime": args["runtime"],
+        "Runtime": args.get("runtime"),
         "DeadLetterConfig": {"TargetArn": args.get("target_arn")},
         "KMSKeyArn": args.get("kms_key_arn"),
         "TracingConfig": {
@@ -680,7 +681,7 @@ def build_kwargs_lambda_function_config_update(args: dict) -> dict:
             "Command": argToList(args.get("image_config_command")),
             "WorkingDirectory": args.get("image_config_working_directory"),
         },
-        "EphemeralStorage": {"Size": args.get("ephemeral_storage_size")},
+        "EphemeralStorage": {"Size": arg_to_number(args.get("ephemeral_storage_size"))},
         "SnapStart": {"ApplyOn": args.get("snap_start_apply_on")},
         "LoggingConfig": {
             "LogFormat": args.get("log_format"),
@@ -691,13 +692,13 @@ def build_kwargs_lambda_function_config_update(args: dict) -> dict:
         "CapacityProviderConfig": {
             "LambdaManagedInstancesCapacityProviderConfig": {
                 "CapacityProviderArn": args.get("capacity_provider_arn"),
-                "PerExecutionEnvironmentMaxConcurrency": args.get("per_execution_env_max_concurrency"),
-                "ExecutionEnvironmentMemoryGiBPerVCpu": args.get("execution_env_memory_per_cpu"),
+                "PerExecutionEnvironmentMaxConcurrency": arg_to_number(args.get("per_execution_env_max_concurrency")),
+                "ExecutionEnvironmentMemoryGiBPerVCpu": float(execution_env_memory_per_cpu) if execution_env_memory_per_cpu else None,
             }
         },
         "DurableConfig": {
-            "RetentionPeriodInDays": args.get("durable_retention_period"),
-            "ExecutionTimeout": args.get("durable_execution_timeout"),
+            "RetentionPeriodInDays": arg_to_number(args.get("durable_retention_period")),
+            "ExecutionTimeout": arg_to_number(args.get("durable_execution_timeout")),
         },
     }
 
