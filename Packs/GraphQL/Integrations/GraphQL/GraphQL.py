@@ -79,7 +79,8 @@ def main() -> None:
 
         demisto.debug(f"Command being called is {command}")
         if command == "test-module":
-            client.fetch_schema()
+            client.connect_sync()
+            client.close_sync()
             return_results("ok")
         elif command == "graphql-query":
             return_results(execute_query(client, demisto.args()))

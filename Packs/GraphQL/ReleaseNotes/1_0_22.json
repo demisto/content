@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "The parameter 'Fetch the schema from the transport' is deprecated. Schema validation is always performed."
-}
