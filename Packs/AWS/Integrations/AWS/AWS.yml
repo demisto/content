@@ -12961,7 +12961,7 @@ script:
       description: The preference for creating and associating private hosted zones with a specified VPC.
       required: false
     - name: dns_options_private_dns_specified_domains
-      description: The private domains used for creating and associating private hosted zones with the VPC
+      description: The private domains used for creating and associating private hosted zones with the VPC.
       required: false
     - name: subnet_configuration_ipv4
       description: The IPv4 address to assign to the endpoint network interface in the subnet.
