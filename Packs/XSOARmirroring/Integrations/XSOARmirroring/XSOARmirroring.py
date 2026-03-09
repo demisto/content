@@ -105,29 +105,29 @@ class Client(BaseClient):
     def get_incident_types(self) -> list[dict[str, Any]]:
         return self._http_request(method="GET", url_suffix="/incidenttype")
 
-    def get_modified_incidents(self, from_date: str, max_results: int = 100) -> list[str]:
-        """Returns IDs of incidents modified since ``from_date`` using the /incidents/search endpoint.
-
-        The dedicated ``/incidents/modified`` endpoint is not available on all XSOAR versions,
-        so we fall back to the standard search API and filter by ``modifiedTime``.
+    def get_modified_incidents(self, from_timestamp: int, to_timestamp: int | None = None) -> list[str]:
+        """Calls the /incidents/modified endpoint to get IDs of incidents modified in the given time range.
 
         Args:
-            from_date: ISO8601 timestamp string; only incidents modified at or after this time are returned.
-            max_results: Maximum number of incident IDs to return (default 100).
+            from_timestamp: Start of the time range (epoch seconds).
+            to_timestamp: End of the time range (epoch seconds). Defaults to current time if not provided.
 
         Returns:
-            A list of modified incident IDs as strings.
+            A list of modified incident IDs.
         """
-        data = {
-            "filter": {
-                "size": max_results,
-                "modifiedTime": from_date,
-                "sort": [{"field": "modified", "asc": True}],
-            }
-        }
-        response = self._http_request(method="POST", url_suffix="/incidents/search", json_data=data)
-        incidents: list[dict] = response.get("data") or []
-        return [str(inc["id"]) for inc in incidents if inc.get("id")]
+        params: dict[str, Any] = {"fromTimeStamp": from_timestamp}
+        if to_timestamp is not None:
+            params["toTimeStamp"] = to_timestamp
+        demisto.debug(f"get_modified_incidents: calling GET /incidents/modified with {params=}")
+        response = self._http_request(method="GET", url_suffix="/incidents/modified", params=params)
+        demisto.debug(f"get_modified_incidents: response type={type(response).__name__} value={response}")
+        # The API returns a map of incident IDs to objects; we only need the keys.
+        if isinstance(response, dict):
+            incident_ids = list(response.keys())
+            demisto.debug(f"get_modified_incidents: returning {len(incident_ids)} IDs: {incident_ids}")
+            return incident_ids
+        demisto.debug("get_modified_incidents: unexpected non-dict response, returning empty list")
+        return []
 
     def update_incident(self, incident: dict[str, Any]) -> dict[str, Any]:
         return self._http_request(method="POST", url_suffix="/incident", json_data=incident)
@@ -842,10 +842,10 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
     if not last_update_utc:
         raise DemistoException(f"Failed to parse {last_update=} got {last_update_utc=}")
 
-    from_date = last_update_utc.strftime(XSOAR_DATE_FORMAT)
-    demisto.debug(f"get-modified-remote-data: fetching incidents modified since {from_date}")
+    from_timestamp = int(last_update_utc.timestamp())
+    demisto.debug(f"get-modified-remote-data: fetching incidents modified since {last_update_utc} (epoch: {from_timestamp})")
 
-    modified_incident_ids = client.get_modified_incidents(from_date=from_date)
+    modified_incident_ids = client.get_modified_incidents(from_timestamp=from_timestamp)
     demisto.debug(f"get-modified-remote-data: found {len(modified_incident_ids)} modified incident(s): {modified_incident_ids}")
 
     return GetModifiedRemoteDataResponse(modified_incident_ids)

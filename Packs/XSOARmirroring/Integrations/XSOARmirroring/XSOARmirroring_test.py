@@ -624,7 +624,7 @@ def test_get_modified_remote_data_empty_response(mocker):
     assert result.modified_incident_ids == []
 
 
-def test_get_modified_remote_data_passes_correct_date(mocker):
+def test_get_modified_remote_data_passes_correct_timestamp(mocker):
     """
     Given:
         - A specific lastUpdate ISO8601 timestamp.
@@ -633,10 +633,10 @@ def test_get_modified_remote_data_passes_correct_date(mocker):
         - Running get_modified_remote_data_command.
 
     Then:
-        - The client's get_modified_incidents is called with the correct ISO8601 date string derived from lastUpdate.
+        - The client's get_modified_incidents is called with the correct epoch seconds derived from lastUpdate.
     """
     last_update = datetime(2026, 3, 1, 12, 0, 0, tzinfo=UTC)
-    expected_from_date = "2026-03-01T12:00:00.000000Z"
+    expected_epoch = int(last_update.timestamp())
     args = {"lastUpdate": last_update.isoformat()}
 
     mock_get_modified = mocker.patch.object(
@@ -648,28 +648,28 @@ def test_get_modified_remote_data_passes_correct_date(mocker):
     client = Client(base_url="https://test.com")
     get_modified_remote_data_command(client, args)
 
-    mock_get_modified.assert_called_once_with(from_date=expected_from_date)
+    mock_get_modified.assert_called_once_with(from_timestamp=expected_epoch)
 
 
 def test_get_modified_incidents_client_method(mocker):
     """
     Given:
-        - A mock HTTP response from /incidents/search returning a list of incident dicts.
+        - A mock HTTP response from /incidents/modified returning a dict of incident IDs.
 
     When:
-        - Calling client.get_modified_incidents with a from_date string.
+        - Calling client.get_modified_incidents with a from_timestamp.
 
     Then:
-        - The method returns a list of incident ID strings.
+        - The method returns a list of the dict keys (incident IDs).
     """
     client = Client(base_url="https://test.com")
     mocker.patch.object(
         client,
         "_http_request",
-        return_value={"data": [{"id": "101"}, {"id": "202"}, {"id": "303"}]},
+        return_value={"101": {}, "202": {}, "303": {}},
     )
 
-    result = client.get_modified_incidents(from_date="2026-03-01T12:00:00.000000Z")
+    result = client.get_modified_incidents(from_timestamp=1740830400)
 
     assert sorted(result) == ["101", "202", "303"]
 
@@ -677,7 +677,7 @@ def test_get_modified_incidents_client_method(mocker):
 def test_get_modified_incidents_client_method_empty_response(mocker):
     """
     Given:
-        - A mock HTTP response from /incidents/search returning no data.
+        - A mock HTTP response from /incidents/modified returning an empty dict.
 
     When:
         - Calling client.get_modified_incidents.
@@ -689,9 +689,11 @@ def test_get_modified_incidents_client_method_empty_response(mocker):
     mocker.patch.object(
         client,
         "_http_request",
-        return_value={"data": []},
+        return_value={},
     )
 
-    result = client.get_modified_incidents(from_date="2026-03-01T12:00:00.000000Z")
+    result = client.get_modified_incidents(from_timestamp=1740830400)
 
     assert result == []
+
+
