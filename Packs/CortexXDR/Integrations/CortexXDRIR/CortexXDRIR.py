@@ -58,6 +58,18 @@ BIOC_AND_CR_SEVERITY_MAPPING = {
     "critical": "SEV_050_CRITICAL",
 }
 
+ISSUE_STATUSES_MAP = {"new": "New", "in_progress": "In Progress", "resolved": "Resolved"}
+
+ISSUE_REASON_MAP = {
+    "resolved_threat_handled": "resolved - threat handled",
+    "resolved_known_issue": "resolved - known issue",
+    "resolved_duplicate": "resolved - duplicate issue",
+    "resolved_false_positive": "resolved - false positive",
+    "resolved_other": "resolved - other",
+    "resolved_true_positive": "resolved - true positive",
+    "resolved_security_testing": "resolved - security testing",
+}
+
 
 def convert_epoch_to_milli(timestamp):
     if timestamp is None:
@@ -2972,20 +2984,20 @@ def list_issues_command(client: Client, args: Dict) -> CommandResults:
             filters.append({"field": "id", "operator": "in", "value": converted_ids})
         except (ValueError, TypeError):
             raise DemistoException("Invalid Issue ID provided. Please ensure all IDs are numbers.")
-    if external_id := argToList(args.get("external_id")):
-        filters.append({"field": "external_id", "operator": "in", "value": external_id})
-    if detection_method := argToList(args.get("detection_method")):
-        filters.append({"field": "detection.method", "operator": "in", "value": detection_method})
-    if domain := argToList(args.get("domain")):
-        filters.append({"field": "issue_domain", "operator": "in", "value": domain})
-    if severity := argToList(args.get("severity")):
-        filters.append({"field": "severity", "operator": "in", "value": severity})
+    filter_mappings = {
+        "external_id": "external_id",
+        "detection_method": "detection.method",
+        "domain": "issue_domain",
+        "severity": "severity",
+    }
+    for arg_name, api_field in filter_mappings.items():
+        if values := argToList(args.get(arg_name)):
+            filters.append({"field": api_field, "operator": "in", "value": values})
     if insert_time := args.get("insert_time"):
         timestamp = arg_to_timestamp(insert_time, arg_name="insert_time")
         filters.append({"field": "_insert_time", "operator": "gte", "value": timestamp})
     if status := argToList(args.get("status")):
-        statuses_map = {"new": "New", "in_progress": "In Progress", "resolved": "Resolved"}
-        mapped_statuses = [statuses_map.get(s) for s in status if s in statuses_map]
+        mapped_statuses = [ISSUE_STATUSES_MAP.get(s) for s in status if s in ISSUE_STATUSES_MAP]
         filters.append({"field": "status.progress", "operator": "in", "value": mapped_statuses})
 
     limit = arg_to_number(args.get("limit")) or 50
@@ -3104,24 +3116,12 @@ def update_issue_command(client: Client, args: Dict) -> CommandResults:
     Returns:
     - CommandResults: A CommandResults object.
     """
-    statuses_map = {"new": "New", "in_progress": "In Progress", "resolved": "Resolved"}
-
-    reason_map = {
-        "resolved_threat_handled": "resolved - threat handled",
-        "resolved_known_issue": "resolved - known issue",
-        "resolved_duplicate": "resolved - duplicate issue",
-        "resolved_false_positive": "resolved - false positive",
-        "resolved_other": "resolved - other",
-        "resolved_true_positive": "resolved - true positive",
-        "resolved_security_testing": "resolved - security testing",
-    }
-
     update_data = assign_params(
         severity=args["severity"].upper() if args.get("severity") else None,
     )
-    if status := statuses_map.get(args.get("status", "")):
+    if status := ISSUE_STATUSES_MAP.get(args.get("status", "")):
         update_data["status_progress"] = status
-    if resolution_reason := reason_map.get(args.get("resolve_reason", "")):
+    if resolution_reason := ISSUE_REASON_MAP.get(args.get("resolve_reason", "")):
         update_data["status_resolution_reason"] = resolution_reason
     if resolution_comment := args.get("resolve_comment"):
         update_data["status_resolution_comment"] = resolution_comment
