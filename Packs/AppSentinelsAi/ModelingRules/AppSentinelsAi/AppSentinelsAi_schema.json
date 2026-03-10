@@ -1,5 +1,5 @@
 {
-    "appsentinels_audit_raw": {
+    "appsentinels_appsentinels_raw": {
         "id": {
             "type": "string",
             "is_array": false

@@ -1,4 +1,4 @@
-[MODEL: dataset="appsentinels_audit_raw"]
+[MODEL: dataset="appsentinels_appsentinels_raw"]
 alter
     xdm.event.id = to_string(id),
     xdm.event.original_event_type = action,
