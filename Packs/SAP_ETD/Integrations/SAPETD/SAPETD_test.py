@@ -897,28 +897,33 @@ class TestClient:
     We mock client.get() directly instead.
     """
 
-    def test_get_alerts_success(self, client: SAPETDClient) -> None:
-        """Test successful alert retrieval."""
-        client.get = MagicMock(return_value=SAMPLE_ALERTS)  # type: ignore[method-assign]
+    @pytest.mark.parametrize(
+        "api_response, expected_count, expected_first_id",
+        [
+            pytest.param(SAMPLE_ALERTS, 3, 6101, id="success_multiple_alerts"),
+            pytest.param([SAMPLE_ALERTS[0]], 1, 6101, id="success_single_alert"),
+            pytest.param([], 0, None, id="empty_response"),
+        ],
+    )
+    def test_get_alerts_responses(
+        self,
+        client: SAPETDClient,
+        api_response: list,
+        expected_count: int,
+        expected_first_id: int | None,
+    ) -> None:
+        """Test get_alerts with various API response types."""
+        client.get = MagicMock(return_value=api_response)  # type: ignore[method-assign]
 
         result = client.get_alerts(
             from_timestamp="2022-04-29T14:00:00.000000Z",
             batch_size=100,
         )
 
-        assert len(result) == 3
-        assert result[0]["AlertId"] == 6101
+        assert len(result) == expected_count
+        if expected_first_id is not None:
+            assert result[0]["AlertId"] == expected_first_id
         client.get.assert_called_once()
-
-    def test_get_alerts_empty(self, client: SAPETDClient) -> None:
-        """Test empty alert response."""
-        client.get = MagicMock(return_value=[])  # type: ignore[method-assign]
-
-        result = client.get_alerts(
-            from_timestamp="2022-04-29T14:00:00.000000Z",
-        )
-
-        assert result == []
 
     def test_get_alerts_query_params(self, client: SAPETDClient) -> None:
         """Test that correct query parameters are sent."""
@@ -936,21 +941,37 @@ class TestClient:
         assert params["$batchSize"] == "500"
         assert params["$includeEvents"] == "true"
 
-    def test_get_alerts_unexpected_response(self, client: SAPETDClient) -> None:
-        """Test handling of unexpected (non-list) response format."""
-        client.get = MagicMock(return_value={"error": "unexpected"})  # type: ignore[method-assign]
+    @pytest.mark.parametrize(
+        "api_response, expected_result",
+        [
+            pytest.param({"error": "unexpected"}, [], id="dict_response"),
+            pytest.param({"results": []}, [], id="dict_with_results_key"),
+            pytest.param("not_a_list", [], id="string_response"),
+        ],
+    )
+    def test_get_alerts_unexpected_response(self, client: SAPETDClient, api_response: Any, expected_result: list) -> None:
+        """Test handling of unexpected (non-list) response formats."""
+        client.get = MagicMock(return_value=api_response)  # type: ignore[method-assign]
 
         result = client.get_alerts(
             from_timestamp="2022-04-29T14:00:00.000000Z",
         )
 
-        assert result == []
+        assert result == expected_result
 
-    def test_get_alerts_http_error(self, client: SAPETDClient) -> None:
-        """Test that HTTP errors are raised."""
-        client.get = MagicMock(side_effect=Exception("Internal Server Error"))  # type: ignore[method-assign]
+    @pytest.mark.parametrize(
+        "error_type, error_msg",
+        [
+            pytest.param(Exception, "Internal Server Error", id="generic_exception"),
+            pytest.param(DemistoException, "API Error 500", id="demisto_exception"),
+            pytest.param(ConnectionError, "Connection refused", id="connection_error"),
+        ],
+    )
+    def test_get_alerts_error_propagation(self, client: SAPETDClient, error_type: type, error_msg: str) -> None:
+        """Test that various HTTP errors are properly propagated."""
+        client.get = MagicMock(side_effect=error_type(error_msg))  # type: ignore[method-assign]
 
-        with pytest.raises(Exception, match="Internal Server Error"):
+        with pytest.raises(error_type, match=error_msg):
             client.get_alerts(from_timestamp="2022-04-29T14:00:00.000000Z")
 
 
@@ -1115,6 +1136,7 @@ class TestMain:
         with (
             patch.object(demisto, "command", return_value="unknown-command"),
             patch.object(demisto, "params", return_value=mock_params),
+            patch.object(demisto, "error"),
         ):
             main()
 
@@ -1132,6 +1154,7 @@ class TestMain:
         with (
             patch.object(demisto, "command", return_value="test-module"),
             patch.object(demisto, "params", return_value={"url": ""}),
+            patch.object(demisto, "error"),
         ):
             main()
 
@@ -1148,6 +1171,7 @@ class TestMain:
         with (
             patch.object(demisto, "command", return_value="test-module"),
             patch.object(demisto, "params", return_value={"url": "https://example.com", "credentials": {}}),
+            patch.object(demisto, "error"),
         ):
             main()
 
@@ -1194,43 +1218,42 @@ class TestEdgeCases:
         assert len(result) == Config.MAX_PAGE_SIZE
         assert client.get_alerts.call_count == 1
 
-    def test_test_module_403_forbidden(self, client: SAPETDClient) -> None:
-        """Test that 403 Forbidden returns specific privilege error message."""
-        client.get_alerts = MagicMock(side_effect=Exception("403 Forbidden"))
+    @pytest.mark.parametrize(
+        "error_message, expected_substring",
+        [
+            pytest.param("403 Forbidden", "User lacks required application privileges", id="403_forbidden"),
+            pytest.param("forbidden access denied", "User lacks required application privileges", id="forbidden_lowercase"),
+        ],
+    )
+    def test_test_module_403_errors(self, client: SAPETDClient, error_message: str, expected_substring: str) -> None:
+        """Test that 403/Forbidden errors return specific privilege error message."""
+        client.get_alerts = MagicMock(side_effect=Exception(error_message))
 
         result = _test_module(client)
 
-        assert "User lacks required application privileges" in result
+        assert expected_substring in result
 
-    def test_parse_integration_params_insecure_true(self) -> None:
-        """Test that insecure=True sets verify=False."""
-        params = {
+    @pytest.mark.parametrize(
+        "param_overrides, config_key, expected_value",
+        [
+            pytest.param({"insecure": True}, "verify", False, id="insecure_true_sets_verify_false"),
+            pytest.param({"insecure": False}, "verify", True, id="insecure_false_sets_verify_true"),
+            pytest.param({"proxy": True}, "proxy", True, id="proxy_true"),
+            pytest.param({"proxy": False}, "proxy", False, id="proxy_false"),
+            pytest.param({"max_fetch": "5000"}, "max_fetch", 5000, id="custom_max_fetch"),
+            pytest.param({"max_fetch": "100"}, "max_fetch", 100, id="small_max_fetch"),
+            pytest.param({}, "max_fetch", Config.DEFAULT_MAX_FETCH, id="default_max_fetch"),
+        ],
+    )
+    def test_parse_integration_params_options(self, param_overrides: dict, config_key: str, expected_value: Any) -> None:
+        """Test various parse_integration_params configuration options."""
+        base_params: dict[str, Any] = {
             "url": "https://example.com",
             "credentials": {"identifier": "dummy_user", "password": "dummy_pass"},
-            "insecure": True,
         }
-        config = parse_integration_params(params)
-        assert config["verify"] is False
-
-    def test_parse_integration_params_proxy_true(self) -> None:
-        """Test that proxy=True is correctly parsed."""
-        params = {
-            "url": "https://example.com",
-            "credentials": {"identifier": "dummy_user", "password": "dummy_pass"},
-            "proxy": True,
-        }
-        config = parse_integration_params(params)
-        assert config["proxy"] is True
-
-    def test_parse_integration_params_custom_max_fetch(self) -> None:
-        """Test that custom max_fetch value is correctly parsed."""
-        params = {
-            "url": "https://example.com",
-            "credentials": {"identifier": "dummy_user", "password": "dummy_pass"},
-            "max_fetch": "5000",
-        }
-        config = parse_integration_params(params)
-        assert config["max_fetch"] == 5000
+        base_params.update(param_overrides)
+        config = parse_integration_params(base_params)
+        assert config[config_key] == expected_value
 
     def test_integration_name_constant(self) -> None:
         """Test that INTEGRATION_NAME is set correctly."""
