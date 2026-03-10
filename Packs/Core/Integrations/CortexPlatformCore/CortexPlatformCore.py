@@ -4993,9 +4993,10 @@ def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, 
 
     reply = response.get("reply", {})
 
+    identification = reply.get("identification", {})
     outputs = {
-        "internet_message_id": reply.get("identification", {}).pop("internet_message_id", internet_message_id),
-        "identification": alert_to_issue(reply.get("identification", {})),
+        "internet_message_id": identification.pop("internet_message_id", internet_message_id),
+        "identification": alert_to_issue(identification),
         "detection_context": alert_to_issue(reply.get("detection_context", {})),
         "sender_forensics": reply.get("sender_forensics", {}),
         "targeting_scope": reply.get("targeting_scope", {}),
