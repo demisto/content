@@ -46,7 +46,7 @@ configuration:
     name: show_content
     type: 8
     required: false
-    defaultvalue: "false"
+    defaultvalue: "true"
     section: Collect
     additionalinfo: If enabled, alarm content will be appended to incident details field (may increase incident size).
   - display: Status Filter
