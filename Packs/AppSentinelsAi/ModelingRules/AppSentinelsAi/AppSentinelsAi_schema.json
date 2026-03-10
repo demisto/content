@@ -24,10 +24,6 @@
             "type": "string",
             "is_array": false
         },
-        "timestamp": {
-            "type": "string",
-            "is_array": false
-        },
         "type": {
             "type": "string",
             "is_array": false
