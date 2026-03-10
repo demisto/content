@@ -13,6 +13,7 @@ PRODUCT = "cloud_infrastructure"
 MAX_EVENTS_TO_FETCH = 100
 FETCH_DEFAULT_TIME = "3 days"
 PORT = 20190901
+SEARCHLOG_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
 
 
 """ CLIENT CLASS """
@@ -272,7 +273,7 @@ def audit_log_api_request(client: Client, start_time: str, next_page: str | None
 
 def searchlogs_api_request(
     client: Client, time_start: str, time_end: str, search_query: str,
-    limit: int = 2000, next_page: str | None = None
+    limit: int = 1000, next_page: str | None = None
 ) -> requests.Response:
     """Makes HTTP POST request to the OCI Search Logs API endpoint.
 
@@ -347,9 +348,80 @@ def deduplicate_events(events: list[dict[str, Any]], last_fetched_ids: list[str]
 
     return new_events
 
+def get_searchlogs_events(
+    client: Client, search_log_query: str, max_fetch: int, searchlog_last_run: dict
+) -> tuple[list[dict[str, Any]], dict]:
+    """Fetch search log events from the OCI Search Logs API.
+
+    Retrieves events using the OCI Search Logs API, handles pagination, deduplication,
+    and computes the last run state for the next fetch cycle.
+
+    Args:
+        client (Client): Client object for API requests.
+        search_log_query (str): The search log query string from the instance configuration.
+        max_fetch (int): The maximum number of events to fetch.
+        searchlog_last_run (dict): The searchlog last run dictionary containing:
+            - 'lastRun' (str): The timestamp from the previous fetch cycle.
+            - 'LastFetchedIds' (list[str]): List of event IDs from the previous fetch for deduplication.
+
+    Returns:
+        tuple[list[dict[str, Any]], dict]: A tuple containing:
+            - list of search log events.
+            - last run dict with keys 'lastRun' (str) and 'LastFetchedIds' (list[str]).
+    """
+    searchlogs_events: list[dict[str, Any]] = []
+    last_searchlogs_ids: list[str] = searchlog_last_run.get('LastFetchedIds', [])
+    new_last_run = searchlog_last_run.get('lastRun', '')
+
+    try:
+        if searchlog_last_run.get('lastRun'):
+            searchlogs_time_start = searchlog_last_run['lastRun']
+        else:
+            searchlogs_time_start = datetime.now().strftime(SEARCHLOG_DATE_FORMAT)
+
+        searchlogs_time_end = (datetime.strptime(searchlogs_time_start, DATE_FORMAT) + timedelta(days=14)).strftime(SEARCHLOG_DATE_FORMAT)
+
+        searchlogs_res = searchlogs_api_request(
+            client=client, time_start=searchlogs_time_start, time_end=searchlogs_time_end, search_query=search_log_query
+        )
+
+        for result in json.loads(searchlogs_res.content).get('results', []):
+            event_data = result.get('data', {}).get('logContent', {})
+            event_data['_time'] = event_data.get('time')
+            searchlogs_events.append(event_data)
+
+        while len(searchlogs_events) < max_fetch and (next_page := searchlogs_res.headers._store.get("opc-next-page")):
+            searchlogs_res = searchlogs_api_request(
+                client=client, time_start=searchlogs_time_start, time_end=searchlogs_time_end,
+                search_query=search_log_query, next_page=next_page[1]
+            )
+
+            for result in json.loads(searchlogs_res.content).get('results', []):
+                event_data = result.get('data', {}).get('logContent', {})
+                event_data['_time'] = event_data.get('time')
+                searchlogs_events.append(event_data)
+
+        if searchlogs_events:
+            # Deduplicate
+            searchlogs_events = deduplicate_events(searchlogs_events, last_searchlogs_ids)
+            searchlogs_events = searchlogs_events[:max_fetch]
+
+        if searchlogs_events:
+            new_last_run = searchlogs_events[-1]['_time']
+            last_searchlogs_ids = [
+                event.get("id") for event in searchlogs_events
+                if event.get("_time") == new_last_run and event.get("id")
+            ]
+
+    except Exception as e:
+        demisto.error(f"Error while fetching search log events: {e}")
+        return [], searchlog_last_run
+
+    return searchlogs_events, {'lastRun': new_last_run, 'LastFetchedIds': last_searchlogs_ids}
+
+
 def get_events(
-    client: Client, first_fetch_time: datetime, max_fetch: int, push_events_on_error: bool,
-    search_log_query: str = ''
+    client: Client, first_fetch_time: datetime, max_fetch: int, push_events_on_error: bool
 ) -> tuple[list[dict[str, Any]], str]:
     """Get events from an oracle cloud infrastructure tenant.
     - The request returns a maximum of 100 events per call by default.
@@ -360,7 +432,6 @@ def get_events(
         first_fetch_time (datetime): The start time to fetch events from.
         max_fetch (int): The limit of events to fetch.
         push_events_on_error (bool): Whether to push available fetched events to XSIAM if an error occurred while fetching events.
-        search_log_query (str): The search log query from the instance configuration.
 
     Raises:
         DemistoException: If an error occurred while fetching events.
@@ -369,46 +440,6 @@ def get_events(
         tuple[list[dict[str, Any]], str]: A tuple of the events list and the last event time for next fetch cycle.
     """
     try:
-        last_searchlogs_ids=[]
-        searchlogs_events = []
-        searchlogs_time_start = '2026-01-01T11:05:00.000Z'
-        searchlogs_time_end = '2026-01-01T11:45:00.000Z'
-        
-        
-        # last_searchlogs_ids = ['aaaa']
-        # searchlogs_time_start = '2026-01-01T11:06:55.362Z' 
-        searchlogs_limit =1
-        
-        
-        searchlogs_res = searchlogs_api_request(client=client,time_start=searchlogs_time_start,time_end=searchlogs_time_end,search_query=searchlogs_query)
-
-        for result in json.loads(searchlogs_res.content).get('results', []):
-            event_data = result.get('data', {}).get('logContent', {})
-            event_data['_time'] = event_data.get('time')
-            searchlogs_events.append(event_data)
-
-
-        while len(searchlogs_events) < searchlogs_limit and (next_page := searchlogs_res.headers._store.get("opc-next-page")):
-            searchlogs_res = searchlogs_api_request(client=client,time_start=searchlogs_time_start,time_end=searchlogs_time_end,search_query=searchlogs_query,next_page=next_page[1])
-
-            for result in json.loads(searchlogs_res.content).get('results', []):
-                event_data = result.get('data', {}).get('logContent', {})
-                event_data['_time'] = event_data.get('time')
-                searchlogs_events.append(event_data)
-
-        if searchlogs_events:
-
-            # Deduplicate
-            searchlogs_events = deduplicate_events(searchlogs_events, last_searchlogs_ids)
-            searchlogs_events = searchlogs_events[:searchlogs_limit]
-
-        if searchlogs_events:
-            new_last_run = searchlogs_events[-1]['_time']   
-            last_searchlogs_ids = [event.get("id") for event in searchlogs_events if event.get("_time") == new_last_run and event.get("id")]
-
-
-        #audit logs events
-
         response = audit_log_api_request(client=client, start_time=first_fetch_time.strftime(DATE_FORMAT))
         events = json.loads(response.content)
 
@@ -495,13 +526,16 @@ def main():
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    last_run_time = demisto.getLastRun().get("lastRun")
+    last_run = demisto.getLastRun()
+    last_run_time = last_run.get("lastRun")
     demisto.info(f"OCI: last_run_time value {last_run_time}")
     max_fetch = arg_to_number(params.get("max_fetch")) or MAX_EVENTS_TO_FETCH
     first_fetch = params.get("first_fetch", FETCH_DEFAULT_TIME)
     first_fetch_time = get_fetch_time(last_run=last_run_time, first_fetch_param=first_fetch)
     should_push_events = argToBoolean(args.get("should_push_events", False))
     private_key_type = params.get("private_key_type") or "PKCS#8"
+    searchlogs_query = params.get('search_log_query')
+    searchlog_last_run = last_run.get("SearchLog",{})
     demisto.info(f"OCI: Command being called is {command}")
 
     try:
@@ -526,10 +560,12 @@ def main():
 
         elif command in ("oracle-cloud-infrastructure-get-events", "fetch-events"):
             push_events = command == "fetch-events" or should_push_events
-            events, last_event_time = get_events(
-                client, first_fetch_time, max_fetch, push_events_on_error=push_events,
-                search_log_query=params.get('search_log_query')
-            )
+            
+            searchlog_events, searchlog_last_run= get_searchlogs_events(client, searchlogs_query, max_fetch, searchlog_last_run)
+            
+            events, last_event_time = get_events(client, first_fetch_time, max_fetch, push_events_on_error=push_events)
+
+            
 
             if push_events:
                 handle_fetched_events(events, last_event_time)
