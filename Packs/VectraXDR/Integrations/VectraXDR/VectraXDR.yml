@@ -1,5 +1,4 @@
 category: Network Security
-provider: Vectra AI
 sectionorder:
 - Connect
 - Collect
@@ -1783,7 +1782,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specify the type of the entity.
+      description: |-
+        Specify the type of the entity.
       isArray: false
       name: entity_type
       required: false
@@ -1793,7 +1793,8 @@ script:
       - account
       - host
     - default: false
-      description: Filter by resolved status.
+      description: |-
+        Filter by resolved status.
       isArray: false
       name: resolved
       required: false
@@ -1803,13 +1804,15 @@ script:
       - 'True'
       - 'False'
     - default: false
-      description: Filter by user ids of the assignment. Comma-separated values supported.
+      description: |-
+        Filter by user ids of the assignment. Comma-separated values supported.
       isArray: false
       name: assignees
       required: false
       secret: false
     - default: false
-      description: Filter by outcome ids of the resolution. Comma-separated values supported.
+      description: |-
+        Filter by outcome ids of the resolution. Comma-separated values supported.
       isArray: false
       name: resolution
       required: false
@@ -1821,7 +1824,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Enables the caller to specify a particular page of results.
+      description: |-
+        Enables the caller to specify a particular page of results.
       isArray: false
       name: page
       required: false
