@@ -419,7 +419,6 @@ def create_incident(notification: dict, region: str, incident_type: str = "Data 
     previous_notifications = notification["previous_notifications"]
     raw_incident["region"] = region
     raw_incident["previousNotification"] = previous_notifications[0] if len(previous_notifications) > 0 else None
-    incident_creation_time = cast(datetime, dateparser.parse(raw_incident["createdAt"]))
     parsed_details = parse_incident_details(raw_incident["incidentDetails"])
     raw_incident["incidentDetails"] = parsed_details
     if not raw_incident.get("userId"):
@@ -429,16 +428,21 @@ def create_incident(notification: dict, region: str, incident_type: str = "Data 
             if attribute_name == "username" and attribute_value:
                 raw_incident["userId"] = attribute_value
 
+    incident_creation_time = cast(datetime, dateparser.parse(raw_incident["createdAt"]))
+    incident_id = raw_incident["incidentId"]
+    incident_timestamp = int(incident_creation_time.timestamp())
+    demisto.debug(f"Creating new incident with {incident_id=} and {incident_timestamp=} in {region=}.")
     event_dump = json.dumps(raw_incident)
+
     return {
-        "name": f'Palo Alto Networks DLP Incident {raw_incident["incidentId"]}',
+        "name": f'Palo Alto Networks DLP Incident {incident_id}',
         "type": incident_type,
         "occurred": incident_creation_time.isoformat(),
         "rawJSON": event_dump,
         "details": event_dump,
         # Internal fields, will be popped before creating the incident
-        ID_KEY: raw_incident["incidentId"],
-        TIMESTAMP_KEY: int(incident_creation_time.timestamp()),
+        ID_KEY: incident_id,
+        TIMESTAMP_KEY: incident_timestamp,
     }
 
 
@@ -586,9 +590,11 @@ def fetch_notifications(
     # Query the API in 3 minute start/end time window
     for start_time, end_time in get_start_end_time_intervals(start_timestamp, end_timestamp, seconds_delta=180):
 
+        demisto.debug(f"Getting incidents between {start_time=} and {end_time=} from {regions=}.")
         notification_map, _ = client.get_dlp_incidents(regions, start_time, end_time)
+
         for region, notifications in notification_map.items():
-            demisto.debug(f"Received {len(notifications)} raw notifications from {region=}.")
+            demisto.debug(f"Received {len(notifications)} raw notifications between {start_time=} and {end_time=} in {region=}.")
 
             for notification in notifications:
                 incident_id = notification["incident"]["incidentId"]
