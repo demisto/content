@@ -5245,6 +5245,7 @@ def verify_support_ticket_permission_command(client: Client) -> CommandResults:
 
     if not has_permission:
         readable_output = "You do not have the required permissions to manage support tickets."
+        output["Error"] = readable_output
 
     else:
         readable_output = tableToMarkdown(
