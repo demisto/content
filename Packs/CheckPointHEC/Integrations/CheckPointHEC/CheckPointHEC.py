@@ -972,7 +972,7 @@ def checkpointhec_download_large_email(client: Client, args: dict) -> dict:
             filename=f"{entity}.eml",
             data=eml,
         )
-    return {}
+    raise DemistoException("Presigned URL not found in API response when downloading large email")
 
 
 def checkpointhec_get_ap_exceptions(client: Client, args: dict) -> CommandResults:
