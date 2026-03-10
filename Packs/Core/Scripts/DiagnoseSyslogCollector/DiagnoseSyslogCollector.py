@@ -125,7 +125,8 @@ dataset = collection_auditing
                             if error_desc and error_desc not in seen_descriptions:
                                 seen_descriptions.add(error_desc)
                                 classification = error.get("classification", "UNKNOWN")
-                                diagnosis_report.append(f"[{classification}] {error_desc}")
+                                timestamp = error.get("_time", "")
+                                diagnosis_report.append(f"[{timestamp}][{classification}] {error_desc}")
                     else:
                         status = "HEALTHY"
                         diagnosis_report.append(f"Syslog Collector is active with no errors in the last {timeframe}")

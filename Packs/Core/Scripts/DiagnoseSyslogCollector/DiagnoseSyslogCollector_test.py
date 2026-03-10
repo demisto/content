@@ -100,7 +100,7 @@ def test_diagnose_syslog_collector_active_with_warnings(mocker):
     """
     Given: Active collector with errors/warnings in collection_auditing
     When: diagnose_syslog_collector is called
-    Then: Returns WARNING status with deduplicated error messages
+    Then: Returns WARNING status with deduplicated error messages including timestamps
     """
     from DiagnoseSyslogCollector import diagnose_syslog_collector
 
@@ -121,13 +121,23 @@ def test_diagnose_syslog_collector_active_with_warnings(mocker):
                 "status": "SUCCESS",
                 "results": [
                     {
+                        "_time": "2026-03-01 11:06:42 UTC",
                         "classification": "WARNING",
                         "description": "Failed to process the packet due to a missing length header. \
                             The packet does not conform to the expected octet-framing format.",
                     },
-                    {"classification": "WARNING", "description": "Log parsing failed due to an unexpected format."},
-                    {"classification": "ERROR", "description": "Unable to connect to the receptor for data transmission."},
                     {
+                        "_time": "2026-03-01 11:07:15 UTC",
+                        "classification": "WARNING",
+                        "description": "Log parsing failed due to an unexpected format.",
+                    },
+                    {
+                        "_time": "2026-03-01 11:08:30 UTC",
+                        "classification": "ERROR",
+                        "description": "Unable to connect to the receptor for data transmission.",
+                    },
+                    {
+                        "_time": "2026-03-01 11:09:00 UTC",
                         "classification": "WARNING",
                         "description": "Failed to process the packet due to a missing length header. \
                             The packet does not conform to the expected octet-framing format.",
@@ -149,6 +159,8 @@ def test_diagnose_syslog_collector_active_with_warnings(mocker):
     assert diagnosis.count("Failed to process the packet due to a missing length header") == 1
     assert "[WARNING] Log parsing failed due to an unexpected format." in diagnosis
     assert "[ERROR] Unable to connect to the receptor for data transmission." in diagnosis
+    # Verify timestamps are included
+    assert "2026-03-01 11:06:42 UTC" in diagnosis or "2026-03-01 11:09:00 UTC" in diagnosis
 
 
 def test_diagnose_syslog_collector_broker_not_found(mocker):
