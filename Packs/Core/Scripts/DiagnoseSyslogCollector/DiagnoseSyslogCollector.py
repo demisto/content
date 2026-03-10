@@ -53,17 +53,13 @@ def diagnose_syslog_collector(broker_vm_name: str, timeframe: str) -> CommandRes
 
     if not syslog_collector:
         status = "ERROR"
-        diagnosis_report.append(
-            f"The Syslog Collector app is not configured on broker '{broker_vm_name}'"
-        )
+        diagnosis_report.append(f"The Syslog Collector app is not configured on broker '{broker_vm_name}'")
     else:
         collector_status = syslog_collector.get("status", "").lower()
 
         if collector_status != "active":
             status = "ERROR"
-            diagnosis_report.append(
-                f"Syslog Collector status is '{collector_status}' (expected 'active')"
-            )
+            diagnosis_report.append(f"Syslog Collector status is '{collector_status}' (expected 'active')")
 
             # Extract additional information from the reasons field
             reasons = syslog_collector.get("reasons", {})
@@ -117,9 +113,7 @@ dataset = collection_auditing
                 query_status = xql_outputs.get("status")
                 errors_found = xql_outputs.get("results", [])
 
-                demisto.debug(
-                    f"XQL Query finished with status={query_status}, found {len(errors_found)} Syslog errors."
-                )
+                demisto.debug(f"XQL Query finished with status={query_status}, found {len(errors_found)} Syslog errors.")
 
                 if query_status == "SUCCESS":
                     if errors_found:
@@ -131,14 +125,10 @@ dataset = collection_auditing
                             if error_desc and error_desc not in seen_descriptions:
                                 seen_descriptions.add(error_desc)
                                 classification = error.get("classification", "UNKNOWN")
-                                diagnosis_report.append(
-                                    f"[{classification}] {error_desc}"
-                                )
+                                diagnosis_report.append(f"[{classification}] {error_desc}")
                     else:
                         status = "HEALTHY"
-                        diagnosis_report.append(
-                            f"Syslog Collector is active with no errors in the last {timeframe}"
-                        )
+                        diagnosis_report.append(f"Syslog Collector is active with no errors in the last {timeframe}")
                 else:
                     status = "ERROR"
                     error_details = xql_outputs.get("error_details")
