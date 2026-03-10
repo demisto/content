@@ -357,7 +357,7 @@ def test_module_success(mocker):
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "list_buckets", return_value={"ResponseMetadata": {"HTTPStatusCode": 200}})
     client = AWSClient()
-    assert AWS_S3.test_module(client) == "ok"
+    assert AWS_S3.test_module(client, "") == "ok"
 
 
 def test_module_list_buckets_fail_list_objects_success(mocker):
@@ -371,13 +371,12 @@ def test_module_list_buckets_fail_list_objects_success(mocker):
     """
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "list_buckets", side_effect=Exception)
-    mocker.patch.object(AWS_S3.demisto, "params", return_value={"bucket": "test_bucket"})
     list_objects_v2_mock = mocker.patch.object(
         Boto3Client, "list_objects_v2", return_value={"ResponseMetadata": {"HTTPStatusCode": 200}}
     )
     client = AWSClient()
-    assert AWS_S3.test_module(client) == "ok"
-    list_objects_v2_mock.assert_called_once()
+    assert AWS_S3.test_module(client, "test_bucket") == "ok"
+    list_objects_v2_mock.assert_called_once_with(Bucket="test_bucket")
 
 
 def test_module_list_buckets_fail_list_objects_fail(mocker):
@@ -393,10 +392,9 @@ def test_module_list_buckets_fail_list_objects_fail(mocker):
 
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "list_buckets", side_effect=Exception)
-    mocker.patch.object(AWS_S3.demisto, "params", return_value={"bucket": "test_bucket"})
     mocker.patch.object(Boto3Client, "list_objects_v2", return_value={"ResponseMetadata": {"HTTPStatusCode": 404}})
     client = AWSClient()
-    result = AWS_S3.test_module(client)
+    result = AWS_S3.test_module(client, "test_bucket")
     assert isinstance(result, CommandResults)
     assert result.content_format == EntryFormat.TEXT
     assert result.entry_type == EntryType.ERROR
