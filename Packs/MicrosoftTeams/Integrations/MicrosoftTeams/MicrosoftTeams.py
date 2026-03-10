@@ -1039,8 +1039,7 @@ def create_proactive_conversation(user_id: str) -> str:
 
     # Load the proactive_conversations LRU cache (OrderedDict preserves insertion order)
     raw_conversations = integration_context.get("proactive_conversations", "{}")
-    if isinstance(raw_conversations, str):
-        raw_conversations = json.loads(raw_conversations)
+    raw_conversations = json.loads(raw_conversations)
     cached_conversations: OrderedDict = OrderedDict(raw_conversations)
 
     cached_conversation_id = lru_cache_get(cached_conversations, user_id)
@@ -1048,7 +1047,6 @@ def create_proactive_conversation(user_id: str) -> str:
         demisto.debug(f"Using cached conversation ID for user {user_id}: {cached_conversation_id}")
         return cached_conversation_id
 
-    # Create new conversation
     conversation: dict = {
         "bot": {"id": BOT_ID, "name": bot_name},
         "members": [{"id": user_id}],
@@ -1065,7 +1063,6 @@ def create_proactive_conversation(user_id: str) -> str:
     if not conversation_id:
         raise ValueError("Failed to create conversation: No conversation ID returned")
 
-    # Cache the conversation ID using LRU eviction (max PROACTIVE_CACHE_MAX_SIZE entries)
     lru_cache_set(cached_conversations, user_id, conversation_id)
     integration_context["proactive_conversations"] = json.dumps(cached_conversations)
     set_integration_context(integration_context)
