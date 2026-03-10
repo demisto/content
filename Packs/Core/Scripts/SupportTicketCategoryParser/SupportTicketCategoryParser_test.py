@@ -5,22 +5,46 @@ from SupportTicketCategoryParser import parse_and_validate, parse_taxonomy, vali
 TAXONOMY_DATA = [
     {"Agent": ["Communication", "Device Control", "Install/Upgrade/Uninstall", "Performance", "non-persistent VDI"]},
     {"Attack Surface Management": ["Asset Inventory", "Attack Surface Issues", "Policies and Configuration"]},
-    {"Cases and Issues": [
-        "Breach Assessment", "Custom Domain", "Health Domain", "Hunting Domain",
-        "IT Domain", "Posture Domain", "Security Domain", "Threat Coverage Analysis",
-    ]},
-    {"Tenant Administration and Access Control": [
-        "Access Management", "Add-ons", "Audit Logs and Health Issues", "Copilot",
-        "Cortex Gateway", "Licensing, Onboarding and Access", "Support Case Creation",
-        "Tenant Availability", "Tenant Configuration", "Tenant Migration",
-    ]},
-    {"XDR Agent": [
-        "XDR Agent for Cloud - App-embedded", "XDR Agent for Cloud - Container",
-        "XDR Agent for Cloud - Host", "XDR Agent for Cloud - Kubernetes",
-        "XDR Agent for Cloud - Serverless", "XDR Agent for Enterprise - Android",
-        "XDR Agent for Enterprise - Linux", "XDR Agent for Enterprise - Windows",
-        "XDR Agent for Enterprise - iOS", "XDR Agent for Enterprise - macOS",
-    ]},
+    {
+        "Cases and Issues": [
+            "Breach Assessment",
+            "Custom Domain",
+            "Health Domain",
+            "Hunting Domain",
+            "IT Domain",
+            "Posture Domain",
+            "Security Domain",
+            "Threat Coverage Analysis",
+        ]
+    },
+    {
+        "Tenant Administration and Access Control": [
+            "Access Management",
+            "Add-ons",
+            "Audit Logs and Health Issues",
+            "Copilot",
+            "Cortex Gateway",
+            "Licensing, Onboarding and Access",
+            "Support Case Creation",
+            "Tenant Availability",
+            "Tenant Configuration",
+            "Tenant Migration",
+        ]
+    },
+    {
+        "XDR Agent": [
+            "XDR Agent for Cloud - App-embedded",
+            "XDR Agent for Cloud - Container",
+            "XDR Agent for Cloud - Host",
+            "XDR Agent for Cloud - Kubernetes",
+            "XDR Agent for Cloud - Serverless",
+            "XDR Agent for Enterprise - Android",
+            "XDR Agent for Enterprise - Linux",
+            "XDR Agent for Enterprise - Windows",
+            "XDR Agent for Enterprise - iOS",
+            "XDR Agent for Enterprise - macOS",
+        ]
+    },
 ]
 
 TAXONOMY_JSON = json.dumps(TAXONOMY_DATA)

@@ -104,20 +104,12 @@ def parse_and_validate(args: dict) -> CommandResults:
     else:
         issue_category = classification_result.strip() if classification_result else None
         problem_concentration = None
-        demisto.debug(
-            f"No delimiter found in classification_result. "
-            f"Using entire value as issue_category: {issue_category}"
-        )
+        demisto.debug(f"No delimiter found in classification_result. " f"Using entire value as issue_category: {issue_category}")
 
-    demisto.debug(
-        f"Parsed - issue_category: {issue_category}, "
-        f"problem_concentration: {problem_concentration}"
-    )
+    demisto.debug(f"Parsed - issue_category: {issue_category}, " f"problem_concentration: {problem_concentration}")
 
     taxonomy = parse_taxonomy(taxonomy_raw)
-    issue_category, problem_concentration, warnings = validate_against_taxonomy(
-        issue_category, problem_concentration, taxonomy
-    )
+    issue_category, problem_concentration, warnings = validate_against_taxonomy(issue_category, problem_concentration, taxonomy)
 
     for warning in warnings:
         demisto.debug(f"Taxonomy validation warning: {warning}")

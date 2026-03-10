@@ -10208,6 +10208,7 @@ def test_send_endpoint_heartbeat_command_missing_id(mocker):
     with pytest.raises(ValueError, match="endpoint_id is required"):
         send_endpoint_heartbeat_command(mock_client, args)
 
+
 def test_core_fill_support_ticket_command_success(mocker: MockerFixture):
     """
     GIVEN:

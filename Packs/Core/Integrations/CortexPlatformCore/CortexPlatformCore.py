@@ -4690,7 +4690,6 @@ def core_fill_support_ticket_command(args: dict[str, Any]) -> CommandResults:
     Includes dependent validation for problem_concentration based on the issue_category.
     """
 
-
     demisto.debug(f"core_fill_support_ticket_command: {args}")
     start_time = args.get("most_recent_issue_start_time")
 
@@ -4705,7 +4704,7 @@ def core_fill_support_ticket_command(args: dict[str, Any]) -> CommandResults:
         "DateTimeOfIssue": start_time_dt.timestamp() if start_time_dt else None,
         "IssueImpact": args.get("issue_impact"),
         "smeArea": issue_category,
-        "subGroupName":problem_concentration,
+        "subGroupName": problem_concentration,
     }
 
     return CommandResults(
@@ -4713,6 +4712,7 @@ def core_fill_support_ticket_command(args: dict[str, Any]) -> CommandResults:
         outputs=data,
         raw_response=data,
     )
+
 
 def get_support_ticket_taxonomy_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
@@ -4741,16 +4741,11 @@ def get_support_ticket_taxonomy_command(client: Client, args: dict[str, Any]) ->
         suggested_values = area.get("suggestedValues", [])
 
         # Extract only the 'value' string from each suggestedValue object
-        problem_concentrations = [
-            sg.get("value") for sg in suggested_values if sg.get("value")
-        ]
+        problem_concentrations = [sg.get("value") for sg in suggested_values if sg.get("value")]
 
-        category_entry = {
-            area_value : problem_concentrations
-        }
+        category_entry = {area_value: problem_concentrations}
 
         taxonomy.append(category_entry)
-
 
     return CommandResults(
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.SupportTicketTaxonomy",
@@ -5215,6 +5210,7 @@ def delete_profile_command(client, args):
     client.delete_profile(profile_ids)
     return CommandResults(readable_output="Your request was sent successfully.")
 
+
 def verify_support_ticket_permission_command(client: Client) -> CommandResults:
     """
     Command wrapper for verify_support_ticket_permission.
@@ -5227,7 +5223,6 @@ def verify_support_ticket_permission_command(client: Client) -> CommandResults:
         CommandResults: Object containing the permission check results with
             user_csp_permission and tenant_entitlement_check fields.
     """
-
 
     response = client.check_support_permission()
     reply = response.get("reply", {})
@@ -5243,7 +5238,6 @@ def verify_support_ticket_permission_command(client: Client) -> CommandResults:
         "has_permission": has_permission,
     }
 
-
     if not has_permission:
         if not tenant_entitlement_check:
             readable_output = "Support for this tenant has expired."
@@ -5253,10 +5247,10 @@ def verify_support_ticket_permission_command(client: Client) -> CommandResults:
 
     else:
         readable_output = tableToMarkdown(
-        "Support Ticket Permission",
-        output,
-        headerTransform=string_to_table_header,
-    )
+            "Support Ticket Permission",
+            output,
+            headerTransform=string_to_table_header,
+        )
 
     return CommandResults(
         readable_output=readable_output,
