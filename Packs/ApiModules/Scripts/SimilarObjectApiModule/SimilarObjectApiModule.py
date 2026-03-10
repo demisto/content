@@ -44,17 +44,6 @@ REPLACE_COMMAND_LINE = {
 }
 
 
-def get_field_args(args) -> tuple:
-    use_all_field = argToBoolean(args.get("useAllFields") or "False")
-    exact_match_fields = [] if use_all_field else extract_fields_from_args(args.get("fieldExactMatch"))
-    similar_text_field = [] if use_all_field else extract_fields_from_args(args.get("similarTextField"))
-    similar_categorical_field = [] if use_all_field else extract_fields_from_args(args.get("similarCategoricalField"))
-    similar_json_field = ["CustomFields"] if use_all_field else extract_fields_from_args(args.get("similarJsonField"))
-
-    demisto.debug(f"{exact_match_fields=}\n{similar_text_field=}\n{similar_categorical_field=}\n{similar_json_field=}")
-    return exact_match_fields, similar_text_field, similar_categorical_field, similar_json_field
-
-
 def keep_high_level_field(incidents_field: list[str]) -> list[str]:
     """
     Return list of fields if they are in the first level of the argument - xdralert.commandline will return xdralert
@@ -218,18 +207,6 @@ def fill_nested_fields(incidents_df: pd.DataFrame, incidents: dict | list, *list
                 value_list = extract_values(incidents, field, values_to_exclude=["None", None, "N/A"])
                 incidents_df[field] = " ".join(value_list)
     return incidents_df
-
-
-def normalize_identity(my_string: str) -> str:
-    """
-    Return identity if string
-    :param my_string: string
-    :return: my_string
-    """
-    if my_string and isinstance(my_string, str):
-        return my_string
-    else:
-        return ""
 
 
 def euclidian_similarity_capped(x: np.ndarray, y: np.ndarray) -> np.ndarray:
@@ -615,20 +592,6 @@ def dumps_json_field_in_incident(incident: dict):
     return incident_df
 
 
-def create_context_for_incidents(similar_incidents=pd.DataFrame()):
-    """
-    Return context from dataframe of incident
-    :param similar_incidents: DataFrame of incidents with indicators
-    :return: context
-    """
-    similar_incidents = similar_incidents.replace(np.nan, "", regex=True)
-    if len(similar_incidents) == 0:
-        context = {"similarIncidentList": {}, "isSimilarIncidentFound": False}
-    else:
-        context = {"similarIncident": (similar_incidents.to_dict(orient="records")), "isSimilarIncidentFound": True}
-    return context
-
-
 def find_incorrect_fields(
     populate_fields: list[str], incidents_df: pd.DataFrame, global_msg: str, incident_alias: str = "incident"
 ):
@@ -700,7 +663,7 @@ class BaseSimilarObjectFinder:
         similar_categorical_field = [] if use_all_field else extract_fields_from_args(self.args.get("similarCategoricalField"))
         similar_json_field = ["CustomFields"] if use_all_field else extract_fields_from_args(self.args.get("similarJsonField"))
 
-        if not (similar_text_field or similar_categorical_field or similar_json_field):
+        if self.incident_alias == "issue" and not (similar_text_field or similar_categorical_field or similar_json_field):
             raise DemistoException(
                 "Please provide at least one of the following args: text_similarity_fields,"
                 " discrete_match_fields, json_similarity_fields."
