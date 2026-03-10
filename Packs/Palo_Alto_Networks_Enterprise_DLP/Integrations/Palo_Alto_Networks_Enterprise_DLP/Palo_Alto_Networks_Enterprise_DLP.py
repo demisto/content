@@ -31,7 +31,7 @@ RESET_KEY = "reset"
 CREDENTIAL = "credential"
 IDENTIFIER = "identifier"
 PASSWORD = "password"
-
+END_TIME_BUFFER = 30 # seconds
 # Internal (private) incident fields
 ID_KEY = "__id"
 TIMESTAMP_KEY = "__timestamp"
@@ -507,15 +507,47 @@ def compute_next_run(incidents: list[dict], last_run: dict[str, Any]) -> dict[st
     if not incidents:
         return last_run
 
-    last_timestamp = incidents[-1][TIMESTAMP_KEY]
-    last_incident_ids = [incident[ID_KEY] for incident in incidents if incident[TIMESTAMP_KEY] == last_timestamp]
+    new_last_timestamp = incidents[-1][TIMESTAMP_KEY]
+    new_last_incident_ids = [incident[ID_KEY] for incident in incidents if incident[TIMESTAMP_KEY] == new_last_timestamp]
+
+    # If the `new_last_timestamp` matches the previous run's timestamp, extend `new_last_incident_ids`
+    # this avoids discarding previously processed IDs for that timestamp.
+    if new_last_timestamp == last_run.get(START_TIMESTAMP_KEY):
+        new_last_incident_ids.extend(last_run.get(LAST_IDS_KEY) or [])
 
     # Clean private internal fields before creating incidents
     for incident in incidents:
         incident.pop(ID_KEY)
         incident.pop(TIMESTAMP_KEY)
 
-    return {START_TIMESTAMP_KEY: last_timestamp, LAST_IDS_KEY: last_incident_ids}
+    return {START_TIMESTAMP_KEY: new_last_timestamp, LAST_IDS_KEY: new_last_incident_ids}
+
+
+def get_start_end_time_intervals(start: int, end: int, seconds_delta: int) -> list[tuple[int, int]]:
+    """
+    Generate a list of time interval tuples from start to end timestamp.
+
+    Args:
+        start (int): Starting epoch timestamp in seconds
+        end (int): Ending epoch timestamp in seconds
+        seconds_delta (int): The delta in seconds for each interval
+
+    Returns:
+        A list of tuples where each tuple contains (interval_start, interval_end)
+
+    Example:
+        >>> get_start_end_time_intervals(0, 900, 300)
+        [(0, 300), (300, 600), (600, 900)]
+    """
+    intervals: list[tuple[int, int]] = []
+    current = start
+
+    while current < end:
+        next_timestamp = min(current + seconds_delta, end)
+        intervals.append((current, next_timestamp))
+        current = next_timestamp
+
+    return intervals
 
 
 def fetch_notifications(
@@ -535,9 +567,13 @@ def fetch_notifications(
 
     """
     last_run = get_last_run()
+    demisto.debug(f"Got {last_run=}.")
+
     last_incident_ids = last_run.get(LAST_IDS_KEY) or []
     start_timestamp = last_run.get(START_TIMESTAMP_KEY) or first_fetch_timestamp
-    end_timestamp = int(datetime.now(tz=UTC).timestamp())
+
+    # Provide buffer to account for minor indexing delays
+    end_timestamp = int(datetime.now(tz=UTC).timestamp()) - END_TIME_BUFFER
 
     integration_context = demisto.getIntegrationContext()
     access_token = integration_context.get(ACCESS_TOKEN)
@@ -547,18 +583,22 @@ def fetch_notifications(
     new_incidents = []
     all_incident_ids = set(last_incident_ids)
 
-    notification_map, _ = client.get_dlp_incidents(regions=regions, start_time=start_timestamp, end_time=end_timestamp)
-    for region, notifications in notification_map.items():
-        demisto.debug(f"Received {len(notifications)} raw notifications from {region=}.")
-        for notification in notifications:
-            incident_id = notification["incident"]["incidentId"]
-            if incident_id in all_incident_ids:
-                print_debug_msg(f"Skipping duplicate {incident_id=} in {region=}.")
-                continue
+    # Query the API in 3 minute start/end time window
+    for start_time, end_time in get_start_end_time_intervals(start_timestamp, end_timestamp, seconds_delta=180):
 
-            incident = create_incident(notification, region, incident_type)
-            new_incidents.append(incident)
-            all_incident_ids.add(incident_id)
+        notification_map, _ = client.get_dlp_incidents(regions, start_time, end_time)
+        for region, notifications in notification_map.items():
+            demisto.debug(f"Received {len(notifications)} raw notifications from {region=}.")
+
+            for notification in notifications:
+                incident_id = notification["incident"]["incidentId"]
+                if incident_id in all_incident_ids:
+                    print_debug_msg(f"Skipping duplicate {incident_id=} in {region=}.")
+                    continue
+
+                incident = create_incident(notification, region, incident_type)
+                new_incidents.append(incident)
+                all_incident_ids.add(incident_id)
 
     new_incidents = sorted(new_incidents, key=lambda inc: inc[TIMESTAMP_KEY])
     next_run = compute_next_run(new_incidents, last_run)
