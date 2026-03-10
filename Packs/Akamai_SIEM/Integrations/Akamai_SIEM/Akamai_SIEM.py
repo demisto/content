@@ -1276,6 +1276,7 @@ def main():  # pragma: no cover
                 demisto.info(f"Got {limit=} lower than {page_size=}, lowering page_size to {limit}.")
                 page_size = limit
             should_skip_decode_events = params.get("should_skip_decode_events", False)
+            should_fail = False
             for events, offset, total_events_count, auto_trigger_next_run in (  # noqa: B007
                 fetch_events_command(
                     client,
@@ -1317,6 +1318,7 @@ def main():  # pragma: no cover
                         f"Done sending {data_size} events to xsiam."
                         f"sent {total_events_count} events to xsiam in total during this interval."
                     )
+            if not should_fail:
                 set_integration_context({"offset": offset})
             demisto.updateModuleHealth({"eventsPulled": (total_events_count or 0)})
             next_run = {}
