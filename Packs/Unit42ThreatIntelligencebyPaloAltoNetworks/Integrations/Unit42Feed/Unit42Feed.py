@@ -316,7 +316,7 @@ def create_vulnerabilities_relationships(threat_obj: dict[str, Any], threat_acto
     Returns:
         List of EntityRelationship objects
     """
-    relationships = []
+    relationships: list[dict] = []
 
     if threat_class not in INDICATOR_TYPE_MAPPING:
         demisto.debug(f"Skipping create_vulnerabilities_relationships for unknown threat_class {threat_class!r}")
@@ -354,7 +354,7 @@ def create_actor_relationships(threat_obj: dict[str, Any], malware_family_name: 
     Returns:
         List of EntityRelationship objects
     """
-    relationships = []
+    relationships: list[dict] = []
 
     if threat_class not in INDICATOR_TYPE_MAPPING:
         demisto.debug(f"Skipping create_actor_relationships for unknown threat_class {threat_class!r}")
@@ -407,7 +407,7 @@ def create_tools_relationships(threat_obj: dict[str, Any], threat_actor_name: st
     Returns:
         List of EntityRelationship objects
     """
-    relationships = []
+    relationships: list[dict] = []
 
     if threat_class not in INDICATOR_TYPE_MAPPING:
         demisto.debug(f"Skipping create_tools_relationships for unknown threat_class {threat_class!r}")
@@ -446,7 +446,7 @@ def create_malware_relationships(threat_obj: dict[str, Any], threat_actor_name: 
     Returns:
         List of EntityRelationship objects
     """
-    relationships = []
+    relationships: list[dict] = []
 
     if threat_class not in INDICATOR_TYPE_MAPPING:
         demisto.debug(f"Skipping create_malware_relationships for unknown threat_class {threat_class!r}")
@@ -499,7 +499,7 @@ def create_attack_patterns_relationships(threat_obj: dict[str, Any], threat_acto
     Returns:
         List of EntityRelationship objects
     """
-    relationships = []
+    relationships: list[dict] = []
 
     if threat_class not in INDICATOR_TYPE_MAPPING:
         demisto.debug(f"Skipping create_attack_patterns_relationships for unknown threat_class {threat_class!r}")
@@ -546,7 +546,7 @@ def create_campaigns_relationships(threat_obj: dict[str, Any], threat_object_nam
     Returns:
         List of EntityRelationship objects
     """
-    relationships = []
+    relationships: list[dict] = []
 
     if threat_class not in INDICATOR_TYPE_MAPPING:
         demisto.debug(f"Skipping create_campaigns_relationships for unknown threat_class {threat_class!r}")
