@@ -1,0 +1,106 @@
+commonfields:
+  id: SAPETD
+  version: -1
+name: SAPETD
+display: SAP Enterprise Threat Detection
+category: Analytics & SIEM
+description: SAP Enterprise Threat Detection fetches alerts from SAP ETD for ingestion into Cortex XSIAM.
+sectionorder:
+- Connect
+- Collect
+configuration:
+- name: url
+  display: Server URL
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: The SAP ETD server URL (e.g., https://<Server_Host>:<Port>).
+- name: credentials
+  display: Username and Password
+  required: true
+  type: 9
+  section: Connect
+  additionalinfo: Basic auth credentials for the SAP ETD API.
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  type: 8
+  defaultvalue: "false"
+  section: Connect
+  advanced: true
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  defaultvalue: "false"
+  type: 8
+  section: Connect
+  advanced: true
+- name: max_fetch
+  display: Maximum alerts per fetch
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
+  defaultvalue: "10000"
+  additionalinfo: Maximum number of alerts to fetch per cycle (default 10000).
+script:
+  commands:
+  - name: sap-etd-get-events
+    description: |-
+      Gets alerts from SAP Enterprise Threat Detection. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and API request limitation exceeding.
+    deprecated: false
+    arguments:
+    - name: from_date
+      description: >-
+        The start date/time to fetch alerts from.
+        Supports relative time (e.g., "3 days ago", "2 hours ago")
+        or specific ISO 8601 dates (e.g., "2026-01-15T15:00:00.00Z").
+      defaultValue: "3 days ago"
+    - name: limit
+      description: Maximum number of alerts to retrieve.
+      defaultValue: "50"
+    - name: should_push_events
+      description: Set to true to push events to XSIAM (use with caution to avoid duplicates).
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: SAPETD.Alert.AlertId
+      description: Unique identifier of the alert.
+      type: Number
+    - contextPath: SAPETD.Alert.AlertSeverity
+      description: Severity level of the alert (e.g., LOW, MEDIUM, HIGH).
+      type: String
+    - contextPath: SAPETD.Alert.AlertStatus
+      description: Current status of the alert (e.g., OPEN, CLOSED).
+      type: String
+    - contextPath: SAPETD.Alert.Category
+      description: Category of the alert (e.g., Brute Force Attack).
+      type: String
+    - contextPath: SAPETD.Alert.PatternName
+      description: Name of the detection pattern that triggered the alert.
+      type: String
+    - contextPath: SAPETD.Alert.AlertCreationTimestamp
+      description: Timestamp when the alert was created (ISO 8601).
+      type: String
+    - contextPath: SAPETD.Alert.Text
+      description: Human-readable description of the alert.
+      type: String
+    - contextPath: SAPETD.Alert.Score
+      description: Alert score value.
+      type: Number
+  isfetchevents: true
+  runonce: false
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/fastapi:0.125.0.7194517
+fromversion: 8.11.0
+supportlevelheader: xsoar
+marketplaces:
+- marketplacev2
+- platform
+tests:
+- No tests (auto formatted)
