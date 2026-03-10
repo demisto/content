@@ -636,7 +636,7 @@ script:
     - description: Value list ID to import values to. Find with "kibana-get-value-lists".
       name: list_id
       required: true
-    - description: Entries of the IOC file to import to Kibana.
+    - description: Entries of the IOC file to import to Kibana in python string format.
       name: file_content
       required: true
     description: Import value list items from a TXT or CSV file.
