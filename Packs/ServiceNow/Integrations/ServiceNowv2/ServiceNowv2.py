@@ -1916,11 +1916,9 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
                     "Category": note.get("category"),
                     "HumanReadable" : f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\nCreated On: {note.get('sys_created_on')}\n{note.get('value')}",
                     "Contents": {
-                        "contentFormat" : note.get("format"),
                         "created" : note.get('sys_created_on'),
                         "Contents" : f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\nCreated On: {note.get('sys_created_on')}\n{note.get('value')}"
                     },
-                    # "ContentsFormat": EntryFormat.JSON,
                     "ContentsFormat": note.get("format"),
                     "Tags": tags,
                     "Note": True,
