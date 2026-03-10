@@ -1,13 +1,15 @@
 [MODEL: dataset = "msft_azure_flowlogs_raw"]
-// --- NSG Flow Logs ---
-filter category = "NetworkSecurityGroupFlowEvent"
+// --- NSG & VNet Flow Logs ---
+filter category in ("NetworkSecurityGroupFlowEvent", "FlowLogFlowEvent")
+| alter
+    get_flowState = if(category = "NetworkSecurityGroupFlowEvent", flowState, category = "FlowLogFlowEvent", deviceAction, null)
 | alter
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_CLOUD),
     xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
     xdm.target.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
     xdm.target.resource.id = resourceId,
     xdm.event.operation_sub_type = operationName,
-    xdm.event.original_event_type = "Network Security Group Flow Event",
+    xdm.event.original_event_type = if(category = "NetworkSecurityGroupFlowEvent", "Network Security Group Flow Event", category = "FlowLogFlowEvent", "VNet Flow Log Event", null),
     xdm.network.rule = nsgRuleName,
 	xdm.source.ipv4 = arrayindex(regextract(sourceAddress, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 0),
 	xdm.source.ipv6 = arrayindex(regextract(sourceAddress, "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}"), 0),
@@ -17,74 +19,38 @@ filter category = "NetworkSecurityGroupFlowEvent"
 	xdm.source.port = to_integer(sourcePort),
 	xdm.target.port = to_integer(destinationPort),
 	xdm.network.ip_protocol = if(
-		transportProtocol = "T", XDM_CONST.IP_PROTOCOL_TCP, 
+		transportProtocol = "T", XDM_CONST.IP_PROTOCOL_TCP,
 		transportProtocol = "U", XDM_CONST.IP_PROTOCOL_UDP,
-		transportProtocol = null, null , to_string(transportProtocol)
+		transportProtocol = "6", XDM_CONST.IP_PROTOCOL_TCP,
+		transportProtocol = "17", XDM_CONST.IP_PROTOCOL_UDP,
+		transportProtocol = "1", XDM_CONST.IP_PROTOCOL_ICMP,
+		transportProtocol = "58", XDM_CONST.IP_PROTOCOL_IPV6_ICMP,
+		transportProtocol = null, null, to_string(transportProtocol)
 		),
 	xdm.event.outcome = if(
 		deviceAction = "A", XDM_CONST.OUTCOME_SUCCESS,
+		deviceAction in ("B", "C", "E"), XDM_CONST.OUTCOME_SUCCESS,
 		deviceAction = "D", XDM_CONST.OUTCOME_FAILED,
 		deviceAction = null, null, to_string(deviceAction)
 		),
 	xdm.event.outcome_reason = deviceAction,
 	xdm.observer.type = if(
-		flowState = "B", "Begin, a flow is created. Statistics aren't provided",
-		flowState = "C", "Continuing for an ongoing flow. Statistics are provided at 5-minute intervals",
-		flowState = "E", "End, when a flow is terminated. Statistics are provided",
-		flowState = null, null, to_string(flowState)
+		get_flowState = "B", "Begin, a flow is created. No statistics are provided",
+		get_flowState = "C", "Continuing for an ongoing flow. Statistics are provided at five-minute intervals",
+		get_flowState = "E", "End, when a flow is terminated. Statistics are provided",
+		get_flowState = "D", "Deny, when a flow is denied",
+		get_flowState = null, null, to_string(get_flowState)
+		),
+	xdm.network.session_id = if(category = "FlowLogFlowEvent", flowState, null),
+	xdm.event.type = if(
+		deviceDirection = "I", "Inbound",
+		deviceDirection = "O", "Outbound",
+		deviceDirection = null, null, to_string(deviceDirection)
 		),
 	xdm.source.sent_packets = to_integer(packetsStoD),
 	xdm.source.sent_bytes = to_integer(bytesStoD),
 	xdm.target.sent_packets = to_integer(packetsDtoS),
 	xdm.target.sent_bytes = to_integer(bytesDtoS);
-
-
-// --- VNet Flow Logs ---
-filter category = "FlowLogFlowEvent"
-| alter
-    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_CLOUD),
-    xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
-    xdm.target.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
-    xdm.target.resource.id = resourceid,
-    xdm.event.operation_sub_type = operationname,
-    xdm.event.original_event_type = "VNet Flow Log Event",
-    xdm.network.rule = nsgrulename,
-    xdm.source.ipv4 = arrayindex(regextract(sourceaddress, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 0),
-    xdm.source.ipv6 = arrayindex(regextract(sourceaddress, "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}"), 0),
-    xdm.target.ipv4 = arrayindex(regextract(destinationaddress, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 0),
-    xdm.target.ipv6 = arrayindex(regextract(destinationaddress, "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}"), 0),
-    xdm.intermediate.host.mac_addresses = arraycreate(mac),
-    xdm.source.port = to_integer(sourceport),
-    xdm.target.port = to_integer(destinationport),
-    xdm.network.ip_protocol = if(
-        transportprotocol = "6", XDM_CONST.IP_PROTOCOL_TCP,
-        transportprotocol = "17", XDM_CONST.IP_PROTOCOL_UDP,
-        transportprotocol = "1", XDM_CONST.IP_PROTOCOL_ICMP,
-        transportprotocol = "58", XDM_CONST.IP_PROTOCOL_IPV6_ICMP,
-        transportprotocol = null, null, to_string(transportprotocol)
-        ),
-    xdm.event.outcome = if(
-        deviceaction = "A", XDM_CONST.OUTCOME_SUCCESS,
-        deviceaction = "D", XDM_CONST.OUTCOME_FAILED,
-        deviceaction = null, null, to_string(deviceaction)
-        ),
-    xdm.event.outcome_reason = deviceaction,
-    xdm.observer.type = if(
-        deviceaction = "B", "Begin, a flow is created",
-        deviceaction = "C", "Continuing for an ongoing flow",
-        deviceaction = "E", "End, a flow is terminated",
-        deviceaction = null, null, to_string(deviceaction)
-        ),
-    xdm.network.session_id = flowstate,
-    xdm.event.type = if(
-        devicedirection = "I", "Inbound",
-        devicedirection = "O", "Outbound",
-        devicedirection = null, null, to_string(devicedirection)
-        ),
-    xdm.source.sent_packets = to_integer(packetsstod),
-    xdm.source.sent_bytes = to_integer(bytesstod),
-    xdm.target.sent_packets = to_integer(packetsdtos),
-    xdm.target.sent_bytes = to_integer(bytesdtos);
 
 
 // --- NTA Flow Logs ---
