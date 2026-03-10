@@ -4131,21 +4131,22 @@ script:
       hidden: true
       outputs: []
     - arguments:
-        - description: The name of the Broker VM to diagnose.
-          name: broker_vm_name
-          required: true
-        - description: How far back to search for collector errors. (e.g., "24 hours", "7 days", "1 hour"). Default is "24 hours".'
-          name: timeframe
-          defaultValue: "24 hours"
-      name: core-diagnose-syslog-collector
-      description: Diagnoses why the syslog collector on a specified Broker VM is failing by checking broker status and querying collection_auditing for errors.
+        - description: Comma-separated list of broker VM names to filter by.
+          name: broker_vm_names
+          isArray: true
+        - description: Maximum number of brokers to return.
+          name: limit
+          defaultValue: "50"
+      name: core-list-brokers
+      description: Retrieves information about broker VMs configured on the system.
+      hidden: true
       outputs:
-        - contextPath: Core.SyslogCollectorDiagnostics.status
-          description: Overall diagnostic status (HEALTHY, WARNING, ERROR, UNKNOWN).
+        - contextPath: Core.Broker.DEVICE_NAME
+          description: The name of the broker VM device.
           type: String
-        - contextPath: Core.SyslogCollectorDiagnostics.diagnosis_report
-          description: Detailed diagnosis report containing error messages (deduplicated). Multiple messages are separated by newlines.
-          type: String
+        - contextPath: Core.Broker.APPS
+          description: List of applications configured on the broker.
+          type: Array
   runonce: false
   script: "-"
   subtype: python3
