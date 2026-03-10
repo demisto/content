@@ -332,7 +332,11 @@ def test_module(aws_client: AWSClient, bucket: str) -> str | CommandResults:
             return "ok"
         else:
             demisto.debug(f"list_buckets failed with {response=}")
-            raise
+            return CommandResults(
+                content_format=EntryFormat.TEXT,
+                entry_type=EntryType.ERROR,
+                readable_output=f"received status code {response['ResponseMetadata']['HTTPStatusCode']}",
+            )
 
     except Exception:
         if bucket:
