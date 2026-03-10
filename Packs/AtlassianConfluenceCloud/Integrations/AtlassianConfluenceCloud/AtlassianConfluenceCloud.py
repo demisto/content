@@ -24,6 +24,9 @@ HTTP_ERROR = {
 }
 URL_SUFFIX = {
     "CONTENT_SEARCH": "/wiki/rest/api/content/search",
+    "GROUP": "/wiki/rest/api/group",
+    "CONTENT": "/wiki/rest/api/content",
+    "USER": "/wiki/rest/api/search/user?cql=type=user",
     "SPACE": "/wiki/rest/api/space",
     "PRIVATE_SPACE": "/wiki/rest/api/space/_private",
     "EVENTS": "/wiki/rest/api/audit/",
