@@ -1,0 +1,9 @@
+{
+    "GravityZone.Command.ChangeIncidentStatus(val.IncidentID && val.IncidentID == obj.IncidentID)": [
+        {
+            "IncidentID": "INCIDENT_ID_1",
+            "IncidentStatus": "ACTIVE",
+            "CommandStatus": "Success"
+        }
+    ]
+}
