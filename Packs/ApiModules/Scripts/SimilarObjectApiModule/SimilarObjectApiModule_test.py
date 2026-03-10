@@ -1,6 +1,4 @@
-import sys
 from copy import deepcopy
-from unittest.mock import MagicMock
 
 import demistomock as demisto
 import numpy as np
@@ -8,20 +6,16 @@ import pandas as pd
 import pytest
 from CommonServerPython import DemistoException
 
-# Mock GetIncidentsApiModule before importing DBotFindSimilarIncidents
-mock_get_incidents = MagicMock()
 
+def get_incidents_by_query_mock(fetched_incident, current_incident):
+    def _mock(args):
+        if "-id:" in args.get("query", ""):
+            return fetched_incident
+        else:
+            return current_incident
 
-def get_incidents_by_query_mock(args):
-    global FETCHED_INCIDENT, CURRENT_INCIDENT
-    if "-id:" in args.get("query", ""):
-        return FETCHED_INCIDENT
-    else:
-        return CURRENT_INCIDENT
+    return _mock
 
-
-mock_get_incidents.get_incidents_by_query = get_incidents_by_query_mock
-sys.modules["GetIncidentsApiModule"] = mock_get_incidents
 
 CURRENT_INCIDENT_NOT_EMPTY = [
     {
@@ -92,11 +86,13 @@ def mock_demistoVersion(mocker):
     mocker.patch.object(demisto, "demistoVersion", return_value={"platform": "xsoar"})
 
 
-def executeCommand(command, args):
-    global SIMILAR_INDICATORS
-    if command == "DBotFindSimilarIncidentsByIndicators":
-        return [[], {"Contents": SIMILAR_INDICATORS, "Type": "note", "Tags": ["similarIncidents"]}]
-    return None
+def executeCommand_mock(similar_indicators):
+    def _mock(command, args):
+        if command == "DBotFindSimilarIncidentsByIndicators":
+            return [[], {"Contents": similar_indicators, "Type": "note", "Tags": ["similarIncidents"]}]
+        return None
+
+    return _mock
 
 
 def check_exist_dataframe_columns(*fields, df):
@@ -131,7 +127,7 @@ def test_match_one_regex():
     assert match_one_regex("123.123.123.123", [REGEX_IP]) is True
     assert match_one_regex("123.123.123", [REGEX_IP]) is False
     assert match_one_regex("abc", [REGEX_IP]) is False
-    assert match_one_regex(1, [REGEX_IP]) is False
+    assert match_one_regex("1", [REGEX_IP]) is False
 
 
 def test_normalize_command_line():
@@ -154,10 +150,15 @@ def test_euclidian_similarity_capped():
 def test_main_regular(mocker):
     from SimilarObjectApiModule import SimilarIncidentFinder
 
-    global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
-    FETCHED_INCIDENT = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
-    CURRENT_INCIDENT = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
-    SIMILAR_INDICATORS = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
+    fetched_incident = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
+    current_incident = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
+    similar_indicators = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
+
+    mocker.patch(
+        "SimilarObjectApiModule.get_incidents_by_query",
+        side_effect=get_incidents_by_query_mock(fetched_incident, current_incident),
+    )
+
     args = {
         "incidentId": 12345,
         "similarTextField": "incident.commandline, commandline, command, "
@@ -171,15 +172,16 @@ def test_main_regular(mocker):
         "minimunIncidentSimilarity": 0.2,
         "maxIncidentsToDisplay": 100,
         "query": "",
-        "aggreagateIncidentsDifferentDate": "False",
+        "aggregateIncidentsDifferentDate": "False",
         "includeIndicatorsSimilarity": "True",
     }
     mocker.patch.object(demisto, "args", return_value=args)
-    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand_mock(similar_indicators))
 
     finder = SimilarIncidentFinder(args)
     res, _ = finder.run()
 
+    assert res is not None
     assert "empty_current_incident_field" not in res.columns
     assert res.loc["3", "Identical indicators"] == "ind_2"
     assert res.loc["2", "Identical indicators"] == ""
@@ -191,10 +193,15 @@ def test_main_regular(mocker):
 def test_main_no_indicators_found(mocker):
     from SimilarObjectApiModule import SimilarIncidentFinder
 
-    global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
-    FETCHED_INCIDENT = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
-    CURRENT_INCIDENT = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
-    SIMILAR_INDICATORS = deepcopy(SIMILAR_INDICATORS_EMPTY)
+    fetched_incident = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
+    current_incident = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
+    similar_indicators = deepcopy(SIMILAR_INDICATORS_EMPTY)
+
+    mocker.patch(
+        "SimilarObjectApiModule.get_incidents_by_query",
+        side_effect=get_incidents_by_query_mock(fetched_incident, current_incident),
+    )
+
     args = {
         "incidentId": 12345,
         "similarTextField": "incident.commandline, commandline, command,"
@@ -212,11 +219,12 @@ def test_main_no_indicators_found(mocker):
         "includeIndicatorsSimilarity": "True",
     }
     mocker.patch.object(demisto, "args", return_value=args)
-    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand_mock(similar_indicators))
 
     finder = SimilarIncidentFinder(args)
     res, _ = finder.run()
 
+    assert res is not None
     assert "empty_current_incident_field" not in res.columns
     assert (res["Identical indicators"] == ["", "", ""]).all()
     assert check_exist_dataframe_columns("similarity indicators", "similarity incident", "id", "created", "name", df=res)
@@ -226,10 +234,15 @@ def test_main_no_indicators_found(mocker):
 def test_main_no_fetched_incidents_found(mocker):
     from SimilarObjectApiModule import SimilarIncidentFinder
 
-    global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
-    FETCHED_INCIDENT = deepcopy(FETCHED_INCIDENT_EMPTY)
-    CURRENT_INCIDENT = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
-    SIMILAR_INDICATORS = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
+    fetched_incident = deepcopy(FETCHED_INCIDENT_EMPTY)
+    current_incident = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
+    similar_indicators = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
+
+    mocker.patch(
+        "SimilarObjectApiModule.get_incidents_by_query",
+        side_effect=get_incidents_by_query_mock(fetched_incident, current_incident),
+    )
+
     args = {
         "incidentId": 12345,
         "similarTextField": "incident.commandline, commandline, command, "
@@ -247,11 +260,11 @@ def test_main_no_fetched_incidents_found(mocker):
         "includeIndicatorsSimilarity": "True",
     }
     mocker.patch.object(demisto, "args", return_value=args)
-    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand_mock(similar_indicators))
 
     finder = SimilarIncidentFinder(args)
     res = finder.run()
-    assert not res[0]
+    assert res[0] is None
     assert "- 0 incidents fetched with these exact match for the given dates." in res[1]
 
 
@@ -272,10 +285,15 @@ def test_main_some_incorrect_fields():
 def test_main_all_incorrect_field(mocker):
     from SimilarObjectApiModule import SimilarIncidentFinder
 
-    global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
-    FETCHED_INCIDENT = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
-    CURRENT_INCIDENT = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
-    SIMILAR_INDICATORS = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
+    fetched_incident = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
+    current_incident = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
+    similar_indicators = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
+
+    mocker.patch(
+        "SimilarObjectApiModule.get_incidents_by_query",
+        side_effect=get_incidents_by_query_mock(fetched_incident, current_incident),
+    )
+
     wrong_field_1 = "wrong_field_1"
     wrong_field_2 = "wrong_field_2"
     wrong_field_3 = "wrong_field_3"
@@ -296,7 +314,7 @@ def test_main_all_incorrect_field(mocker):
         "includeIndicatorsSimilarity": "True",
     }
     mocker.patch.object(demisto, "args", return_value=args)
-    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand_mock(similar_indicators))
 
     finder = SimilarIncidentFinder(args)
     df, msg = finder.run()
@@ -307,10 +325,15 @@ def test_main_all_incorrect_field(mocker):
 def test_main_incident_truncated(mocker):
     from SimilarObjectApiModule import SimilarIncidentFinder
 
-    global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
-    FETCHED_INCIDENT = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
-    CURRENT_INCIDENT = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
-    SIMILAR_INDICATORS = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
+    fetched_incident = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
+    current_incident = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
+    similar_indicators = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
+
+    mocker.patch(
+        "SimilarObjectApiModule.get_incidents_by_query",
+        side_effect=get_incidents_by_query_mock(fetched_incident, current_incident),
+    )
+
     correct_field_1 = "commandline"
     wrong_field_2 = "wrong_field_2"
     wrong_field_3 = "wrong_field_3"
@@ -331,7 +354,7 @@ def test_main_incident_truncated(mocker):
         "includeIndicatorsSimilarity": "True",
     }
     mocker.patch.object(demisto, "args", return_value=args)
-    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand_mock(similar_indicators))
 
     finder = SimilarIncidentFinder(args)
     df, msg = finder.run()
@@ -347,10 +370,15 @@ def test_main_incident_truncated(mocker):
 def test_main_incident_nested(mocker):
     from SimilarObjectApiModule import SimilarIncidentFinder
 
-    global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
-    FETCHED_INCIDENT = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
-    CURRENT_INCIDENT = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
-    SIMILAR_INDICATORS = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
+    fetched_incident = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
+    current_incident = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
+    similar_indicators = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
+
+    mocker.patch(
+        "SimilarObjectApiModule.get_incidents_by_query",
+        side_effect=get_incidents_by_query_mock(fetched_incident, current_incident),
+    )
+
     nested_field = "CustomFields.nested_field"
 
     args = {
@@ -370,7 +398,7 @@ def test_main_incident_nested(mocker):
         "includeIndicatorsSimilarity": "True",
     }
     mocker.patch.object(demisto, "args", return_value=args)
-    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand_mock(similar_indicators))
 
     finder = SimilarIncidentFinder(args)
     df, _ = finder.run()
@@ -504,7 +532,7 @@ def test_similar_issue_finder_preprocess_args():
     assert finder.args["fieldsToDisplay"] == "name, status"
     assert finder.args["fromDate"] == "2023-01-01"
     assert finder.args["toDate"] == "2023-12-31"
-    assert finder.args["aggreagateIncidentsDifferentDate"] == "True"
+    assert finder.args["aggregateIncidentsDifferentDate"] == "True"
     assert finder.args["includeIndicatorsSimilarity"] == "False"
     assert finder.args["minNumberOfIndicators"] == "2"
     assert finder.args["indicatorsTypes"] == "IP, Domain"
@@ -557,6 +585,7 @@ def test_similar_issue_finder_get_all_incidents(mocker):
 
     all_issues, msg = finder.get_all_incidents(exact_match_fields, [], [], [], [], incident, "2023-01-01", "2023-12-31", 50)
 
+    assert all_issues is not None
     assert len(all_issues) == 1
     assert all_issues[0] == {"internal_id": "456", "issue_name": "test2"}
     mock_execute_command_batch.assert_called_once()
@@ -579,9 +608,9 @@ def test_similar_issue_finder_create_context():
     )
     context = finder.create_context(df)
 
-    assert context["isSimilarIssueFound"] is True
-    assert context["similarIssue"][0]["similarityIssue"] == 0.9
-    assert context["similarIssue"][0]["id"] == "123"
-    assert context["similarIssue"][0]["name"] == "test"
-    assert context["similarIssue"][0]["identicalIndicators"] == "ind1"
-    assert context["similarIssue"][0]["similarityIndicators"] == 0.8
+    assert context["is_similar_issue_found"] is True
+    assert context["similar_issue"][0]["similarity_score"] == 0.9
+    assert context["similar_issue"][0]["id"] == "123"
+    assert context["similar_issue"][0]["name"] == "test"
+    assert context["similar_issue"][0]["identicalIndicators"] == "ind1"
+    assert context["similar_issue"][0]["similarityIndicators"] == 0.8

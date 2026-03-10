@@ -56,7 +56,7 @@ args:
   predefined:
   - 'True'
   - 'False'
-- description: "A custom filter. When using this argument, other filter arguments are not relevant. example: {\"OR\":[\"SEARCH_FIELD\":\"actor_process_command_line\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"path_to_file\"}]}`."
+- description: "A custom filter. When using this argument, other filter arguments are not relevant. example: `{\"OR\":[\"SEARCH_FIELD\":\"actor_process_command_line\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"path_to_file\"}]}`."
   name: custom_filter
 - auto: PREDEFINED
   defaultValue: 'False'
@@ -73,27 +73,26 @@ commonfields:
   version: -1
 enabled: false
 name: FindSimilarIssues
-isInternal: true
 outputs:
-- contextPath: SimilarIssues.executionSummary
+- contextPath: SimilarIssues.execution_summary
   description: The summary of the execution.
   type: string
-- contextPath: SimilarIssues.isSimilarIssueFound
+- contextPath: SimilarIssues.is_similar_issue_found
   description: Indicates whether similar issues have been found.
   type: boolean
-- contextPath: SimilarIssues.similarIssue.created
+- contextPath: SimilarIssues.similar_issue.created
   description: The creation date of the similar issue.
   type: date
-- contextPath: SimilarIssues.similarIssue.id
+- contextPath: SimilarIssues.similar_issue.id
   description: The ID of the similar issue.
   type: string
-- contextPath: SimilarIssues.similarIssue.name
+- contextPath: SimilarIssues.similar_issue.name
   description: The name of the similar issue.
   type: string
-- contextPath: SimilarIssues.similarIssue.similarityIssue
+- contextPath: SimilarIssues.similar_issue.similarity_score
   description: The similarity of the similar issue represented as a float in the range 0-1.
   type: number
-- contextPath: SimilarIssues.similarIssue.details
+- contextPath: SimilarIssues.similar_issue.details
   description: The details of the similar issue.
   type: string
 script: '-'
@@ -108,13 +107,6 @@ tests:
 marketplaces:
 - platform
 supportedModules:
-- "C1"
-- "C3"
-- "X0"
-- "X1"
-- "X3"
-- "X5"
-- "ENT_PLUS"
 - xsiam
 - agentix
 - cloud

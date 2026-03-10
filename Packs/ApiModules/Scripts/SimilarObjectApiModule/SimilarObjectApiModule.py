@@ -176,7 +176,10 @@ def normalize_json(obj) -> str:  # type: ignore
     if isinstance(obj, float) or not obj:
         return " "
     if isinstance(obj, str):
-        obj = json.loads(obj)
+        try:
+            obj = json.loads(obj)
+        except ValueError:
+            return " "
     if check_list_of_dict(obj):
         obj = dict(enumerate(obj))
     if not isinstance(obj, dict):
@@ -528,7 +531,7 @@ def return_clean_date(timestamp: str) -> str:
     :param timestamp: str of the date
     :return: Return YYYY-MM-DD
     """
-    if timestamp and len(timestamp) > 10:
+    if timestamp and len(timestamp) >= 10:
         return timestamp[:10]
     else:
         return ""
@@ -762,7 +765,7 @@ class BaseSimilarObjectFinder:
             "EntryContext": None,
             "Tags": ["Error.id"],
         }
-        demisto.results(return_entry)
+        return_results(return_entry)
 
     def return_outputs_summary(
         self, confidence: float, number_incident_fetched: int, number_incidents_found: int, fields_used: list[str]
@@ -773,12 +776,15 @@ class BaseSimilarObjectFinder:
             f"Number of similar {self.incident_alias}s found ": number_incidents_found,
             "Valid fields used for similarity": ", ".join(fields_used),
         }
-        return_outputs(readable_output=self.global_msg + tableToMarkdown("Summary", summary))
+        return_results(CommandResults(readable_output=self.global_msg + tableToMarkdown("Summary", summary)))
 
     def return_outputs_similar_incidents_empty(self):
-        return_outputs(
-            readable_output=f"### Similar {self.incident_alias.capitalize()}\nNo Similar {self.incident_alias}s were found.",
-            outputs={self.get_context_key(): self.create_context(pd.DataFrame())},
+        return_results(
+            CommandResults(
+                readable_output=f"### Similar {self.incident_alias.capitalize()}\nNo Similar {self.incident_alias}s were found.",
+                outputs_prefix=self.get_context_key(),
+                outputs=self.create_context(pd.DataFrame()),
+            )
         )
 
     def get_context_key(self):
@@ -826,9 +832,11 @@ class BaseSimilarObjectFinder:
         incident_json = current_incident.to_dict(orient="records")
 
         if str(show_actual_incident) == "True":
-            return_outputs(
-                readable_output=tableToMarkdown(
-                    f"Current {self.incident_alias.capitalize()}", incident_json, col_current_incident_to_display
+            return_results(
+                CommandResults(
+                    readable_output=tableToMarkdown(
+                        f"Current {self.incident_alias.capitalize()}", incident_json, col_current_incident_to_display
+                    )
                 )
             )
         readable_output = tableToMarkdown(
@@ -857,7 +865,9 @@ class BaseSimilarObjectFinder:
         show_distance = self.args.get("showIncidentSimilarityForAllFields")
         confidence = float(self.args.get("minimunIncidentSimilarity") or 0.2)
         max_incidents = int(self.args.get("maxIncidentsToDisplay") or 100)
-        aggregate = self.args.get("aggreagateIncidentsDifferentDate") or "False"
+        aggregate = (
+            self.args.get("aggregateIncidentsDifferentDate") or self.args.get("aggreagateIncidentsDifferentDate") or "False"
+        )
         limit = int(self.args.get("limit") or 1500)
         if self.incident_alias == "issue":
             limit += 1
@@ -1184,7 +1194,7 @@ class SimilarIssueFinder(BaseSimilarObjectFinder):
             "fields_to_display": "fieldsToDisplay",
             "from_date": "fromDate",
             "to_date": "toDate",
-            "aggregate_issues_different_date": "aggreagateIncidentsDifferentDate",
+            "aggregate_issues_different_date": "aggregateIncidentsDifferentDate",
             "include_indicators_similarity": "includeIndicatorsSimilarity",
             "min_number_of_indicators": "minNumberOfIndicators",
             "indicators_types": "indicatorsTypes",
@@ -1351,7 +1361,7 @@ class SimilarIssueFinder(BaseSimilarObjectFinder):
         df = similar_incidents.copy()
 
         rename_map = {
-            f"similarity {self.incident_alias}": "similarityIssue",
+            f"similarity {self.incident_alias}": "similarity_score",
             "id": "id",
             "name": "name",
             "details": "details",
@@ -1364,12 +1374,12 @@ class SimilarIssueFinder(BaseSimilarObjectFinder):
 
         context: dict[str, Any] = {}
         if len(df) == 0:
-            context = {"isSimilarIssueFound": False}
+            context = {"is_similar_issue_found": False}
         else:
             context = {
-                "executionSummary": "Execution completed successfully.",
-                "similarIssue": df.to_dict(orient="records"),
-                "isSimilarIssueFound": True,
+                "execution_summary": "Execution completed successfully.",
+                "similar_issue": df.to_dict(orient="records"),
+                "is_similar_issue_found": True,
             }
         return context
 
@@ -1414,9 +1424,11 @@ class SimilarIssueFinder(BaseSimilarObjectFinder):
         incident_json = current_incident.to_dict(orient="records")
 
         if str(show_actual_incident) == "True":
-            return_outputs(
-                readable_output=tableToMarkdown(
-                    f"Current {self.incident_alias.capitalize()}", incident_json, col_current_incident_to_display
+            return_results(
+                CommandResults(
+                    readable_output=tableToMarkdown(
+                        f"Current {self.incident_alias.capitalize()}", incident_json, col_current_incident_to_display
+                    )
                 )
             )
         readable_output = tableToMarkdown(
