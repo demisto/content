@@ -5243,8 +5243,12 @@ def verify_support_ticket_permission_command(client: Client) -> CommandResults:
         "has_permission": has_permission,
     }
 
+
     if not has_permission:
-        readable_output = "You do not have the required permissions to manage support tickets."
+        if not tenant_entitlement_check:
+            readable_output = "Support for this tenant has expired."
+        elif not user_csp_permission:
+            readable_output = "You do not have the required CSP permissions to manage support tickets."
         output["Error"] = readable_output
 
     else:
