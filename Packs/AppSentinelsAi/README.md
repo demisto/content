@@ -18,7 +18,7 @@ Data normalization capabilities:
 | Category                    | Category Display Name                 |
 |:----------------------------|:--------------------------------------|
 | security_events             | Security Events                       |
-| users_events                | Users Events                          |
+| users_events                | User Events                           |
 | admin_events                | Admin Events                          |
 
 ### Supported endpoints
@@ -38,12 +38,12 @@ Configure AppSentinel API access for audit log collection:
 
 1. Log in to the AppSentinel management console.
 2. Navigate to **Settings** → **API Access**.
-3. Generate an API key and note the corresponding `x-user-key`.
+3. Generate an API key and record the corresponding `x-user-key`.
 4. Ensure the API key has permissions to access the Audit and Events endpoints.
 
 ### Authentication Method
 
-AppSentinel uses API Key Authentication. The following headers must be included in API requests:
+AppSentinel uses API key authentication. The following headers must be included in API requests:
 
 | Header         | Description                                      |
 |:---------------|:-------------------------------------------------|
@@ -54,15 +54,14 @@ AppSentinel uses API Key Authentication. The following headers must be included 
 
 To configure the data collection in Cortex XSIAM:
 
-1. Navigate to **Settings** → **Configuration** → **Data Sources** → **Add Data Source**.
-2. Search for **AppSentinels.ai** and select the integration.
+1. Navigate to **Settings** → **Data Sources & Integrations** → **+ Add New**.
+2. Search for **AppSentinels.ai**, hover over it and click **Add**.
 3. When configuring the integration, set the following parameters:
 
     | Parameter      | Value                                                                                  |
     |:---------------|:---------------------------------------------------------------------------------------|
     | `API Key`      | Enter the API key generated in the AppSentinel console.                                |
-    | `x-user-key`   | Enter the user key associated with the API key.                                        |
-    | `Vendor`       | Enter appsentinels.ai                                                                  |
-    | `Product`      | Enter audit                                                                            |
+    | `User key`     | Enter the user key associated with the API key.                                        |
+    | `Organization` | Enter Organization name                                                                |
 
 </~XSIAM>
