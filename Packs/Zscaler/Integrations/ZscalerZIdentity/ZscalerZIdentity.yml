@@ -1,0 +1,818 @@
+category: Network Security
+provider: Zscaler
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: ZscalerZIdentity
+  version: -1
+configuration:
+- display: Domain
+  name: domain
+  additionalinfo: The domain assigned to your organization. For example, if your domain is "acme", the token endpoint will be https://acme.zslogin.net/oauth2/v1/token.
+  required: true
+  type: 0
+  section: Connect
+- display: Client ID
+  displaypassword: Client Secret
+  name: credentials
+  required: true
+  type: 9
+  section: Connect
+- additionalinfo: If enabled, the integration will activate the command changes after each execution. If disabled, use the 'zia-activate-changes' command to activate Zscaler command changes.
+  defaultvalue: 'true'
+  display: Auto Activate Changes
+  name: auto_activate
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: reliability
+  type: 15
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  section: Collect
+  advanced: true
+  required: true
+- additionalinfo: 'Suspicious URL categories for security alerts. Default: SUSPICIOUS_DESTINATION, SPYWARE_OR_ADWARE'
+  defaultvalue: SUSPICIOUS_DESTINATION,SPYWARE_OR_ADWARE
+  display: Suspicious URL categories
+  name: suspicious_categories
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+description: Zscaler Internet Access via ZIdentity OAuth 2.0. Provides URL/IP/domain classification, denylist and allowlist management, URL category management, sandbox reporting, user and group management, and IP destination group management using OAuth 2.0 client credentials authentication through ZIdentity.
+display: Zscaler Internet Access via ZIdentity
+name: ZscalerZIdentity
+script:
+  commands:
+  - name: zia-denylist-list
+    description: Gets a list of URLs and IPs that are on the denylist.
+    arguments:
+    - name: filter
+      description: Filter results by URL or IP objects.
+      auto: PREDEFINED
+      predefined:
+      - url
+      - ip
+    - name: query
+      description: Query to match against (Python regular expressions, for example, 8.*.*.8).
+    - name: limit
+      description: The number of items to return. The default is 50.
+      defaultValue: '50'
+    - name: all_results
+      description: Whether to retrieve all results at once. Possible values are True, False. The default is False.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'False'
+    outputs:
+    - contextPath: ZIA.DenyList
+      description: The list of URLs and IPs on the denylist.
+      type: String
+  - name: zia-denylist-update
+    description: Updates the list of URLs and IPs that are on the denylist.
+    execution: true
+    arguments:
+    - name: url
+      description: A comma-separated list of URLs to update the denylist. For example, snapchat.com,facebook.com.
+      isArray: true
+    - name: ip
+      description: A comma-separated list of IPs to update the denylist. For example, 1.2.3.4,8.8.8.8.
+      isArray: true
+    - name: action
+      description: The action applied to the denylist.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ADD_TO_LIST
+      - REMOVE_FROM_LIST
+      - OVERWRITE
+  - name: zia-allowlist-list
+    description: Gets a list of URLs and IPs that are on the allowlist.
+    arguments:
+    - name: filter
+      description: Filter results by URL or IP objects.
+      auto: PREDEFINED
+      predefined:
+      - url
+      - ip
+    - name: query
+      description: Query to match against (Python regular expressions, for example, 8.*.*.8).
+    - name: limit
+      description: The number of items to return. The default is 50.
+      defaultValue: '50'
+    - name: all_results
+      description: Whether to retrieve all results at once. Possible values are True, False. The default is False.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'False'
+    outputs:
+    - contextPath: ZIA.AllowList
+      description: The list of URLs on the allowlist.
+      type: String
+  - name: zia-allowlist-update
+    description: Updates the list of URLs that are on the allowlist.
+    execution: true
+    arguments:
+    - name: url
+      description: A comma-separated list of URLs to update the allowlist. For example, snapchat.com,facebook.com.
+      isArray: true
+    - name: ip
+      description: A comma-separated list of IPs to update the allowlist. For example, 1.2.3.4,8.8.8.8.
+      isArray: true
+    - name: action
+      description: The action applied to the allowlist.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ADD_TO_LIST
+      - REMOVE_FROM_LIST
+      - OVERWRITE
+  - name: zia-category-list
+    description: Gets information about all or custom URL categories. By default, the response includes keywords. The lite option cannot be used in combination with other parameters.
+    arguments:
+    - name: category_id
+      description: Gets the URL category information for the specified ID. The category Id should be one of the possible values https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/url-categories/get-url-categories.
+    - name: custom_only
+      description: "If set to true, gets information on custom URL categories only. Default value: false"
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: include_only_url_keyword_counts
+      description: If set to true, the response only includes URL and keyword counts.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: lite
+      description: Gets a lightweight key-value list of all or custom URL categories. Cannot be used with other parameters.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: limit
+      description: The number of items to return. The default is 50.
+      defaultValue: '50'
+    - name: all_results
+      description: Whether to retrieve all results at once. Possible values are True, False. The default is False.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'False'
+    - name: display_URL
+      description: Whether to display the URLs of each category in the War Room. URLs will always be returned to the Context Data.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+    - contextPath: ZIA.Category.id
+      description: The ID of the category.
+      type: String
+    - contextPath: ZIA.Category.configuredName
+      description: The configured name of the category.
+      type: String
+    - contextPath: ZIA.Category.superCategory
+      description: The super category of the category.
+      type: String
+    - contextPath: ZIA.Category.keywords
+      description: The keywords associated with the category.
+      type: String
+    - contextPath: ZIA.Category.urls
+      description: The URLs in the category.
+      type: String
+    - contextPath: ZIA.Category.customCategory
+      description: Whether the category is a custom category.
+      type: Boolean
+  - name: zia-category-update
+    description: Updates the URL category for the specified ID.
+    execution: true
+    arguments:
+    - name: category_id
+      description: The unique identifier for the URL category. The category Id should be one of the possible values https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/url-categories/get-url-categories.
+      required: true
+    - name: url
+      description: 'A comma-separated list of URLs to update the specified category. For example, pandora.com,spotify.com. Important: If any URL contains a comma (,), you must pass the url argument as a JSON list wrapped in backticks (`). Example: url=`["https://example.com/foo,bar"]`'
+      isArray: true
+    - name: ip
+      description: A comma-separated list of IP ranges to update the specified category. For example, 1.2.3.4,8.8.8.8.
+      isArray: true
+    - name: action
+      description: The action applied to the URL category.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ADD_TO_LIST
+      - REMOVE_FROM_LIST
+      - OVERWRITE
+    - name: keywords
+      description: Custom keywords associated with a URL category. Up to 2048 custom keywords can be added per organization across all categories.
+      isArray: true
+    - name: description
+      description: Description of the URL category. Contains tag name and needs to be localized on client side in case of predefined category
+    - name: db_categorized_urls
+      description: URLs added to a custom URL category that are also retained under the original parent URL category.
+      isArray: true
+    - name: keywords_retaining_parent_category
+      description: Retained custom keywords from the parent URL category. Up to 2048 retained parent keywords can be added per organization across all categories
+      isArray: true
+    - name: ip_ranges_retaining_parent_category
+      description: The retaining parent custom IP address ranges associated with a URL category. Up to 2000 custom IP ranges and retaining parent custom IP address ranges can be added, per organization, across all categories.
+      isArray: true
+  - name: zia-url-quota-get
+    description: Gets information on the number of unique URLs that are currently provisioned for your organization as well as how many URLs you can add before reaching that number.
+    arguments: []
+    outputs:
+    - contextPath: ZIA.UrlQuota.uniqueUrlsProvisioned
+      description: The number of unique URLs that are currently provisioned for your organization.
+      type: Number
+    - contextPath: ZIA.UrlQuota.remainingUrlsQuota
+      description: The number of URLs you can add before reaching the quota.
+      type: Number
+  - name: zia-ip-destination-group-list
+    description: Gets a list of all IP destination groups or for the specified ID.
+    arguments:
+    - name: group_id
+      description: The unique identifier for the IP destination group.
+    - name: include_ipv6
+      description: "Retrieve IPv6 destination groups. Possible values are: True, False. The default is False."
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'False'
+    - name: exclude_type
+      description: Filter based on the IP destination group's type.
+      auto: PREDEFINED
+      predefined:
+      - DSTN_IP
+      - DSTN_FQDN
+      - DSTN_DOMAIN
+      - DSTN_OTHER
+    - name: category_type
+      description: Filter based on the IP destination group's type.
+      auto: PREDEFINED
+      predefined:
+      - DSTN_IP
+      - DSTN_FQDN
+      - DSTN_DOMAIN
+      - DSTN_OTHER
+    - name: lite
+      description: Gets a lightweight dictionary (name and ID) of all IP destination groups.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'False'
+    - name: limit
+      description: The number of items to return. The default is 50.
+      defaultValue: '50'
+    - name: all_results
+      description: Whether to retrieve all results at once. Possible values are True, False. The default is False.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'False'
+    outputs:
+    - contextPath: ZIA.IPDestinationGroup.id
+      description: Unique identifier for the destination IP group.
+      type: Number
+    - contextPath: ZIA.IPDestinationGroup.name
+      description: Destination IP group name.
+      type: String
+    - contextPath: ZIA.IPDestinationGroup.type
+      description: Destination IP group type.
+      type: String
+    - contextPath: ZIA.IPDestinationGroup.addresses
+      description: Destination IP addresses, FQDNs, or wildcard FQDNs added to the group.
+      type: String
+    - contextPath: ZIA.IPDestinationGroup.description
+      description: Additional information about the destination IP group.
+      type: String
+    - contextPath: ZIA.IPDestinationGroup.countries
+      description: Destination IP address countries.
+      type: String
+    - contextPath: ZIA.IPDestinationGroup.ipCategories
+      description: Destination IP address URL categories.
+      type: String
+  - name: zia-ip-destination-group-update
+    description: Updates an existing IP destination group.
+    execution: true
+    arguments:
+    - name: group_id
+      description: The unique identifier for the IP destination group.
+      required: true
+    - name: group_name
+      description: Destination IP group name.
+    - name: group_type
+      description: Destination IP group type.
+      auto: PREDEFINED
+      predefined:
+      - DSTN_IP
+      - DSTN_FQDN
+      - DSTN_DOMAIN
+      - DSTN_OTHER
+    - name: address
+      description: Destination IP addresses.
+      isArray: true
+    - name: description
+      description: Additional information about the destination IP group.
+    - name: ip_category
+      description: Destination IP address URL categories. Possible values can be found here https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/firewall-policies/ip-destination-group-resource-edit-destination-ip-group.
+      isArray: true
+    - name: country
+      description: Destination IP address countries. Possible values can be found here https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/firewall-policies/ip-destination-group-resource-edit-destination-ip-group.
+      isArray: true
+    outputs:
+    - contextPath: ZIA.IPDestinationGroup.id
+      description: Unique identifier for the destination IP group.
+      type: Number
+    - contextPath: ZIA.IPDestinationGroup.name
+      description: Destination IP group name.
+      type: String
+    - contextPath: ZIA.IPDestinationGroup.type
+      description: Destination IP group type.
+      type: String
+    - contextPath: ZIA.IPDestinationGroup.addresses
+      description: Destination IP addresses, FQDNs, or wildcard FQDNs added to the group.
+      type: String
+    - contextPath: ZIA.IPDestinationGroup.description
+      description: Additional information about the destination IP group.
+      type: String
+    - contextPath: ZIA.IPDestinationGroup.countries
+      description: Destination IP address countries.
+      type: String
+    - contextPath: ZIA.IPDestinationGroup.ipCategories
+      description: Destination IP address URL categories.
+      type: String
+  - name: zia-ip-destination-group-add
+    description: Adds a new IP destination group.
+    execution: true
+    arguments:
+    - name: group_name
+      description: Destination IP group name.
+    - name: group_type
+      description: Destination IP group type.
+      auto: PREDEFINED
+      predefined:
+      - DSTN_IP
+      - DSTN_FQDN
+      - DSTN_DOMAIN
+      - DSTN_OTHER
+    - name: address
+      description: Destination IP addresses.
+      isArray: true
+    - name: description
+      description: Additional information about the destination IP group.
+    - name: ip_category
+      description: Destination IP address URL categories. Possible values can be found here https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/firewall-policies/ip-destination-group-resource-edit-destination-ip-group.
+      isArray: true
+    - name: country
+      description: Destination IP address countries. Possible values can be found here https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/firewall-policies/ip-destination-group-resource-edit-destination-ip-group.
+      isArray: true
+    - name: is_non_editable
+      description: If set to true, the destination IP address group is non-editable.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+    - contextPath: ZIA.IPDestinationGroup.id
+      description: Unique identifier for the destination IP group.
+      type: Number
+    - contextPath: ZIA.IPDestinationGroup.name
+      description: Destination IP group name.
+      type: String
+    - contextPath: ZIA.IPDestinationGroup.type
+      description: Destination IP group type.
+      type: String
+    - contextPath: ZIA.IPDestinationGroup.addresses
+      description: Destination IP addresses, FQDNs, or wildcard FQDNs added to the group.
+      type: String
+    - contextPath: ZIA.IPDestinationGroup.description
+      description: Additional information about the destination IP group.
+      type: String
+    - contextPath: ZIA.IPDestinationGroup.countries
+      description: Destination IP address countries.
+      type: String
+    - contextPath: ZIA.IPDestinationGroup.ipCategories
+      description: Destination IP address URL categories.
+      type: String
+  - name: zia-ip-destination-group-delete
+    description: Deletes the IP destination group for the specified ID.
+    execution: true
+    arguments:
+    - name: group_id
+      description: The unique identifier for the IP destination group.
+      required: true
+  - name: zia-user-list
+    description: Gets a list of all users or the user information for the specified ID.
+    arguments:
+    - name: user_id
+      description: Filters by the unique identifier for the user.
+    - name: dept
+      description: Filters by department name.
+    - name: group
+      description: Filters by group name.
+    - name: page
+      description: Specifies the page offset.
+      defaultValue: '1'
+    - name: page_size
+      description: Specifies the page size. The default size is 100 and the maximum size is 10,000.
+      defaultValue: '100'
+    - name: all_results
+      description: Whether to retrieve all results at once. Possible values are True, False. The default is False.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'False'
+    outputs:
+    - contextPath: ZIA.User.id
+      description: The unique identifier for the user.
+      type: Number
+    - contextPath: ZIA.User.name
+      description: User name.
+      type: String
+    - contextPath: ZIA.User.email
+      description: User email address.
+      type: String
+    - contextPath: ZIA.User.comments
+      description: Additional information about the user.
+      type: String
+  - name: zia-user-update
+    description: Updates the user information for the specified ID.
+    execution: true
+    arguments:
+    - name: user_id
+      description: The unique identifier for the user.
+      required: true
+    - name: user
+      description: Full user object as JSON. If provided, individual field arguments are applied on top of this.
+    - name: user_name
+      description: User name. This appears when choosing users for policies.
+    - name: email
+      description: User email consists of a user name and domain name.
+    - name: comments
+      description: Additional information about this user.
+    - name: temp_auth_email
+      description: Temporary Authentication Email.
+    - name: password
+      description: User's password. Applicable only when authentication type is Hosted DB.
+    outputs:
+    - contextPath: ZIA.User.id
+      description: The unique identifier for the user.
+      type: Number
+    - contextPath: ZIA.User.name
+      description: User name.
+      type: String
+    - contextPath: ZIA.User.email
+      description: User email address.
+      type: String
+    - contextPath: ZIA.User.comments
+      description: Additional information about the user.
+      type: String
+  - name: zia-groups-list
+    description: Gets a list of groups.
+    arguments:
+    - name: search
+      description: The search string used to match against a group's name or comments attributes.
+    - name: defined_by
+      description: The string value defined by the group name or other applicable attributes.
+    - name: sort_by
+      description: Sorts the groups based on available values.
+      auto: PREDEFINED
+      predefined:
+      - id
+      - name
+      - expiry
+      - status
+      - externalId
+      - rank
+      - modTime
+      defaultValue: id
+    - name: sort_order
+      description: Sorts the order of groups based on available values.
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      - ruleExecution
+      defaultValue: asc
+    - name: page
+      description: Specifies the page offset.
+      defaultValue: '1'
+    - name: page_size
+      description: Specifies the page size. The default size is 100 and the maximum size is 10,000.
+      defaultValue: '100'
+    - name: all_results
+      description: Whether to retrieve all results at once. Possible values are True, False. The default is False.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'False'
+    outputs:
+    - contextPath: ZIA.Groups.id
+      description: The unique identifier for the group.
+      type: Number
+    - contextPath: ZIA.Groups.name
+      description: Group name.
+      type: String
+    - contextPath: ZIA.Groups.idpId
+      description: Unique identifier for the identity provider (IdP).
+      type: Number
+    - contextPath: ZIA.Groups.comments
+      description: Additional information about the group.
+      type: String
+    - contextPath: ZIA.Groups.isSystemDefined
+      description: Whether the group is system-defined.
+      type: Boolean
+  - name: zia-departments-list
+    description: Gets a list of all departments or the department information for the specified ID.
+    arguments:
+    - name: department_id
+      description: Unique identifier for the department.
+    - name: search
+      description: The search string used to match against a department's name or comments attributes.
+    - name: limit_search
+      description: Limits the search to match only against the department name.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: sort_by
+      description: Sorts the departments based on available values.
+      auto: PREDEFINED
+      predefined:
+      - id
+      - name
+      - expiry
+      - status
+      - externalId
+      - rank
+      defaultValue: id
+    - name: sort_order
+      description: Sorts the order of departments based on available values.
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      - ruleExecution
+      defaultValue: asc
+    - name: page
+      description: Specifies the page offset.
+      defaultValue: '1'
+    - name: page_size
+      description: Specifies the page size. The default size is 100 and the maximum size is 10,000.
+      defaultValue: '100'
+    - name: all_results
+      description: Whether to retrieve all results at once. Possible values are True, False. The default is False.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'False'
+    outputs:
+    - contextPath: ZIA.Department.id
+      description: The unique identifier for the department.
+      type: Number
+    - contextPath: ZIA.Department.name
+      description: Department name.
+      type: String
+    - contextPath: ZIA.Department.idpId
+      description: Unique identifier for the identity provider (IdP).
+      type: Number
+    - contextPath: ZIA.Department.comments
+      description: Additional information about the department.
+      type: String
+    - contextPath: ZIA.Department.deleted
+      description: Whether the department is deleted.
+      type: Boolean
+  - name: zia-sandbox-report-get
+    description: Gets a full or summary detail report for an MD5 hash of a file that was analyzed by Sandbox.
+    arguments:
+    - name: md5
+      description: MD5 hash of the file that was analyzed by Sandbox.
+      required: true
+    - name: report_type
+      description: Type of report, full or summary.
+      auto: PREDEFINED
+      predefined:
+      - full
+      - summary
+      defaultValue: summary
+    outputs:
+    - contextPath: ZIA.SandboxReport
+      description: The full sandbox report response.
+      type: Unknown
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that tagged the file as malicious.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason the vendor tagged the file as malicious.
+      type: String
+    - contextPath: File.DetectedMalware
+      description: The malware detected in the file.
+      type: String
+    - contextPath: File.FileType
+      description: The file type.
+      type: String
+  - name: zia-activate-changes
+    description: Activates the saved configuration changes.
+    arguments: []
+    outputs:
+    - contextPath: ZIA.ActivationStatus.status
+      description: The activation status.
+      type: String
+  - name: url
+    description: Retrieve Zscaler's default classification for a given set of URLs.
+    arguments:
+    - name: url
+      description: A comma-separated list of URLs for which to look up the classification. For example, abc.com,xyz.com. Up to 100 URLs can be looked up per request, and a URL cannot exceed 1,024 characters.
+      isArray: true
+      required: true
+    outputs:
+    - contextPath: ZIA.URL.Data
+      description: The URL that was searched.
+      type: String
+    - contextPath: ZIA.URL.Address
+      description: The URL that was searched.
+      type: String
+    - contextPath: ZIA.URL.urlClassifications
+      description: The classification of the URL.
+      type: String
+    - contextPath: ZIA.URL.urlClassificationsWithSecurityAlert
+      description: The classifications of the URLs that have security alerts.
+      type: String
+    - contextPath: URL.Data
+      description: The URL that was searched.
+      type: String
+    - contextPath: URL.Address
+      description: The URL that was searched.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that tagged the URL as malicious.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason the vendor tagged the URL as malicious.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+  - name: ip
+    description: Retrieve the classification for each of the specified IP addresses.
+    arguments:
+    - name: ip
+      description: A comma-separated list of IP addresses for which to look up the classification. For example, 8.8.8.8,1.2.3.4. The maximum number of IPs per call is 100.
+      isArray: true
+      required: true
+      default: true
+    outputs:
+    - contextPath: ZIA.IP.Address
+      description: The IP address that was searched.
+      type: String
+    - contextPath: ZIA.IP.Classifications
+      description: The classification of the IP address.
+      type: String
+    - contextPath: ZIA.IP.ClassificationsWithSecurityAlert
+      description: Classifications that have a security alert for the IP address.
+      type: String
+    - contextPath: IP.Address
+      description: The IP address that was searched.
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IP addresses, the vendor that tagged the IP address as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: For malicious IP addresses, the reason the vendor tagged the IP address as malicious.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+  - name: domain
+    description: Retrieve Zscaler's default classification for a given set of domains.
+    arguments:
+    - name: domain
+      description: A comma-separated list of domains for which to look up the classification. For example, abc.com,xyz.com. The maximum number of domains per call is 100.
+      isArray: true
+      required: true
+      default: true
+    outputs:
+    - contextPath: ZIA.Domain.Data
+      description: The domain that was searched.
+      type: String
+    - contextPath: ZIA.Domain.Address
+      description: The domain that was searched.
+      type: String
+    - contextPath: ZIA.Domain.Classifications
+      description: The classification of the domain.
+      type: String
+    - contextPath: ZIA.Domain.ClassificationsWithSecurityAlert
+      description: Classifications that have a security alert for the domain.
+      type: String
+    - contextPath: Domain.Name
+      description: The domain that was searched.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that tagged the domain as malicious.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason the vendor tagged the domain as malicious.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+  script: ''
+  subtype: python3
+  dockerimage: demisto/python3:3.12.12.6796194
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests
