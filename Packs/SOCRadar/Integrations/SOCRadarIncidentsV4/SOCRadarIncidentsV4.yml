@@ -158,8 +158,8 @@ script:
           description: Decide whether to update related finding status.
           auto: PREDEFINED
           predefined:
-          - "True"
-          - "False"
+            - "True"
+            - "False"
           required: false
         - name: email
           description: Email of action owner (required if update_related_finding_status is True).
