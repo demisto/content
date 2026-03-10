@@ -707,7 +707,7 @@ def fetch_incidents(
         demisto.error(f"[SOCRadar] Traceback: {traceback.format_exc()}")
 
         return {
-            "last_alarm_ids": list(last_alarm_ids_backup)[:1000],
+            "last_alarm_ids": list(last_alarm_ids_backup)[:10000],
             "last_fetch": start_date,
             "start_date": start_date,
             "end_date": end_date,
