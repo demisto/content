@@ -1,0 +1,8 @@
+{
+    "activity_id": "6943fb82c1f339e18b0949a1",
+    "activity_type": "DownloadFile",
+    "target_id": "ENDPOINT_ID",
+    "status": "failed",
+    "url": null,
+    "errorCode": -100
+}
