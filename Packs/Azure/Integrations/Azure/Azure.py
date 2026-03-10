@@ -4590,28 +4590,32 @@ def network_interface_update_command(client: AzureClient, params: dict[str, Any]
 
     # Update properties based on user arguments
     properties = current_nic.get("properties", {})
-    properties["enableIPForwarding"] = arg_to_bool_or_none(args.get("enable_ip_forwarding")) or properties.get(
+    properties["enableIPForwarding"] = argToBoolean(args.get("enable_ip_forwarding")) if args.get("enable_ip_forwarding") is not None else properties.get(
         "enableIPForwarding"
     )
-    properties["enableAcceleratedNetworking"] = arg_to_bool_or_none(args.get("accelerate_networking")) or properties.get(
+    properties["enableAcceleratedNetworking"] = argToBoolean(args.get("accelerate_networking")) if args.get("accelerate_networking") is not None else properties.get(
         "enableAcceleratedNetworking"
     )
     properties["auxiliaryMode"] = args.get("auxiliary_mode") or properties.get("auxiliaryMode")
     properties["auxiliarySku"] = args.get("auxiliary_sku") or properties.get("auxiliarySku")
     properties["nicType"] = args.get("nic_type") or properties.get("nicType")
+    nsg_prefix = f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups/"
     properties["networkSecurityGroup"] = {
-        "name": args.get("network_security_group_name") or properties.get("networkSecurityGroup")
+        "id": f'{nsg_prefix}{args.get("network_security_group_name")}' if args.get("network_security_group_name") else properties.get("networkSecurityGroup", {}).get("id")
     }
 
-    if "dnsSettings" not in properties:
+    internal_dns_name_label = args.get("internal_dns_name_label")
+    dns_servers = args.get("dns_servers")
+    dns_arr = [internal_dns_name_label, dns_servers]
+
+    if "dnsSettings" not in properties and any(x is not None for x in dns_arr):
         properties["dnsSettings"] = {}
 
-    properties["dnsSettings"]["internalDnsNameLabel"] = args.get("internal_dns_name_label") or properties.get(
-        "dnsSettings", {}
-    ).get("internalDnsNameLabel")
-    properties["dnsSettings"]["dnsServers"] = argToList(args.get("dns_servers")) or properties.get("dnsSettings", {}).get(
-        "dnsServers"
-    )
+    if internal_dns_name_label:
+        properties["dnsSettings"]["internalDnsNameLabel"] = internal_dns_name_label
+
+    if dns_servers:
+        properties["dnsSettings"]["dnsServers"] = argToList(dns_servers)
 
     if remove_network_security_group:
         demisto.debug(f"Removing the network security group {properties.get('networkSecurityGroup')}")
