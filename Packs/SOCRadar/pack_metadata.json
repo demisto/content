@@ -10,7 +10,7 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": ["SOCRadar"],
+    "tags": [],
     "useCases": [],
     "keywords": [
         "Threat Intelligence",
@@ -18,7 +18,8 @@
         "Digital Risk Protection",
         "Incident Management",
         "Brand Protection",
-        "Credential Monitoring"
+        "Credential Monitoring",
+        "SOCRadar"
     ],
     "devEmail": [
         "xsoar@socradar.io"
