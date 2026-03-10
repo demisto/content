@@ -1,0 +1,15 @@
+{
+    "description": "Incoming mapper for Cyware Intel Exchange fetched reports.",
+    "feed": false,
+    "id": "CTIX v3 Incoming Mapper",
+    "mapping": {
+        "CTIX Report": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "CTIX v3 Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}
