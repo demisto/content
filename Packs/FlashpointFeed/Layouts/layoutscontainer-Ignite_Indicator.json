@@ -1,0 +1,903 @@
+{
+    "group": "indicator",
+    "id": "Ignite Indicator",
+    "indicatorsDetails": {
+        "tabs": [
+            {
+                "id": "default-main",
+                "name": "Info",
+                "sections": [
+                    {
+                        "h": 2,
+                        "i": "default-main-relationshipsTable",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 2,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "h": 2,
+                        "i": "default-main-relatedIncidents",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 2,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "indicatortype",
+                                "height": 26,
+                                "id": "indicator-type",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 26,
+                                "id": "indicator-modified",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "expiration",
+                                "height": 26,
+                                "id": "indicator-expiration",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "timestamp",
+                                "height": 26,
+                                "id": "indicator-timestamp",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Basic Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "default-main-actions",
+                        "items": [
+                            {
+                                "args": {},
+                                "endCol": 1,
+                                "height": 44,
+                                "index": 0,
+                                "name": "Enrich indicator",
+                                "scriptId": "Builtin|||enrichIndicators",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "height": 44,
+                                "index": 1,
+                                "name": "Expire indicator",
+                                "scriptId": "Builtin|||expireIndicators",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Actions",
+                        "static": false,
+                        "type": "actions",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "default-main-tagsAndTLP",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 53,
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "height": 53,
+                                "index": 1,
+                                "name": "Add tags",
+                                "scriptId": "Builtin|||appendIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 53,
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "endCol": 2,
+                                "height": 53,
+                                "index": 1,
+                                "name": "Remove tags",
+                                "scriptId": "Builtin|||removeIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Tags and TLP",
+                        "static": false,
+                        "type": "tagsAndTLP",
+                        "w": 1,
+                        "x": 2,
+                        "y": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "i": "default-main-indicatorTimeline",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    },
+                    {
+                        "h": 3,
+                        "i": "default-main-comments",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 2,
+                        "y": 7
+                    },
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "default-main-reputationStatus",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Verdict Status",
+                        "static": false,
+                        "type": "reputationStatus",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "default-main-expirationStatus",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Expiration Status",
+                        "static": false,
+                        "type": "expirationStatus",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "default-main-reputationSources",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Verdict",
+                        "static": false,
+                        "type": "reputationSources",
+                        "w": 1,
+                        "x": 1,
+                        "y": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "default-main-publications",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "communitynotes",
+                                "height": 106,
+                                "id": "indicator-communitynotes-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "publications",
+                                "height": 106,
+                                "id": "indicator-publications-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Publications",
+                        "static": false,
+                        "type": "publications",
+                        "w": 2,
+                        "x": 0,
+                        "y": 7
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "zsilnmjhpd",
+                "name": "Indicator Details",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": false,
+                        "hideName": false,
+                        "i": "zsilnmjhpd-f8bc63c6-9216-4fb0-82b3-0a7cfae929a8",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedplatformurl",
+                                "height": 26,
+                                "id": "d0e3b919-0601-46e1-84c6-4bd0cf51927c",
+                                "index": 0,
+                                "listId": "zsilnmjhpd-f8bc63c6-9216-4fb0-82b3-0a7cfae929a8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedindicatorid",
+                                "height": 26,
+                                "id": "afb4ccef-15d6-4a15-9932-406377c2c1e9",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedindicatortype",
+                                "height": 26,
+                                "id": "fbe8f27f-0e46-4a19-8f58-47f9b054b3d6",
+                                "index": 2,
+                                "listId": "zsilnmjhpd-f8bc63c6-9216-4fb0-82b3-0a7cfae929a8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedscorevalue",
+                                "height": 26,
+                                "id": "9b9336bd-02d7-43d3-940a-629100e3f7a1",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedtotalsightings",
+                                "height": 26,
+                                "id": "f731afbf-f2e3-4a9a-b6da-a9588e2ada14",
+                                "index": 4,
+                                "listId": "zsilnmjhpd-f8bc63c6-9216-4fb0-82b3-0a7cfae929a8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedapi",
+                                "height": 26,
+                                "id": "6fb3a2d6-b614-4e0d-9c63-d62f221cac02",
+                                "index": 5,
+                                "listId": "zsilnmjhpd-f8bc63c6-9216-4fb0-82b3-0a7cfae929a8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Indicator Information",
+                        "static": false,
+                        "w": 1,
+                        "wrapLabels": true,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": false,
+                        "hideName": false,
+                        "i": "zsilnmjhpd-7b6ec46c-fdb2-4d1c-8548-c2b7aa6c3ad5",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedcreateddate",
+                                "height": 26,
+                                "id": "dd7d5cd0-ffc5-4047-b57c-03eeffe64a14",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedlastseendate",
+                                "height": 26,
+                                "id": "fb7815f0-019d-4af9-8406-77105affca70",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedmodifieddate",
+                                "height": 26,
+                                "id": "f908046f-e87f-4a38-b2e1-5c6e758c5b6c",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedlastscoredate",
+                                "height": 26,
+                                "id": "e6beee3b-a1d4-4cb5-b8ed-694c0be1d82c",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Timeline Information",
+                        "static": false,
+                        "w": 1,
+                        "wrapLabels": true,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "zsilnmjhpd-ab50aeae-bc54-41d8-8847-c362c99a8b75",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "flashpointfeedexternalreferences",
+                                "height": 106,
+                                "id": "ffac6280-bdd9-45e1-9f8b-56abce2522cd",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "External References",
+                        "static": false,
+                        "w": 3,
+                        "wrapLabels": true,
+                        "x": 0,
+                        "y": 11
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "zsilnmjhpd-df977aa9-015d-4978-bd5e-f6d0b13aed89",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "flashpointfeedmitreattackids",
+                                "height": 106,
+                                "id": "f77a6980-8af9-48ca-ab75-babf01ddf8e9",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Mitre Attack IDs",
+                        "static": false,
+                        "w": 3,
+                        "wrapLabels": true,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "zsilnmjhpd-d5f3cd84-8c6a-4517-b832-0f64e8d83b84",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "flashpointfeedsightings",
+                                "height": 106,
+                                "id": "b1b01240-85e2-42a9-85d9-c85c6514a137",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Sightings",
+                        "static": false,
+                        "w": 3,
+                        "wrapLabels": true,
+                        "x": 0,
+                        "y": 9
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "zsilnmjhpd-ad38f63f-d61a-4021-85d4-fdc43fe33e8a",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedhtmlmalwaredescription",
+                                "height": 52,
+                                "id": "6293209a-4364-40f5-8425-355459d88423",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Malware Description",
+                        "static": false,
+                        "w": 1,
+                        "wrapLabels": true,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "zsilnmjhpd-9ab224de-4e39-4c2d-9c84-809ce7f35be3",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "value",
+                                "height": 52,
+                                "id": "8e9e15b2-ce6a-4b73-a130-f47d7b02582e",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Indicator Value",
+                        "showFullDescription": false,
+                        "static": false,
+                        "w": 1,
+                        "wrapLabels": true,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "zsilnmjhpd-b9ada80d-1c5d-406d-8895-e55703418771",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "flashpointfeedaptdescription",
+                                "height": 106,
+                                "id": "ef1ced7e-15fa-443d-b9ee-71fcb608b413",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "APT Description",
+                        "static": false,
+                        "w": 2,
+                        "wrapLabels": true,
+                        "x": 1,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "indicatorsQuickView": {
+        "tabs": [
+            {
+                "id": "indicator-quick-view-info",
+                "name": "Info",
+                "sections": [
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "indicator-quick-view-info-expirationStatus",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Expiration Status",
+                        "static": false,
+                        "type": "expirationStatus",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "indicator-quick-view-info-reputationSources",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Verdict",
+                        "static": false,
+                        "type": "reputationSources",
+                        "w": 1,
+                        "x": 0,
+                        "y": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "i": "indicator-quick-view-info-tags-section",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "indicator-quick-view-info-tags-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Tags",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 20
+                    },
+                    {
+                        "h": 2,
+                        "i": "indicator-quick-view-info-relatedIncidents",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 1,
+                        "x": 0,
+                        "y": 22
+                    },
+                    {
+                        "h": 2,
+                        "i": "indicator-quick-view-info-comments",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 0,
+                        "y": 24
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "indicator-quick-view-info-580649db-dabc-41f0-9689-8cf0f9701c29",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedplatformurl",
+                                "height": 26,
+                                "id": "3a6bac09-6156-46bc-9630-7928fc807053",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedindicatorid",
+                                "height": 26,
+                                "id": "e8fe9f47-cbd1-4950-abe1-71c33c2f4486",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedindicatortype",
+                                "height": 26,
+                                "id": "a77029bf-0fff-4f6a-99ea-9a19aaf70851",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedscorevalue",
+                                "height": 26,
+                                "id": "9b0342df-6fb3-48ca-8079-60d555c8a50b",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedtotalsightings",
+                                "height": 26,
+                                "id": "2acc0e4c-3fc7-4644-b943-afa1c081dc94",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedapi",
+                                "height": 26,
+                                "id": "7379ebc0-4b14-499c-a790-fb2ae4c12e9c",
+                                "index": 5,
+                                "listId": "indicator-quick-view-info-580649db-dabc-41f0-9689-8cf0f9701c29",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Indicator Information",
+                        "static": false,
+                        "w": 1,
+                        "wrapLabels": true,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "indicator-quick-view-info-3cc71ed0-cb6e-473f-a7b0-6a3015480605",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedmitreattackids",
+                                "height": 26,
+                                "id": "f22e9b5a-07a7-4068-98bd-fb91393ee30e",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Mitre Attack IDs",
+                        "static": false,
+                        "w": 1,
+                        "wrapLabels": true,
+                        "x": 0,
+                        "y": 12
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "indicator-quick-view-info-628c7aed-a6ae-4891-8355-c393e7ddc728",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedexternalreferences",
+                                "height": 26,
+                                "id": "c002ac87-ebc1-4779-a9d9-4fbdc30d282e",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "External References",
+                        "static": false,
+                        "w": 1,
+                        "wrapLabels": true,
+                        "x": 0,
+                        "y": 16
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "indicator-quick-view-info-693d3ae6-c3c6-4ebd-b2ec-237c89aa7ece",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedsightings",
+                                "height": 26,
+                                "id": "dfa3b79d-905c-464e-8858-bcdeb686abd0",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Sightings",
+                        "static": false,
+                        "w": 1,
+                        "wrapLabels": true,
+                        "x": 0,
+                        "y": 14
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "indicator-quick-view-info-f2106ccc-aabb-4bae-837b-f1e98cb73d32",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "value",
+                                "height": 52,
+                                "id": "2804295b-2aaf-4d26-b8e7-2f5f9e4cd451",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Indicator Value",
+                        "static": false,
+                        "w": 1,
+                        "wrapLabels": true,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideName": true,
+                        "i": "indicator-quick-view-info-d3d29767-d95a-441a-ae50-d466d67a8c84",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedaptdescription",
+                                "height": 106,
+                                "id": "6a35231d-7173-45cf-9175-27ca3702e0ff",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "flashpointfeedhtmlmalwaredescription",
+                                "height": 106,
+                                "id": "b7e4ab53-6b82-4519-8b3e-5fa0c410adeb",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Descriptions",
+                        "static": false,
+                        "w": 1,
+                        "wrapLabels": true,
+                        "x": 0,
+                        "y": 8
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "name": "Ignite Indicator",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "description": "Layout for the Ignite Indicator.",
+    "marketplaces": [
+        "xsoar"
+    ]
+}

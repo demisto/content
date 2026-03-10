@@ -18,4 +18,4 @@ The more elementary models (e.g. gpt-3.5) often provide shallower answers with a
 
 
 ### How to use this integration with XSOAR
-#### The following blog post ['Palo Alto Networks - Playbook of the week'](https://www.paloaltonetworks.com/blog/security-operations/using-chatgpt-in-cortex-xsoar/) by Sameh Elhakim explains how to use this integration in your playbooks:
+#### The following blog post ['Palo Alto Networks - Playbook of the week'](https://www.paloaltonetworks.com/blog/security-operations/using-chatgpt-in-cortex-xsoar/) by Sam Testov explains how to use this integration in your playbooks:

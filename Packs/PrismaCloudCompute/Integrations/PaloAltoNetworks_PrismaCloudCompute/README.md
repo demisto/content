@@ -5201,7 +5201,7 @@ Retrieves the runtime policy for containers protected by Defender. A policy cons
 >
 >|Name|Owner|Modified|
 >|---|---|---|
->| rke-monitor-rule | avega@paloaltonetworks.com | 2024-01-12T16:52:25.358Z |
+>| rke-monitor-rule | avega@example.com | 2024-01-12T16:52:25.358Z |
 
 ## General Note
 

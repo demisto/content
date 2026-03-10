@@ -158,6 +158,107 @@ def test_add_fields_to_events():
     assert events[0]["source_log_type"] == XSIAM_EVENT_TYPE.get("detailed_events")
 
 
+@pytest.mark.parametrize(
+    "last_run, current_set_ids, args, expected_set_ids, expected_new_sets, expected_removed_sets",
+    [
+        # Test Case 1: No changes - set IDs match exactly
+        (
+            {"id1": {"admin_audits": {"from_date": "2023-01-01T00:00:00.000Z"}}},
+            ["id1"],
+            {"from_date": "2023-01-01T00:00:00.000Z"},
+            ["id1"],
+            [],
+            [],
+        ),
+        # Test Case 2: New set added - should initialize with from_date
+        (
+            {"id1": {"admin_audits": {"from_date": "2023-01-01T00:00:00.000Z"}}},
+            ["id1", "id2"],
+            {"from_date": "2023-02-01T00:00:00.000Z"},
+            ["id1", "id2"],
+            ["id2"],
+            [],
+        ),
+        # Test Case 3: Old set removed - should be deleted from last_run
+        (
+            {
+                "id1": {"admin_audits": {"from_date": "2023-01-01T00:00:00.000Z"}},
+                "id2": {"admin_audits": {"from_date": "2023-01-01T00:00:00.000Z"}},
+            },
+            ["id1"],
+            {"from_date": "2023-01-01T00:00:00.000Z"},
+            ["id1"],
+            [],
+            ["id2"],
+        ),
+        # Test Case 4: Multiple sets added and removed simultaneously
+        (
+            {
+                "id1": {"admin_audits": {"from_date": "2023-01-01T00:00:00.000Z"}},
+                "id2": {"admin_audits": {"from_date": "2023-01-01T00:00:00.000Z"}},
+            },
+            ["id1", "id3", "id4"],
+            {"from_date": "2023-03-01T00:00:00.000Z"},
+            ["id1", "id3", "id4"],
+            ["id3", "id4"],
+            ["id2"],
+        ),
+        # Test Case 5: Complete replacement - all old sets removed, all new sets added
+        (
+            {"id1": {"admin_audits": {"from_date": "2023-01-01T00:00:00.000Z"}}},
+            ["id2", "id3"],
+            {"from_date": "2023-04-01T00:00:00.000Z"},
+            ["id2", "id3"],
+            ["id2", "id3"],
+            ["id1"],
+        ),
+    ],
+)
+def test_reconcile_last_run_with_current_sets(
+    last_run, current_set_ids, args, expected_set_ids, expected_new_sets, expected_removed_sets
+):
+    """
+    Given:
+        - A last_run state and currently configured set IDs.
+
+    When:
+        - Calling reconcile_last_run_with_current_sets function.
+            1. When set IDs match exactly (no changes)
+            2. When a new set is added to the configuration
+            3. When an old set is removed from the configuration
+            4. When multiple sets are added and removed simultaneously
+            5. When all sets are replaced with new ones
+
+    Then:
+        - Ensure stale sets are removed from last_run
+        - Ensure new sets are added with proper initialization
+        - Ensure existing sets remain unchanged
+        - Ensure the returned last_run contains only the current set IDs
+    """
+    from CyberArkEPMEventCollector import reconcile_last_run_with_current_sets
+
+    result = reconcile_last_run_with_current_sets(last_run, current_set_ids, args)
+
+    # Verify the result contains exactly the expected set IDs
+    assert set(result.keys()) == set(expected_set_ids)
+
+    # Verify removed sets are no longer in the result
+    for removed_id in expected_removed_sets:
+        assert removed_id not in result
+
+    # Verify new sets are properly initialized
+    for new_id in expected_new_sets:
+        assert new_id in result
+        assert "admin_audits" in result[new_id]
+        assert "policy_audits" in result[new_id]
+        assert "detailed_events" in result[new_id]
+        assert "from_date" in result[new_id]["admin_audits"]
+        assert "from_date" in result[new_id]["policy_audits"]
+        assert "next_cursor" in result[new_id]["policy_audits"]
+        assert "from_date" in result[new_id]["detailed_events"]
+        assert "next_cursor" in result[new_id]["detailed_events"]
+
+
 def test_get_set_ids_by_set_names(mocker, requests_mock):
     """
     Given:

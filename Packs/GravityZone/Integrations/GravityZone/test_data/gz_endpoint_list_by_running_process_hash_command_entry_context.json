@@ -1,0 +1,9 @@
+{
+    "GravityZone.Command.EndpointsRunningProcessHash(val.ProcessHash && val.ProcessHash == obj.ProcessHash)": [
+        {
+            "EndpointID": "ENDPOINT_ID",
+            "Path": "C:\\Windows\\System32\\notepad.exe",
+            "ProcessHash": "process_hash"
+        }
+    ]
+}

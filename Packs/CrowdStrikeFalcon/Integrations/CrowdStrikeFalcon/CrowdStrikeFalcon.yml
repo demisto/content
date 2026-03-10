@@ -292,6 +292,20 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+- display: 'Fetch Asset types'
+  name: fetch_assets_type
+  defaultvalue: 'Spotlight,CNAPP Alerts'
+  type: 16
+  section: Collect
+  advanced: false
+  required: false
+  additionalinfo: |-
+      The asset sources to ingest into the Cortex Unified Asset Inventory.
+  options:
+  - Spotlight
+  - CNAPP Alerts
+  hidden:
+  - xsoar
 - display: 'Reopen Statuses'
   additionalinfo: CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination.
   defaultvalue: 'New,In progress,True positive,False positive,Reopened,Ignored'
@@ -593,7 +607,7 @@ script:
       - in_progress
       - closed
       - reopened
-    - description: 'A user ID, for example: 1234567891234567891. username and assigned_to_uuid are mutually exclusive.'
+    - description: 'A user ID, for example: 1234567855512345678. username and assigned_to_uuid are mutually exclusive.'
       name: assigned_to_uuid
     - description: Optional comment to add to the detection. Comments are displayed with the detection in CrowdStrike Falcon and provide context or notes for other Falcon users.
       name: comment
@@ -2161,7 +2175,8 @@ script:
     - description: A comma-separated list of detection IDs. For example, ldt:1234:1234,ldt:5678:5678. If you use this argument, the fetch_query argument will be ignored.
       isArray: true
       name: ids
-    description: Lists incident summaries.
+    deprecated: true
+    description: Deprecated. Use the cs-falcon-list-case-summaries command instead.
     name: cs-falcon-list-incident-summaries
     outputs:
     - contextPath: CrowdStrike.Incidents.incident_id
@@ -2278,6 +2293,106 @@ script:
     - contextPath: CrowdStrike.Incidents.fine_score
       description: The incident score.
       type: Number
+  - arguments:
+    - description: A comma-separated list of case IDs.
+      isArray: true
+      name: ids
+    description: Lists case summaries.
+    name: cs-falcon-list-case-summaries
+    outputs:
+    - contextPath: CrowdStrike.Case.id
+      description: The ID of the case.
+      type: String
+    - contextPath: CrowdStrike.Case.name
+      description: The name of the case.
+      type: String
+    - contextPath: CrowdStrike.Case.created_timestamp
+      description: The date and time the case was created.
+      type: Date
+    - contextPath: CrowdStrike.Case.status
+      description: The status of the case.
+      type: String
+    - contextPath: CrowdStrike.Case.version
+      description: The version of the case.
+      type: String
+    - contextPath: CrowdStrike.Case.description
+      description: The description of the case.
+      type: String
+    - contextPath: CrowdStrike.Case.severity
+      description: The severity of the case.
+      type: String
+    - contextPath: CrowdStrike.Case.assigned_to
+      description: The name of the user assigned to the case.
+      type: String
+    - contextPath: CrowdStrike.Case.tags
+      description: The tags of the case.
+      type: String
+  - arguments:
+    - description: The ID of the case to retrieve evidence for.
+      name: id
+      required: true
+    description: Get evidence for a specific case.
+    name: cs-falcon-get-evidence-for-case
+    outputs:
+    - contextPath: CrowdStrike.CaseEvidence.alerts
+      description: The alerts associated with the case.
+      type: Array
+    - contextPath: CrowdStrike.CaseEvidence.events
+      description: The events associated with the case.
+      type: Array
+    - contextPath: CrowdStrike.CaseEvidence.leads
+      description: The leads associated with the case.
+      type: Array
+  - arguments:
+    - description: A comma-separated list of tags.
+      isArray: true
+      name: tags
+      required: true
+    - description: The ID of the case the tags will be added to.
+      name: id
+      required: true
+    description: Adds tags to the specified case.
+    name: cs-falcon-add-case-tag
+  - arguments:
+    - description: The ID of the case the tags will be deleted from.
+      name: id
+      required: true
+    - description: The tag to delete.
+      name: tag
+      required: true
+    description: Deletes a tag from the specified case.
+    name: cs-falcon-delete-case-tag
+  - arguments:
+    - description: The ID of the case to resolve.
+      name: id
+      required: true
+    - description: The status to set for the case.
+      name: status
+      auto: PREDEFINED
+      predefined:
+      - new
+      - in_progress
+      - closed
+      - reopened
+    - description: A UUID of a user to assign the case to.
+      name: assigned_to_uuid
+    - description: A new description for the case.
+      name: description
+    - description: "Whether to remove case assignment from the current user.\nIf set to true and assigned_to_uuid is not provided, the case becomes unassigned.\nIf set to false and assigned_to_uuid is provided, the case is reassigned to the specified user UUID.\nIf set to true and assigned_to_uuid is provided, the case is reassigned to the specified user UUID.\nIf this field is omitted and assigned_to_uuid is provided, the case is reassigned to the specified user UUID."
+      name: remove_user_assignment
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - description: The new case severity rating (10-100).
+      name: severity
+    - description: The unique ID of the template to apply to the case.
+      name: template_id
+    - description: The new name for the case.
+      name: name
+    description: Resolves or updates a case.
+    name: cs-falcon-resolve-case
   - arguments:
     - description: The endpoint ID.
       name: id
@@ -2575,7 +2690,8 @@ script:
       name: remove_tag
     - description: Add a comment to the incident. Comment is limited to 1024 characters.
       name: add_comment
-    description: Resolve and update incidents using the specified settings.
+    deprecated: true
+    description: Deprecated. Use the cs-falcon-resolve-case command instead.
     name: cs-falcon-resolve-incident
   - arguments:
     - description: A JSON object with a list of CrowdStrike Falcon indicators to upload.
@@ -2817,7 +2933,8 @@ script:
       description: The incident ID to get detections for. A list of all available incident IDs can be retrieved by running the 'cs-falcon-list-incident-summaries' command.
       name: incident_id
       required: true
-    description: Gets the detections for a specific incident.
+    deprecated: true
+    description: Deprecated. Use the cs-falcon-get-evidence-for-case command instead.
     name: cs-falcon-get-detections-for-incident
     outputs:
     - contextPath: CrowdStrike.IncidentDetection.incident_id
@@ -5027,7 +5144,8 @@ script:
       name: behavior_ids
       isArray: true
       required: true
-    description: Get incident behavior information.
+    deprecated: true
+    description: This command is deprecated.
     name: cs-falcon-get-incident-behavior
     outputs:
     - contextPath: CrowdStrike.IncidentBehavior.behavior_id
@@ -5267,7 +5385,93 @@ script:
     - contextPath: CrowdStrike.CnappAlert.severity
       description: The severity of the alert.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.6308650
+  - arguments:
+    - name: repository
+      description: |
+        The repository to run the query against.
+      auto: PREDEFINED
+      predefined:
+      - search-all
+      - third-party
+      - falcon_for_it_view
+      - forensics_view
+      - investigate_view
+      defaultValue: search-all
+    - name: query
+      description: 'The CQL query to use for the search. Note: Double quotes (“) and backslashes (\) in the queryString must be escaped with a backslash to ensure they are properly interpreted. Example: query="#event_simpleName = \"Event_name\""", For more details see: https://library.humio.com/data-analysis/syntax.html.'
+      required: true
+    - name: start
+      description: |
+        The start of the search window, based on the event timestamp.
+        Note: 'end' must be later than 'start'.
+        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
+        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).
+    - name: end
+      description: |
+        The end of the search window, based on the event timestamp.
+        Note: 'end' must be later than 'start'.
+        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
+        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).
+    - name: around_event_id
+      description: The ID of the event to search around. Must be provided together with around_timestamp.
+    - name: around_number_events_before
+      description: Number of events to return before the target event. Requires around_event_id and around_timestamp.
+    - name: around_number_events_after
+      description: Number of events to return after the target event. Requires around_event_id and around_timestamp.
+    - name: around_timestamp
+      description: Timestamp for around search. Must be provided together with around_event_id.
+    - name: ingest_start
+      description: |
+        The start of the search window, based on the event ingesttimestamp.
+        Note: 'ingest_end' must be later than 'ingest_start'.
+        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
+        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).
+    - name: ingest_end
+      description: |
+        The end of the search window, based on the event ingesttimestamp.
+        Note: 'ingest_end' must be later than 'ingest_start'.
+        If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).
+        Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).
+    - name: use_ingest_time
+      description: When true, the server uses ingest_start/ingest_end as the query window. when false (or not set), it uses start/end. If both windows are provided, results are constrained by BOTH (AND).
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: limit
+      description: Maximum number of events to return. Ignored when around_number_events_before or around_number_events_after parameters are specified.
+      defaultValue: '50'
+    - name: interval_in_seconds
+      description: Interval between polling attempts in seconds. To prevent search timeouts, set this value within the 60–90 second range.
+      defaultValue: '60'
+    - name: timeout_in_seconds
+      description: Timeout for polling in seconds.
+      defaultValue: '600'
+    - name: job_id
+      description: Internal argument for polling - job ID from previous run.
+      hidden: true
+    - name: wait_for_result
+      hidden: true
+      description: Whether to poll for results.
+      auto: PREDEFINED
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    description: 'Search NGSIEM historical events. Requires NGSIEM scope with read and write permissions.'
+    name: cs-falcon-search-ngsiem-events
+    polling: true
+    outputs:
+    - contextPath: CrowdStrike.NGSiemEvent
+      description: The list of all events returned from the search.
+      type: Array
+    - contextPath: CrowdStrike.NGSiemEvent.id
+      description: The event ID.
+      type: String
+    - contextPath: CrowdStrike.NGSiemEvent.timestamp
+      description: Event timestamp.
+      type: String
+  dockerimage: demisto/py3-tools:1.0.0.7436613
   isfetch: true
   isfetch:marketplacev2: false
   isfetch:platform: false
