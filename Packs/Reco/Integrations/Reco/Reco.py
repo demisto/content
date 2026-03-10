@@ -1108,6 +1108,7 @@ def enrich_incident(reco_client: RecoClient, single_incident: dict[str, Any]) ->
 def map_reco_score_to_demisto_score(
     reco_score: int,
 ) -> int | float:  # pylint: disable=E1136
+    """Map Reco numeric risk score (10-40) to Demisto severity."""
     # demisto_unknown = 0  (commented because of linter issues)
     demisto_informational = 0.5
     # demisto_low = 1  (commented because of linter issues)
@@ -1115,7 +1116,7 @@ def map_reco_score_to_demisto_score(
     demisto_high = 3
     demisto_critical = 4
 
-    # LHS is Reco score
+    # Reco API returns risk_level in range 10-40. Normalize to tier keys.
     MAPPING = {
         40: demisto_critical,
         30: demisto_high,
@@ -1123,8 +1124,8 @@ def map_reco_score_to_demisto_score(
         10: demisto_informational,
         0: demisto_informational,
     }
-
-    return MAPPING[reco_score]
+    tier = min(40, max(0, (reco_score // 10) * 10))
+    return MAPPING.get(tier, demisto_informational)
 
 
 def map_reco_alert_score_to_demisto_score(
@@ -1146,6 +1147,29 @@ def map_reco_alert_score_to_demisto_score(
     }
 
     return MAPPING[reco_score]
+
+
+def _reco_risk_to_demisto_severity(raw_risk: Any) -> int | float:
+    """Normalize Reco risk_level to Demisto severity. Accepts int, str numbers ('10', '30'), or str labels ('HIGH', 'LOW')."""
+    if raw_risk is None:
+        return map_reco_score_to_demisto_score(10)
+    if isinstance(raw_risk, int):
+        risk_level = min(40, max(10, raw_risk))
+        return map_reco_score_to_demisto_score(risk_level)
+    if isinstance(raw_risk, str):
+        stripped = raw_risk.strip().upper()
+        if stripped in ("CRITICAL", "HIGH", "MEDIUM", "LOW"):
+            return map_reco_alert_score_to_demisto_score(stripped)
+        try:
+            risk_level = min(40, max(10, int(raw_risk)))
+            return map_reco_score_to_demisto_score(risk_level)
+        except (TypeError, ValueError):
+            pass
+    try:
+        risk_level = min(40, max(10, int(raw_risk)))
+        return map_reco_score_to_demisto_score(risk_level)
+    except (TypeError, ValueError):
+        return map_reco_score_to_demisto_score(10)
 
 
 def parse_incidents_objects(
@@ -1457,19 +1481,15 @@ def parse_alerts_to_incidents(alerts: list[dict[str, Any]]) -> list[dict[str, An
     """Map alert rows (ALERT_VIEW_WITH_SHARED_STATUS uses snake_case) to XSOAR incidents."""
     alerts_as_incidents = []
     for alert in alerts:
-        alert_dict = (
-            parse_table_row_to_dict(alert.get("cells", {}))
-            if alert.get("cells")
-            else alert
-        )
+        alert_dict = parse_table_row_to_dict(alert.get("cells", {})) if alert.get("cells") else alert
         occurred = alert_dict.get("created_at") or alert_dict.get("createdAt", "")
-        risk_level = alert_dict.get("risk_level") or alert_dict.get("riskLevel", DEMISTO_INFORMATIONAL)
+        raw_risk = alert_dict.get("risk_level") or alert_dict.get("riskLevel")
         incident = {
             "name": alert_dict.get("description", ""),
             "occurred": occurred,
             "dbotMirrorId": alert_dict.get("id", ""),
             "rawJSON": json.dumps(alert),
-            "severity": map_reco_alert_score_to_demisto_score(reco_score=risk_level),
+            "severity": _reco_risk_to_demisto_severity(raw_risk),
         }
         alerts_as_incidents.append(incident)
     return alerts_as_incidents
