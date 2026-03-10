@@ -59,6 +59,14 @@
                 }
             }
         },
+        "CrowdStrike Falcon Intelligence Recon notification": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "status": {
+                    "simple": "state"
+                }
+            }
+        },
         "CrowdStrike Falcon Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {

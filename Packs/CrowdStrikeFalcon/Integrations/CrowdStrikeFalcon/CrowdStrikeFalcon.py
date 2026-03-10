@@ -2843,6 +2843,8 @@ def get_remote_recon_data(remote_incident_id: str):
 
     updated_object = {"incident_type": RECON_NOTIFICATION}
     set_updated_object(updated_object, mirrored_data, CS_FALCON_RECON_INCOMING_ARGS)
+    if "notification.status" in updated_object:
+        updated_object["status"] = updated_object["notification.status"]
 
     demisto.debug(f"Recon-Log in get_remote_recon_data {mirrored_data=} {CS_FALCON_RECON_INCOMING_ARGS=} {updated_object=}")
     return mirrored_data, updated_object, RECON_NOTIFICATION
@@ -2862,24 +2864,14 @@ def update_remote_recon_notification(delta: Dict[str, Any], inc_status: int, rem
     :return: The API response payload on success, or empty string if no relevant change found.
     :rtype: ``str``
     """
+    demisto.debug(f"Recon-Log in update_remote_recon_notification {delta=} {inc_status=} {remote_incident_id=}")
     remote_id = remote_incident_id.replace(f"{IncidentType.RECON.value}", "", 1)
-    if "status" in delta:
-        if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
-            new_recon_status = "closed-true-positive"
-        elif inc_status == IncidentStatus.ACTIVE:
-            new_recon_status = "in-progress"
-        else:
-            demisto.debug(f"Recon-Log XSOAR status {inc_status} does not require Recon Notification status update.")
-            return ""
-        request_payload = {"id": remote_id, "status": new_recon_status}
-        demisto.debug(f"Recon-Log Attempting to PATCH Recon Notification {remote_id} with status: {new_recon_status}")
-        try:
-            raw_response = http_request(method="PATCH", url_suffix="/recon/entities/notifications/v1", data=request_payload)
-            return str(raw_response)
-        except Exception as e:
-            demisto.error(f"Recon-Log API PATCH call failed for Recon Notification {remote_id}. Error: {e!s}")
-            raise Exception(f"Failed to update Recon Notification {remote_id}. Error: {e!s}")
-
+    if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
+        demisto.debug(f"Recon-Log Closing Recon Notification: {remote_id} in remote system.")
+        return str(resolve_case(remote_id, status="closed", is_recon_type=True))
+    elif "status" in delta:
+        demisto.debug(f"Recon-Log Updating Recon Notification: {remote_id} with status: {delta.get('status')} in remote system.")
+        return str(resolve_case(remote_id, status=delta.get("status"), is_recon_type=True))
     return ""
 
 
@@ -2905,11 +2897,11 @@ def get_modified_recon_ids(last_update_timestamp: str) -> List[str]:
             is_fetch=False,
         )
         prefixed_incident_ids = [f"{IncidentType.RECON.value}{id}" for id in ids]
+        demisto.debug(f"Recon-Log get_modified_recon_ids return: {prefixed_incident_ids}")
         return prefixed_incident_ids
 
     except Exception as e:
         error_msg = f"Failed to fetch modified Recon IDs. Filter: {mirror_status_filter}. Error: {str(e)}"
-        demisto.debug(f"Recon-Log {error_msg}")
         demisto.error(error_msg)
         return []
 
@@ -2932,12 +2924,12 @@ def set_xsoar_entries(
     :return: The response.
     :rtype ``dict``
     """
-    reopen_statuses_set = {str(status).lower().strip().replace(" ", "_") for status in reopen_statuses_list}
+    reopen_statuses_set = {str(status).lower().strip().replace(" ", "_").replace("-", "_") for status in reopen_statuses_list}
     demisto.debug(f"In set_xsoar_entries {reopen_statuses_set=} {remote_detection_id=}")
     if demisto.params().get("close_incident"):
-        if updated_object.get("status", "").lower() == "closed":
+        if updated_object.get("status", "").lower() == "closed" or updated_object.get("status", "").lower().startswith("closed-"):
             close_in_xsoar(entries, remote_detection_id, incident_type_name)
-        elif updated_object.get("status", "").lower() in reopen_statuses_set:
+        elif updated_object.get("status", "").lower().replace("-", "_") in reopen_statuses_set:
             reopen_in_xsoar(entries, remote_detection_id, incident_type_name)
         else:
             demisto.debug(
@@ -6443,6 +6435,7 @@ def resolve_case(
     remove_user_assignment: bool | None = None,
     severity: int | None = None,
     template_id: str | None = None,
+    is_recon_type: bool | None = None,
 ) -> dict:
     """
     Updates a specific case object using PATCH /cases/entities/cases/v2.
@@ -6455,6 +6448,7 @@ def resolve_case(
         remove_user_assignment (bool): Whether to remove case assignment from current user.
         severity (int | None): The new case severity rating (10-100).
         template_id (str | None): The unique ID of the template to apply to the case.
+        is_recon_type (bool | None): Whether the case is a recon type.
 
     Returns:
         dict: The response from the API.
@@ -6472,7 +6466,8 @@ def resolve_case(
     fields = {k: v for k, v in fields.items() if v is not None}
 
     payload = {"id": case_id, "fields": fields}
-    return http_request("PATCH", "/cases/entities/cases/v2", json=payload)
+    url_suffix = "/recon/entities/notifications/v1" if is_recon_type else "/cases/entities/cases/v2"
+    return http_request("PATCH", url_suffix, json=payload)
 
 
 def resolve_case_command(args: dict[str, Any]) -> CommandResults:
