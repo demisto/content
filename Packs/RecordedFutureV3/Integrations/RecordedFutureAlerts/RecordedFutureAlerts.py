@@ -263,6 +263,10 @@ class Actions:
     def alert_update_command(self) -> dict | list[CommandResults]:
         return self.client.alert_update()
 
+    def alert_lookup_command(self) -> dict | list[CommandResults]:
+        alert_id = demisto.args().get("alert_id", "")
+        return self.client.alert_lookup(alert_id)
+
     @staticmethod
     def _get_file_name_from_image_id(image_id: str) -> str:
         return f"{image_id.replace('img:', '')}.png"
@@ -430,6 +434,8 @@ def main():
             return_results(actions.alert_search_command())
         elif command == "rf-alert-update":
             return_results(actions.alert_update_command())
+        elif command == "rf-alert-lookup":
+            return_results(actions.alert_lookup_command())
         elif command == "rf-alert-images":
             return_results(actions.get_alert_images_command())
 

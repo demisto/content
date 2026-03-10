@@ -462,3 +462,11 @@ def test_main_dispatch_rf_alert_images(monkeypatch: pytest.MonkeyPatch):
         command="rf-alert-images",
         actions_attr="get_alert_images_command",
     )
+
+
+def test_main_dispatch_rf_alert_lookup(monkeypatch: pytest.MonkeyPatch):
+    _exercise_main(
+        monkeypatch,
+        command="rf-alert-lookup",
+        actions_attr="alert_lookup_command",
+    )
