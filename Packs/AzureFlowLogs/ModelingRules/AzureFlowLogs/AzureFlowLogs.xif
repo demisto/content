@@ -28,8 +28,7 @@ filter category in ("NetworkSecurityGroupFlowEvent", "FlowLogFlowEvent")
 		transportProtocol = null, null, to_string(transportProtocol)
 		),
 	xdm.event.outcome = if(
-		deviceAction = "A", XDM_CONST.OUTCOME_SUCCESS,
-		deviceAction in ("B", "C", "E"), XDM_CONST.OUTCOME_SUCCESS,
+		deviceAction in ("A", "B", "C", "E"), XDM_CONST.OUTCOME_SUCCESS,
 		deviceAction = "D", XDM_CONST.OUTCOME_FAILED,
 		deviceAction = null, null, to_string(deviceAction)
 		),
@@ -42,7 +41,7 @@ filter category in ("NetworkSecurityGroupFlowEvent", "FlowLogFlowEvent")
 		get_flowState = null, null, to_string(get_flowState)
 		),
 	xdm.network.session_id = if(category = "FlowLogFlowEvent", flowState, null),
-	xdm.event.type = if(
+	xdm.event.description = if(
 		deviceDirection = "I", "Inbound",
 		deviceDirection = "O", "Outbound",
 		deviceDirection = null, null, to_string(deviceDirection)
