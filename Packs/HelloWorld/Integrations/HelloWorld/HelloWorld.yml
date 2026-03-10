@@ -1,4 +1,4 @@
-category: Utilities
+category: NonStandardCategory
 provider: Open Source
 sectionorder:
 - Connect
@@ -23,7 +23,7 @@ configuration:
   section: Collect
   required: false
 - defaultvalue: https://api.xsoar-example.com
-  display: Server URL (e.g., https://api.xsoar-example.com)
+display: server_url
   name: url
   required: true
   type: 0
