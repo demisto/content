@@ -602,7 +602,7 @@ def list_assets_command(client: Client, args: dict):
 
 
 def fetch_incidents(
-    client: Client, last_run: Dict[str, int], max_fetch: str, fetch_filter: str, first_fetch_time: str
+    client: Client, last_run: Dict[str, int], max_fetch: str, fetch_filter: str | None, first_fetch_time: str
 ) -> tuple[Dict, List[dict]]:
     """
     Fetch incidents (alerts) each minute (by default).
@@ -611,7 +611,7 @@ def fetch_incidents(
         last_run (dict): Dict with last_fetch object,
                                   saving the last fetch time(in millisecond timestamp).
         max_fetch (str): Max number of alerts to fetch.
-        fetch_filter (str): filter incidents with Qualys syntax.
+        fetch_filter (str | None): filter incidents with Qualys syntax.
         first_fetch_time (str): Dict with first fetch time in str (ex: 3 days ago).
 
     Returns:
@@ -682,7 +682,7 @@ def fetch_incidents(
 
     if len(incidents) > 0:
         last_incident_id = incidents[-1].get("incident_id")
-        demisto.debug(f"Setting last_fetched_id={last_incident_id}")
+        demisto.debug(f"Setting {last_incident_id=}.")
 
     next_run_timestamp = int(datetime.timestamp(next_run))
     new_last_run = {"last_fetch": next_run_timestamp, "last_fetched_id": last_incident_id}

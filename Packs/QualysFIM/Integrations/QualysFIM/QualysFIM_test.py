@@ -285,6 +285,46 @@ def test_fetch_incidents_command(requests_mock, authenticated_client: Client) ->
     assert raw_json["createdBy"]["date"] == 1613378492427
 
 
+@pytest.mark.parametrize(
+    "fetch_filter, expected_filter",
+    [
+        pytest.param(None, "createdBy.date: ['1613205600000'..'1613469600000']", id="Empty filter"),
+        pytest.param("status: OPEN", "createdBy.date: ['1613205600000'..'1613469600000'] and status: OPEN", id="With filter"),
+    ],
+)
+@pytest.mark.freeze_time("2021-02-16 10:00:00")
+def test_fetch_incidents_filter_construction(
+    mocker, authenticated_client: Client, fetch_filter: str | None, expected_filter: str
+) -> None:
+    """
+    Given:
+        - fetch_filter parameter (empty or with value)
+    When:
+        - fetch_incidents is called
+    Then:
+        - Assert the filter string sent to the API is correctly constructed
+    """
+    from QualysFIM import fetch_incidents
+
+    # Mocking incidents_list to capture the params
+    mock_incidents_list = mocker.patch.object(Client, "incidents_list", return_value=[])
+
+    # Arrange
+    last_run = {"last_fetch": 1613205600}  # 2021-02-13 10:00:00
+
+    # Act
+    fetch_incidents(
+        client=authenticated_client,
+        last_run=last_run,
+        fetch_filter=fetch_filter,
+        first_fetch_time="3 days",
+        max_fetch="50",
+    )
+
+    # Assert
+    assert mock_incidents_list.call_args.args[0]["filter"] == expected_filter
+
+
 def test_create_event_or_incident_output() -> None:
     """
     Given:
