@@ -4,7 +4,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Docusign
+  id: Docusign - test
   version: -1
 configuration:
 - defaultvalue: https://account.docusign.com
@@ -80,8 +80,8 @@ configuration:
   section: Connect
   advanced: true
 description: Docusign is a leading provider of electronic signature technology, allowing individuals and organizations to sign, send, and manage documents digitally.
-display: Docusign
-name: Docusign
+display: Docusign - test
+name: Docusign - test
 script:
   commands:
   - name: docusign-generate-consent-url
