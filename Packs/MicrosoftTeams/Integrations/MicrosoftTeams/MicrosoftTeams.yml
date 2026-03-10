@@ -945,12 +945,6 @@ script:
     description: |-
       Sends a proactive message to any Microsoft Teams user across the organization.
       This command enables direct communication with users without requiring them to be in a specific team or channel.
-      
-      The command will:
-      1. Resolve the user identifier to the actual user ID using Microsoft Graph API
-      2. Create or retrieve an existing conversation with the user
-      3. Send the message or adaptive card via the Bot Framework API
-      
       Note: Either 'message' or 'adaptive_card' must be provided, but not both.
     name: microsoft-teams-send-proactive-message
     outputs:
