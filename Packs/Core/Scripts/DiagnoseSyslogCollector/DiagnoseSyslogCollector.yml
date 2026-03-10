@@ -32,4 +32,5 @@ tests:
 marketplaces:
 - platform
 supportedModules:
+- cloud_runtime_security
 - xsiam
