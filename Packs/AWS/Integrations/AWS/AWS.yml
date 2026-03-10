@@ -2897,7 +2897,7 @@ script:
       - description: A comma-separated list of VPC security groups to be associated with the cluster.
         name: vpc_security_group_ids
         isArray: true
-        required: true
+        required: false
       - description: The new cluster type.
         name: cluster_type
         auto: PREDEFINED
