@@ -4250,140 +4250,140 @@ script:
         - contextPath: Core.EmailCampaignForensics.internet_message_id
           description: The Internet Message ID that serves as the primary identifier for the email campaign.
           type: String
-        - contextPath: Core.EmailCampaignForensics.lcaas_id
+        - contextPath: Core.EmailCampaignForensics.identification.lcaas_id
           description: The LCaaS (Log Collection as a Service) identifier for the email.
           type: String
-        - contextPath: Core.EmailCampaignForensics.issue_id
-          description: External identifier for the email from the source system.
+        - contextPath: Core.EmailCampaignForensics.identification.issue_id
+          description: The external identifier for the email from the source system.
           type: String
-        - contextPath: Core.EmailCampaignForensics.observation_time
-          description: Timestamp when the email was first observed in the system.
+        - contextPath: Core.EmailCampaignForensics.identification.observation_time
+          description: The timestamp when the email was first observed in the system.
           type: Date
-        - contextPath: Core.EmailCampaignForensics.created_time
-          description: Timestamp when the email record was created.
+        - contextPath: Core.EmailCampaignForensics.identification.created_time
+          description: The timestamp when the email record was created.
           type: Date
-        - contextPath: Core.EmailCampaignForensics.issue_name
-          description: Unique list of issue names triggered by this email campaign.
-          type: Array
-        - contextPath: Core.EmailCampaignForensics.issue_full_description
-          description: List of full issue descriptions from all related issues.
-          type: Array
-        - contextPath: Core.EmailCampaignForensics.detector_id
+        - contextPath: Core.EmailCampaignForensics.detection_context.issue_name
+          description: The unique list of issue names triggered by this email campaign.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.detection_context.issue_full_description
+          description: The list of full issue descriptions from all related issues.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.detection_context.detector_id
           description: The detector ID that identified the threat.
           type: String
-        - contextPath: Core.EmailCampaignForensics.variation_rule_id
+        - contextPath: Core.EmailCampaignForensics.detection_context.variation_rule_id
           description: The variation rule ID associated with the detection.
           type: String
-        - contextPath: Core.EmailCampaignForensics.original_severity
+        - contextPath: Core.EmailCampaignForensics.detection_context.original_severity
           description: The original severity level assigned to the email threat.
           type: String
-        - contextPath: Core.EmailCampaignForensics.message_directionality
+        - contextPath: Core.EmailCampaignForensics.directionality.message_directionality
           description: The direction of the email message (inbound/outbound).
           type: String
-        - contextPath: Core.EmailCampaignForensics.msft_directionality
-          description: Microsoft-specific directionality information.
+        - contextPath: Core.EmailCampaignForensics.directionality.msft_directionality
+          description: The Microsoft-specific directionality information.
           type: String
-        - contextPath: Core.EmailCampaignForensics.folder
+        - contextPath: Core.EmailCampaignForensics.mail_context.folder
           description: The email folder where the message was found.
           type: String
-        - contextPath: Core.EmailCampaignForensics.o365_data_is_draft
-          description: Boolean indicating if the email is a draft in Office 365.
+        - contextPath: Core.EmailCampaignForensics.mail_context.o365_data_is_draft
+          description: The boolean indicating if the email is a draft in Office 365.
           type: Boolean
-        - contextPath: Core.EmailCampaignForensics.o365_data_json
-          description: Complete Office 365 metadata for the email in JSON format.
+        - contextPath: Core.EmailCampaignForensics.mail_context.o365_data_json
+          description: The complete Office 365 metadata for the email in JSON format.
           type: JSON
-        - contextPath: Core.EmailCampaignForensics.from_json
-          description: Parsed 'From' header information in JSON format.
+        - contextPath: Core.EmailCampaignForensics.sender_forensics.from_json
+          description: The parsed 'From' header information in JSON format.
           type: JSON
-        - contextPath: Core.EmailCampaignForensics.sender_json
-          description: Parsed sender information in JSON format.
+        - contextPath: Core.EmailCampaignForensics.sender_forensics.sender_json
+          description: The parsed sender information in JSON format.
           type: JSON
-        - contextPath: Core.EmailCampaignForensics.return_path_data_json
-          description: Return-Path header data in JSON format.
+        - contextPath: Core.EmailCampaignForensics.sender_forensics.return_path_data_json
+          description: The Return-Path header data in JSON format.
           type: JSON
-        - contextPath: Core.EmailCampaignForensics.reply_to_json
-          description: Reply-To header information in JSON format.
+        - contextPath: Core.EmailCampaignForensics.sender_forensics.reply_to_json
+          description: The Reply-To header information in JSON format.
           type: JSON
-        - contextPath: Core.EmailCampaignForensics.internet_message_id_data_json
-          description: Complete Internet Message ID header data in JSON format.
+        - contextPath: Core.EmailCampaignForensics.sender_forensics.internet_message_id_data_json
+          description: The complete Internet Message ID header data in JSON format.
           type: JSON
-        - contextPath: Core.EmailCampaignForensics.mailbox_owner
-          description: List of mailbox owners who received this email.
-          type: Array
-        - contextPath: Core.EmailCampaignForensics.mailbox_owner_fqdn
-          description: Fully qualified domain name of the mailbox owner.
+        - contextPath: Core.EmailCampaignForensics.targeting_scope.mailbox_owner
+          description: The list of mailbox owners who received this email.
           type: String
-        - contextPath: Core.EmailCampaignForensics.recipients
-          description: Merged unique list of all recipients across related issues.
-          type: Array
-        - contextPath: Core.EmailCampaignForensics.cc_recipients
-          description: List of CC recipients.
-          type: Array
-        - contextPath: Core.EmailCampaignForensics.bcc_recipients
-          description: List of BCC recipients.
-          type: Array
-        - contextPath: Core.EmailCampaignForensics.sender_ip_received_headers
-          description: Sender IP addresses extracted from Received headers.
+        - contextPath: Core.EmailCampaignForensics.targeting_scope.mailbox_owner_fqdn
+          description: The fully qualified domain name of the mailbox owner.
           type: String
-        - contextPath: Core.EmailCampaignForensics.connecting_ip_address
+        - contextPath: Core.EmailCampaignForensics.targeting_scope.recipients
+          description: The merged unique list of all recipients across related issues.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.targeting_scope.cc_recipients
+          description: The list of CC recipients.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.targeting_scope.bcc_recipients
+          description: The list of BCC recipients.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.infrastructure.sender_ip_received_headers
+          description: The sender IP addresses extracted from Received headers.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.infrastructure.connecting_ip_address
           description: The IP address that connected to deliver the email.
           type: String
-        - contextPath: Core.EmailCampaignForensics.original_client_ip
+        - contextPath: Core.EmailCampaignForensics.infrastructure.original_client_ip
           description: The original client IP address from email headers.
           type: String
-        - contextPath: Core.EmailCampaignForensics.sender_ip_as_data_json
-          description: Autonomous System (AS) data for the sender IP in JSON format.
+        - contextPath: Core.EmailCampaignForensics.infrastructure.sender_ip_as_data_json
+          description: The Autonomous System (AS) data for the sender IP in JSON format.
           type: JSON
-        - contextPath: Core.EmailCampaignForensics.sender_ip_location_json
-          description: Geographic location data for the sender IP in JSON format.
+        - contextPath: Core.EmailCampaignForensics.infrastructure.sender_ip_location_json
+          description: The geographic location data for the sender IP in JSON format.
           type: JSON
-        - contextPath: Core.EmailCampaignForensics.msft_country
-          description: Country information from Microsoft telemetry.
+        - contextPath: Core.EmailCampaignForensics.infrastructure.msft_country
+          description: The country information from Microsoft telemetry.
           type: String
-        - contextPath: Core.EmailCampaignForensics.sender_ip_enrichment_json
-          description: Complete sender IP enrichment data in JSON format.
+        - contextPath: Core.EmailCampaignForensics.infrastructure.sender_ip_enrichment_json
+          description: The complete sender IP enrichment data in JSON format.
           type: JSON
-        - contextPath: Core.EmailCampaignForensics.attachments
-          description: Unique list of email attachments deduplicated by file hash.
-          type: Array
-        - contextPath: Core.EmailCampaignForensics.url_verdicts_json
-          description: Unique list of URLs with their verdicts, deduplicated by URL string.
-          type: JSON
-        - contextPath: Core.EmailCampaignForensics.arc_headers_data_json
-          description: ARC (Authenticated Received Chain) headers data in JSON format.
-          type: JSON
-        - contextPath: Core.EmailCampaignForensics.first_authentication_results_json
-          description: First authentication results (SPF/DKIM/DMARC) in JSON format.
-          type: JSON
-        - contextPath: Core.EmailCampaignForensics.last_authentication_results_json
-          description: Last authentication results (SPF/DKIM/DMARC) in JSON format.
-          type: JSON
-        - contextPath: Core.EmailCampaignForensics.microsoft_threat_category
-          description: Microsoft's threat categorization for the email.
+        - contextPath: Core.EmailCampaignForensics.artifacts.attachments
+          description: The unique list of email attachments deduplicated by file hash.
           type: String
-        - contextPath: Core.EmailCampaignForensics.scl
-          description: Spam Confidence Level (SCL) from Microsoft.
+        - contextPath: Core.EmailCampaignForensics.artifacts.url_verdicts_json
+          description: The unique list of URLs with their verdicts, deduplicated by URL string.
+          type: JSON
+        - contextPath: Core.EmailCampaignForensics.authentication.arc_headers_data_json
+          description: The ARC (Authenticated Received Chain) headers data in JSON format.
+          type: JSON
+        - contextPath: Core.EmailCampaignForensics.authentication.first_authentication_results_json
+          description: The first authentication results (SPF/DKIM/DMARC) in JSON format.
+          type: JSON
+        - contextPath: Core.EmailCampaignForensics.authentication.last_authentication_results_json
+          description: The last authentication results (SPF/DKIM/DMARC) in JSON format.
+          type: JSON
+        - contextPath: Core.EmailCampaignForensics.m365_signals.microsoft_threat_category
+          description: The Microsoft's threat categorization for the email.
+          type: String
+        - contextPath: Core.EmailCampaignForensics.m365_signals.scl
+          description: The Spam Confidence Level (SCL) from Microsoft.
           type: Number
-        - contextPath: Core.EmailCampaignForensics.bcl
-          description: Bulk Complaint Level (BCL) from Microsoft.
+        - contextPath: Core.EmailCampaignForensics.m365_signals.bcl
+          description: The Bulk Complaint Level (BCL) from Microsoft.
           type: Number
-        - contextPath: Core.EmailCampaignForensics.sfty
-          description: Safety score from Microsoft filtering.
+        - contextPath: Core.EmailCampaignForensics.m365_signals.sfty
+          description: The safety score from Microsoft filtering.
           type: Number
-        - contextPath: Core.EmailCampaignForensics.sfv
-          description: Spam Filtering Verdict from Microsoft.
+        - contextPath: Core.EmailCampaignForensics.m365_signals.sfv
+          description: The Spam Filtering Verdict from Microsoft.
           type: String
-        - contextPath: Core.EmailCampaignForensics.x_customspam
-          description: Custom spam header values from Microsoft.
+        - contextPath: Core.EmailCampaignForensics.m365_signals.x_customspam
+          description: The custom spam header values from Microsoft.
           type: String
-        - contextPath: Core.EmailCampaignForensics.subject_hash
-          description: Hash of the email subject line for fingerprinting.
+        - contextPath: Core.EmailCampaignForensics.fingerprints.subject_hash
+          description: The hash of the email subject line for fingerprinting.
           type: String
-        - contextPath: Core.EmailCampaignForensics.body_hash
-          description: Hash of the email body for fingerprinting.
+        - contextPath: Core.EmailCampaignForensics.fingerprints.body_hash
+          description: The hash of the email body for fingerprinting.
           type: String
-        - contextPath: Core.EmailCampaignForensics.internet_message_headers_normalized_json
-          description: Normalized email headers in JSON format for analysis.
+        - contextPath: Core.EmailCampaignForensics.fingerprints.internet_message_headers_normalized_json
+          description: The normalized email headers in JSON format for analysis.
           type: JSON
     - arguments:
         - description: The Internet Message ID of the email campaign to remediate.

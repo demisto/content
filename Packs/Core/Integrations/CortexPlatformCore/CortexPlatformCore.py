@@ -4991,120 +4991,27 @@ def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, 
 
     demisto.debug(f"get_email_campaign_consolidated_forensic_enrichment response: {response}")
 
-    outputs = response.get("reply", {})
+    reply = response.get("reply", {})
 
-    readable_sections = []
-
-    identification_data = outputs.get("identification", {})
-    if identification_data:
-        identification = {
-            "internet_message_id": identification_data.get("internet_message_id"),
-            "lcaas_id": identification_data.get("lcaas_id"),
-            "issue_id": identification_data.get("alert_id"),
-            "observation_time": identification_data.get("observation_time"),
-            "created_time": identification_data.get("created_time"),
-        }
-        readable_sections.append(tableToMarkdown("Identification", identification, headerTransform=string_to_table_header))
-
-    detection_context_data = outputs.get("detection_context", {})
-    if detection_context_data:
-        detection = {
-            "issue_name": detection_context_data.get("alert_name"),
-            "issue_full_description": detection_context_data.get("alert_full_description"),
-            "detector_id": detection_context_data.get("detector_id"),
-            "variation_rule_id": detection_context_data.get("variation_rule_id"),
-            "original_severity": detection_context_data.get("original_severity"),
-            "detection_method": detection_context_data.get("detection_method"),
-        }
-        readable_sections.append(tableToMarkdown("Detection Context", detection, headerTransform=string_to_table_header))
-
-    sender_forensics_data = outputs.get("sender_forensics", {})
-    if sender_forensics_data:
-        sender = {
-            "from_json": sender_forensics_data.get("from_json"),
-            "sender_json": sender_forensics_data.get("sender_json"),
-            "return_path_data_json": sender_forensics_data.get("return_path_data_json"),
-            "reply_to_json": sender_forensics_data.get("reply_to_json"),
-            "internet_message_id_data_json": sender_forensics_data.get("internet_message_id_data_json"),
-        }
-        readable_sections.append(tableToMarkdown("Sender Forensics", sender, headerTransform=string_to_table_header))
-
-    targeting_scope_data = outputs.get("targeting_scope", {})
-    if targeting_scope_data:
-        targeting = {
-            "mailbox_owner": targeting_scope_data.get("mailbox_owner"),
-            "mailbox_owner_fqdn": targeting_scope_data.get("mailbox_owner_fqdn"),
-            "recipients": targeting_scope_data.get("recipients"),
-            "recipients_count": targeting_scope_data.get("recipients_count"),
-            "cc_recipients": targeting_scope_data.get("cc_recipients"),
-            "cc_recipients_count": targeting_scope_data.get("cc_recipients_count"),
-            "bcc_recipients": targeting_scope_data.get("bcc_recipients"),
-            "bcc_recipients_count": targeting_scope_data.get("bcc_recipients_count"),
-        }
-        readable_sections.append(tableToMarkdown("Targeting Scope", targeting, headerTransform=string_to_table_header))
-
-    infrastructure_data = outputs.get("infrastructure", {})
-    if infrastructure_data:
-        infrastructure = {
-            "sender_ip_received_headers": infrastructure_data.get("sender_ip_received_headers"),
-            "connecting_ip_address": infrastructure_data.get("connecting_ip_address"),
-            "original_client_ip": infrastructure_data.get("original_client_ip"),
-            "sender_ip_as_data_json": infrastructure_data.get("sender_ip_as_data_json"),
-            "sender_ip_location_json": infrastructure_data.get("sender_ip_location_json"),
-            "msft_country": infrastructure_data.get("msft_country"),
-            "sender_ip_enrichment_json": infrastructure_data.get("sender_ip_enrichment_json"),
-        }
-        readable_sections.append(tableToMarkdown("Infrastructure", infrastructure, headerTransform=string_to_table_header))
-
-    artifacts_data = outputs.get("artifacts", {})
-    if artifacts_data:
-        artifacts = {
-            "attachments": artifacts_data.get("attachments"),
-            "attachments_count": artifacts_data.get("attachments_count"),
-            "url_verdicts_json": artifacts_data.get("url_verdicts_json"),
-            "urls_count": artifacts_data.get("urls_count"),
-        }
-        readable_sections.append(tableToMarkdown("Artifacts", artifacts, headerTransform=string_to_table_header))
-
-    authentication_data = outputs.get("authentication", {})
-    if authentication_data:
-        authentication = {
-            "arc_headers_data_json": authentication_data.get("arc_headers_data_json"),
-            "first_authentication_results_json": authentication_data.get("first_authentication_results_json"),
-            "last_authentication_results_json": authentication_data.get("last_authentication_results_json"),
-        }
-        readable_sections.append(tableToMarkdown("Authentication", authentication, headerTransform=string_to_table_header))
-
-    mail_context_data = outputs.get("mail_context", {})
-    if mail_context_data:
-        mail_context = {
-            "folder": mail_context_data.get("folder"),
-            "o365_data_is_draft": mail_context_data.get("o365_data_is_draft"),
-            "o365_data_json": mail_context_data.get("o365_data_json"),
-        }
-        readable_sections.append(tableToMarkdown("Mail Context", mail_context, headerTransform=string_to_table_header))
-
-    directionality_data = outputs.get("directionality", {})
-    if directionality_data:
-        directionality = {
-            "message_directionality": directionality_data.get("message_directionality"),
-            "msft_directionality": directionality_data.get("msft_directionality"),
-        }
-        readable_sections.append(tableToMarkdown("Directionality", directionality, headerTransform=string_to_table_header))
-
-    readable_output = (
-        "\n\n".join(readable_sections)
-        if readable_sections
-        else "Forensic data added to context."
-        if outputs
-        else "No Forensic data found."
-    )
+    outputs = {
+        "internet_message_id": reply.get("identification", {}).pop("internet_message_id", internet_message_id),
+        "identification": alert_to_issue(reply.get("identification", {})),
+        "detection_context": alert_to_issue(reply.get("detection_context", {})),
+        "sender_forensics": reply.get("sender_forensics", {}),
+        "targeting_scope": reply.get("targeting_scope", {}),
+        "infrastructure": reply.get("infrastructure", {}),
+        "artifacts": reply.get("artifacts", {}),
+        "authentication": reply.get("authentication", {}),
+        "mail_context": reply.get("mail_context", {}),
+        "directionality": reply.get("directionality", {}),
+        "m365_signals": reply.get("m365_signals", {}),
+        "fingerprints": reply.get("fingerprints", {}),
+    }
 
     return CommandResults(
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EmailCampaignForensics",
         outputs_key_field="internet_message_id",
         outputs=outputs,
-        readable_output=readable_output,
         raw_response=response,
     )
 
@@ -5204,7 +5111,7 @@ def get_email_investigation_summary_command(client: Client, args: dict) -> Comma
     min_severity_phishing = args.get("min_severity_phishing")
 
     timeframe = args.get("timeframe")
-    days_timeframe = timeframe_to_days(timeframe) if timeframe else None
+    days_timeframe = timeframe_to_days(timeframe) if timeframe else 30
     detection_method = args.get("detection_method", "").replace(" ", "_").upper()
     params = assign_params(
         days_timeframe=days_timeframe,

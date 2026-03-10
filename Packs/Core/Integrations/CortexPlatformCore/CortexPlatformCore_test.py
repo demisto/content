@@ -10193,6 +10193,8 @@ def test_get_email_campaign_consolidated_forensic_enrichment_command_with_natura
     # Verify the client was called with parsed days (30)
     mock_client.get_email_campaign_consolidated_forensic_enrichment.assert_called_once_with("<test@example.com>", 30)
     assert result.outputs_prefix == "Core.EmailCampaignForensics"
+    # Verify internet_message_id is hoisted to top level for outputs_key_field
+    assert result.outputs["internet_message_id"] == "<test@example.com>"
 
 
 def test_get_email_campaign_consolidated_forensic_enrichment_command_invalid_days_timeframe(mocker: MockerFixture):
@@ -10233,8 +10235,7 @@ def test_get_email_campaign_consolidated_forensic_enrichment_command_empty_respo
 
     result = get_email_campaign_consolidated_forensic_enrichment_command(mock_client, args)
 
-    assert result.outputs == {}
-    assert result.readable_output == "No Forensic data found."
+    assert result.outputs.get("internet_message_id") == "<test@example.com>"
 
 
 def test_get_email_campaign_consolidated_forensic_enrichment_command_all_categories(mocker: MockerFixture):
@@ -10252,7 +10253,7 @@ def test_get_email_campaign_consolidated_forensic_enrichment_command_all_categor
     mock_response = {
         "reply": {
             "identification": {"internet_message_id": "<test@example.com>"},
-            "detection_context": {"alert_name": ["Test Alert"]},
+            "detection_context": {"alert_name": ["Test Alert"]},  # alert_to_issue() will rename to issue_name
             "sender_forensics": {"from_json": {"address": "sender@example.com"}},
             "targeting_scope": {"mailbox_owner": ["recipient@example.com"]},
             "infrastructure": {"connecting_ip_address": "1.2.3.4"},
@@ -10270,6 +10271,8 @@ def test_get_email_campaign_consolidated_forensic_enrichment_command_all_categor
     result = get_email_campaign_consolidated_forensic_enrichment_command(mock_client, args)
 
     # Verify all categories are present
+    assert "internet_message_id" in result.outputs  # hoisted to top level
+    assert result.outputs["internet_message_id"] == "<test@example.com>"
     assert "identification" in result.outputs
     assert "detection_context" in result.outputs
     assert "sender_forensics" in result.outputs
@@ -10279,12 +10282,67 @@ def test_get_email_campaign_consolidated_forensic_enrichment_command_all_categor
     assert "authentication" in result.outputs
     assert "mail_context" in result.outputs
     assert "directionality" in result.outputs
+    # Verify alert_to_issue() was applied: alert_name -> issue_name in detection_context
+    assert "issue_name" in result.outputs["detection_context"]
+    assert "alert_name" not in result.outputs["detection_context"]
 
 
-def test_execute_email_security_remediation_command_invalid_action(mocker: MockerFixture):
+@pytest.mark.parametrize(
+    "action",
+    [
+        "DeleteEmail",
+        "UndeleteEmail",
+        "SendAlertEmail",
+        "MoveEmailToFolder",
+        "TagEmailAsPhishing",
+    ],
+)
+def test_execute_email_security_remediation_command_success(mocker: MockerFixture, action: str):
     """
     Given:
-        A mocked client and arguments with invalid action value.
+        A mocked client and valid action values (one per parametrize case).
+    When:
+        The execute_email_security_remediation_command function is called.
+    Then:
+        The client is called with the correct payload and CommandResults are returned.
+    """
+    from CortexPlatformCore import execute_email_security_remediation_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {"success": True, "message": "Action triggered successfully"}
+    mock_execute = mocker.patch.object(mock_client, "execute_email_security_remediation", return_value=mock_response)
+
+    args = {
+        "action": action,
+        "internet_message_id": "<test@example.com>",
+        "issue_id": "issue-123",
+    }
+
+    result = execute_email_security_remediation_command(mock_client, args)
+
+    mock_execute.assert_called_once_with("<test@example.com>", "issue-123", action)
+    assert result.outputs_prefix == "Core.EmailSecurityRemediation"
+    assert result.outputs_key_field == "issue_id"
+    assert result.outputs["internet_message_id"] == "<test@example.com>"
+    assert result.outputs["issue_id"] == "issue-123"
+    assert result.outputs["action"] == action
+    assert "<test@example.com>" in result.readable_output
+
+
+@pytest.mark.parametrize(
+    "invalid_action",
+    [
+        "InvalidAction",
+        "deleteEmail",  # wrong case
+        "DELETE_EMAIL",  # wrong format
+        "",  # empty string
+        "Block",  # unrelated action
+    ],
+)
+def test_execute_email_security_remediation_command_invalid_action(mocker: MockerFixture, invalid_action: str):
+    """
+    Given:
+        A mocked client and arguments with invalid action values.
     When:
         The execute_email_security_remediation_command function is called.
     Then:
@@ -10295,12 +10353,12 @@ def test_execute_email_security_remediation_command_invalid_action(mocker: Mocke
     mock_client = Client(base_url="", headers={})
 
     args = {
-        "action": "InvalidAction",
+        "action": invalid_action,
         "internet_message_id": "<test@example.com>",
         "issue_id": "issue-123",
     }
 
-    with pytest.raises(DemistoException, match='Invalid action "InvalidAction"'):
+    with pytest.raises(DemistoException, match="Invalid action"):
         execute_email_security_remediation_command(mock_client, args)
 
 
@@ -10353,6 +10411,72 @@ def test_get_email_investigation_summary_command_success(mocker: MockerFixture):
     assert len(result.outputs) == 2
     assert result.outputs[0]["internet_message_id"] == "<test1@example.com>"
     assert result.outputs[1]["campaign_size"] == 3
+
+
+@pytest.mark.parametrize(
+    "min_severity, expected_api_severity",
+    [
+        ("info", "SEV_010_INFO"),
+        ("low", "SEV_020_LOW"),
+        ("medium", "SEV_030_MEDIUM"),
+        ("high", "SEV_040_HIGH"),
+        ("critical", "SEV_050_CRITICAL"),
+        (None, None),  # no severity filter → not sent
+    ],
+)
+def test_get_email_investigation_summary_command_severity_mapping(mocker: MockerFixture, min_severity, expected_api_severity):
+    """
+    Given:
+        Various min_severity values (including None).
+    When:
+        The get_email_investigation_summary_command function is called.
+    Then:
+        The severity is correctly mapped to the API enum value (or omitted when None).
+    """
+    from CortexPlatformCore import get_email_investigation_summary_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {"reply": {"data": []}}
+    mock_get_summary = mocker.patch.object(mock_client, "get_email_investigation_summary", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.timeframe_to_days", return_value=7)
+
+    args = {"timeframe": "7 days"}
+    if min_severity is not None:
+        args["min_severity"] = min_severity
+
+    get_email_investigation_summary_command(mock_client, args)
+
+    call_params = mock_get_summary.call_args[0][0]
+    if expected_api_severity is None:
+        assert "min_severity" not in call_params
+    else:
+        assert call_params["min_severity"] == expected_api_severity
+
+
+def test_get_email_investigation_summary_command_empty_response(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client that returns an empty data list.
+    When:
+        The get_email_investigation_summary_command function is called.
+    Then:
+        An empty outputs list is returned with the correct prefix.
+    """
+    from CortexPlatformCore import get_email_investigation_summary_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {"reply": {"data": []}}
+    mocker.patch.object(mock_client, "get_email_investigation_summary", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+    mocker.patch("CortexPlatformCore.timeframe_to_days", return_value=30)
+
+    args = {"timeframe": "30 days"}
+    result = get_email_investigation_summary_command(mock_client, args)
+
+    assert result.outputs == []
+    assert result.outputs_prefix == "Core.EmailInvestigationSummary"
+    assert result.outputs_key_field == "internet_message_id"
 
 
 @pytest.mark.parametrize(
