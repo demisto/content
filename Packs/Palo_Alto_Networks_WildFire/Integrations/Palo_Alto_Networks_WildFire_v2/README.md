@@ -41,13 +41,15 @@ For a list of the supported file types, see [here](https://docs.paloaltonetworks
 
 Use the appropriate server URL in the **Server base URL** parameter based on your region or cloud environment:
 
-| Server URL | Region |
+| Region | Server URL |
 | --- | --- |
-| https://wildfire.paloaltonetworks.com | Global (default) |
-| https://pubsec-cloud.wildfire.paloaltonetworks.com | US Gov Cloud / FedRAMP Moderate |
-| https://gov-cloud.wildfire.paloaltonetworks.com | US Gov Cloud / FedRAMP High |
-| https://eu.wildfire.paloaltonetworks.com | EU |
-| https://jp.wildfire.paloaltonetworks.com | Japan |
+| Global (default) | https://wildfire.paloaltonetworks.com |
+| US Gov Cloud / FedRAMP Moderate | https://pubsec-cloud.wildfire.paloaltonetworks.com |
+| US Gov Cloud / FedRAMP High | https://gov-cloud.wildfire.paloaltonetworks.com |
+| EU | https://eu.wildfire.paloaltonetworks.com |
+| Japan | https://jp.wildfire.paloaltonetworks.com |
+
+For on-premise WildFire appliances, use the appliance IP or hostname with the `/publicapi` path (e.g., `https://192.168.0.1/publicapi`).
 
 ## Commands
 
