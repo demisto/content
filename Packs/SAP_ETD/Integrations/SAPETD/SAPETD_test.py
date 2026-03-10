@@ -22,6 +22,7 @@ def mock_support_multithreading():
 
 
 from SAPETD import (
+    INTEGRATION_NAME,
     Config,
     SAPETDClient,
     add_time_to_events,
@@ -29,6 +30,7 @@ from SAPETD import (
     fetch_alerts_with_pagination,
     fetch_events_command,
     get_events_command,
+    main,
     parse_date_to_iso,
     parse_integration_params,
     test_module as _test_module,
@@ -987,6 +989,313 @@ class TestConfig:
     def test_max_page_size_less_than_max_fetch(self) -> None:
         """Test that MAX_PAGE_SIZE is less than or equal to DEFAULT_MAX_FETCH."""
         assert Config.MAX_PAGE_SIZE <= Config.DEFAULT_MAX_FETCH
+
+
+# endregion
+
+# region main() tests
+# =================================
+# main() tests
+# =================================
+
+
+class TestMain:
+    """Tests for the main() entry point and command routing."""
+
+    @patch("SAPETD.return_results")
+    @patch("SAPETD.SAPETDClient")
+    @patch("SAPETD.parse_integration_params")
+    def test_test_module_command(
+        self,
+        mock_parse: MagicMock,
+        mock_client_cls: MagicMock,
+        mock_return_results: MagicMock,
+        mock_params: dict[str, Any],
+    ) -> None:
+        """Test main() routes test-module command correctly."""
+        mock_parse.return_value = {
+            "base_url": "https://etd.example.com:4300",
+            "username": "test_user",
+            "password": "test_password",
+            "verify": False,
+            "proxy": False,
+            "max_fetch": 10000,
+        }
+        mock_client = MagicMock()
+        mock_client.get_alerts.return_value = []
+        mock_client_cls.return_value = mock_client
+
+        with (
+            patch.object(demisto, "command", return_value="test-module"),
+            patch.object(demisto, "params", return_value=mock_params),
+        ):
+            main()
+
+        mock_return_results.assert_called_once()
+
+    @patch("SAPETD.fetch_events_command")
+    @patch("SAPETD.SAPETDClient")
+    @patch("SAPETD.parse_integration_params")
+    def test_fetch_events_command_routing(
+        self,
+        mock_parse: MagicMock,
+        mock_client_cls: MagicMock,
+        mock_fetch: MagicMock,
+        mock_params: dict[str, Any],
+    ) -> None:
+        """Test main() routes fetch-events command correctly."""
+        mock_parse.return_value = {
+            "base_url": "https://etd.example.com:4300",
+            "username": "test_user",
+            "password": "test_password",
+            "verify": False,
+            "proxy": False,
+            "max_fetch": 10000,
+        }
+        mock_client_cls.return_value = MagicMock()
+
+        with (
+            patch.object(demisto, "command", return_value="fetch-events"),
+            patch.object(demisto, "params", return_value=mock_params),
+        ):
+            main()
+
+        mock_fetch.assert_called_once()
+
+    @patch("SAPETD.return_results")
+    @patch("SAPETD.SAPETDClient")
+    @patch("SAPETD.parse_integration_params")
+    def test_get_events_command_routing(
+        self,
+        mock_parse: MagicMock,
+        mock_client_cls: MagicMock,
+        mock_return_results: MagicMock,
+        mock_params: dict[str, Any],
+    ) -> None:
+        """Test main() routes sap-etd-get-events command correctly."""
+        mock_parse.return_value = {
+            "base_url": "https://etd.example.com:4300",
+            "username": "test_user",
+            "password": "test_password",
+            "verify": False,
+            "proxy": False,
+            "max_fetch": 10000,
+        }
+        mock_client = MagicMock()
+        mock_client.get_alerts.return_value = []
+        mock_client_cls.return_value = mock_client
+
+        with (
+            patch.object(demisto, "command", return_value="sap-etd-get-events"),
+            patch.object(demisto, "params", return_value=mock_params),
+            patch.object(demisto, "args", return_value={"from_date": "3 days ago", "limit": "10", "should_push_events": "false"}),
+        ):
+            main()
+
+        mock_return_results.assert_called_once()
+
+    @patch("SAPETD.return_error")
+    @patch("SAPETD.parse_integration_params")
+    def test_unknown_command(
+        self,
+        mock_parse: MagicMock,
+        mock_return_error: MagicMock,
+        mock_params: dict[str, Any],
+    ) -> None:
+        """Test main() handles unknown command with return_error."""
+        mock_parse.return_value = {
+            "base_url": "https://etd.example.com:4300",
+            "username": "test_user",
+            "password": "test_password",
+            "verify": False,
+            "proxy": False,
+            "max_fetch": 10000,
+        }
+
+        with (
+            patch.object(demisto, "command", return_value="unknown-command"),
+            patch.object(demisto, "params", return_value=mock_params),
+        ):
+            main()
+
+        mock_return_error.assert_called_once()
+        error_msg = mock_return_error.call_args[0][0]
+        assert "unknown-command" in error_msg
+
+    @patch("SAPETD.return_error")
+    def test_exception_handling(
+        self,
+        mock_return_error: MagicMock,
+        mock_params: dict[str, Any],
+    ) -> None:
+        """Test main() catches exceptions and calls return_error."""
+        with (
+            patch.object(demisto, "command", return_value="test-module"),
+            patch.object(demisto, "params", return_value={"url": ""}),
+        ):
+            main()
+
+        mock_return_error.assert_called_once()
+        error_msg = mock_return_error.call_args[0][0]
+        assert "Server URL is required" in error_msg
+
+    @patch("SAPETD.return_error")
+    def test_missing_credentials_error(
+        self,
+        mock_return_error: MagicMock,
+    ) -> None:
+        """Test main() handles missing credentials gracefully."""
+        with (
+            patch.object(demisto, "command", return_value="test-module"),
+            patch.object(demisto, "params", return_value={"url": "https://example.com", "credentials": {}}),
+        ):
+            main()
+
+        mock_return_error.assert_called_once()
+        error_msg = mock_return_error.call_args[0][0]
+        assert "Username and Password" in error_msg
+
+
+# endregion
+
+# region Additional edge case tests
+# =================================
+# Additional edge case tests
+# =================================
+
+
+class TestEdgeCases:
+    """Tests for edge cases to improve coverage."""
+
+    @patch("SAPETD.send_events_to_xsiam")
+    def test_fetch_events_missing_timestamp_in_last_event(self, mock_send: MagicMock, client: SAPETDClient) -> None:
+        """Test fetch_events_command when last event has no AlertCreationTimestamp."""
+        alert_no_timestamp = [{"AlertId": 9999}]
+        client.get_alerts = MagicMock(return_value=alert_no_timestamp)
+
+        with (
+            patch.object(demisto, "getLastRun", return_value={}),
+            patch.object(demisto, "setLastRun") as mock_set_last_run,
+        ):
+            fetch_events_command(client, max_fetch=Config.DEFAULT_MAX_FETCH)
+
+        # Last run should NOT be updated since AlertCreationTimestamp is missing
+        mock_set_last_run.assert_not_called()
+
+    def test_pagination_stops_when_last_alert_missing_timestamp(self, client: SAPETDClient) -> None:
+        """Test that pagination stops when last alert in batch has no AlertCreationTimestamp."""
+        batch1 = [{"AlertId": i} for i in range(1, Config.MAX_PAGE_SIZE + 1)]  # No timestamps
+
+        client.get_alerts = MagicMock(return_value=batch1)
+
+        result = fetch_alerts_with_pagination(client, from_timestamp="2022-04-29T14:00:00.000000Z", max_alerts=2000)
+
+        # Should stop after first batch since last alert has no timestamp
+        assert len(result) == Config.MAX_PAGE_SIZE
+        assert client.get_alerts.call_count == 1
+
+    def test_test_module_403_forbidden(self, client: SAPETDClient) -> None:
+        """Test that 403 Forbidden returns specific privilege error message."""
+        client.get_alerts = MagicMock(side_effect=Exception("403 Forbidden"))
+
+        result = _test_module(client)
+
+        assert "User lacks required application privileges" in result
+
+    def test_parse_integration_params_insecure_true(self) -> None:
+        """Test that insecure=True sets verify=False."""
+        params = {
+            "url": "https://example.com",
+            "credentials": {"identifier": "dummy_user", "password": "dummy_pass"},
+            "insecure": True,
+        }
+        config = parse_integration_params(params)
+        assert config["verify"] is False
+
+    def test_parse_integration_params_proxy_true(self) -> None:
+        """Test that proxy=True is correctly parsed."""
+        params = {
+            "url": "https://example.com",
+            "credentials": {"identifier": "dummy_user", "password": "dummy_pass"},
+            "proxy": True,
+        }
+        config = parse_integration_params(params)
+        assert config["proxy"] is True
+
+    def test_parse_integration_params_custom_max_fetch(self) -> None:
+        """Test that custom max_fetch value is correctly parsed."""
+        params = {
+            "url": "https://example.com",
+            "credentials": {"identifier": "dummy_user", "password": "dummy_pass"},
+            "max_fetch": "5000",
+        }
+        config = parse_integration_params(params)
+        assert config["max_fetch"] == 5000
+
+    def test_integration_name_constant(self) -> None:
+        """Test that INTEGRATION_NAME is set correctly."""
+        assert INTEGRATION_NAME == "SAP Enterprise Threat Detection"
+
+    @patch("SAPETD.send_events_to_xsiam")
+    def test_fetch_events_subsequent_run_uses_last_fetch(self, mock_send: MagicMock, client: SAPETDClient) -> None:
+        """Test that subsequent run uses last_fetch timestamp from last_run."""
+        alerts = [copy.deepcopy(SAMPLE_ALERTS[0])]
+        client.get_alerts = MagicMock(return_value=alerts)
+
+        mock_last_run = {
+            "last_fetch": "2022-04-29T14:20:29.682Z",
+            "last_fetched_alert_ids": [],
+        }
+
+        with (
+            patch.object(demisto, "getLastRun", return_value=mock_last_run),
+            patch.object(demisto, "setLastRun"),
+        ):
+            fetch_events_command(client, max_fetch=Config.DEFAULT_MAX_FETCH)
+
+        # Verify the client was called with the last_fetch timestamp
+        call_kwargs = client.get_alerts.call_args_list[0].kwargs
+        assert call_kwargs["from_timestamp"] == "2022-04-29T14:20:29.682Z"
+
+    @patch("SAPETD.send_events_to_xsiam")
+    def test_fetch_events_raw_ids_not_list(self, mock_send: MagicMock, client: SAPETDClient) -> None:
+        """Test that non-list last_fetched_alert_ids is handled gracefully."""
+        alerts = [copy.deepcopy(SAMPLE_ALERTS[0])]
+        client.get_alerts = MagicMock(return_value=alerts)
+
+        mock_last_run = {
+            "last_fetch": "2022-04-29T14:00:00.000Z",
+            "last_fetched_alert_ids": "not_a_list",  # Invalid type
+        }
+
+        with (
+            patch.object(demisto, "getLastRun", return_value=mock_last_run),
+            patch.object(demisto, "setLastRun"),
+        ):
+            # Should not raise - treats invalid type as empty list
+            fetch_events_command(client, max_fetch=Config.DEFAULT_MAX_FETCH)
+
+        mock_send.assert_called_once()
+
+    def test_get_events_command_default_args(self, client: SAPETDClient) -> None:
+        """Test get_events_command with minimal/default arguments."""
+        client.get_alerts = MagicMock(return_value=[])
+
+        result = get_events_command(client, {})
+
+        assert isinstance(result, CommandResults)
+
+    def test_get_events_command_readable_output_headers(self, client: SAPETDClient, sample_alerts: list[dict]) -> None:
+        """Test that readable output contains expected table headers."""
+        client.get_alerts = MagicMock(return_value=sample_alerts)
+
+        args = {"from_date": "3 days ago", "limit": "50", "should_push_events": "false"}
+        result = get_events_command(client, args)
+
+        assert isinstance(result, CommandResults)
+        assert "AlertId" in result.readable_output
+        assert "AlertSeverity" in result.readable_output
+        assert INTEGRATION_NAME in result.readable_output
 
 
 # endregion
