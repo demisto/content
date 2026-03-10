@@ -296,7 +296,7 @@ class AuthClient(BaseClient):
         }
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
-        resp = self._http_request(method="POST", full_url=url, headers=headers, data=data, resp_type="json")
+        resp = self._http_request(method="POST", full_url=url, headers=headers, data=data, resp_type="json", timeout=120)
 
         access_token = resp.get("access_token")
         expires_in_seconds = resp.get("expires_in")
