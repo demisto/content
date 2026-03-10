@@ -521,7 +521,7 @@ Resolves and updates a detection using the provided arguments. At least one opti
 | --- | --- | --- |
 | ids | A comma-separated list of one or more IDs to resolve. | Required |
 | status | The status to transition a detection to. **Possible** values are: new, in_progress, closed, reopened. | Optional |
-| assigned_to_uuid | A user ID, for example: 1234567891234567891. username and assigned_to_uuid are mutually exclusive. | Optional |
+| assigned_to_uuid | A user ID, for example: 1234567855512345678. username and assigned_to_uuid are mutually exclusive. | Optional |
 | comment | Optional comment to add to the detection. Comments are displayed with the detection in CrowdStrike Falcon and provide context or notes for other Falcon users. | Optional |
 | show_in_ui | If true, displays the detection in the UI. Possible values are: true, false. | Optional |
 | username | Username to assign the detections to. (This is usually the user's email address, but may vary based on your configuration). username and assigned_to_uuid are mutually exclusive. | Optional |
