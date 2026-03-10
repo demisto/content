@@ -968,10 +968,11 @@ def checkpointhec_download_large_email(client: Client, args: dict) -> dict:
         else:
             raise DemistoException(f"Error downloading email from presigned url, status code: {eml_response.status_code}")
 
-    return fileResult(
-        filename=f"{entity}.eml",
-        data=eml,
-    )
+        return fileResult(
+            filename=f"{entity}.eml",
+            data=eml,
+        )
+    return {}
 
 
 def checkpointhec_get_ap_exceptions(client: Client, args: dict) -> CommandResults:
