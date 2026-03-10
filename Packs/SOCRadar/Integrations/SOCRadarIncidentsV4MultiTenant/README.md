@@ -106,7 +106,7 @@ To obtain your API credentials:
 | **Max incidents per fetch** | No | 10000 | Maximum incidents per fetch cycle |
 | **First fetch time** | No | 3 days | Initial time range for first fetch |
 | **Fetch Interval (Minutes)** | No | 1 | Time window for subsequent fetches |
-| **Show Content** | No | No | Show Alarm Content Field |
+| **Show Content** | No | False | Show Alarm Content Field |
 
 ### Filtering Options
 
