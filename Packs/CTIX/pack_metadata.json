@@ -1,8 +1,8 @@
 {
-    "name": "CTIX",
+    "name": "Cyware Intel Exchange",
     "description": "Cyware Threat Intelligence eXchange",
     "support": "partner",
-    "currentVersion": "2.3.0",
+    "currentVersion": "2.4.0",
     "author": "Cyware Labs",
     "url": "https://cyware.com/",
     "email": "integrations@cyware.com",
