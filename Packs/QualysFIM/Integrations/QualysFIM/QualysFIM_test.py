@@ -1,6 +1,7 @@
 import json
 from urllib.parse import urljoin
 import pytest
+from freezegun import freeze_time
 from QualysFIM import Client
 
 BASE_URL = "https://gateway.qg2.apps.qualys.eu/"
@@ -292,7 +293,7 @@ def test_fetch_incidents_command(requests_mock, authenticated_client: Client) ->
         pytest.param("status: OPEN", "createdBy.date: ['1613205600000'..'1613469600000'] and status: OPEN", id="With filter"),
     ],
 )
-@pytest.mark.freeze_time("2021-02-16 10:00:00")
+@freeze_time("2021-02-16 10:00:00", tz_offset=0)
 def test_fetch_incidents_filter_construction(
     mocker, authenticated_client: Client, fetch_filter: str | None, expected_filter: str
 ) -> None:

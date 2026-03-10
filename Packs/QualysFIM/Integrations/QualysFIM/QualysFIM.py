@@ -618,24 +618,26 @@ def fetch_incidents(
         Tuple of next_run (millisecond timestamp) and the incidents list.
     """
     demisto.debug(f"Starting fetch. Got {last_run=}.")
-    last_fetch_timestamp = last_run.get("last_fetch", None)
-    if last_fetch_timestamp:
-        next_run = datetime.fromtimestamp(last_fetch_timestamp)
-    else:
-        next_run = dateparser.parse(first_fetch_time)  # type: ignore
 
-    next_run = cast(datetime, next_run)
-    last_fetch_timestamp_new = int(datetime.timestamp(next_run) * 1000)
+    last_incident_id = last_run.get("last_fetched_id")
+    last_fetch_timestamp = last_run.get("last_fetch")
+
+    if last_fetch_timestamp:
+        last_fetch_timestamp = int(last_fetch_timestamp) * 1000
+    else:
+        first_fetch_datetime = cast(datetime, dateparser.parse(first_fetch_time))
+        last_fetch_timestamp = int(first_fetch_datetime.timestamp() * 1000)
+
     time_now = int(datetime.timestamp(datetime.now()) * 1000)
 
-    demisto.debug(f"Fetching from {last_fetch_timestamp_new=} to {time_now=} using {fetch_filter=} and {max_fetch=}.")
+    demisto.debug(f"Fetching from {last_fetch_timestamp=} to {time_now=} using {fetch_filter=} and {max_fetch=}.")
 
     if int(max_fetch) > 200:
         raise ValueError("Max Fetch is limited to 200 incidents per fetch, please choose lower number than 200.")
 
     params = {
         "pageSize": max_fetch,
-        "filter": f"createdBy.date: ['{last_fetch_timestamp_new}'..'{time_now}']",
+        "filter": f"createdBy.date: ['{last_fetch_timestamp}'..'{time_now}']",
         "sort": '[{"createdBy.date":"asc"}]',
     }
     if fetch_filter:
@@ -646,7 +648,7 @@ def fetch_incidents(
     demisto.debug(f"API returned {len(raw_response)} raw incidents.")
 
     incidents = []
-    last_incident_id = last_run.get("last_fetched_id")
+    next_fetch_timestamp = last_fetch_timestamp
 
     for idx, incident in enumerate(raw_response):
         incident = incident.get("data", None)
@@ -666,7 +668,8 @@ def fetch_incidents(
             demisto.debug(f"Incident {incident_id} missing createdBy.date, skipping")
             continue
 
-        incident_created_time = datetime.fromtimestamp(created_date / 1000)
+        incident_created_timestamp = created_date / 1000
+        incident_created_time = datetime.fromtimestamp(incident_created_timestamp)
 
         incident = {
             "name": incident_name,
@@ -675,8 +678,7 @@ def fetch_incidents(
             "incident_id": incident_id,
         }
         incidents.append(incident)
-        if incident_created_time > next_run:
-            next_run = incident_created_time
+        next_fetch_timestamp = max(incident_created_timestamp, next_fetch_timestamp)
 
     demisto.debug(f"Processed {len(incidents)} incidents after filtering.")
 
@@ -684,8 +686,7 @@ def fetch_incidents(
         last_incident_id = incidents[-1].get("incident_id")
         demisto.debug(f"Setting {last_incident_id=}.")
 
-    next_run_timestamp = int(datetime.timestamp(next_run))
-    new_last_run = {"last_fetch": next_run_timestamp, "last_fetched_id": last_incident_id}
+    new_last_run = {"last_fetch": next_fetch_timestamp, "last_fetched_id": last_incident_id}
     demisto.debug(f"Setting {new_last_run=}.")
 
     return new_last_run, incidents
