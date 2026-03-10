@@ -723,7 +723,7 @@ def change_status_command(client: Client, args: dict[str, str]) -> CommandResult
     company_id = args.get("company_id")
     update_related_finding_status_str = args.get("update_related_finding_status")
     update_related_finding_status: bool | None = (
-        argToBoolean(update_related_finding_status_str) if update_related_finding_status_str else None
+        argToBool(update_related_finding_status_str) if update_related_finding_status_str else None
     )
     email = args.get("email")
 
