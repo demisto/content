@@ -2,7 +2,6 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 
 ## Configure CrowdStrike Falcon in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL (e.g., https://api.crowdstrike.com) |  | True |
@@ -40,7 +39,6 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | Advanced: Time in minutes to look back when fetching incidents and detections | Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created. | False |
 | Advanced: Time in minutes to look back when fetching events and detections | Use this parameter to determine the look-back period for searching for events that were created before the last run time and did not match the query when they were created. | False |
 | Assets Fetch Interval | The fetch interval for assets and vulnerabilities. It is recommended to set it to 1 hour. | False |
-
 
 ### Required API client scope
 
