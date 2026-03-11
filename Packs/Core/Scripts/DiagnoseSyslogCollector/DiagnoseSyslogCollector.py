@@ -145,7 +145,7 @@ dataset = collection_auditing
     # Final output with only status and diagnosis_report
     diagnostics = {
         "status": status,
-        "diagnosis_report": "\n".join(diagnosis_report),
+        "diagnosis_report": diagnosis_report,
     }
 
     readable_output = tableToMarkdown(
