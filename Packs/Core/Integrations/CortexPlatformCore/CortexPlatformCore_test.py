@@ -10216,7 +10216,7 @@ class TestListBrokersCommand:
         """
         Given: Client and single broker_vm_name
         When: list_brokers_command is called
-        Then: Single broker returned with correct structure and APPS data
+        Then: Single broker returned with correct structure and Apps data
         """
         from CortexPlatformCore import list_brokers_command, Client
 
@@ -10237,10 +10237,10 @@ class TestListBrokersCommand:
         result = list_brokers_command(mock_client, {"broker_vm_names": "broker-01"})
 
         assert result.outputs_prefix == "Core.Broker"
-        assert result.outputs_key_field == "DEVICE_NAME"
+        assert result.outputs_key_field == "DeviceName"
         assert len(result.outputs) == 1
-        assert result.outputs[0]["DEVICE_NAME"] == "broker-01"
-        assert len(result.outputs[0]["APPS"]) == 1
+        assert result.outputs[0]["DeviceName"] == "broker-01"
+        assert len(result.outputs[0]["Apps"]) == 1
 
     def test_list_brokers_command_multiple_brokers(self, mocker):
         """
@@ -10260,8 +10260,8 @@ class TestListBrokersCommand:
         result = list_brokers_command(mock_client, {"broker_vm_names": "broker-01,broker-02,broker-03"})
 
         assert len(result.outputs) == 3
-        assert result.outputs[0]["DEVICE_NAME"] == "broker-01"
-        assert result.outputs[2]["DEVICE_NAME"] == "broker-03"
+        assert result.outputs[0]["DeviceName"] == "broker-01"
+        assert result.outputs[2]["DeviceName"] == "broker-03"
 
     def test_list_brokers_command_no_filter_default_limit(self, mocker):
         """

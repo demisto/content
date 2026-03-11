@@ -31,7 +31,11 @@ def diagnose_syslog_collector(broker_vm_name: str, timeframe: str) -> CommandRes
     if not broker_result or not isinstance(broker_result, list):
         raise DemistoException("No response received from core-list-brokers command")
 
-    broker_data_list = broker_result[0].get("Contents", [])
+    first_result = broker_result[0]
+    if not isinstance(first_result, dict):
+        raise DemistoException("Unexpected response format from core-list-brokers command")
+
+    broker_data_list = first_result.get("Contents", [])
 
     if not broker_data_list or not isinstance(broker_data_list, list):
         raise DemistoException(f"Broker VM '{broker_vm_name}' not found")
@@ -40,7 +44,7 @@ def diagnose_syslog_collector(broker_vm_name: str, timeframe: str) -> CommandRes
     demisto.debug(f"Found broker data: {broker_data}")
 
     # Check if Syslog Collector app exists and is active
-    apps = broker_data.get("APPS", [])
+    apps = broker_data.get("Apps", [])
     syslog_collector = None
 
     for app in apps:

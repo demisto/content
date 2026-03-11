@@ -16,8 +16,8 @@ def test_diagnose_syslog_collector_healthy_status(mocker):
         {
             "Contents": [
                 {
-                    "DEVICE_NAME": "test-broker",
-                    "APPS": [{"display_name": "Syslog Collector", "status": "active"}],
+                    "DeviceName": "test-broker",
+                    "Apps": [{"display_name": "Syslog Collector", "status": "active"}],
                 }
             ]
         }
@@ -45,7 +45,7 @@ def test_diagnose_syslog_collector_collector_not_configured(mocker):
     """
     from DiagnoseSyslogCollector import diagnose_syslog_collector
 
-    broker_response = [{"Contents": [{"DEVICE_NAME": "test-broker", "APPS": []}]}]
+    broker_response = [{"Contents": [{"DeviceName": "test-broker", "Apps": []}]}]
 
     mock_execute = mocker.patch.object(demisto, "executeCommand", return_value=broker_response)
     mocker.patch("DiagnoseSyslogCollector.is_error", return_value=False)
@@ -69,8 +69,8 @@ def test_diagnose_syslog_collector_inactive_with_errors(mocker):
         {
             "Contents": [
                 {
-                    "DEVICE_NAME": "test-broker",
-                    "APPS": [
+                    "DeviceName": "test-broker",
+                    "Apps": [
                         {
                             "display_name": "Syslog Collector",
                             "status": "inactive",
@@ -108,8 +108,8 @@ def test_diagnose_syslog_collector_active_with_warnings(mocker):
         {
             "Contents": [
                 {
-                    "DEVICE_NAME": "test-broker",
-                    "APPS": [{"display_name": "Syslog Collector", "status": "active"}],
+                    "DeviceName": "test-broker",
+                    "Apps": [{"display_name": "Syslog Collector", "status": "active"}],
                 }
             ]
         }
@@ -123,8 +123,10 @@ def test_diagnose_syslog_collector_active_with_warnings(mocker):
                     {
                         "_time": "2026-03-01 11:06:42 UTC",
                         "classification": "WARNING",
-                        "description": "Failed to process the packet due to a missing length header. \
-                            The packet does not conform to the expected octet-framing format.",
+                        "description": (
+                            "Failed to process the packet due to a missing length header. "
+                            "The packet does not conform to the expected octet-framing format."
+                        ),
                     },
                     {
                         "_time": "2026-03-01 11:07:15 UTC",
@@ -139,8 +141,10 @@ def test_diagnose_syslog_collector_active_with_warnings(mocker):
                     {
                         "_time": "2026-03-01 11:09:00 UTC",
                         "classification": "WARNING",
-                        "description": "Failed to process the packet due to a missing length header. \
-                            The packet does not conform to the expected octet-framing format.",
+                        "description": (
+                            "Failed to process the packet due to a missing length header. "
+                            "The packet does not conform to the expected octet-framing format."
+                        ),
                     },  # Duplicate
                 ],
             }
@@ -192,8 +196,8 @@ def test_diagnose_syslog_collector_xql_query_failure(mocker):
         {
             "Contents": [
                 {
-                    "DEVICE_NAME": "test-broker",
-                    "APPS": [{"display_name": "Syslog Collector", "status": "active"}],
+                    "DeviceName": "test-broker",
+                    "Apps": [{"display_name": "Syslog Collector", "status": "active"}],
                 }
             ]
         }

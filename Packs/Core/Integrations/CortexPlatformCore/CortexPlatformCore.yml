@@ -4141,10 +4141,10 @@ script:
       description: Retrieves information about broker VMs configured on the system.
       hidden: true
       outputs:
-        - contextPath: Core.Broker.DEVICE_NAME
+        - contextPath: Core.Broker.DeviceName
           description: The name of the broker VM device.
           type: String
-        - contextPath: Core.Broker.APPS
+        - contextPath: Core.Broker.Apps
           description: List of applications configured on the broker.
           type: Array
   runonce: false
