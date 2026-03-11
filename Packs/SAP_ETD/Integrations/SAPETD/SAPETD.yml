@@ -17,7 +17,7 @@ configuration:
   section: Connect
   additionalinfo: The SAP ETD server URL (e.g., https://<Server_Host>:<Port>).
 - name: credentials
-  display: Username and Password
+  display: Username
   required: true
   type: 9
   section: Connect
