@@ -70,7 +70,7 @@ def test_diagnose_syslog_collector_inactive_with_errors(mocker):
             "Contents": [
                 {
                     "DEVICE_NAME": "test-broker",
-                    "apps": [
+                    "APPS": [
                         {
                             "display_name": "Syslog Collector",
                             "status": "inactive",
@@ -91,9 +91,9 @@ def test_diagnose_syslog_collector_inactive_with_errors(mocker):
     result = diagnose_syslog_collector("test-broker", "24 hours")
 
     assert result.outputs["status"] == "ERROR"
-    assert "[ERROR] Connection failed" in result.outputs["diagnosis_report"]
-    assert "[ERROR] Port unavailable" in result.outputs["diagnosis_report"]
-    assert "[WARNING] High latency" in result.outputs["diagnosis_report"]
+    assert any("[ERROR] Connection failed" in item for item in result.outputs["diagnosis_report"])
+    assert any("[ERROR] Port unavailable" in item for item in result.outputs["diagnosis_report"])
+    assert any("[WARNING] High latency" in item for item in result.outputs["diagnosis_report"])
 
 
 def test_diagnose_syslog_collector_active_with_warnings(mocker):
