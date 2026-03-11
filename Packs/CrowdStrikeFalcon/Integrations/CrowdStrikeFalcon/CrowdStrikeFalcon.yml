@@ -259,7 +259,7 @@ configuration:
     Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
   options:
   - IDP Detection
-  - Endpoint Incident
+  # - Endpoint Incident
   - Endpoint Detection
   - Indicator of Misconfiguration
   - Indicator of Attack
@@ -284,7 +284,7 @@ configuration:
     Choose what to fetch -  You can choose any combination. Note: Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
   options:
   - IDP Detection
-  - Endpoint Incident
+  # - Endpoint Incident
   - Endpoint Detection
   - Mobile Detection
   - On-Demand Scans Detection

@@ -2672,14 +2672,14 @@ def get_remote_data_command(args: dict[str, Any]):
         )
         incident_type = find_incident_type(remote_incident_id)
         demisto.debug(f"Successfully identified incident type: {incident_type} for remote incident id: {remote_incident_id}")
-        if incident_type == IncidentType.INCIDENT:
-            mirrored_data, updated_object = get_remote_incident_data(remote_incident_id)
-            if updated_object:
-                demisto.debug(f"Update incident {remote_incident_id} with fields: {updated_object}")
-                detection_type = "Incident"
-                set_xsoar_entries(updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list)
+        # if incident_type == IncidentType.INCIDENT:
+        #     mirrored_data, updated_object = get_remote_incident_data(remote_incident_id)
+        #     if updated_object:
+        #         demisto.debug(f"Update incident {remote_incident_id} with fields: {updated_object}")
+        #         detection_type = "Incident"
+        #         set_xsoar_entries(updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list)
         # for legacy endpoint detections
-        elif incident_type == IncidentType.LEGACY_ENDPOINT_DETECTION:
+        if incident_type == IncidentType.LEGACY_ENDPOINT_DETECTION:
             mirrored_data, updated_object = get_remote_detection_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f"Update detection {remote_incident_id} with fields: {updated_object}")
@@ -3045,11 +3045,11 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
         incident_type = find_incident_type(remote_incident_id)
         demisto.debug(f"Successfully identified incident type: {incident_type} for remote incident id: {remote_incident_id}")
         if parsed_args.incident_changed:
-            if incident_type == IncidentType.INCIDENT:
-                result = update_remote_incident(delta, parsed_args.inc_status, remote_incident_id)
-                if result:
-                    demisto.debug(f"Incident updated successfully. Result: {result}")
-            elif incident_type in (IncidentType.ON_DEMAND, IncidentType.LEGACY_ENDPOINT_DETECTION):
+            # if incident_type == IncidentType.INCIDENT:
+            #     result = update_remote_incident(delta, parsed_args.inc_status, remote_incident_id)
+            #     if result:
+            #         demisto.debug(f"Incident updated successfully. Result: {result}")
+            if incident_type in (IncidentType.ON_DEMAND, IncidentType.LEGACY_ENDPOINT_DETECTION):
                 result = update_remote_detection(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f"Detection updated successfully. Result: {result}")
@@ -3633,12 +3633,12 @@ def fetch_items(command="fetch-incidents"):
         items.extend(fetched_detections)
 
     # Fetch Endpoint Incidents
-    if is_incident_fetch_type_selected(selected_types=fetch_incidents_or_detections):
-        # if "Incidents" in fetch_incidents_or_detections or "Endpoint Incident" in fetch_incidents_or_detections:
-        demisto.debug("CrowdStrikeFalconMsg: Start fetch Incidents")
-        demisto.debug(f"CrowdStrikeFalconMsg: Current Incidents last_run object: {incidents_last_run}")
-        fetched_incidents, incidents_last_run = fetch_endpoint_incidents(incidents_last_run, look_back, is_fetch_events)
-        items.extend(fetched_incidents)
+    # if is_incident_fetch_type_selected(selected_types=fetch_incidents_or_detections):
+    #     # if "Incidents" in fetch_incidents_or_detections or "Endpoint Incident" in fetch_incidents_or_detections:
+    #     demisto.debug("CrowdStrikeFalconMsg: Start fetch Incidents")
+    #     demisto.debug(f"CrowdStrikeFalconMsg: Current Incidents last_run object: {incidents_last_run}")
+    #     fetched_incidents, incidents_last_run = fetch_endpoint_incidents(incidents_last_run, look_back, is_fetch_events)
+    #     items.extend(fetched_incidents)
 
     # Fetch IDP Detections
     if IDP_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
