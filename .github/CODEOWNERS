@@ -55,8 +55,8 @@
 /Packs/CommonScripts/Scripts/UnEscapeIPs/* @Ni-Knight
 
 # SDK Related
-.pre-commit-config_template.yaml @YuvHayun @yedidyacohenpalo
-validation_config.toml @YuvHayun @yedidyacohenpalo
+.pre-commit-config_template.yaml @yedidyacohenpalo
+validation_config.toml @yedidyacohenpalo
 
 # XDR Related
 /Packs/CortexXDR/Integrations/ @jlevypaloalto

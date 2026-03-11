@@ -2093,6 +2093,14 @@ script:
             - 'new'
             - 'in_progress'
             - 'resolved'
+        - description: A comma-separated list of statuses to exclude.
+          isArray: true
+          name: not_status
+          predefined:
+            - 'new'
+            - 'in_progress'
+            - 'resolved'
+          auto: PREDEFINED
         - auto: PREDEFINED
           description: |
             A comma-separated list of severity levels to filter cases by.

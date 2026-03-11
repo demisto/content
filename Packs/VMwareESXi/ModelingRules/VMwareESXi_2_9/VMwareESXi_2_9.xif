@@ -98,7 +98,7 @@ alter // Extract the <PRI> value from the syslog header
 // ==========================================
 // Modeling Rule
 // ==========================================
-[MODEL: dataset="VMware_ESXi_raw"]
+[MODEL: dataset="vmware_esxi_raw"]
 
 // ------------------------------------------
 // Virtualization event type 1: Command Execution

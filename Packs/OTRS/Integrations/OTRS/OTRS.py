@@ -121,8 +121,23 @@ def get_mirroring():
 
 
 class OTRSClient:
-    def __init__(self, base_url: str, username: str, password: str, https_verify: bool, use_legacy_sessions: bool):
-        self.client = Client(base_url, username, password, https_verify=https_verify, use_legacy_sessions=use_legacy_sessions)
+    def __init__(
+        self,
+        base_url: str,
+        username: str,
+        password: str,
+        https_verify: bool,
+        use_legacy_sessions: bool,
+        webservice_config_ticket: dict | None = None,
+    ):
+        self.client = Client(
+            base_url,
+            username,
+            password,
+            https_verify=https_verify,
+            use_legacy_sessions=use_legacy_sessions,
+            webservice_config_ticket=webservice_config_ticket,
+        )
         cache = demisto.getIntegrationContext()
         # OTRS creates new session for each request, to avoid that behavior -
         # save the sessionId in integration context to use it multiple times
@@ -744,6 +759,7 @@ def main():
     username = params.get("credentials", {}).get("identifier")
     password = params.get("credentials", {}).get("password")
     use_legacy_sessions = argToBoolean(params.get("use_legacy_sessions", False))
+    webservice_config_ticket = params.get("webservice_config_ticket", None)
     verify = not params.get("unsecure", False)
     fetch_queue = params.get("fetch_queue", "Any")
     fetch_priority = params.get("fetch_priority")
@@ -753,7 +769,17 @@ def main():
     look_back_days = int(params.get("look_back", 1))
     handle_proxy(params.get("proxy"))
 
-    otrs_client = OTRSClient(base_url, username, password, https_verify=verify, use_legacy_sessions=use_legacy_sessions)
+    if webservice_config_ticket and isinstance(webservice_config_ticket, str):
+        webservice_config_ticket = safe_load_json(webservice_config_ticket)
+
+    otrs_client = OTRSClient(
+        base_url,
+        username,
+        password,
+        https_verify=verify,
+        use_legacy_sessions=use_legacy_sessions,
+        webservice_config_ticket=webservice_config_ticket,
+    )
 
     args = demisto.args()
 

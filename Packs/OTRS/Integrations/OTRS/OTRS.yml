@@ -120,6 +120,12 @@ configuration:
   - platform
   required: false
   section: Collect
+- additionalinfo: Configuration of the web service routes to take by the integration in JSON format. See integration documentation or pyOTRS for default values.
+  display: Web Service Config for Tickets
+  name: webservice_config_ticket
+  type: 12
+  required: false
+  section: Connect
 description: Service management suite that comprises ticketing, workflow automation, and notification.
 display: OTRS
 name: OTRS
@@ -477,7 +483,7 @@ script:
     - contextPath: OTRS.Ticket.Article.Body
       description: Ticket article body.
       type: string
-  dockerimage: demisto/pyotrs:1.0.0.3545032
+  dockerimage: demisto/pyotrs:1.0.0.6443371
   isfetch: true
   runonce: false
   script: '-'
