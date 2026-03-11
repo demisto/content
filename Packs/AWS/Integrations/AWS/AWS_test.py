@@ -1502,7 +1502,7 @@ def test_aws_error_handler_handle_response_error_with_request_id(mocker):
             "Type": 4,
             "ContentsFormat": "text",
             "Contents": "AWS API Error occurred while executing:"
-            " test-command with arguments: {'arg1': 'value1'}\nRequest Id: RequestId\nHTTP Status Code: 400",
+            " test-command with arguments: ['arg1']\nRequest Id: RequestId\nHTTP Status Code: 400",
             "EntryContext": None,
         }
     )
@@ -1529,7 +1529,7 @@ def test_aws_error_handler_handle_response_error_missing_metadata(mocker):
         {
             "Type": 4,
             "ContentsFormat": "text",
-            "Contents": "AWS API Error occurred while executing: test-command with arguments: {}"
+            "Contents": "AWS API Error occurred while executing: test-command with arguments: []"
             "\nRequest Id: N/A\nHTTP Status Code: N/A",
             "EntryContext": None,
         }
@@ -1642,7 +1642,7 @@ def test_aws_error_handler_handle_client_error_general_error(mocker):
             "Type": 4,
             "ContentsFormat": "text",
             "Contents": "AWS API Error occurred while executing:"
-            " test-command with arguments: {'param': 'value'}\n"
+            " test-command with arguments: ['param']\n"
             "Error Code: InvalidParameterValue\nError Message: "
             "The parameter value is invalid\nHTTP Status Code: 400\n"
             "Request ID: RequestId",
@@ -1743,7 +1743,7 @@ def test_aws_error_handler_handle_general_error_missing_metadata(mocker):
             "Type": 4,
             "ContentsFormat": "text",
             "Contents": "AWS API Error occurred while executing:"
-            " test-command with arguments: {}\n"
+            " test-command with arguments: []\n"
             "Error Code: TestError\n"
             "Error Message: Test message\nHTTP Status Code: N/A\nRequest ID: N/A",
             "EntryContext": None,
@@ -6420,7 +6420,7 @@ def test_ec2_create_security_group_command_unexpected_response(mocker):
         {
             "Type": 4,
             "ContentsFormat": "text",
-            "Contents": "AWS API Error occurred while executing:  with arguments: {}\nRequest Id: N/A\nHTTP Status Code: 400",
+            "Contents": "AWS API Error occurred while executing:  with arguments: []\nRequest Id: N/A\nHTTP Status Code: 400",
             "EntryContext": None,
         }
     )
@@ -6446,7 +6446,7 @@ def test_ec2_create_security_group_command_missing_group_id(mocker):
         {
             "Type": 4,
             "ContentsFormat": "text",
-            "Contents": "AWS API Error occurred while executing:  with arguments: {}\nRequest Id: N/A\nHTTP Status Code: 206",
+            "Contents": "AWS API Error occurred while executing:  with arguments: []\nRequest Id: N/A\nHTTP Status Code: 206",
             "EntryContext": None,
         }
     )
@@ -6839,7 +6839,7 @@ def test_ec2_authorize_security_group_egress_command_unexpected_response(mocker)
         {
             "Type": 4,
             "ContentsFormat": "text",
-            "Contents": "AWS API Error occurred while executing:  with arguments: {}\nRequest Id: N/A\nHTTP Status Code: 400",
+            "Contents": "AWS API Error occurred while executing:  with arguments: []\nRequest Id: N/A\nHTTP Status Code: 400",
             "EntryContext": None,
         }
     )

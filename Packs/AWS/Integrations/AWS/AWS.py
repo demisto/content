@@ -693,7 +693,9 @@ def build_kwargs_lambda_function_config_update(args: dict) -> dict:
             "LambdaManagedInstancesCapacityProviderConfig": {
                 "CapacityProviderArn": args.get("capacity_provider_arn"),
                 "PerExecutionEnvironmentMaxConcurrency": arg_to_number(args.get("per_execution_env_max_concurrency")),
-                "ExecutionEnvironmentMemoryGiBPerVCpu": float(execution_env_memory_per_cpu) if execution_env_memory_per_cpu else None,
+                "ExecutionEnvironmentMemoryGiBPerVCpu": float(execution_env_memory_per_cpu)
+                if execution_env_memory_per_cpu
+                else None,
             }
         },
         "DurableConfig": {
@@ -710,6 +712,7 @@ def build_kwargs_lambda_function_config_update(args: dict) -> dict:
         kwargs["FileSystemConfigs"] = arn_local_mount_path_list
 
     return kwargs
+
 
 def aws_ec2_fleet_command_launch_templates_config_args_builder(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
@@ -837,7 +840,7 @@ class AWSErrorHandler:
         """
         # Create informative error message
         detailed_error = (
-            f"AWS API Error occurred while executing: {demisto.command()} with arguments: {demisto.args()}\n"
+            f"AWS API Error occurred while executing: {demisto.command()} with arguments: {list(demisto.args().keys())}\n"
             f"Request Id: {response.get('ResponseMetadata',{}).get('RequestId', 'N/A')}\n"
             f"HTTP Status Code: {response.get('ResponseMetadata',{}).get('HTTPStatusCode', 'N/A')}"
         )
@@ -929,7 +932,7 @@ class AWSErrorHandler:
 
         # Create informative error message
         detailed_error = (
-            f"AWS API Error occurred while executing: {demisto.command()} with arguments: {demisto.args()}\n"
+            f"AWS API Error occurred while executing: {demisto.command()} with arguments: {list(demisto.args().keys())}\n"
             f"Error Code: {error_code}\n"
             f"Error Message: {error_message}\n"
             f"HTTP Status Code: {http_status}\n"
@@ -5794,6 +5797,10 @@ class Redshift:
 
         response = serialize_response_with_datetime_encoding(response)
         cluster_data = response.get("Cluster", {})
+
+        if cluster_data.get("PendingModifiedValues", {}).get("MasterUserPassword"):
+            del cluster_data["PendingModifiedValues"]["MasterUserPassword"]
+
         readable_output = tableToMarkdown(
             f"Successfully modified Redshift cluster: {cluster_data.get('ClusterIdentifier')}",
             cluster_data,
@@ -7435,6 +7442,7 @@ class Lambda:
             outputs,
             headerTransform=pascalToSpace,
             removeNull=True,
+            headers=["FunctionName", "FunctionArn", "Description", "LastModified"],
         )
 
         return CommandResults(

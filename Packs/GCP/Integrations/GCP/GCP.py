@@ -2264,7 +2264,7 @@ def bq_dataset_policy_update_command(creds: Credentials, args: dict[str, Any]) -
     user_email = args.get("user_email")
     group_email = args.get("group_email")
     role = args.get("role")
-    add_or_remove = args.get("add_or_remove")
+    action = args.get("action")
     body: dict[str, Any] = {}
 
     if (user_email and group_email) or (not user_email and not group_email):
@@ -2277,7 +2277,7 @@ def bq_dataset_policy_update_command(creds: Credentials, args: dict[str, Any]) -
     demisto.debug(f"[GCP] {current_dataset=}")
     current_access = current_dataset.get("access", [])
 
-    if add_or_remove == "remove":
+    if action == "remove":
         # Filter out access entries matching the email
         # Access entries can have 'userByEmail', 'groupByEmail', or 'domain'
         new_access = [

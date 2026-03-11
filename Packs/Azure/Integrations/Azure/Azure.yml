@@ -2887,46 +2887,46 @@ script:
       name: network_interface_name
       required: true
     outputs:
-    - contextPath: Azure.Network.Interfaces.properties.ipConfigurations
+    - contextPath: Azure.VirtualNetwork.Interfaces.properties.ipConfigurations
       description: The interface public IP address ID.
       type: Unknown
-    - contextPath: Azure.Network.Interfaces.properties.macAddress
+    - contextPath: Azure.VirtualNetwork.Interfaces.properties.macAddress
       description: The interface MAC address.
       type: String
-    - contextPath: Azure.Network.Interfaces.name
+    - contextPath: Azure.VirtualNetwork.Interfaces.name
       description: The interface name.
       type: String
-    - contextPath: Azure.Network.Interfaces.location
+    - contextPath: Azure.VirtualNetwork.Interfaces.location
       description: The interface location.
       type: String
-    - contextPath: Azure.Network.Interfaces.id
+    - contextPath: Azure.VirtualNetwork.Interfaces.id
       description: The interface ID.
       type: String
-    - contextPath: Azure.Network.Interfaces.location
+    - contextPath: Azure.VirtualNetwork.Interfaces.location
       description: The Azure region where the network interface is deployed.
       type: String
-    - contextPath: Azure.Network.Interfaces.etag
+    - contextPath: Azure.VirtualNetwork.Interfaces.etag
       description: A unique read-only string that changes whenever the network interface resource is updated.
       type: String
-    - contextPath: Azure.Network.Interfaces.kind
+    - contextPath: Azure.VirtualNetwork.Interfaces.kind
       description: The type of the network interface resource, used for Azure internal classification.
       type: String
-    - contextPath: Azure.Network.Interfaces.properties.tapConfigurations
+    - contextPath: Azure.VirtualNetwork.Interfaces.properties.tapConfigurations
       description: The list of tap configurations attached to the network interface for traffic mirroring.
       type: String
-    - contextPath: Azure.Network.Interfaces.properties.allowPort25Out
+    - contextPath: Azure.VirtualNetwork.Interfaces.properties.allowPort25Out
       description: Indicates whether outbound traffic on port 25 (SMTP) is allowed from this network interface.
       type: String
-    - contextPath: Azure.Network.Interfaces.properties.nicType
+    - contextPath: Azure.VirtualNetwork.Interfaces.properties.nicType
       description: Specifies the type of network interface, such as Standard or Elastic.
       type: String
-    - contextPath: Azure.Network.Interfaces.properties.provisioningState
+    - contextPath: Azure.VirtualNetwork.Interfaces.properties.provisioningState
       description: The current provisioning state of the network interface (e.g., Succeeded, Updating, Failed).
       type: String
-    - contextPath: Azure.Network.Interfaces.properties.dnsSettings
+    - contextPath: Azure.VirtualNetwork.Interfaces.properties.dnsSettings
       description: The DNS configuration of the network interface, including DNS servers and domain name.
       type: String
-    - contextPath: Azure.Network.Interfaces.properties.enableIPForwarding
+    - contextPath: Azure.VirtualNetwork.Interfaces.properties.enableIPForwarding
       description: Indicates whether IP forwarding is enabled for the network interface.
       type: String
   - name: azure-vn-network-interface-update
@@ -3074,49 +3074,49 @@ script:
         - Standard
         - Elastic
     outputs:
-    - contextPath: Azure.Network.Interfaces.id
+    - contextPath: Azure.VirtualNetwork.Interfaces.id
       description: The network interface ID.
       type: String
-    - contextPath: Azure.Network.Interfaces.name
+    - contextPath: Azure.VirtualNetwork.Interfaces.name
       description: The network interface name.
       type: String
-    - contextPath: Azure.Network.Interfaces.location
+    - contextPath: Azure.VirtualNetwork.Interfaces.location
       description: The Azure region where the network interface is deployed.
       type: String
-    - contextPath: Azure.Network.Interfaces.etag
+    - contextPath: Azure.VirtualNetwork.Interfaces.etag
       description: A unique read-only string that changes whenever the network interface resource is updated.
       type: String
-    - contextPath: Azure.Network.Interfaces.properties.provisioningState
+    - contextPath: Azure.VirtualNetwork.Interfaces.properties.provisioningState
       description: The current provisioning state of the network interface (e.g., Succeeded, Updating, Failed).
       type: String
-    - contextPath: Azure.Network.Interfaces.properties.ipConfigurations
+    - contextPath: Azure.VirtualNetwork.Interfaces.properties.ipConfigurations
       description: The list of IP configurations for the network interface.
       type: Unknown
-    - contextPath: Azure.Network.Interfaces.properties.dnsSettings
+    - contextPath: Azure.VirtualNetwork.Interfaces.properties.dnsSettings
       description: The DNS configuration of the network interface, including DNS servers and domain name.
       type: Unknown
-    - contextPath: Azure.Network.Interfaces.properties.macAddress
+    - contextPath: Azure.VirtualNetwork.Interfaces.properties.macAddress
       description: The MAC address of the network interface.
       type: String
-    - contextPath: Azure.Network.Interfaces.properties.enableIPForwarding
+    - contextPath: Azure.VirtualNetwork.Interfaces.properties.enableIPForwarding
       description: Indicates whether IP forwarding is enabled for the network interface.
       type: Boolean
-    - contextPath: Azure.Network.Interfaces.properties.enableAcceleratedNetworking
+    - contextPath: Azure.VirtualNetwork.Interfaces.properties.enableAcceleratedNetworking
       description: Indicates whether accelerated networking is enabled for the network interface.
       type: Boolean
-    - contextPath: Azure.Network.Interfaces.properties.networkSecurityGroup
+    - contextPath: Azure.VirtualNetwork.Interfaces.properties.networkSecurityGroup
       description: The network security group associated with the network interface.
       type: Unknown
-    - contextPath: Azure.Network.Interfaces.properties.primary
+    - contextPath: Azure.VirtualNetwork.Interfaces.properties.primary
       description: Indicates whether this is a primary network interface on a virtual machine.
       type: Boolean
-    - contextPath: Azure.Network.Interfaces.properties.virtualMachine
+    - contextPath: Azure.VirtualNetwork.Interfaces.properties.virtualMachine
       description: The reference to a virtual machine.
       type: Unknown
-    - contextPath: Azure.Network.Interfaces.properties.nicType
+    - contextPath: Azure.VirtualNetwork.Interfaces.properties.nicType
       description: The type of network interface (Standard or Elastic).
       type: String
-    - contextPath: Azure.Network.Interfaces.type
+    - contextPath: Azure.VirtualNetwork.Interfaces.type
       description: The resource type.
       type: String
   - name: azure-vm-public-ip-details-get
@@ -6456,151 +6456,151 @@ script:
     - name: next_token
       description: "The URI to fetch the next page of results."
     outputs:
-      - contextPath: Azure.Compute.VMs.properties.vmId
+      - contextPath: Azure.Compute.VirtualMachines.properties.vmId
         description: The unique ID of the virtual machine.
         type: String
-      - contextPath: Azure.Compute.VMs.properties.availabilitySet
+      - contextPath: Azure.Compute.VirtualMachines.properties.availabilitySet
         description: The availability set that the virtual machine is in.
         type: String
-      - contextPath: Azure.Compute.VMs.properties.hardwareProfile.
+      - contextPath: Azure.Compute.VirtualMachines.properties.hardwareProfile.
         description: Specifies the hardware settings for the virtual machine.
         type: Object
-      - contextPath: Azure.Compute.VMs.properties.storageProfile
+      - contextPath: Azure.Compute.VirtualMachines.properties.storageProfile
         description: Specifies the storage settings for the virtual machine disks.
         type: Object
-      - contextPath: Azure.Compute.VMs.properties.osProfile
+      - contextPath: Azure.Compute.VirtualMachines.properties.osProfile
         description: Specifies the operating system settings for the virtual machine.
         type: Object
-      - contextPath: Azure.Compute.VMs.properties.networkProfile
+      - contextPath: Azure.Compute.VirtualMachines.properties.networkProfile
         description: Specifies the network interfaces of the virtual machine.
         type: String
-      - contextPath: Azure.Compute.VMs.properties.provisioningState
+      - contextPath: Azure.Compute.VirtualMachines.properties.provisioningState
         description: The provisioning state, which only appears in the response.
         type: String
-      - contextPath: Azure.Compute.VMs.properties.additionalCapabilities
+      - contextPath: Azure.Compute.VirtualMachines.properties.additionalCapabilities
         description: Specifies additional capabilities enabled or disabled on the virtual machine.
         type: Object
-      - contextPath: Azure.Compute.VMs.properties.securityProfile
+      - contextPath: Azure.Compute.VirtualMachines.properties.securityProfile
         description: Specifies the security settings for the virtual machine.
         type: Object
-      - contextPath: Azure.Compute.VMs.properties.diagnosticsProfile
+      - contextPath: Azure.Compute.VirtualMachines.properties.diagnosticsProfile
         description: Specifies the boot diagnostic settings state.
         type: Object
-      - contextPath: Azure.Compute.VMs.properties.virtualMachineScaleSet
+      - contextPath: Azure.Compute.VirtualMachines.properties.virtualMachineScaleSet
         description: The virtual machine scale set that the virtual machine is in.
         type: Object
-      - contextPath: Azure.Compute.VMs.properties.proximityPlacementGroup
+      - contextPath: Azure.Compute.VirtualMachines.properties.proximityPlacementGroup
         description: The proximity placement group that the virtual machine is in.
         type: Object
-      - contextPath: Azure.Compute.VMs.properties.priority
+      - contextPath: Azure.Compute.VirtualMachines.properties.priority
         description: The priority for the virtual machine.
         type: String
-      - contextPath: Azure.Compute.VMs.properties.evictionPolicy
+      - contextPath: Azure.Compute.VirtualMachines.properties.evictionPolicy
         description: The eviction policy for the virtual machine.
         type: String
-      - contextPath: Azure.Compute.VMs.properties.billingProfile
+      - contextPath: Azure.Compute.VirtualMachines.properties.billingProfile
         description: Specifies the billing related details of a Azure Spot virtual machine.
         type: Object
-      - contextPath: Azure.Compute.VMs.properties.host
+      - contextPath: Azure.Compute.VirtualMachines.properties.host
         description: The host that the virtual machine is in.
         type: Object
-      - contextPath: Azure.Compute.VMs.properties.hostGroup
+      - contextPath: Azure.Compute.VirtualMachines.properties.hostGroup
         description: The host group that the virtual machine is in.
         type: Object
-      - contextPath: Azure.Compute.VMs.properties.licenseType
+      - contextPath: Azure.Compute.VirtualMachines.properties.licenseType
         description: The license type, which is for bringing your own license scenario.
         type: String
-      - contextPath: Azure.Compute.VMs.properties.extensionsTimeBudget
+      - contextPath: Azure.Compute.VirtualMachines.properties.extensionsTimeBudget
         description: Specifies the time alloted for all extensions to start.
         type: String
-      - contextPath: Azure.Compute.VMs.properties.platformFaultDomain
+      - contextPath: Azure.Compute.VirtualMachines.properties.platformFaultDomain
         description: The fault domain that the virtual machine is in.
         type: Number
-      - contextPath: Azure.Compute.VMs.properties.scheduledEventsProfile
+      - contextPath: Azure.Compute.VirtualMachines.properties.scheduledEventsProfile
         description: Specifies scheduled event related configurations.
         type: Object
-      - contextPath: Azure.Compute.VMs.properties.userData
+      - contextPath: Azure.Compute.VirtualMachines.properties.userData
         description: UserData for the VM, which must be base-64 encoded.
         type: String
-      - contextPath: Azure.Compute.VMs.properties.capacityReservation
+      - contextPath: Azure.Compute.VirtualMachines.properties.capacityReservation
         description: Specifies the capacity reservation related details of a virtual machine.
         type: Object
-      - contextPath: Azure.Compute.VMs.properties.applicationProfile
+      - contextPath: Azure.Compute.VirtualMachines.properties.applicationProfile
         description: Specifies the gallery applications that should be made available to the VM/VMSS.
         type: Object
-      - contextPath: Azure.Compute.VMs.properties.timeCreated
+      - contextPath: Azure.Compute.VirtualMachines.properties.timeCreated
         description: The time when the virtual machine was created.
         type: Date
-      - contextPath: Azure.Compute.VMs.type
+      - contextPath: Azure.Compute.VirtualMachines.type
         description: The type of the resource.
         type: String
-      - contextPath: Azure.Compute.VMs.location
+      - contextPath: Azure.Compute.VirtualMachines.location
         description: The location of the resource.
         type: String
-      - contextPath: Azure.Compute.VMs.tags
+      - contextPath: Azure.Compute.VirtualMachines.tags
         description: The tags of the resource.
         type: Unknown
-      - contextPath: Azure.Compute.VMs.id
+      - contextPath: Azure.Compute.VirtualMachines.id
         description: The ID of the resource.
         type: String
-      - contextPath: Azure.Compute.VMs.name
+      - contextPath: Azure.Compute.VirtualMachines.name
         description: The name of the resource.
         type: String
-      - contextPath: Azure.Compute.VMs.plan.name
+      - contextPath: Azure.Compute.VirtualMachines.plan.name
         description: The plan name.
         type: String
-      - contextPath: Azure.Compute.VMs.plan.publisher
+      - contextPath: Azure.Compute.VirtualMachines.plan.publisher
         description: The publisher of the plan.
         type: String
-      - contextPath: Azure.Compute.VMs.plan.product
+      - contextPath: Azure.Compute.VirtualMachines.plan.product
         description: The product of the plan.
         type: String
-      - contextPath: Azure.Compute.VMs.plan.promotionCode
+      - contextPath: Azure.Compute.VirtualMachines.plan.promotionCode
         description: The promotion code of the plan.
         type: String
-      - contextPath: Azure.Compute.VMs.resources.properties
+      - contextPath: Azure.Compute.VirtualMachines.resources.properties
         description: The properties of the resource.
         type: Object
-      - contextPath: Azure.Compute.VMs.resources.id
+      - contextPath: Azure.Compute.VirtualMachines.resources.id
         description: The ID of the resource.
         type: String
-      - contextPath: Azure.Compute.VMs.resources.name
+      - contextPath: Azure.Compute.VirtualMachines.resources.name
         description: The name of the resource.
         type: String
-      - contextPath: Azure.Compute.VMs.resources.type
+      - contextPath: Azure.Compute.VirtualMachines.resources.type
         description: The type of the resource.
         type: String
-      - contextPath: Azure.Compute.VMs.resources.location
+      - contextPath: Azure.Compute.VirtualMachines.resources.location
         description: The location of the resource.
         type: String
-      - contextPath: Azure.Compute.VMs.resources.tags
+      - contextPath: Azure.Compute.VirtualMachines.resources.tags
         description: The tags of the resource.
         type: Object
-      - contextPath: Azure.Compute.VMs.identity.principalId
+      - contextPath: Azure.Compute.VirtualMachines.identity.principalId
         description: The principal ID of the identity.
         type: String
-      - contextPath: Azure.Compute.VMs.identity.tenantId
+      - contextPath: Azure.Compute.VirtualMachines.identity.tenantId
         description: The tenant ID of the identity.
         type: String
-      - contextPath: Azure.Compute.VMs.identity.type
+      - contextPath: Azure.Compute.VirtualMachines.identity.type
         description: The type of the identity.
         type: String
-      - contextPath: Azure.Compute.VMs.identity.userAssignedIdentities
+      - contextPath: Azure.Compute.VirtualMachines.identity.userAssignedIdentities
         description: The list of user assigned identities associated with the virtual machine.
         type: String
-      - contextPath: Azure.Compute.VMs.zones
+      - contextPath: Azure.Compute.VirtualMachines.zones
         description: The zones of the virtual machine.
         type: String
-      - contextPath: Azure.Compute.VMs.extendedLocation.name
+      - contextPath: Azure.Compute.VirtualMachines.extendedLocation.name
         description: The name of the extended location.
         type: String
-      - contextPath: Azure.Compute.VMs.extendedLocation.type
+      - contextPath: Azure.Compute.VirtualMachines.extendedLocation.type
         description: The type of the extended location.
         type: String
-      - contextPath: Azure.Compute.VMs.properties.instanceView
+      - contextPath: Azure.Compute.VirtualMachines.properties.instanceView
         description: The virtual machine instance view.
         type: Object
-      - contextPath: Azure.Compute.VMsNextToken
+      - contextPath: Azure.Compute.VirtualMachinesNextToken
         description: The URI to fetch the next page of VMs. Call the same command with the next_token argument to get the next page of VMs.
         type: String
   isfetch: false

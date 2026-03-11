@@ -4456,8 +4456,8 @@ def list_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str,
         return CommandResults("No Virtual Machines found.")
 
     outputs = {
-        "Azure.Compute.VMs(val.id && val.id == obj.id)": vms_list,
-        "Azure.Compute(true)": {"VMsNextToken": response.get("nextLink")},
+        "Azure.Compute.VirtualMachines(val.id && val.id == obj.id)": vms_list,
+        "Azure.Compute(true)": {"VirtualMachinesNextToken": response.get("nextLink")},
     }
 
     title = "The list of Virtual Machines"
@@ -4663,7 +4663,7 @@ def network_interface_update_command(client: AzureClient, params: dict[str, Any]
     )
 
     return CommandResults(
-        outputs_prefix="Azure.Network.Interfaces",
+        outputs_prefix="Azure.VirtualNetwork.Interfaces",
         outputs_key_field="id",
         outputs=response,
         readable_output=human_readable,

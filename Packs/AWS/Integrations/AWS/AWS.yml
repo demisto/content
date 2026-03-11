@@ -2321,9 +2321,6 @@ script:
       - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.AllocatedStorage
         description: The allocated storage size for the DB instance specified in gibibytes (GiB).
         type: Number
-      - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.MasterUserPassword
-        description: The master credentials for the DB instance.
-        type: String
       - contextPath: AWS.RDS.DBInstances.PendingModifiedValues.Port
         description: The port for the DB instance.
         type: Number
@@ -2919,8 +2916,6 @@ script:
       - description: A comma-separated list of cluster security groups to be authorized on this cluster.
         name: cluster_security_groups
         isArray: true
-      - description: The new master user password for the cluster.
-        name: master_user_password
       - description: The name of the cluster parameter group to apply to the cluster. This change is applied only after the cluster is rebooted.
         name: cluster_parameter_group_name
       - description: The number of days that automated snapshots are retained. If the value is 0, automated snapshots are disabled.
@@ -2977,14 +2972,6 @@ script:
         name: availability_zone
       - description: The option to change the port of an Amazon Redshift cluster.
         name: port
-      - description: If true, Amazon Redshift uses Secrets Manager to manage this cluster’s admin credentials.
-        name: manage_master_password
-        auto: PREDEFINED
-        predefined:
-          - 'true'
-          - 'false'
-      - description: The ID of the Key Management Service (KMS) key used to encrypt and store the cluster’s admin credentials secret.
-        name: master_password_secret_kms_key_id
       - description: The IP address types that the cluster supports.
         name: ip_address_type
         auto: PREDEFINED
