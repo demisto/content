@@ -43,12 +43,12 @@ configuration:
   section: Collect
   advanced: true
   defaultvalue: "10000"
-  additionalinfo: Maximum number of alerts to fetch per cycle (default 10000).
+  additionalinfo: Maximum number of alerts to fetch per cycle.
 script:
   commands:
   - name: sap-etd-get-events
     description: |-
-    Gets alerts from SAP Enterprise Threat Detection. Note: This command is intended for development and debugging. Use with caution, as it may cause event duplication or exceed API rate limits.
+      Gets alerts from SAP Enterprise Threat Detection. Note: Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     deprecated: false
     arguments:
     - name: from_date
