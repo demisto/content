@@ -5561,6 +5561,7 @@ class EC2:
             raw_response=response,
         )
 
+
 class EKS:
     service = AWSServices.EKS
 

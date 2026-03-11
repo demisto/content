@@ -14107,9 +14107,6 @@ def test_allocate_hosts_command_failure(mocker):
     mock_error_handler.assert_called_once()
 
 
-# ── aws-ec2-hosts-release ─────────────────────────────────────────────────────
-
-
 def test_release_hosts_command_success(mocker):
     """
     Given: A mocked EC2 client and valid host IDs.
@@ -14165,9 +14162,6 @@ def test_release_hosts_command_partial_failure(mocker):
     assert result.outputs["Unsuccessful"][0]["ResourceId"] == "h-fail001"
     assert "h-success001" in result.readable_output
     assert "h-fail001" in result.readable_output
-
-
-# ── aws-ec2-traffic-mirror-session-create ─────────────────────────────────────
 
 
 def test_create_traffic_mirror_session_command_success(mocker):
