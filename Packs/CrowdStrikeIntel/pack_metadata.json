@@ -14,6 +14,12 @@
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "xsoar"
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }
