@@ -7391,13 +7391,13 @@ def update_integration_context_by_event_type(event_type: str, changes: Dict[str,
     """
 
     # 1. Get the current context
-    current_context = demisto.getAssetsLastRun()
+    current_context = get_integration_context()
 
     # 2. Apply the update using the helper function
     _apply_collector_changes(current_context, event_type, changes)
 
     # 3. Set the updated context back to the platform
-    demisto.setAssetsLastRun(current_context)
+    set_integration_context(current_context)
     log(event_type, f"State checkpoint saved. New line: {current_context[event_type]}")  # noqa: E501
 
 
@@ -7852,7 +7852,7 @@ async def run_full_collector_workflow(client: InsightVMClient, event_type: str, 
 
     The function signature is adapted to receive the client instance.
     """
-    integration_context = demisto.getAssetsLastRun()
+    integration_context = get_integration_context()
     log(event_type, f"Got integration_context: {integration_context}")
 
     # 1. RETRIEVE STATE
@@ -7943,7 +7943,7 @@ async def run_all_collectors(
     """
 
     try:
-        context = demisto.getAssetsLastRun()
+        context = get_integration_context()
         await ensure_report_config_exists(client, "asset", context)
         await ensure_report_config_exists(client, "vulnerability", context)
 

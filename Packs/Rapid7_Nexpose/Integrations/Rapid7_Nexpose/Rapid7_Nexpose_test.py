@@ -2435,8 +2435,8 @@ async def test_run_full_collector_workflow_success(mocker):
 
     # Mock the integration context
     mock_integration_context = {"asset": {"report_id": "test-report-id"}}
-    mocker.patch("Rapid7_Nexpose.demisto.getAssetsLastRun", return_value=mock_integration_context)
-    mock_set_integration_context = mocker.patch("Rapid7_Nexpose.demisto.setAssetsLastRun")
+    mocker.patch("Rapid7_Nexpose.get_integration_context", return_value=mock_integration_context)
+    mock_set_integration_context = mocker.patch("Rapid7_Nexpose.set_integration_context")
     mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
     mocker.patch("Rapid7_Nexpose.demisto.debug")
 
@@ -2486,8 +2486,8 @@ async def test_run_full_collector_workflow_error_handling(mocker):
 
     # Mock the integration context with a report_id to avoid the early exception
     mock_integration_context = {"vulnerability": {"report_id": "test-report-id"}}
-    mocker.patch("Rapid7_Nexpose.demisto.getAssetsLastRun", return_value=mock_integration_context)
-    mocker.patch("Rapid7_Nexpose.demisto.setAssetsLastRun")
+    mocker.patch("Rapid7_Nexpose.get_integration_context", return_value=mock_integration_context)
+    mocker.patch("Rapid7_Nexpose.set_integration_context")
     mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
     mocker.patch("Rapid7_Nexpose.demisto.debug")
 
@@ -2805,17 +2805,17 @@ def test_update_integration_context_by_event_type(mocker, initial_context, colle
       - Ensure the module health is updated
     """
     # Mock the integration context functions
-    mock_get_context = mocker.patch("Rapid7_Nexpose.demisto.getAssetsLastRun", return_value=initial_context)
-    mock_set_context = mocker.patch("Rapid7_Nexpose.demisto.setAssetsLastRun")
+    mock_get_context = mocker.patch("Rapid7_Nexpose.get_integration_context", return_value=initial_context)
+    mock_set_context = mocker.patch("Rapid7_Nexpose.set_integration_context")
     mocker.patch("Rapid7_Nexpose.demisto.debug")
 
     # Call the function under test
     update_integration_context_by_event_type(collector_type, changes)
 
-    # Verify getAssetsLastRun was called
+    # Verify get_integration_context was called
     mock_get_context.assert_called_once()
 
-    # Verify setAssetsLastRun was called with the expected context
+    # Verify set_integration_context was called with the expected context
     mock_set_context.assert_called_once_with(expected_context)
 
 
@@ -2911,17 +2911,17 @@ def test_update_integration_context_by_event_type_mismatch_updates(
       - Ensure the context is not updated when the new values are less than or equal to the existing values
     """
     # Mock the integration context functions
-    mock_get_context = mocker.patch("Rapid7_Nexpose.demisto.getAssetsLastRun", return_value=initial_context)
-    mock_set_context = mocker.patch("Rapid7_Nexpose.demisto.setAssetsLastRun")
+    mock_get_context = mocker.patch("Rapid7_Nexpose.get_integration_context", return_value=initial_context)
+    mock_set_context = mocker.patch("Rapid7_Nexpose.set_integration_context")
     mocker.patch("Rapid7_Nexpose.demisto.debug")
 
     # Call the function under test
     update_integration_context_by_event_type(collector_type, changes)
 
-    # Verify getAssetsLastRun was called
+    # Verify get_integration_context was called
     mock_get_context.assert_called_once()
 
-    # Verify setAssetsLastRun was called with the expected context
+    # Verify set_integration_context was called with the expected context
     mock_set_context.assert_called_once_with(expected_context)
 
 
