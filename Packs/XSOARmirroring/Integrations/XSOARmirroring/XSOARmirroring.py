@@ -105,18 +105,17 @@ class Client(BaseClient):
     def get_incident_types(self) -> list[dict[str, Any]]:
         return self._http_request(method="GET", url_suffix="/incidenttype")
 
-    def get_modified_incidents(self, from_timestamp: int, to_timestamp: int | None = None) -> list[str]:
+    def get_modified_incidents(self, from_timestamp: int | None = None) -> list[str]:
         """Calls the /incidents/modified endpoint to get IDs of incidents modified in the given time range.
 
         Args:
             from_timestamp: Start of the time range (epoch seconds).
-            to_timestamp: End of the time range (epoch seconds). Defaults to current time if not provided.
 
         Returns:
             A list of modified incident IDs.
         """
         params: dict[str, Any] = {"fromTimeStamp": from_timestamp}
-        demisto.debug(f"get_modified_incidents: calling GET /incidents/modified with {params=}")
+        demisto.debug(f"get_modified_incidents: calling GET /public/v1/incidents/modified with {params=}")
 
         response = self._http_request(method="GET", url_suffix="/public/v1/incidents/modified", params=params)
         demisto.debug(f"get_modified_incidents: response type={type(response).__name__} value={response}")
@@ -837,7 +836,7 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
     :rtype: ``GetModifiedRemoteDataResponse``
     """
     remote_args = GetModifiedRemoteDataArgs(args)
-    # last_update is an ISO8601 string (e.g. '2026-03-10T18:39:56.138527333Z'); fall back to now minus 1 minute if empty.
+    # last_update is an ISO8601 string (e.g. '2026-01-10T00:00:00.123456789Z'); fall back to now minus 1 minute if empty.
     if not remote_args.last_update:
         from_timestamp = int((datetime.utcnow() - timedelta(minutes=1)).timestamp())
         demisto.debug(f"get-modified-remote-data: last_update was empty, defaulting to now minus 1 minute (epoch: {from_timestamp})")
