@@ -236,21 +236,29 @@ def login():
     try:
         res_json = parse_json_response(res)
         global IS_V7_9
-        # ArcSight 7.9+ (no namespaces)
+
         if "loginResponse" in res_json and "return" in res_json.get("loginResponse", {}):
+            demisto.debug("[login] Using ArcSight 7.9+ API (no namespaces)")
             auth_token = res_json["loginResponse"]["return"]
             IS_V7_9 = True
-        # Legacy ArcSight (with namespaces)
+
         elif "log.loginResponse" in res_json and "log.return" in res_json.get("log.loginResponse", {}):
+            demisto.debug("[login] Using Legacy ArcSight API (with namespaces)")
             auth_token = res_json["log.loginResponse"]["log.return"]
             IS_V7_9 = False
         else:
             return_error("Failed to login. Have not received token after login")
             return None
 
+        init_integration_context = demisto.getIntegrationContext()
+        init_integration_context["is_v7_9"] = IS_V7_9
+
         if demisto.command() not in ["test-module", "fetch-incidents"]:
             # this is done to bypass setting integration context outside of the cli
-            demisto.setIntegrationContext({"auth_token": auth_token, "is_v7_9": IS_V7_9})
+            init_integration_context["auth_token"] = auth_token
+
+        demisto.setIntegrationContext(init_integration_context)
+        demisto.debug(f"[login] Successfully logged in. Set IS_V7_9 to {IS_V7_9}")
         return auth_token
     except ValueError:
         return_error("Failed to login. Please check integration parameters")
@@ -1013,7 +1021,7 @@ MAX_UNIQUE: int
 FETCH_CHUNK_SIZE: int
 BASE_URL: str
 VERIFY_CERTIFICATE: bool
-IS_V7_9: bool = False
+IS_V7_9: bool
 
 
 def _ns_key(prefix: str, key: str) -> str:
@@ -1046,12 +1054,12 @@ def main():
     use_rest = demisto.params().get("use_rest", False)
 
     global AUTH_TOKEN
-    integration_context = demisto.getIntegrationContext()
-    AUTH_TOKEN = integration_context.get("auth_token") or login()
+    AUTH_TOKEN = demisto.getIntegrationContext().get("auth_token") or login()
 
     global IS_V7_9
-    # At this point, login() has already been called, and is_v7_9 is set within the login() function.
-    IS_V7_9 = integration_context.get("is_v7_9", False)
+    # Re-read integration context AFTER potential login() call, which updates is_v7_9 flag
+    IS_V7_9 = demisto.getIntegrationContext().get("is_v7_9", False)
+    demisto.debug(f"[main] IS_V7_9 set to {IS_V7_9}")
 
     use_detect_api = demisto.params().get("productVersion") == "7.4 and above"
 
