@@ -5,7 +5,7 @@ name: SAPETD
 display: SAP Enterprise Threat Detection
 category: Analytics & SIEM
 provider: SAP
-description: SAP Enterprise Threat Detection fetches alerts from SAP ETD for ingestion into Cortex XSIAM.
+description: Use the SAP Enterprise Threat Detection integration to fetch alerts from SAP ETD for ingestion into Cortex XSIAM.
 sectionorder:
 - Connect
 - Collect
