@@ -1319,3 +1319,202 @@ def test_update_remote_system_with_entries(mocker):
 
         assert delta["classification"] == "Unknown"
         assert delta["determination"] == "NotAvailable"
+
+
+# ========== NEW COMMAND TESTS ==========
+
+
+class TestAlertsListCommand:
+    MOCK_ALERTS_RESPONSE = {
+        "value": [
+            {"id": "alert-1", "title": "Suspicious activity", "severity": "High", "status": "New",
+             "category": "Malware", "createdDateTime": "2026-01-01T00:00:00Z", "assignedTo": "user@contoso.com"},
+            {"id": "alert-2", "title": "Phishing attempt", "severity": "Medium", "status": "InProgress",
+             "category": "Phishing", "createdDateTime": "2026-01-02T00:00:00Z", "assignedTo": None},
+        ]
+    }
+
+    def test_alerts_list(self, mocker):
+        from Microsoft365Defender import microsoft_365_defender_alerts_list_command
+        client = mock_client(mocker, "alerts_list", self.MOCK_ALERTS_RESPONSE)
+        results = microsoft_365_defender_alerts_list_command(client, {"limit": "10"})
+        assert len(results.outputs) == 2
+        assert results.outputs[0]["id"] == "alert-1"
+        assert "Alerts:" in results.readable_output
+
+    def test_alerts_list_empty(self, mocker):
+        from Microsoft365Defender import microsoft_365_defender_alerts_list_command
+        client = mock_client(mocker, "alerts_list", {"value": []})
+        results = microsoft_365_defender_alerts_list_command(client, {"limit": "10"})
+        assert results.readable_output == "No alerts found"
+
+
+class TestAlertGetCommand:
+    MOCK_ALERT = {"id": "alert-1", "title": "Suspicious activity", "severity": "High", "status": "New"}
+
+    def test_alert_get(self, mocker):
+        from Microsoft365Defender import microsoft_365_defender_alert_get_command
+        client = mock_client(mocker, "get_alert", self.MOCK_ALERT)
+        results = microsoft_365_defender_alert_get_command(client, {"alert_id": "alert-1"})
+        assert results.outputs["id"] == "alert-1"
+
+
+class TestAlertUpdateCommand:
+    MOCK_UPDATED_ALERT = {"id": "alert-1", "status": "Resolved", "classification": "TruePositive"}
+
+    def test_alert_update(self, mocker):
+        from Microsoft365Defender import microsoft_365_defender_alert_update_command
+        client = mock_client(mocker, "update_alert", self.MOCK_UPDATED_ALERT)
+        results = microsoft_365_defender_alert_update_command(
+            client, {"alert_id": "alert-1", "status": "Resolved", "classification": "TruePositive"}
+        )
+        assert results.outputs["status"] == "Resolved"
+
+
+class TestAlertCreateCommentCommand:
+    MOCK_COMMENT_RESPONSE = {"id": "comment-1", "comment": "Test comment", "createdBy": "user@contoso.com"}
+
+    def test_alert_create_comment(self, mocker):
+        from Microsoft365Defender import microsoft_365_defender_alert_create_comment_command
+        client = mock_client(mocker, "create_alert_comment", self.MOCK_COMMENT_RESPONSE)
+        results = microsoft_365_defender_alert_create_comment_command(
+            client, {"alert_id": "alert-1", "comment": "Test comment"}
+        )
+        assert "Comment added" in results.readable_output
+
+
+class TestIncidentAlertsListCommand:
+    MOCK_INCIDENT_ALERTS = {
+        "value": [
+            {"id": "alert-1", "title": "Alert in incident", "severity": "High", "status": "New", "category": "Malware"},
+        ]
+    }
+
+    def test_incident_alerts_list(self, mocker):
+        from Microsoft365Defender import microsoft_365_defender_incident_alerts_list_command
+        client = mock_client(mocker, "get_incident_alerts", self.MOCK_INCIDENT_ALERTS)
+        results = microsoft_365_defender_incident_alerts_list_command(client, {"incident_id": "264"})
+        assert len(results.outputs) == 1
+        assert results.outputs[0]["id"] == "alert-1"
+
+
+class TestMachineIsolateCommand:
+    MOCK_ACTION = {"id": "action-1", "type": "Isolate", "status": "Pending", "machineId": "machine-1"}
+
+    def test_machine_isolate(self, mocker):
+        from Microsoft365Defender import microsoft_365_defender_machine_isolate_command
+        client = mock_client(mocker, "isolate_machine", self.MOCK_ACTION)
+        results = microsoft_365_defender_machine_isolate_command(
+            client, {"machine_id": "machine-1", "comment": "Test isolation", "isolation_type": "Full"}
+        )
+        assert results.outputs["type"] == "Isolate"
+        assert results.outputs["status"] == "Pending"
+
+
+class TestMachineUnisolateCommand:
+    MOCK_ACTION = {"id": "action-2", "type": "Unisolate", "status": "Pending", "machineId": "machine-1"}
+
+    def test_machine_unisolate(self, mocker):
+        from Microsoft365Defender import microsoft_365_defender_machine_unisolate_command
+        client = mock_client(mocker, "unisolate_machine", self.MOCK_ACTION)
+        results = microsoft_365_defender_machine_unisolate_command(
+            client, {"machine_id": "machine-1", "comment": "Release from isolation"}
+        )
+        assert results.outputs["type"] == "Unisolate"
+
+
+class TestMachineScanCommand:
+    MOCK_ACTION = {"id": "action-3", "type": "RunAntiVirusScan", "status": "Pending", "machineId": "machine-1"}
+
+    def test_machine_scan(self, mocker):
+        from Microsoft365Defender import microsoft_365_defender_machine_scan_command
+        client = mock_client(mocker, "run_antivirus_scan", self.MOCK_ACTION)
+        results = microsoft_365_defender_machine_scan_command(
+            client, {"machine_id": "machine-1", "scan_type": "Quick"}
+        )
+        assert results.outputs["type"] == "RunAntiVirusScan"
+
+
+class TestMachineCollectInvestigationPackageCommand:
+    MOCK_ACTION = {"id": "action-4", "type": "CollectInvestigationPackage", "status": "Pending"}
+
+    def test_collect_package(self, mocker):
+        from Microsoft365Defender import microsoft_365_defender_machine_collect_investigation_package_command
+        client = mock_client(mocker, "collect_investigation_package", self.MOCK_ACTION)
+        results = microsoft_365_defender_machine_collect_investigation_package_command(
+            client, {"machine_id": "machine-1"}
+        )
+        assert results.outputs["type"] == "CollectInvestigationPackage"
+
+
+class TestMachineRestrictExecutionCommand:
+    MOCK_ACTION = {"id": "action-5", "type": "RestrictCodeExecution", "status": "Pending"}
+
+    def test_restrict_execution(self, mocker):
+        from Microsoft365Defender import microsoft_365_defender_machine_restrict_execution_command
+        client = mock_client(mocker, "restrict_code_execution", self.MOCK_ACTION)
+        results = microsoft_365_defender_machine_restrict_execution_command(
+            client, {"machine_id": "machine-1"}
+        )
+        assert results.outputs["type"] == "RestrictCodeExecution"
+
+
+class TestMachineUnrestrictExecutionCommand:
+    MOCK_ACTION = {"id": "action-6", "type": "UnrestrictCodeExecution", "status": "Pending"}
+
+    def test_unrestrict_execution(self, mocker):
+        from Microsoft365Defender import microsoft_365_defender_machine_unrestrict_execution_command
+        client = mock_client(mocker, "unrestrict_code_execution", self.MOCK_ACTION)
+        results = microsoft_365_defender_machine_unrestrict_execution_command(
+            client, {"machine_id": "machine-1"}
+        )
+        assert results.outputs["type"] == "UnrestrictCodeExecution"
+
+
+class TestIndicatorCreateCommand:
+    MOCK_INDICATOR = {
+        "id": "ind-1", "indicatorValue": "220.10.10.1", "indicatorType": "IpAddress",
+        "action": "AlertAndBlock", "title": "Malicious IP", "severity": "High",
+    }
+
+    def test_indicator_create(self, mocker):
+        from Microsoft365Defender import microsoft_365_defender_indicator_create_command
+        client = mock_client(mocker, "create_indicator", self.MOCK_INDICATOR)
+        results = microsoft_365_defender_indicator_create_command(
+            client, {
+                "indicator_value": "220.10.10.1", "indicator_type": "IpAddress",
+                "action": "AlertAndBlock", "title": "Malicious IP", "description": "Known C2",
+            }
+        )
+        assert results.outputs["indicatorValue"] == "220.10.10.1"
+        assert "Indicator created" in results.readable_output
+
+
+class TestIndicatorListCommand:
+    MOCK_INDICATORS = {
+        "value": [
+            {"id": "ind-1", "indicatorValue": "220.10.10.1", "indicatorType": "IpAddress",
+             "action": "AlertAndBlock", "severity": "High", "title": "Bad IP", "expirationTime": None},
+        ]
+    }
+
+    def test_indicator_list(self, mocker):
+        from Microsoft365Defender import microsoft_365_defender_indicator_list_command
+        client = mock_client(mocker, "list_indicators", self.MOCK_INDICATORS)
+        results = microsoft_365_defender_indicator_list_command(client, {"limit": "10"})
+        assert len(results.outputs) == 1
+        assert results.outputs[0]["indicatorValue"] == "220.10.10.1"
+
+    def test_indicator_list_empty(self, mocker):
+        from Microsoft365Defender import microsoft_365_defender_indicator_list_command
+        client = mock_client(mocker, "list_indicators", {"value": []})
+        results = microsoft_365_defender_indicator_list_command(client, {"limit": "10"})
+        assert results.readable_output == "No indicators found"
+
+
+class TestIndicatorDeleteCommand:
+    def test_indicator_delete(self, mocker):
+        from Microsoft365Defender import microsoft_365_defender_indicator_delete_command
+        client = mock_client(mocker, "delete_indicator", None)
+        results = microsoft_365_defender_indicator_delete_command(client, {"indicator_id": "ind-1"})
+        assert "deleted successfully" in results.readable_output

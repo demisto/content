@@ -256,6 +256,155 @@ class Client:
             method="POST", url_suffix="api/advancedhunting/run", json_data={"Query": query}, timeout=timeout
         )
 
+    # ---- Alert Management ----
+
+    @logger
+    def alerts_list(
+        self,
+        timeout: int,
+        limit: int = MAX_ENTRIES,
+        severity: Optional[str] = None,
+        status: Optional[str] = None,
+        category: Optional[str] = None,
+        skip: Optional[int] = None,
+    ) -> dict:
+        params: dict = {"$top": limit}
+        filter_parts: list = []
+        if severity:
+            filter_parts.append(f"severity eq '{severity}'")
+        if status:
+            filter_parts.append(f"status eq '{status}'")
+        if category:
+            filter_parts.append(f"category eq '{category}'")
+        if filter_parts:
+            params["$filter"] = " and ".join(filter_parts)
+        if skip:
+            params["$skip"] = skip
+        return self.ms_client.http_request(method="GET", url_suffix="api/alerts", timeout=timeout, params=params)
+
+    @logger
+    def get_alert(self, alert_id: str, timeout: int) -> dict:
+        return self.ms_client.http_request(method="GET", url_suffix=f"api/alerts/{alert_id}", timeout=timeout)
+
+    @logger
+    def update_alert(
+        self,
+        alert_id: str,
+        timeout: int,
+        status: Optional[str] = None,
+        classification: Optional[str] = None,
+        determination: Optional[str] = None,
+        assigned_to: Optional[str] = None,
+    ) -> dict:
+        body = assign_params(
+            status=status,
+            classification=classification,
+            determination=determination,
+            assignedTo=assigned_to,
+        )
+        return self.ms_client.http_request(
+            method="PATCH", url_suffix=f"api/alerts/{alert_id}", json_data=body, timeout=timeout
+        )
+
+    @logger
+    def create_alert_comment(self, alert_id: str, comment: str, timeout: int) -> dict:
+        body = {"Comment": comment}
+        return self.ms_client.http_request(
+            method="POST", url_suffix=f"api/alerts/{alert_id}/comments", json_data=body, timeout=timeout
+        )
+
+    @logger
+    def get_incident_alerts(self, incident_id: int, timeout: int) -> dict:
+        return self.ms_client.http_request(
+            method="GET", url_suffix=f"api/incidents/{incident_id}/alerts", timeout=timeout
+        )
+
+    # ---- Device Response Actions ----
+
+    @logger
+    def isolate_machine(self, machine_id: str, comment: str, isolation_type: str, timeout: int) -> dict:
+        body = {"Comment": comment, "IsolationType": isolation_type}
+        return self.ms_client.http_request(
+            method="POST", url_suffix=f"api/machines/{machine_id}/isolate", json_data=body, timeout=timeout
+        )
+
+    @logger
+    def unisolate_machine(self, machine_id: str, comment: str, timeout: int) -> dict:
+        body = {"Comment": comment}
+        return self.ms_client.http_request(
+            method="POST", url_suffix=f"api/machines/{machine_id}/unisolate", json_data=body, timeout=timeout
+        )
+
+    @logger
+    def run_antivirus_scan(self, machine_id: str, comment: str, scan_type: str, timeout: int) -> dict:
+        body = {"Comment": comment, "ScanType": scan_type}
+        return self.ms_client.http_request(
+            method="POST", url_suffix=f"api/machines/{machine_id}/runAntiVirusScan", json_data=body, timeout=timeout
+        )
+
+    @logger
+    def collect_investigation_package(self, machine_id: str, comment: str, timeout: int) -> dict:
+        body = {"Comment": comment}
+        return self.ms_client.http_request(
+            method="POST", url_suffix=f"api/machines/{machine_id}/collectInvestigationPackage", json_data=body, timeout=timeout
+        )
+
+    @logger
+    def restrict_code_execution(self, machine_id: str, comment: str, timeout: int) -> dict:
+        body = {"Comment": comment}
+        return self.ms_client.http_request(
+            method="POST", url_suffix=f"api/machines/{machine_id}/restrictCodeExecution", json_data=body, timeout=timeout
+        )
+
+    @logger
+    def unrestrict_code_execution(self, machine_id: str, comment: str, timeout: int) -> dict:
+        body = {"Comment": comment}
+        return self.ms_client.http_request(
+            method="POST", url_suffix=f"api/machines/{machine_id}/unrestrictCodeExecution", json_data=body, timeout=timeout
+        )
+
+    # ---- Threat Indicators ----
+
+    @logger
+    def create_indicator(
+        self,
+        indicator_value: str,
+        indicator_type: str,
+        action: str,
+        title: str,
+        description: str,
+        timeout: int,
+        severity: Optional[str] = None,
+        expiration_time: Optional[str] = None,
+        recommended_actions: Optional[str] = None,
+    ) -> dict:
+        body = assign_params(
+            indicatorValue=indicator_value,
+            indicatorType=indicator_type,
+            action=action,
+            title=title,
+            description=description,
+            severity=severity,
+            expirationTime=expiration_time,
+            recommendedActions=recommended_actions,
+        )
+        return self.ms_client.http_request(
+            method="POST", url_suffix="api/indicators", json_data=body, timeout=timeout
+        )
+
+    @logger
+    def list_indicators(self, timeout: int, limit: int = MAX_ENTRIES, skip: Optional[int] = None) -> dict:
+        params: dict = {"$top": limit}
+        if skip:
+            params["$skip"] = skip
+        return self.ms_client.http_request(method="GET", url_suffix="api/indicators", timeout=timeout, params=params)
+
+    @logger
+    def delete_indicator(self, indicator_id: str, timeout: int) -> None:
+        self.ms_client.http_request(
+            method="DELETE", url_suffix=f"api/indicators/{indicator_id}", timeout=timeout, resp_type="response"
+        )
+
 
 @logger
 def start_auth(client: Client) -> CommandResults:
@@ -1243,6 +1392,287 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 """ MAIN FUNCTION """
 
 
+""" NEW COMMAND FUNCTIONS """
+
+
+@logger
+def microsoft_365_defender_alerts_list_command(client: Client, args: dict) -> CommandResults:
+    limit = arg_to_number(args.get("limit", MAX_ENTRIES), arg_name="limit", required=True)
+    severity = args.get("severity")
+    status = args.get("status")
+    category = args.get("category")
+    offset = arg_to_number(args.get("offset"))
+    timeout = arg_to_number(args.get("timeout", TIMEOUT))
+
+    response = client.alerts_list(
+        timeout=timeout, limit=limit, severity=severity, status=status, category=category, skip=offset
+    )
+    raw_alerts = response.get("value", [])
+    if raw_alerts:
+        headers = ["id", "title", "severity", "status", "category", "createdDateTime", "assignedTo"]
+        readable = [{k: alert.get(k) for k in headers} for alert in raw_alerts]
+        human_readable = tableToMarkdown(name="Alerts:", t=readable, headers=headers)
+    else:
+        human_readable = "No alerts found"
+
+    return CommandResults(
+        outputs_prefix="Microsoft365Defender.Alert",
+        outputs_key_field="id",
+        outputs=raw_alerts,
+        readable_output=human_readable,
+    )
+
+
+@logger
+def microsoft_365_defender_alert_get_command(client: Client, args: dict) -> CommandResults:
+    alert_id = args.get("alert_id", "")
+    timeout = arg_to_number(args.get("timeout", TIMEOUT))
+
+    alert = client.get_alert(alert_id=alert_id, timeout=timeout)
+    human_readable = tableToMarkdown(name=f"Alert {alert_id}:", t=alert)
+
+    return CommandResults(
+        outputs_prefix="Microsoft365Defender.Alert",
+        outputs_key_field="id",
+        outputs=alert,
+        readable_output=human_readable,
+    )
+
+
+@logger
+def microsoft_365_defender_alert_update_command(client: Client, args: dict) -> CommandResults:
+    alert_id = args.get("alert_id", "")
+    timeout = arg_to_number(args.get("timeout", TIMEOUT))
+    status = args.get("status")
+    classification = args.get("classification")
+    determination = args.get("determination")
+    assigned_to = args.get("assigned_to")
+
+    alert = client.update_alert(
+        alert_id=alert_id, timeout=timeout, status=status,
+        classification=classification, determination=determination, assigned_to=assigned_to,
+    )
+    human_readable = tableToMarkdown(name=f"Updated Alert {alert_id}:", t=alert)
+
+    return CommandResults(
+        outputs_prefix="Microsoft365Defender.Alert",
+        outputs_key_field="id",
+        outputs=alert,
+        readable_output=human_readable,
+    )
+
+
+@logger
+def microsoft_365_defender_alert_create_comment_command(client: Client, args: dict) -> CommandResults:
+    alert_id = args.get("alert_id", "")
+    comment = args.get("comment", "")
+    timeout = arg_to_number(args.get("timeout", TIMEOUT))
+
+    response = client.create_alert_comment(alert_id=alert_id, comment=comment, timeout=timeout)
+    human_readable = f"Comment added to alert {alert_id} successfully."
+
+    return CommandResults(
+        outputs_prefix="Microsoft365Defender.AlertComment",
+        outputs=response,
+        readable_output=human_readable,
+    )
+
+
+@logger
+def microsoft_365_defender_incident_alerts_list_command(client: Client, args: dict) -> CommandResults:
+    incident_id = arg_to_number(args.get("incident_id"), arg_name="incident_id", required=True)
+    timeout = arg_to_number(args.get("timeout", TIMEOUT))
+
+    response = client.get_incident_alerts(incident_id=incident_id, timeout=timeout)
+    raw_alerts = response.get("value", []) if isinstance(response, dict) else response
+    if not isinstance(raw_alerts, list):
+        raw_alerts = [raw_alerts] if raw_alerts else []
+
+    if raw_alerts:
+        headers = ["id", "title", "severity", "status", "category"]
+        readable = [{k: alert.get(k) for k in headers} for alert in raw_alerts]
+        human_readable = tableToMarkdown(name=f"Alerts for Incident {incident_id}:", t=readable, headers=headers)
+    else:
+        human_readable = f"No alerts found for incident {incident_id}"
+
+    return CommandResults(
+        outputs_prefix="Microsoft365Defender.IncidentAlert",
+        outputs_key_field="id",
+        outputs=raw_alerts,
+        readable_output=human_readable,
+    )
+
+
+@logger
+def microsoft_365_defender_machine_isolate_command(client: Client, args: dict) -> CommandResults:
+    machine_id = args.get("machine_id", "")
+    comment = args.get("comment", "Isolated via Cortex XSOAR")
+    isolation_type = args.get("isolation_type", "Full")
+    timeout = arg_to_number(args.get("timeout", TIMEOUT))
+
+    response = client.isolate_machine(
+        machine_id=machine_id, comment=comment, isolation_type=isolation_type, timeout=timeout
+    )
+    human_readable = tableToMarkdown(name=f"Machine {machine_id} isolation initiated:", t=response)
+
+    return CommandResults(
+        outputs_prefix="Microsoft365Defender.MachineAction",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=human_readable,
+    )
+
+
+@logger
+def microsoft_365_defender_machine_unisolate_command(client: Client, args: dict) -> CommandResults:
+    machine_id = args.get("machine_id", "")
+    comment = args.get("comment", "Released from isolation via Cortex XSOAR")
+    timeout = arg_to_number(args.get("timeout", TIMEOUT))
+
+    response = client.unisolate_machine(machine_id=machine_id, comment=comment, timeout=timeout)
+    human_readable = tableToMarkdown(name=f"Machine {machine_id} unisolation initiated:", t=response)
+
+    return CommandResults(
+        outputs_prefix="Microsoft365Defender.MachineAction",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=human_readable,
+    )
+
+
+@logger
+def microsoft_365_defender_machine_scan_command(client: Client, args: dict) -> CommandResults:
+    machine_id = args.get("machine_id", "")
+    comment = args.get("comment", "AV scan initiated via Cortex XSOAR")
+    scan_type = args.get("scan_type", "Quick")
+    timeout = arg_to_number(args.get("timeout", TIMEOUT))
+
+    response = client.run_antivirus_scan(
+        machine_id=machine_id, comment=comment, scan_type=scan_type, timeout=timeout
+    )
+    human_readable = tableToMarkdown(name=f"AV scan on machine {machine_id} initiated:", t=response)
+
+    return CommandResults(
+        outputs_prefix="Microsoft365Defender.MachineAction",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=human_readable,
+    )
+
+
+@logger
+def microsoft_365_defender_machine_collect_investigation_package_command(client: Client, args: dict) -> CommandResults:
+    machine_id = args.get("machine_id", "")
+    comment = args.get("comment", "Investigation package collection via Cortex XSOAR")
+    timeout = arg_to_number(args.get("timeout", TIMEOUT))
+
+    response = client.collect_investigation_package(machine_id=machine_id, comment=comment, timeout=timeout)
+    human_readable = tableToMarkdown(name=f"Investigation package collection on {machine_id} initiated:", t=response)
+
+    return CommandResults(
+        outputs_prefix="Microsoft365Defender.MachineAction",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=human_readable,
+    )
+
+
+@logger
+def microsoft_365_defender_machine_restrict_execution_command(client: Client, args: dict) -> CommandResults:
+    machine_id = args.get("machine_id", "")
+    comment = args.get("comment", "Code execution restricted via Cortex XSOAR")
+    timeout = arg_to_number(args.get("timeout", TIMEOUT))
+
+    response = client.restrict_code_execution(machine_id=machine_id, comment=comment, timeout=timeout)
+    human_readable = tableToMarkdown(name=f"Code execution restriction on {machine_id} initiated:", t=response)
+
+    return CommandResults(
+        outputs_prefix="Microsoft365Defender.MachineAction",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=human_readable,
+    )
+
+
+@logger
+def microsoft_365_defender_machine_unrestrict_execution_command(client: Client, args: dict) -> CommandResults:
+    machine_id = args.get("machine_id", "")
+    comment = args.get("comment", "Code execution restriction removed via Cortex XSOAR")
+    timeout = arg_to_number(args.get("timeout", TIMEOUT))
+
+    response = client.unrestrict_code_execution(machine_id=machine_id, comment=comment, timeout=timeout)
+    human_readable = tableToMarkdown(name=f"Code execution unrestriction on {machine_id} initiated:", t=response)
+
+    return CommandResults(
+        outputs_prefix="Microsoft365Defender.MachineAction",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=human_readable,
+    )
+
+
+@logger
+def microsoft_365_defender_indicator_create_command(client: Client, args: dict) -> CommandResults:
+    indicator_value = args.get("indicator_value", "")
+    indicator_type = args.get("indicator_type", "")
+    action = args.get("action", "Alert")
+    title = args.get("title", "")
+    description = args.get("description", "")
+    severity = args.get("severity")
+    expiration_time = args.get("expiration_time")
+    recommended_actions = args.get("recommended_actions")
+    timeout = arg_to_number(args.get("timeout", TIMEOUT))
+
+    response = client.create_indicator(
+        indicator_value=indicator_value, indicator_type=indicator_type, action=action,
+        title=title, description=description, severity=severity,
+        expiration_time=expiration_time, recommended_actions=recommended_actions, timeout=timeout,
+    )
+    human_readable = tableToMarkdown(name="Indicator created:", t=response)
+
+    return CommandResults(
+        outputs_prefix="Microsoft365Defender.Indicator",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=human_readable,
+    )
+
+
+@logger
+def microsoft_365_defender_indicator_list_command(client: Client, args: dict) -> CommandResults:
+    limit = arg_to_number(args.get("limit", MAX_ENTRIES), arg_name="limit", required=True)
+    offset = arg_to_number(args.get("offset"))
+    timeout = arg_to_number(args.get("timeout", TIMEOUT))
+
+    response = client.list_indicators(timeout=timeout, limit=limit, skip=offset)
+    raw_indicators = response.get("value", [])
+    if raw_indicators:
+        headers = ["id", "indicatorValue", "indicatorType", "action", "severity", "title", "expirationTime"]
+        readable = [{k: ind.get(k) for k in headers} for ind in raw_indicators]
+        human_readable = tableToMarkdown(name="Indicators:", t=readable, headers=headers)
+    else:
+        human_readable = "No indicators found"
+
+    return CommandResults(
+        outputs_prefix="Microsoft365Defender.Indicator",
+        outputs_key_field="id",
+        outputs=raw_indicators,
+        readable_output=human_readable,
+    )
+
+
+@logger
+def microsoft_365_defender_indicator_delete_command(client: Client, args: dict) -> CommandResults:
+    indicator_id = args.get("indicator_id", "")
+    timeout = arg_to_number(args.get("timeout", TIMEOUT))
+
+    client.delete_indicator(indicator_id=indicator_id, timeout=timeout)
+
+    return CommandResults(
+        readable_output=f"Indicator {indicator_id} deleted successfully.",
+    )
+
+
 def main() -> None:
     """main function, parses params and runs command functions
 
@@ -1357,6 +1787,65 @@ def main() -> None:
 
         elif command == "get-mapping-fields":
             return_results(get_mapping_fields_command())
+
+        # ---- Alert Management Commands ----
+        elif command == "microsoft-365-defender-alerts-list":
+            test_context_for_token(client)
+            return_results(microsoft_365_defender_alerts_list_command(client, args))
+
+        elif command == "microsoft-365-defender-alert-get":
+            test_context_for_token(client)
+            return_results(microsoft_365_defender_alert_get_command(client, args))
+
+        elif command == "microsoft-365-defender-alert-update":
+            test_context_for_token(client)
+            return_results(microsoft_365_defender_alert_update_command(client, args))
+
+        elif command == "microsoft-365-defender-alert-create-comment":
+            test_context_for_token(client)
+            return_results(microsoft_365_defender_alert_create_comment_command(client, args))
+
+        elif command == "microsoft-365-defender-incident-alerts-list":
+            test_context_for_token(client)
+            return_results(microsoft_365_defender_incident_alerts_list_command(client, args))
+
+        # ---- Device Response Action Commands ----
+        elif command == "microsoft-365-defender-machine-isolate":
+            test_context_for_token(client)
+            return_results(microsoft_365_defender_machine_isolate_command(client, args))
+
+        elif command == "microsoft-365-defender-machine-unisolate":
+            test_context_for_token(client)
+            return_results(microsoft_365_defender_machine_unisolate_command(client, args))
+
+        elif command == "microsoft-365-defender-machine-scan":
+            test_context_for_token(client)
+            return_results(microsoft_365_defender_machine_scan_command(client, args))
+
+        elif command == "microsoft-365-defender-machine-collect-investigation-package":
+            test_context_for_token(client)
+            return_results(microsoft_365_defender_machine_collect_investigation_package_command(client, args))
+
+        elif command == "microsoft-365-defender-machine-restrict-execution":
+            test_context_for_token(client)
+            return_results(microsoft_365_defender_machine_restrict_execution_command(client, args))
+
+        elif command == "microsoft-365-defender-machine-unrestrict-execution":
+            test_context_for_token(client)
+            return_results(microsoft_365_defender_machine_unrestrict_execution_command(client, args))
+
+        # ---- Threat Indicator Commands ----
+        elif command == "microsoft-365-defender-indicator-create":
+            test_context_for_token(client)
+            return_results(microsoft_365_defender_indicator_create_command(client, args))
+
+        elif command == "microsoft-365-defender-indicator-list":
+            test_context_for_token(client)
+            return_results(microsoft_365_defender_indicator_list_command(client, args))
+
+        elif command == "microsoft-365-defender-indicator-delete":
+            test_context_for_token(client)
+            return_results(microsoft_365_defender_indicator_delete_command(client, args))
 
         else:
             raise NotImplementedError

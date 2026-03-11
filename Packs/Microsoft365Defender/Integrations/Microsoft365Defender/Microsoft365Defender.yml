@@ -536,6 +536,377 @@ script:
     description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     execution: false
     name: update-remote-system
+  # ---- Alert Management Commands ----
+  - arguments:
+    - defaultValue: '100'
+      description: Maximum number of alerts to return. Maximum is 100.
+      name: limit
+    - auto: PREDEFINED
+      description: Filter alerts by severity.
+      name: severity
+      predefined:
+      - Informational
+      - Low
+      - Medium
+      - High
+    - auto: PREDEFINED
+      description: Filter alerts by status.
+      name: status
+      predefined:
+      - New
+      - InProgress
+      - Resolved
+    - description: Filter alerts by category (e.g., Ransomware, Phishing).
+      name: category
+    - description: Number of entries to skip.
+      name: offset
+    - defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      name: timeout
+    description: Lists alerts from Microsoft 365 Defender.
+    name: microsoft-365-defender-alerts-list
+    outputs:
+    - contextPath: Microsoft365Defender.Alert.id
+      description: The alert ID.
+      type: String
+    - contextPath: Microsoft365Defender.Alert.title
+      description: The alert title.
+      type: String
+    - contextPath: Microsoft365Defender.Alert.severity
+      description: The alert severity.
+      type: String
+    - contextPath: Microsoft365Defender.Alert.status
+      description: The alert status.
+      type: String
+    - contextPath: Microsoft365Defender.Alert.category
+      description: The alert category.
+      type: String
+  - arguments:
+    - description: The alert ID to retrieve.
+      name: alert_id
+      required: true
+    - defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      name: timeout
+    description: Gets a single alert by ID from Microsoft 365 Defender.
+    name: microsoft-365-defender-alert-get
+    outputs:
+    - contextPath: Microsoft365Defender.Alert.id
+      description: The alert ID.
+      type: String
+    - contextPath: Microsoft365Defender.Alert.title
+      description: The alert title.
+      type: String
+    - contextPath: Microsoft365Defender.Alert.severity
+      description: The alert severity.
+      type: String
+    - contextPath: Microsoft365Defender.Alert.status
+      description: The alert status.
+      type: String
+  - arguments:
+    - description: The alert ID to update.
+      name: alert_id
+      required: true
+    - auto: PREDEFINED
+      description: The new status for the alert.
+      name: status
+      predefined:
+      - New
+      - InProgress
+      - Resolved
+    - auto: PREDEFINED
+      description: The classification of the alert.
+      name: classification
+      predefined:
+      - Unknown
+      - FalsePositive
+      - TruePositive
+      - InformationalExpectedActivity
+    - description: The determination of the alert.
+      name: determination
+    - description: The user to assign the alert to.
+      name: assigned_to
+    - defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      name: timeout
+    description: Updates a single alert in Microsoft 365 Defender.
+    name: microsoft-365-defender-alert-update
+    outputs:
+    - contextPath: Microsoft365Defender.Alert.id
+      description: The alert ID.
+      type: String
+    - contextPath: Microsoft365Defender.Alert.status
+      description: The updated alert status.
+      type: String
+  - arguments:
+    - description: The alert ID to add a comment to.
+      name: alert_id
+      required: true
+    - description: The comment text to add.
+      name: comment
+      required: true
+    - defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      name: timeout
+    description: Adds a comment to an alert in Microsoft 365 Defender.
+    name: microsoft-365-defender-alert-create-comment
+    outputs:
+    - contextPath: Microsoft365Defender.AlertComment
+      description: The comment response.
+      type: Unknown
+  - arguments:
+    - description: The incident ID to list alerts for.
+      name: incident_id
+      required: true
+    - defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      name: timeout
+    description: Lists all alerts for a specific incident in Microsoft 365 Defender.
+    name: microsoft-365-defender-incident-alerts-list
+    outputs:
+    - contextPath: Microsoft365Defender.IncidentAlert.id
+      description: The alert ID.
+      type: String
+    - contextPath: Microsoft365Defender.IncidentAlert.title
+      description: The alert title.
+      type: String
+    - contextPath: Microsoft365Defender.IncidentAlert.severity
+      description: The alert severity.
+      type: String
+  # ---- Device Response Action Commands ----
+  - arguments:
+    - description: The machine ID to isolate.
+      name: machine_id
+      required: true
+    - description: A comment to associate with the action.
+      name: comment
+      defaultValue: Isolated via Cortex XSOAR
+    - auto: PREDEFINED
+      description: The type of isolation.
+      name: isolation_type
+      defaultValue: Full
+      predefined:
+      - Full
+      - Selective
+    - defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      name: timeout
+    description: Isolates a device from the network. This action blocks the compromised device from the network while retaining connectivity to the Defender for Endpoint service.
+    execution: true
+    name: microsoft-365-defender-machine-isolate
+    outputs:
+    - contextPath: Microsoft365Defender.MachineAction.id
+      description: The action ID.
+      type: String
+    - contextPath: Microsoft365Defender.MachineAction.status
+      description: The action status.
+      type: String
+    - contextPath: Microsoft365Defender.MachineAction.type
+      description: The action type.
+      type: String
+  - arguments:
+    - description: The machine ID to release from isolation.
+      name: machine_id
+      required: true
+    - description: A comment to associate with the action.
+      name: comment
+      defaultValue: Released from isolation via Cortex XSOAR
+    - defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      name: timeout
+    description: Releases a device from isolation.
+    execution: true
+    name: microsoft-365-defender-machine-unisolate
+    outputs:
+    - contextPath: Microsoft365Defender.MachineAction.id
+      description: The action ID.
+      type: String
+    - contextPath: Microsoft365Defender.MachineAction.status
+      description: The action status.
+      type: String
+  - arguments:
+    - description: The machine ID to run antivirus scan on.
+      name: machine_id
+      required: true
+    - description: A comment to associate with the action.
+      name: comment
+      defaultValue: AV scan initiated via Cortex XSOAR
+    - auto: PREDEFINED
+      description: The type of antivirus scan.
+      name: scan_type
+      defaultValue: Quick
+      predefined:
+      - Quick
+      - Full
+    - defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      name: timeout
+    description: Initiates an antivirus scan on a device.
+    name: microsoft-365-defender-machine-scan
+    outputs:
+    - contextPath: Microsoft365Defender.MachineAction.id
+      description: The action ID.
+      type: String
+    - contextPath: Microsoft365Defender.MachineAction.status
+      description: The action status.
+      type: String
+  - arguments:
+    - description: The machine ID to collect investigation package from.
+      name: machine_id
+      required: true
+    - description: A comment to associate with the action.
+      name: comment
+      defaultValue: Investigation package collection via Cortex XSOAR
+    - defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      name: timeout
+    description: Collects an investigation package from a device for forensic analysis.
+    name: microsoft-365-defender-machine-collect-investigation-package
+    outputs:
+    - contextPath: Microsoft365Defender.MachineAction.id
+      description: The action ID.
+      type: String
+    - contextPath: Microsoft365Defender.MachineAction.status
+      description: The action status.
+      type: String
+  - arguments:
+    - description: The machine ID to restrict code execution on.
+      name: machine_id
+      required: true
+    - description: A comment to associate with the action.
+      name: comment
+      defaultValue: Code execution restricted via Cortex XSOAR
+    - defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      name: timeout
+    description: Restricts execution of all applications on the device that are not signed by Microsoft.
+    execution: true
+    name: microsoft-365-defender-machine-restrict-execution
+    outputs:
+    - contextPath: Microsoft365Defender.MachineAction.id
+      description: The action ID.
+      type: String
+    - contextPath: Microsoft365Defender.MachineAction.status
+      description: The action status.
+      type: String
+  - arguments:
+    - description: The machine ID to unrestrict code execution on.
+      name: machine_id
+      required: true
+    - description: A comment to associate with the action.
+      name: comment
+      defaultValue: Code execution restriction removed via Cortex XSOAR
+    - defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      name: timeout
+    description: Removes the code execution restriction from a device.
+    execution: true
+    name: microsoft-365-defender-machine-unrestrict-execution
+    outputs:
+    - contextPath: Microsoft365Defender.MachineAction.id
+      description: The action ID.
+      type: String
+    - contextPath: Microsoft365Defender.MachineAction.status
+      description: The action status.
+      type: String
+  # ---- Threat Indicator Commands ----
+  - arguments:
+    - description: The indicator value (IP, URL, domain, or file hash).
+      name: indicator_value
+      required: true
+    - auto: PREDEFINED
+      description: The type of the indicator.
+      name: indicator_type
+      required: true
+      predefined:
+      - FileSha1
+      - FileSha256
+      - FileMd5
+      - CertificateThumbprint
+      - IpAddress
+      - DomainName
+      - Url
+    - auto: PREDEFINED
+      description: The action to take when the indicator is matched.
+      name: action
+      required: true
+      predefined:
+      - Alert
+      - AlertAndBlock
+      - Allowed
+      - Audit
+      - Block
+      - Warn
+    - description: The title of the indicator.
+      name: title
+      required: true
+    - description: Description of the indicator.
+      name: description
+      required: true
+    - auto: PREDEFINED
+      description: The severity of the indicator.
+      name: severity
+      predefined:
+      - Informational
+      - Low
+      - Medium
+      - High
+    - description: The expiration time of the indicator in ISO 8601 format.
+      name: expiration_time
+    - description: Recommended actions for the indicator.
+      name: recommended_actions
+    - defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      name: timeout
+    description: Creates a new threat indicator in Microsoft 365 Defender.
+    name: microsoft-365-defender-indicator-create
+    outputs:
+    - contextPath: Microsoft365Defender.Indicator.id
+      description: The indicator ID.
+      type: String
+    - contextPath: Microsoft365Defender.Indicator.indicatorValue
+      description: The indicator value.
+      type: String
+    - contextPath: Microsoft365Defender.Indicator.indicatorType
+      description: The indicator type.
+      type: String
+    - contextPath: Microsoft365Defender.Indicator.action
+      description: The indicator action.
+      type: String
+  - arguments:
+    - defaultValue: '100'
+      description: Maximum number of indicators to return. Maximum is 100.
+      name: limit
+    - description: Number of entries to skip.
+      name: offset
+    - defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      name: timeout
+    description: Lists threat indicators in Microsoft 365 Defender.
+    name: microsoft-365-defender-indicator-list
+    outputs:
+    - contextPath: Microsoft365Defender.Indicator.id
+      description: The indicator ID.
+      type: String
+    - contextPath: Microsoft365Defender.Indicator.indicatorValue
+      description: The indicator value.
+      type: String
+    - contextPath: Microsoft365Defender.Indicator.indicatorType
+      description: The indicator type.
+      type: String
+    - contextPath: Microsoft365Defender.Indicator.action
+      description: The indicator action.
+      type: String
+  - arguments:
+    - description: The ID of the indicator to delete.
+      name: indicator_id
+      required: true
+    - defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      name: timeout
+    description: Deletes a threat indicator from Microsoft 365 Defender.
+    execution: true
+    name: microsoft-365-defender-indicator-delete
   dockerimage: demisto/crypto:1.0.0.6932158
   isfetch: true
   ismappable: true

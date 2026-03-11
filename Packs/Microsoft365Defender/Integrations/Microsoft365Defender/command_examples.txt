@@ -6,3 +6,17 @@
 !microsoft-365-defender-advanced-hunting query=AlertInfo
 !microsoft-365-defender-incident-update id=264 tags=test1,test2,test3
 !microsoft-365-defender-incident-get id=264
+!microsoft-365-defender-alerts-list limit=10 severity=High
+!microsoft-365-defender-alert-get alert_id=da637551227677560813_-961444813
+!microsoft-365-defender-alert-update alert_id=da637551227677560813_-961444813 status=Resolved classification=TruePositive
+!microsoft-365-defender-alert-create-comment alert_id=da637551227677560813_-961444813 comment="Investigated and confirmed malicious."
+!microsoft-365-defender-incident-alerts-list incident_id=264
+!microsoft-365-defender-machine-isolate machine_id=1e5bc9d7e413ddd7902c2932e418702b84d0cc07 comment="Isolating compromised device"
+!microsoft-365-defender-machine-unisolate machine_id=1e5bc9d7e413ddd7902c2932e418702b84d0cc07 comment="Releasing device from isolation"
+!microsoft-365-defender-machine-scan machine_id=1e5bc9d7e413ddd7902c2932e418702b84d0cc07 scan_type=Full
+!microsoft-365-defender-machine-collect-investigation-package machine_id=1e5bc9d7e413ddd7902c2932e418702b84d0cc07
+!microsoft-365-defender-machine-restrict-execution machine_id=1e5bc9d7e413ddd7902c2932e418702b84d0cc07
+!microsoft-365-defender-machine-unrestrict-execution machine_id=1e5bc9d7e413ddd7902c2932e418702b84d0cc07
+!microsoft-365-defender-indicator-create indicator_value=220.10.10.1 indicator_type=IpAddress action=AlertAndBlock title="Malicious IP" description="Known C2 server"
+!microsoft-365-defender-indicator-list limit=10
+!microsoft-365-defender-indicator-delete indicator_id=12345
