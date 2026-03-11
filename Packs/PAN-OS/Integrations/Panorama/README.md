@@ -5849,9 +5849,7 @@ Gets information from all PAN-OS systems in the topology.
 ### pan-os-platform-get-device-groups
 
 ***
-Gets operational information about **all** device groups in the topology.
-Runs on a Panorama instance only.
-If no filter is provided, all device groups in the topology will be returned.
+Gets operational information for all device groups in the Panorama topology, including group names, hierarchy, and associated firewalls. If no filter is provided, the command returns all device groups within the Panorama instance.
 
 #### Base Command
 
@@ -5861,7 +5859,7 @@ If no filter is provided, all device groups in the topology will be returned.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String that specifies which Panorama device in the topology to retrieve the device groups from. The value can be the Panorama hostname or the Panorama serial number. The filter requires an exact match and does not support substrings. | Optional |
+| device_filter_string | The Panorama hostname or serial number used to filter device groups. This command is specifically for Panorama and requires an exact match (substrings are not supported). | Optional |
 | device_filter | String by which to filter the results to only show specific Panorama hostnames or Panorama serial numbers. | Optional |
 
 #### Context Output
