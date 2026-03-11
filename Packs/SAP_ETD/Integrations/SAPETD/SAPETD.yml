@@ -72,7 +72,7 @@ script:
       description: The unique identifier of the alert.
       type: Number
     - contextPath: SAPETD.Alert.AlertSeverity
-      description: Severity level of the alert (e.g., LOW, MEDIUM, HIGH).
+      description: The severity level of the alert. Can be LOW, MEDIUM, or HIGH.
       type: String
     - contextPath: SAPETD.Alert.AlertStatus
       description: Current status of the alert (e.g., OPEN, CLOSED).
