@@ -378,7 +378,6 @@ def test_create_incident(incident_type_input, expected_type):
     Then:
         - Ensure no errors due to the lack of `userId` in `INCIDENT_JSON`.
         - Ensure the incident is created with the correct type.
-        - Ensure internal __id and __timestamp fields are present for processing.
     """
     import copy
 
@@ -410,6 +409,3 @@ def test_create_incident(incident_type_input, expected_type):
     assert result["occurred"] == occurred_time
     assert result["rawJSON"] == json.dumps(raw_data)
     assert result["details"] == json.dumps(raw_data)
-    # Assert - check internal fields are present
-    assert result["__id"] == INCIDENT_JSON["incidentId"]
-    assert isinstance(result["__timestamp"], int)

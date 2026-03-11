@@ -31,10 +31,7 @@ RESET_KEY = "reset"
 CREDENTIAL = "credential"
 IDENTIFIER = "identifier"
 PASSWORD = "password"
-END_TIME_BUFFER = 30 # seconds
-# Internal (private) incident fields
-ID_KEY = "__id"
-TIMESTAMP_KEY = "__timestamp"
+END_TIME_BUFFER = 30  # seconds
 
 # Last run
 START_TIMESTAMP_KEY = "start_timestamp"
@@ -414,7 +411,18 @@ def parse_incident_details(compressed_details: str):
     return details_obj
 
 
-def create_incident(notification: dict, region: str, incident_type: str = "Data Loss Prevention"):
+def create_incident(notification: dict, region: str, incident_type: str = "Data Loss Prevention") -> dict[str, Any]:
+    """
+    Create an XSOAR incident from a DLP notification.
+
+    Args:
+        notification: DLP notification containing incident data and previous notifications
+        region: DLP region where the incident occurred
+        incident_type: Type of incident to create (default: "Data Loss Prevention")
+
+    Returns:
+        dict[str, Any]: XSOAR incident object with name, type, occurred time, and raw JSON data
+    """
     raw_incident = notification["incident"]
     previous_notifications = notification["previous_notifications"]
     raw_incident["region"] = region
@@ -435,18 +443,15 @@ def create_incident(notification: dict, region: str, incident_type: str = "Data 
     event_dump = json.dumps(raw_incident)
 
     return {
-        "name": f'Palo Alto Networks DLP Incident {incident_id}',
+        "name": f"Palo Alto Networks DLP Incident {incident_id}",
         "type": incident_type,
         "occurred": incident_creation_time.isoformat(),
         "rawJSON": event_dump,
         "details": event_dump,
-        # Internal fields, will be popped before creating the incident
-        ID_KEY: incident_id,
-        TIMESTAMP_KEY: incident_timestamp,
     }
 
 
-def is_reset_triggered():
+def is_reset_triggered() -> bool:
     """
     Checks if reset of integration context have been made by the user.
     Because fetch is long running execution, user communicates with us
@@ -493,38 +498,29 @@ def set_last_run(last_run: dict[str, Any]) -> None:
     demisto.setLastRun(last_run)
 
 
-def compute_next_run(incidents: list[dict], last_run: dict[str, Any]) -> dict[str, Any]:
+def compute_next_run(incident_ids_committed_timestamps: dict[str, int], last_run: dict[str, Any]) -> dict[str, Any]:
     """
-    Compute the next run state based on fetched incidents.
-    Removes internal __id and __timestamp fields from incidents as a side effect.
+    Compute the next run state based on fetched incidents using their committed timestamps.
 
     Args:
-        incidents: List of incident objects with __id and __timestamp fields
-        last_run: Previous last run state to return if no incidents
+        incident_ids_committed_timestamps (dict[str, int]): Dictionary mapping incident IDs to their committedAt timestamps.
+        last_run (dict[str, Any]): Previous last run state to return if no incidents were fetched.
 
     Returns:
-        Dictionary with start_timestamp and last_ids for next run
-
-    Side Effects:
-        Modifies incidents list by removing __id and __timestamp fields
+        dict[str, Any]: Dictionary with start_timestamp (latest committedAt) and last_ids
+                        (all incident IDs with that timestamp) for next fetch.
     """
-    if not incidents:
+    if not incident_ids_committed_timestamps:
         return last_run
 
-    new_last_timestamp = incidents[-1][TIMESTAMP_KEY]
-    new_last_incident_ids = [incident[ID_KEY] for incident in incidents if incident[TIMESTAMP_KEY] == new_last_timestamp]
+    new_last_committed_timestamp = max(incident_ids_committed_timestamps.values())
+    new_last_incident_ids = [
+        _id
+        for _id, _committed_timestamp in incident_ids_committed_timestamps.items()
+        if _committed_timestamp == new_last_committed_timestamp
+    ]
 
-    # If the `new_last_timestamp` matches the previous run's timestamp, extend `new_last_incident_ids`
-    # this avoids discarding previously processed IDs for that timestamp.
-    if new_last_timestamp == last_run.get(START_TIMESTAMP_KEY):
-        new_last_incident_ids.extend(last_run.get(LAST_IDS_KEY) or [])
-
-    # Clean private internal fields before creating incidents
-    for incident in incidents:
-        incident.pop(ID_KEY)
-        incident.pop(TIMESTAMP_KEY)
-
-    return {START_TIMESTAMP_KEY: new_last_timestamp, LAST_IDS_KEY: new_last_incident_ids}
+    return {START_TIMESTAMP_KEY: new_last_committed_timestamp, LAST_IDS_KEY: new_last_incident_ids}
 
 
 def get_start_end_time_intervals(start: int, end: int, seconds_delta: int) -> list[tuple[int, int]]:
@@ -559,16 +555,22 @@ def fetch_notifications(
     regions: str,
     first_fetch_timestamp: int,
     incident_type: str = "Data Loss Prevention",
-):
+) -> None:
     """
-    Fetch notifications from DLP API and filter out duplicates.
+    Fetch notifications from DLP API using time-based queries with ID-based deduplication.
+
+    - Queries the DLP API in 3-minute time windows based on incident 'committedAt' timestamp.
+    - Formats and deduplicates incidents.
+    - Tracks the latest committedAt timestamp.
+    - Creates incidents via demisto.createIncidents().
+    - Updates last run state via set_last_run().
+    - Updates integration context with access token and sample incidents.
 
     Args:
-        client: DLP API client
-        regions: Regions to fetch from
-        first_fetch_timestamp: Timestamp to use for first fetch (unix seconds)
-        incident_type: Type of incident to create
-
+        client (Client): DLP API client.
+        regions (str): Comma-separated DLP regions to fetch from.
+        first_fetch_timestamp (int): Timestamp to use for first fetch (unix epoch seconds).
+        incident_type (str): Type of incident to create (default: "Data Loss Prevention").
     """
     last_run = get_last_run()
     demisto.debug(f"Got {last_run=}.")
@@ -585,11 +587,12 @@ def fetch_notifications(
         client.set_access_token(access_token)
 
     new_incidents = []
-    all_incident_ids = set(last_incident_ids)
+    fetched_incident_ids_committed_timestamps: dict[str, int] = {
+        incident_id: start_timestamp for incident_id in last_incident_ids
+    }
 
-    # Query the API in 3 minute start/end time window
+    # Query the API in 3 minute start/end time window, this filters incidents according to their "committedAt" timestamps
     for start_time, end_time in get_start_end_time_intervals(start_timestamp, end_timestamp, seconds_delta=180):
-
         demisto.debug(f"Getting incidents between {start_time=} and {end_time=} from {regions=}.")
         notification_map, _ = client.get_dlp_incidents(regions, start_time, end_time)
 
@@ -597,18 +600,19 @@ def fetch_notifications(
             demisto.debug(f"Received {len(notifications)} raw notifications between {start_time=} and {end_time=} in {region=}.")
 
             for notification in notifications:
+                # Use "incidentId" and "committedAt" fields for deduplication and last run tracking
+                # These are required fields that are guaranteed to exist for each DLP incident
                 incident_id = notification["incident"]["incidentId"]
-                incident_timestamp = int(dateparser.parse(notification["incident"]["createdAt"]).timestamp())  # type: ignore
-                if incident_id in all_incident_ids or incident_timestamp < start_timestamp:
-                    demisto.debug(f"Skipping duplicate {incident_id=} with {incident_timestamp=} in {region=}.")
+                incident_committed_timestamp = int(dateparser.parse(notification["incident"]["committedAt"]).timestamp())  # type: ignore
+                if incident_id in fetched_incident_ids_committed_timestamps:
+                    demisto.debug(f"Skipping duplicate {incident_id=} with {incident_committed_timestamp=} in {region=}.")
                     continue
 
                 incident = create_incident(notification, region, incident_type)
                 new_incidents.append(incident)
-                all_incident_ids.add(incident_id)
+                fetched_incident_ids_committed_timestamps[incident_id] = incident_committed_timestamp
 
-    new_incidents = sorted(new_incidents, key=lambda inc: inc[TIMESTAMP_KEY])
-    next_run = compute_next_run(new_incidents, last_run)
+    next_run = compute_next_run(fetched_incident_ids_committed_timestamps, last_run)
 
     if not is_reset_triggered():
         demisto.debug(f"Creating {len(new_incidents)} incidents: {[inc.get('name') for inc in new_incidents]}.")
@@ -625,13 +629,17 @@ def fetch_notifications(
         print_debug_msg(f"Skipped {len(new_incidents)} incidents because of reset")
 
 
-def long_running_execution_command(client: Client, params: dict):
+def long_running_execution_command(client: Client, params: dict) -> None:
     """
     Long running execution of fetching incidents from Palo Alto Networks Enterprise DLP.
-    Will continue to fetch in an infinite loop using time-based queries and deduplication.
-    Args:
-        params (Dict): Demisto params.
 
+    Continuously fetches incidents in an infinite loop using explicit time-based queries
+    with ID-based deduplication. This approach avoids reliance on stateful API behavior
+    and ensures no incidents are missed due to indexing delays or API async issues.
+
+    Args:
+        client (Client): DLP API client instance.
+        params (dict): Integration instance configuration parameters.
     """
     demisto.setIntegrationContext({ACCESS_TOKEN: ""})
     regions = params.get("dlp_regions", "")
