@@ -8429,9 +8429,9 @@ script:
       description: Virtual system feature.
       type: String
   - arguments:
-    - description: String that specifies which Panorama device in the topology to retrieve the device groups from. The value can be the Panorama hostname or the Panorama serial number. The filter requires an exact match and does not support substrings.
+    - description: The Panorama hostname or serial number used to filter device groups. This command is specifically for Panorama and requires an exact match (substrings are not supported).
       name: device_filter_string
-    description: Gets operational information about **all** device groups in the topology. Runs on a Panorama instance only. If no filter is provided, all device groups in the topology will be returned.
+    description: Gets operational information for all device groups in the Panorama topology, including group names, hierarchy, and associated firewalls. If no filter is provided, the command returns all device groups within the Panorama instance.
     name: pan-os-platform-get-device-groups
     outputs:
     - contextPath: PANOS.DeviceGroupOp.hostid
