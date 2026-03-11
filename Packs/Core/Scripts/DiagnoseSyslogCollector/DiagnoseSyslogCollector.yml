@@ -34,3 +34,4 @@ marketplaces:
 supportedModules:
 - cloud_runtime_security
 - xsiam
+- edr

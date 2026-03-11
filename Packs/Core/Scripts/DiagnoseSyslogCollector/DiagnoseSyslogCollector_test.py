@@ -16,8 +16,8 @@ def test_diagnose_syslog_collector_healthy_status(mocker):
         {
             "Contents": [
                 {
-                    "DeviceName": "test-broker",
-                    "Apps": [{"display_name": "Syslog Collector", "status": "active"}],
+                    "DEVICE_NAME": "test-broker",
+                    "APPS": [{"display_name": "Syslog Collector", "status": "active"}],
                 }
             ]
         }
@@ -45,7 +45,7 @@ def test_diagnose_syslog_collector_collector_not_configured(mocker):
     """
     from DiagnoseSyslogCollector import diagnose_syslog_collector
 
-    broker_response = [{"Contents": [{"DeviceName": "test-broker", "Apps": []}]}]
+    broker_response = [{"Contents": [{"DEVICE_NAME": "test-broker", "APPS": []}]}]
 
     mock_execute = mocker.patch.object(demisto, "executeCommand", return_value=broker_response)
     mocker.patch("DiagnoseSyslogCollector.is_error", return_value=False)
@@ -69,8 +69,8 @@ def test_diagnose_syslog_collector_inactive_with_errors(mocker):
         {
             "Contents": [
                 {
-                    "DeviceName": "test-broker",
-                    "Apps": [
+                    "DEVICE_NAME": "test-broker",
+                    "apps": [
                         {
                             "display_name": "Syslog Collector",
                             "status": "inactive",
@@ -108,8 +108,8 @@ def test_diagnose_syslog_collector_active_with_warnings(mocker):
         {
             "Contents": [
                 {
-                    "DeviceName": "test-broker",
-                    "Apps": [{"display_name": "Syslog Collector", "status": "active"}],
+                    "DEVICE_NAME": "test-broker",
+                    "APPS": [{"display_name": "Syslog Collector", "status": "active"}],
                 }
             ]
         }
@@ -196,8 +196,8 @@ def test_diagnose_syslog_collector_xql_query_failure(mocker):
         {
             "Contents": [
                 {
-                    "DeviceName": "test-broker",
-                    "Apps": [{"display_name": "Syslog Collector", "status": "active"}],
+                    "DEVICE_NAME": "test-broker",
+                    "APPS": [{"display_name": "Syslog Collector", "status": "active"}],
                 }
             ]
         }

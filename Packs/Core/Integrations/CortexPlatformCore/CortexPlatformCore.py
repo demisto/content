@@ -5150,19 +5150,11 @@ def list_brokers_command(client: Client, args: dict) -> CommandResults:
     reply = response.get("reply", {})
     brokers = reply.get("brokers", [])
 
-    # Map API response keys to PascalCase for context output
-    KEY_MAPPING = {
-        "DEVICE_NAME": "DeviceName",
-        "APPS": "Apps",
-    }
-    mapped_brokers = [{KEY_MAPPING.get(k, k): v for k, v in broker.items()} for broker in brokers]
-
     return CommandResults(
-        readable_output=tableToMarkdown("Brokers", mapped_brokers, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown("Brokers", brokers, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Broker",
-        outputs_key_field="DeviceName",
-        outputs=mapped_brokers,
-        raw_response=brokers,
+        outputs_key_field="DEVICE_NAME",
+        outputs=brokers,
     )
 
 

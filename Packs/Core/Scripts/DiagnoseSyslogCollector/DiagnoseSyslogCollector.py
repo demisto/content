@@ -25,17 +25,10 @@ def diagnose_syslog_collector(broker_vm_name: str, timeframe: str) -> CommandRes
     # Get basic broker information
     broker_result = demisto.executeCommand("core-list-brokers", {"broker_vm_names": broker_vm_name})
 
-    if is_error(broker_result):
-        raise DemistoException(f"Failed to retrieve broker information: {get_error(broker_result)}")
+    if is_error(broker_result) or not broker_result or not isinstance(broker_result, list):
+        raise DemistoException("Failed to retrieve broker information: Internal Error.")
 
-    if not broker_result or not isinstance(broker_result, list):
-        raise DemistoException("No response received from core-list-brokers command")
-
-    first_result = broker_result[0]
-    if not isinstance(first_result, dict):
-        raise DemistoException("Unexpected response format from core-list-brokers command")
-
-    broker_data_list = first_result.get("Contents", [])
+    broker_data_list = broker_result[0].get("Contents", [])
 
     if not broker_data_list or not isinstance(broker_data_list, list):
         raise DemistoException(f"Broker VM '{broker_vm_name}' not found")
@@ -44,7 +37,7 @@ def diagnose_syslog_collector(broker_vm_name: str, timeframe: str) -> CommandRes
     demisto.debug(f"Found broker data: {broker_data}")
 
     # Check if Syslog Collector app exists and is active
-    apps = broker_data.get("Apps", [])
+    apps = broker_data.get("APPS", [])
     syslog_collector = None
 
     for app in apps:
@@ -105,11 +98,8 @@ dataset = collection_auditing
 
                 demisto.debug(f"XQL query result: {xql_result}")
 
-                if is_error(xql_result):
-                    raise DemistoException(f"Failed to execute XQL query: {get_error(xql_result)}")
-
-                if not xql_result or not isinstance(xql_result, list) or len(xql_result) == 0:
-                    raise DemistoException("No response received from core-xql-generic-query-platform command")
+                if is_error(xql_result) or not xql_result or not isinstance(xql_result, list) or len(xql_result) == 0:
+                    raise DemistoException("Failed to execute XQL query")
 
                 xql_outputs = xql_result[0].get("Contents", {})
                 demisto.debug(f"XQL outputs: {xql_outputs}")
@@ -137,7 +127,7 @@ dataset = collection_auditing
                 else:
                     status = "ERROR"
                     error_details = xql_outputs.get("error_details")
-                    raise DemistoException(f"Internal error while trying to query collection_auditing. {error_details}")
+                    raise DemistoException(error_details)
 
             except Exception as e:
                 raise DemistoException(f"Internal error while trying to query collection_auditing. {str(e)}")
