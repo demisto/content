@@ -408,3 +408,307 @@ def test_fetch_events_with_oauth_onprem(mocker):
     first_request = m.request_history[0]
     assert "Authorization" in first_request.headers
     assert first_request.headers["Authorization"] == "Bearer valid-onprem-oauth-token"
+
+
+@freeze_time("2022-04-14T00:00:00Z")
+def test_basic_auth_missing_credentials(mocker):
+    """
+    Given
+        - Basic authentication is configured but credentials are missing
+    When
+        - main() is called
+    Then
+        - Verify a DemistoException is raised with a clear error message
+    """
+    params = DEMISTO_PARAMS.copy()
+    params["credentials"] = {"identifier": "", "password": ""}
+
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    return_error_mock = mocker.patch("JiraEventCollector.return_error")
+
+    from JiraEventCollector import main
+
+    main()
+
+    assert return_error_mock.called
+    error_msg = return_error_mock.call_args[0][0]
+    assert "Username and API token are required" in error_msg
+
+
+@freeze_time("2022-04-14T00:00:00Z")
+def test_basic_auth_missing_password(mocker):
+    """
+    Given
+        - Basic authentication is configured but API token is missing
+    When
+        - main() is called
+    Then
+        - Verify a DemistoException is raised
+    """
+    params = DEMISTO_PARAMS.copy()
+    params["credentials"] = {"identifier": "admin@example.com", "password": ""}
+
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    return_error_mock = mocker.patch("JiraEventCollector.return_error")
+
+    from JiraEventCollector import main
+
+    main()
+
+    assert return_error_mock.called
+    error_msg = return_error_mock.call_args[0][0]
+    assert "Username and API token are required" in error_msg
+
+
+@freeze_time("2022-04-14T00:00:00Z")
+def test_test_module_basic_auth(mocker):
+    """
+    Given
+        - Basic authentication is configured with valid credentials
+    When
+        - test-module command is executed
+    Then
+        - Verify 'ok' is returned
+    """
+    mocker.patch.object(demisto, "params", return_value=DEMISTO_PARAMS)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    results = mocker.patch.object(demisto, "results")
+    mocker.patch("JiraEventCollector.send_events_to_xsiam")
+
+    with requests_mock.Mocker() as m:
+        m.get(
+            URL,
+            [
+                {"json": {"records": []}, "headers": {"Content-Type": "application/json"}},
+            ],
+        )
+
+        from JiraEventCollector import main
+
+        main()
+
+    results.assert_called_once_with("ok")
+
+
+@freeze_time("2022-04-14T00:00:00Z")
+def test_test_module_oauth(mocker):
+    """
+    Given
+        - OAuth 2.0 authentication is configured with valid tokens
+    When
+        - test-module command is executed
+    Then
+        - Verify 'ok' is returned
+    """
+    oauth_params = DEMISTO_PARAMS.copy()
+    oauth_params["auth_method"] = "OAuth 2.0"
+    oauth_params["cloud_id"] = "test-cloud-id"
+    oauth_params["callback_url"] = "https://localhost/callback"
+    oauth_params["client_credentials"] = {"identifier": "test-client-id", "password": "test-client-secret"}
+
+    mocker.patch.object(demisto, "params", return_value=oauth_params)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mocker.patch(
+        "AtlassianApiModule.get_integration_context",
+        return_value={"token": "valid-token", "valid_until": 9999999999, "refresh_token": "refresh-token"},
+    )
+    results = mocker.patch.object(demisto, "results")
+
+    from JiraEventCollector import main
+
+    main()
+
+    results.assert_called_once_with("ok")
+
+
+@freeze_time("2022-04-14T00:00:00Z")
+def test_oauth_command_without_oauth_config(mocker):
+    """
+    Given
+        - Basic authentication is configured (not OAuth)
+    When
+        - jira-oauth-start command is executed
+    Then
+        - Verify an error is raised
+    """
+    mocker.patch.object(demisto, "params", return_value=DEMISTO_PARAMS)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="jira-oauth-start")
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    return_error_mock = mocker.patch("JiraEventCollector.return_error")
+
+    from JiraEventCollector import main
+
+    main()
+
+    assert return_error_mock.called
+    error_msg = return_error_mock.call_args[0][0]
+    assert "OAuth commands are only available" in error_msg
+
+
+@freeze_time("2022-04-14T00:00:00Z")
+def test_oauth_complete_missing_code(mocker):
+    """
+    Given
+        - OAuth 2.0 authentication is configured
+        - No authorization code is provided
+    When
+        - jira-oauth-complete command is executed
+    Then
+        - Verify an error is raised
+    """
+    oauth_params = DEMISTO_PARAMS.copy()
+    oauth_params["auth_method"] = "OAuth 2.0"
+    oauth_params["cloud_id"] = "test-cloud-id"
+    oauth_params["callback_url"] = "https://localhost/callback"
+    oauth_params["client_credentials"] = {"identifier": "test-client-id", "password": "test-client-secret"}
+
+    mocker.patch.object(demisto, "params", return_value=oauth_params)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="jira-oauth-complete")
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    return_error_mock = mocker.patch("JiraEventCollector.return_error")
+
+    from JiraEventCollector import main
+
+    main()
+
+    assert return_error_mock.called
+    error_msg = return_error_mock.call_args[0][0]
+    assert "Authorization code is required" in error_msg
+
+
+@freeze_time("2022-04-14T00:00:00Z")
+def test_set_next_run_with_milliseconds():
+    """
+    Given
+        - An event with a timestamp containing milliseconds
+    When
+        - set_next_run is called
+    Then
+        - Verify the timestamp is parsed correctly
+    """
+    from JiraEventCollector import GetEvents
+
+    log = {"created": "2022-04-12T18:45:42.967+0000"}
+    result = GetEvents.set_next_run(log)
+    assert result.get("from") == "2022-04-12T18:45:43"
+
+
+@freeze_time("2022-04-14T00:00:00Z")
+def test_set_next_run_without_milliseconds():
+    """
+    Given
+        - An event with a timestamp without milliseconds
+    When
+        - set_next_run is called
+    Then
+        - Verify the timestamp is parsed correctly
+    """
+    from JiraEventCollector import GetEvents
+
+    log = {"timestamp": "2022-04-12T18:45:42"}
+    result = GetEvents.set_next_run(log)
+    assert result.get("from") == "2022-04-12T18:45:43"
+
+
+@freeze_time("2022-04-14T00:00:00Z")
+def test_set_next_run_no_timestamp():
+    """
+    Given
+        - An event with no timestamp field
+    When
+        - set_next_run is called
+    Then
+        - Verify last_run is returned unchanged
+    """
+    from JiraEventCollector import GetEvents
+
+    log = {"summary": "some event"}
+    result = GetEvents.set_next_run(log)
+    assert "from" not in result
+
+
+@freeze_time("2022-04-14T00:00:00Z")
+def test_set_next_run_invalid_timestamp():
+    """
+    Given
+        - An event with an unparseable timestamp
+    When
+        - set_next_run is called
+    Then
+        - Verify last_run is returned unchanged
+    """
+    from JiraEventCollector import GetEvents
+
+    log = {"created": "not-a-valid-timestamp"}
+    result = GetEvents.set_next_run(log)
+    assert "from" not in result
+
+
+@freeze_time("2022-04-14T00:00:00Z")
+def test_redirect_detection(mocker):
+    """
+    Given
+        - A request that gets redirected (e.g., to a login page)
+    When
+        - fetch-events is running
+    Then
+        - Verify a DemistoException is raised about redirect
+    """
+    mocker.patch.object(demisto, "params", return_value=DEMISTO_PARAMS)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mocker.patch("JiraEventCollector.send_events_to_xsiam")
+    return_error_mock = mocker.patch("JiraEventCollector.return_error")
+
+    with requests_mock.Mocker() as m:
+        m.get(URL, status_code=302, headers={"Location": "https://login.example.com"})
+
+        from JiraEventCollector import main
+
+        main()
+
+    assert return_error_mock.called
+    error_msg = return_error_mock.call_args[0][0]
+    assert "redirected" in error_msg.lower() or "redirect" in error_msg.lower()
+
+
+@freeze_time("2022-04-14T00:00:00Z")
+def test_non_json_response(mocker):
+    """
+    Given
+        - A response with non-JSON content type
+    When
+        - fetch-events is running
+    Then
+        - Verify a DemistoException is raised about unexpected content type
+    """
+    mocker.patch.object(demisto, "params", return_value=DEMISTO_PARAMS)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mocker.patch("JiraEventCollector.send_events_to_xsiam")
+    return_error_mock = mocker.patch("JiraEventCollector.return_error")
+
+    with requests_mock.Mocker() as m:
+        m.get(URL, text="<html>Login Page</html>", headers={"Content-Type": "text/html"})
+
+        from JiraEventCollector import main
+
+        main()
+
+    assert return_error_mock.called
+    error_msg = return_error_mock.call_args[0][0]
+    assert "Content-Type" in error_msg or "content type" in error_msg.lower()

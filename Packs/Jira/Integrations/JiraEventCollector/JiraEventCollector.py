@@ -9,7 +9,7 @@ from CommonServerPython import *  # noqa: F401
 from pydantic import AnyUrl, BaseConfig, BaseModel, Field, Json  # pylint: disable=no-name-in-module
 from requests.auth import HTTPBasicAuth
 
-from AtlassianApiModule import *  # type: ignore[import] # noqa: F401
+from AtlassianApiModule import *  # type: ignore[import,assignment] # noqa: F401
 
 urllib3.disable_warnings()
 
@@ -334,10 +334,11 @@ def main():
         username = credentials.get("identifier", "")
         password = credentials.get("password", "")
         if not username or not password:
-            raise DemistoException(
+            return_error(
                 "Username and API token are required for Basic authentication. "
                 "Please provide valid credentials or switch to OAuth 2.0."
             )
+            return
 
     # Build the API URL
     base_url = str(demisto_params.get("url", "")).removesuffix("/")

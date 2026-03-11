@@ -11,7 +11,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 # Import AtlassianApiModule for OAuth support
-from AtlassianApiModule import *  # type: ignore[import] # noqa: F401
+from AtlassianApiModule import *  # type: ignore[import,assignment] # noqa: F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member

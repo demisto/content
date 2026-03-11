@@ -6,8 +6,6 @@ import os
 import re
 import time
 from abc import ABC, abstractmethod
-from urllib.parse import urljoin
-
 import requests
 from CommonServerPython import *  # noqa: F401
 
