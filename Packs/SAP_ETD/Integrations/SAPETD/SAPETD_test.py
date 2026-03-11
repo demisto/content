@@ -676,6 +676,7 @@ class TestGetEventsCommand:
 
         assert isinstance(result, str)
         assert "3" in result
+        # send_events_to_xsiam is called internally by client.send_events
         mock_send.assert_called_once()
         call_kwargs = mock_send.call_args
         assert call_kwargs.kwargs["vendor"] == Config.VENDOR
@@ -1280,6 +1281,89 @@ class TestEdgeCases:
         assert "AlertId" in result.readable_output
         assert "AlertSeverity" in result.readable_output
         assert INTEGRATION_NAME in result.readable_output
+
+    @patch("SAPETD.send_events_to_xsiam")
+    def test_send_events_method(self, mock_send: MagicMock, client: SAPETDClient) -> None:
+        """Test that client.send_events calls send_events_to_xsiam with correct vendor/product."""
+        events = [{"AlertId": 1, "AlertCreationTimestamp": "2022-04-29T14:20:29.682Z"}]
+
+        client.send_events(events)
+
+        mock_send.assert_called_once_with(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
+
+    @patch("SAPETD.send_events_to_xsiam")
+    def test_send_events_empty_list(self, mock_send: MagicMock, client: SAPETDClient) -> None:
+        """Test that client.send_events works with empty list."""
+        client.send_events([])
+
+        mock_send.assert_called_once_with(events=[], vendor=Config.VENDOR, product=Config.PRODUCT)
+
+    @patch("SAPETD.SAPETDClient")
+    @patch("SAPETD.parse_integration_params")
+    def test_main_finally_diagnostic_report(
+        self,
+        mock_parse: MagicMock,
+        mock_client_cls: MagicMock,
+        mock_params: dict[str, Any],
+    ) -> None:
+        """Test that main() generates diagnostic report in finally block."""
+        mock_parse.return_value = {
+            "base_url": "https://etd.example.com:4300",
+            "username": "test_user",
+            "password": "test_password",
+            "verify": False,
+            "proxy": False,
+            "max_fetch": 10000,
+        }
+        mock_client = MagicMock()
+        mock_client.get_alerts.return_value = []
+        mock_client_cls.return_value = mock_client
+
+        with (
+            patch.object(demisto, "command", return_value="test-module"),
+            patch.object(demisto, "params", return_value=mock_params),
+            patch("SAPETD.return_results"),
+        ):
+            main()
+
+        # Verify diagnostic report was requested
+        mock_client.get_diagnostic_report.assert_called_once()
+
+    @patch("SAPETD.return_error")
+    @patch("SAPETD.SAPETDClient")
+    @patch("SAPETD.parse_integration_params")
+    def test_main_finally_diagnostic_report_on_error(
+        self,
+        mock_parse: MagicMock,
+        mock_client_cls: MagicMock,
+        mock_return_error: MagicMock,
+        mock_params: dict[str, Any],
+    ) -> None:
+        """Test that diagnostic report is generated even when command fails."""
+        mock_parse.return_value = {
+            "base_url": "https://etd.example.com:4300",
+            "username": "test_user",
+            "password": "test_password",
+            "verify": False,
+            "proxy": False,
+            "max_fetch": 10000,
+        }
+        mock_client = MagicMock()
+        mock_client.get_alerts.side_effect = Exception("API Error")
+        mock_client_cls.return_value = mock_client
+
+        with (
+            patch.object(demisto, "command", return_value="sap-etd-get-events"),
+            patch.object(demisto, "params", return_value=mock_params),
+            patch.object(demisto, "args", return_value={"from_date": "3 days ago"}),
+            patch.object(demisto, "error"),
+        ):
+            main()
+
+        # Verify diagnostic report was still requested despite the error
+        mock_client.get_diagnostic_report.assert_called_once()
+        # Verify error was reported
+        mock_return_error.assert_called_once()
 
 
 # endregion
