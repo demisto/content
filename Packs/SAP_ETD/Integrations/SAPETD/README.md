@@ -1,7 +1,6 @@
-## SAP Enterprise Threat Detection
+## Overview
 
 SAP Enterprise Threat Detection (ETD) helps identify, analyze, and neutralize cyberattacks in SAP applications.
-
 This integration fetches alerts from SAP ETD and ingests them as events into Cortex XSIAM for security monitoring and threat analysis.
 
 ### Prerequisites
