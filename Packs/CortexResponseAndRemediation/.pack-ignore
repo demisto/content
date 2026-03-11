@@ -375,9 +375,6 @@ ignore=GR109
 [file:silent-playbook-Execution_of_an_uncommon_process_at_an_early_startup_stage_by_Windows_system_binary.yml]
 ignore=GR109
 
-# GR109 fails on playbooks that use modules that the pack does not support. This ignore entry should be removed once GR109 can be ignored at the pack level / no longer poses an issue (new repo or pack).
-[file:silent-playbook-Execution_of_significantly_renamed_lolbin.yml]
-ignore=GR109
 
 # GR109 fails on playbooks that use modules that the pack does not support. This ignore entry should be removed once GR109 can be ignored at the pack level / no longer poses an issue (new repo or pack).
 [file:silent-playbook-External_Login_Password_Spray_Test.yml]
