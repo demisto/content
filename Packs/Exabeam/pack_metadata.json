@@ -10,9 +10,27 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "Alerts",
+        "Attack",
+        "Breach",
+        "Incident Handling",
+        "Security",
+        "Security Analytics"
+    ],
+    "useCases": [
+        "Network Security",
+        "Case Management",
+        "Breach Notification"
+    ],
+    "keywords": [
+        "exabeam",
+        "threat",
+        "SIEM",
+        "SOC",
+        "ALert",
+        "Incident"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

@@ -1,0 +1,84 @@
+{
+  "exabeam_threat_center_raw": {
+    "alertId": {
+      "type": "String",
+      "is_array": false
+    },
+    "name": {
+      "type": "String",
+      "is_array": false
+    },
+    "priority": {
+      "type": "String",
+      "is_array": false
+    },
+    "useCases": {
+      "type": "String",
+      "is_array": true
+    },
+    "rules": {
+      "type": "String",
+      "is_array": true
+    },
+    "mitres": {
+      "type": "String",
+      "is_array": true
+    },
+    "srcIp": {
+      "type": "String",
+      "is_array": true
+    },
+    "srcHost": {
+      "type": "String",
+      "is_array": true
+    },
+    "user": {
+      "type": "String",
+      "is_array": true
+    },
+    "destIp": {
+      "type": "String",
+      "is_array": true
+    },
+    "destHost": {
+      "type": "String",
+      "is_array": true
+    },
+    "riskScore": {
+      "type": "Integer",
+      "is_array": false
+    },
+    "caseNumber": {
+      "type": "Integer",
+      "is_array": false
+    },
+    "hasAttachments": {
+      "type": "Boolean",
+      "is_array": false
+    },
+    "tags": {
+      "type": "String",
+      "is_array": true
+    },
+    "queue": {
+      "type": "String",
+      "is_array": false
+    },
+    "stage": {
+      "type": "String",
+      "is_array": false
+    },
+    "caseId": {
+      "type": "String",
+      "is_array": false
+    },
+    "vendor": {
+      "type": "String",
+      "is_array": true
+    },
+    "product": {
+      "type": "String",
+      "is_array": true
+    }
+  }
+}
