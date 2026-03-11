@@ -5201,10 +5201,10 @@ class EC2:
                     "PrivateDnsPreference": args.get("dns_options_private_dns_preference"),
                     "PrivateDnsSpecifiedDomains": argToList(args.get("dns_options_private_dns_specified_domains")),
                 },
-                "SubnetConfiguration": {
-                    "Ipv4": "subnet_configuration_ipv4",
-                    "Ipv6": "subnet_configuration_ipv6",
-                    "SubnetId": "subnet_configuration_subnet_id",
+                "SubnetConfigurations": {
+                    "Ipv4": args.get("subnet_configuration_ipv4"),
+                    "Ipv6": args.get("subnet_configuration_ipv6"),
+                    "SubnetId": args.get("subnet_configuration_subnet_id"),
                 },
                 "TagSpecifications": [{"ResourceType": "vpc-endpoint", "Tags": parse_tag_field(args.get("tags"))}],
             }
