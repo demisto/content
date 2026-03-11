@@ -10,7 +10,7 @@ configuration:
   - display: API Key
     name: apikey
     required: true
-    type: 9
+    type: 4
     section: Connect
     additionalinfo: Your SOCRadar API key from platform.socradar.com
   - display: Multi-Tenant ID
