@@ -48,7 +48,7 @@ script:
   commands:
   - name: sap-etd-get-events
     description: |-
-      Gets alerts from SAP Enterprise Threat Detection. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and API request limitation exceeding.
+    Gets alerts from SAP Enterprise Threat Detection. Note: This command is intended for development and debugging. Use with caution, as it may cause event duplication or exceed API rate limits.
     deprecated: false
     arguments:
     - name: from_date
