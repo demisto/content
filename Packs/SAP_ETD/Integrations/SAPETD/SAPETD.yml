@@ -81,7 +81,7 @@ script:
       description: The category of the alert, such as Brute Force Attack.
       type: String
     - contextPath: SAPETD.Alert.PatternName
-      description: Name of the detection pattern that triggered the alert.
+      description: The name of the detection pattern that triggered the alert.
       type: String
     - contextPath: SAPETD.Alert.AlertCreationTimestamp
       description: Timestamp when the alert was created (ISO 8601).
