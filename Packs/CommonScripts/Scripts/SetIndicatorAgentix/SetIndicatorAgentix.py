@@ -20,7 +20,8 @@ def set_indicator_if_exist(args: dict):
     demisto.debug(f"Checking if {indicator_value} exists by running findIndicators.")
     exists = execute_command("findIndicators", {"value": indicator_value})
     if not exists:
-        return_error("Indicator does not exist.")
+        outputs = {"Value": indicator_value, "Result": "Indicator does not exist."}
+        return CommandResults(outputs=outputs, outputs_key_field="Value", outputs_prefix="SetIndicator")
 
     success_results = ""
     error_result = ""

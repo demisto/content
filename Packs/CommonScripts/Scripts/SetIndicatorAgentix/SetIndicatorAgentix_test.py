@@ -13,21 +13,24 @@ class TestSetIndicator:
 
     def test_empty_arguments(self):
         """Test that function returns error when completely empty arguments"""
-        args = {}
+        args: dict = {}
 
         with pytest.raises(SystemExit):
             set_indicator_if_exist(args)
 
     @patch("SetIndicatorAgentix.execute_command")
     def test_indicator_does_not_exist(self, mock_execute):
-        """Test that function returns error when indicator does not exist"""
+        """Test that function returns a CommandResults with 'does not exist' message when indicator is not found"""
         args = {"value": "nonexistent.com", "type": "Domain"}
         mock_execute.return_value = None
 
-        with pytest.raises(SystemExit):
-            set_indicator_if_exist(args)
+        result = set_indicator_if_exist(args)
 
         mock_execute.assert_called_once_with("findIndicators", {"value": "nonexistent.com"})
+        assert result.outputs["Value"] == "nonexistent.com"
+        assert result.outputs["Result"] == "Indicator does not exist."
+        assert result.outputs_prefix == "SetIndicator"
+        assert result.outputs_key_field == "Value"
 
     @patch("SetIndicatorAgentix.execute_command")
     def test_set_indicator_type_only(self, mock_execute):
