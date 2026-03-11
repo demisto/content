@@ -258,7 +258,7 @@ class Client(ContentClient):
             if items and last_record_id:
                 for idx, item in enumerate(items):
                     if item.get("recordId") == last_record_id:
-                        items = items[idx + 1:]
+                        items = items[idx + 1 :]
                         break
 
             records.extend(items)
