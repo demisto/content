@@ -1,18 +1,21 @@
 <~XSIAM>
 
 ## Overview
+
 Exabeam Threat Center is part of the Exabeam Security Management Platform, which provides detection, User Event Behavioral Analytics (UEBA), and SOAR capabilities.
 This pack supports normalization of Exabeam Threat Center data ingested into Cortex XSIAM through API-based collection.
 The normalized data can then be queried and used for investigation and analysis in Cortex XSIAM.
 
-## This pack includes:
+## This pack includes
 
 Data normalization capabilities:  
-  * Rules for modeling Exabeam Threat Center logs that are ingested via the API into Cortex XSIAM.  
-    * The ingested Exabeam Threat Center logs can be queried in XQL Search using the *`<dataset_name>`* dataset.
 
-### Supported timestamp formats:
-  * Timestamp parsing support assumes a UTC +0000 format is being used.
+* Rules for modeling Exabeam Threat Center logs that are ingested via the API into Cortex XSIAM.  
+  * The ingested Exabeam Threat Center logs can be queried in XQL Search using the *`<dataset_name>`* dataset.
+
+### Supported timestamp formats
+
+* Timestamp parsing support assumes a UTC +0000 format is being used.
 
 ***
 
@@ -22,13 +25,14 @@ Data normalization capabilities:
 
 There are 2 supported authentication methods:
 
-- **API Token** - API token should be entered in the **API Token** parameter. In order to use the fetch incident functionality in this integration, the username must also be provided in the **Username** parameter.
-- **Basic Authentication** - Providing username and password in the corresponding parameters in the configuration. This method also allows fetching incidents.
+* **API Token** - API token should be entered in the **API Token** parameter. In order to use the fetch incident functionality in this integration, the username must also be provided in the **Username** parameter.
+* **Basic Authentication** - Providing username and password in the corresponding parameters in the configuration. This method also allows fetching incidents.
 
 ***Deprecated***:  
 API Key entered in the **Password** parameter and `__token` in the username parameter. This method does not allow fetching incidents.
 
 #### Generate a Cluster Authentication Token
+
 1. Navigate to **Settings** > **Admin Operations** > **Cluster Authentication Token**.
 2. At the Cluster Authentication Token menu, click the blue **`+`** button.
 3. In the **Setup Token** menu, fill in the **Token Name**, **Expiry Date**, and select the **Permission Level**(s).
