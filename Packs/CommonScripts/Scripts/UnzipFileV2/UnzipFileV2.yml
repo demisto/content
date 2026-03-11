@@ -18,12 +18,12 @@ args:
   predefined:
   - 7z
   - zipfile
-comment: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
+comment: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context. (Non-root Docker version)
 commonfields:
-  id: UnzipFile
+  id: UnzipFileV2
   version: -1
 enabled: true
-name: UnzipFile
+name: UnzipFileV2
 outputs:
 - contextPath: ExtractedFiles
   description: A list of file names that were extracted from the ZIP file.
@@ -35,8 +35,7 @@ tags:
 - file
 timeout: '0'
 type: python
-dockerimage: demisto/unzip:1.0.0.4855875
+dockerimage: devdemisto/unzip:1.0.0.7586985
 tests:
-- ZipFile-Test
-- UnzipFile-Test
+- No tests (auto formatted)
 fromversion: 5.0.0
