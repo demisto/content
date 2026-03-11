@@ -90,7 +90,7 @@ script:
       description: A human-readable description of the alert.
       type: String
     - contextPath: SAPETD.Alert.Score
-      description: Alert score value.
+      description: The alert score value.
       type: Number
   isfetchevents: true
   runonce: false
