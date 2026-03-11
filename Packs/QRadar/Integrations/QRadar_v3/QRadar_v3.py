@@ -22,6 +22,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 FAILURE_SLEEP = 20  # sleep between consecutive failures events fetch
 FETCH_SLEEP = arg_to_number(demisto.params().get("fetch_interval")) or 60  # sleep between fetches
+FETCH_INITIAL_SLEEP = 1  # sleep before the initial check to see if a query has completed.
 BATCH_SIZE = 100  # batch size used for offense ip enrichment
 OFF_ENRCH_LIMIT = BATCH_SIZE * 10  # max amount of IPs to enrich per offense
 MAX_WORKERS = 8  # max concurrent workers used for events enriching
@@ -1195,8 +1196,9 @@ def merge_samples(current_ctx: dict, changes: dict) -> None:
     current_samples = current_ctx.get(SAMPLE_INCIDENTS_KEY, [])
     if isinstance(current_samples, list):
         # Ensure samples do not grow unbounded due to the list appending behavior of always_merger
-        demisto.debug("Appending new samples to existing ones in context.")
-        current_ctx[SAMPLE_INCIDENTS_KEY] = (current_samples + new_samples)[:SAMPLE_SIZE]
+        # Store samples from the LAST iteration by prioritizing new_samples over current_samples
+        demisto.debug("Storing new samples from the last iteration in context.")
+        current_ctx[SAMPLE_INCIDENTS_KEY] = (new_samples + current_samples)[:SAMPLE_SIZE]
     else:
         # If samples is a JSON string (legacy context schema), then override
         demisto.debug("Setting new samples in context.")
@@ -2414,7 +2416,8 @@ def poll_offense_events(
         search_status_response = client.search_status_get(search_id)
         print_debug_msg(f"Got search status for {search_id}")
         query_status = search_status_response.get("status")
-        print_debug_msg(f"Search status for offense {offense_id} is {query_status}.")
+        query_runtime = search_status_response.get("query_execution_time", "N/A")
+        print_debug_msg(f"Search status for offense {offense_id} is {query_status}. Current time elapsed: {query_runtime}")
 
         if query_status in {"CANCELED", "ERROR"}:
             return [], QueryStatus.ERROR.value
@@ -2509,6 +2512,7 @@ def enrich_offense_with_events(client: Client, offense: dict, fetch_mode: FetchM
         if search_id == QueryStatus.ERROR.value:
             failure_message = "Search for events was failed."
         else:
+            time.sleep(FETCH_INITIAL_SLEEP)
             events, failure_message = poll_offense_events_with_retry(client, search_id, int(offense_id))
         events_fetched = get_num_events(events)
         offense["events_fetched"] = events_fetched

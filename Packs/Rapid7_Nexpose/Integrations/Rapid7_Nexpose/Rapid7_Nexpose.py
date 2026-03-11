@@ -7739,13 +7739,20 @@ async def xsiam_api_call_async_with_retries(
                     status_code = response.status
                 except aiohttp.ClientResponseError as e:
                     if ok_codes and e.status in ok_codes:
+                        demisto.debug(f"Got retryable status code {e.status} on attempt {attempt_num}, will retry.")
                         continue
                     else:
                         header_msg = f"Error sending new {data_type} into XSIAM.\n"
+                        demisto.debug(
+                            f"XSIAM API returned a non-retryable error. Status: {e.status}, "
+                            f"Message: {e.message}, Request URL: {e.request_info}"
+                        )
+                        # Convert CIMultiDictProxy headers to a plain dict for JSON serialization
+                        serializable_headers = dict(e.headers) if e.headers else {}
                         api_call_info = (
                             "Parameters used:\n"
                             f"\tURL: {xsiam_url}\n"
-                            f"\tHeaders: {json.dumps(e.headers, indent=8)}\n\n"
+                            f"\tHeaders: {json.dumps(serializable_headers, indent=8)}\n\n"
                             f"Response status code: {e.status}\n"
                             f"Error received:\n\t{e.message}\n"
                             f"additional request info: \n\t{e.request_info}"

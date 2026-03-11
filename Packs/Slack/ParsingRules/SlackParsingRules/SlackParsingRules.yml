@@ -1,5 +1,5 @@
-fromversion: 6.10.0
-id: Slack Parsing Rule
+fromversion: 8.13.0
+id: Slack_ParsingRule
 name: Slack Parsing Rule
 rules: ''
 samples: ''
