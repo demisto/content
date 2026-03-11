@@ -443,4 +443,3 @@ def post_ai_review_introduction(pr: PullRequest, reviewers: list[str] | None = N
     pr.create_issue_comment(ai_reviewer_introduction_msg)
     if t:
         print(f"{t.cyan}Posted AI reviewer introduction comment{t.normal}")  # noqa: T201
- 
