@@ -207,6 +207,19 @@ class SAPETDClient(ContentClient):
         )
         demisto.debug("[API] SAPETDClient initialized")
 
+    def send_events(self, events: list[dict[str, Any]]) -> None:
+        """Send events to XSIAM using the ContentClient context.
+
+        Wraps send_events_to_xsiam to keep event sending encapsulated
+        within the client class for consistent logging and diagnostics.
+
+        Args:
+            events: List of event dicts to send.
+        """
+        demisto.debug(f"[API] Sending {len(events)} events to XSIAM")
+        send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
+        demisto.debug(f"[API] Successfully sent {len(events)} events to XSIAM")
+
     def get_alerts(
         self,
         from_timestamp: str,
@@ -373,8 +386,7 @@ def get_events_command(client: SAPETDClient, args: dict[str, Any]) -> CommandRes
 
     if should_push_events and events:
         add_time_to_events(events)
-        send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
-        demisto.debug(f"[Command] Pushed {len(events)} events to XSIAM")
+        client.send_events(events)
         return f"Successfully retrieved and pushed {len(events)} events to XSIAM."
 
     readable_output = tableToMarkdown(
@@ -430,8 +442,7 @@ def fetch_events_command(client: SAPETDClient, max_fetch: int) -> None:
         demisto.debug("[Fetch] All events were duplicates.")
     else:
         add_time_to_events(new_events)
-        send_events_to_xsiam(events=new_events, vendor=Config.VENDOR, product=Config.PRODUCT)
-        demisto.debug(f"[Fetch] Pushed {len(new_events)} events to XSIAM")
+        client.send_events(new_events)
 
     # Update Last Run - always update based on ALL fetched events (not just new_events)
     # This ensures we advance the high-water mark even if some/all events were duplicates
