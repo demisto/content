@@ -15,13 +15,13 @@ This integration connects to the Zscaler Internet Access (ZIA) API using **OAuth
 
 1. Set up ZIdentity, link your service tenants, and create API Clients with the right roles and resources — [Getting Access](https://automate.zscaler.com/docs/getting-started/getting-started#getting-access).
 2. Generate a **Client Secret** in ZIdentity when creating the API client.
-3. Note your **Domain** (e.g., `acme` if your login URL is `acme.zslogin.net`).
+3. Note your **Server URL** (e.g., `www.vanity.zslogin.net` if your login URL is `https://vanity.zslogin.net`).
 
 ## Instance Configuration
 
 | Parameter | Description |
 |-----------|-------------|
-| **Domain** | The domain assigned to your organization. For example, if your ZIdentity URL is `https://acme.zslogin.net`, enter `acme`. |
+| **Server URL** | The Server URL assigned to your organization. For example, `www.vanity.zslogin.net`. |
 | **Client ID** | The OAuth 2.0 client ID from ZIdentity. |
 | **Client Secret** | The OAuth 2.0 client secret from ZIdentity. |
 | **Auto Activate Changes** | If enabled, the integration will automatically activate configuration changes after each write command. If disabled, use the `zia-activate-changes` command manually. |
@@ -32,7 +32,7 @@ This integration connects to the Zscaler Internet Access (ZIA) API using **OAuth
 
 The integration uses the OAuth 2.0 **client credentials** grant type:
 
-1. Sends a POST request to `https://{domain}.zslogin.net/oauth2/v1/token` with `client_id`, `client_secret`, and `audience=https://api.zscaler.com`.
+1. Sends a POST request to `https://{server_url}/oauth2/v1/token` with `client_id`, `client_secret`, and `audience=https://api.zscaler.com`.
 2. ZIdentity returns a Bearer access token.
 3. All ZIA API calls use `Authorization: Bearer {access_token}`.
 

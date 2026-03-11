@@ -7,9 +7,10 @@ commonfields:
   id: ZscalerZIdentity
   version: -1
 configuration:
-- display: Domain
-  name: domain
-  additionalinfo: The domain assigned to your organization. For example, if your domain is "acme", the token endpoint will be https://acme.zslogin.net/oauth2/v1/token.
+- display: Server URL
+  name: server_url
+  additionalinfo: The Server URL assigned to your organization. For example, www.acme.zslogin.net.
+  defaultvalue: '<vanity-domain>.zslogin.net'
   required: true
   type: 0
   section: Connect
@@ -348,6 +349,14 @@ script:
     - name: address
       description: Destination IP addresses.
       isArray: true
+    - name: action
+      description: The action applied to the addresses list.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ADD_TO_LIST
+      - REMOVE_FROM_LIST
+      - OVERWRITE
     - name: description
       description: Additional information about the destination IP group.
     - name: ip_category

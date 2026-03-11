@@ -72,7 +72,7 @@ def get_outputs_list(result: CommandResults) -> list:
 def mock_client() -> Client:
     """Return a Client instance with mocked token retrieval."""
     client = Client(
-        domain="testdomain",
+        server_url="www.testdomain.zslogin.net",
         client_id="test_client_id",
         client_secret="test_client_secret",
         verify=False,
@@ -91,7 +91,7 @@ def mock_demisto_params(mocker):
         demisto,
         "params",
         return_value={
-            "domain": "testdomain",
+            "server_url": "www.testdomain.zslogin.net",
             "credentials": {"identifier": "test_client_id", "password": "test_client_secret"},
             "reliability": "C - Fairly reliable",
             "auto_activate": True,
@@ -552,9 +552,102 @@ class TestIPDestinationGroupCommands:
         updated = {**existing, "name": "Updated Group"}
         mocker.patch.object(mock_client, "list_ip_destination_groups", return_value=existing)
         mocker.patch.object(mock_client, "update_ip_destination_group", return_value=updated)
-        result = zia_ip_destination_group_update_command(mock_client, {"group_id": "1001", "group_name": "Updated Group"})
+        result = zia_ip_destination_group_update_command(
+            mock_client, {"group_id": "1001", "group_name": "Updated Group", "action": "OVERWRITE"}
+        )
         assert "successfully edited" in result.readable_output
         assert result.raw_response == updated  # type: ignore[comparison-overlap]
+
+    def test_update_action_add_to_list(self, mock_client, mocker):
+        """
+        Given: A valid group_id, address list, and action=ADD_TO_LIST are provided.
+        When: zia_ip_destination_group_update_command is called.
+        Then: The new address is appended to the existing addresses list.
+        """
+        existing = {
+            "id": 1001,
+            "name": "Test Group",
+            "type": "DSTN_IP",
+            "addresses": ["10.0.0.1"],
+            "description": "desc",
+            "ipCategories": [],
+            "countries": [],
+        }
+        updated = {**existing, "addresses": ["10.0.0.1", "10.0.0.2"]}
+        mocker.patch.object(mock_client, "list_ip_destination_groups", return_value=existing)
+        mock_update = mocker.patch.object(mock_client, "update_ip_destination_group", return_value=updated)
+        zia_ip_destination_group_update_command(mock_client, {"group_id": "1001", "address": "10.0.0.2", "action": "ADD_TO_LIST"})
+        call_payload = mock_update.call_args[0][1]
+        assert call_payload["addresses"] == ["10.0.0.1", "10.0.0.2"]
+
+    def test_update_action_add_to_list_no_duplicates(self, mock_client, mocker):
+        """
+        Given: A valid group_id, an address already in the list, and action=ADD_TO_LIST.
+        When: zia_ip_destination_group_update_command is called.
+        Then: The existing address is not duplicated in the resulting list.
+        """
+        existing = {
+            "id": 1001,
+            "name": "Test Group",
+            "type": "DSTN_IP",
+            "addresses": ["10.0.0.1"],
+            "description": "desc",
+            "ipCategories": [],
+            "countries": [],
+        }
+        mocker.patch.object(mock_client, "list_ip_destination_groups", return_value=existing)
+        mock_update = mocker.patch.object(mock_client, "update_ip_destination_group", return_value=existing)
+        zia_ip_destination_group_update_command(mock_client, {"group_id": "1001", "address": "10.0.0.1", "action": "ADD_TO_LIST"})
+        call_payload = mock_update.call_args[0][1]
+        assert call_payload["addresses"] == ["10.0.0.1"]
+
+    def test_update_action_remove_from_list(self, mock_client, mocker):
+        """
+        Given: A valid group_id, an address to remove, and action=REMOVE_FROM_LIST.
+        When: zia_ip_destination_group_update_command is called.
+        Then: The specified address is removed from the addresses list.
+        """
+        existing = {
+            "id": 1001,
+            "name": "Test Group",
+            "type": "DSTN_IP",
+            "addresses": ["10.0.0.1", "10.0.0.2"],
+            "description": "desc",
+            "ipCategories": [],
+            "countries": [],
+        }
+        updated = {**existing, "addresses": ["10.0.0.1"]}
+        mocker.patch.object(mock_client, "list_ip_destination_groups", return_value=existing)
+        mock_update = mocker.patch.object(mock_client, "update_ip_destination_group", return_value=updated)
+        zia_ip_destination_group_update_command(
+            mock_client, {"group_id": "1001", "address": "10.0.0.2", "action": "REMOVE_FROM_LIST"}
+        )
+        call_payload = mock_update.call_args[0][1]
+        assert call_payload["addresses"] == ["10.0.0.1"]
+
+    def test_update_action_overwrite(self, mock_client, mocker):
+        """
+        Given: A valid group_id, a new address list, and action=OVERWRITE.
+        When: zia_ip_destination_group_update_command is called.
+        Then: The addresses list is fully replaced with the provided addresses.
+        """
+        existing = {
+            "id": 1001,
+            "name": "Test Group",
+            "type": "DSTN_IP",
+            "addresses": ["10.0.0.1", "10.0.0.2"],
+            "description": "desc",
+            "ipCategories": [],
+            "countries": [],
+        }
+        updated = {**existing, "addresses": ["192.168.1.1"]}
+        mocker.patch.object(mock_client, "list_ip_destination_groups", return_value=existing)
+        mock_update = mocker.patch.object(mock_client, "update_ip_destination_group", return_value=updated)
+        zia_ip_destination_group_update_command(
+            mock_client, {"group_id": "1001", "address": "192.168.1.1", "action": "OVERWRITE"}
+        )
+        call_payload = mock_update.call_args[0][1]
+        assert call_payload["addresses"] == ["192.168.1.1"]
 
     def test_add_success(self, mock_client, mocker):
         """

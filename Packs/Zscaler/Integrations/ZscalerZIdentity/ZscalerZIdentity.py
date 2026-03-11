@@ -7,7 +7,7 @@ import re
 
 INTEGRATION_NAME = "ZscalerZIA"
 BASE_API_URL = "https://api.zsapi.net/zia/api/v1"
-TOKEN_URL_TEMPLATE = "https://{domain}.zslogin.net/oauth2/v1/token"
+TOKEN_URL_TEMPLATE = "https://{server_url}/oauth2/v1/token"
 AUDIENCE = "https://api.zscaler.com"
 SUSPICIOUS_CATEGORIES = ["SUSPICIOUS_DESTINATION", "SPYWARE_OR_ADWARE"]
 
@@ -58,7 +58,7 @@ class Client(BaseClient):
     the ZIdentity token endpoint and forwards Bearer tokens to the ZIA REST API.
 
     Attributes:
-        domain: The ZIdentity domain (e.g. "acme" for acme.zslogin.net).
+        server_url: The ZIdentity server URL (e.g. "www.vanity.zslogin.net").
         client_id: The OAuth 2.0 client ID.
         client_secret: The OAuth 2.0 client secret.
         reliability: Source reliability string for DBotScore.
@@ -68,7 +68,7 @@ class Client(BaseClient):
 
     def __init__(
         self,
-        domain: str,
+        server_url: str,
         client_id: str,
         client_secret: str,
         verify: bool,
@@ -80,7 +80,7 @@ class Client(BaseClient):
         """Initializes the Client.
 
         Args:
-            domain: The ZIdentity domain name (e.g. "acme").
+            server_url: The ZIdentity server URL (e.g. "www.vanity.zslogin.net").
             client_id: The OAuth 2.0 client ID registered in ZIdentity.
             client_secret: The OAuth 2.0 client secret.
             verify: Whether to verify SSL certificates.
@@ -90,7 +90,7 @@ class Client(BaseClient):
             suspicious_categories: List of URL categories considered suspicious.
         """
         super().__init__(base_url=BASE_API_URL, verify=verify, proxy=proxy)
-        self.domain = domain
+        self.server_url = server_url
         self.client_id = client_id
         self.client_secret = client_secret
         self.reliability = reliability
@@ -120,7 +120,7 @@ class Client(BaseClient):
             return token
 
         demisto.debug("Fetching new ZIdentity access token.")
-        token_url = TOKEN_URL_TEMPLATE.format(domain=self.domain)
+        token_url = TOKEN_URL_TEMPLATE.format(server_url=self.server_url)
         payload = {
             "grant_type": "client_credentials",
             "client_id": self.client_id,
@@ -1078,7 +1078,9 @@ def zia_ip_destination_group_update_command(client: Client, args: dict) -> Comma
     """Updates an existing ZIA IP destination group.
 
     Fetches the current group state and merges provided arguments on top,
-    so only specified fields are changed.
+    so only specified fields are changed. The 'action' argument controls how
+    the 'address' list is applied: ADD_TO_LIST adds new addresses, REMOVE_FROM_LIST
+    removes specified addresses, and OVERWRITE replaces the entire list.
 
     Args:
         client: The authenticated ZIA Client instance.
@@ -1087,6 +1089,8 @@ def zia_ip_destination_group_update_command(client: Client, args: dict) -> Comma
             - group_name: New name for the group.
             - group_type: New type (DSTN_IP, DSTN_FQDN, DSTN_DOMAIN, DSTN_OTHER).
             - address: Comma-separated list of addresses.
+            - action: How to apply the address list: ADD_TO_LIST, REMOVE_FROM_LIST,
+                or OVERWRITE (required).
             - description: Group description.
             - ip_category: Comma-separated list of IP categories.
             - country: Comma-separated list of country codes.
@@ -1101,16 +1105,27 @@ def zia_ip_destination_group_update_command(client: Client, args: dict) -> Comma
     if group_id is None:
         raise DemistoException("The 'group_id' argument is required.")
 
+    action = args.get("action", "OVERWRITE")
+    new_addresses = argToList(args.get("address", []))
+
     # Fetch existing group to merge
     existing = client.list_ip_destination_groups(group_id=group_id)
     if isinstance(existing, list):
         existing = existing[0] if existing else {}
 
+    existing_addresses: list[str] = existing.get("addresses", [])
+    if action == "ADD_TO_LIST":
+        merged_addresses = existing_addresses + [a for a in new_addresses if a not in existing_addresses]
+    elif action == "REMOVE_FROM_LIST":
+        merged_addresses = [a for a in existing_addresses if a not in new_addresses]
+    else:  # OVERWRITE
+        merged_addresses = new_addresses if new_addresses else existing_addresses
+
     payload: dict = {
         "id": group_id,
         "name": args.get("group_name", existing.get("name", "")),
         "type": args.get("group_type", existing.get("type", "")),
-        "addresses": argToList(args.get("address", existing.get("addresses", []))),
+        "addresses": merged_addresses,
         "description": args.get("description", existing.get("description", "")),
         "ipCategories": argToList(args.get("ip_category", existing.get("ipCategories", []))),
         "countries": argToList(args.get("country", existing.get("countries", []))),
@@ -1747,7 +1762,7 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
 
-    domain = params.get("domain", "")
+    server_url = params.get("server_url", "")
     client_id = params.get("credentials", {}).get("identifier", "")
     client_secret = params.get("credentials", {}).get("password", "")
     verify = not params.get("insecure", False)
@@ -1764,7 +1779,7 @@ def main() -> None:  # pragma: no cover
     add_sensitive_log_strs(client_secret)
 
     client = Client(
-        domain=domain,
+        server_url=server_url,
         client_id=client_id,
         client_secret=client_secret,
         verify=verify,
