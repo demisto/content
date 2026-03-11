@@ -1,12 +1,10 @@
-import asyncio
 import json
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 
 import copy
 import pytest
 from Rapid7_Nexpose import *
-from Rapid7_Nexpose import _AiohttpCompatContentStream, _AiohttpCompatResponse
 
 
 @pytest.fixture
@@ -48,7 +46,7 @@ def test_connection_errors_recovers(mocker, mock_client):
     mocker.patch.object(demisto, "error")
     mocker.patch("Rapid7_Nexpose.time.sleep")
     mocker.patch.object(
-        Client,
+        BaseClient,
         "_http_request",
         side_effect=[
             DemistoException(message="error", exception=requests.ConnectionError("error")),
@@ -73,7 +71,7 @@ def test_http_request_no_connection_errors(mocker, mock_client):
     mocker.patch.object(demisto, "error")
     sleep_mocker = mocker.patch("Rapid7_Nexpose.time.sleep")
     mocker.patch.object(
-        Client,
+        BaseClient,
         "_http_request",
         side_effect=[DemistoException(message="error", exception=requests.exceptions.HTTPError("error"))],
     )
@@ -107,7 +105,7 @@ def test_client_paged_http_request(
 
         return mock_data[0]
 
-    mocker.patch.object(Client, "_http_request", side_effect=pagination_side_effect)
+    mocker.patch.object(BaseClient, "_http_request", side_effect=pagination_side_effect)
     assert mock_client._paged_http_request(**test_input_kwargs) == load_test_data(
         "paged_http_request", f"{expected_output_context_file}"
     )
@@ -494,7 +492,7 @@ def test_client_create_report_config(
     When: Calling the create_report_config function.
     Then: Ensure the API call is being called with the correct parameters.
     """
-    http_request = mocker.patch.object(Client, "_http_request")
+    http_request = mocker.patch.object(BaseClient, "_http_request")
     mock_client.create_report_config(scope=scope, template_id=template_id, report_name=report_name, report_format=report_format)
 
     http_request.assert_called_with(
@@ -709,7 +707,7 @@ def test_create_scan_schedule_command(
     Then: If valid - ensure a valid API call is made and a valid context output is returned.
         If invalid - Ensure an  exception is raised.
     """
-    http_request = mocker.patch.object(Client, "_http_request", return_value=api_mock_data)
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value=api_mock_data)
 
     if test_input_kwargs.get("frequency") is not None and (
         test_input_kwargs.get("interval_time") is None
@@ -840,7 +838,7 @@ def test_create_site(
     When: Calling the create_site function.
     Then: Ensure a valid API call is made and a valid context output is returned.
     """
-    http_request = mocker.patch.object(Client, "_http_request", return_value=api_mock_data)
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value=api_mock_data)
 
     assert create_site_command(client=mock_client, **test_input_kwargs).outputs == expected_output_context
 
@@ -965,7 +963,7 @@ def test_create_site_scan_credential_command(
     Then: Ensure a valid API call is made and a valid context output is returned.
     """
     site_id = test_input_kwargs.pop("site_id")
-    http_request = mocker.patch.object(Client, "_http_request", return_value=api_mock_data)
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value=api_mock_data)
 
     assert (
         create_site_scan_credential_command(client=mock_client, site_id=site_id, **test_input_kwargs).outputs
@@ -1034,7 +1032,7 @@ def test_delete_asset_command(mocker, mock_client: Client, asset_id: str):
     When: Calling the delete_asset_command function.
     Then: Ensure a valid API call is made and no context output is returned.
     """
-    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     result = delete_asset_command(client=mock_client, asset_id=asset_id)
 
     http_request.assert_called_with(
@@ -1059,7 +1057,7 @@ def test_delete_scheduled_scan_command(mocker, mock_client: Client, site_id: str
     When: Calling the delete_scheduled_scan_command function.
     Then: Ensure a valid API call is made and no context output is returned.
     """
-    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     result = delete_scan_schedule_command(client=mock_client, site_id=site_id, schedule_id=schedule_id)
 
     http_request.assert_called_with(
@@ -1083,7 +1081,7 @@ def test_delete_shared_credential_command(mocker, mock_client: Client, shared_cr
     When: Calling the delete_shared_credential_command function.
     Then: Ensure a valid API call is made and no context output is returned.
     """
-    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     result = delete_shared_credential_command(client=mock_client, shared_credential_id=shared_credential_id)
 
     http_request.assert_called_with(
@@ -1108,7 +1106,7 @@ def test_delete_site_command(mocker, mock_client: Client, site_id: str):
     When: Calling the delete_site_command function.
     Then: Ensure a valid API call is made and no context output is returned.
     """
-    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     result = delete_site_command(client=mock_client, site_id=site_id)
 
     http_request.assert_called_with(
@@ -1133,7 +1131,7 @@ def test_delete_site_scan_credential_command(mocker, mock_client: Client, site_i
     When: Calling the delete_site_scan_credential_command function.
     Then: Ensure a valid API call is made and no context output is returned.
     """
-    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     result = delete_site_scan_credential_command(client=mock_client, site_id=site_id, credential_id=credential_id)
 
     http_request.assert_called_with(
@@ -1157,7 +1155,7 @@ def test_delete_vulnerability_exception_command(mocker, mock_client: Client, vul
     When: Calling the delete_vulnerability_exception_command function.
     Then: Ensure a valid API call is made and no context output is returned.
     """
-    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     result = delete_vulnerability_exception_command(client=mock_client, vulnerability_exception_id=vulnerability_exception_id)
 
     http_request.assert_called_with(
@@ -1640,7 +1638,7 @@ def test_update_scan_schedule_command(mocker, mock_client: Client, test_input_kw
 
 
     """
-    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
 
     if test_input_kwargs.get("frequency") is not None and (
         test_input_kwargs.get("interval") is None
@@ -1773,7 +1771,7 @@ def test_update_shared_credential_command(mocker, mock_client: Client, test_inpu
     When: Calling the update_shared_credential_command function.
     Then: Ensure a valid API call is made and no context output is returned.
     """
-    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     result = update_shared_credential_command(client=mock_client, **test_input_kwargs)
 
     http_request.assert_called_with(
@@ -1896,7 +1894,7 @@ def test_update_site_scan_credential_command(mocker, mock_client: Client, test_i
     When: Calling the update_site_scan_credential_command function.
     Then: Ensure a valid API call is made and no context output is returned.
     """
-    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     result = update_site_scan_credential_command(client=mock_client, **test_input_kwargs)
 
     http_request.assert_called_with(
@@ -1923,7 +1921,7 @@ def test_update_vulnerability_exception_expiration_command(
     When: Calling the update_vulnerability_exception_expiration_command function.
     Then: Ensure a valid API call is made and no context output is returned.
     """
-    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     result = update_vulnerability_exception_expiration_command(
         client=mock_client, vulnerability_exception_id=vulnerability_exception_id, expiration=expiration
     )
@@ -1951,7 +1949,7 @@ def test_update_vulnerability_exception_status_command(mocker, mock_client: Clie
     When: Calling the update_vulnerability_exception_status_command function.
     Then: Ensure a valid API call is made and no context output is returned.
     """
-    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     result = update_vulnerability_exception_status_command(
         client=mock_client, vulnerability_exception_id=vulnerability_exception_id, status=status
     )
@@ -1975,7 +1973,7 @@ def test_start_site_scan_command(mocker, mock_client: Client, site_id: str, host
     When: Calling the start_site_scan_command function.
     Then: Ensure a valid API call is made and no context output is returned.
     """
-    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     start_site_scan_command(client=mock_client, site_id=site_id, name="Test Scan", hosts=hosts)
 
     http_request.assert_called_with(
@@ -2008,7 +2006,7 @@ def test_start_site_scan_command(mocker, mock_client: Client, site_id: str, host
     ],
 )
 def test_create_tag_command(mocker, mock_client, name, type, color, ip_address_is, match, expected_post_data):
-    http_request = mocker.patch.object(Client, "_http_request", return_value={"id": 1})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={"id": 1})
     result = create_tag_command(
         client=mock_client,
         name=name,
@@ -2029,7 +2027,7 @@ def test_create_tag_command(mocker, mock_client, name, type, color, ip_address_i
 
 @pytest.mark.parametrize("tag_id", [(1)])
 def test_delete_tag_command(mocker, mock_client, tag_id):
-    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     delete_tag_command(client=mock_client, id=tag_id)
 
     http_request.assert_called_with(
@@ -2065,7 +2063,7 @@ def test_get_list_tag_command(mocker, mock_client, name, type, tag_id, page_size
 
 @pytest.mark.parametrize("tag_id, risk_score_higher_than, match, overwrite", [("1", "8000", "all", "no")])
 def test_update_tag_search_criteria(mocker, mock_client, tag_id, risk_score_higher_than, match, overwrite):
-    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
 
     update_tag_search_criteria_command(
         client=mock_client, overwrite=overwrite, tag_id=tag_id, risk_score_higher_than=risk_score_higher_than, match=match
@@ -2086,7 +2084,7 @@ def test_update_tag_search_criteria(mocker, mock_client, tag_id, risk_score_high
 
 @pytest.mark.parametrize("tag_id", [(1)])
 def test_get_list_tag_asset_group_command(mocker, mock_client, tag_id):
-    http_request = mocker.patch.object(Client, "_http_request", return_value={"resources": [1, 2, 5]})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={"resources": [1, 2, 5]})
     get_list_tag_asset_group_command(client=mock_client, tag_id=tag_id)
 
     http_request.assert_called_with(method="GET", url_suffix=f"/tags/{tag_id}/asset_groups", resp_type="json")
@@ -2099,7 +2097,7 @@ def test_get_list_tag_asset_group_command(mocker, mock_client, tag_id):
     ],
 )
 def test_add_tag_asset_group_command(mocker, mock_client, tag_id, asset_group_ids):
-    http_request = mocker.patch.object(Client, "_http_request", return_value={"resources": [1, 2, 3]})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={"resources": [1, 2, 3]})
 
     add_tag_asset_group_command(client=mock_client, tag_id=tag_id, asset_group_ids=asset_group_ids)
 
@@ -2117,7 +2115,7 @@ def test_remove_tag_asset_group_command(
     tag_id,
     asset_group_id,
 ):
-    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
 
     remove_tag_asset_group_command(client=mock_client, tag_id=tag_id, asset_group_id=asset_group_id)
 
@@ -2126,7 +2124,7 @@ def test_remove_tag_asset_group_command(
 
 @pytest.mark.parametrize("tag_id, expected_output", [("1", {"resources": [{"id": 12, "sources": ["asset-group"]}]})])
 def test_get_list_tag_asset_command(mocker, mock_client, tag_id, expected_output):
-    http_request = mocker.patch.object(Client, "_http_request", return_value=expected_output)
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value=expected_output)
 
     result = get_list_tag_asset_command(client=mock_client, tag_id=tag_id)
 
@@ -2137,7 +2135,7 @@ def test_get_list_tag_asset_command(mocker, mock_client, tag_id, expected_output
 
 @pytest.mark.parametrize("tag_id, asset_id", [("1", "123")])
 def test_add_tag_asset_command(mocker, mock_client, tag_id, asset_id):
-    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
 
     add_tag_asset_command(client=mock_client, tag_id=tag_id, asset_id=asset_id)
 
@@ -2146,7 +2144,7 @@ def test_add_tag_asset_command(mocker, mock_client, tag_id, asset_id):
 
 @pytest.mark.parametrize("tag_id, asset_id", [("1", "123")])
 def test_remove_tag_asset_command(mocker, mock_client, tag_id, asset_id):
-    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
 
     remove_tag_asset_command(client=mock_client, tag_id=tag_id, asset_id=asset_id)
 
@@ -2163,7 +2161,7 @@ def test_remove_tag_asset_command(mocker, mock_client, tag_id, asset_id):
     ],
 )
 def test_add_site_asset_command(mocker, mock_client, site_id, target_type, assets, asset_group_ids):
-    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
 
     add_site_asset_command(
         client=mock_client, target_type=target_type, site_id=site_id, assets=assets, asset_group_ids=asset_group_ids
@@ -2192,7 +2190,7 @@ def test_add_site_asset_command(mocker, mock_client, site_id, target_type, asset
     ],
 )
 def test_remove_site_asset_command(mocker, mock_client, target_type, site_id, assets, asset_group_ids):
-    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
 
     remove_site_asset_command(
         client=mock_client, target_type=target_type, site_id=site_id, assets=assets, asset_group_ids=asset_group_ids
@@ -2237,7 +2235,7 @@ def test_list_site_assets_command(mocker, mock_client, site_id, asset_type, targ
             ]
         }
     )
-    http_request = mocker.patch.object(Client, "_http_request", return_value=response_data)
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value=response_data)
 
     list_site_assets_command(client=mock_client, site_id=site_id, asset_type=asset_type, target_type=target_type)
 
@@ -2270,7 +2268,7 @@ def test_list_site_assets_command(mocker, mock_client, site_id, asset_type, targ
     ],
 )
 def test_parse_filters(mocker, mock_client, kwargs, expected_output):
-    mocker.patch.object(Client, "_http_request", return_value={"resources": [{"name": "site1", "id": "site1_Id"}]})
+    mocker.patch.object(BaseClient, "_http_request", return_value={"resources": [{"name": "site1", "id": "site1_Id"}]})
 
     result = parse_asset_filters(client=mock_client, **kwargs)
 
@@ -2299,7 +2297,7 @@ def test_parse_filters(mocker, mock_client, kwargs, expected_output):
     ],
 )
 def test_create_asset_group_command(mocker, mock_client, name, type, description, ip_address_is, match, expected_post_data):
-    http_request = mocker.patch.object(Client, "_http_request", return_value={"id": 1})
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={"id": 1})
     result = create_asset_group_command(
         client=mock_client,
         name=name,
@@ -3002,321 +3000,49 @@ async def test_stream_report_success(mocker):
 
 
 @pytest.mark.asyncio
-async def test_aiohttp_compat_content_stream():
-    """
-    Given:
-      - An httpx response object with async byte streaming via aiter_bytes
-
-    When:
-      - Wrapping it in _AiohttpCompatContentStream and calling iter_any()
-
-    Then:
-      - Ensure iter_any() yields the same byte chunks as aiter_bytes()
-    """
-    # Create a mock httpx response with aiter_bytes
-    mock_httpx_response = MagicMock()
-    expected_chunks = [b"chunk1", b"chunk2", b"chunk3"]
-
-    async def mock_aiter_bytes():
-        for chunk in expected_chunks:
-            yield chunk
-
-    mock_httpx_response.aiter_bytes = mock_aiter_bytes
-
-    # Wrap in the adapter
-    stream = _AiohttpCompatContentStream(mock_httpx_response)
-
-    # Collect chunks from iter_any()
-    collected_chunks: list[bytes] = []
-    async for chunk in stream.iter_any():
-        collected_chunks.append(chunk)
-
-    assert collected_chunks == expected_chunks
-
-
-@pytest.mark.asyncio
-async def test_aiohttp_compat_response():
-    """
-    Given:
-      - An httpx response object with status_code, headers, json(), text, and close()
-
-    When:
-      - Wrapping it in _AiohttpCompatResponse
-
-    Then:
-      - Ensure .status returns the status_code
-      - Ensure .headers returns the headers
-      - Ensure await .json() returns the parsed JSON
-      - Ensure await .text() returns the text body
-      - Ensure await .release() completes without error
-      - Ensure .content returns an _AiohttpCompatContentStream instance
-    """
-    mock_httpx_response = MagicMock()
-    mock_httpx_response.status_code = 200
-    mock_httpx_response.headers = {"Content-Type": "application/json"}
-    mock_httpx_response.json.return_value = {"key": "value"}
-    mock_httpx_response.text = "response body"
-    mock_httpx_response.close = MagicMock()
-
-    adapter = _AiohttpCompatResponse(mock_httpx_response)
-
-    # Verify .status
-    assert adapter.status == 200
-
-    # Verify .headers
-    assert adapter.headers == {"Content-Type": "application/json"}
-
-    # Verify await .json()
-    result_json = await adapter.json()
-    assert result_json == {"key": "value"}
-
-    # Verify await .text()
-    result_text = await adapter.text()
-    assert result_text == "response body"
-
-    # Verify await .release() completes without error
-    await adapter.release()
-
-    # Verify .content returns _AiohttpCompatContentStream
-    assert isinstance(adapter.content, _AiohttpCompatContentStream)
-
-    # Verify .close() delegates to the underlying response
-    adapter.close()
-    mock_httpx_response.close.assert_called_once()
-
-
-@pytest.mark.asyncio
-async def test_client_async_http_request(mocker):
-    """
-    Given:
-      - A Client instance with a mocked _request() method
-
-    When:
-      - Calling the async http_request() method
-
-    Then:
-      - Ensure _request() is called with the correct parameters
-      - Ensure the returned object is an _AiohttpCompatResponse
-    """
-    # Mock demisto.debug to avoid debug output during tests
-    mocker.patch("Rapid7_Nexpose.demisto.debug")
-
-    # Create a mock httpx response
-    mock_httpx_response = MagicMock()
-    mock_httpx_response.status_code = 200
-    mock_httpx_response.headers = {"Content-Type": "application/json"}
-
-    # Create a client and mock _request
-    client = Client(url="https://test-server.com", username="user", password="pass", verify=False)
-    mocker.patch.object(client, "_request", new_callable=AsyncMock, return_value=mock_httpx_response)
-
-    # Call http_request
-    result = await client.http_request("GET", "/api/3/reports")
-
-    # Verify the result is an _AiohttpCompatResponse
-    assert isinstance(result, _AiohttpCompatResponse)
-    assert result.status == 200
-
-    # Verify _request was called with the correct parameters
-    client._request.assert_called_once_with(
-        method="GET",
-        full_url="https://test-server.com/api/3/reports",
-        json_data=None,
-        resp_type="response",
-        ok_codes=(200, 201, 202, 204),
-    )
-
-
-@pytest.mark.asyncio
-async def test_client_async_http_request_with_payload(mocker):
-    """
-    Given:
-      - A Client instance with a mocked _request() method
-      - A JSON payload to send
-
-    When:
-      - Calling the async http_request() method with a payload
-
-    Then:
-      - Ensure _request() is called with the payload as json_data
-    """
-    mocker.patch("Rapid7_Nexpose.demisto.debug")
-
-    mock_httpx_response = MagicMock()
-    mock_httpx_response.status_code = 201
-    mock_httpx_response.headers = {}
-
-    client = Client(url="https://test-server.com", username="user", password="pass", verify=False)
-    mocker.patch.object(client, "_request", new_callable=AsyncMock, return_value=mock_httpx_response)
-
-    payload = {"name": "test-report", "format": "csv"}
-    result = await client.http_request("POST", "/api/3/reports", payload=payload)
-
-    assert isinstance(result, _AiohttpCompatResponse)
-    assert result.status == 201
-
-    client._request.assert_called_once_with(
-        method="POST",
-        full_url="https://test-server.com/api/3/reports",
-        json_data=payload,
-        resp_type="response",
-        ok_codes=(200, 201, 202, 204),
-    )
-
-
-@pytest.mark.asyncio
-async def test_client_async_http_request_retries_on_server_error(mocker):
-    """
-    Given:
-      - A Client instance where _request() returns a 500 status on the first call
-        and a 200 status on the second call
-
-    When:
-      - Calling the async http_request() method
-
-    Then:
-      - Ensure the method retries and eventually returns the successful response
-    """
-    mocker.patch("Rapid7_Nexpose.demisto.debug")
-    mocker.patch("Rapid7_Nexpose.asyncio.sleep", new_callable=AsyncMock)
-
-    mock_error_response = MagicMock()
-    mock_error_response.status_code = 500
-    mock_error_response.close = MagicMock()
-
-    mock_success_response = MagicMock()
-    mock_success_response.status_code = 200
-    mock_success_response.headers = {}
-
-    client = Client(url="https://test-server.com", username="user", password="pass", verify=False)
-    mocker.patch.object(
-        client,
-        "_request",
-        new_callable=AsyncMock,
-        side_effect=[mock_error_response, mock_success_response],
-    )
-
-    result = await client.http_request("GET", "/api/3/assets")
-
-    assert isinstance(result, _AiohttpCompatResponse)
-    assert result.status == 200
-    assert client._request.call_count == 2
-
-
-@pytest.mark.asyncio
 async def test_fetch_assets_command(mocker):
-    """
-    Given:
-      - A fully-initialised Client instance
+    """Test that fetch_assets_command creates InsightVMClient and calls run_all_collectors."""
+    mock_run_all = mocker.patch("Rapid7_Nexpose.run_all_collectors", new_callable=AsyncMock)
+    mock_client_cls = mocker.patch("Rapid7_Nexpose.InsightVMClient")
 
-    When:
-      - Calling the fetch_assets_command function
+    # Setup async context manager mock
+    mock_client_instance = AsyncMock()
+    mock_client_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client_instance)
+    mock_client_cls.return_value.__aexit__ = AsyncMock(return_value=False)
 
-    Then:
-      - Ensure the client is used as an async context manager
-      - Ensure run_all_collectors is called with the correct parameters
-      - Ensure timing debug messages are logged
-    """
-    # Mock demisto.debug
-    mock_debug = mocker.patch("Rapid7_Nexpose.demisto.debug")
+    params = {
+        "server": "https://nexpose.example.com",
+        "credentials": {"identifier": "user", "password": "pass"},
+        "insecure": False,
+    }
+    token = "test-token"
 
-    # Mock time.time to control duration calculation
-    mock_time = mocker.patch("Rapid7_Nexpose.time.time")
-    mock_time.side_effect = [1000.0, 1042.5]
+    await fetch_assets_command(params, token)
 
-    # Create a mock client that supports async context manager
-    mock_client = AsyncMock()
-    mock_client.__aenter__ = AsyncMock(return_value=mock_client)
-    mock_client.__aexit__ = AsyncMock(return_value=False)
-
-    # Mock run_all_collectors
-    mock_run_all_collectors = mocker.patch("Rapid7_Nexpose.run_all_collectors", new_callable=AsyncMock)
-
-    # Call the function under test
-    await fetch_assets_command(mock_client)
-
-    # Verify run_all_collectors was called with the client and default batch size
-    mock_run_all_collectors.assert_called_once_with(mock_client, batch_size=DEFAULT_BATCH_SIZE)
-
-    # Verify the client was used as an async context manager
-    mock_client.__aenter__.assert_called_once()
-    mock_client.__aexit__.assert_called_once()
-
-    # Verify debug messages were logged
-    mock_debug.assert_any_call("fetch-assets: starting collector run")
-    mock_debug.assert_any_call("fetch-assets: collector run completed in 42.5s")
-
-
-@pytest.mark.asyncio
-async def test_fetch_assets_command_propagates_errors(mocker):
-    """
-    Given:
-      - A Client instance where run_all_collectors raises an exception
-
-    When:
-      - Calling the fetch_assets_command function
-
-    Then:
-      - Ensure the exception propagates (no silent swallowing)
-    """
-    mocker.patch("Rapid7_Nexpose.demisto.debug")
-    mocker.patch("Rapid7_Nexpose.time.time", side_effect=[1000.0, 1010.0])
-
-    mock_client = AsyncMock()
-    mock_client.__aenter__ = AsyncMock(return_value=mock_client)
-    mock_client.__aexit__ = AsyncMock(return_value=False)
-
-    mocker.patch(
-        "Rapid7_Nexpose.run_all_collectors",
-        new_callable=AsyncMock,
-        side_effect=DemistoException("Collector failure"),
-    )
-
-    with pytest.raises(DemistoException, match="Collector failure"):
-        await fetch_assets_command(mock_client)
+    mock_run_all.assert_called_once()
 
 
 def test_main_fetch_assets_dispatch(mocker):
-    """
-    Given:
-      - demisto.command() returns 'fetch-assets'
-
-    When:
-      - Calling main()
-
-    Then:
-      - Ensure asyncio.run is called with fetch_assets_command(client)
-      - Ensure demisto.info is called with the expected message
-    """
+    """Test that main() dispatches fetch-assets command correctly."""
     mocker.patch.object(demisto, "command", return_value="fetch-assets")
-    mocker.patch.object(demisto, "args", return_value={})
     mocker.patch.object(
         demisto,
         "params",
         return_value={
-            "server": "https://test-server.com",
-            "credentials": {"identifier": "test-user", "password": "test-password"},
-            "unsecure": False,
+            "server": "https://nexpose.example.com",
+            "credentials": {"identifier": "user", "password": "pass"},
+            "insecure": False,
         },
     )
-    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "args", return_value={})
     mocker.patch("Rapid7_Nexpose.handle_proxy")
-
     mock_asyncio_run = mocker.patch("Rapid7_Nexpose.asyncio.run")
+
+    from Rapid7_Nexpose import main
 
     main()
 
-    # Verify asyncio.run was called once
     mock_asyncio_run.assert_called_once()
-
-    # Verify the argument to asyncio.run is a coroutine (from fetch_assets_command)
-    call_args = mock_asyncio_run.call_args[0][0]
-    assert asyncio.iscoroutine(call_args)
-    # Clean up the unawaited coroutine to avoid RuntimeWarning
-    call_args.close()
-
-    # Verify demisto.info was called
-    demisto.info.assert_called_with("Starting fetch-assets execution.")
 
 
 @pytest.mark.asyncio

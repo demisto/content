@@ -10,10 +10,8 @@ from collections.abc import AsyncGenerator
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
-from ContentClientApiModule import *  # noqa: F401,E402
 import asyncio
 import aiohttp
-import time
 
 VENDOR_NAME = "Rapid7 Nexpose"  # Vendor name to use for indicators.
 API_DEFAULT_PAGE_SIZE = 10  # Default page size that's set on the API. Used for calculations.
@@ -352,9 +350,6 @@ PRODUCT = {"asset": "nexpose_assets", "vulnerability": "nexpose_vulnerabilities"
 XSIAM_EVENT_CHUNK_SIZE = 2**20  # 1 Mib
 XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10**6)  # 9 MB, note that the allowed max size for 1 entry is 5MB.
 
-# 24 hours converted to seconds
-TWENTYFOUR_HOURS_AS_SECONDS = 24 * 60 * 60
-
 
 def log(event_type: str, log_line: str):
     full_log_line = f"[{event_type}] {log_line}"
@@ -462,71 +457,7 @@ class VulnerabilityExceptionScopeType(Enum, metaclass=FlexibleEnum):
     ASSET_GROUP = "Asset Group"
 
 
-class _AiohttpCompatContentStream:
-    """Adapter that wraps httpx async byte streaming to match the aiohttp content.iter_any() interface.
-
-    The collector functions (which must not be modified) call ``response.content.iter_any()``
-    expecting an async iterator of ``bytes`` chunks.  httpx exposes ``response.aiter_bytes()``
-    instead, so this thin wrapper bridges the two APIs.
-    """
-
-    def __init__(self, response: Any) -> None:
-        self._response = response
-
-    async def iter_any(self) -> AsyncGenerator[bytes, None]:  # type: ignore[misc]
-        async for chunk in self._response.aiter_bytes():
-            yield chunk
-
-
-class _AiohttpCompatResponse:
-    """Adapter that wraps an ``httpx.Response`` to expose the aiohttp-style interface
-    expected by the preserved collector functions.
-
-    Mapped attributes / methods:
-    - ``.status``          → ``httpx.Response.status_code``
-    - ``.headers``         → ``httpx.Response.headers``  (already compatible)
-    - ``await .json()``    → wraps the synchronous ``httpx.Response.json()``
-    - ``await .text()``    → wraps the synchronous ``httpx.Response.text``
-    - ``await .release()`` / ``.release()`` → no-op (httpx manages connections automatically)
-    - ``.close()``         → ``httpx.Response.close()``
-    - ``.content``         → ``_AiohttpCompatContentStream`` for streaming
-    """
-
-    def __init__(self, httpx_response: Any) -> None:
-        self._response = httpx_response
-
-    # --- aiohttp-compatible properties ---
-
-    @property
-    def status(self) -> int:
-        return self._response.status_code
-
-    @property
-    def headers(self) -> Any:
-        return self._response.headers
-
-    @property
-    def content(self) -> _AiohttpCompatContentStream:
-        return _AiohttpCompatContentStream(self._response)
-
-    # --- aiohttp-compatible async methods ---
-
-    async def json(self) -> Any:
-        return self._response.json()
-
-    async def text(self) -> str:
-        return self._response.text
-
-    async def release(self) -> None:
-        """No-op — httpx handles connection lifecycle automatically."""
-
-    # --- sync helpers used by some collector paths ---
-
-    def close(self) -> None:
-        self._response.close()
-
-
-class Client(ContentClient, BaseClient):
+class Client(BaseClient):
     """Client class for interactions with Rapid7 Nexpose API."""
 
     def __init__(
@@ -552,7 +483,7 @@ class Client(ContentClient, BaseClient):
         self._auth_username = username
         self._auth_password = password
         self._auth_token = token
-        headers = {
+        self._headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
         }
@@ -560,32 +491,15 @@ class Client(ContentClient, BaseClient):
 
         # Add 2FA token to headers if provided
         if token:
-            headers["Token"] = token
+            self._headers.update({"Token": token})
 
-        api_base_url = url.rstrip("/") + "/api/3"
-
-        # Initialize ContentClient (async httpx stack, _headers, _base_url, etc.)
-        ContentClient.__init__(
-            self,
-            base_url=api_base_url,
+        super().__init__(
+            base_url=url.rstrip("/") + "/api/3",
             auth=(username, password),
-            headers=headers,
+            headers=self._headers,
             ok_codes=(200, 201),
             verify=verify,
         )
-
-        # Initialize BaseClient (creates self._session for sync requests.Session)
-        BaseClient.__init__(
-            self,
-            base_url=api_base_url,
-            auth=(username, password),
-            headers=headers,
-            ok_codes=(200, 201),
-            verify=verify,
-        )
-
-        # Store headers for async http_request usage
-        self._collector_headers = self._headers.copy()
 
     def _http_request(self, **kwargs):  # type: ignore[override]
         """Wrapper for BaseClient._http_request() that optionally removes `links` keys from responses."""
@@ -605,75 +519,6 @@ class Client(ContentClient, BaseClient):
                     time.sleep(1)  # pylint: disable=sleep-exists
 
         return None
-
-    async def http_request(
-        self, method: str, endpoint: str, payload: Optional[Dict[str, Any]] = None
-    ) -> "_AiohttpCompatResponse":
-        """Async HTTP request compatible with the collector functions.
-
-        Provides the same interface as the former ``InsightVMClient.http_request()``
-        but delegates to ``ContentClient._request()`` under the hood and wraps the
-        ``httpx.Response`` in an aiohttp-compatible adapter so that the preserved
-        collector functions continue to work without modification.
-
-        Args:
-            method: HTTP method (GET, POST, DELETE, etc.).
-            endpoint: API endpoint path (e.g. ``/api/3/reports``).
-            payload: Optional JSON body.
-
-        Returns:
-            An ``_AiohttpCompatResponse`` wrapping the raw ``httpx.Response``.
-        """
-        # The collector functions pass full endpoint paths like "/api/3/reports/..."
-        # ContentClient._request uses url_suffix relative to base_url which already
-        # includes "/api/3", so we need to use full_url instead.
-        full_url = self.base_url.rstrip("/") + endpoint
-
-        MAX_RETRIES = 3
-        RETRYABLE_STATUSES = {500, 502, 503, 504, 429}
-
-        for attempt in range(MAX_RETRIES + 1):
-            if attempt > 0:
-                delay = 5**attempt
-                demisto.debug(f"Retrying {method} {endpoint}... Attempt {attempt}/{MAX_RETRIES}. Waiting {delay}s...")
-                await asyncio.sleep(delay)
-
-            try:
-                response = await self._request(
-                    method=method,
-                    full_url=full_url,
-                    json_data=payload,
-                    resp_type="response",
-                    ok_codes=(200, 201, 202, 204),
-                )
-
-                # Handle retryable status codes
-                if response.status_code in RETRYABLE_STATUSES:
-                    demisto.debug(f"API returned retryable status {response.status_code} for {method} {endpoint}")
-                    response.close()
-                    continue
-
-                # Handle fatal client errors (4xx)
-                if 400 <= response.status_code < 500:
-                    try:
-                        error_body = response.text
-                    except Exception:
-                        error_body = "Could not read error body."
-                    response.close()
-                    raise DemistoException(f"Client API Error ({response.status_code}): {error_body}")
-
-                # Success — wrap in aiohttp-compatible adapter
-                return _AiohttpCompatResponse(response)
-
-            except DemistoException:
-                if attempt == MAX_RETRIES:
-                    raise
-            except Exception as e:
-                demisto.debug(f"Connection error: {e}")
-                if attempt == MAX_RETRIES:
-                    raise
-
-        raise DemistoException(f"API request failed after {MAX_RETRIES} attempts.")
 
     def _generate_session_id(self) -> str:
         """
@@ -2733,10 +2578,100 @@ class Client(ContentClient, BaseClient):
         )
 
 
-# InsightVMClient has been replaced by Client(ContentClient) with async http_request() method.
-# The Client class now serves both sync XSOAR commands and async collector workflows.
-# Type alias so that preserved collector function signatures remain valid at runtime.
-InsightVMClient = Client
+class InsightVMClient:
+    """
+    Asynchronous client for interacting with the Rapid7 InsightVM API.
+    Handles session and authentication management.
+    """
+
+    def __init__(
+        self,
+        base_url: str,
+        username: str,
+        password: str,
+        token: str = "",
+        verify: bool = True,
+    ):
+        self._base_url = base_url.rstrip("/")
+        self._auth_username = username
+        self._auth_password = password
+        self._auth_token = token
+        self._verify = verify
+        self._headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        }
+        self.connection_error_retries = CONNECTION_ERRORS_RETRIES
+
+        # Add 2FA token to headers if provided
+        if token:
+            self._headers.update({"Token": token})
+
+        auth_string = base64.b64encode(f"{username}:{password}".encode()).decode("utf-8")
+        self._headers.update({"Authorization": f"Basic {auth_string}"})
+
+    async def __aenter__(self):
+        """Asynchronous context manager entry: creates the aiohttp session."""
+        # Create a single session that persists for the client's lifespan
+        self._session = aiohttp.ClientSession()
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Asynchronous context manager exit: closes the aiohttp session."""
+        await self._session.close()
+
+    async def http_request(self, method: str, endpoint: str, payload: Optional[Dict[str, Any]] = None) -> aiohttp.ClientResponse:
+        """
+        Executes an asynchronous HTTP request and returns the raw response object.
+        Includes retry logic for server errors.
+        """
+        url = self._base_url + endpoint
+
+        # Select the method function (get, post, etc.)
+        request_func = getattr(self._session, method.lower())
+
+        MAX_RETRIES = 3
+        # Retry on: 500/502/503/504 (Server Errors), 429 (Rate Limit)
+        RETRYABLE_STATUSES = {500, 502, 503, 504, 429}
+
+        for attempt in range(MAX_RETRIES + 1):
+            if attempt > 0:
+                delay = 5**attempt
+                demisto.debug(f"Retrying {method} {endpoint}... Attempt {attempt}/{MAX_RETRIES}. Waiting {delay}s...")
+                await asyncio.sleep(delay)
+
+            try:
+                response = await request_func(url, headers=self._headers, json=payload, ssl=False)
+
+                # 1. Handle Retryable Errors
+                if response.status in RETRYABLE_STATUSES:
+                    try:
+                        message = response.message
+                    except AttributeError:
+                        message = "No message from Rapid7"
+                    demisto.debug(f"API returned retryable status {response.status}: {message}")
+                    response.close()  # Close connection before retrying
+                    continue
+
+                # 2. Handle Fatal Client Errors (4xx)
+                if 400 <= response.status < 500:
+                    try:
+                        error_body = await response.text()
+                    except Exception:
+                        error_body = "Could not read error body."
+                    response.close()
+                    raise DemistoException(f"Client API Error ({response.status}): {error_body}")
+
+                # 3. Success (2xx)
+                # Return the RAW response object so the caller can read headers/json as needed.
+                return response
+
+            except aiohttp.ClientConnectorError as e:
+                demisto.debug(f"Connection error: {e}")
+                if attempt == MAX_RETRIES:
+                    raise
+
+        raise DemistoException(f"API request failed after {MAX_RETRIES} attempts.")
 
 
 class Site:
@@ -7456,13 +7391,13 @@ def update_integration_context_by_event_type(event_type: str, changes: Dict[str,
     """
 
     # 1. Get the current context
-    current_context = get_integration_context()
+    current_context = demisto.getAssetsLastRun()
 
     # 2. Apply the update using the helper function
     _apply_collector_changes(current_context, event_type, changes)
 
     # 3. Set the updated context back to the platform
-    set_integration_context(current_context)
+    demisto.setAssetsLastRun(current_context)
     log(event_type, f"State checkpoint saved. New line: {current_context[event_type]}")  # noqa: E501
 
 
@@ -7917,7 +7852,7 @@ async def run_full_collector_workflow(client: InsightVMClient, event_type: str, 
 
     The function signature is adapted to receive the client instance.
     """
-    integration_context = get_integration_context()
+    integration_context = demisto.getAssetsLastRun()
     log(event_type, f"Got integration_context: {integration_context}")
 
     # 1. RETRIEVE STATE
@@ -8008,7 +7943,7 @@ async def run_all_collectors(
     """
 
     try:
-        context = get_integration_context()
+        context = demisto.getAssetsLastRun()
         await ensure_report_config_exists(client, "asset", context)
         await ensure_report_config_exists(client, "vulnerability", context)
 
@@ -8042,29 +7977,22 @@ async def run_all_collectors(
     demisto.debug("All collector workflows finished successfully.")
 
 
-async def fetch_assets_command(client: Client) -> None:
-    """Fetch assets command — replaces long-running-execution.
+async def fetch_assets_command(params: dict, token: str) -> None:
+    """Fetch assets command - replaces long-running-execution.
 
-    Uses the platform's ``fetch-assets`` scheduling mechanism instead of a
-    ``while True`` + ``sleep(24h)`` loop.  The existing collector pipeline
-    (create → generate → poll → stream → cleanup) runs to completion in a
-    single invocation; the platform re-invokes on the configured schedule.
-
-    The ``Client(ContentClient)`` instance is used as an async context manager
-    so that the underlying ``httpx.AsyncClient`` is properly initialised and
-    cleaned up.
-
-    Args:
-        client: A fully-initialised ``Client`` instance.
+    The platform's fetch-assets scheduler handles re-invocation at the configured interval.
+    Each invocation runs the full collector pipeline once.
     """
-    demisto.debug("fetch-assets: starting collector run")
-    start_time = time.time()
-
-    async with client:
+    demisto.debug("Starting fetch-assets execution")
+    async with InsightVMClient(
+        base_url=params["server"],
+        username=params["credentials"].get("identifier"),
+        password=params["credentials"].get("password"),
+        token=token,
+        verify=not params.get("unsecure"),
+    ) as client:
         await run_all_collectors(client, batch_size=DEFAULT_BATCH_SIZE)
-
-    duration_seconds = time.time() - start_time
-    demisto.debug(f"fetch-assets: collector run completed in {duration_seconds:.1f}s")
+    demisto.debug("Finished fetch-assets execution")
 
 
 def main():  # pragma: no cover
@@ -8100,8 +8028,7 @@ def main():  # pragma: no cover
             client.get_assets(page_size=1, limit=1)
             results = "ok"
         elif command == "fetch-assets":
-            demisto.info("Starting fetch-assets execution.")
-            asyncio.run(fetch_assets_command(client))
+            asyncio.run(fetch_assets_command(params, token))
             return
         elif command == "nexpose-create-asset":
             results = create_asset_command(client=client, **args)
