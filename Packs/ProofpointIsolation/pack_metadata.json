@@ -9,12 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Email"
+    ],
     "useCases": [],
     "keywords": [
         "event collector",
         "Browser isolation",
-        "RBI"
+        "RBI",
+        "Proofpoint",
+        "email isolation"
     ],
     "marketplaces": [
         "marketplacev2",

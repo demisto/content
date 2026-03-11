@@ -9,9 +9,20 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security",
+        "VPN"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Zscaler",
+        "ZPA",
+        "Zscaler Private Access",
+        "zero trust",
+        "ZTNA",
+        "remote access"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

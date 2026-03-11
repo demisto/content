@@ -10,9 +10,18 @@
     "categories": [
         "Identity and Access Management"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "IAM"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Delinea",
+        "Secret Server",
+        "Thycotic",
+        "PAM",
+        "Privileged Access"
+    ],
     "githubUser": [
         "delinea-rajani"
     ],

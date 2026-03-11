@@ -9,14 +9,19 @@
     "categories": [
         "Identity and Access Management"
     ],
-    "tags": [],
+    "tags": [
+        "IAM",
+        "Security"
+    ],
     "useCases": [],
     "keywords": [
         "Fraud",
         "Account",
         "Authentication",
         "Thales",
-        "SafeNet"
+        "SafeNet",
+        "MFA",
+        "access management"
     ],
     "dependencies": {
         "CommonTypes": {

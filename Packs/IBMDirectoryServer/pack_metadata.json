@@ -11,11 +11,15 @@
         "IT Services"
     ],
     "tags": [
-        "IT"
+        "IT",
+        "IAM"
     ],
     "useCases": [],
     "keywords": [
-        "LDAP"
+        "LDAP",
+        "IBM",
+        "Directory Server",
+        "IBM Directory Server"
     ],
     "marketplaces": [
         "marketplacev2",

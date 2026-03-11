@@ -9,9 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "macOS",
+        "Mac",
+        "Apple",
+        "Mac OS X",
+        "operating system"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

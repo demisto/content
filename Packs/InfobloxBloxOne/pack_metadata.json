@@ -9,9 +9,21 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Network",
+        "Threat Intelligence"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Infoblox",
+        "BloxOne",
+        "DDI",
+        "DNS",
+        "DHCP",
+        "Threat Defense",
+        "DNS Security"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

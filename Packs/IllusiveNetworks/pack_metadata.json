@@ -9,10 +9,19 @@
     "categories": [
         "Deception & Breach Simulation"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Breach Simulation",
+        "Forensics"
+    ],
     "created": "2020-03-19T09:39:30Z",
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Illusive",
+        "Illusive Networks",
+        "Deception",
+        "Deception Technology"
+    ],
     "certification": "certified",
     "githubUser": [
         "adiozer"

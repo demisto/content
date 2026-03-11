@@ -9,9 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Security Analytics"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "CyberArk",
+        "PTA",
+        "Privileged Threat Analytics",
+        "Privilege"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

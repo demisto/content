@@ -9,9 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Email"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Forcepoint",
+        "Email Security",
+        "Email Protection",
+        "Email Gateway"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

@@ -14,7 +14,12 @@
         "IT"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Atlassian",
+        "Confluence",
+        "Confluence Cloud",
+        "Wiki"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

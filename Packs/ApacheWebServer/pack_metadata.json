@@ -14,7 +14,10 @@
     ],
     "useCases": [],
     "keywords": [
-        "httpd"
+        "httpd",
+        "Apache",
+        "Apache Web Server",
+        "Apache HTTP Server"
     ],
     "marketplaces": [
         "marketplacev2",

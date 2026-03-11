@@ -20,7 +20,10 @@
         "Threat Intelligence Management"
     ],
     "keywords": [
-        "bitsight"
+        "bitsight",
+        "Security Ratings",
+        "Risk Rating",
+        "Cyber Risk"
     ],
     "marketplaces": [
         "xsoar",

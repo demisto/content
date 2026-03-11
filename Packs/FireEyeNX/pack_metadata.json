@@ -11,9 +11,19 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Network"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "FireEye",
+        "NX",
+        "FireEye NX",
+        "Trellix",
+        "Network Security",
+        "NDR"
+    ],
     "dependencies": {
         "FireEyeCommonFields": {
             "mandatory": true,

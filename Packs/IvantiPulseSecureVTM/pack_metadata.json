@@ -9,9 +9,18 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Ivanti",
+        "Pulse Secure",
+        "VTM",
+        "Virtual Traffic Manager",
+        "Load Balancer"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

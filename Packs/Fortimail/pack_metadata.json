@@ -11,11 +11,14 @@
         "Email"
     ],
     "tags": [
-        "Email"
+        "Email",
+        "Security"
     ],
     "useCases": [],
     "keywords": [
-        "Fortinet"
+        "Fortinet",
+        "Fortimail",
+        "Email Gateway"
     ],
     "githubUser": [],
     "marketplaces": [

@@ -10,9 +10,19 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security",
+        "Security Analytics"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Cisco",
+        "Stealthwatch",
+        "Secure Network Analytics",
+        "NTA",
+        "NDR"
+    ],
     "dependencies": {
         "CommonPlaybooks": {
             "mandatory": true,

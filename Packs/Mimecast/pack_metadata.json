@@ -10,9 +10,16 @@
     "categories": [
         "Email"
     ],
-    "tags": [],
+    "tags": [
+        "Email",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Mimecast",
+        "email security",
+        "email archiving"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

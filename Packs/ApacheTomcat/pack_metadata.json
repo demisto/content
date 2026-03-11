@@ -9,9 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Apache",
+        "Tomcat",
+        "Apache Tomcat",
+        "Web Server",
+        "Application Server"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

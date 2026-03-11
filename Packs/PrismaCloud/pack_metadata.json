@@ -13,14 +13,22 @@
         "Cloud Security"
     ],
     "tags": [
-        "Palo Alto Networks Products"
+        "Palo Alto Networks Products",
+        "Security"
     ],
     "itemPrefix": [
         "Prisma Cloud"
     ],
     "created": "2020-05-11T18:00:53Z",
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Prisma Cloud",
+        "CSPM",
+        "CWPP",
+        "cloud security",
+        "RedLock",
+        "Twistlock"
+    ],
     "dependencies": {
         "CommonTypes": {
             "mandatory": true,

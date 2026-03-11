@@ -8,7 +8,8 @@
     "url": "",
     "email": "support@abnormalsecurity.com",
     "tags": [
-        "Email"
+        "Email",
+        "Security"
     ],
     "categories": [
         "Email"
@@ -19,7 +20,10 @@
     "keywords": [
         "Email",
         "Phishing",
-        "AbnormalSecurity"
+        "AbnormalSecurity",
+        "Abnormal Security",
+        "BEC",
+        "Email Security"
     ],
     "githubUser": [
         "fraankwang"

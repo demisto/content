@@ -11,7 +11,8 @@
         "Cloud Security"
     ],
     "tags": [
-        "Palo Alto Networks Products"
+        "Palo Alto Networks Products",
+        "Security"
     ],
     "dependencies": {
         "Jira": {
@@ -24,7 +25,12 @@
         }
     },
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Prisma Cloud Compute",
+        "Twistlock",
+        "container security",
+        "cloud workload"
+    ],
     "itemPrefix": [
         "Prisma Cloud Compute"
     ],

@@ -10,11 +10,17 @@
     "categories": [
         "Vulnerability Management"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
     "keywords": [
         "Asset Collection",
-        "Tenable"
+        "Tenable",
+        "Tenable.io",
+        "Nessus",
+        "vulnerability management",
+        "vulnerability scanning"
     ],
     "marketplaces": [
         "xsoar",

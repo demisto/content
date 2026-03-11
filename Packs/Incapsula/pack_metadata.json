@@ -10,9 +10,19 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Network"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Imperva",
+        "Incapsula",
+        "WAF",
+        "Web Application Firewall",
+        "CDN",
+        "DDoS Protection"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

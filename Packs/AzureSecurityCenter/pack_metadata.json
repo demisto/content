@@ -12,13 +12,19 @@
         "Cloud Service Provider"
     ],
     "tags": [
-        "IT"
+        "IT",
+        "Security",
+        "Alerts"
     ],
     "useCases": [],
     "keywords": [
         "security center",
         "azure",
-        "Microsoft"
+        "Microsoft",
+        "Defender for Cloud",
+        "Microsoft Defender",
+        "Azure Security Center",
+        "ASC"
     ],
     "marketplaces": [
         "xsoar",

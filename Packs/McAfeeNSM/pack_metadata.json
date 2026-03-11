@@ -10,9 +10,18 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "McAfee",
+        "NSM",
+        "Network Security Manager",
+        "Trellix",
+        "IPS"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

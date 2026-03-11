@@ -10,14 +10,19 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "Network"
+        "Network",
+        "Security"
     ],
     "useCases": [
         "Network Security"
     ],
     "keywords": [
         "vmware",
-        "nsx"
+        "nsx",
+        "VMware NSX",
+        "virtual networking",
+        "micro-segmentation",
+        "Broadcom"
     ],
     "marketplaces": [
         "marketplacev2",

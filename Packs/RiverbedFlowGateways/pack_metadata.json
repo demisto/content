@@ -22,7 +22,9 @@
         "SteelHead SD",
         "SteelHead",
         "SteelConnect Manager",
-        "SCM"
+        "SCM",
+        "NetFlow",
+        "network visibility"
     ],
     "marketplaces": [
         "marketplacev2"

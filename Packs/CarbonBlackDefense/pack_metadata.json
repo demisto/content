@@ -10,9 +10,19 @@
     "categories": [
         "Endpoint"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Malware"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Carbon Black",
+        "VMware",
+        "Broadcom",
+        "EDR",
+        "Endpoint Standard",
+        "NGAV"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

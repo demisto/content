@@ -11,10 +11,15 @@
     ],
     "tags": [
         "IT",
-        "Network"
+        "Network",
+        "Security"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Kiteworks",
+        "Accellion",
+        "secure file sharing"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

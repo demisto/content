@@ -10,13 +10,17 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "IT"
+        "IT",
+        "Security"
     ],
     "useCases": [],
     "keywords": [
         "Remote Support",
         "Remote",
-        "Bomgar"
+        "Bomgar",
+        "BeyondTrust",
+        "Beyond Trust",
+        "BeyondTrust Remote Support"
     ],
     "marketplaces": [
         "marketplacev2",

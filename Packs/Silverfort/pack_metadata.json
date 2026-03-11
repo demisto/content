@@ -18,7 +18,11 @@
         "Identity and Access Management"
     ],
     "keywords": [
-        "Silverfort"
+        "Silverfort",
+        "MFA",
+        "authentication",
+        "identity protection",
+        "zero trust"
     ],
     "githubUser": [
         "liavSilverfort"

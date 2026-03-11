@@ -9,9 +9,18 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Cisco",
+        "Nexus",
+        "Cisco Nexus",
+        "Data Center",
+        "NX-OS"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

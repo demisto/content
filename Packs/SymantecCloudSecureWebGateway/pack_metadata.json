@@ -10,12 +10,19 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "useCases": [],
     "keywords": [
         "wss",
         "swg",
-        "web security service"
+        "web security service",
+        "Symantec",
+        "Broadcom",
+        "Secure Web Gateway",
+        "cloud proxy"
     ],
     "marketplaces": [
         "marketplacev2",

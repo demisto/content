@@ -9,9 +9,16 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Tableau",
+        "visual analytics",
+        "data visualization",
+        "BI"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

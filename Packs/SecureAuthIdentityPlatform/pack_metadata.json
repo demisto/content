@@ -9,7 +9,10 @@
     "categories": [
         "Identity and Access Management"
     ],
-    "tags": [],
+    "tags": [
+        "IAM",
+        "Security"
+    ],
     "useCases": [],
     "keywords": [
         "Secure",
@@ -17,7 +20,9 @@
         "SecureAuth",
         "IDP",
         "Identity Platform",
-        "Identity"
+        "Identity",
+        "MFA",
+        "SSO"
     ],
     "marketplaces": [
         "marketplacev2",

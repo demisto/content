@@ -9,9 +9,17 @@
     "categories": [
         "Identity and Access Management"
     ],
-    "tags": [],
+    "tags": [
+        "IAM",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Oracle",
+        "OCI",
+        "Oracle Cloud",
+        "cloud infrastructure"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

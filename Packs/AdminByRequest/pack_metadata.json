@@ -10,10 +10,17 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "IT"
+        "IT",
+        "IAM",
+        "Security"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "AdminByRequest",
+        "Admin By Request",
+        "PAM",
+        "Privileged Access Management"
+    ],
     "marketplaces": [
         "platform",
         "marketplacev2",

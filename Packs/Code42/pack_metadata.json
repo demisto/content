@@ -13,11 +13,16 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Incident Response"
+        "Incident Response",
+        "Security"
     ],
     "useCases": [],
     "keywords": [
-        "Incydr"
+        "Incydr",
+        "Code42",
+        "Insider Threat",
+        "Data Exfiltration",
+        "DLP"
     ],
     "marketplaces": [
         "xsoar",

@@ -10,9 +10,16 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Microsoft",
+        "ATA",
+        "Advanced Threat Analytics",
+        "Active Directory"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

@@ -10,12 +10,17 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "Security"
+        "Security",
+        "Network"
     ],
     "useCases": [],
     "keywords": [
         "dragos",
-        "OT"
+        "OT",
+        "ICS",
+        "SCADA",
+        "Industrial Control Systems",
+        "Operational Technology"
     ],
     "marketplaces": [
         "marketplacev2",

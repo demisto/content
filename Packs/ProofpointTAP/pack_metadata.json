@@ -15,7 +15,13 @@
         "Security"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Proofpoint",
+        "TAP",
+        "Targeted Attack Protection",
+        "phishing",
+        "email security"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

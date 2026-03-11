@@ -9,10 +9,16 @@
     "categories": [
         "CI/CD"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
     "keywords": [
-        "Atlassian"
+        "Atlassian",
+        "Bitbucket",
+        "Git",
+        "CI/CD",
+        "Source Control"
     ],
     "marketplaces": [
         "xsoar",

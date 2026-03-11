@@ -9,9 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Kubernetes",
+        "K8s",
+        "container",
+        "orchestration",
+        "cloud native"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

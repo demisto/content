@@ -9,10 +9,19 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Network"
+    ],
     "created": "2021-01-02T18:00:53Z",
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Armis",
+        "IoT",
+        "OT",
+        "Asset Management",
+        "Device Security"
+    ],
     "dependencies": {},
     "marketplaces": [
         "xsoar",

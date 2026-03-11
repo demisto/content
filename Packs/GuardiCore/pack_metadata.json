@@ -25,7 +25,11 @@
         "Network Security"
     ],
     "keywords": [
-        "Guardicore Centra"
+        "Guardicore Centra",
+        "Akamai",
+        "GuardiCore",
+        "Microsegmentation",
+        "Segmentation"
     ],
     "marketplaces": [
         "xsoar",

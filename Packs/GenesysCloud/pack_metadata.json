@@ -10,10 +10,16 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "IT"
+        "IT",
+        "Compliance"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Genesys",
+        "Genesys Cloud",
+        "Contact Center",
+        "CCaaS"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

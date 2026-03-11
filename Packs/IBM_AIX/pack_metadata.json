@@ -9,9 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "IBM",
+        "AIX",
+        "UNIX",
+        "IBM AIX",
+        "Power Systems"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

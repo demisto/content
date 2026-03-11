@@ -15,7 +15,11 @@
     ],
     "useCases": [],
     "keywords": [
-        "Asset Collection"
+        "Asset Collection",
+        "vulnerability management",
+        "VMDR",
+        "QualysGuard",
+        "vulnerability scanning"
     ],
     "marketplaces": [
         "xsoar",

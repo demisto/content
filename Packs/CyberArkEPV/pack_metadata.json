@@ -9,7 +9,10 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "IAM"
+    ],
     "useCases": [],
     "keywords": [
         "EPV",

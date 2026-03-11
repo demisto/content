@@ -10,12 +10,18 @@
     "categories": [
         "Endpoint"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Malware"
+    ],
     "useCases": [],
     "keywords": [
         "Cisco",
         "AMP",
-        "Secure Endpoint"
+        "Secure Endpoint",
+        "Cisco AMP",
+        "Endpoint Protection",
+        "EDR"
     ],
     "marketplaces": [
         "xsoar",

@@ -10,9 +10,18 @@
     "categories": [
         "Email"
     ],
-    "tags": [],
+    "tags": [
+        "Email",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Cisco",
+        "SMA",
+        "Cisco SMA",
+        "Security Management Appliance",
+        "Email Security"
+    ],
     "dependencies": {
         "Phishing": {
             "mandatory": true,

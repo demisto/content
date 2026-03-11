@@ -14,7 +14,10 @@
     ],
     "useCases": [],
     "keywords": [
-        "JunOS"
+        "JunOS",
+        "Juniper",
+        "SRX",
+        "firewall"
     ],
     "marketplaces": [
         "marketplacev2",

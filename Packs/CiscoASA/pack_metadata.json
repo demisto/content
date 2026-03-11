@@ -11,10 +11,18 @@
         "Network Security"
     ],
     "tags": [
-        "Network"
+        "Network",
+        "Security"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Cisco",
+        "ASA",
+        "Cisco ASA",
+        "Firewall",
+        "Adaptive Security Appliance",
+        "VPN"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

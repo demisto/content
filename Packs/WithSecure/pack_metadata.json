@@ -9,9 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "WithSecure",
+        "F-Secure",
+        "endpoint protection",
+        "EPP",
+        "EDR"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

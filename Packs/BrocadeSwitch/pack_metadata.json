@@ -9,9 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Brocade",
+        "Switch",
+        "Network Switch",
+        "SAN"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

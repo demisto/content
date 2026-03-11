@@ -10,13 +10,19 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "useCases": [],
     "keywords": [
         "ACS",
         "ISE",
         "Access Control System",
-        "Identity Services Engine"
+        "Identity Services Engine",
+        "Cisco",
+        "NAC",
+        "RADIUS"
     ],
     "marketplaces": [
         "xsoar",

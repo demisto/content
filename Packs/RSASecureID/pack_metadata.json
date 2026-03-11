@@ -9,9 +9,18 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "IAM",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "RSA",
+        "SecurID",
+        "MFA",
+        "multi-factor authentication",
+        "token"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

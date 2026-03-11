@@ -10,7 +10,11 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Threat Intelligence",
+        "Dark Web"
+    ],
     "useCases": [],
     "keywords": [
         "DigitalShadows",
@@ -30,7 +34,10 @@
         "threat actors",
         "Digital",
         "Shadows",
-        "SearchLight"
+        "SearchLight",
+        "ReliaQuest",
+        "Digital Risk Protection",
+        "DRP"
     ],
     "githubUser": [
         "rq-vsarode"

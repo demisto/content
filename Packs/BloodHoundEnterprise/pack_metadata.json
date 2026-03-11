@@ -9,9 +9,18 @@
     "categories": [
         "Identity and Access Management"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "IAM"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "BloodHound",
+        "BloodHound Enterprise",
+        "Active Directory",
+        "AD",
+        "Attack Path"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

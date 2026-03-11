@@ -10,10 +10,17 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "IT"
+        "IT",
+        "Security"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "IBM",
+        "MaaS360",
+        "MDM",
+        "Mobile Device Management",
+        "UEM"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

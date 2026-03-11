@@ -9,9 +9,20 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "F5",
+        "BIG-IP",
+        "AWAF",
+        "WAF",
+        "Web Application Firewall",
+        "Advanced WAF",
+        "DDoS"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

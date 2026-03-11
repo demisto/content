@@ -9,9 +9,16 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "TeamViewer",
+        "remote access",
+        "remote desktop",
+        "remote support"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

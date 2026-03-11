@@ -10,9 +10,17 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Network"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Fortinet",
+        "FortiWeb",
+        "WAF",
+        "Web Application Firewall"
+    ],
     "githubUser": [],
     "certification": "certified",
     "marketplaces": [

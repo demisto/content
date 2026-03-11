@@ -9,9 +9,18 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Compliance"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Alibaba",
+        "Alibaba Cloud",
+        "Action Trail",
+        "ActionTrail",
+        "Audit"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

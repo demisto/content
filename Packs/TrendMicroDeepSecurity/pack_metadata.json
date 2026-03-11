@@ -9,9 +9,16 @@
     "categories": [
         "Endpoint"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Trend Micro",
+        "Deep Security",
+        "workload security",
+        "IPS"
+    ],
     "githubUser": [],
     "marketplaces": [
         "xsoar",

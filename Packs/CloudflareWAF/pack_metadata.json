@@ -9,9 +9,18 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Cloudflare",
+        "WAF",
+        "Web Application Firewall",
+        "CDN",
+        "Firewall"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

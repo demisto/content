@@ -10,9 +10,16 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Microsoft",
+        "Azure",
+        "Events Hub",
+        "Event Hub"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]

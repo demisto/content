@@ -9,9 +9,17 @@
     "categories": [
         "Cloud Services"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Google",
+        "Apigee",
+        "API Management",
+        "API Gateway",
+        "API Security"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

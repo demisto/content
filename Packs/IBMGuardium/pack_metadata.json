@@ -9,12 +9,20 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Compliance"
+    ],
     "useCases": [],
     "keywords": [
         "DB",
         "Database",
-        "DBF"
+        "DBF",
+        "IBM",
+        "Guardium",
+        "Data Security",
+        "Data Activity Monitoring",
+        "DAM"
     ],
     "marketplaces": [
         "marketplacev2",

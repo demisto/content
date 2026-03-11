@@ -13,11 +13,16 @@
     ],
     "tags": [
         "Security",
-        "Network"
+        "Network",
+        "Alerts"
     ],
     "useCases": [],
     "keywords": [
-        "RevealX"
+        "RevealX",
+        "ExtraHop",
+        "NDR",
+        "Network Detection and Response",
+        "Reveal(x)"
     ],
     "githubUser": [
         "Dan-at-Extrahop"

@@ -9,9 +9,18 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Compliance"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "GitGuardian",
+        "Secret Detection",
+        "Secret Scanning",
+        "API Keys",
+        "Code Security"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

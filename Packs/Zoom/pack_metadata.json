@@ -10,9 +10,16 @@
     "categories": [
         "Messaging and Conferencing"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Zoom",
+        "video conferencing",
+        "meetings",
+        "collaboration"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

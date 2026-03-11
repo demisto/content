@@ -10,13 +10,17 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "IT"
+        "IT",
+        "IAM",
+        "Security"
     ],
     "useCases": [],
     "keywords": [
         "Vault",
         "Password Management",
-        "Credentials"
+        "Credentials",
+        "Bitwarden",
+        "Password Manager"
     ],
     "marketplaces": [
         "marketplacev2",

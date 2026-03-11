@@ -21,7 +21,10 @@
         "azure",
         "aks",
         "kubernetes",
-        "kubernetes services"
+        "kubernetes services",
+        "Microsoft",
+        "Azure Kubernetes",
+        "containers"
     ],
     "marketplaces": [
         "xsoar",

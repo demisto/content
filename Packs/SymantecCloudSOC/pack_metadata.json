@@ -9,9 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Symantec",
+        "CloudSOC",
+        "CASB",
+        "Broadcom",
+        "cloud security"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

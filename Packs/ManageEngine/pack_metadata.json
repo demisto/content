@@ -10,14 +10,19 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "IT"
+        "IT",
+        "Security"
     ],
     "useCases": [
         "Asset Management"
     ],
     "keywords": [
         "Desktop Central",
-        "Endpoint Central"
+        "Endpoint Central",
+        "ManageEngine",
+        "Zoho",
+        "UEM",
+        "endpoint management"
     ],
     "marketplaces": [
         "marketplacev2",

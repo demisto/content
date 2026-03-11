@@ -9,9 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "IAM",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "OneLogin",
+        "SSO",
+        "identity management",
+        "MFA"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

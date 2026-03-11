@@ -10,14 +10,21 @@
     "categories": [
         "Cloud Service Provider"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Compliance"
+    ],
     "useCases": [],
     "keywords": [
         "Google",
         "Security Command Center",
         "Command Center",
         "Security Center",
-        "SCC"
+        "SCC",
+        "GCP",
+        "Google Cloud",
+        "Cloud Security",
+        "CSPM"
     ],
     "githubUser": [],
     "marketplaces": [

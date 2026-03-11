@@ -10,12 +10,19 @@
         "Network Security"
     ],
     "tags": [
-        "Network"
+        "Network",
+        "Security"
     ],
     "useCases": [
         "Network Security"
     ],
-    "keywords": [],
+    "keywords": [
+        "Amazon",
+        "AWS",
+        "WAF",
+        "Web Application Firewall",
+        "AWS WAF"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

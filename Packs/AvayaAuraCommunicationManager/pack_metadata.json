@@ -9,9 +9,18 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "IT",
+        "Network"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Avaya",
+        "Aura",
+        "Communication Manager",
+        "IP Telephony",
+        "VoIP"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

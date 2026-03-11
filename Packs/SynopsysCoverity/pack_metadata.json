@@ -20,7 +20,10 @@
     "keywords": [
         "synopsys",
         "coverity",
-        "synopsys coverity"
+        "synopsys coverity",
+        "SAST",
+        "static analysis",
+        "code security"
     ],
     "marketplaces": [
         "marketplacev2",

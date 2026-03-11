@@ -10,11 +10,18 @@
     "categories": [
         "Endpoint"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
     "keywords": [
         "trellix",
-        "endpoint security"
+        "endpoint security",
+        "FireEye",
+        "HX",
+        "FireEye HX",
+        "EDR",
+        "Endpoint Detection and Response"
     ],
     "marketplaces": [
         "xsoar",

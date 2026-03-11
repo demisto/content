@@ -10,13 +10,17 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "Security"
+        "Security",
+        "IT"
     ],
     "useCases": [],
     "keywords": [
         "Azure",
         "App Service",
-        "Azure App Service"
+        "Azure App Service",
+        "Microsoft",
+        "Microsoft Azure",
+        "Web App"
     ],
     "marketplaces": [
         "marketplacev2",

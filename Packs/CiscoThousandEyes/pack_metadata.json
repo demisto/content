@@ -10,13 +10,17 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "Network"
+        "Network",
+        "IT"
     ],
     "useCases": [],
     "keywords": [
         "Cisco",
         "ThousandEyes",
-        "Thousand Eyes"
+        "Thousand Eyes",
+        "Network Monitoring",
+        "Network Performance",
+        "DEM"
     ],
     "marketplaces": [
         "marketplacev2",

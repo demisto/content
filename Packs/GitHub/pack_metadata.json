@@ -10,9 +10,16 @@
     "categories": [
         "Code Repositories"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "GitHub",
+        "Git",
+        "Source Control",
+        "Version Control"
+    ],
     "dependencies": {
         "IAM-SCIM": {
             "mandatory": true,

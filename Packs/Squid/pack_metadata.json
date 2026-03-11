@@ -9,9 +9,16 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Network"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Squid",
+        "proxy",
+        "caching proxy",
+        "web proxy"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

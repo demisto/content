@@ -9,9 +9,19 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
+    "tags": [
+        "IAM",
+        "Network"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Okta",
+        "OAG",
+        "Access Gateway",
+        "SAML",
+        "OIDC",
+        "reverse proxy"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

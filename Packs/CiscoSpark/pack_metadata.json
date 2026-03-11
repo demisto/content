@@ -11,11 +11,16 @@
         "Messaging and Conferencing"
     ],
     "tags": [
-        "Network"
+        "Network",
+        "IT"
     ],
     "useCases": [],
     "keywords": [
-        "Cisco Spark"
+        "Cisco Spark",
+        "Cisco",
+        "Webex",
+        "Webex Teams",
+        "Cisco Webex"
     ],
     "marketplaces": [
         "xsoar",

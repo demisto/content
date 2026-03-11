@@ -9,11 +9,16 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
     "keywords": [
         "Trellix",
-        "Sentrigo"
+        "Sentrigo",
+        "McAfee",
+        "database security",
+        "DBMS"
     ],
     "marketplaces": [
         "marketplacev2",

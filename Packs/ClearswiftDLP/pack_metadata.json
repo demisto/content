@@ -9,9 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Compliance"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Clearswift",
+        "DLP",
+        "Data Loss Prevention",
+        "Endpoint DLP"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

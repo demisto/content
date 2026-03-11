@@ -9,14 +9,19 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
     "keywords": [
         "Dell",
         "EMC",
         "Unity",
         "Dell EMC",
-        "Dell EMC Unity"
+        "Dell EMC Unity",
+        "Storage",
+        "NAS",
+        "SAN"
     ],
     "marketplaces": [
         "marketplacev2",

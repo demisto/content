@@ -9,9 +9,18 @@
     "categories": [
         "Identity and Access Management"
     ],
-    "tags": [],
+    "tags": [
+        "IAM",
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Okta",
+        "Auth0",
+        "authentication",
+        "identity platform",
+        "CIAM"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

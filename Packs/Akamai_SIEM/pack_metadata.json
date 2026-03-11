@@ -11,14 +11,19 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "Network"
+        "Network",
+        "Security",
+        "Alerts"
     ],
     "useCases": [
         "Network Security"
     ],
     "keywords": [
         "Akamai",
-        "WAF"
+        "WAF",
+        "SIEM",
+        "Web Application Firewall",
+        "Akamai SIEM"
     ],
     "marketplaces": [
         "xsoar",

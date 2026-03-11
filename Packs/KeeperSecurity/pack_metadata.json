@@ -10,13 +10,16 @@
         "Authentication & Identity Management"
     ],
     "tags": [
-        "Security"
+        "Security",
+        "IAM"
     ],
     "useCases": [],
     "keywords": [
         "keeper",
         "security",
-        "secret"
+        "secret",
+        "password manager",
+        "vault"
     ],
     "marketplaces": [
         "marketplacev2",

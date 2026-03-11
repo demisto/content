@@ -10,9 +10,17 @@
     "categories": [
         "Endpoint"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Tanium",
+        "Threat Response",
+        "EDR",
+        "endpoint detection",
+        "incident response"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

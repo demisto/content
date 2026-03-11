@@ -10,10 +10,17 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Email"
+    ],
     "useCases": [],
     "keywords": [
-        "FireEye ETP"
+        "FireEye ETP",
+        "Trellix",
+        "ETP",
+        "Email Threat Prevention",
+        "Email Security"
     ],
     "marketplaces": [
         "xsoar",

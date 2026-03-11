@@ -9,9 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Proofpoint",
+        "ObserveIT",
+        "insider threat",
+        "DLP",
+        "user activity monitoring"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

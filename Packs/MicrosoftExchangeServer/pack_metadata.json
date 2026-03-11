@@ -9,9 +9,17 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Email",
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Microsoft",
+        "Exchange",
+        "Exchange Server",
+        "mail server"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

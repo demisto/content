@@ -9,9 +9,18 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Compliance"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Auditd",
+        "Linux",
+        "Audit",
+        "Linux Audit",
+        "System Audit"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"

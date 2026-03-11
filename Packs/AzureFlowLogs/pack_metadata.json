@@ -11,7 +11,8 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "IT"
+        "IT",
+        "Network"
     ],
     "useCases": [
         "Network Security"
@@ -20,7 +21,11 @@
         "Azure",
         "Flow",
         "Logs",
-        "Network Watcher"
+        "Network Watcher",
+        "Microsoft",
+        "NSG",
+        "Network Security Group",
+        "Azure Flow Logs"
     ],
     "marketplaces": [
         "marketplacev2"
