@@ -75,7 +75,7 @@ script:
       description: The severity level of the alert. Can be LOW, MEDIUM, or HIGH.
       type: String
     - contextPath: SAPETD.Alert.AlertStatus
-      description: Current status of the alert (e.g., OPEN, CLOSED).
+      description: The current status of the alert. Can be OPEN or CLOSED.
       type: String
     - contextPath: SAPETD.Alert.Category
       description: Category of the alert (e.g., Brute Force Attack).
