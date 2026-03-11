@@ -7,7 +7,7 @@
    - `sap.secmon::NormalizedLogRead`
    - `sap.secmon::ResolveUserOnAlertService`
 
-2. If you need to see the real users when pulling the alerts, you must also assign the `sap.secmon::ResolveUserOnAlertService` application privilege. Otherwise, you will see the user pseudonyms.
+2. To view actual usernames instead of pseudonyms, assign the sap.secmon::ResolveUserOnAlertService privilege.
 
 3. Configure your SIEM solution to send requests.
    1. Configure the service using basic or X.509 authentication. For basic authentication, provide the credentials for the user created in step 1.
