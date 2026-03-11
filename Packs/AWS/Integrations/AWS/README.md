@@ -4566,8 +4566,8 @@ Allocates Dedicated Hosts to your account. Requires the instance type or family,
 | availability_zone | The Availability Zone in which to allocate the Dedicated Host. | Required |
 | availability_zone_id | The ID of the Availability Zone. | Optional |
 | quantity | The number of Dedicated Hosts with these parameters to allocate to your account. | Required |
-| instance_type | Specifies the instance type to be supported by the Dedicated Hosts. You cannot specify InstanceType and InstanceFamily in the same request. | Optional |
-| instance_family | Specifies the instance family to be supported by the Dedicated Hosts. You cannot specify InstanceType and InstanceFamily in the same request. | Optional |
+| instance_type | Specifies the instance type to be supported by the Dedicated Hosts. You cannot specify instance_type and instance_family in the same request. | Optional |
+| instance_family | Specifies the instance family to be supported by the Dedicated Hosts. You cannot specify instance_type and instance_family in the same request. | Optional |
 | auto_placement | Whether the host accepts untargeted instance launches matching its configuration or only accepts instance launches specifying its unique host ID. Possible values are: on, off. | Optional |
 | host_recovery | Whether to enable or disable host recovery for the Dedicated Host. Host recovery is disabled by default. Possible values are: on, off. | Optional |
 | host_maintenance | Whether to enable or disable host maintenance for the Dedicated Host. Possible values are: on, off. | Optional |
@@ -4625,7 +4625,7 @@ Creates a Traffic Mirror session. A Traffic Mirror session actively copies packe
 | traffic_mirror_target_id | The ID of the Traffic Mirror target. | Required |
 | traffic_mirror_filter_id | The ID of the Traffic Mirror filter. | Required |
 | session_number | The order in which sessions are evaluated when an interface is used by multiple sessions. Possible values are 1-32766. | Required |
-| virtual_network_id | The VXLAN ID for the Traffic Mirror session. If you do not specify a virtual_network_id, an account-wide unique ID is chosen at random. | Optional |
+| virtual_network_id | The VXLAN ID for the Traffic Mirror session. If you do not specify a VirtualNetworkId, an account-wide unique ID is chosen at random. | Optional |
 | packet_length | The number of bytes in each packet to mirror. These are bytes after the VXLAN header. Do not specify this parameter when you want to mirror the entire packet. | Optional |
 | description | The description of the Traffic Mirror session. | Optional |
 | tags | The tags to assign to a Traffic Mirror session. Format: key=&lt;key&gt;,value=&lt;value&gt;;key=&lt;key&gt;,value=&lt;value&gt;. | Optional |
