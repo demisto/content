@@ -2835,17 +2835,17 @@ def get_remote_recon_data(remote_incident_id: str):
     :param remote_incident_id: The remote incident ID.
     :return: The mirrored data, the updated object, and the incident type.
     """
+    demisto.debug(f"Recon-Log in get_remote_recon_data {remote_incident_id=}")
     remote_id = remote_incident_id.replace(f"{IncidentType.RECON.value}", "", 1)
     mirrored_data_list = get_recon_notifications_detailed([remote_id])
     if not mirrored_data_list:
         raise DemistoException(f"No Recon notification found for ID: {remote_incident_id}")
     mirrored_data = mirrored_data_list[0]
-
+    demisto.debug(f"Recon-Log in get_remote_recon_data {mirrored_data=}")
     updated_object = {"incident_type": RECON_NOTIFICATION}
     set_updated_object(updated_object, mirrored_data, CS_FALCON_RECON_INCOMING_ARGS)
     if "notification.status" in updated_object:
         updated_object["status"] = updated_object["notification.status"]
-
     demisto.debug(f"Recon-Log in get_remote_recon_data {mirrored_data=} {CS_FALCON_RECON_INCOMING_ARGS=} {updated_object=}")
     return mirrored_data, updated_object, RECON_NOTIFICATION
 
@@ -2862,16 +2862,21 @@ def update_remote_recon_notification(delta: Dict[str, Any], inc_status: int, rem
     :type remote_incident_id: ``str``
     :param remote_incident_id: The ID of the Recon Notification in CrowdStrike.
     :return: The API response payload on success, or empty string if no relevant change found.
-    :rtype: ``str``
+    :type: ``str``
     """
     demisto.debug(f"Recon-Log in update_remote_recon_notification {delta=} {inc_status=} {remote_incident_id=}")
     remote_id = remote_incident_id.replace(f"{IncidentType.RECON.value}", "", 1)
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
         demisto.debug(f"Recon-Log Closing Recon Notification: {remote_id} in remote system.")
-        return str(resolve_case(remote_id, status="closed", is_recon_type=True))
+        result = str(resolve_case(remote_id, status="closed", is_recon_type=True))
+        demisto.debug(f"Recon-Log result closing Recon Notification: {remote_id} in remote system. {result=}")
+        return result
     elif "status" in delta:
         demisto.debug(f"Recon-Log Updating Recon Notification: {remote_id} with status: {delta.get('status')} in remote system.")
-        return str(resolve_case(remote_id, status=delta.get("status"), is_recon_type=True))
+        result = str(resolve_case(remote_id, status=delta.get("status"), is_recon_type=True))
+        demisto.debug(f"Recon-Log result closing Recon Notification: {remote_id} in remote system. {result=}")
+        return result
+    demisto.debug(f"Recon-Log No relevant change found for Recon Notification: {remote_id}")
     return ""
 
 
@@ -2886,7 +2891,7 @@ def get_modified_recon_ids(last_update_timestamp: str) -> List[str]:
     mirror_status_filter = (
         f"status:['in-progress','closed-false-positive','closed-true-positive']+updated_date:>'{last_update_timestamp}'"
     )
-    demisto.debug(f"Recon-Log get_modified_recon_ids filter: {mirror_status_filter}")
+    demisto.debug(f"Recon-Log get_modified_recon_ids filter: {mirror_status_filter=}")
 
     try:
         ids, _, _ = recon_notifications_pagination(
@@ -4255,7 +4260,7 @@ def get_recon_notifications_detailed(notification_ids: list[str]) -> list[dict[s
     """
     if not notification_ids:
         return []
-
+    demisto.debug(f"Recon-Log get_recon_notifications_detailed: {notification_ids=}")
     all_resources: list[dict[str, Any]] = []
     offset = 0
     total = offset + 1
@@ -6466,6 +6471,7 @@ def resolve_case(
     fields = {k: v for k, v in fields.items() if v is not None}
 
     payload = {"id": case_id, "fields": fields}
+    demisto.debug(f"About to call http_request with {payload=}")
     url_suffix = "/recon/entities/notifications/v1" if is_recon_type else "/cases/entities/cases/v2"
     return http_request("PATCH", url_suffix, json=payload)
 
@@ -8667,6 +8673,21 @@ def main():  # pragma: no cover
             last_run, events = fetch_items(command=command)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(last_run)
+        # Mirroring commands
+        elif command == "get-remote-data":
+            disable_for_xsiam()
+            return_results(get_remote_data_command(args))
+        elif command == "get-modified-remote-data":
+            disable_for_xsiam()
+            return_results(get_modified_remote_data_command(args))
+        elif command == "update-remote-system":
+            disable_for_xsiam()
+            return_results(update_remote_system_command(args))
+        elif command == "get-mapping-fields":
+            disable_for_xsiam()
+            return_results(get_mapping_fields_command())
+        # ------- End Mirroring commands ----------
+
         elif command in ("cs-device-ran-on", "cs-falcon-device-ran-on"):
             return_results(get_indicator_device_id())
         elif demisto.command() == "cs-falcon-search-device":
@@ -8832,19 +8853,6 @@ def main():  # pragma: no cover
             return_results(rtr_polling_retrieve_file_command(args))
         elif command == "cs-falcon-get-detections-for-incident":
             return_results(get_detection_for_incident_command(args.get("incident_id")))
-        # Mirroring commands
-        elif command == "get-remote-data":
-            disable_for_xsiam()
-            return_results(get_remote_data_command(args))
-        elif command == "get-modified-remote-data":
-            disable_for_xsiam()
-            return_results(get_modified_remote_data_command(args))
-        elif command == "update-remote-system":
-            disable_for_xsiam()
-            return_results(update_remote_system_command(args))
-        elif command == "get-mapping-fields":
-            disable_for_xsiam()
-            return_results(get_mapping_fields_command())
         elif command == "cs-falcon-spotlight-search-vulnerability":
             return_results(cs_falcon_spotlight_search_vulnerability_command(args))
         elif command == "cs-falcon-spotlight-list-host-by-vulnerability":

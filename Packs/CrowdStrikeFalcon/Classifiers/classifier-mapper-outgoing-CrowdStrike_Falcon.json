@@ -63,7 +63,7 @@
             "dontMapEventToLabels": true,
             "internalMapping": {
                 "status": {
-                    "simple": "state"
+                    "simple": "notification.status"
                 }
             }
         },

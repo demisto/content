@@ -8372,7 +8372,7 @@ def test_get_remote_recon_data_success(mocker):
     mirrored_data, updated_object, incident_type = get_remote_recon_data(remote_incident_id)
 
     assert mirrored_data == mock_notification
-    assert updated_object == {"incident_type": RECON_NOTIFICATION, "notification.status": "new"}
+    assert updated_object == {"incident_type": RECON_NOTIFICATION, "notification.status": "new", "status": "new"}
     assert incident_type == RECON_NOTIFICATION
 
 
@@ -8400,9 +8400,9 @@ def test_get_remote_recon_data_not_found(mocker):
 @pytest.mark.parametrize(
     "delta, inc_status, close_in_cs, expected_status, expected_call",
     [
-        ({"status": 2}, IncidentStatus.DONE, True, "closed-true-positive", True),
-        ({"status": 1}, IncidentStatus.ACTIVE, False, "in-progress", True),
-        ({"status": 1}, IncidentStatus.DONE, False, None, False),
+        ({"status": 2}, IncidentStatus.DONE, True, "closed", True),
+        ({"status": "in-progress"}, IncidentStatus.ACTIVE, False, "in-progress", True),
+        ({"other_field": 1}, IncidentStatus.DONE, False, None, False),
     ],
 )
 def test_update_remote_recon_notification(mocker, delta, inc_status, close_in_cs, expected_status, expected_call):
@@ -8412,7 +8412,8 @@ def test_update_remote_recon_notification(mocker, delta, inc_status, close_in_cs
     When:
         - Calling update_remote_recon_notification.
     Then:
-        - Ensure http_request is called with the correct parameters if an update is expected.
+        - Ensure http_request is called with the correct parameters if an update is expected,
+          or not called when no relevant change is found.
     """
     from CrowdStrikeFalcon import update_remote_recon_notification, IncidentType
 
@@ -8426,7 +8427,7 @@ def test_update_remote_recon_notification(mocker, delta, inc_status, close_in_cs
 
     if expected_call:
         mock_http_request.assert_called_once_with(
-            method="PATCH", url_suffix="/recon/entities/notifications/v1", data={"id": remote_id, "status": expected_status}
+            "PATCH", "/recon/entities/notifications/v1", json={"id": remote_id, "fields": {"status": expected_status}}
         )
     else:
         mock_http_request.assert_not_called()
