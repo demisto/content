@@ -4206,6 +4206,9 @@ script:
         - contextPath: Core.EmailInvestigationSummary.max_severity
           description: The maximum severity level of the issues associated with the email.
           type: String
+        - contextPath: Core.EmailInvestigationSummary.reported_by
+          description: The users who reported the email.
+          type: Array
     - arguments:
         - description: The unique internet message ID of the email to decrypt. Accepts a comma-separated list.
           name: internet_message_id
