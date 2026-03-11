@@ -392,7 +392,7 @@ class LastRunIndex(IntEnum):
 
     # Common fetch types for fetch-incidents and fetch-events.
     DETECTIONS = 0
-    # INCIDENTS removed - index 1 is intentionally skipped to preserve existing last_run state
+    _RESERVED_INCIDENTS = 1  # Formerly Endpoint Incidents. Do not reuse.
     IDP_DETECTIONS = 2
     MOBILE_DETECTIONS = 3
     ON_DEMAND_DETECTIONS = 4
