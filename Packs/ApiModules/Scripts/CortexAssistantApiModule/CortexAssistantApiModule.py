@@ -236,8 +236,8 @@ class AssistantMessages:
     WAITING_FOR_COMPLETION = "Still generating a response for you."
 
     # Messages for action errors
-    CANNOT_SELECT_AGENT = "You cannot make this selection. Only {locked_user_tag} can choose."
-    CANNOT_APPROVE_ACTION = "You cannot respond to this action. Only {locked_user_tag} can approve or reject."
+    CANNOT_SELECT_AGENT = "Only {locked_user_tag} can select an agent for this thread."
+    CANNOT_APPROVE_ACTION = "Only {locked_user_tag} can approve or reject this action."
 
     # Configuration errors
     LLM_NOT_ENABLED = (
@@ -1590,7 +1590,14 @@ class AssistantMessagingHandler:
 
             if AssistantMessageType.is_step_type(message_type):
                 # Step-type group: merge contents using platform-specific dividers
-                step_contents = [self._unescape_content(msg.get("content", "")) for msg in group]
+                step_contents = [
+                    self._unescape_content(msg.get("content", ""))
+                    for msg in group
+                    if msg.get("content", "").strip()
+                ]
+                if not step_contents:
+                    demisto.debug("Skipping step group with all empty contents")
+                    continue
                 blocks, attachments = self.prepare_merged_step_blocks(step_contents)
 
                 self.post_agent_response_sync(
@@ -1605,6 +1612,11 @@ class AssistantMessagingHandler:
                     msg_type = msg.get("response_type", "")
                     msg_id = msg.get("message_id", "")
                     msg_is_final = msg.get("is_final", False)
+
+                    # Skip messages with empty content unless they carry UI elements (e.g., approval buttons)
+                    if not msg_content.strip() and not AssistantMessageType.is_approval_type(msg_type):
+                        demisto.debug(f"Skipping message with empty content (type={msg_type})")
+                        continue
 
                     self._send_single_response(
                         channel_id=channel_id,
