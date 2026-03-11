@@ -122,8 +122,12 @@ VENDOR = "tenable"
 PRODUCT = "io"
 CHUNK_SIZE = 5000
 ASSETS_NUMBER = 100
-MAX_CHUNKS_PER_FETCH = 2  # Reduced from 8 to ensure fetch completes within 3-4 minutes
-MAX_VULNS_CHUNKS_PER_FETCH = 2  # Reduced from 8 to ensure fetch completes within 3-4 minutes
+MAX_CHUNKS_PER_FETCH = 100  # Must be large enough to download all asset chunks in a single fetch cycle,
+# because the platform scheduler uses the configured assetsFetchInterval (default 12 hours)
+# and does not reliably honor the nextTrigger override. If chunks span multiple cycles,
+# the Tenable export UUID expires (~24h) before all chunks can be downloaded, causing
+# perpetual 404 errors and the snapshot never being sealed.
+MAX_VULNS_CHUNKS_PER_FETCH = 100  # Same reasoning as MAX_CHUNKS_PER_FETCH
 ASSETS_FETCH_FROM = "90 days"
 VULNS_FETCH_FROM = "3 days"
 MIN_ASSETS_INTERVAL = 60
