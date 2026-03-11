@@ -1,6 +1,8 @@
 """Tests for SAP Enterprise Threat Detection integration."""
 
 import copy
+import json
+import os
 from typing import Any
 from unittest.mock import MagicMock, patch
 
@@ -36,77 +38,36 @@ from SAPETD import (
     test_module as _test_module,
 )
 
+# region Test data helpers
+# =================================
+# Test data helpers
+# =================================
+
+TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), "test_data")
+
+
+def load_test_data(filename: str) -> Any:
+    """Load test data from a JSON file in the test_data directory.
+
+    Args:
+        filename: Name of the JSON file to load.
+
+    Returns:
+        Parsed JSON data.
+    """
+    filepath = os.path.join(TEST_DATA_DIR, filename)
+    with open(filepath) as f:
+        return json.load(f)
+
+
+SAMPLE_ALERTS: list[dict[str, Any]] = load_test_data("sample_alerts.json")
+
+# endregion
+
 # region Fixtures
 # =================================
 # Fixtures
 # =================================
-
-
-SAMPLE_ALERTS: list[dict[str, Any]] = [  # disable-secrets-detection
-    {
-        "Version": "1.0",
-        "AlertCreationTimestamp": "2022-04-29T14:20:29.682Z",
-        "AlertId": 6101,
-        "AlertSeverity": "MEDIUM",
-        "AlertStatus": "OPEN",
-        "AlertSource": {"NetworkHostnameInitiator": "1.2.3.4"},
-        "AlertSystemIds": ["UI3/006", "UI3/026"],
-        "HostNames": ["ldai1ui3"],
-        "Category": "Brute Force Attack",
-        "PatternId": "55827776E1B0FE2BE10000000A4CF109",
-        "PatternType": "FLAB",
-        "PatternName": "Brute force attack",
-        "PatternNameSpace": "http://sap.com/secmon/basis",  # disable-secrets-detection
-        "PatternDescription": "The number of failed logons from one terminal ID has exceeded a threshold.",
-        "MinTimestamp": "2022-04-29T14:00:29.581Z",
-        "MaxTimestamp": "2022-04-29T14:19:26.490Z",
-        "Text": "Measurement 1065 exceeded threshold 50 for 'Network, Hostname, Initiator' = '1.2.3.4'",
-        "Score": 50,
-        "UiLink": "https://example.corp:4300/sap/secmon/#/Alert/6101",
-    },
-    {
-        "Version": "1.0",
-        "AlertCreationTimestamp": "2022-04-29T15:30:00.000Z",
-        "AlertId": 6102,
-        "AlertSeverity": "HIGH",
-        "AlertStatus": "OPEN",
-        "AlertSource": {"NetworkHostnameInitiator": "10.0.0.1"},
-        "AlertSystemIds": ["UI3/007"],
-        "HostNames": ["ldai1ui3"],
-        "Category": "Privilege Escalation",
-        "PatternId": "66927776E1B0FE2BE10000000A4CF110",
-        "PatternType": "FLAB",
-        "PatternName": "Privilege escalation attempt",
-        "PatternNameSpace": "http://sap.com/secmon/basis",  # disable-secrets-detection
-        "PatternDescription": "A user has attempted to escalate privileges.",
-        "MinTimestamp": "2022-04-29T15:00:00.000Z",
-        "MaxTimestamp": "2022-04-29T15:29:00.000Z",
-        "Text": "User attempted privilege escalation on system UI3/007",
-        "Score": 80,
-        "UiLink": "https://example.corp:4300/sap/secmon/#/Alert/6102",
-    },
-    {
-        "Version": "1.0",
-        "AlertCreationTimestamp": "2022-04-29T15:30:00.000Z",
-        "AlertId": 6103,
-        "AlertSeverity": "LOW",
-        "AlertStatus": "OPEN",
-        "AlertSource": {"NetworkHostnameInitiator": "192.168.1.100"},
-        "AlertSystemIds": ["UI3/008"],
-        "HostNames": ["ldai1ui3"],
-        "Category": "Suspicious Activity",
-        "PatternId": "77027776E1B0FE2BE10000000A4CF111",
-        "PatternType": "FLAB",
-        "PatternName": "Suspicious login pattern",
-        "PatternNameSpace": "http://sap.com/secmon/basis",  # disable-secrets-detection
-        "PatternDescription": "Unusual login pattern detected.",
-        "MinTimestamp": "2022-04-29T15:10:00.000Z",
-        "MaxTimestamp": "2022-04-29T15:28:00.000Z",
-        "Text": "Unusual login pattern detected for user admin",
-        "Score": 30,
-        "UiLink": "https://example.corp:4300/sap/secmon/#/Alert/6103",
-    },
-]
 
 
 @pytest.fixture
@@ -306,7 +267,7 @@ class TestAddTimeToEvents:
                     {"AlertId": 1, "AlertCreationTimestamp": "2022-04-29T14:20:29.682Z"},
                     {"AlertId": 2, "AlertCreationTimestamp": "2022-04-29T15:30:00.000Z"},
                 ],
-                {1: "2022-04-29T14:20:29.682Z", 2: "2022-04-29T15:30:00.000Z"},
+                {1: "2022-04-29T14:20:29.682000+00:00", 2: "2022-04-29T15:30:00+00:00"},
                 id="with_timestamps",
             ),
             pytest.param(
@@ -326,7 +287,7 @@ class TestAddTimeToEvents:
                     {"AlertId": 3, "AlertCreationTimestamp": "2022-04-29T16:00:00.000Z"},
                     {"AlertId": 4},
                 ],
-                {1: None, 2: "2022-04-29T15:30:00.000Z", 3: "2022-04-29T16:00:00.000Z", 4: None},
+                {1: None, 2: "2022-04-29T15:30:00+00:00", 3: "2022-04-29T16:00:00+00:00", 4: None},
                 id="mixed_events",
             ),
         ],

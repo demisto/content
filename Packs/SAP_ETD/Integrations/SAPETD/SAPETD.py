@@ -1,8 +1,8 @@
 # ruff: noqa: F401
+import json
 import traceback
 from typing import Any
 
-import dateparser
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -41,21 +41,23 @@ class Config:
 def parse_date_to_iso(date_input: str | None) -> str:
     """Parse a date string and return an ISO 8601 formatted timestamp.
 
+    Uses arg_to_datetime for consistent date parsing across the platform.
+
     Args:
         date_input: Date string to parse (e.g., '3 days ago', '2025-09-15T17:10:00Z').
 
     Returns:
         ISO 8601 formatted timestamp string (e.g., '2026-01-15T15:00:00.000000Z').
     """
-    if not date_input:
-        demisto.debug("[Date Helper] No input provided. Using current UTC time.")
-        return datetime.now(tz=timezone.utc).strftime(Config.DATE_FORMAT)
-
     demisto.debug(f"[Date Helper] Attempting to parse date string: '{date_input}'")
-    parsed = dateparser.parse(
-        date_input,
-        settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True, "TO_TIMEZONE": "UTC"},
-    )
+    try:
+        parsed = arg_to_datetime(
+            arg=date_input,
+            required=False,
+            settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True, "TO_TIMEZONE": "UTC"},
+        )
+    except ValueError:
+        parsed = None
 
     if not parsed:
         demisto.debug(f"[Date Helper] Failed to parse '{date_input}'. Falling back to current UTC.")
@@ -70,14 +72,16 @@ def add_time_to_events(events: list[dict[str, Any]]) -> None:
     """Add _time field to events for XSIAM ingestion.
 
     Maps the event's 'AlertCreationTimestamp' field to '_time' for proper XSIAM indexing.
+    Ensures the timestamp is in ISO 8601 format accepted by XSIAM.
 
     Args:
         events: List of alert event dicts.
     """
     for event in events:
-        alert_timestamp = event.get("AlertCreationTimestamp")
-        if alert_timestamp:
-            event["_time"] = alert_timestamp
+        raw_timestamp = event.get("AlertCreationTimestamp")
+        if raw_timestamp:
+            parsed_time = arg_to_datetime(raw_timestamp)
+            event["_time"] = parsed_time.isoformat() if parsed_time else raw_timestamp
         else:
             demisto.debug(
                 f"[Event Time] WARNING: Event missing 'AlertCreationTimestamp' "
@@ -467,6 +471,8 @@ def main() -> None:
     command = demisto.command()
     demisto.debug(f"[Main] Executing command: {command}")
 
+    client: SAPETDClient | None = None
+
     try:
         params = demisto.params()
         config = parse_integration_params(params)
@@ -490,7 +496,15 @@ def main() -> None:
         demisto.error(f"{error_msg}\n{traceback.format_exc()}")
         return_error(error_msg)
 
-    demisto.debug(f"[Main] {INTEGRATION_NAME} integration finished")
+    finally:
+        if client:
+            try:
+                report = client.get_diagnostic_report()
+                demisto.debug(f"[Main] Diagnostic Report: {json.dumps(report.__dict__, default=str, indent=2)}")
+            except Exception as e:
+                demisto.debug(f"[Main] Failed to generate diagnostic report: {e}")
+
+        demisto.debug(f"[Main] {INTEGRATION_NAME} integration finished")
 
 
 # endregion
