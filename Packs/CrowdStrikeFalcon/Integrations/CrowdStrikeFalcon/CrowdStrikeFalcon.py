@@ -2563,6 +2563,11 @@ def get_remote_data_command(args: dict[str, Any]):
                     updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list
                 )  # sets in place
 
+        elif incident_type is None and remote_incident_id.startswith("inc:"):
+            demisto.debug(
+                f"Skipping get-remote-data for deprecated Endpoint Incident {remote_incident_id}. "
+                "Endpoint Incident mirroring is no longer supported."
+            )
         else:
             # this is here as prints can disrupt mirroring
             raise Exception(f"Executed get-remote-data command with undefined id: {remote_incident_id}")
@@ -2897,6 +2902,11 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
                 result = update_remote_ngsiem_case(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f"NGSIEM case updated successfully. Result: {result}")
+            elif incident_type is None and remote_incident_id.startswith("inc:"):
+                demisto.debug(
+                    f"Skipping update-remote-system for deprecated Endpoint Incident {remote_incident_id}. "
+                    "Endpoint Incident mirroring is no longer supported."
+                )
             else:
                 raise Exception(f"Executed update-remote-system command with undefined id: {remote_incident_id}")
 

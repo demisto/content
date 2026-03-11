@@ -3654,6 +3654,28 @@ def test_get_remote_data_command(mocker, remote_id, close_incident, detection_st
     assert result.entries == entries
 
 
+def test_get_remote_data_command_deprecated_incident(mocker):
+    """
+    Given:
+        - A remote incident ID with 'inc:' prefix (deprecated Endpoint Incident).
+    When:
+        - Running get_remote_data_command.
+    Then:
+        - The function returns an empty GetRemoteDataResponse without raising an exception.
+        - A debug log is emitted about the deprecated incident type.
+    """
+    from CrowdStrikeFalcon import get_remote_data_command
+
+    debug_mock = mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "params", return_value={"close_incident": False, "reopen_statuses": ""})
+
+    result = get_remote_data_command({"id": "inc:abc123:def456", "lastUpdate": "2022-03-08T08:17:09Z"})
+
+    assert result.mirrored_object == {}
+    assert result.entries == []
+    assert any("deprecated Endpoint Incident" in str(call) for call in debug_mock.call_args_list)
+
+
 def test_find_incident_type():
     """
     Given
@@ -4178,6 +4200,41 @@ def test_update_remote_system_command_no_change(mocker):
     assert result == remote_id
     assert not mock_detection.called
     assert not mock_multiple.called
+
+
+def test_update_remote_system_command_deprecated_incident(mocker):
+    """
+    Given:
+        - A remote incident ID with 'inc:' prefix (deprecated Endpoint Incident) and incident_changed=True.
+    When:
+        - Running update_remote_system_command.
+    Then:
+        - The function returns the remote_incident_id without raising an exception.
+        - No downstream update functions are called.
+        - A debug log is emitted about the deprecated incident type.
+    """
+    from CrowdStrikeFalcon import update_remote_system_command
+
+    debug_mock = mocker.patch.object(demisto, "debug")
+    mock_detection = mocker.patch("CrowdStrikeFalcon.update_remote_detection")
+    mock_multiple = mocker.patch("CrowdStrikeFalcon.update_remote_for_multiple_detection_types")
+    mocker.patch.object(demisto, "params", return_value={"close_in_cs_falcon": True})
+
+    remote_id = "inc:abc123:def456"
+    args = {
+        "remoteId": remote_id,
+        "incidentChanged": True,
+        "data": {"status": "closed"},
+        "status": 2,
+        "delta": {"status": "closed"},
+    }
+
+    result = update_remote_system_command(args)
+
+    assert result == remote_id
+    assert not mock_detection.called
+    assert not mock_multiple.called
+    assert any("deprecated Endpoint Incident" in str(call) for call in debug_mock.call_args_list)
 
 
 @pytest.mark.parametrize("delta, close_in_cs_falcon_param, to_close", input_data.close_in_cs_falcon_args)
