@@ -6823,7 +6823,7 @@ def test_run_script_agentix_command_script_with_inputs_and_parameters_provided(m
                 }
             ],
         ),
-        CommandResults(outputs={"filtered_count": "2", "returned_count": "2"}),
+        CommandResults(outputs={"filtered_count": "1", "returned_count": "1"}),
     ]
 
     mock_list_scripts.return_value = mock_scripts_result
