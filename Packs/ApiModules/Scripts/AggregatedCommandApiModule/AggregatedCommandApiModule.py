@@ -514,20 +514,7 @@ class ContextBuilder:
             final_context[f"{self.final_context_path}(val.Value && val.Value == obj.Value)"] = indicator_list
         final_context.update(self.other_context)
 
-        return remove_empty_elements_with_exceptions(
-            final_context,
-            exceptions={
-                "TIMCVSS",
-                "Status",
-                "ModifiedTime",
-                "IndicatorExists",
-                "MaxScore",
-                "MaxVerdict",
-                "TIMScore",
-                "Results",
-                "Message",
-            },
-        )
+        return remove_empty_elements_with_exceptions(final_context, exceptions={"TIMCVSS", "Status", "ModifiedTime"})
 
     def build_indicators_context(self) -> list[dict]:
         """
@@ -562,12 +549,6 @@ class ContextBuilder:
             "Value": instance.extracted_value or instance.raw_input,
             "Status": IndicatorStatus.ERROR.value,
             "Message": instance.context_message,
-            "MaxScore": None,
-            "MaxVerdict": None,
-            "TIMScore": None,
-            "ModifiedTime": None,
-            "Results": [],
-            "IndicatorExists": False,
         }
 
     def _build_success_indicator_context(self, instance: IndicatorInstance) -> dict[str, Any]:
@@ -614,7 +595,6 @@ class ContextBuilder:
             if "CVSS" in self.indicator_schema.context_output_mapping:
                 current_indicator["TIMCVSS"] = tim_obj.get("CVSS")
 
-        current_indicator["IndicatorExists"] = True
         current_indicator["Results"] = instance.tim_context
         return current_indicator
 
@@ -1555,7 +1535,7 @@ def create_and_extract_indicators(
         full_hr.append(hr)
 
     if not valid_set:
-        demisto.debug("No valid indicators found in the input data. Returning invalid instances only.")
+        raise ValueError("No valid indicators found in the input data.")
 
     demisto.debug(f"Valid Inputs: {valid_set}")
     demisto.debug(f"Invalid Inputs: {invalid_set}")
