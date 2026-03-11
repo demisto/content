@@ -5860,7 +5860,6 @@ Gets operational information for all device groups in the Panorama topology, inc
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | device_filter_string | The Panorama hostname or serial number used to filter device groups. This command is specifically for Panorama and requires an exact match (substrings are not supported). | Optional |
-| device_filter | String by which to filter the results to only show specific Panorama hostnames or Panorama serial numbers. | Optional |
 
 #### Context Output
 
