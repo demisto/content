@@ -26,6 +26,8 @@ def diagnose_syslog_collector(broker_vm_name: str, timeframe: str) -> CommandRes
     broker_result = demisto.executeCommand("core-list-brokers", {"broker_vm_names": broker_vm_name})
 
     if is_error(broker_result) or not broker_result or not isinstance(broker_result, list):
+        if is_error(broker_result):
+            demisto.debug(f"Error retrieving broker information: {get_error(broker_result)}")
         raise DemistoException("Failed to retrieve broker information: Internal Error.")
 
     broker_data_list = broker_result[0].get("Contents", [])
@@ -99,6 +101,8 @@ dataset = collection_auditing
                 demisto.debug(f"XQL query result: {xql_result}")
 
                 if is_error(xql_result) or not xql_result or not isinstance(xql_result, list) or len(xql_result) == 0:
+                    if is_error(xql_result):
+                        demisto.debug(f"XQL query failed: {get_error(xql_result)}")
                     raise DemistoException("Failed to execute XQL query")
 
                 xql_outputs = xql_result[0].get("Contents", {})
