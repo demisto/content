@@ -41,7 +41,7 @@ configuration:
   type: 0
   section: Connect
 - additionalinfo: The interval in hours between each fetch of assets. Default is 24 hours.
-  defaultvalue: 24
+  defaultvalue: 1440
   display: Assets Fetch Interval
   name: assetsFetchInterval
   type: 19
