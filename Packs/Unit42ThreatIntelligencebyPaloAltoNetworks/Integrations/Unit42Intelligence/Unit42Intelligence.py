@@ -70,6 +70,9 @@ def parse_url_list(url_input: str | list | None) -> list[str]:
     This function intelligently splits URLs by detecting URL patterns to avoid
     incorrectly splitting URLs that contain commas in their parameters.
     Supports list inputs (from playbooks), None inputs, and newline separators.
+    Also handles URLs wrapped in double-quote or single-quote characters (e.g. from
+    email security tools or JSON extraction): "url1","url2" or 'url1','url2' is split
+    and quotes are stripped.
 
     Args:
         url_input: String, list, or None containing one or more URLs
@@ -90,27 +93,33 @@ def parse_url_list(url_input: str | list | None) -> list[str]:
         []
         >>> parse_url_list("ftp://example.com,http://test.com")
         ['ftp://example.com', 'http://test.com']
+        >>> parse_url_list('"share.google/a","example.com/url?a=https://share.google/a"')
+        ['share.google/a', 'example.com/url?a=https://share.google/a']
+        >>> parse_url_list("'https://example.com','https://test.com'")
+        ['https://example.com', 'https://test.com']
     """
     if url_input is None:
         return []
 
     # Handle list input from playbooks
     if isinstance(url_input, list):
-        return [url.strip() for url in argToList(url_input) if url and str(url).strip()]
+        return [url.strip(" \"'") for url in argToList(url_input) if url and str(url).strip()]
 
-    # Handle string input - split by newlines, then intelligently by commas
+    # Handle string input - split by newlines and intelligently by commas in one pass
     url_input = str(url_input).strip()
     if not url_input:
         return []
 
-    # Split by comma only if followed by a URL scheme (supports all schemes, not just http/https)
-    # This preserves commas within URL parameters
-    all_urls: list[str] = []
-    for line in url_input.split("\n"):
-        if line := line.strip():
-            all_urls.extend(url.strip() for url in re.split(r",\s*(?=[a-zA-Z][a-zA-Z0-9+.-]*://)", line) if url.strip())
+    # Split on any of:
+    #   1. "\s*,\s*"  — comma between double-quoted URLs ('"url1", "url2"' => ["url1", "url2"])
+    #   2. '\s*,\s*'  — comma between single-quoted URLs ("'url1', 'url2'" => ['url1', 'url2'])
+    #   3. ,\s*(?=scheme://) — comma followed by a URL scheme ("http://a.com?x=1,2,http://b.com" => ["http://a.com?x=1,2", "http://b.com"])
+    #   4. \n         — newline separator ("http://a.com/path \n http://b.com/path" => ["http://a.com/path", "http://b.com/path"])
+    # Alternatives 1 & 2 must come before 3 so that a comma inside a quoted URL's
+    # query string (e.g. "url?a=https://other") is not split by the scheme lookahead.
+    segments = re.split(r'"\s*,\s*"|' + r"'\s*,\s*'" + r"|,\s*(?=[a-zA-Z][a-zA-Z0-9+.-]*://)|\n", url_input)
 
-    return all_urls
+    return [url for segment in segments if (url := segment.strip(" \"'"))]
 
 
 def unit42_error_handler(res: requests.Response):
@@ -136,28 +145,50 @@ def unit42_error_handler(res: requests.Response):
 
 def encode_url_indicator(indicator_value: str) -> str:
     """
-    Double-encode URLs to handle special characters like < and >
+    Double-encode URLs to handle special characters like < and > and URLs without schemes.
+    URL fragments (the part after '#') are stripped before encoding because the Unit 42
+    TDP API rejects any URL that contains an encoded '#' (%23) in the indicator value.
 
     Args:
         indicator_value: The URL to encode
 
     Returns:
-        Encoded URL string
+        Encoded URL string (fragment stripped)
     """
-    # Step 1: Parse the URL to separate components
-    parsed = urllib.parse.urlparse(indicator_value)
+    # Step 1: Ensure URL has a scheme for proper parsing
+    # If no scheme is present, urlparse treats the entire URL as a path
+    # which causes incorrect encoding (e.g., domain slashes get encoded)
+    parsed_check = urllib.parse.urlparse(indicator_value)
+    had_scheme = bool(parsed_check.scheme)
 
-    # Step 2: Encode special characters in the query string (keeping '=' safe)
+    url_to_parse = indicator_value
+    if not had_scheme:
+        url_to_parse = "http://" + indicator_value
+
+    # Step 2: Parse the URL to separate components
+    parsed = urllib.parse.urlparse(url_to_parse)
+
+    # Step 3: Encode special characters in the path (keeping '/' safe)
+    # This handles characters like ^, |, <, > in the path
+    encoded_path = urllib.parse.quote(parsed.path, safe="/") if parsed.path else ""
+
+    # Step 4: Encode special characters in the query string (keeping '=' and '&' safe)
     # This converts query=<test> to query=%3Ctest%3E
-    encoded_query = urllib.parse.quote(parsed.query, safe="=") if parsed.query else ""
+    encoded_query = urllib.parse.quote(parsed.query, safe="=&") if parsed.query else ""
 
-    # Step 3: Reconstruct the URL with the encoded query
-    temp_url = urllib.parse.urlunparse(parsed._replace(query=encoded_query))
+    # Step 5: Reconstruct the URL with the encoded path and query,
+    # dropping the fragment (as this is not relevant for threat Intelligence tools).
+    temp_url = urllib.parse.urlunparse(parsed._replace(path=encoded_path, query=encoded_query, fragment=""))
 
-    # Step 4: Final full URL encoding for the API request
-    # This converts the entire URL including the already-encoded query
-    # Example: https://example.com/search?query=%3Ctest%3E becomes
-    # https%3A%2F%2Fexample.com%2Fsearch%3Fquery%3D%253Ctest%253E
+    # Step 6: Remove the scheme if it was added for parsing
+    # The API expects URLs without the scheme prefix
+    if not had_scheme:
+        temp_url = temp_url.replace("http://", "", 1)
+
+    # Step 7: Final full URL encoding for the API request
+    # This converts the entire URL including the already-encoded path and query
+    # Example: example.com/search?query=%3Ctest%3E becomes
+    # example.com%2Fsearch%3Fquery%3D%253Ctest%253E
     return urllib.parse.quote(temp_url, safe="")
 
 

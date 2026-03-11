@@ -1,49 +1,48 @@
 import json
-
-import demistomock as demisto
 import pytest
-import RSANetWitnessv115
-from CommonServerPython import CommandResults, DemistoException
+import demistomock as demisto
 from freezegun import freeze_time
+from CommonServerPython import CommandResults, DemistoException
+import RSANetWitnessv115
 from RSANetWitnessv115 import (
     Client,
-    clean_old_inc_context,
-    clean_secret_integration_context,
-    create_exclusions_list,
-    create_filter,
-    create_time,
-    endpoint_command,
-    endpoint_isolate_from_network_command,
-    endpoint_isolation_remove_command,
-    endpoint_update_exclusions_command,
-    fetch_alerts_related_incident,
-    fetch_incidents,
-    file_alerts_list_command,
-    file_download_command,
-    files_list_command,
-    get_mapping_fields_command,
-    get_modified_remote_data_command,
-    get_remote_data_command,
-    host_alerts_list_command,
-    hosts_list_command,
+    list_incidents_command,
+    update_incident_command,
+    remove_incident_command,
     incident_add_journal_entry_command,
     incident_list_alerts_command,
-    list_incidents_command,
-    mft_download_request_command,
-    paging_command,
-    process_dump_download_request_command,
-    remove_duplicates_for_fetch,
-    remove_duplicates_in_items,
-    remove_incident_command,
-    scan_request_command,
     services_list_command,
-    snapshot_details_get_command,
+    hosts_list_command,
     snapshots_list_for_host_command,
-    struct_inc_context,
+    snapshot_details_get_command,
+    files_list_command,
+    scan_request_command,
+    host_alerts_list_command,
+    file_alerts_list_command,
+    file_download_command,
+    mft_download_request_command,
     system_dump_download_request_command,
-    update_incident_command,
-    update_remote_system_command,
+    process_dump_download_request_command,
+    endpoint_isolate_from_network_command,
+    endpoint_update_exclusions_command,
+    endpoint_isolation_remove_command,
+    endpoint_command,
+    create_time,
+    create_filter,
+    create_exclusions_list,
+    remove_duplicates_in_items,
+    remove_duplicates_for_fetch,
+    fetch_incidents,
+    paging_command,
+    fetch_alerts_related_incident,
+    get_mapping_fields_command,
     xsoar_status_to_rsa_status,
+    update_remote_system_command,
+    get_remote_data_command,
+    get_modified_remote_data_command,
+    struct_inc_context,
+    clean_secret_integration_context,
+    clean_old_inc_context,
 )
 
 
@@ -388,13 +387,23 @@ def test_fetch_incidents(mocker, import_alerts: bool, test_data_key: str):
 
     """
     fetch_responses = util_load_json("test_data/fetch_incidents.json")
-    mocked_http__incidents_response = fetch_responses["list_incidents_request"][0]
-    mocked_http__alerts_response = fetch_responses["incident_list_alerts_request"][0]
+    mocked_http__incidents_response = fetch_responses["list_incidents_request"]
+    mocked_http__alerts_response = fetch_responses["incident_list_alerts_request"]
     mocker.patch.object(client, "list_incidents_request", return_value=mocked_http__incidents_response)
     mocker.patch.object(client, "incident_list_alerts_request", return_value=mocked_http__alerts_response)
 
     incidents = fetch_incidents(client, params={"import_alerts": import_alerts})
-    assert incidents == fetch_responses[test_data_key][0]
+    expected = fetch_responses[test_data_key][0]
+    actual = incidents
+
+    # Normalize rawJSON for comparison
+    for a, e in zip(actual, expected):
+        if isinstance(a.get("rawJSON"), str):
+            a["rawJSON"] = json.loads(a["rawJSON"])
+        if isinstance(e.get("rawJSON"), str):
+            e["rawJSON"] = json.loads(e["rawJSON"])
+
+    assert actual == expected
 
 
 def test_generate_token(mocker):
@@ -496,9 +505,9 @@ def test_update_remote_system_command_with_updated_incident(mocker):
             self.data = {"status": 2, "closeReason": "False positive"}
 
     mocker.patch.object(RSANetWitnessv115, "UpdateRemoteSystemArgs", return_value=UpdateRemoteSystemArgsResponse())
-    mocker.patch.object(client, "get_incident_request", return_value={"id": "INC-1", "status": "New"})
+    mocker.patch.object(client, "get_incident_request", return_value=[{"id": "INC-1", "status": "New"}])
     mocker_update = mocker.patch.object(
-        client, "update_incident_request", return_value={"id": "INC-1", "status": "ClosedFalsePositive"}
+        client, "update_incident_request", return_value=[{"id": "INC-1", "status": "ClosedFalsePositive"}]
     )
     result = update_remote_system_command(client, {}, {})
     mocker_update.assert_called_with("INC-1", "ClosedFalsePositive", None)
@@ -555,7 +564,7 @@ def test_get_remote_data_command(mocker):
 
     mocker.patch.object(RSANetWitnessv115, "GetRemoteDataArgs", return_value=GetRemoteDataArgsResponse())
     params = {"close_incident": True, "import_alerts": True, "max_alerts": "3"}
-    mocker.patch.object(client, "get_incident_request", return_value={"id": 1, "status": "New", "alertCount": 2})
+    mocker.patch.object(client, "get_incident_request", return_value=[{"id": 1, "status": "New", "alertCount": 2}])
     mocker.patch.object(RSANetWitnessv115, "fetch_alerts_related_incident", return_value=[{"id": "1"}, {"id": "2"}])
 
     res = get_remote_data_command(client, {}, params)
@@ -591,7 +600,7 @@ def test_get_remote_data_command_with_closed_xsoar_incident(mocker):
 
     mocker.patch.object(RSANetWitnessv115, "GetRemoteDataArgs", return_value=GetRemoteDataArgsResponse())
     params = {"close_incident": True, "import_alerts": True, "max_alerts": "3"}
-    mocker.patch.object(client, "get_incident_request", return_value={"id": 1, "status": "Closed", "alertCount": 1})
+    mocker.patch.object(client, "get_incident_request", return_value=[{"id": 1, "status": "Closed", "alertCount": 1}])
     mocker.patch.object(RSANetWitnessv115, "fetch_alerts_related_incident", return_value={"alerts": [{"id": 1}]})
 
     res = get_remote_data_command(client, {}, params)
@@ -649,7 +658,7 @@ def test_get_modified_remote_data_command_from_alerts(mocker):
 
     mocker.patch.object(RSANetWitnessv115, "GetModifiedRemoteDataArgs", return_value=GetModifiedRemoteDataArgsResponse())
     mocker.patch.object(
-        client, "get_incident_request", return_value={"id": "INC-1", "status": 1, "alertCount": 1, "eventCount": 1}
+        client, "get_incident_request", return_value=[{"id": "INC-1", "status": 1, "alertCount": 1, "eventCount": 1}]
     )
     mocker.patch.object(
         RSANetWitnessv115,
@@ -658,11 +667,8 @@ def test_get_modified_remote_data_command_from_alerts(mocker):
     )
     mocker.patch.object(RSANetWitnessv115, "clean_old_inc_context", return_value=False)
     mocker.patch.object(
-        RSANetWitnessv115,
-        "get_integration_context",
-        return_value={"IncidentsDataCount": {"INC-1": {"alertCount": 1, "eventCount": 1}}},
+        demisto, "getIntegrationContext", return_value={"IncidentsDataCount": {"INC-1": {"alertCount": 1, "eventCount": 1}}}
     )
-
     res = get_modified_remote_data_command(client, {}, {"max_fetch": 2, "max_alerts": 2, "max_mirror_time": 0})
     assert res.modified_incident_ids == paging_data
 
