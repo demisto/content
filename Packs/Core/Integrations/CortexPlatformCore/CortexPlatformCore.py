@@ -19,6 +19,7 @@ MAX_SCRIPTS_LIMIT = 100
 MAX_GET_ENDPOINTS_LIMIT = 100
 MAX_COMPLIANCE_STANDARDS = 100
 AGENTS_TABLE = "AGENTS_TABLE"
+BROKER_CLUSTER_TABLE = "BROKER_CLUSTER_TABLE"
 SECONDS_IN_DAY = 86400  # Number of seconds in one day
 MIN_DIFF_SECONDS = 2 * 3600  # Minimum allowed difference = 2 hours
 MAX_GET_SYSTEM_USERS_LIMIT = 50
@@ -78,6 +79,7 @@ WEBAPP_COMMANDS = [
     "core-fill-support-ticket",
     "core-get-support-ticket-taxonomy",
     "core-verify-support-ticket-permission",
+    "core-list-brokers",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -5260,6 +5262,55 @@ def verify_support_ticket_permission_command(client: Client) -> CommandResults:
     )
 
 
+def list_brokers_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves broker information from the BROKER_CLUSTER_TABLE.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - broker_vm_names (str, optional): Comma-separated list of broker VM names to filter by.
+                         - limit (int, optional): Maximum number of brokers to return (default: 50).
+
+    Returns:
+        CommandResults: Object containing the broker data.
+    """
+    broker_vm_names = argToList(args.get("broker_vm_names"))
+    limit = arg_to_number(args.get("limit")) or 50
+
+    filter_builder = FilterBuilder()
+    if broker_vm_names:
+        filter_builder.add_field("DEVICE_NAME", FilterType.EQ, broker_vm_names)
+
+    request_data = build_webapp_request_data(
+        table_name=BROKER_CLUSTER_TABLE,
+        filter_dict=filter_builder.to_dict(),
+        limit=limit,
+        sort_field="DEVICE_NAME",
+    )
+
+    demisto.debug(f"Querying BROKER_CLUSTER_TABLE with request: {request_data}")
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    brokers = reply.get("brokers", [])
+
+    # Map API response keys to PascalCase for context output
+    KEY_MAPPING = {
+        "DEVICE_NAME": "DeviceName",
+        "APPS": "Apps",
+    }
+    mapped_brokers = [{KEY_MAPPING.get(k, k): v for k, v in broker.items()} for broker in brokers]
+
+    return CommandResults(
+        readable_output=tableToMarkdown("Brokers", mapped_brokers, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Broker",
+        outputs_key_field="DeviceName",
+        outputs=mapped_brokers,
+        raw_response=brokers,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -5428,6 +5479,9 @@ def main():  # pragma: no cover
         elif command == "core-verify-support-ticket-permission":
             verify_platform_version("8.14.0")
             return_results(verify_support_ticket_permission_command(client))
+
+        elif command == "core-list-brokers":
+            return_results(list_brokers_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
