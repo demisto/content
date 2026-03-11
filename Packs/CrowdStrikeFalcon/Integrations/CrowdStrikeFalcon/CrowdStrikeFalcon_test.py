@@ -3671,8 +3671,8 @@ def test_get_remote_data_command_deprecated_incident(mocker):
 
     result = get_remote_data_command({"id": "inc:abc123:def456", "lastUpdate": "2022-03-08T08:17:09Z"})
 
-    assert result.mirrored_object == {}
     assert result.entries == []
+    assert "in_mirror_error" not in result.mirrored_object
     assert any("deprecated Endpoint Incident" in str(call) for call in debug_mock.call_args_list)
 
 

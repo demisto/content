@@ -2568,6 +2568,7 @@ def get_remote_data_command(args: dict[str, Any]):
                 f"Skipping get-remote-data for deprecated Endpoint Incident {remote_incident_id}. "
                 "Endpoint Incident mirroring is no longer supported."
             )
+            return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=entries)
         else:
             # this is here as prints can disrupt mirroring
             raise Exception(f"Executed get-remote-data command with undefined id: {remote_incident_id}")
