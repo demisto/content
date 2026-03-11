@@ -371,10 +371,10 @@ def get_searchlogs_events(
     """
     searchlogs_events: list[dict[str, Any]] = []
     last_searchlogs_ids: list[str] = searchlog_last_run.get('LastFetchedIds', [])
-    new_last_run = searchlog_last_run.get('lastRun', '')
+    last_run = searchlog_last_run.get('lastRun', '')
 
     try:
-        if searchlog_last_run.get('lastRun'):
+        if last_run:
             searchlogs_time_start = searchlog_last_run['lastRun']
         else:
             searchlogs_time_start = datetime.now().strftime(SEARCHLOG_DATE_FORMAT)
@@ -407,17 +407,17 @@ def get_searchlogs_events(
             searchlogs_events = searchlogs_events[:max_fetch]
 
         if searchlogs_events:
-            new_last_run = searchlogs_events[-1]['_time']
+            last_run = searchlogs_events[-1]['_time']
             last_searchlogs_ids = [
                 event.get("id") for event in searchlogs_events
-                if event.get("_time") == new_last_run and event.get("id")
+                if event.get("_time") == last_run and event.get("id")
             ]
 
     except Exception as e:
         demisto.error(f"Error while fetching search log events: {e}")
         return [], searchlog_last_run
 
-    return searchlogs_events, {'lastRun': new_last_run, 'LastFetchedIds': last_searchlogs_ids}
+    return searchlogs_events, {'lastRun': last_run, 'LastFetchedIds': last_searchlogs_ids}
 
 
 def get_events(
@@ -488,6 +488,25 @@ def handle_fetched_events(events: list[dict[str, Any]], last_event_time: str):
     else:
         demisto.info("OCI: No new events fetched, Last run was not updated.")
 
+def handle_searchlog_fetched_events(searchlog_events: list[dict[str, Any]], searchlog_last_run: dict[str, Any], last_run: dict[str, Any]):
+    """Handles searchlog fetched events.
+    - Sends the events to XSIAM.
+    - Sets the last run for next fetch cycle.
+
+    Args:
+        searchlog_events (list[dict[str, Any]]): Fetched events.
+        searchlog_last_run (dict[str, Any]): searchlogs last run.
+        last_run (dict[str, Any]): The last run value.
+    """
+    send_events_to_xsiam(searchlog_events, vendor=VENDOR, product=PRODUCT)
+    demisto.info(f"OCI: {len(searchlog_events)} searchlog events were sent to XSIAM at {datetime.now()}.")
+    if searchlog_events:
+        last_run['SearchLog'] = searchlog_last_run
+        demisto.setLastRun(last_run)
+        demisto.info(f"OCI: Set last run to {last_run}")
+    else:
+        demisto.info("OCI: No new searchlog events fetched, Last run was not updated.")
+
 
 """ Test module """
 
@@ -536,6 +555,8 @@ def main():
     private_key_type = params.get("private_key_type") or "PKCS#8"
     searchlogs_query = params.get('search_log_query')
     searchlog_last_run = last_run.get("SearchLog",{})
+    event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["Audit"]))
+
     demisto.info(f"OCI: Command being called is {command}")
 
     try:
@@ -560,18 +581,23 @@ def main():
 
         elif command in ("oracle-cloud-infrastructure-get-events", "fetch-events"):
             push_events = command == "fetch-events" or should_push_events
-            
-            searchlog_events, searchlog_last_run= get_searchlogs_events(client, searchlogs_query, max_fetch, searchlog_last_run)
-            
-            events, last_event_time = get_events(client, first_fetch_time, max_fetch, push_events_on_error=push_events)
 
-            
+            searchlog_events =[]
+            audit_events = []
+            last_audit_event_time = ''
+
+            if 'Search Logs' in event_types_to_fetch:
+                searchlog_events, searchlog_last_run= get_searchlogs_events(client, searchlogs_query, max_fetch, searchlog_last_run)
+
+            if 'Audit' in event_types_to_fetch:
+                audit_events, last_audit_event_time = get_events(client, first_fetch_time, max_fetch, push_events_on_error=push_events)
 
             if push_events:
-                handle_fetched_events(events, last_event_time)
+                handle_searchlog_fetched_events(searchlog_events, searchlog_last_run, demisto.getLastRun())
+                handle_fetched_events(audit_events, last_audit_event_time)
 
             elif command == "oracle-cloud-infrastructure-get-events":
-                return_results(events_to_command_results(events))
+                return_results(events_to_command_results(searchlog_events))
         else:
             return_error(f"Command {command} does not exist for this integration.")
     except Exception as e:
