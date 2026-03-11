@@ -1,6 +1,9 @@
 commonfields:
   id: Aella Star Light
   version: -1
+sectionorder:
+- Connect
+- Collect
 name: Aella Star Light
 display: Aella Star Light
 category: Data Enrichment & Threat Intelligence
@@ -12,21 +15,26 @@ configuration:
   defaultvalue: ''
   type: 0
   required: true
+  section: Connect
 - display: User name
   name: credentials
   defaultvalue: ''
   type: 9
   required: true
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
+  section: Collect
   required: false
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Fetching interval in minutes (default is 15, minimum is 15 )
   name: fetch_interval
+  section: Collect
   defaultvalue: '15'
   type: 0
   required: false
@@ -35,17 +43,21 @@ configuration:
   defaultvalue: ''
   type: 0
   required: false
+  section: Collect
 - display: Security event severity threshold, between 0-100
   name: severity
   defaultvalue: '50'
   type: 0
+  section: Collect
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
+  section: Connect
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
+  section: Connect
   defaultvalue: 'false'
   type: 8
   required: false
@@ -88,7 +100,7 @@ script:
     description: Query the details for a specific Start Light event
   isfetch: true
   runonce: false
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.7090913
 tests:
 - No test
 fromversion: 6.5.0
