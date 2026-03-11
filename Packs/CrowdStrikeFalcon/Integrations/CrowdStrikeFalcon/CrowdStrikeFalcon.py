@@ -2982,7 +2982,6 @@ def update_remote_for_multiple_detection_types(delta, inc_status: IncidentStatus
     return ""
 
 
-
 def get_mapping_fields_command() -> GetMappingFieldsResponse:
     """
     Returns the list of fields to map in outgoing mirroring, for incidents and detections.

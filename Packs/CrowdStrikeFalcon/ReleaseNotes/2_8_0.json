@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Removed 5 deprecated incident-based commands along with the Endpoint Incident fetch"
+}
