@@ -87,7 +87,7 @@ script:
       description: The date and time the alert was created (ISO 8601).
       type: String
     - contextPath: SAPETD.Alert.Text
-      description: Human-readable description of the alert.
+      description: A human-readable description of the alert.
       type: String
     - contextPath: SAPETD.Alert.Score
       description: Alert score value.
