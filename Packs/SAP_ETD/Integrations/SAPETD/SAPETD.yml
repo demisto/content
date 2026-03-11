@@ -78,7 +78,7 @@ script:
       description: The current status of the alert. Can be OPEN or CLOSED.
       type: String
     - contextPath: SAPETD.Alert.Category
-      description: Category of the alert (e.g., Brute Force Attack).
+      description: The category of the alert, such as Brute Force Attack.
       type: String
     - contextPath: SAPETD.Alert.PatternName
       description: Name of the detection pattern that triggered the alert.
