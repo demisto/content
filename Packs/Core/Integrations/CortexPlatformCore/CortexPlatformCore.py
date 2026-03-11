@@ -5155,10 +5155,7 @@ def list_brokers_command(client: Client, args: dict) -> CommandResults:
         "DEVICE_NAME": "DeviceName",
         "APPS": "Apps",
     }
-    mapped_brokers = [
-        {KEY_MAPPING.get(k, k): v for k, v in broker.items()}
-        for broker in brokers
-    ]
+    mapped_brokers = [{KEY_MAPPING.get(k, k): v for k, v in broker.items()} for broker in brokers]
 
     return CommandResults(
         readable_output=tableToMarkdown("Brokers", mapped_brokers, headerTransform=string_to_table_header),
