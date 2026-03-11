@@ -354,11 +354,10 @@ remote_third_party_detection_id = (
     "cb28a1bf5xxxxxxxxx698253914:thirdparty:cb28a1bf5axxxxxxxxxx698253914:5efcd0feb3xxxxxxxxxxab190ab39a"
 )
 
-# remote_id, close_incident, incident_status, detection_status, mirrored_object, entries
+# remote_id, close_incident, detection_status, mirrored_object, entries
 get_remote_detection = (
     remote_detection_id,
     False,
-    None,
     "in_progress",
     {
         "device.hostname": "FALCON-CROWDSTR",
@@ -370,7 +369,6 @@ get_remote_detection = (
 get_remote_detection_update = (
     remote_detection_id,
     True,
-    None,
     "reopened",
     {
         "device.hostname": "FALCON-CROWDSTR",
@@ -382,7 +380,6 @@ get_remote_detection_update = (
 get_remote_detection_close = (
     remote_detection_id,
     True,
-    None,
     "closed",
     {
         "device.hostname": "FALCON-CROWDSTR",
@@ -400,7 +397,6 @@ get_remote_detection_close = (
 get_remote_detection_no_close = (
     remote_detection_id,
     False,
-    None,
     "closed",
     {
 

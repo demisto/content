@@ -3626,10 +3626,10 @@ def test_rtr_read_registry_keys_command(mocker):
 
 
 @pytest.mark.parametrize(
-    "remote_id, close_incident, incident_status, detection_status, mirrored_object, entries",
+    "remote_id, close_incident, detection_status, mirrored_object, entries",
     [args for args in input_data.get_remote_data_command_args if args[0] == input_data.remote_detection_id],
 )
-def test_get_remote_data_command(mocker, remote_id, close_incident, incident_status, detection_status, mirrored_object, entries):
+def test_get_remote_data_command(mocker, remote_id, close_incident, detection_status, mirrored_object, entries):
     """
     Given
         - arguments - id and lastUpdate time set to a lower than detection modification time
@@ -4108,6 +4108,76 @@ def test_update_detection_request_bad(status, mocker):
     with pytest.raises(DemistoException) as de:
         update_detection_request([input_data.remote_detection_id], status)
     assert "CrowdStrike Falcon Error" in str(de.value)
+
+
+@pytest.mark.parametrize(
+    "remote_id, expected_mock",
+    [
+        (input_data.remote_detection_id, "update_remote_detection"),
+        (input_data.remote_idp_detection_id, "update_remote_for_multiple_detection_types"),
+        (input_data.remote_ngsiem_detection_id, "update_remote_for_multiple_detection_types"),
+        (input_data.remote_third_party_detection_id, "update_remote_for_multiple_detection_types"),
+    ],
+)
+def test_update_remote_system_command(mocker, remote_id, expected_mock):
+    """
+    Given:
+        - A remote incident ID of various types (legacy detection, IDP, NGSIEM, third-party).
+    When:
+        - Running update_remote_system_command with incident_changed=True and a status delta.
+    Then:
+        - The correct downstream update function is called based on the incident type.
+        - The function returns the remote_incident_id.
+    """
+    from CrowdStrikeFalcon import update_remote_system_command
+
+    mock_func = mocker.patch(f"CrowdStrikeFalcon.{expected_mock}")
+    mocker.patch.object(demisto, "params", return_value={"close_in_cs_falcon": True})
+
+    args = {
+        "remoteId": remote_id,
+        "incidentChanged": True,
+        "data": {"status": "closed"},
+        "status": 2,
+        "delta": {"status": "closed"},
+    }
+
+    result = update_remote_system_command(args)
+
+    assert result == remote_id
+    assert mock_func.called
+
+
+def test_update_remote_system_command_no_change(mocker):
+    """
+    Given:
+        - A remote incident ID with incident_changed=False.
+    When:
+        - Running update_remote_system_command.
+    Then:
+        - No downstream update function is called.
+        - The function returns the remote_incident_id.
+    """
+    from CrowdStrikeFalcon import update_remote_system_command
+
+    mock_detection = mocker.patch("CrowdStrikeFalcon.update_remote_detection")
+    mock_multiple = mocker.patch("CrowdStrikeFalcon.update_remote_for_multiple_detection_types")
+    mocker.patch.object(demisto, "params", return_value={"close_in_cs_falcon": True})
+
+    remote_id = input_data.remote_detection_id
+    args = {
+        "remoteId": remote_id,
+        "incidentChanged": False,
+        "data": {},
+        "status": 1,
+        "delta": {},
+    }
+
+    result = update_remote_system_command(args)
+
+    assert result == remote_id
+    assert not mock_detection.called
+    assert not mock_multiple.called
 
 
 @pytest.mark.parametrize("delta, close_in_cs_falcon_param, to_close", input_data.close_in_cs_falcon_args)
