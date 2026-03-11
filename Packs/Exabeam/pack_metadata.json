@@ -19,16 +19,15 @@
         "Security Analytics"
     ],
     "useCases": [
-        "Network Security",
         "Case Management",
         "Breach Notification"
     ],
     "keywords": [
-        "exabeam",
-        "threat",
+        "Exabeam",
+        "Threat",
         "SIEM",
         "SOC",
-        "ALert",
+        "Alert",
         "Incident"
     ],
     "marketplaces": [

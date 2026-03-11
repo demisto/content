@@ -13,10 +13,6 @@ Data normalization capabilities:
 * Rules for modeling Exabeam Threat Center logs that are ingested via the API into Cortex XSIAM.  
   * The ingested Exabeam Threat Center logs can be queried in XQL Search using the *`<dataset_name>`* dataset.
 
-### Supported timestamp formats
-
-* Timestamp parsing support assumes a UTC +0000 format is being used.
-
 ***
 
 ## Data Collection
