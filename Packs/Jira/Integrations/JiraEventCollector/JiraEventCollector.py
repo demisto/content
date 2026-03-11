@@ -221,19 +221,24 @@ class GetEvents:
                 demisto.debug("No timestamp found in event, skipping next_run update")
                 return last_run
 
+            LOG_PREFIX = "[Jira Event Collector]"
+
             try:
                 # Parse with milliseconds (Data Center format: 2026-01-19T11:36:01.892)
+                demisto.debug(f"{LOG_PREFIX} Attempting to parse timestamp with milliseconds: {last_datetime}")
                 last_datetime_obj = datetime.strptime(last_datetime, "%Y-%m-%dT%H:%M:%S.%f")
             except ValueError:
                 try:
                     # Fallback for formats without milliseconds
+                    demisto.debug(f"{LOG_PREFIX} Attempting to parse timestamp without milliseconds: {last_datetime}")
                     last_datetime_obj = datetime.strptime(last_datetime, "%Y-%m-%dT%H:%M:%S")
                 except ValueError:
                     try:
                         # Try original format with microseconds
+                        demisto.debug(f"{LOG_PREFIX} Attempting to parse timestamp with microseconds: {last_datetime}")
                         last_datetime_obj = datetime.strptime(last_datetime, DATETIME_FORMAT)
                     except ValueError as e:
-                        demisto.debug(f"Failed to parse timestamp '{last_datetime}': {e}")
+                        demisto.debug(f"{LOG_PREFIX} Failed to parse timestamp '{last_datetime}': {e}")
                         return last_run
 
             # Add 1 second to ensure we don't fetch duplicates (since we truncate milliseconds)
@@ -323,6 +328,17 @@ def main():
             proxy=demisto_params.get("proxy", False),
         )
 
+    # Validate Basic auth credentials when using Basic authentication
+    if not is_oauth:
+        credentials = demisto_params.get("credentials", {})
+        username = credentials.get("identifier", "")
+        password = credentials.get("password", "")
+        if not username or not password:
+            raise DemistoException(
+                "Username and API token are required for Basic authentication. "
+                "Please provide valid credentials or switch to OAuth 2.0."
+            )
+
     # Build the API URL
     base_url = str(demisto_params.get("url", "")).removesuffix("/")
     if is_oauth and oauth_client and hasattr(oauth_client, "cloud_id") and oauth_client.cloud_id:
@@ -332,10 +348,16 @@ def main():
         base_url = "https://api.atlassian.com/ex/jira"
         demisto_params["url"] = f"{base_url}/{oauth_client.cloud_id}/rest/api/3/auditing/record"
     else:
-        # For Basic auth or On-Prem OAuth
-        # Jira Server/Data Center uses API v2. Cloud supports both v2 and v3.
-        # Using v2 ensures compatibility with On-Prem instances.
-        demisto_params["url"] = f"{base_url}/rest/auditing/1.0/events"
+        # Distinguish Jira Cloud vs Server/Data Center by the base URL.
+        # Jira Cloud (e.g., *.atlassian.net) should use the v3 auditing endpoint,
+        # while Jira Server/Data Center continues to use the legacy auditing endpoint.
+        lower_base_url = base_url.lower()
+        if ".atlassian.net" in lower_base_url:
+            # Jira Cloud with Basic auth (or non-cloud OAuth without cloud ID)
+            demisto_params["url"] = f"{base_url}/rest/api/3/auditing/record"
+        else:
+            # Jira Server/Data Center
+            demisto_params["url"] = f"{base_url}/rest/auditing/1.0/events"
 
     demisto_params["params"] = ReqParams.model_validate(demisto_params)  # type: ignore[attr-defined]
 

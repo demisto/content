@@ -115,5 +115,37 @@ supportedModules:
 - agentix
 - xsiam
 fromversion: 6.5.0
+triggers:
+- conditions:
+  - name: auth_method
+    operator: equal
+    value: Basic
+  effects:
+  - name: credentials
+    action:
+      required: true
+  - name: client_credentials
+    action:
+      hidden: true
+  - name: callback_url
+    action:
+      hidden: true
+  - name: cloud_id
+    action:
+      hidden: true
+- conditions:
+  - name: auth_method
+    operator: equal
+    value: OAuth 2.0
+  effects:
+  - name: credentials
+    action:
+      hidden: true
+  - name: client_credentials
+    action:
+      required: true
+  - name: callback_url
+    action:
+      required: true
 tests:
 - No tests (auto formatted)

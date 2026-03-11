@@ -30,7 +30,7 @@ Concrete implementation for Jira Cloud with predefined scopes:
 
 Concrete implementation for Jira On-Prem/Data Center with:
 - PKCE (Proof Key for Code Exchange) support for enhanced security
-- Scope: `WRITE` (provides read and write access)
+- Scope: `ADMIN` (provides admin-level access required for audit log retrieval)
 - Server-specific OAuth endpoints
 
 ## Usage
@@ -38,10 +38,10 @@ Concrete implementation for Jira On-Prem/Data Center with:
 ### Jira Cloud
 
 ```python
-from AtlassianApiModule import create_jira_oauth_client
+from AtlassianApiModule import create_atlassian_oauth_client
 
-# Create OAuth client for Cloud (backward compatible function name)
-oauth_client = create_jira_oauth_client(
+# Create OAuth client for Cloud
+oauth_client = create_atlassian_oauth_client(
     client_id="your-client-id",
     client_secret="your-client-secret",
     callback_url="https://localhost/callback",
@@ -96,8 +96,8 @@ The module handles all OAuth token lifecycle management, allowing integrations t
 
 ## Function Names
 
-- `create_atlassian_oauth_client()` - Generic factory function
-- `create_jira_oauth_client()` - Backward compatibility alias (same as above)
+- `create_atlassian_oauth_client()` - Generic factory function (recommended)
+- `create_jira_oauth_client()` - Backward-compatible alias (same as `create_atlassian_oauth_client`)
 
 ## Key Features
 

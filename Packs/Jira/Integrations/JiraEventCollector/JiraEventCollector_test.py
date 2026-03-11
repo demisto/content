@@ -15,7 +15,7 @@ DEMISTO_PARAMS = {
         "password": "123456",
     },
 }
-URL = "https://your.domain.atlassian.net/rest/auditing/1.0/events"
+URL = "https://your.domain.atlassian.net/rest/api/3/auditing/record"
 FIRST_REQUESTS_PARAMS = "from=2022-04-11T00%3A00%3A00.000Z&limit=1000&offset=0"
 SECOND_REQUESTS_PARAMS = "from=2022-04-11T00%3A00%3A00.000Z&limit=1000&offset=1000"
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
@@ -56,7 +56,14 @@ def test_fetch_incidents_few_incidents(mocker):
     mocker.patch("JiraEventCollector.send_events_to_xsiam")
 
     with requests_mock.Mocker() as m:
-        m.get(URL, json=util_load_json("test_data/events.json"), headers={"Content-Type": "application/json"})
+        # First call returns events, second call returns empty to stop pagination
+        m.get(
+            URL,
+            [
+                {"json": util_load_json("test_data/events.json"), "headers": {"Content-Type": "application/json"}},
+                {"json": {"records": []}, "headers": {"Content-Type": "application/json"}},
+            ],
+        )
 
         from JiraEventCollector import main
 
