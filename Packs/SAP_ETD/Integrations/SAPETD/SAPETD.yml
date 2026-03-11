@@ -21,7 +21,7 @@ configuration:
   required: true
   type: 9
   section: Connect
-  additionalinfo: Basic auth credentials for the SAP ETD API.
+  additionalinfo: Basic authentication credentials for the SAP ETD API.
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
