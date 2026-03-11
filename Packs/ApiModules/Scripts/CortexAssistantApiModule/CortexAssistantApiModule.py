@@ -859,7 +859,7 @@ class AssistantMessagingHandler:
                 del assistant[assistant_id_key]
 
             await self.send_message_async(
-                channel_id, AssistantMessages.RESET_SESSION_SUCCESS, thread_id=thread_id, ephemeral=True, user_id=user_id
+                channel_id, AssistantMessages.RESET_SESSION_SUCCESS, thread_id=thread_id, user_id=user_id
             )
         elif backend_response.error_type == BackendErrorType.CONVERSATION_NOT_FOUND:
             # Backend says no active session (conversation not found)
