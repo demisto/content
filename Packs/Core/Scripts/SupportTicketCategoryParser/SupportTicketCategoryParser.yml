@@ -4,7 +4,6 @@ commonfields:
 name: SupportTicketCategoryParser
 script: ''
 type: python
-isInternal: true
 tags:
 - Utility
 comment: Parses a delimited support ticket classification string (issue_category|||problem_concentration)
