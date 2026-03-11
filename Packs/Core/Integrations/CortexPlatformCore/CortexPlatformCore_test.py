@@ -10207,3 +10207,137 @@ def test_send_endpoint_heartbeat_command_missing_id(mocker):
 
     with pytest.raises(ValueError, match="endpoint_id is required"):
         send_endpoint_heartbeat_command(mock_client, args)
+
+
+def test_core_fill_support_ticket_command_success(mocker: MockerFixture):
+    """
+    GIVEN:
+        Valid arguments including the new product_type.
+    WHEN:
+        The core_fill_support_ticket_command function is called.
+    THEN:
+        The response contains the productType and other fields correctly mapped.
+    """
+    from CortexPlatformCore import core_fill_support_ticket_command
+
+    args = {
+        "product_type": "Cortex XSIAM",
+        "description": "This is a detailed description that is at least 25 characters long.",
+        "contact_number": "123456789",
+        "issue_impact": "P4",
+        "issue_category": "Agent",
+        "problem_concentration": "Communication",
+        "issue_frequency": "Yes - Consistent",
+        "most_recent_issue_start_time": "2023-01-01T00:00:00Z",
+    }
+
+    result = core_fill_support_ticket_command(args)
+
+    assert result.outputs["description"] == args["description"]
+    assert result.outputs["contactNumber"] == "123456789"
+    assert result.outputs["IssueImpact"] == "P4"
+    assert result.outputs["smeArea"] == "Agent"
+    assert result.outputs["subGroupName"] == "Communication"
+    assert result.outputs["OngoingIssue"] == "Yes - Consistent"
+    assert result.outputs["DateTimeOfIssue"] is not None
+    assert result.outputs_prefix == "Core.SupportTicket"
+
+
+def test_get_support_ticket_taxonomy_command_success(mocker: MockerFixture):
+    """
+    GIVEN:
+        Mock API response with SME areas and their sub-groups.
+    WHEN:
+        The get_support_ticket_taxonomy_command function is called.
+    THEN:
+        It fetches all SME areas and returns the taxonomy mapping each area to its problem concentrations.
+    """
+    from CortexPlatformCore import get_support_ticket_taxonomy_command, Client
+
+    areas_response = {
+        "reply": [
+            {
+                "value": "Agent",
+                "label": "Agent",
+                "suggestedValues": [
+                    {"value": "Communication", "label": "Communication"},
+                    {"value": "Performance", "label": "Performance"},
+                ],
+            },
+            {
+                "value": "Server",
+                "label": "Server",
+                "suggestedValues": [
+                    {"value": "Automation", "label": "Automation"},
+                ],
+            },
+        ]
+    }
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "get_sme_areas_and_sub_groups", return_value=areas_response)
+
+    result = get_support_ticket_taxonomy_command(mock_client, {})
+
+    assert result.outputs_prefix == "Core.SupportTicketTaxonomy"
+
+    expected_taxonomy = [
+        {"Agent": ["Communication", "Performance"]},
+        {"Server": ["Automation"]},
+    ]
+    assert result.outputs == str(expected_taxonomy)
+    assert result.raw_response == expected_taxonomy
+
+    assert mock_client.get_sme_areas_and_sub_groups.call_count == 1
+
+
+def test_get_support_ticket_taxonomy_command_empty_areas(mocker: MockerFixture):
+    """
+    GIVEN:
+        The SME areas API returns an empty list.
+    WHEN:
+        The get_support_ticket_taxonomy_command function is called.
+    THEN:
+        The response contains an empty list.
+    """
+    from CortexPlatformCore import get_support_ticket_taxonomy_command, Client
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "get_sme_areas_and_sub_groups", return_value={"reply": []})
+
+    result = get_support_ticket_taxonomy_command(mock_client, {})
+
+    assert result.outputs == str([])
+    assert result.raw_response == []
+    assert result.outputs_prefix == "Core.SupportTicketTaxonomy"
+
+
+def test_get_support_ticket_taxonomy_command_empty_suggested_values(mocker: MockerFixture):
+    """
+    GIVEN:
+        An SME area with empty suggestedValues.
+    WHEN:
+        The get_support_ticket_taxonomy_command function is called.
+    THEN:
+        The area is included with an empty list of problem concentrations.
+    """
+    from CortexPlatformCore import get_support_ticket_taxonomy_command, Client
+
+    areas_response = {
+        "reply": [
+            {
+                "value": "Agent",
+                "label": "Agent",
+                "suggestedValues": [],
+            },
+        ]
+    }
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "get_sme_areas_and_sub_groups", return_value=areas_response)
+
+    result = get_support_ticket_taxonomy_command(mock_client, {})
+
+    expected_taxonomy = [{"Agent": []}]
+    assert result.outputs == str(expected_taxonomy)
+    assert result.raw_response == expected_taxonomy
