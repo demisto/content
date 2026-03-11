@@ -1,6 +1,6 @@
 ## Prerequisites
 
-1. To be able to call the API, create a user in your SIEM solution with the following application privileges:
+1. Create a user in your SIEM solution with the following application privileges:
    - `sap.secmon::Execute`
    - `sap.secmon.ui::Execute`
    - `sap.secmon::AlertRead`
