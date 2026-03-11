@@ -848,9 +848,13 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
 
     demisto.debug(f"get-modified-remote-data: fetching incidents modified since epoch {from_timestamp}")
 
+    # try:
     modified_incident_ids = client.get_modified_incidents(from_timestamp=from_timestamp)
-    demisto.debug(f"get-modified-remote-data: found {len(modified_incident_ids)} modified incident(s): {modified_incident_ids}")
+    # except Exception as e:
+    #     demisto.error(f"get-modified-remote-data: failed to fetch modified incidents: {e}")
+    #     raise DemistoException(f"Failed to fetch modified incidents: {e}")
 
+    demisto.debug(f"get-modified-remote-data: found {len(modified_incident_ids)} modified incident(s): {modified_incident_ids}")
     return GetModifiedRemoteDataResponse(modified_incident_ids)
 
 
