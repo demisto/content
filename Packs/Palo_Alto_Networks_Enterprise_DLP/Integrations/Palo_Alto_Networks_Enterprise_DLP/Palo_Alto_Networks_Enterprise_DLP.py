@@ -598,8 +598,9 @@ def fetch_notifications(
 
             for notification in notifications:
                 incident_id = notification["incident"]["incidentId"]
-                if incident_id in all_incident_ids:
-                    print_debug_msg(f"Skipping duplicate {incident_id=} in {region=}.")
+                incident_timestamp = int(dateparser.parse(notification["incident"]["createdAt"]).timestamp())  # type: ignore
+                if incident_id in all_incident_ids or incident_timestamp < start_timestamp:
+                    demisto.debug(f"Skipping duplicate {incident_id=} with {incident_timestamp=} in {region=}.")
                     continue
 
                 incident = create_incident(notification, region, incident_type)
