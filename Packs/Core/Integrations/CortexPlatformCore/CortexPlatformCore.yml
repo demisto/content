@@ -4152,6 +4152,23 @@ script:
         - contextPath: Core.SupportTicketPermission.has_permission
           description: Whether the user has full permission (both user CSP permission and tenant entitlement).
           type: Boolean
+    - arguments:
+        - description: Comma-separated list of broker VM names to filter by.
+          name: broker_vm_names
+          isArray: true
+        - description: Maximum number of brokers to return.
+          name: limit
+          defaultValue: "50"
+      name: core-list-brokers
+      description: Retrieves information about broker VMs configured on the system.
+      hidden: true
+      outputs:
+        - contextPath: Core.Broker.DEVICE_NAME
+          description: The name of the broker VM device.
+          type: String
+        - contextPath: Core.Broker.APPS
+          description: List of applications configured on the broker.
+          type: Array
   runonce: false
   script: "-"
   subtype: python3

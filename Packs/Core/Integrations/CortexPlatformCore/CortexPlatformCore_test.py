@@ -10307,3 +10307,93 @@ def test_get_support_ticket_taxonomy_command_empty_suggested_values(mocker: Mock
     expected_taxonomy = [{"Agent": []}]
     assert result.outputs == str(expected_taxonomy)
     assert result.raw_response == expected_taxonomy
+class TestListBrokersCommand:
+    """Test cases for list_brokers_command function."""
+
+    def test_list_brokers_command_single_broker_success(self, mocker):
+        """
+        Given: Client and single broker_vm_name
+        When: list_brokers_command is called
+        Then: Single broker returned with correct structure and APPS data
+        """
+        from CortexPlatformCore import list_brokers_command, Client
+
+        mock_client = Client(base_url="", headers={})
+        mock_response = {
+            "reply": {
+                "brokers": [
+                    {
+                        "DEVICE_NAME": "broker-01",
+                        "APPS": [{"display_name": "Syslog Collector", "status": "active"}],
+                    }
+                ]
+            }
+        }
+        mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+        mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Brokers Table")
+
+        result = list_brokers_command(mock_client, {"broker_vm_names": "broker-01"})
+
+        assert result.outputs_prefix == "Core.Broker"
+        assert result.outputs_key_field == "DEVICE_NAME"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["DEVICE_NAME"] == "broker-01"
+        assert len(result.outputs[0]["APPS"]) == 1
+
+    def test_list_brokers_command_multiple_brokers(self, mocker):
+        """
+        Given: Multiple broker names as comma-separated list
+        When: list_brokers_command is called
+        Then: All matching brokers returned
+        """
+        from CortexPlatformCore import list_brokers_command, Client
+
+        mock_client = Client(base_url="", headers={})
+        mock_response = {
+            "reply": {"brokers": [{"DEVICE_NAME": "broker-01"}, {"DEVICE_NAME": "broker-02"}, {"DEVICE_NAME": "broker-03"}]}
+        }
+        mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+        mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Table")
+
+        result = list_brokers_command(mock_client, {"broker_vm_names": "broker-01,broker-02,broker-03"})
+
+        assert len(result.outputs) == 3
+        assert result.outputs[0]["DEVICE_NAME"] == "broker-01"
+        assert result.outputs[2]["DEVICE_NAME"] == "broker-03"
+
+    def test_list_brokers_command_no_filter_default_limit(self, mocker):
+        """
+        Given: No broker filter and no limit specified
+        When: list_brokers_command is called
+        Then: All brokers returned with default limit of 50
+        """
+        from CortexPlatformCore import list_brokers_command, Client
+
+        mock_client = Client(base_url="", headers={})
+        mock_response = {"reply": {"brokers": [{"DEVICE_NAME": f"broker-{i}"} for i in range(10)]}}
+        mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+        mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Table")
+
+        result = list_brokers_command(mock_client, {})
+
+        assert len(result.outputs) == 10
+        call_args = mock_client.get_webapp_data.call_args[0][0]
+        assert call_args["filter_data"]["paging"]["to"] == 50
+
+    def test_list_brokers_command_empty_response(self, mocker):
+        """
+        Given: Broker filter that matches no brokers
+        When: list_brokers_command is called
+        Then: Empty list returned gracefully
+        """
+        from CortexPlatformCore import list_brokers_command, Client
+
+        mock_client = Client(base_url="", headers={})
+        mock_response = {"reply": {"brokers": []}}
+        mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+        mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="No brokers found")
+
+        result = list_brokers_command(mock_client, {"broker_vm_names": "nonexistent"})
+
+        assert result.outputs == []
+        assert result.readable_output == "No brokers found"
