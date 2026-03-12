@@ -15,12 +15,7 @@
     ],
     "useCases": [],
     "keywords": [],
-    "dependencies": {
-        "ApiModules": {
-            "mandatory": true,
-            "display_name": "API Modules"
-        }
-    },
+    "dependencies": {},
     "marketplaces": [
         "xsoar",
         "marketplacev2",
