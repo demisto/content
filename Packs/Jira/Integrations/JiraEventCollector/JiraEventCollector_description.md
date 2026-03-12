@@ -13,7 +13,7 @@ The user name and password.
 ## Authentication Methods
 
 ### Basic Authentication
-Provide your email address and API token generated from your Jira account settings.
+Provide your email address (as the **User name**) and API token (as the **Password**) generated from your Jira account settings.
 
 ### OAuth 2.0 Authentication
 
