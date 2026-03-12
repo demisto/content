@@ -28,7 +28,6 @@ from ZscalerZIdentity import (
     url_command,
     ip_command,
     domain_command,
-    # test_module_command,
     SUSPICIOUS_CATEGORIES,
 )
 from CommonServerPython import DemistoException, Common, CommandResults
@@ -280,21 +279,6 @@ class TestTokenCaching:
         mocker.patch.object(mock_client, "_http_request", return_value={"error": "invalid_client"})
         with pytest.raises(DemistoException, match="Failed to obtain access token"):
             mock_client._get_access_token()
-
-
-# # ---- Unit tests: test_module ----
-
-
-# class TestTestModule:
-#     def test_ok(self, mock_client, mocker):
-#         """
-#         Given: The ZIA API is reachable and returns a valid status response.
-#         When: test_module_command is called.
-#         Then: The string "ok" is returned.
-#         """
-#         _patch_api(mocker, mock_client, {"status": "ACTIVE"})
-#         result = test_module_command(mock_client)
-#         assert result == "ok"
 
 
 # ---- Unit tests: denylist ----
