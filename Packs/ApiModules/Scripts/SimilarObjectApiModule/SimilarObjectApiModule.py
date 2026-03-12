@@ -413,6 +413,7 @@ class Model:
     """
     Class for the similarity model.
     """
+
     def __init__(self, p_transformation, incident_alias="incident"):
         """
         Initialize Model.
@@ -729,11 +730,60 @@ def prepare_current_incident(
     return incident_filter
 
 
+class ObjectArgs:
+    """
+    Class for mapping and normalizing arguments for finding similar objects.
+    """
+
+    MAPPING = {
+        "object_id": ["incidentId", "issue_id"],
+        "min_object_similarity": ["minimunIncidentSimilarity", "min_similarity"],
+        "max_objects_to_display": ["maxIncidentsToDisplay", "max_issues_to_display"],
+        "max_objects_in_indicators_for_white_list": [
+            "maxIncidentsInIndicatorsForWhiteList",
+            "max_issues_in_indicators_for_white_list",
+        ],
+        "field_exact_match": ["fieldExactMatch", "filter_equal_fields"],
+        "similar_text_field": ["similarTextField", "text_similarity_fields"],
+        "similar_json_field": ["similarJsonField", "json_similarity_fields"],
+        "similar_categorical_field": ["similarCategoricalField", "discrete_match_fields"],
+        "fields_to_display": ["fieldsToDisplay", "fields_to_display"],
+        "from_date": ["fromDate", "from_date"],
+        "to_date": ["toDate", "to_date"],
+        "aggregate_objects_different_date": [
+            "aggregateIncidentsDifferentDate",
+            "aggreagateIncidentsDifferentDate",
+            "aggregate_issues_different_date",
+        ],
+        "include_indicators_similarity": ["includeIndicatorsSimilarity", "include_indicators_similarity"],
+        "min_number_of_indicators": ["minNumberOfIndicators", "min_number_of_indicators"],
+        "indicators_types": ["indicatorsTypes", "indicators_types"],
+        "show_current_object": ["showCurrentIncident", "show_current_issue"],
+        "show_object_fields_similarity": ["showIncidentSimilarityForAllFields", "show_issue_fields_similarity"],
+        "use_all_fields": ["useAllFields"],
+        "query": ["query"],
+        "custom_filter": ["custom_filter"],
+        "limit": ["limit"],
+    }
+
+    def __init__(self, args: dict):
+        self.original_args = args
+        for generic_name, original_names in self.MAPPING.items():
+            value = None
+            for name in original_names:
+                if name in args:
+                    value = args[name]
+                    break
+
+            setattr(self, generic_name, value)
+
+
 class BaseSimilarObjectFinder:
     """
     Base class for finding similar objects.
     """
-    def __init__(self, args: dict):
+
+    def __init__(self, args: ObjectArgs):
         """
         Initialize BaseSimilarObjectFinder.
         :param args: Arguments for the finder.
@@ -745,23 +795,28 @@ class BaseSimilarObjectFinder:
         self.id_field = "id"
         self.time_format = "%Y-%m-%dT%H:%M:%S"
 
+    def __getattr__(self, name):
+        if hasattr(self.args, name):
+            return getattr(self.args, name)
+
+        raise AttributeError(f"'{type(self).__name__}' object has no attribute '{name}'")
+
     def preprocess_args(self):
         """
         Preprocess arguments.
         :return: None
         """
-        pass
 
     def get_fields(self):
         """
         Get fields for similarity calculation.
         :return: Tuple of (exact_match_fields, similar_text_field, similar_categorical_field, similar_json_field)
         """
-        use_all_field = argToBoolean(self.args.get("useAllFields") or "False")
-        exact_match_fields = [] if use_all_field else extract_fields_from_args(self.args.get("fieldExactMatch"))
-        similar_text_field = [] if use_all_field else extract_fields_from_args(self.args.get("similarTextField"))
-        similar_categorical_field = [] if use_all_field else extract_fields_from_args(self.args.get("similarCategoricalField"))
-        similar_json_field = ["CustomFields"] if use_all_field else extract_fields_from_args(self.args.get("similarJsonField"))
+        use_all_field = argToBoolean(self.use_all_fields or "False")
+        exact_match_fields = [] if use_all_field else extract_fields_from_args(self.field_exact_match)
+        similar_text_field = [] if use_all_field else extract_fields_from_args(self.similar_text_field)
+        similar_categorical_field = [] if use_all_field else extract_fields_from_args(self.similar_categorical_field)
+        similar_json_field = ["CustomFields"] if use_all_field else extract_fields_from_args(self.similar_json_field)
 
         if self.incident_alias == "issue" and not (similar_text_field or similar_categorical_field or similar_json_field):
             raise DemistoException(
@@ -776,14 +831,14 @@ class BaseSimilarObjectFinder:
         Get fields to display in the results.
         :return: List of display fields.
         """
-        return list(set([self.id_field, "created", "name"] + argToList(self.args.get("fieldsToDisplay"))))
+        return list(set([self.id_field, "created", "name"] + argToList(self.fields_to_display)))
 
     def get_dates(self):
         """
         Get from and to dates from arguments.
         :return: Tuple of (from_date, to_date)
         """
-        return self.args.get("fromDate"), self.args.get("toDate")
+        return self.from_date, self.to_date
 
     def load_current_incident(
         self,
@@ -1023,19 +1078,17 @@ class BaseSimilarObjectFinder:
 
         from_date, to_date = self.get_dates()
 
-        show_distance = self.args.get("showIncidentSimilarityForAllFields")
-        confidence = float(self.args.get("minimunIncidentSimilarity") or 0.2)
-        max_incidents = int(self.args.get("maxIncidentsToDisplay") or 100)
-        aggregate = (
-            self.args.get("aggregateIncidentsDifferentDate") or self.args.get("aggreagateIncidentsDifferentDate") or "False"
-        )
-        limit = int(self.args.get("limit") or 1500)
+        show_distance = self.show_object_fields_similarity
+        confidence = float(self.min_object_similarity or 0.2)
+        max_incidents = int(self.max_objects_to_display or 100)
+        aggregate = self.aggregate_objects_different_date or "False"
+        limit = int(self.limit or 1500)
         if self.incident_alias == "issue":
             limit += 1
 
-        show_actual_incident = self.args.get("showCurrentIncident")
-        incident_id = self.args.get("incidentId")
-        include_indicators_similarity = self.args.get("includeIndicatorsSimilarity") or "False"
+        show_actual_incident = self.show_current_object
+        incident_id = self.object_id
+        include_indicators_similarity = self.include_indicators_similarity or "False"
 
         incident, incident_id = self.load_current_incident(
             incident_id,
@@ -1155,7 +1208,8 @@ class SimilarIncidentFinder(BaseSimilarObjectFinder):
     """
     Finder for similar incidents.
     """
-    def __init__(self, args: dict):
+
+    def __init__(self, args: ObjectArgs):
         """
         Initialize SimilarIncidentFinder.
         :param args: Arguments for the finder.
@@ -1295,7 +1349,7 @@ class SimilarIncidentFinder(BaseSimilarObjectFinder):
 
         query = " AND ".join(exact_match_fields_list)
         query += f" AND -id:{incident['id']} "
-        query_sup = self.args.get("query")
+        query_sup = self.query
         if query_sup:
             query += f" {query_sup}"
 
@@ -1327,7 +1381,12 @@ class SimilarIncidentFinder(BaseSimilarObjectFinder):
         :return: Updated DataFrame.
         """
         if include_indicators_similarity == "True":
-            args_defined_by_user = {key: self.args.get(key) for key in KEYS_ARGS_INDICATORS}
+            args_defined_by_user = {
+                "indicatorsTypes": self.indicators_types,
+                "maxIncidentsInIndicatorsForWhiteList": self.max_objects_in_indicators_for_white_list,
+                "minNumberOfIndicators": self.min_number_of_indicators,
+                "incidentId": self.object_id,
+            }
             full_args_indicators_script = {**CONST_PARAMETERS_INDICATORS_SCRIPT, **args_defined_by_user}
 
             demisto.debug("Executing DBotFindSimilarIncidentsByIndicators")
@@ -1359,7 +1418,8 @@ class SimilarIssueFinder(BaseSimilarObjectFinder):
     """
     Finder for similar issues.
     """
-    def __init__(self, args: dict):
+
+    def __init__(self, args: ObjectArgs):
         """
         Initialize SimilarIssueFinder.
         :param args: Arguments for the finder.
@@ -1385,10 +1445,10 @@ class SimilarIssueFinder(BaseSimilarObjectFinder):
         Preprocess arguments for issues.
         :return: None
         """
-        fields_to_check = ["text_similarity_fields", "filter_equal_fields", "discrete_match_fields"]
+        fields_to_check = ["similar_text_field", "field_exact_match", "similar_categorical_field"]
 
         for key in fields_to_check:
-            value = self.args.get(key)
+            value = getattr(self, key)
             if not value:
                 continue
 
@@ -1401,43 +1461,19 @@ class SimilarIssueFinder(BaseSimilarObjectFinder):
 
             updated_fields = []
             for f in fields:
-                if key == "filter_equal_fields" and (f == "status" or f == "assignee"):
+                if key == "field_exact_match" and (f == "status" or f == "assignee"):
                     updated_fields.append(f)
                 else:
                     updated_fields.append(self.replacements.get(f, f))
 
-            self.args[key] = ",".join(updated_fields)
-
-        name_mapping = {
-            "issue_id": "incidentId",
-            "min_similarity": "minimunIncidentSimilarity",
-            "max_issues_to_display": "maxIncidentsToDisplay",
-            "max_issues_in_indicators_for_white_list": "maxIncidentsInIndicatorsForWhiteList",
-            "filter_equal_fields": "fieldExactMatch",
-            "text_similarity_fields": "similarTextField",
-            "json_similarity_fields": "similarJsonField",
-            "discrete_match_fields": "similarCategoricalField",
-            "fields_to_display": "fieldsToDisplay",
-            "from_date": "fromDate",
-            "to_date": "toDate",
-            "aggregate_issues_different_date": "aggregateIncidentsDifferentDate",
-            "include_indicators_similarity": "includeIndicatorsSimilarity",
-            "min_number_of_indicators": "minNumberOfIndicators",
-            "indicators_types": "indicatorsTypes",
-            "show_current_issue": "showCurrentIncident",
-            "show_issue_fields_similarity": "showIncidentSimilarityForAllFields",
-        }
-
-        new_args = {name_mapping.get(k, k): v for k, v in self.args.items()}
-        demisto.debug(f"Changed args for calling the script to: {new_args}")
-        self.args = new_args
+            setattr(self, key, ",".join(updated_fields))
 
     def get_display_fields(self):
         """
         Get fields to display for issues.
         :return: List of display fields.
         """
-        display_fields = {"internal_id", "issue_name", "issue_description"} | set(argToList(self.args.get("fieldsToDisplay")))
+        display_fields = {"internal_id", "issue_name", "issue_description"} | set(argToList(self.fields_to_display))
         return list(display_fields)
 
     def get_dates(self):
@@ -1445,8 +1481,8 @@ class SimilarIssueFinder(BaseSimilarObjectFinder):
         Get from and to dates for issues.
         :return: Tuple of (from_date_str, to_date_str)
         """
-        from_date = arg_to_datetime(self.args.get("fromDate"))
-        to_date = arg_to_datetime(self.args.get("toDate"))
+        from_date = arg_to_datetime(self.from_date)
+        to_date = arg_to_datetime(self.to_date)
 
         from_date_str = str(date_to_timestamp(from_date, self.time_format)) if from_date else None
         to_date_str = str(date_to_timestamp(to_date, self.time_format)) if to_date else None
@@ -1565,7 +1601,7 @@ class SimilarIssueFinder(BaseSimilarObjectFinder):
             "time_frame": "custom",
         }
 
-        custom_filter = self.args.get("custom_filter")
+        custom_filter = self.custom_filter
         if custom_filter:
             base_args["custom_filter"] = custom_filter
 
