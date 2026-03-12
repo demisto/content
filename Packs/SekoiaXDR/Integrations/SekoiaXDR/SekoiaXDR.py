@@ -740,7 +740,7 @@ def fetch_incidents(
     )
 
     # Initiate an empty list to store cached incidents
-    cached_incidents = []
+    cached_incidents: list[dict[str, Any]] = []
 
     for alert in alerts:
         # If no created_time set is as epoch (0). We use time in ms so we must
@@ -1523,7 +1523,7 @@ def http_request_command(client: Client, args: dict[str, Any]) -> CommandResults
     http_response = client.http_request(method=method, params=params, url_suffix=url_suffix, data=data)
 
     # Extract response items if available
-    response = http_response.get("items", http_response)
+    response = http_response.get("items", http_response) if isinstance(http_response, dict) else http_response
 
     # Build output text based on what parameters were provided
     output_parts = [f"### HTTP {method} request to {url_suffix}"]
