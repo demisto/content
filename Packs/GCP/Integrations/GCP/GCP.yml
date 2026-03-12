@@ -1877,7 +1877,7 @@ script:
       required: true
     outputs: []
   - name: gcp-bq-dataset-policy-update
-    description: Updates information in an existing dataset. The method supports patch semantics.
+    description: Updates the policy of an existing dataset.
     arguments:
     - name: project_id
       required: true

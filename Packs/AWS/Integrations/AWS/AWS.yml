@@ -3202,7 +3202,7 @@ script:
         description: An option that specifies whether to create the cluster with enhanced VPC routing enabled.
         type: Boolean
       - contextPath: AWS.Redshift.Clusters.IamRoles.IamRoleArn
-        description: The Amazon Resource Name (ARN) of the IAM role
+        description: The Amazon Resource Name (ARN) of the IAM role.
         type: String
       - contextPath: AWS.Redshift.Clusters.IamRoles.ApplyStatus
         description: A value that describes the status of the IAM role’s association with an Amazon Redshift cluster.
@@ -13231,6 +13231,7 @@ script:
       - contextPath: AWS.EC2.DeletedLaunchTemplates.Tags.Value
         description: The value of the tag.
         type: string
+
   - name: aws-ec2-fleet-create
     description: Launches an EC2 Fleet.
     arguments:
@@ -14617,6 +14618,7 @@ script:
 
   isfetch: false
   runonce: false
+  script: '-'
   type: python
   subtype: python3
   dockerimage: demisto/boto3py3:1.0.0.6593929

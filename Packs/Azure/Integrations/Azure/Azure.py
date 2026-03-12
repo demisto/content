@@ -4603,8 +4603,10 @@ def network_interface_update_command(client: AzureClient, params: dict[str, Any]
     properties["auxiliaryMode"] = args.get("auxiliary_mode") or properties.get("auxiliaryMode")
     properties["auxiliarySku"] = args.get("auxiliary_sku") or properties.get("auxiliarySku")
     properties["nicType"] = args.get("nic_type") or properties.get("nicType")
-    nsg_prefix = (f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network"
-                  f"/networkSecurityGroups/")
+    nsg_prefix = (
+        f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network"
+        f"/networkSecurityGroups/"
+    )
     properties["networkSecurityGroup"] = {
         "id": f'{nsg_prefix}{args.get("network_security_group_name")}'
         if args.get("network_security_group_name")

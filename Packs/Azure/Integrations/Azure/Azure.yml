@@ -2887,46 +2887,46 @@ script:
       name: network_interface_name
       required: true
     outputs:
-    - contextPath: Azure.VirtualNetwork.Interfaces.properties.ipConfigurations
+    - contextPath: Azure.Network.Interfaces.properties.ipConfigurations
       description: The interface public IP address ID.
       type: Unknown
-    - contextPath: Azure.VirtualNetwork.Interfaces.properties.macAddress
+    - contextPath: Azure.Network.Interfaces.properties.macAddress
       description: The interface MAC address.
       type: String
-    - contextPath: Azure.VirtualNetwork.Interfaces.name
+    - contextPath: Azure.Network.Interfaces.name
       description: The interface name.
       type: String
-    - contextPath: Azure.VirtualNetwork.Interfaces.location
+    - contextPath: Azure.Network.Interfaces.location
       description: The interface location.
       type: String
-    - contextPath: Azure.VirtualNetwork.Interfaces.id
+    - contextPath: Azure.Network.Interfaces.id
       description: The interface ID.
       type: String
-    - contextPath: Azure.VirtualNetwork.Interfaces.location
+    - contextPath: Azure.Network.Interfaces.location
       description: The Azure region where the network interface is deployed.
       type: String
-    - contextPath: Azure.VirtualNetwork.Interfaces.etag
+    - contextPath: Azure.Network.Interfaces.etag
       description: A unique read-only string that changes whenever the network interface resource is updated.
       type: String
-    - contextPath: Azure.VirtualNetwork.Interfaces.kind
+    - contextPath: Azure.Network.Interfaces.kind
       description: The type of the network interface resource, used for Azure internal classification.
       type: String
-    - contextPath: Azure.VirtualNetwork.Interfaces.properties.tapConfigurations
+    - contextPath: Azure.Network.Interfaces.properties.tapConfigurations
       description: The list of tap configurations attached to the network interface for traffic mirroring.
       type: String
-    - contextPath: Azure.VirtualNetwork.Interfaces.properties.allowPort25Out
+    - contextPath: Azure.Network.Interfaces.properties.allowPort25Out
       description: Indicates whether outbound traffic on port 25 (SMTP) is allowed from this network interface.
       type: String
-    - contextPath: Azure.VirtualNetwork.Interfaces.properties.nicType
+    - contextPath: Azure.Network.Interfaces.properties.nicType
       description: Specifies the type of network interface, such as Standard or Elastic.
       type: String
-    - contextPath: Azure.VirtualNetwork.Interfaces.properties.provisioningState
+    - contextPath: Azure.Network.Interfaces.properties.provisioningState
       description: The current provisioning state of the network interface (e.g., Succeeded, Updating, Failed).
       type: String
-    - contextPath: Azure.VirtualNetwork.Interfaces.properties.dnsSettings
+    - contextPath: Azure.Network.Interfaces.properties.dnsSettings
       description: The DNS configuration of the network interface, including DNS servers and domain name.
       type: String
-    - contextPath: Azure.VirtualNetwork.Interfaces.properties.enableIPForwarding
+    - contextPath: Azure.Network.Interfaces.properties.enableIPForwarding
       description: Indicates whether IP forwarding is enabled for the network interface.
       type: String
   - name: azure-vn-network-interface-update
@@ -6445,7 +6445,7 @@ script:
     quickaction: true
     prettyname: Enable SSL on Postgres Server
   - name: azure-compute-vm-list
-    description: "Lists all the virtual machines in the specified subscription. Use the next_link argument to view the next page of results."
+    description: Lists all the virtual machines in the specified subscription. Use the next_token argument to view the next page of results.
     arguments:
     - name: subscription_id
       description: "The subscription ID."
