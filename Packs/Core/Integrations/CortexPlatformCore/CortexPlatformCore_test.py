@@ -9708,6 +9708,78 @@ def test_get_ai_model_activity_command_inactive_model(mocker: MockerFixture):
     assert result.outputs[0]["event_count"] == 0
 
 
+def test_handle_view_graph_clause_removes_view_graph():
+    """
+    Given:
+    - A complex query with a final view graph clause, containing comment and quote edge cases.
+
+    When:
+    - Calling handle_view_graph_clause function.
+
+    Then:
+    - Ensure the final view graph clause is removed.
+    - Ensure "view graph" in comments and quotes are NOT removed.
+    - Ensure has_view_graph returns True.
+    """
+    from CortexPlatformCore import remove_view_graph_clause
+
+    query = """dataset = issues
+| limit 5
+/* Block comment: | view graph for future */
+| filter description != "| view graph example"
+// Comment: | view graph later
+| fields issue_id, severity /* Multi line comment
+should remain intact */| VIEW GRAPH type = pie xaxis = _insert_time yaxis = xdm.issue.observation_time // this comment is part of view graph line"""
+
+    expected_result = """dataset = issues
+| limit 5
+/* Block comment: | view graph for future */
+| filter description != "| view graph example"
+// Comment: | view graph later
+| fields issue_id, severity /* Multi line comment
+should remain intact */"""
+
+    result, removed_clause = remove_view_graph_clause(query)
+
+    assert result == expected_result
+    assert (
+        removed_clause
+        == "| VIEW GRAPH type = pie xaxis = _insert_time yaxis = xdm.issue.observation_time // this comment is part of view graph line"
+    )
+
+
+def test_handle_view_graph_clause_no_view_graph():
+    """
+    Given:
+    - A query without actual "view graph" clauses, containing edge cases like:
+      - "view graph" inside comments - should be ignored
+      - "view graph" inside quoted strings - should be ignored
+      - Separate "view" and "graph" words
+
+    When:
+    - Calling remove_view_graph_clause function.
+
+    Then:
+    - Ensure the query is NOT modified.
+    - Ensure empty string is returned for removed clause.
+    """
+    from CortexPlatformCore import remove_view_graph_clause
+
+    query = """/* Note: | view graph in comment */
+dataset = xdr_data
+| filter event_type = ENUM.PROCESS // | view graph ignored
+| filter description contains "view graph test"
+| filter name = '| view graph value'
+| alter graph_view_field = "some value"
+| fields agent_hostname
+// Final: | view graph"""
+
+    result, removed_clause = remove_view_graph_clause(query)
+
+    assert result == query
+    assert removed_clause == ""
+
+
 def test_get_ai_model_activity_command_asset_id_list_format(mocker: MockerFixture):
     """
     Given:
