@@ -10,17 +10,10 @@ BASE_API_URL = "https://api.zsapi.net/zia/api/v1"
 TOKEN_URL_TEMPLATE = "https://{server_url}/oauth2/v1/token"
 AUDIENCE = "https://api.zscaler.com"
 SUSPICIOUS_CATEGORIES = ["SUSPICIOUS_DESTINATION", "SPYWARE_OR_ADWARE"]
+TOKEN_EXPIRY_BUFFER_SECONDS = 30 # Refresh the cached token this many seconds before it actually expires
 
 ERROR_CODES_DICT = {
     400: "Invalid or bad request",
-    401: "Session is not authenticated or timed out",
-    403: (
-        "One of the following permission errors occurred:\n"
-        "-The API key was disabled by your service provider\n"
-        "-User role has no access permissions or functional scope\n"
-        "-A required SKU subscription is missing\n"
-        "Contact support or your account team for assistance."
-    ),
     404: "Resource does not exist",
     406: "Not Acceptable",
     409: (
@@ -115,7 +108,7 @@ class Client(BaseClient):
         token = ctx.get("access_token")
         expires_at = ctx.get("token_expires_at", 0)
 
-        if token and time.time() < expires_at - 30:
+        if token and time.time() < expires_at - TOKEN_EXPIRY_BUFFER_SECONDS:
             demisto.debug("Using cached ZIdentity access token.")
             return token
 
@@ -1854,3 +1847,4 @@ def main() -> None:  # pragma: no cover
 
 if __name__ in ("__builtin__", "builtins", "__main__"):  # pragma: no cover
     main()
+
