@@ -574,6 +574,9 @@ def retrieve_cves(client: Client, start_date: Any, end_date: Any, use_pub_date: 
                     seen_ids.add(cve_id)
                     deduplicated.append(cve)
 
+    # Sort by last-modified date for consistent batch trimming.
+    deduplicated.sort(key=lambda cve: cve.get("cve", {}).get("lastModified", ""))
+
     demisto.debug(
         f"Total deduplicated CVEs after querying "
         f"{len(client.cvss_versions or [])} CVSS versions x {len(client.cvss_severity)} severity levels: "
@@ -636,9 +639,11 @@ def _ingest_batch(
     indicators = build_indicators(client, raw_cves)
 
     fetch_limit_reached = False
-    if len(indicators) > remaining:
-        demisto.debug(f"Trimming batch from {len(indicators)} to {remaining} " f"to stay within max_indicators={max_indicators}.")
-        indicators = indicators[:remaining]
+    if len(indicators) >= remaining:
+        demisto.debug(
+            f"Batch of {len(indicators)} reaches/exceeds the remaining {remaining} indicators. "
+            f"Stopping after this batch to prevent data loss."
+        )
         fetch_limit_reached = True
 
     demisto.debug(f'Creating {len(indicators)} using "createIndicators"')
@@ -774,7 +779,7 @@ def manual_get_indicators_command(client: Client) -> CommandResults:
     # --- Read command arguments ---
     history_arg = demisto.getArg("history") or "7 days"
     keyword = demisto.getArg("keyword") or ""
-    limit = arg_to_number(demisto.getArg("limit")) or client.max_indicators or DEFAULT_MANUAL_LIMIT
+    limit = arg_to_number(demisto.getArg("limit")) or DEFAULT_MANUAL_LIMIT
 
     # Override CVSS filters if provided as command args
     severity_override = argToList(demisto.getArg("cvss_severity"))
@@ -813,13 +818,15 @@ def main():  # pragma: no cover
     """Main integration entry point."""
 
     params = demisto.params()
-    proxy = params.get("proxy", False)
+    proxy = argToBool(params.get("proxy", False))
     api_key = params.get("apiKey", {}).get("password", "")
     tlp_color = params.get("tlp_color", "")
-    has_kev = params.get("hasKev", False)
+    has_kev = argToBool(params.get("hasKev", False))
     first_fetch = params.get("first_fetch", "")
     feed_tags = params.get("feedTags", [])
     max_indicators = arg_to_number(params.get("max_indicators"))
+    if max_indicators is None:
+        max_indicators = MAX_INDICATORS_WITH_API_KEY if api_key else MAX_INDICATORS_WITHOUT_API_KEY
     cvss_versions_raw = argToList(params.get("cvss_versions", ""))
 
     command = demisto.command()
@@ -837,7 +844,7 @@ def main():  # pragma: no cover
             cvss_severity=argToList(params.get("cvss_severity", [])),
             keyword_search=params.get("keyword_search", ""),
             cvss_versions=cvss_versions_raw or None,
-            max_indicators=max_indicators or DEFAULT_MANUAL_LIMIT,
+            max_indicators=max_indicators,
         )
 
         if command == "test-module":
