@@ -48,15 +48,16 @@ configuration:
   type: 0
   section: Connect
 - display: First fetch time
+  additionalinfo: This parameter is relevant for 'Audit' events only.
   defaultvalue: 3 days
   name: first_fetch
   type: 0
   section: Collect
   required: false
-- display: Number of events to fetch per fetch.
+- display: Maximum number of events to fetch per type.
   name: max_fetch
   type: 0
-  defaultvalue: 100
+  defaultvalue: 1000
   section: Collect
   required: false
 - display: Events types to fetch
