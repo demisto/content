@@ -237,18 +237,18 @@ def get_fetch_time(last_run: str | None, first_fetch_param: str) -> datetime | N
         return arg_to_datetime(arg=FETCH_DEFAULT_TIME)
 
 
-def events_to_command_results(events: list[dict[str, Any]]) -> CommandResults:
+def events_to_command_results(events: list[dict[str, Any]], title: str) -> CommandResults:
     """Returns a CommandResults object with a table of fetched events.
 
     Args:
         events (list[dict[str, Any]]): list of fetched events.
-
+        title (str): The title of the table of fetched events.
     Returns:
         CommandResults: CommandResults object with a table of fetched events.
     """
     return CommandResults(
         readable_output=tableToMarkdown(
-            "Oracle Cloud Infrastructure Events", events, removeNull=True, headerTransform=pascalToSpace
+            title, events, removeNull=True, headerTransform=pascalToSpace
         ),
         raw_response=events,
     )
@@ -464,7 +464,7 @@ def get_events(
         if events and push_events_on_error:
             last_event_time = get_last_event_time(events, first_fetch_time)
             events = add_time_key_to_events(events)
-            handle_fetched_events(events, last_event_time)
+            handle_fetched_events(events, last_event_time,demisto.getLastRun())
             raise DemistoException(f"Error while fetching events: {e}") from e
 
     demisto.info(f"OCI: {len(events)} Events fetched from start time: {first_fetch_time}.")
@@ -483,12 +483,14 @@ def handle_fetched_events(events: list[dict[str, Any]], last_event_time: str):
     send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
     demisto.info(f"OCI: {len(events)} events were sent to XSIAM at {datetime.now()}.")
     if events:
-        demisto.setLastRun({"lastRun": last_event_time})
+        last_run = demisto.getLastRun()
+        last_run['lastRun'] = last_event_time
+        demisto.setLastRun(last_run)
         demisto.info(f"OCI: Set last run to {last_event_time}")
     else:
         demisto.info("OCI: No new events fetched, Last run was not updated.")
 
-def handle_searchlog_fetched_events(searchlog_events: list[dict[str, Any]], searchlog_last_run: dict[str, Any], last_run: dict[str, Any]):
+def handle_searchlog_fetched_events(searchlog_events: list[dict[str, Any]], searchlog_last_run: dict[str, Any]):
     """Handles searchlog fetched events.
     - Sends the events to XSIAM.
     - Sets the last run for next fetch cycle.
@@ -496,11 +498,11 @@ def handle_searchlog_fetched_events(searchlog_events: list[dict[str, Any]], sear
     Args:
         searchlog_events (list[dict[str, Any]]): Fetched events.
         searchlog_last_run (dict[str, Any]): searchlogs last run.
-        last_run (dict[str, Any]): The last run value.
     """
     send_events_to_xsiam(searchlog_events, vendor=VENDOR, product=PRODUCT)
     demisto.info(f"OCI: {len(searchlog_events)} searchlog events were sent to XSIAM at {datetime.now()}.")
     if searchlog_events:
+        last_run = demisto.getLastRun()
         last_run['SearchLog'] = searchlog_last_run
         demisto.setLastRun(last_run)
         demisto.info(f"OCI: Set last run to {last_run}")
@@ -511,11 +513,12 @@ def handle_searchlog_fetched_events(searchlog_events: list[dict[str, Any]], sear
 """ Test module """
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, search_log_query: str, event_types_to_fetch: List) -> str:
     """Tests API connectivity and authentication.
 
     Args:
         client (Client): Client for SDK interaction and api requests.
+        search_log_query (str): The search log query string from the instance configuration.
 
     Raises:
         DemistoException: If an error occurred while testing.
@@ -524,16 +527,32 @@ def test_module(client: Client) -> str:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
 
-    try:
-        datetime_now = datetime.now().strftime(DATE_FORMAT)
-        params = {"compartmentId": client.compartment_id, "startTime": datetime_now, "endTime": datetime_now}
-        client._http_request(method="GET", params=params)
+    if 'Audit' in event_types_to_fetch:
+        try:
+            datetime_now = datetime.now().strftime(DATE_FORMAT)
+            params = {"compartmentId": client.compartment_id, "startTime": datetime_now, "endTime": datetime_now}
+            client._http_request(method="GET", params=params)
 
-    except Exception as e:
-        if "failed" in str(e):
-            return "Authorization Error: make sure OCI parameters are correctly set"
-        else:
-            raise DemistoException(f"Error while testing: {e}") from e
+        except Exception as e:
+            if "failed" in str(e):
+                return "Authorization Error: make sure OCI parameters are correctly set"
+            else:
+                raise DemistoException(f"Error while testing: {e}") from e
+
+    if 'Search Logs' in event_types_to_fetch:
+        try:
+            searchlogs_time_start = datetime.now().strftime(SEARCHLOG_DATE_FORMAT)
+            searchlogs_time_end = (datetime.strptime(searchlogs_time_start, DATE_FORMAT) + timedelta(days=14)).strftime(SEARCHLOG_DATE_FORMAT)
+
+            searchlogs_api_request(
+                client=client, time_start=searchlogs_time_start, time_end=searchlogs_time_end, search_query=search_log_query
+            )
+
+        except Exception as e:
+            if "failed" in str(e):
+                return "Authorization Error: make sure OCI parameters are correctly set"
+            else:
+                raise DemistoException(f"Error while testing: {e}") from e
 
     return "ok"
 
@@ -557,6 +576,10 @@ def main():
     searchlog_last_run = last_run.get("SearchLog",{})
     event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["Audit"]))
 
+    if 'Search Logs' in event_types_to_fetch and not searchlogs_query:
+        raise DemistoException("The parameter 'Search log query' is required in order to fetch search logs.")
+
+
     demisto.info(f"OCI: Command being called is {command}")
 
     try:
@@ -577,7 +600,7 @@ def main():
         demisto.info("OCI: Client created successfully.")
 
         if command == "test-module":
-            return_results(test_module(client))
+            return_results(test_module(client, searchlogs_query, event_types_to_fetch))
 
         elif command in ("oracle-cloud-infrastructure-get-events", "fetch-events"):
             push_events = command == "fetch-events" or should_push_events
@@ -593,11 +616,14 @@ def main():
                 audit_events, last_audit_event_time = get_events(client, first_fetch_time, max_fetch, push_events_on_error=push_events)
 
             if push_events:
-                handle_searchlog_fetched_events(searchlog_events, searchlog_last_run, demisto.getLastRun())
+                handle_searchlog_fetched_events(searchlog_events, searchlog_last_run)
                 handle_fetched_events(audit_events, last_audit_event_time)
 
             elif command == "oracle-cloud-infrastructure-get-events":
-                return_results(events_to_command_results(searchlog_events))
+                if 'Audit' in event_types_to_fetch:
+                    return_results(events_to_command_results(audit_events, "Oracle Cloud Infrastructure Audit Events"))
+                if 'Search Logs' in event_types_to_fetch:
+                    return_results(events_to_command_results(searchlog_events, "Oracle Cloud Infrastructure Search Logs Events"))
         else:
             return_error(f"Command {command} does not exist for this integration.")
     except Exception as e:
