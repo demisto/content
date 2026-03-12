@@ -1,5 +1,5 @@
 import json
-from datetime import timedelta
+from datetime import timedelta, timezone
 from typing import Any
 
 import dateparser
@@ -839,7 +839,7 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
 
     # last_update is an ISO8601 string (e.g. '2026-01-10T00:00:00.123456789Z'); fall back to now minus 1 minute if empty.
     if not remote_args.last_update:
-        from_timestamp = int((datetime.utcnow() - timedelta(minutes=1)).timestamp())
+        from_timestamp = int((datetime.now(tz=timezone.utc) - timedelta(minutes=1)).timestamp())
         demisto.debug(
             f"get-modified-remote-data: last_update was empty, defaulting to now minus 1 minute (epoch: {from_timestamp})"
         )
