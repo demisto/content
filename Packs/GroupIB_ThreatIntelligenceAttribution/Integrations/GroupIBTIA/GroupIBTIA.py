@@ -1599,9 +1599,7 @@ class Client(BaseClient):
                     date_from_for_generator = None
                     demisto.debug(f"[create_poll_generator] Using resolved seqUpdate={resolved_seq}; dropping date_from")
                 else:
-                    demisto.debug(
-                        "[create_poll_generator] sequence_list returned empty for collection; fallback to date_from"
-                    )
+                    demisto.debug("[create_poll_generator] sequence_list returned empty for collection; fallback to date_from")
             except Exception as e:
                 demisto.debug(f"[create_poll_generator] sequence_list resolution failed: {e}; fallback to date_from")
 
@@ -2402,8 +2400,7 @@ def fetch_incidents_command(
             else None
         )
         demisto.debug(
-            f"[fetch-incidents] Updated next_run for collection={collection_name}: "
-            f"{next_run['last_fetch'][collection_name]}"
+            f"[fetch-incidents] Updated next_run for collection={collection_name}: " f"{next_run['last_fetch'][collection_name]}"
         )
 
     return next_run, incidents

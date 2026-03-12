@@ -3,7 +3,6 @@
     "feed": false,
     "id": "Group-IB Threat Intelligence (classifier)",
     "keyTypeMap": {
-        "compromised/breacheddb": "GIB Data Breach",
         "osi/git_repository": "GIB OSI Git Leak",
         "osi/public_leak": "GIB OSI Public Leak",
         "compromised/account_group": "GIB Compromised Account Group",
@@ -25,6 +24,7 @@
         "apt/threat_actor": "GIB Nation-State Cybercriminals Threat Actor",
         "apt/threat": "GIB Nation-State Cybercriminals Threat",
         "osi/vulnerability": "GIB OSI Vulnerability",
+        "compromised/breacheddb": "GIB Data Breach",
         "compromised/spd": "GIB SPD"
     },
     "name": "Group-IB Threat Intelligence (classifier)",
