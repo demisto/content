@@ -2,6 +2,7 @@ commonfields:
   id: SupportTicketCategoryParser
   version: -1
 name: SupportTicketCategoryParser
+isInternal: true
 script: ''
 type: python
 tags:
@@ -40,12 +41,19 @@ outputs:
 scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.12.12.6391686
-fromversion: 8.13.0
+fromversion: 8.14.0
 tests:
 - No tests (auto formatted)
 marketplaces:
 - platform
 supportedModules:
 - agentix
+- asm
+- cloud
+- cloud_appsec
+- cloud_posture
+- cloud_runtime_security
+- email_security
+- exposure_management
 - xsiam
 - edr

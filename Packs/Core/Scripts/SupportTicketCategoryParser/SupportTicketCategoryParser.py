@@ -97,14 +97,9 @@ def parse_and_validate(args: dict) -> CommandResults:
 
     demisto.debug(f"Input - classification_result: {classification_result}")
 
-    if DELIMITER in classification_result:
-        parts = classification_result.split(DELIMITER)
-        issue_category = parts[0].strip() if len(parts) > 0 else None
-        problem_concentration = parts[1].strip() if len(parts) > 1 else None
-    else:
-        issue_category = classification_result.strip() if classification_result else None
-        problem_concentration = None
-        demisto.debug(f"No delimiter found in classification_result. " f"Using entire value as issue_category: {issue_category}")
+    parts = classification_result.split(DELIMITER)
+    issue_category = parts[0].strip() if len(parts) > 0 else None
+    problem_concentration = parts[1].strip() if len(parts) > 1 else None
 
     demisto.debug(f"Parsed - issue_category: {issue_category}, " f"problem_concentration: {problem_concentration}")
 
@@ -121,26 +116,9 @@ def parse_and_validate(args: dict) -> CommandResults:
         "Warnings": warnings if warnings else None,
     }
 
-    if warnings:
-        readable = (
-            f"### Support Ticket Category Parser\n\n"
-            f"- **Issue Category**: {issue_category}\n"
-            f"- **Problem Concentration**: {problem_concentration}\n"
-            f"- **Valid**: No\n\n"
-            f"#### Warnings\n" + "\n".join(f"- {w}" for w in warnings)
-        )
-    else:
-        readable = (
-            f"### Support Ticket Category Parser\n\n"
-            f"- **Issue Category**: {issue_category}\n"
-            f"- **Problem Concentration**: {problem_concentration}\n"
-            f"- **Valid**: Yes"
-        )
-
     return CommandResults(
         outputs_prefix="Core.SupportTicketCategoryParser",
         outputs=outputs,
-        readable_output=readable,
     )
 
 

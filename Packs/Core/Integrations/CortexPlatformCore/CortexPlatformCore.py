@@ -4684,34 +4684,6 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def core_fill_support_ticket_command(args: dict[str, Any]) -> CommandResults:
-    """
-    Validates arguments and maps them to the support ticket context.
-    Includes dependent validation for problem_concentration based on the issue_category.
-    """
-
-    demisto.debug(f"core_fill_support_ticket_command: {args}")
-    start_time = args.get("most_recent_issue_start_time")
-
-    issue_category = args.get("issue_category")
-    problem_concentration = args.get("problem_concentration")
-
-    start_time_dt = arg_to_datetime(start_time) if start_time else None
-    data = {
-        "description": args.get("description"),
-        "contactNumber": args.get("contact_number"),
-        "OngoingIssue": args.get("issue_frequency"),
-        "DateTimeOfIssue": start_time_dt.timestamp() if start_time_dt else None,
-        "IssueImpact": args.get("issue_impact"),
-        "smeArea": issue_category,
-        "subGroupName": problem_concentration,
-    }
-
-    return CommandResults(
-        outputs_prefix="Core.SupportTicket",
-        outputs=data,
-        raw_response=data,
-    )
 
 
 def get_support_ticket_taxonomy_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -4732,8 +4704,7 @@ def get_support_ticket_taxonomy_command(client: Client, args: dict[str, Any]) ->
         CommandResults: Object containing the full nested taxonomy data.
     """
     areas_response = client.get_sme_areas_and_sub_groups()
-    areas_reply = areas_response.get("reply", areas_response)
-    areas = areas_reply if isinstance(areas_reply, list) else []
+    areas = areas_response.get("reply", [])
 
     taxonomy: list[dict] = []
     for area in areas:
@@ -5416,10 +5387,6 @@ def main():  # pragma: no cover
 
         elif command == "core-list-findings":
             return_results(list_findings_command(client, args))
-
-        elif command == "core-fill-support-ticket":
-            verify_platform_version("8.14.0")
-            return_results(core_fill_support_ticket_command(args))
 
         elif command == "core-get-support-ticket-taxonomy":
             verify_platform_version("8.14.0")
