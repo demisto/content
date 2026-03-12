@@ -4590,18 +4590,25 @@ def network_interface_update_command(client: AzureClient, params: dict[str, Any]
 
     # Update properties based on user arguments
     properties = current_nic.get("properties", {})
-    properties["enableIPForwarding"] = argToBoolean(args.get("enable_ip_forwarding")) if args.get("enable_ip_forwarding") is not None else properties.get(
-        "enableIPForwarding"
+    properties["enableIPForwarding"] = (
+        argToBoolean(args.get("enable_ip_forwarding"))
+        if args.get("enable_ip_forwarding") is not None
+        else properties.get("enableIPForwarding")
     )
-    properties["enableAcceleratedNetworking"] = argToBoolean(args.get("accelerate_networking")) if args.get("accelerate_networking") is not None else properties.get(
-        "enableAcceleratedNetworking"
+    properties["enableAcceleratedNetworking"] = (
+        argToBoolean(args.get("accelerate_networking"))
+        if args.get("accelerate_networking") is not None
+        else properties.get("enableAcceleratedNetworking")
     )
     properties["auxiliaryMode"] = args.get("auxiliary_mode") or properties.get("auxiliaryMode")
     properties["auxiliarySku"] = args.get("auxiliary_sku") or properties.get("auxiliarySku")
     properties["nicType"] = args.get("nic_type") or properties.get("nicType")
-    nsg_prefix = f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups/"
+    nsg_prefix = (f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network"
+                  f"/networkSecurityGroups/")
     properties["networkSecurityGroup"] = {
-        "id": f'{nsg_prefix}{args.get("network_security_group_name")}' if args.get("network_security_group_name") else properties.get("networkSecurityGroup", {}).get("id")
+        "id": f'{nsg_prefix}{args.get("network_security_group_name")}'
+        if args.get("network_security_group_name")
+        else properties.get("networkSecurityGroup", {}).get("id")
     }
 
     internal_dns_name_label = args.get("internal_dns_name_label")
