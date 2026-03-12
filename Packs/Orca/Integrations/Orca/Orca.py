@@ -300,6 +300,7 @@ def fetch_incidents(
             demisto.info("pull_existing_alerts flag is not set, not pulling alerts")
             # Pull only new alerts from now
             time_from = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
+        next_run["step"] = STEP_FETCH
     else:
         # Not first run, continue exporting alerts from last run time
         demisto.info("not first run, exporting reminder of alerts")
@@ -318,9 +319,10 @@ def fetch_incidents(
 
     # Only update next_run if no error occurred
     if had_error:
-        # Preserve current state for retry
+        # Preserve the current state for retry
         next_run["fetch_page"] = fetch_page
         next_run["lastRun"] = last_run_time
+        next_run["step"] = step
         demisto.info("API error occurred, preserving current fetch state for retry")
     elif is_last_page:
         # Success: reset page count and update last run time
@@ -331,9 +333,6 @@ def fetch_incidents(
         # Keep the lastRun datetime as is
         next_run["fetch_page"] = fetch_page + 1
         next_run["lastRun"] = time_from
-
-    if had_error is False and step == STEP_INIT:
-        next_run["step"] = STEP_FETCH
 
     # Prepare incidents
     incidents = get_incidents_from_alerts(alerts)

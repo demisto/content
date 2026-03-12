@@ -16,6 +16,7 @@ from Orca import (
     API_QUERY_ALERTS_URL,
     get_incident_from_alert,
     get_incidents_from_alerts,
+    STEP_INIT,
 )
 
 from CommonServerPython import DemistoException
@@ -477,7 +478,7 @@ def test_pagination_with_remainder(requests_mock, orca_client: OrcaClient) -> No
     alerts, is_last_page, has_error = orca_client.get_alerts(time_from=None, page=4, limit=3)
 
     assert len(alerts) == 1
-    assert is_last_page is True  # Should be last page
+    assert is_last_page  # Should be last page
     assert has_error is False
 
 
@@ -538,10 +539,10 @@ def test_empty_data_response(requests_mock, orca_client: OrcaClient) -> None:
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response_null_data)
     alerts, is_last_page, has_error = orca_client.get_alerts(time_from=None, page=1, limit=10)
 
-    assert has_error is True
+    assert has_error is False
     # Should return empty list and mark as last page
     assert alerts == []
-    assert is_last_page is True
+    assert is_last_page
 
 
 def test_page_beyond_total(requests_mock, orca_client: OrcaClient) -> None:
@@ -556,13 +557,13 @@ def test_page_beyond_total(requests_mock, orca_client: OrcaClient) -> None:
     }
 
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
-    alerts, is_last_page, had_error = orca_client.get_alerts(time_from=None, page=3, limit=3)
+    alerts, is_last_page, has_error = orca_client.get_alerts(time_from=None, page=3, limit=3)
 
-    assert had_error is False
+    assert has_error is False
     # Should return empty list
     assert alerts == []
     # total_pages = (5 + 3 - 1) // 3 = 2, so page 3 >= 2 = True (is_last_page)
-    assert is_last_page is True
+    assert is_last_page
 
 
 def test_get_alerts_with_invalid_page(requests_mock, orca_client: OrcaClient) -> None:
@@ -573,22 +574,22 @@ def test_get_alerts_with_invalid_page(requests_mock, orca_client: OrcaClient) ->
 
     # Test with None page
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
-    alerts, is_last_page, had_error = orca_client.get_alerts(time_from=None, page=None, limit=10)
-    assert had_error is False
+    alerts, is_last_page, has_error = orca_client.get_alerts(time_from=None, page=None, limit=10)
+    assert has_error is False
     assert len(alerts) == 2
     # Page should default to 1
 
     # Test with 0 page
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
-    alerts, is_last_page, had_error = orca_client.get_alerts(time_from=None, page=0, limit=10)
-    assert had_error is False
+    alerts, is_last_page, has_error = orca_client.get_alerts(time_from=None, page=0, limit=10)
+    assert has_error is False
     assert len(alerts) == 2
     # Page should default to 1
 
     # Test with negative page
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
-    alerts, is_last_page, had_error = orca_client.get_alerts(time_from=None, page=-1, limit=10)
-    assert had_error is False
+    alerts, is_last_page, has_error = orca_client.get_alerts(time_from=None, page=-1, limit=10)
+    assert has_error is False
     assert len(alerts) == 2
     # Page should default to 1
 
@@ -601,13 +602,13 @@ def test_get_alerts_with_invalid_limit(requests_mock, orca_client: OrcaClient) -
 
     # Test with 0 limit
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
-    alerts, is_last_page, had_error = orca_client.get_alerts(time_from=None, page=1, limit=0)
+    alerts, is_last_page, has_error = orca_client.get_alerts(time_from=None, page=1, limit=0)
     assert len(alerts) == 2
     # Limit should default to ORCA_API_LIMIT (500)
 
     # Test with negative limit
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
-    alerts, is_last_page, had_error = orca_client.get_alerts(time_from=None, page=1, limit=-5)
+    alerts, is_last_page, has_error = orca_client.get_alerts(time_from=None, page=1, limit=-5)
     assert len(alerts) == 2
     # Limit should default to ORCA_API_LIMIT (500)
 
@@ -619,12 +620,12 @@ def test_get_alerts_error_response(requests_mock, orca_client: OrcaClient) -> No
     mock_error_response = {"status": "failure", "error": "Invalid API token"}
 
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_error_response)
-    alerts, is_last_page, had_error = orca_client.get_alerts(time_from=None, page=1, limit=10)
+    alerts, is_last_page, has_error = orca_client.get_alerts(time_from=None, page=1, limit=10)
 
     # Should return empty list and indicate error occurred
     assert alerts == []
-    assert is_last_page is True
-    assert had_error is True
+    assert is_last_page
+    assert has_error
 
 
 def test_get_alerts_read_timeout(requests_mock, orca_client: OrcaClient) -> None:
@@ -635,12 +636,12 @@ def test_get_alerts_read_timeout(requests_mock, orca_client: OrcaClient) -> None
         f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", exc=requests.exceptions.ReadTimeout("Connection timeout")
     )
 
-    alerts, is_last_page, had_error = orca_client.get_alerts(time_from=None, page=1, limit=10)
+    alerts, is_last_page, has_error = orca_client.get_alerts(time_from=None, page=1, limit=10)
 
     # Should return empty list and indicate error occurred
     assert alerts == []
-    assert is_last_page is True
-    assert had_error is True
+    assert is_last_page
+    assert has_error
 
 
 def test_get_incidents_from_alerts_with_invalid_data() -> None:
@@ -685,12 +686,12 @@ def test_get_alerts_with_total_items_zero(requests_mock, orca_client: OrcaClient
     mock_response = {"status": "success", "total_items": 0, "data": []}
 
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
-    alerts, is_last_page, had_error = orca_client.get_alerts(time_from=None, page=1, limit=10)
+    alerts, is_last_page, has_error = orca_client.get_alerts(time_from=None, page=1, limit=10)
 
-    assert had_error is False
+    assert has_error is False
     # Should return empty list and mark as last page
     assert alerts == []
-    assert is_last_page is True
+    assert is_last_page
 
 
 def test_get_alerts_with_non_list_data_type(requests_mock, orca_client: OrcaClient) -> None:
@@ -705,12 +706,12 @@ def test_get_alerts_with_non_list_data_type(requests_mock, orca_client: OrcaClie
     }
 
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response_dict)
-    alerts, is_last_page, had_error = orca_client.get_alerts(time_from=None, page=1, limit=10)
+    alerts, is_last_page, has_error = orca_client.get_alerts(time_from=None, page=1, limit=10)
 
     # Should return empty list and indicate error occurred due to invalid data type
     assert alerts == []
-    assert is_last_page is True
-    assert had_error is True
+    assert is_last_page
+    assert has_error is False
 
     # Test with string instead of list
     mock_response_string = {
@@ -720,12 +721,12 @@ def test_get_alerts_with_non_list_data_type(requests_mock, orca_client: OrcaClie
     }
 
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response_string)
-    alerts, is_last_page, had_error = orca_client.get_alerts(time_from=None, page=1, limit=10)
+    alerts, is_last_page, has_error = orca_client.get_alerts(time_from=None, page=1, limit=10)
 
     # Should return empty list and indicate error occurred due to invalid data type
     assert alerts == []
-    assert is_last_page is True
-    assert had_error is True
+    assert is_last_page
+    assert has_error is False
 
 
 def test_get_alerts_with_demisto_exception(requests_mock, orca_client: OrcaClient) -> None:
@@ -736,12 +737,12 @@ def test_get_alerts_with_demisto_exception(requests_mock, orca_client: OrcaClien
 
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", exc=DemistoException("API Error"))
 
-    alerts, is_last_page, had_error = orca_client.get_alerts(time_from=None, page=1, limit=10)
+    alerts, is_last_page, has_error = orca_client.get_alerts(time_from=None, page=1, limit=10)
 
     # Should return empty list and indicate error occurred on exception
     assert alerts == []
-    assert is_last_page is True
-    assert had_error is True
+    assert is_last_page
+    assert has_error
 
 
 def test_get_incident_from_alert_with_missing_last_seen() -> None:
@@ -857,9 +858,9 @@ def test_get_alerts_with_empty_string_risk_level(requests_mock, orca_client: Orc
     }
 
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
-    alerts, is_last_page, had_error = orca_client.get_alerts(time_from=None, page=1, limit=10)
+    alerts, is_last_page, has_error = orca_client.get_alerts(time_from=None, page=1, limit=10)
 
-    assert had_error is False
+    assert has_error is False
     assert len(alerts) == 1
 
     # Test incident creation with empty string RiskLevel
@@ -887,7 +888,7 @@ def test_fetch_incidents_with_api_error_preserves_state(requests_mock, orca_clie
         last_run={"lastRun": "2025-10-24T10:00:00Z", "fetch_page": 2},
         max_fetch=10,
         pull_existing_alerts=False,
-        first_fetch_time=None
+        first_fetch_time=None,
     )
 
     # Should advance to next page
@@ -903,7 +904,7 @@ def test_fetch_incidents_with_api_error_preserves_state(requests_mock, orca_clie
         last_run=last_run,  # Use the previous successful state
         max_fetch=10,
         pull_existing_alerts=False,
-        first_fetch_time=None
+        first_fetch_time=None,
     )
 
     # State should be preserved on error
@@ -919,23 +920,19 @@ def test_fetch_incidents_with_timeout_preserves_state(requests_mock, orca_client
     """
     Test that fetch_incidents preserves state when timeout occurs
     """
-    initial_state = {"lastRun": "2025-10-24T10:00:00Z", "fetch_page": 1, "step": STEP_FETCH}
+    initial_state = {"lastRun": "2025-10-24T10:00:00Z", "fetch_page": 1, "step": STEP_INIT}
 
     # Mock timeout
     requests_mock.post(
-        f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}",
-        exc=requests.exceptions.ReadTimeout("Connection timeout")
+        f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", exc=requests.exceptions.ReadTimeout("Connection timeout")
     )
 
     last_run, incidents = fetch_incidents(
-        orca_client,
-        last_run=initial_state,
-        max_fetch=10,
-        pull_existing_alerts=False,
-        first_fetch_time=None
+        orca_client, last_run=initial_state, max_fetch=10, pull_existing_alerts=False, first_fetch_time=None
     )
 
     # State should be preserved on timeout
     assert last_run["fetch_page"] == 1  # Same as initial
     assert last_run["lastRun"] == "2025-10-24T10:00:00Z"  # Time preserved
+    assert last_run["step"] == STEP_INIT  # Step preserved
     assert len(incidents) == 0  # No incidents on timeout
