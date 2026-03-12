@@ -883,7 +883,7 @@ class Client(BaseClient):
             product_name="CortexSOAR",
             product_version="unknown",
             integration_name="Group-IB Threat Intelligence",
-            integration_version="2.3.2",
+            integration_version="3.0.0",
         )
         demisto.info(f"[Client.__init__] TI Feed client initialized: url={base_url}, verify={verify}, proxy={proxy}")
 
