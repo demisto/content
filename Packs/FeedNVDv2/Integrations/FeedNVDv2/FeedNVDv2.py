@@ -749,10 +749,9 @@ def fetch_indicators_command(client: Client) -> None:
 
     # Persist progress
     if fetch_limit_reached:
-        last_run_data = demisto.getLastRun()
         set_feed_last_run(
             {
-                "lastRun": last_run_data.get("lastRun", last_completed_end.strftime(DATE_FORMAT)),
+                "lastRun": last_completed_end.strftime(DATE_FORMAT),
                 "resumeFrom": last_completed_end.strftime(DATE_FORMAT),
                 "usePubDate": use_pub_date,
             }
