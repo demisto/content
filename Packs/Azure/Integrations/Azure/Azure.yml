@@ -2876,7 +2876,7 @@ script:
       defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
-      prettyname: Resource Group Name
+      prettyname: Resource Group
     - description: The name of the security group.
       name: security_group_name
       required: true
