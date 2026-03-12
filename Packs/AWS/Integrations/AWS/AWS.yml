@@ -1627,6 +1627,256 @@ script:
       description: The date and time for the last modification to the object.
       type: String
 
+  - name: aws-eks-access-entry-update
+    description: Updates an existing Access Entry for an Amazon EKS cluster.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: cluster_name
+      description: The name of the cluster for which to update the AccessEntry.
+      required: true
+    - name: principal_arn
+      description: ARN of the IAM principal for the AccessEntry.
+      required: true
+    - name: kubernetes_groups
+      description: A comma-separated list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings.
+      required: false
+      isArray: true
+    - name: client_request_token
+      description: Unique identifier for idempotency.
+      required: false
+    - name: user_name
+      description: Username for Kubernetes authentication.
+      required: false
+    outputs:
+    - contextPath: AWS.EKS.AccessEntry.clusterName
+      description: The name of the cluster.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.principalArn
+      description: The ARN of the IAM principal for the access entry.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.username
+      description: The Kubernetes user name for the access entry.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.type
+      description: The type of the access entry.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.createdAt
+      description: The date and time the access entry was created.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.modifiedAt
+      description: The date and time the access entry was last modified.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.kubernetesGroups
+      description: The Kubernetes groups that the access entry is associated with.
+      type: Array
+    - contextPath: AWS.EKS.AccessEntry.tags
+      description: Metadata tags associated with the access entry.
+      type: Object
+    - contextPath: AWS.EKS.AccessEntry.accessEntryArn
+      description: The ARN of the access entry.
+      type: String
+  - name: aws-eks-access-entry-create
+    description: Creates a new Access Entry for an Amazon EKS cluster.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: cluster_name
+      description: The name of the cluster for which to create an access entry.
+      required: true
+    - name: principal_arn
+      description: ARN of the IAM principal for the AccessEntry.
+      required: true
+    - name: kubernetes_groups
+      description: A comma-separated list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings.
+      required: false
+      isArray: true
+    - name: tags
+      description: "A JSON string containing metadata tags for categorization and organization. Each tag consists of a key and an optional value. For example, '{\"Environment\": \"prod\", \"Team\": \"platform\"}'."
+      required: false
+    - name: client_request_token
+      description: Unique identifier for idempotency.
+      required: false
+    - name: type
+      description: The type of access entry to create. Default is Standard.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Standard
+      - FARGATE_LINUX
+      - EC2_LINUX
+      - EC2_WINDOWS
+    - name: user_name
+      description: Username for Kubernetes authentication.
+      required: false
+    outputs:
+    - contextPath: AWS.EKS.AccessEntry.clusterName
+      description: The name of the cluster.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.principalArn
+      description: The ARN of the IAM principal for the access entry.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.username
+      description: The Kubernetes user name for the access entry.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.type
+      description: The type of the access entry.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.createdAt
+      description: The date and time the access entry was created.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.modifiedAt
+      description: The date and time the access entry was last modified.
+      type: String
+    - contextPath: AWS.EKS.AccessEntry.kubernetesGroups
+      description: The Kubernetes groups that the access entry is associated with.
+      type: Array
+    - contextPath: AWS.EKS.AccessEntry.tags
+      description: Metadata tags associated with the access entry.
+      type: Object
+    - contextPath: AWS.EKS.AccessEntry.accessEntryArn
+      description: The ARN of the access entry.
+      type: String
+  - name: aws-eks-clusters-list
+    description: Returns a list of EKS clusters.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: limit
+      description: The maximum number of clusters returned in response. The possible values are between 1 and 100. Default is 50.
+      required: false
+      defaultValue: 50
+    - name: next_token
+      description: The nextToken value returned from a previous paginated ListClusters request. Use the value from AWS.EKS.ClustersNextToken.
+      required: false
+    outputs:
+    - contextPath: AWS.EKS.Clusters
+      description: A list of all of the clusters for your account in the specified Region.
+      type: String
+    - contextPath: AWS.EKS.ClustersNextToken
+      description: The nextToken value to include in a future ListClusters request. When the results of a ListClusters request exceed maxResults, you can use this value to retrieve the next page of results.
+      type: String
+
   - name: aws-rds-db-cluster-modify
     description: "Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster settings such as port, master credentials, VPC security groups, deletion protection, and other configuration options."
     arguments:

@@ -14252,6 +14252,105 @@ def test_create_traffic_mirror_session_command_with_optional_params(mocker):
     assert call_kwargs["Description"] == "My mirror session"
 
 
+def test_eks_list_clusters_command_success(mocker):
+    """
+    Given: A mocked boto3 EKS client returning a list of clusters.
+    When: list_clusters_command is called successfully.
+    Then: It should return CommandResults with the list of cluster names and proper outputs.
+    """
+    from AWS import EKS
+
+    mock_client = mocker.Mock()
+    mock_client.list_clusters.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "clusters": ["cluster-1", "cluster-2", "cluster-3"],
+        "nextToken": "next-token-123",
+    }
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "limit": "50"}
+
+    result = EKS.list_clusters_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "AWS EKS Clusters" in result.readable_output
+    assert "cluster-1" in result.readable_output
+    assert "cluster-2" in result.readable_output
+    assert "cluster-3" in result.readable_output
+    assert result.outputs["AWS.EKS(true)"]["ClustersNextToken"] == "next-token-123"
+    mock_client.list_clusters.assert_called_once()
+
+
+def test_eks_list_clusters_command_empty_result(mocker):
+    """
+    Given: A mocked boto3 EKS client returning an empty list of clusters.
+    When: list_clusters_command is called with no clusters in the account.
+    Then: It should return CommandResults with an empty table and no next token.
+    """
+    from AWS import EKS
+
+    mock_client = mocker.Mock()
+    mock_client.list_clusters.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "clusters": [],
+    }
+
+    args = {"account_id": "123456789012", "region": "us-east-1"}
+
+    result = EKS.list_clusters_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "AWS EKS Clusters" in result.readable_output
+    assert "AWS.EKS(true)" not in result.outputs
+
+
+def test_eks_list_clusters_command_with_pagination(mocker):
+    """
+    Given: A mocked boto3 EKS client and a next_token argument for pagination.
+    When: list_clusters_command is called with a next_token.
+    Then: It should pass the next_token to the API call and return the next page of results.
+    """
+    from AWS import EKS
+
+    mock_client = mocker.Mock()
+    mock_client.list_clusters.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "clusters": ["cluster-4", "cluster-5"],
+    }
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "next_token": "next-token-123"}
+
+    result = EKS.list_clusters_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.list_clusters.call_args[1]
+    assert call_kwargs["NextToken"] == "next-token-123"
+    assert "cluster-4" in result.readable_output
+    assert "cluster-5" in result.readable_output
+
+
+def test_eks_list_clusters_command_with_limit(mocker):
+    """
+    Given: A mocked boto3 EKS client and a limit argument.
+    When: list_clusters_command is called with a specific limit.
+    Then: It should pass the MaxResults parameter to the API call.
+    """
+    from AWS import EKS
+
+    mock_client = mocker.Mock()
+    mock_client.list_clusters.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "clusters": ["cluster-1"],
+    }
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "limit": "10"}
+
+    result = EKS.list_clusters_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.list_clusters.call_args[1]
+    assert call_kwargs["maxResults"] == 10
+
+
 def test_create_traffic_mirror_session_command_failure(mocker):
     """
     Given: A mocked EC2 client that returns a non-200 HTTP status.
@@ -14279,3 +14378,308 @@ def test_create_traffic_mirror_session_command_failure(mocker):
     EC2.create_traffic_mirror_session_command(mock_client, args)
 
     mock_error_handler.assert_called_once()
+
+
+def test_eks_create_access_entry_command_success(mocker):
+    """
+    Given: A mocked boto3 EKS client and valid access entry creation arguments.
+    When: create_access_entry_command is called successfully.
+    Then: It should return CommandResults with the created access entry details and proper outputs.
+    """
+    from AWS import EKS
+    from datetime import datetime
+
+    mock_client = mocker.Mock()
+    mock_client.create_access_entry.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "accessEntry": {
+            "clusterName": "test-cluster",
+            "principalArn": "arn:aws:iam::123456789012:role/test-role",
+            "username": "test-user",
+            "type": "Standard",
+            "createdAt": datetime(2024, 1, 15, 10, 30, 0),
+            "modifiedAt": datetime(2024, 1, 15, 10, 30, 0),
+            "kubernetesGroups": ["group1", "group2"],
+            "accessEntryArn": "arn:aws:eks:us-east-1:123456789012:access-entry/test-cluster/role/123456789012/test-role/abc123",
+        },
+    }
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "cluster_name": "test-cluster",
+        "principal_arn": "arn:aws:iam::123456789012:role/test-role",
+        "kubernetes_groups": "group1,group2",
+        "type": "Standard",
+    }
+
+    result = EKS.create_access_entry_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EKS.AccessEntry"
+    assert result.outputs["clusterName"] == "test-cluster"
+    assert result.outputs["principalArn"] == "arn:aws:iam::123456789012:role/test-role"
+    assert result.outputs["type"] == "Standard"
+    assert "AWS EKS Access Entry" in result.readable_output
+    mock_client.create_access_entry.assert_called_once()
+    call_kwargs = mock_client.create_access_entry.call_args[1]
+    assert call_kwargs["clusterName"] == "test-cluster"
+    assert call_kwargs["principalArn"] == "arn:aws:iam::123456789012:role/test-role"
+    assert call_kwargs["kubernetesGroups"] == ["group1", "group2"]
+    assert call_kwargs["type"] == "Standard"
+
+
+def test_eks_create_access_entry_command_minimal_args(mocker):
+    """
+    Given: A mocked boto3 EKS client and only required arguments.
+    When: create_access_entry_command is called with minimal required parameters.
+    Then: It should return CommandResults without optional parameters in the API call.
+    """
+    from AWS import EKS
+    from datetime import datetime
+
+    mock_client = mocker.Mock()
+    mock_client.create_access_entry.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "accessEntry": {
+            "clusterName": "my-cluster",
+            "principalArn": "arn:aws:iam::123456789012:user/test-user",
+            "type": "Standard",
+            "createdAt": datetime(2024, 1, 15, 10, 30, 0),
+            "modifiedAt": datetime(2024, 1, 15, 10, 30, 0),
+        },
+    }
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "cluster_name": "my-cluster",
+        "principal_arn": "arn:aws:iam::123456789012:user/test-user",
+    }
+
+    result = EKS.create_access_entry_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs["clusterName"] == "my-cluster"
+    call_kwargs = mock_client.create_access_entry.call_args[1]
+    assert "kubernetesGroups" not in call_kwargs
+    assert "tags" not in call_kwargs
+    assert "clientRequestToken" not in call_kwargs
+    assert "type" not in call_kwargs
+
+
+def test_eks_create_access_entry_command_with_tags(mocker):
+    """
+    Given: A mocked boto3 EKS client and arguments including JSON tags.
+    When: create_access_entry_command is called with tags parameter.
+    Then: It should parse the JSON tags and pass them to the API call.
+    """
+    from AWS import EKS
+    from datetime import datetime
+
+    mock_client = mocker.Mock()
+    mock_client.create_access_entry.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "accessEntry": {
+            "clusterName": "test-cluster",
+            "principalArn": "arn:aws:iam::123456789012:role/test-role",
+            "type": "Standard",
+            "createdAt": datetime(2024, 1, 15, 10, 30, 0),
+            "modifiedAt": datetime(2024, 1, 15, 10, 30, 0),
+            "tags": {"Environment": "prod", "Team": "platform"},
+        },
+    }
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "cluster_name": "test-cluster",
+        "principal_arn": "arn:aws:iam::123456789012:role/test-role",
+        "tags": '{"Environment": "prod", "Team": "platform"}',
+    }
+
+    result = EKS.create_access_entry_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.create_access_entry.call_args[1]
+    assert call_kwargs["tags"] == {"Environment": "prod", "Team": "platform"}
+
+
+def test_eks_create_access_entry_command_invalid_tags(mocker):
+    """
+    Given: A mocked boto3 EKS client and invalid JSON tags string.
+    When: create_access_entry_command is called with malformed tags JSON.
+    Then: It should raise DemistoException with JSON format error message.
+    """
+    from AWS import EKS
+
+    mock_client = mocker.Mock()
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "cluster_name": "test-cluster",
+        "principal_arn": "arn:aws:iam::123456789012:role/test-role",
+        "tags": "invalid-json-string",
+    }
+
+    with pytest.raises(DemistoException, match="Invalid tags JSON format"):
+        EKS.create_access_entry_command(mock_client, args)
+
+
+def test_eks_update_access_entry_command_success(mocker):
+    """
+    Given: A mocked boto3 EKS client and valid access entry update arguments.
+    When: update_access_entry_command is called successfully.
+    Then: It should return CommandResults with the updated access entry details and proper outputs.
+    """
+    from AWS import EKS
+    from datetime import datetime
+
+    mock_client = mocker.Mock()
+    mock_client.update_access_entry.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "accessEntry": {
+            "clusterName": "test-cluster",
+            "principalArn": "arn:aws:iam::123456789012:role/test-role",
+            "username": "updated-user",
+            "type": "Standard",
+            "createdAt": datetime(2024, 1, 15, 10, 30, 0),
+            "modifiedAt": datetime(2024, 1, 16, 9, 0, 0),
+            "kubernetesGroups": ["new-group1", "new-group2"],
+            "accessEntryArn": "arn:aws:eks:us-east-1:123456789012:access-entry/test-cluster/role/123456789012/test-role/abc123",
+        },
+    }
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "cluster_name": "test-cluster",
+        "principal_arn": "arn:aws:iam::123456789012:role/test-role",
+        "kubernetes_groups": "new-group1,new-group2",
+        "user_name": "updated-user",
+    }
+
+    result = EKS.update_access_entry_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EKS.AccessEntry"
+    assert result.outputs["clusterName"] == "test-cluster"
+    assert result.outputs["principalArn"] == "arn:aws:iam::123456789012:role/test-role"
+    assert result.outputs["username"] == "updated-user"
+    assert "AWS EKS Access Entry" in result.readable_output
+    mock_client.update_access_entry.assert_called_once()
+    call_kwargs = mock_client.update_access_entry.call_args[1]
+    assert call_kwargs["clusterName"] == "test-cluster"
+    assert call_kwargs["principalArn"] == "arn:aws:iam::123456789012:role/test-role"
+    assert call_kwargs["kubernetesGroups"] == ["new-group1", "new-group2"]
+    assert call_kwargs["username"] == "updated-user"
+
+
+def test_eks_update_access_entry_command_minimal_args(mocker):
+    """
+    Given: A mocked boto3 EKS client and only required arguments.
+    When: update_access_entry_command is called with minimal required parameters.
+    Then: It should return CommandResults without optional parameters in the API call.
+    """
+    from AWS import EKS
+    from datetime import datetime
+
+    mock_client = mocker.Mock()
+    mock_client.update_access_entry.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "accessEntry": {
+            "clusterName": "my-cluster",
+            "principalArn": "arn:aws:iam::123456789012:user/test-user",
+            "type": "Standard",
+            "createdAt": datetime(2024, 1, 15, 10, 30, 0),
+            "modifiedAt": datetime(2024, 1, 16, 9, 0, 0),
+        },
+    }
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "cluster_name": "my-cluster",
+        "principal_arn": "arn:aws:iam::123456789012:user/test-user",
+    }
+
+    result = EKS.update_access_entry_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs["clusterName"] == "my-cluster"
+    call_kwargs = mock_client.update_access_entry.call_args[1]
+    assert "kubernetesGroups" not in call_kwargs
+    assert "clientRequestToken" not in call_kwargs
+    assert "username" not in call_kwargs
+
+
+def test_eks_update_access_entry_command_with_client_request_token(mocker):
+    """
+    Given: A mocked boto3 EKS client and a client_request_token argument.
+    When: update_access_entry_command is called with a client_request_token.
+    Then: It should pass the clientRequestToken to the API call.
+    """
+    from AWS import EKS
+    from datetime import datetime
+
+    mock_client = mocker.Mock()
+    mock_client.update_access_entry.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "accessEntry": {
+            "clusterName": "test-cluster",
+            "principalArn": "arn:aws:iam::123456789012:role/test-role",
+            "type": "Standard",
+            "createdAt": datetime(2024, 1, 15, 10, 30, 0),
+            "modifiedAt": datetime(2024, 1, 16, 9, 0, 0),
+        },
+    }
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "cluster_name": "test-cluster",
+        "principal_arn": "arn:aws:iam::123456789012:role/test-role",
+        "client_request_token": "unique-token-12345",
+    }
+
+    result = EKS.update_access_entry_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.update_access_entry.call_args[1]
+    assert call_kwargs["clientRequestToken"] == "unique-token-12345"
+
+
+def test_eks_update_access_entry_command_outputs_key_field(mocker):
+    """
+    Given: A mocked boto3 EKS client returning an updated access entry.
+    When: update_access_entry_command is called successfully.
+    Then: The outputs_key_field should be a composite of clusterName and principalArn.
+    """
+    from AWS import EKS
+    from datetime import datetime
+
+    mock_client = mocker.Mock()
+    mock_client.update_access_entry.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "accessEntry": {
+            "clusterName": "prod-cluster",
+            "principalArn": "arn:aws:iam::123456789012:role/admin-role",
+            "type": "Standard",
+            "createdAt": datetime(2024, 1, 15, 10, 30, 0),
+            "modifiedAt": datetime(2024, 1, 16, 9, 0, 0),
+        },
+    }
+
+    args = {
+        "account_id": "123456789012",
+        "region": "us-east-1",
+        "cluster_name": "prod-cluster",
+        "principal_arn": "arn:aws:iam::123456789012:role/admin-role",
+    }
+
+    result = EKS.update_access_entry_command(mock_client, args)
+
+    assert result.outputs_key_field == ["clusterName", "principalArn"]
+    assert result.outputs["clusterName"] == "prod-cluster"
+    assert result.outputs["principalArn"] == "arn:aws:iam::123456789012:role/admin-role"
