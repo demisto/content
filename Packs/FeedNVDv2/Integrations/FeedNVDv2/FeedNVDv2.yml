@@ -198,25 +198,25 @@ script:
       - CVSS v3
       - CVSS v2
     outputs:
-    - contextPath: NistNVDv2.Indicators.id
+    - contextPath: CVE.ID
       description: The ID of the CVE.
       type: String
-    - contextPath: NistNVDv2.Indicators.score
-      description: The CVSS base score of the CVE.
-      type: Number
-    - contextPath: NistNVDv2.Indicators.published
+    - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE.
+      type: number
+    - contextPath: CVE.Published
       description: The date the CVE was published.
       type: Date
-    - contextPath: NistNVDv2.Indicators.modified
+    - contextPath: CVE.Modified
       description: The date that the CVE was last modified.
       type: Date
-    - contextPath: NistNVDv2.Indicators.description
+    - contextPath: CVE.Description
       description: The description of the CVE.
       type: String
-    - contextPath: NistNVDv2.Indicators.cvssversion
+    - contextPath: CVE.CVSSVersion
       description: The CVSS version used for scoring (e.g. 4.0, 3.1, 2.0).
       type: String
-    - contextPath: NistNVDv2.Indicators.severity
+    - contextPath: CVE.Severity
       description: The CVSS severity level (e.g. CRITICAL, HIGH, MEDIUM, LOW).
       type: String
   dockerimage: demisto/python3:3.12.12.5490952
