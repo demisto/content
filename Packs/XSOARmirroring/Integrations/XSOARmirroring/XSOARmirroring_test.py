@@ -697,17 +697,20 @@ def test_get_modified_incidents_client_method_empty_response(mocker):
     assert result == []
 
 
-def test_get_modified_remote_data_404_handled_gracefully(mocker):
+@pytest.mark.parametrize("status_code", [303, 404])
+def test_get_modified_remote_data_unsupported_endpoint_handled_gracefully(mocker, status_code):
     """
     Given:
-        - client.get_modified_incidents raises a DemistoException with a 404 response.
+        - client.get_modified_incidents raises a DemistoException with a 303 or 404 response,
+          indicating the remote machine does not support the /public/v1/incidents/modified endpoint.
 
     When:
         - Running get_modified_remote_data_command.
 
     Then:
-        - demisto.error is called with the error message.
-        - demisto.results is called with an ERROR entry.
+        - demisto.error is called twice: once for the general log and once for the user-facing message.
+        - The user-facing error message mentions the unsupported endpoint and actionable guidance.
+        - demisto.results is called with an ERROR entry whose Contents explains the issue.
         - sys.exit(0) is called to terminate gracefully.
     """
     import sys
@@ -717,8 +720,8 @@ def test_get_modified_remote_data_404_handled_gracefully(mocker):
     args = {"lastUpdate": last_update.isoformat()}
 
     mock_res = MagicMock()
-    mock_res.status_code = 404
-    exc = DemistoException("Not Found", res=mock_res)
+    mock_res.status_code = status_code
+    exc = DemistoException("Endpoint not found", res=mock_res)
 
     mocker.patch.object(Client, "get_modified_incidents", side_effect=exc)
     mock_error = mocker.patch("demistomock.error")
@@ -730,11 +733,21 @@ def test_get_modified_remote_data_404_handled_gracefully(mocker):
     with pytest.raises(SystemExit):
         get_modified_remote_data_command(client, args)
 
-    mock_error.assert_called_once()
-    assert "error fetching modified incidents" in mock_error.call_args[0][0]
+    # demisto.error should be called twice: general log + user-facing message
+    assert mock_error.call_count == 2
+    all_error_msgs = " ".join(call[0][0] for call in mock_error.call_args_list)
+    assert "/public/v1/incidents/modified" in all_error_msgs
+    assert str(status_code) in all_error_msgs
+
+    # demisto.results should carry an ERROR entry with the actionable message
     mock_results.assert_called_once()
     result_entry = mock_results.call_args[0][0]
     assert result_entry["Type"] == 2  # EntryType.ERROR
+    contents = result_entry["Contents"]
+    assert "/public/v1/incidents/modified" in contents
+    assert "XSOAR 8" in contents or "XSIAM" in contents
+    assert "Disable" in contents or "disable" in contents
+
     mock_exit.assert_called_once_with(0)
 
 

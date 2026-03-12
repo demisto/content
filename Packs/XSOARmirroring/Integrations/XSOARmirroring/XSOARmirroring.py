@@ -854,14 +854,19 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
     try:
         modified_incident_ids = client.get_modified_incidents(from_timestamp=from_timestamp)
     except DemistoException as e:
+        status_code = e.res.status_code if e.res is not None else None
         demisto.error(f"get-modified-remote-data: encountered an error while fetching modified incidents: {e}")
-        if e.res is not None and e.res.status_code == 404:
-            demisto.error(f"get-modified-remote-data: error fetching modified incidents: {e}")
+        if e.res is not None and status_code in (303, 404):
+            error_msg = (
+                f"The remote XSOAR machine does not support the /public/v1/incidents/modified endpoint "
+                f"(HTTP {status_code=}). This endpoint is only available on XSOAR 8.14.0 and later. Original error: {e}"
+            )
+            demisto.error(f"get-modified-remote-data: {error_msg}")
             demisto.results(
                 {
                     "Type": EntryType.ERROR,
                     "ContentsFormat": EntryFormat.TEXT,
-                    "Contents": f"Error fetching modified incidents: {e}",
+                    "Contents": error_msg,
                 }
             )
             sys.exit(0)
