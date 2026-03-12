@@ -339,6 +339,12 @@ def cves_to_war_room(raw_cves: list[dict], preferred_versions: list[str] | None 
 
         output_list.append(fields)
 
+    if not output_list:
+        return CommandResults(
+            readable_output="No CVE indicators were found for the given parameters.",
+            raw_response=raw_cves,
+        )
+
     return CommandResults(
         outputs=output_list,
         outputs_prefix="NistNVDv2.Indicators",
@@ -358,7 +364,8 @@ def cves_to_war_room(raw_cves: list[dict], preferred_versions: list[str] | None 
             ],
             headers=["ID", "CVSS Version", "Severity", "Score", "Published", "Last Modified", "Description"],
         ),
-        outputs_key_field="Name",
+        outputs_key_field="id",
+        raw_response=raw_cves,
     )
 
 
@@ -366,11 +373,11 @@ def cves_to_war_room(raw_cves: list[dict], preferred_versions: list[str] | None 
 CVSS_VERSION_TO_METRIC_KEYS: dict[str, list[str]] = {
     "CVSS v4": ["cvssMetricV40"],
     "CVSS v3": ["cvssMetricV31", "cvssMetricV30"],
-    "CVSS v2": ["cvssMetricV20"],
+    "CVSS v2": ["cvssMetricV2"],
 }
 
 # Default priority when no preferred versions are specified.
-_DEFAULT_METRIC_KEY_ORDER = ["cvssMetricV40", "cvssMetricV31", "cvssMetricV30", "cvssMetricV20"]
+_DEFAULT_METRIC_KEY_ORDER = ["cvssMetricV40", "cvssMetricV31", "cvssMetricV30", "cvssMetricV2"]
 
 
 def get_cvss_version_and_score(
@@ -400,7 +407,8 @@ def get_cvss_version_and_score(
         if cvss_entry:
             cvss_data = cvss_entry.get("cvssData", {})
             if cvss_data:
-                severity = cvss_data.get("baseSeverity", "")
+                # For CVSS v2, baseSeverity is at the metric entry root, not inside cvssData.
+                severity = cvss_data.get("baseSeverity") or cvss_entry.get("baseSeverity", "")
                 return cvss_data["version"], cvss_data["baseScore"], severity
 
     return "", "", ""
@@ -541,7 +549,8 @@ def retrieve_cves(client: Client, start_date: Any, end_date: Any, use_pub_date: 
     seen_ids: set[str] = set()
     deduplicated: list[dict] = []
 
-    for version_label in client.cvss_versions or []:
+    versions_to_query = client.cvss_versions or list(CVSS_VERSION_TO_PARAM.keys())
+    for version_label in versions_to_query:
         severity_param = CVSS_VERSION_TO_PARAM.get(version_label, "")
         if not severity_param:
             demisto.debug(f"Unknown CVSS version label '{version_label}', skipping.")

@@ -67,9 +67,26 @@ def test_build_indicators_command(client):
 def test_cves_to_war_room():
     raw_cve = open_json("./test_data/nist_response.json")
     cves = raw_cve["vulnerabilities"]
-    entry = cves_to_war_room(cves).to_context()
+    result = cves_to_war_room(cves)
+    entry = result.to_context()
     expected_entry = open_json("./test_data/war_room_entry.json")
-    assert entry == expected_entry
+
+    assert entry["HumanReadable"] == expected_entry["HumanReadable"]
+    # raw_response is now passed through, so Contents holds the raw CVE dicts.
+    assert entry["Contents"] == cves
+    # EntryContext key uses outputs_key_field="id".
+    context_values = list(entry["EntryContext"].values())
+    expected_context_values = list(expected_entry["EntryContext"].values())
+    assert context_values == expected_context_values
+
+
+def test_cves_to_war_room_empty():
+    """When no CVEs match, outputs should be None with a descriptive message."""
+    result = cves_to_war_room([])
+    assert result.outputs is None
+    assert result.outputs_prefix is None
+    assert result.readable_output == "No CVE indicators were found for the given parameters."
+    assert result.raw_response == []
 
 
 @pytest.mark.parametrize("cvss_score, expected_result", [(10.0, 3), ("10.0", 3), (10, 3), (6, 2), (3, 1), (-1, 0)])
@@ -84,12 +101,12 @@ def test_calculate_dbotscore(cvss_score, expected_result):
         ({"cvssMetricV40": [{"cvssData": {"version": "4.0", "baseScore": 6.0, "baseSeverity": "MEDIUM"}}]}, "4.0", 6.0, "MEDIUM"),
         ({"cvssMetricV31": [{"cvssData": {"version": "3.1", "baseScore": 7.5, "baseSeverity": "HIGH"}}]}, "3.1", 7.5, "HIGH"),
         ({"cvssMetricV30": [{"cvssData": {"version": "3.0", "baseScore": 8.0, "baseSeverity": "HIGH"}}]}, "3.0", 8.0, "HIGH"),
-        ({"cvssMetricV20": [{"cvssData": {"version": "2.0", "baseScore": 5.0, "baseSeverity": "MEDIUM"}}]}, "2.0", 5.0, "MEDIUM"),
+        ({"cvssMetricV2": [{"cvssData": {"version": "2.0", "baseScore": 5.0}, "baseSeverity": "MEDIUM"}]}, "2.0", 5.0, "MEDIUM"),
         ({}, "", "", ""),
         ({"cvssMetricV40": [{}]}, "", "", ""),
         ({"cvssMetricV31": [{}]}, "", "", ""),
         ({"cvssMetricV30": [{}]}, "", "", ""),
-        ({"cvssMetricV20": [{}]}, "", "", ""),
+        ({"cvssMetricV2": [{}]}, "", "", ""),
         # Multi-source: CNA first, Primary second — should pick Primary
         (
             {
