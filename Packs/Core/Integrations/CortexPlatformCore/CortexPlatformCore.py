@@ -5118,7 +5118,20 @@ def resolve_platform_name(platform: str) -> str:
 
 
 def resolve_endpoint_names_to_ids(client: Client, endpoint_names: list[str]) -> list[str]:
-    """Resolve endpoint names to IDs and validate no duplicates exist."""
+    """
+    Resolve endpoint names to their corresponding endpoint IDs, validating that no duplicate names exist.
+
+    Args:
+        client (Client): The Cortex Platform client instance used to query the agents table.
+        endpoint_names (list[str]): List of endpoint names to resolve to IDs.
+
+    Returns:
+        list[str]: List of endpoint IDs corresponding to the provided endpoint names.
+
+    Raises:
+        DemistoException: If no endpoints are found with the specified names, or if multiple
+                          endpoints share the same name (ambiguous resolution).
+    """
     demisto.debug(f"Resolving endpoint names to IDs: {endpoint_names}")
 
     filter_builder = FilterBuilder()
@@ -5169,7 +5182,23 @@ def resolve_endpoint_names_to_ids(client: Client, endpoint_names: list[str]) -> 
 
 
 def calculate_policy_priority(current_policies: list[dict], platform_value: str, requested_priority: int | None) -> int:
-    """Calculate and validate policy priority, handling auto-assignment."""
+    """
+    Calculate and validate the policy priority for a new endpoint policy, handling auto-assignment.
+
+    If no priority is requested, assigns one higher than the current maximum for the platform.
+    If the requested priority exceeds the current maximum, it is clamped to max + 1.
+
+    Args:
+        current_policies (list[dict]): The full list of existing policies from the policy table.
+        platform_value (str): The platform identifier (e.g., 'AGENT_OS_WINDOWS', 'AGENT_OS_LINUX').
+        requested_priority (int | None): The desired priority, or None to auto-assign.
+
+    Returns:
+        int: The validated and calculated priority value for the new policy.
+
+    Raises:
+        DemistoException: If the calculated priority is below the minimum allowed user policy priority (1).
+    """
     MIN_USER_POLICY_PRIORITY = 1
     platform_policies = [p for p in current_policies if p.get("PLATFORM") == platform_value]
 
@@ -5196,7 +5225,22 @@ def calculate_policy_priority(current_policies: list[dict], platform_value: str,
 
 
 def shift_policy_priorities(current_policies: list[dict], platform_value: str, new_priority: int) -> None:
-    """Shift existing policies with priority >= new_priority up by 1 (modifies in-place)."""
+    """
+    Shift existing policies with priority >= new_priority up by 1 to make room for a new policy.
+
+    Modifies the policy list in-place. If no policy currently holds the given priority for the
+    specified platform, no changes are made.
+
+    Args:
+        current_policies (list[dict]): The full list of existing policies from the policy table.
+                                       Modified in-place.
+        platform_value (str): The platform identifier (e.g., 'AGENT_OS_WINDOWS', 'AGENT_OS_LINUX').
+        new_priority (int): The priority value at which to insert the new policy; all existing
+                            policies at this priority or higher will be incremented by 1.
+
+    Returns:
+        None
+    """
     existing_priority_policy = next(
         (p for p in current_policies if p.get("PLATFORM") == platform_value and p.get("PRIORITY") == new_priority), None
     )
@@ -5221,8 +5265,20 @@ def shift_policy_priorities(current_policies: list[dict], platform_value: str, n
 
 def get_identity_and_web_api_profile_defaults(platform_value: str) -> dict[str, Any]:
     """
-    Get platform-specific default profile IDs for identity and web_and_api.
-    Note: identity and web_and_api are currently not supported, but the api expect to get them in the request.
+    Get platform-specific default profile IDs for identity and web_and_api profiles.
+
+    Note: identity and web_and_api profiles are currently not supported by the UI, but the API
+    requires them to be present in the policy creation request payload.
+
+    Args:
+        platform_value (str): The platform identifier (e.g., 'AGENT_OS_WINDOWS', 'AGENT_OS_LINUX').
+
+    Returns:
+        dict[str, Any]: A dictionary containing the identity and web_and_api profile names and IDs:
+            - identity (str | None): The identity profile name, or None if not applicable.
+            - identity_id (int | None): The identity profile ID, or None if not applicable.
+            - web_and_api (str | None): The web_and_api profile name, or None if not applicable.
+            - web_and_api_id (int | None): The web_and_api profile ID, or None if not applicable.
     """
     WINDOWS_IDENTITY_PROFILE_ID = 17
     LINUX_WEB_AND_API_PROFILE_ID = 12
@@ -5307,7 +5363,26 @@ def build_policy_object(
     profile_map: dict[str, dict[str, Any]],
     description: str,
 ) -> dict[str, Any]:
-    """Build the complete policy object with all required fields."""
+    """
+    Build the complete policy object with all required fields for the agent policy table.
+
+    Assembles the full policy dictionary including platform, priority, target filter,
+    profile assignments (exploit, malware, agent_settings, restrictions, exceptions),
+    and platform-specific identity/web_and_api profile defaults.
+
+    Args:
+        policy_name (str): The name for the new policy.
+        platform_value (str): The platform identifier (e.g., 'AGENT_OS_WINDOWS', 'AGENT_OS_LINUX').
+        priority (int): The priority level for the policy.
+        target_endpoint_ids (list[str]): List of endpoint IDs that this policy targets.
+        profile_map (dict[str, dict[str, Any]]): Mapping of profile type (uppercase) to profile data
+                                                  containing 'id' and 'name' keys.
+                                                  Example: {'EXPLOIT': {'id': 11, 'name': 'Default'}}
+        description (str): A human-readable description for the policy.
+
+    Returns:
+        dict[str, Any]: The complete policy object ready to be inserted into the agent policy table.
+    """
     identity_and_web_api_profiles = get_identity_and_web_api_profile_defaults(platform_value)
     target_filter = build_target_filter_from_endpoint_ids(target_endpoint_ids)
 
@@ -5464,7 +5539,25 @@ def find_policies_to_delete(
     policy_ids: list[str],
     platform: str,
 ) -> list[dict]:
-    """Find the policies to delete based on names or IDs."""
+    """
+    Find the policies to delete from the platform policy list based on names or IDs.
+
+    Searches by policy IDs if provided, otherwise searches by policy names. When searching
+    by name, raises an error if multiple policies share the same name to avoid ambiguous deletion.
+
+    Args:
+        platform_policies (list[dict]): List of existing policies filtered to the target platform.
+        policy_names (list[str]): List of policy names to search for. Used when policy_ids is empty.
+        policy_ids (list[str]): List of policy IDs to search for. Takes precedence over policy_names.
+        platform (str): The platform name (e.g., 'windows', 'linux') used in error messages.
+
+    Returns:
+        list[dict]: List of policy dictionaries that match the specified names or IDs.
+
+    Raises:
+        DemistoException: If a policy ID or name is not found, or if multiple policies share
+                          the same name (ambiguous match when searching by name).
+    """
     policies_to_delete = []
 
     if policy_ids:
@@ -5499,7 +5592,21 @@ def find_policies_to_delete(
 
 
 def validate_policy_deletable(policy: dict, platform: str) -> None:
-    """Validate that a policy can be deleted."""
+    """
+    Validate that a policy is eligible for deletion.
+
+    Default policies (priority 0) are system-level and cannot be deleted.
+
+    Args:
+        policy (dict): The policy dictionary to validate, expected to contain 'PRIORITY' and 'NAME' keys.
+        platform (str): The platform name (e.g., 'windows', 'linux') used in error messages.
+
+    Returns:
+        None
+
+    Raises:
+        DemistoException: If the policy has priority 0 (default system policy), which cannot be deleted.
+    """
     DEFAULT_POLICY_PRIORITY = 0  # System default, cannot be deleted
     priority = policy.get("PRIORITY")
 
@@ -5514,24 +5621,30 @@ def validate_policy_deletable(policy: dict, platform: str) -> None:
 
 def delete_endpoint_policy_command(client: Client, args: dict) -> CommandResults:
     """
-    Deletes one or more existing endpoint policies from the policy table.
+    Delete one or more existing endpoint policies from the agent policy table.
 
     This command:
     1. Fetches the current policy table and hash
     2. Identifies policies to delete by names or IDs
-    3. Validates policies can be deleted (not default policies)
-    4. Removes the policies and updates the table
+    3. Validates that the policies can be deleted (not default system policies)
+    4. Removes the policies and updates the table with the new hash
 
     Args:
-        client: The Cortex Platform client instance.
-        args: Dictionary containing policy identification parameters.
+        client (Client): The Cortex Platform client instance.
+        args (dict): Dictionary containing policy identification parameters:
+            - policy_name (str, optional): Comma-separated list of policy names to delete.
+            - policy_id (str, optional): Comma-separated list of policy IDs to delete.
+            - platform (str): The platform type (e.g., 'windows', 'linux', 'mac').
 
     Returns:
-        CommandResults: Results object with success message and deleted policy details.
+        CommandResults: Results object containing a success message and the list of deleted
+                        policy details (PolicyName, PolicyID, Platform, Priority, Deleted).
 
     Raises:
-        DemistoException: If required parameters are missing, policies not found,
-                         or multiple policies match the criteria.
+        DemistoException: If neither policy_name nor policy_id is provided, if both are provided,
+                          if the platform is invalid, if no policies exist for the platform,
+                          if a specified policy is not found, or if a default policy deletion
+                          is attempted.
     """
     policy_names = argToList(args.get("policy_name"))
     policy_ids = argToList(args.get("policy_id"))
@@ -5569,13 +5682,12 @@ def delete_endpoint_policy_command(client: Client, args: dict) -> CommandResults
         }
         deleted_policies_info.append(policy_info)
         demisto.debug(
-            f"Deleting policy: Name='{policy_info['PolicyName']}', "
+            f"Queuing policy for deletion: Name='{policy_info['PolicyName']}', "
             f"ID={policy_info['PolicyID']}, Priority={policy_info['Priority']}"
         )
 
     policies_to_delete_set = {p.get("ID") for p in policies_to_delete}
     updated_policies = [p for p in current_policies if p.get("ID") not in policies_to_delete_set]
-    demisto.debug(f"Policies count after deletion: {len(updated_policies)} (removed {len(policies_to_delete)})")
 
     update_payload = {
         "DATA": updated_policies,
@@ -5585,6 +5697,9 @@ def delete_endpoint_policy_command(client: Client, args: dict) -> CommandResults
     demisto.debug("Updating agent policy table")
     response = client.update_agent_policy(update_payload)
 
+    demisto.debug(
+        f"Update successful, policies count after deletion: {len(updated_policies)} (removed {len(policies_to_delete)})"
+    )
     readable_output = "Successfully deleted the following endpoint policies:\n\n"
     for policy_info in deleted_policies_info:
         readable_output += (
