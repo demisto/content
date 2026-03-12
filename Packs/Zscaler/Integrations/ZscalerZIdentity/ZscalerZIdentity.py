@@ -272,7 +272,7 @@ class Client(BaseClient):
         """
         return self.api_request("GET", "/security")
 
-    def update_allowlist(self, urls: list[str], ips: list[str], action: str) -> None:
+    def update_allowlist(self, items: list[str], action: str) -> None:
         """Updates the ZIA allowlist with the given URLs and IPs.
 
         Since the ZIA API only supports PUT (full replacement), this method
@@ -280,11 +280,9 @@ class Client(BaseClient):
         Deduplicates entries when adding.
 
         Args:
-            urls: List of URL strings to add/remove/overwrite.
-            ips: List of IP address strings to add/remove/overwrite.
+            items: List of URL/IP strings to add/remove/overwrite.
             action: One of "ADD_TO_LIST", "REMOVE_FROM_LIST", or "OVERWRITE".
         """
-        items = urls + ips
         current = self.get_allowlist()
         existing = current.get("whitelistUrls", [])
         if action == "ADD_TO_LIST":
@@ -846,7 +844,7 @@ def zia_allowlist_update_command(client: Client, args: dict) -> CommandResults:
     if not action:
         raise DemistoException("The 'action' argument is required.")
 
-    client.update_allowlist(urls, ips, action)
+    client.update_allowlist(urls + ips, action)
     return CommandResults(readable_output="The allowlist has been successfully updated.")
 
 
@@ -1456,7 +1454,7 @@ def zia_departments_list_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def zia_sandbox_report_get_command(client: Client, args: dict) -> list[CommandResults]:
+def zia_sandbox_report_get_command(client: Client, args: dict) -> CommandResults:
     """Retrieves a Sandbox analysis report for a file identified by MD5 hash.
 
     Calculates a DBotScore based on the classification type:

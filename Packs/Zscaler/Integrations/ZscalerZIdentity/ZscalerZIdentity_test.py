@@ -2,6 +2,7 @@ import demistomock as demisto
 import pytest
 import json
 import time
+from pathlib import Path
 
 from ZscalerZIdentity import (
     Client,
@@ -38,7 +39,8 @@ from CommonServerPython import DemistoException, Common, CommandResults
 
 def load_json(path: str):
     """Load a JSON file from disk and return its parsed content."""
-    with open(path) as f:
+    full_path = Path(__file__).parent / path.lstrip("/")
+    with open(full_path) as f:
         return json.load(f)
 
 
