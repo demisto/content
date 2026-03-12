@@ -97,7 +97,7 @@
       "is_array": false
     },
     "activityUuid": {
-      "type": "int",
+      "type": "string",
       "is_array": false
     }
   }
