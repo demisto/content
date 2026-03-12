@@ -1,5 +1,4 @@
 category: Utilities
-provider: Orca Security
 sectionorder:
 - Connect
 - Collect
@@ -97,14 +96,14 @@ script:
       type: String
   - name: orca-get-asset
     arguments:
-      - description: Asset unique id.
-        name: asset_unique_id
-        required: true
+    - description: Asset unique id.
+      name: asset_unique_id
+      required: true
     description: Get Description of An asset. Deprecated, disabled.
     outputs:
-      - contextPath: Orca.Manager.Asset
-        description: Asset description.
-        type: String
+    - contextPath: Orca.Manager.Asset
+      description: Asset description.
+      type: String
   - name: orca-set-alert-severity
     description: Change severity for the alert.
     arguments:

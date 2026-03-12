@@ -868,37 +868,37 @@ def test_fetch_incidents_with_api_error_preserves_state(requests_mock, orca_clie
             {"AlertId": "orca-1", "LastSeen": "2025-10-24T13:37:01+00:00", "RiskLevel": "high"},
         ],
     }
-    
+
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_success_response)
     last_run, incidents = fetch_incidents(
-        orca_client, 
-        last_run={"lastRun": "2025-10-24T10:00:00Z", "fetch_page": 2}, 
-        max_fetch=10, 
-        pull_existing_alerts=False, 
+        orca_client,
+        last_run={"lastRun": "2025-10-24T10:00:00Z", "fetch_page": 2},
+        max_fetch=10,
+        pull_existing_alerts=False,
         first_fetch_time=None
     )
-    
+
     # Should advance to next page
     assert last_run["fetch_page"] == 3
     assert len(incidents) == 1
-    
+
     # Now test with API error - should preserve state
     mock_error_response = {"status": "failure", "error": "API Error"}
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_error_response)
-    
+
     error_last_run, error_incidents = fetch_incidents(
-        orca_client, 
+        orca_client,
         last_run=last_run,  # Use the previous successful state
-        max_fetch=10, 
-        pull_existing_alerts=False, 
+        max_fetch=10,
+        pull_existing_alerts=False,
         first_fetch_time=None
     )
-    
+
     # State should be preserved on error
     assert error_last_run["fetch_page"] == 3  # Same as before error
     assert error_last_run["lastRun"] == last_run["lastRun"]  # Time preserved
     assert len(error_incidents) == 0  # No incidents on error
-    
+
     # Verify the step is preserved too
     assert error_last_run.get("step") == last_run.get("step")
 
@@ -908,21 +908,21 @@ def test_fetch_incidents_with_timeout_preserves_state(requests_mock, orca_client
     Test that fetch_incidents preserves state when timeout occurs
     """
     initial_state = {"lastRun": "2025-10-24T10:00:00Z", "fetch_page": 1, "step": STEP_FETCH}
-    
+
     # Mock timeout
     requests_mock.post(
-        f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", 
+        f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}",
         exc=requests.exceptions.ReadTimeout("Connection timeout")
     )
-    
+
     last_run, incidents = fetch_incidents(
-        orca_client, 
-        last_run=initial_state, 
-        max_fetch=10, 
-        pull_existing_alerts=False, 
+        orca_client,
+        last_run=initial_state,
+        max_fetch=10,
+        pull_existing_alerts=False,
         first_fetch_time=None
     )
-    
+
     # State should be preserved on timeout
     assert last_run["fetch_page"] == 1  # Same as initial
     assert last_run["lastRun"] == "2025-10-24T10:00:00Z"  # Time preserved
