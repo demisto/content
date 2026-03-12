@@ -61,14 +61,16 @@ configuration:
   required: false
 - display: Events types to fetch
   name: event_types_to_fetch
+  additionalinfo: The type of the events to fetch. Default value is 'Audit'.
   type: 16
   options:
   - Audit
   - Search Logs
   defaultvalue: Audit
   section: Collect
-  required: false
+  required: True
 - display: Search log query
+  additionalinfo: Query corresponding to the search operation.
   name: search_log_query
   type: 0
   section: Collect
