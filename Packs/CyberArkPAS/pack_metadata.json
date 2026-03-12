@@ -2,7 +2,7 @@
     "name": "CyberArk",
     "description": "Provides a Safe Haven, where all your administrative passwords can be securely archived, transferred and shared by authorized users.",
     "support": "partner",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.1.3",
     "author": "CyberArk",
     "url": "https://www.cyberark.com/services-support/technical-support-contact/",
     "email": "support@cyberark.com",
@@ -20,10 +20,6 @@
         "platform"
     ],
     "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
         "agentix",
         "xsiam"
     ]

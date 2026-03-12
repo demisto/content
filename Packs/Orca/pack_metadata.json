@@ -2,7 +2,7 @@
     "name": "Orca",
     "description": "Integrate with Orca security for bidirectional incident management and fetching of asset information. \n",
     "support": "partner",
-    "currentVersion": "3.0.2",
+    "currentVersion": "3.0.3",
     "author": "Orca Security",
     "url": "https://orca.security/",
     "email": "support@orca.security",
@@ -21,11 +21,6 @@
     ],
     "defaultDataSource": "Orca Event Collector",
     "supportedModules": [
-        "C1",
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
         "agentix",
         "xsiam",
         "cloud_posture"
