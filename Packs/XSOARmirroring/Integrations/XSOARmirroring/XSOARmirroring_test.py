@@ -695,5 +695,3 @@ def test_get_modified_incidents_client_method_empty_response(mocker):
     result = client.get_modified_incidents(from_timestamp=1740830400)
 
     assert result == []
-
-
