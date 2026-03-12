@@ -1198,7 +1198,7 @@ script:
         required: true
         description: GCP project ID.
         prettyname: GCP Project ID
-        defaultValue: GCP project ID
+        defaultValue: GCP Project ID
         prettypredefined:
           GCP Project ID: ${asset.xdm.asset.realm}
       - name: region
