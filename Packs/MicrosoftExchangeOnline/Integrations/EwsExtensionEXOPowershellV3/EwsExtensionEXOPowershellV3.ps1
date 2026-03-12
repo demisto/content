@@ -693,7 +693,7 @@ class ExchangeOnlinePowershellV3Client
                 $cmd_params.User = $user
             }
             if ($release_to_all) {
-                $cmd_params.ReleaseToAll = $null
+                $cmd_params.ReleaseToAll = $release_to_all
             }
             if ($identities) {
                 $identities = $identities.Split(",").Trim()
@@ -2207,7 +2207,6 @@ function EXOGetQuarantineMessageCommand {
         EntityType = $kwargs.entity_type
         RecipientAddress = $kwargs.recipient_address
         SenderAddress = $kwargs.sender_address
-        TeamsConversationTypes = ArgToList $kwargs.teams_conversation_types
         Direction = $kwargs.direction
         Domain = $kwargs.domain
         EndExpiresDate = $kwargs.end_expires_date

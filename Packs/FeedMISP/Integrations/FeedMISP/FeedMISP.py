@@ -273,13 +273,12 @@ def parsing_user_query(query: str, limit: int, page: int = 1, from_timestamp: Op
         query: User's query string
     Returns: Dict which has only needed arguments to be sent to MISP
     """
-    global LIMIT
     try:
         params = json.loads(query)
         params["returnFormat"] = "json"
         if "page" not in params:
             params["page"] = page
-        params["limit"] = params.get("limit") or LIMIT
+        params["limit"] = params.get("limit") or limit
         if params.get("timestamp"):
             params["attribute_timestamp"] = params.pop("timestamp")
         if from_timestamp:
@@ -586,7 +585,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     tags = argToList(params.get("attribute_tags", ""))
     feed_tags = argToList(params.get("feedTags", []))
     attribute_types = argToList(params.get("attribute_types", ""))
-    fetch_limit = client.max_indicator_to_fetch
+    fetch_limit = client.max_indicator_to_fetch or LIMIT
     last_run = demisto.getLastRun()
     total_fetched_indicators = 0
     query = params.get("query", None)
@@ -594,10 +593,10 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     last_run_page = last_run.get("page") or 1
     last_run_value = last_run.get("last_indicator_value") or ""
     params_dict = (
-        parsing_user_query(query, LIMIT, from_timestamp=last_run_timestamp, page=last_run_page)
+        parsing_user_query(query, fetch_limit, from_timestamp=last_run_timestamp, page=last_run_page)
         if query
         else build_params_dict(
-            tags=tags, attribute_type=attribute_types, limit=LIMIT, page=last_run_page, from_timestamp=last_run_timestamp
+            tags=tags, attribute_type=attribute_types, limit=fetch_limit, page=last_run_page, from_timestamp=last_run_timestamp
         )
     )
 
