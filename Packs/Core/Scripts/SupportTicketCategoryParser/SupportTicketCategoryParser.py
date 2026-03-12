@@ -113,7 +113,9 @@ def parse_and_validate(args: dict) -> CommandResults:
         demisto.debug(f"Parsed - issue_category: {issue_category}, " f"problem_concentration: {problem_concentration}")
 
         taxonomy = parse_taxonomy(taxonomy_raw)
-        issue_category, problem_concentration, warnings = validate_against_taxonomy(issue_category, problem_concentration, taxonomy)
+        issue_category, problem_concentration, warnings = validate_against_taxonomy(
+            issue_category, problem_concentration, taxonomy
+        )
 
         for warning in warnings:
             demisto.debug(f"Taxonomy validation warning: {warning}")
