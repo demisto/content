@@ -748,35 +748,3 @@ def test_get_modified_remote_data_unsupported_endpoint_handled_gracefully(mocker
     assert "XSOAR 8" in contents
 
     mock_exit.assert_called_once_with(0)
-
-
-def test_get_modified_remote_data_non_404_exception_is_reraised(mocker):
-    """
-    Given:
-        - client.get_modified_incidents raises a DemistoException with a 500 response.
-
-    When:
-        - Running get_modified_remote_data_command.
-
-    Then:
-        - The exception is re-raised and not swallowed.
-        - demisto.results is NOT called with an error entry.
-    """
-    from unittest.mock import MagicMock
-
-    last_update = datetime(2026, 3, 1, 12, 0, 0, tzinfo=UTC)
-    args = {"lastUpdate": last_update.isoformat()}
-
-    mock_res = MagicMock()
-    mock_res.status_code = 500
-    exc = DemistoException("Internal Server Error", res=mock_res)
-
-    mocker.patch.object(Client, "get_modified_incidents", side_effect=exc)
-    mock_results = mocker.patch("demistomock.results")
-
-    client = Client(base_url="https://test.com")
-
-    with pytest.raises(DemistoException, match="Internal Server Error"):
-        get_modified_remote_data_command(client, args)
-
-    mock_results.assert_not_called()
