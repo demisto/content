@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "This version introduces support for the compromised/spd and compromised/breacheddb collections and removes support for compromised/breached. It also updates Incident Field IDs for multiple fields, including incidentfield-GIB_Nation-State_Cybercriminals_Threat_Actor_Aliases.json and incidentfield-GIB_Scanner_Sources.json."
+}

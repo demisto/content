@@ -74,6 +74,7 @@
         "GIB Suspicious IP Scanner",
         "GIB Cybercriminal Threat",
         "GIB Suspicious IP Socks Proxy",
-        "GIB Nation-State Cybercriminals Threat"
+        "GIB Nation-State Cybercriminals Threat",
+        "GIB SPD"
     ]
 }
