@@ -27,6 +27,10 @@
         "JiraDataCenter": {
             "mandatory": false,
             "display_name": "Atlassian Jira Data Center"
+        },
+        "ApiModules": {
+            "mandatory": false,
+            "display_name": "API Modules"
         }
     },
     "supportedModules": [
