@@ -1,0 +1,51 @@
+commonfields:
+  id: SupportTicketCategoryParser
+  version: -1
+name: SupportTicketCategoryParser
+script: ''
+type: python
+tags:
+- Utility
+comment: Parses a delimited support ticket classification string (issue_category|||problem_concentration)
+  into separate fields and validates both values against a provided taxonomy. Designed
+  to post-process the single-line output of the SupportTicketClassification LLM script.
+enabled: true
+args:
+- name: classification_result
+  required: true
+  description: 'The combined classification result string from the SupportTicketClassification
+    script, in the format: <issue_category>|||<problem_concentration>. The delimiter
+    is three pipe characters (|||).'
+- name: taxonomy
+  required: true
+  description: 'The support ticket taxonomy as a JSON string. Structure: a list of
+    dictionaries where each dictionary has one key (the issue_category) mapped to a
+    list of its allowed problem_concentrations. Example: [{"Agent": ["Communication",
+    "Device Control"]}, {"Modules": ["AI Security", "Identity Security"]}]. Obtained
+    from the core-get-support-ticket-taxonomy command output.'
+outputs:
+- contextPath: Core.SupportTicketCategoryParser.IssueCategory
+  description: The parsed issue category.
+  type: String
+- contextPath: Core.SupportTicketCategoryParser.ProblemConcentration
+  description: The parsed problem concentration.
+  type: String
+- contextPath: Core.SupportTicketCategoryParser.IsValid
+  description: Whether both the issue category and problem concentration are valid
+    entries in the taxonomy.
+  type: Boolean
+- contextPath: Core.SupportTicketCategoryParser.Warnings
+  description: List of validation warnings if any values are not found in the taxonomy.
+  type: Unknown
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.12.6391686
+fromversion: 8.13.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- platform
+supportedModules:
+- agentix
+- xsiam
+- edr
