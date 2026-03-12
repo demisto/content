@@ -1443,12 +1443,12 @@ script:
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: accessKeyId
-        description: The name of the user whose access key you want to deactivate.
+        description: The id of the access key you want to deactivate.
         prettyname: Access Key Id
         required: true
         defaultValue: Access Key Id
         prettypredefined:
-          User Name: ${asset.xdm.asset.name}
+          Access Key Id: ${asset.xdm.asset.name}
       - name: status
         description: The status to assign to the access key.
         defaultValue: 'Inactive'

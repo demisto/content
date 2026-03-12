@@ -1407,7 +1407,7 @@ class IAM:
         role_name = args.get("role_name", "")
 
         try:
-            demisto.debug(f"calling remove_role_from_instance_profile with {instance_profile_name=}, {role_name}")
+            demisto.debug(f"calling remove_role_from_instance_profile with {instance_profile_name=}, {role_name=}")
             response = client.remove_role_from_instance_profile(InstanceProfileName=instance_profile_name, RoleName=role_name)
 
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
