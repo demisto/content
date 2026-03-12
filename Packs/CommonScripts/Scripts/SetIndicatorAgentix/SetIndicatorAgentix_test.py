@@ -1,22 +1,33 @@
-import pytest
 from unittest.mock import patch
+from CommonServerPython import CommandResults
 from SetIndicatorAgentix import set_indicator_if_exist
 
 
 class TestSetIndicator:
     def test_no_arguments_provided(self):
-        """Test that function returns error when no valid arguments are provided"""
+        """Test that function returns CommandResults with error message when no valid arguments are provided"""
         args = {"value": "1.1.1.1"}
 
-        with pytest.raises(SystemExit):
-            set_indicator_if_exist(args)
+        result = set_indicator_if_exist(args)
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs_prefix == "SetIndicator"
+        assert result.outputs_key_field == "Value"
+        outputs = dict(result.outputs)  # type: ignore[arg-type]
+        assert outputs["Value"] == "1.1.1.1"
+        assert "Please provide at least one argument" in outputs["Result"]
 
     def test_empty_arguments(self):
-        """Test that function returns error when completely empty arguments"""
+        """Test that function returns CommandResults with error message when completely empty arguments"""
         args: dict = {}
 
-        with pytest.raises(SystemExit):
-            set_indicator_if_exist(args)
+        result = set_indicator_if_exist(args)
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs_prefix == "SetIndicator"
+        assert result.outputs_key_field == "Value"
+        outputs = dict(result.outputs)  # type: ignore[arg-type]
+        assert "Please provide at least one argument" in outputs["Result"]
 
     @patch("SetIndicatorAgentix.execute_command")
     def test_indicator_does_not_exist(self, mock_execute):
