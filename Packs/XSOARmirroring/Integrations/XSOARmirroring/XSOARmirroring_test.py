@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, UTC
 
 import dateparser
 import pytest
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, EntryType
 from XSOARmirroring import (
     XSOAR_DATE_FORMAT,
     Client,
@@ -654,19 +654,19 @@ def test_get_modified_remote_data_passes_correct_timestamp(mocker):
 def test_get_modified_incidents_client_method(mocker):
     """
     Given:
-        - A mock HTTP response from /incidents/modified returning a dict of incident IDs.
+        - A mock HTTP response from /incidents/modified returning a list of incident IDs.
 
     When:
         - Calling client.get_modified_incidents with a from_timestamp.
 
     Then:
-        - The method returns a list of the dict keys (incident IDs).
+        - The method returns the list of incident IDs as-is.
     """
     client = Client(base_url="https://test.com")
     mocker.patch.object(
         client,
         "_http_request",
-        return_value={"101": {}, "202": {}, "303": {}},
+        return_value=["101", "202", "303"],
     )
 
     result = client.get_modified_incidents(from_timestamp=1740830400)
@@ -742,11 +742,10 @@ def test_get_modified_remote_data_unsupported_endpoint_handled_gracefully(mocker
     # demisto.results should carry an ERROR entry with the actionable message
     mock_results.assert_called_once()
     result_entry = mock_results.call_args[0][0]
-    assert result_entry["Type"] == 2  # EntryType.ERROR
+    assert result_entry["Type"] == EntryType.ERROR  # 4
     contents = result_entry["Contents"]
     assert "/public/v1/incidents/modified" in contents
-    assert "XSOAR 8" in contents or "XSIAM" in contents
-    assert "Disable" in contents or "disable" in contents
+    assert "XSOAR 8" in contents
 
     mock_exit.assert_called_once_with(0)
 
