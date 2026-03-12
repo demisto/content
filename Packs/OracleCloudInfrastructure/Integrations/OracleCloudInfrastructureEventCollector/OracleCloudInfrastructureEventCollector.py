@@ -13,7 +13,7 @@ PRODUCT = "cloud_infrastructure"
 MAX_EVENTS_TO_FETCH = 100
 FETCH_DEFAULT_TIME = "3 days"
 PORT = 20190901
-SEARCHLOG_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
+SEARCHLOG_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 
 
 """ CLIENT CLASS """
@@ -247,9 +247,7 @@ def events_to_command_results(events: list[dict[str, Any]], title: str) -> Comma
         CommandResults: CommandResults object with a table of fetched events.
     """
     return CommandResults(
-        readable_output=tableToMarkdown(
-            title, events, removeNull=True, headerTransform=pascalToSpace
-        ),
+        readable_output=tableToMarkdown(title, events, removeNull=True, headerTransform=pascalToSpace),
         raw_response=events,
     )
 
@@ -272,8 +270,7 @@ def audit_log_api_request(client: Client, start_time: str, next_page: str | None
 
 
 def searchlogs_api_request(
-    client: Client, time_start: str, time_end: str, search_query: str,
-    limit: int = 1000, next_page: str | None = None
+    client: Client, time_start: str, time_end: str, search_query: str, limit: int = 1000, next_page: str | None = None
 ) -> requests.Response:
     """Makes HTTP POST request to the OCI Search Logs API endpoint.
 
@@ -289,20 +286,13 @@ def searchlogs_api_request(
         requests.Response: raw response from the API.
     """
     url = client.searchlog_url
-    body = {
-        "timeStart": time_start,
-        "timeEnd": time_end,
-        "searchQuery": search_query,
-        "isReturnFieldInfo": False
-    }
+    body = {"timeStart": time_start, "timeEnd": time_end, "searchQuery": search_query, "isReturnFieldInfo": False}
     params: dict[str, str | int] = {"limit": limit}
     if next_page:
         params["page"] = next_page
 
     demisto.info(f"Sending http request to get search log events with {body=} {params=}")
-    return client._http_request(
-        method="POST", full_url=url, params=params, json_data=body, resp_type="response"
-    )
+    return client._http_request(method="POST", full_url=url, params=params, json_data=body, resp_type="response")
 
 
 def add_millisecond_to_timestamp(timestamp: str) -> str:
@@ -350,6 +340,7 @@ def deduplicate_events(events: list[dict[str, Any]], last_fetched_ids: list[str]
 
     return new_events
 
+
 def get_searchlogs_events(
     client: Client, search_log_query: str, max_fetch: int, searchlog_last_run: dict
 ) -> tuple[list[dict[str, Any]], dict]:
@@ -372,35 +363,40 @@ def get_searchlogs_events(
             - last run dict with keys 'lastRun' (str) and 'LastFetchedIds' (list[str]).
     """
     searchlogs_events: list[dict[str, Any]] = []
-    last_searchlogs_ids: list[str] = searchlog_last_run.get('LastFetchedIds', [])
-    last_run = searchlog_last_run.get('lastRun', '')
+    last_searchlogs_ids: list[str] = searchlog_last_run.get("LastFetchedIds", [])
+    last_run = searchlog_last_run.get("lastRun", "")
 
     try:
         if last_run:
-            searchlogs_time_start = searchlog_last_run['lastRun']
+            searchlogs_time_start = searchlog_last_run["lastRun"]
         else:
             searchlogs_time_start = datetime.now().strftime(SEARCHLOG_DATE_FORMAT)
 
-        searchlogs_time_end = (datetime.strptime(searchlogs_time_start, DATE_FORMAT) + timedelta(days=14)).strftime(SEARCHLOG_DATE_FORMAT)
+        searchlogs_time_end = (datetime.strptime(searchlogs_time_start, DATE_FORMAT) + timedelta(days=14)).strftime(
+            SEARCHLOG_DATE_FORMAT
+        )
 
         searchlogs_res = searchlogs_api_request(
             client=client, time_start=searchlogs_time_start, time_end=searchlogs_time_end, search_query=search_log_query
         )
 
-        for result in json.loads(searchlogs_res.content).get('results', []):
-            event_data = result.get('data', {}).get('logContent', {})
-            event_data['_time'] = event_data.get('time')
+        for result in json.loads(searchlogs_res.content).get("results", []):
+            event_data = result.get("data", {}).get("logContent", {})
+            event_data["_time"] = event_data.get("time")
             searchlogs_events.append(event_data)
 
-        while len(searchlogs_events) < max_fetch and (next_page := searchlogs_res.headers._store.get("opc-next-page")):
+        while len(searchlogs_events) < max_fetch and (next_page := searchlogs_res.headers._store.get("opc-next-page")):  # type: ignore[attr-defined]
             searchlogs_res = searchlogs_api_request(
-                client=client, time_start=searchlogs_time_start, time_end=searchlogs_time_end,
-                search_query=search_log_query, next_page=next_page[1]
+                client=client,
+                time_start=searchlogs_time_start,
+                time_end=searchlogs_time_end,
+                search_query=search_log_query,
+                next_page=next_page[1],
             )
 
-            for result in json.loads(searchlogs_res.content).get('results', []):
-                event_data = result.get('data', {}).get('logContent', {})
-                event_data['_time'] = event_data.get('time')
+            for result in json.loads(searchlogs_res.content).get("results", []):
+                event_data = result.get("data", {}).get("logContent", {})
+                event_data["_time"] = event_data.get("time")
                 searchlogs_events.append(event_data)
 
         if searchlogs_events:
@@ -409,17 +405,16 @@ def get_searchlogs_events(
             searchlogs_events = searchlogs_events[:max_fetch]
 
         if searchlogs_events:
-            last_run = searchlogs_events[-1]['_time']
+            last_run = searchlogs_events[-1]["_time"]
             last_searchlogs_ids = [
-                event.get("id") for event in searchlogs_events
-                if event.get("_time") == last_run and event.get("id")
+                str(event.get("id")) for event in searchlogs_events if event.get("_time") == last_run and event.get("id")
             ]
 
     except Exception as e:
         demisto.error(f"Error while fetching search log events: {e}")
         return [], searchlog_last_run
 
-    return searchlogs_events, {'lastRun': last_run, 'LastFetchedIds': last_searchlogs_ids}
+    return searchlogs_events, {"lastRun": last_run, "LastFetchedIds": last_searchlogs_ids}
 
 
 def get_events(
@@ -466,7 +461,7 @@ def get_events(
         if events and push_events_on_error:
             last_event_time = get_last_event_time(events, first_fetch_time)
             events = add_time_key_to_events(events)
-            handle_fetched_events(events, last_event_time,demisto.getLastRun())
+            handle_fetched_events(events, last_event_time)
             raise DemistoException(f"Error while fetching events: {e}") from e
 
     demisto.info(f"OCI: {len(events)} Events fetched from start time: {first_fetch_time}.")
@@ -486,11 +481,12 @@ def handle_fetched_events(events: list[dict[str, Any]], last_event_time: str):
     demisto.info(f"OCI: {len(events)} events were sent to XSIAM at {datetime.now()}.")
     if events:
         last_run = demisto.getLastRun()
-        last_run['lastRun'] = last_event_time
+        last_run["lastRun"] = last_event_time
         demisto.setLastRun(last_run)
         demisto.info(f"OCI: Set last run to {last_event_time}")
     else:
         demisto.info("OCI: No new events fetched, Last run was not updated.")
+
 
 def handle_searchlog_fetched_events(searchlog_events: list[dict[str, Any]], searchlog_last_run: dict[str, Any]):
     """Handles searchlog fetched events.
@@ -505,7 +501,7 @@ def handle_searchlog_fetched_events(searchlog_events: list[dict[str, Any]], sear
     demisto.info(f"OCI: {len(searchlog_events)} searchlog events were sent to XSIAM at {datetime.now()}.")
     if searchlog_events:
         last_run = demisto.getLastRun()
-        last_run['SearchLog'] = searchlog_last_run
+        last_run["SearchLog"] = searchlog_last_run
         demisto.setLastRun(last_run)
         demisto.info(f"OCI: Set last run to {last_run}")
     else:
@@ -529,7 +525,7 @@ def test_module(client: Client, search_log_query: str, event_types_to_fetch: Lis
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
 
-    if 'Audit' in event_types_to_fetch:
+    if "Audit" in event_types_to_fetch:
         try:
             datetime_now = datetime.now().strftime(DATE_FORMAT)
             params = {"compartmentId": client.compartment_id, "startTime": datetime_now, "endTime": datetime_now}
@@ -541,10 +537,12 @@ def test_module(client: Client, search_log_query: str, event_types_to_fetch: Lis
             else:
                 raise DemistoException(f"Error while testing: {e}") from e
 
-    if 'Search Logs' in event_types_to_fetch:
+    if "Search Logs" in event_types_to_fetch:
         try:
             searchlogs_time_start = datetime.now().strftime(SEARCHLOG_DATE_FORMAT)
-            searchlogs_time_end = (datetime.strptime(searchlogs_time_start, DATE_FORMAT) + timedelta(days=14)).strftime(SEARCHLOG_DATE_FORMAT)
+            searchlogs_time_end = (datetime.strptime(searchlogs_time_start, DATE_FORMAT) + timedelta(days=14)).strftime(
+                SEARCHLOG_DATE_FORMAT
+            )
 
             searchlogs_api_request(
                 client=client, time_start=searchlogs_time_start, time_end=searchlogs_time_end, search_query=search_log_query
@@ -574,13 +572,12 @@ def main():
     first_fetch_time = get_fetch_time(last_run=last_run_time, first_fetch_param=first_fetch)
     should_push_events = argToBoolean(args.get("should_push_events", False))
     private_key_type = params.get("private_key_type") or "PKCS#8"
-    searchlogs_query = params.get('search_log_query')
-    searchlog_last_run = last_run.get("SearchLog",{})
+    searchlogs_query = params.get("search_log_query")
+    searchlog_last_run = last_run.get("SearchLog", {})
     event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["Audit"]))
 
-    if 'Search Logs' in event_types_to_fetch and not searchlogs_query:
+    if "Search Logs" in event_types_to_fetch and not searchlogs_query:
         raise DemistoException("The parameter 'Search log query' is required in order to fetch search logs.")
-
 
     demisto.info(f"OCI: Command being called is {command}")
 
@@ -607,24 +604,28 @@ def main():
         elif command in ("oracle-cloud-infrastructure-get-events", "fetch-events"):
             push_events = command == "fetch-events" or should_push_events
 
-            searchlog_events =[]
-            audit_events = []
-            last_audit_event_time = ''
+            searchlog_events: list[dict] = []
+            audit_events: list[dict] = []
+            last_audit_event_time = ""
 
-            if 'Search Logs' in event_types_to_fetch:
-                searchlog_events, searchlog_last_run= get_searchlogs_events(client, searchlogs_query, max_fetch, searchlog_last_run)
+            if "Search Logs" in event_types_to_fetch:
+                searchlog_events, searchlog_last_run = get_searchlogs_events(
+                    client, searchlogs_query, max_fetch, searchlog_last_run
+                )
 
-            if 'Audit' in event_types_to_fetch:
-                audit_events, last_audit_event_time = get_events(client, first_fetch_time, max_fetch, push_events_on_error=push_events)
+            if "Audit" in event_types_to_fetch:
+                audit_events, last_audit_event_time = get_events(
+                    client, first_fetch_time, max_fetch, push_events_on_error=push_events
+                )
 
             if push_events:
                 handle_searchlog_fetched_events(searchlog_events, searchlog_last_run)
                 handle_fetched_events(audit_events, last_audit_event_time)
 
             elif command == "oracle-cloud-infrastructure-get-events":
-                if 'Audit' in event_types_to_fetch:
+                if "Audit" in event_types_to_fetch:
                     return_results(events_to_command_results(audit_events, "Oracle Cloud Infrastructure Audit Events"))
-                if 'Search Logs' in event_types_to_fetch:
+                if "Search Logs" in event_types_to_fetch:
                     return_results(events_to_command_results(searchlog_events, "Oracle Cloud Infrastructure Search Logs Events"))
         else:
             return_error(f"Command {command} does not exist for this integration.")

@@ -73,6 +73,7 @@ class TestClientRelatedFunctions:
             - Make sure the singer object is built successfully.
         """
         mocker.patch.object(Client, "build_audit_base_url", return_value="dummy_audit_base_url")
+        mocker.patch.object(Client, "build_searchlog_url", return_value="dummy_searchlog_url")
         mocker.patch("OracleCloudInfrastructureEventCollector.Signer", return_value="dummy_singer_object")
         mocker.patch.object(Client, "validate_private_key_syntax", return_value="dummy_validated_private_key")
         client = Client(
@@ -108,6 +109,7 @@ class TestClientRelatedFunctions:
             - Make sure the singer object will not be built, and a DemistoException will be raised with a relevant message.
         """
         mocker.patch.object(Client, "build_audit_base_url", return_value="dummy_audit_base_url")
+        mocker.patch.object(Client, "build_searchlog_url", return_value="dummy_searchlog_url")
         mocker.patch("OracleCloudInfrastructureEventCollector.Signer", side_effect=Exception("dummy_exception"))
         mocker.patch.object(Client, "validate_private_key_syntax", return_value="dummy_validated_private_key")
 
@@ -228,6 +230,7 @@ class TestClientRelatedFunctions:
         """
         mocker.patch.object(Client, "build_singer_object", return_value="dummy_singer_object")
         mocker.patch.object(Client, "build_audit_base_url", return_value="dummy_audit_base_url")
+        mocker.patch.object(Client, "build_searchlog_url", return_value="dummy_searchlog_url")
         client = Client(
             verify_certificate=False,
             proxy=False,
@@ -367,7 +370,10 @@ class TestEventRelatedFunctions:
             ),
             raw_response=dummy_events_list,
         )
-        assert events_to_command_results(events=dummy_events_list).readable_output == expected_result.readable_output
+        assert (
+            events_to_command_results(events=dummy_events_list, title="Oracle Cloud Infrastructure Events").readable_output
+            == expected_result.readable_output
+        )
 
     def test_add_millisecond_to_timestamp(self):
         """
@@ -433,6 +439,7 @@ class TestEventRelatedFunctions:
         from OracleCloudInfrastructureEventCollector import audit_log_api_request
 
         mocker.patch.object(Client, "build_audit_base_url", return_value="dummy_audit_base_url")
+        mocker.patch.object(Client, "build_searchlog_url", return_value="dummy_searchlog_url")
         mocker.patch("OracleCloudInfrastructureEventCollector.Signer", return_value="dummy_singer_object")
         mocker.patch.object(Client, "validate_private_key_syntax", return_value="dummy_validated_private_key")
         client = Client(
@@ -1201,6 +1208,7 @@ class TestGetSearchlogsEvents:
             "OracleCloudInfrastructureEventCollector.searchlogs_api_request",
             side_effect=Exception("API Error"),
         )
+        mocker.patch("OracleCloudInfrastructureEventCollector.demisto.error")
 
         searchlog_last_run = {
             "lastRun": "2023-01-01T09:30:00.000000Z",
