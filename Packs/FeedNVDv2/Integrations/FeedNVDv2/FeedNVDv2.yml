@@ -40,7 +40,7 @@ configuration:
   section: Collect
 - name: cvss_versions
   display: CVSS Versions
-  additionalinfo: CVSS versions to query when severity filter is set. Default covers most modern CVEs.
+  additionalinfo: CVSS versions to query when the severity filter is set. By default, covers most modern CVEs.
   options:
   - CVSS v4
   - CVSS v3
