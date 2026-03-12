@@ -324,13 +324,13 @@ def cves_to_war_room(raw_cves: list[dict], preferred_versions: list[str] | None 
         cve = raw_cve.get("cve")
         if not cve:
             continue
-        fields: dict[str, Any] = {"description": cve.get("descriptions", [])[0].get("value")}
-        fields["modified"] = cve.get("lastModified")
-        fields["published"] = cve.get("published")
-        fields["id"] = cve.get("id")
-        fields["score"] = 0
+        fields: dict[str, Any] = {"Description": cve.get("descriptions", [])[0].get("value")}
+        fields["Modified"] = cve.get("lastModified")
+        fields["Published"] = cve.get("published")
+        fields["ID"] = cve.get("id")
+        fields["CVSS"] = 0
         try:
-            fields["cvssversion"], fields["score"], fields["severity"] = get_cvss_version_and_score(
+            fields["CVSSVersion"], fields["CVSS"], fields["Severity"] = get_cvss_version_and_score(
                 cve.get("metrics"),
                 preferred_versions=preferred_versions,
             )
@@ -347,24 +347,24 @@ def cves_to_war_room(raw_cves: list[dict], preferred_versions: list[str] | None 
 
     return CommandResults(
         outputs=output_list,
-        outputs_prefix="NistNVDv2.Indicators",
+        outputs_prefix="CVE",
         readable_output=tableToMarkdown(
             f"CVEs ({len(output_list):,} results)",
             [
                 {
-                    "ID": cve["id"].replace("-", "\u2011"),
-                    "CVSS Version": cve.get("cvssversion", ""),
-                    "Severity": cve.get("severity", ""),
-                    "Score": cve["score"],
-                    "Published": cve.get("published", "")[:10],
-                    "Last Modified": cve.get("modified", "")[:10],
-                    "Description": cve["description"],
+                    "ID": cve["ID"].replace("-", "\u2011"),
+                    "CVSS Version": cve.get("CVSSVersion", ""),
+                    "Severity": cve.get("Severity", ""),
+                    "Score": cve["CVSS"],
+                    "Published": cve.get("Published", "")[:10],
+                    "Last Modified": cve.get("Modified", "")[:10],
+                    "Description": cve["Description"],
                 }
                 for cve in output_list
             ],
             headers=["ID", "CVSS Version", "Severity", "Score", "Published", "Last Modified", "Description"],
         ),
-        outputs_key_field="id",
+        outputs_key_field="ID",
         raw_response=raw_cves,
     )
 
