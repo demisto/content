@@ -818,10 +818,10 @@ def main():  # pragma: no cover
     """Main integration entry point."""
 
     params = demisto.params()
-    proxy = argToBool(params.get("proxy", False))
+    proxy = argToBoolean(params.get("proxy", False))
     api_key = params.get("apiKey", {}).get("password", "")
     tlp_color = params.get("tlp_color", "")
-    has_kev = argToBool(params.get("hasKev", False))
+    has_kev = argToBoolean(params.get("hasKev", False))
     first_fetch = params.get("first_fetch", "")
     feed_tags = params.get("feedTags", [])
     max_indicators = arg_to_number(params.get("max_indicators"))
