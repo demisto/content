@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Outpost24
 commonfields:
   id: Blueliv ThreatContext
   version: -1
@@ -148,7 +149,7 @@ script:
       description: Indicator last seen date.
       type: Date
     - contextPath: BluelivThreatContext.indicator.risk
-      description: Indicator risk
+      description: Indicator risk.
       type: Number
     - contextPath: BluelivThreatContext.indicator.latitude
       description: Indicator latitude.
@@ -637,9 +638,11 @@ script:
     - contextPath: BluelivThreatContext.signature.type
       description: Signature type.
       type: String
-  dockerimage: demisto/python3:3.10.14.100715
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

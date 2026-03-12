@@ -1,0 +1,534 @@
+id: URL Enrichment - Infoblox Cloud
+version: -1
+name: URL Enrichment - Infoblox Cloud
+description: This playbook enriches URL with the dossier and TIDE data using Infoblox Threat Defense with DDI integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4ff4de14-f011-4bba-862a-cfcee77197be
+    type: start
+    task:
+      id: 4ff4de14-f011-4bba-862a-cfcee77197be
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 0c001686-6062-4eba-864b-88bb00609b22
+    type: condition
+    task:
+      id: 0c001686-6062-4eba-864b-88bb00609b22
+      version: -1
+      name: Is Infoblox Threat Defense with DDI integration enabled?
+      description: Checks whether Infoblox Threat Defense with DDI integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: InfobloxBloxOneThreatDefense
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d2b2db6f-f560-4fdb-85d5-1225fce4224c
+    type: regular
+    task:
+      id: d2b2db6f-f560-4fdb-85d5-1225fce4224c
+      version: -1
+      name: Clear previous inputs
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      key:
+        simple: FoundIndicators
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 3df95f0d-332e-429d-863f-f6462761ef98
+    type: regular
+    task:
+      id: 3df95f0d-332e-429d-863f-f6462761ef98
+      version: -1
+      name: Fetch Indicators from Incident
+      description: commands.local.cmd.find.indicators
+      script: Builtin|||findIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      extend-context:
+        simple: FoundIndicators=.={"value":val.value,"indicator_type":val.indicator_type}
+      query:
+        complex:
+          root: incident
+          accessor: id
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'investigationIDs:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 97b9432a-4dd4-4cdd-89ed-f06167d8e111
+    type: regular
+    task:
+      id: 97b9432a-4dd4-4cdd-89ed-f06167d8e111
+      version: -1
+      name: Get reputation for URL indicators
+      description: Gets the comprehensive URL reputation and threat intelligence from Infoblox Threat Defense, including threat indicators, and standard URL reputation data.
+      script: InfobloxBloxOneThreatDefense|||url
+      type: regular
+      iscommand: true
+      brand: InfobloxBloxOneThreatDefense
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      url:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FoundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          accessor: value
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.urls
+                iscontext: true
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: b08eb5d2-b22c-4072-8b58-a198889c5277
+    type: title
+    task:
+      id: b08eb5d2-b22c-4072-8b58-a198889c5277
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 7f141731-bf65-4cd6-8fea-afc25ba7d044
+    type: condition
+    task:
+      id: 7f141731-bf65-4cd6-8fea-afc25ba7d044
+      version: -1
+      name: Check whether URLs are available in playbook input
+      description: Check whether URLs are available in playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.urls
+                transformers:
+                - operator: splitAndTrim
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys: {}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: f698ffbf-a3e8-4a0a-883a-0798a2b662bb
+    type: title
+    task:
+      id: f698ffbf-a3e8-4a0a-883a-0798a2b662bb
+      version: -1
+      name: Check for indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 32f2dfb6-fb13-4197-8756-163d9f535f28
+    type: condition
+    task:
+      id: 32f2dfb6-fb13-4197-8756-163d9f535f28
+      version: -1
+      name: Check that URL indicators are present or not
+      description: Check that URLs are present or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "4"
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FoundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: url
+                    ignorecase: true
+                accessor: value
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.urls
+                      iscontext: true
+                - operator: splitAndTrim
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys: {}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 728ae17b-2db0-424b-8507-01c7d0bfcb8e
+    type: regular
+    task:
+      id: 728ae17b-2db0-424b-8507-01c7d0bfcb8e
+      version: -1
+      name: Get dossier information for URL indicators
+      description: The Dossier Lookup API returns detailed information on the specified indicator from the requested sources.
+      script: '|||bloxone-td-dossier-lookup-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      indicator_type:
+        simple: url
+      value:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: FoundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          accessor: value
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.urls
+                iscontext: true
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_4_yes": 0.46,
+      "11_6_#default#": 0.2,
+      "1_2_yes": 0.58,
+      "1_6_#default#": 0.1,
+      "8_10_yes": 0.16,
+      "8_3_#default#": 0.56
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1595,
+        "width": 820,
+        "x": 390,
+        "y": -70
+      }
+    }
+  }
+inputs:
+- key: urls
+  value: {}
+  required: false
+  description: The optional comma-separated list of URLs to enrich.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

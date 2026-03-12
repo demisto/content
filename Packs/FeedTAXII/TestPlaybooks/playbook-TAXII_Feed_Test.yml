@@ -325,7 +325,7 @@ tasks:
       updateddate: {}
       username: {}
       value:
-        simple: www.demisto.com
+        simple: https://www.demisto.com
     separatecontext: false
     view: |-
       {

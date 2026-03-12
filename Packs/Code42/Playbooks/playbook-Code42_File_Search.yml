@@ -165,7 +165,7 @@ tasks:
       version: -1
       name: Code42 Search by SHA256
       description: ''
-      script: '|||code42-securitydata-search'
+      script: '|||code42-file-events-search'
       type: regular
       iscommand: true
       brand: ''
@@ -173,13 +173,14 @@ tasks:
       '#none#':
       - '7'
     scriptarguments:
-      exposure: {}
       hash:
         simple: ${inputs.SHA256}
+      add-to-context: {}
       hostname: {}
       json: {}
       results: {}
       username: {}
+      min_risk_score: {}
     separatecontext: false
     view: |-
       {
@@ -200,7 +201,7 @@ tasks:
       version: -1
       name: Code42 Search by MD5
       description: ''
-      script: '|||code42-securitydata-search'
+      script: '|||code42-file-events-search'
       type: regular
       iscommand: true
       brand: ''
@@ -208,13 +209,14 @@ tasks:
       '#none#':
       - '7'
     scriptarguments:
-      exposure: {}
+      add-to-context: {}
       hash:
         simple: ${inputs.MD5}
       hostname: {}
       json: {}
       results: {}
       username: {}
+      min_risk_score: {}
     separatecontext: false
     view: |-
       {

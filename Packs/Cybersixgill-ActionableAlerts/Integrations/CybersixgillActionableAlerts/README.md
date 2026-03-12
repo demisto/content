@@ -4,13 +4,10 @@ organization assets, and automatically alerts users in real time of any relevant
 The integration will focus on retrieving Cybersixgill's Actionable Alerts as incidents
 
 ## Use Cases
+
 Fetch Incidents & Events
 
 ## Configure Cybersixgill on XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cybersixgill.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -19,12 +16,13 @@ Fetch Incidents & Events
 | threat_level | Filter by alert threat level | False |
 | threat_type | Filter by alert threat type | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Fetch incidents
+
 You can execute these commands from the XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ## output
+
 ```
 [{
 'name': "<alert name>",
@@ -49,16 +47,19 @@ After you successfully execute a command, a DBot message appears in the War Room
 ```
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cybersixgill-update-alert-status
+
 ***
 updates the existing actionable alert status
-
 
 #### Base Command
 
 `cybersixgill-update-alert-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -67,10 +68,10 @@ updates the existing actionable alert status
 | alert_status | The new status. | Required |
 | aggregate_alert_id | The aggregate alert id. | Optional |
 
-
 #### Context Output
 
 There is no context output for this command.
-## Additional Information
-Contact us: support@cybersixgill.com
 
+## Additional Information
+
+Contact us: support@cybersixgill.com

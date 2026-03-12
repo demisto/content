@@ -1,59 +1,62 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import hashlib
 import secrets
 import string
-from itertools import zip_longest
 from datetime import datetime, timedelta
-import pytz
+from itertools import zip_longest
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
-
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 NONCE_LENGTH = 64
 API_KEY_LENGTH = 128
 
-INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
-XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident Schema'
-INTEGRATION_NAME = 'Cortex XDR - IR'
+INTEGRATION_CONTEXT_BRAND = "PaloAltoNetworksXDR"
+XDR_INCIDENT_TYPE_NAME = "Cortex XDR Incident Schema"
+INTEGRATION_NAME = "Cortex XDR - IR"
 ALERTS_LIMIT_PER_INCIDENTS: int = -1
-FIELDS_TO_EXCLUDE = [
-    'network_artifacts',
-    'file_artifacts'
-]
-
+REMOVE_ALERTS_NULL_VALUES = "null_values"
+FIELDS_TO_EXCLUDE = ["network_artifacts", "file_artifacts"]
 
 XDR_INCIDENT_FIELDS = {
-    "status": {"description": "Current status of the incident: \"new\",\"under_"
-                              "investigation\",\"resolved_known_issue\","
-                              "\"resolved_duplicate\",\"resolved_false_positive\","
-                              "\"resolved_true_positive\",\"resolved_security_testing\",\"resolved_other\"",
-               "xsoar_field_name": 'xdrstatusv2'},
-    "assigned_user_mail": {"description": "Email address of the assigned user.",
-                           'xsoar_field_name': "xdrassigneduseremail"},
-    "assigned_user_pretty_name": {"description": "Full name of the user assigned to the incident.",
-                                  "xsoar_field_name": "xdrassigneduserprettyname"},
-    "resolve_comment": {"description": "Comments entered by the user when the incident was resolved.",
-                        "xsoar_field_name": "xdrresolvecomment"},
-    "manual_severity": {"description": "Incident severity assigned by the user. "
-                                       "This does not affect the calculated severity low medium high",
-                        "xsoar_field_name": "severity"},
-    "close_reason": {"description": "The close reason of the XSOAR incident",
-                     "xsoar_field_name": "closeReason"}
+    "status": {
+        "description": 'Current status of the incident: "new","under_'
+        'investigation","resolved_known_issue",'
+        '"resolved_duplicate","resolved_false_positive",'
+        '"resolved_true_positive","resolved_security_testing","resolved_other"',
+        "xsoar_field_name": "xdrstatusv2",
+    },
+    "assigned_user_mail": {"description": "Email address of the assigned user.", "xsoar_field_name": "xdrassigneduseremail"},
+    "assigned_user_pretty_name": {
+        "description": "Full name of the user assigned to the incident.",
+        "xsoar_field_name": "xdrassigneduserprettyname",
+    },
+    "resolve_comment": {
+        "description": "Comments entered by the user when the incident was resolved.",
+        "xsoar_field_name": "xdrresolvecomment",
+    },
+    "manual_severity": {
+        "description": "Incident severity assigned by the user. This does not affect the calculated severity low medium high",
+        "xsoar_field_name": "severity",
+    },
+    "close_reason": {"description": "The close reason of the XSOAR incident", "xsoar_field_name": "closeReason"},
 }
 
-MIRROR_DIRECTION = {
-    'None': None,
-    'Incoming': 'In',
-    'Outgoing': 'Out',
-    'Both': 'Both'
-}
+MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Both": "Both"}
 
 XSOAR_TO_XDR = "XSOAR -> XDR"
 XDR_TO_XSOAR = "XDR -> XSOAR"
+
+XDR_OPEN_STATUS_TO_XSOAR = ["under_investigation", "new"]
+
+BIOC_AND_CR_SEVERITY_MAPPING = {
+    "info": "SEV_010_INFO",
+    "low": "SEV_020_LOW",
+    "medium": "SEV_030_MEDIUM",
+    "high": "SEV_040_HIGH",
+    "critical": "SEV_050_CRITICAL",
+}
 
 
 def convert_epoch_to_milli(timestamp):
@@ -69,7 +72,7 @@ def convert_datetime_to_epoch(the_time: (int | datetime) = 0):
         return None
     try:
         if isinstance(the_time, datetime):
-            return int(the_time.strftime('%s'))
+            return int(the_time.strftime("%s"))
     except Exception as err:
         demisto.debug(err)
         return 0
@@ -105,6 +108,23 @@ def clear_trailing_whitespace(res):
     return res
 
 
+def replace_dots_in_keys(data: Any) -> Any:
+    """
+    Recursively replaces dots with underscores in dictionary keys.
+
+    Args:
+        data (Any): The input data structure (dictionary, list, or primitive) to process.
+
+    Returns:
+        Any: The data structure with all dictionary keys having dots replaced by underscores.
+    """
+    if isinstance(data, dict):
+        return {k.replace(".", "_"): replace_dots_in_keys(v) for k, v in data.items()}
+    elif isinstance(data, list):
+        return [replace_dots_in_keys(i) for i in data]
+    return data
+
+
 def filter_and_save_unseen_incident(incidents: List, limit: int, number_of_already_filtered_incidents: int) -> List:
     """
     Filters incidents that were seen already and saves the unseen incidents to LastRun object.
@@ -114,12 +134,12 @@ def filter_and_save_unseen_incident(incidents: List, limit: int, number_of_alrea
     :return: the filtered incidents.
     """
     last_run_obj = demisto.getLastRun()
-    fetched_starred_incidents = last_run_obj.pop('fetched_starred_incidents', {})
+    fetched_starred_incidents = last_run_obj.pop("fetched_starred_incidents", {})
     filtered_incidents = []
     for incident in incidents:
-        incident_id = incident.get('incident_id')
+        incident_id = incident.get("incident_id")
         if incident_id in fetched_starred_incidents:
-            demisto.debug(f'incident (ID {incident_id}) was already fetched in the past.')
+            demisto.debug(f"incident (ID {incident_id}) was already fetched in the past.")
             continue
         fetched_starred_incidents[incident_id] = True
         filtered_incidents.append(incident)
@@ -127,35 +147,37 @@ def filter_and_save_unseen_incident(incidents: List, limit: int, number_of_alrea
         if number_of_already_filtered_incidents >= limit:
             break
 
-    last_run_obj['fetched_starred_incidents'] = fetched_starred_incidents
+    last_run_obj["fetched_starred_incidents"] = fetched_starred_incidents
     demisto.setLastRun(last_run_obj)
     return filtered_incidents
 
 
 def get_xsoar_close_reasons():
     """
-     Get the default XSOAR close-reasons in addition to custom close-reasons from server configuration.
+    Get the default XSOAR close-reasons in addition to custom close-reasons from server configuration.
     """
     default_xsoar_close_reasons = list(XSOAR_RESOLVED_STATUS_TO_XDR.keys())
     custom_close_reasons: List[str] = []
     try:
         server_config = get_server_config()
-        demisto.debug(f'get_xsoar_close_reasons server-config: {str(server_config)}')
+        demisto.debug(f"get_xsoar_close_reasons server-config: {server_config!s}")
         if server_config:
-            custom_close_reasons = argToList(server_config.get('incident.closereasons', ''))
+            custom_close_reasons = argToList(server_config.get("incident.closereasons", ""))
     except Exception as e:
         demisto.error(f"Could not get server configuration: {e}")
     return default_xsoar_close_reasons + custom_close_reasons
 
 
 def validate_custom_close_reasons_mapping(mapping: str, direction: str):
-    """ Check validity of provided custom close-reason mappings. """
+    """Check validity of provided custom close-reason mappings."""
 
     xdr_statuses = [status.replace("resolved_", "").replace("_", " ").title() for status in XDR_RESOLVED_STATUS_TO_XSOAR]
     xsoar_statuses = get_xsoar_close_reasons()
 
-    exception_message = ('Improper custom mapping ({direction}) provided: "{key_or_value}" is not a valid Cortex '
-                         '{xsoar_or_xdr} close-reason. Valid Cortex {xsoar_or_xdr} close-reasons are: {statuses}')
+    exception_message = (
+        'Improper custom mapping ({direction}) provided: "{key_or_value}" is not a valid Cortex '
+        "{xsoar_or_xdr} close-reason. Valid Cortex {xsoar_or_xdr} close-reasons are: {statuses}"
+    )
 
     def to_xdr_status(status):
         return "resolved_" + "_".join(status.lower().split(" "))
@@ -176,18 +198,38 @@ def validate_custom_close_reasons_mapping(mapping: str, direction: str):
 
         if not valid_key:
             raise DemistoException(
-                exception_message.format(direction=direction,
-                                         key_or_value=key,
-                                         xsoar_or_xdr="XSOAR" if direction == XSOAR_TO_XDR else "XDR",
-                                         statuses=xsoar_statuses
-                                         if direction == XSOAR_TO_XDR else xdr_statuses))
+                exception_message.format(
+                    direction=direction,
+                    key_or_value=key,
+                    xsoar_or_xdr="XSOAR" if direction == XSOAR_TO_XDR else "XDR",
+                    statuses=xsoar_statuses if direction == XSOAR_TO_XDR else xdr_statuses,
+                )
+            )
         elif not valid_value:
             raise DemistoException(
-                exception_message.format(direction=direction,
-                                         key_or_value=value,
-                                         xsoar_or_xdr="XDR" if direction == XSOAR_TO_XDR else "XSOAR",
-                                         statuses=xdr_statuses
-                                         if direction == XSOAR_TO_XDR else xsoar_statuses))
+                exception_message.format(
+                    direction=direction,
+                    key_or_value=value,
+                    xsoar_or_xdr="XDR" if direction == XSOAR_TO_XDR else "XSOAR",
+                    statuses=xdr_statuses if direction == XSOAR_TO_XDR else xsoar_statuses,
+                )
+            )
+
+
+def handle_excluded_data_from_alerts_param(excluded_alert_fields: list = []) -> tuple[list, bool]:
+    """handles the excluded_alert_fields parameter
+
+    Args:
+        excluded_alert_fields (list, optional): the fields from alerts to exclude. Defaults to [].
+
+    Returns:
+        (list, bool): (Which fields of alerts should be excluded from the response,
+        and whether null values should be excluded from the response)
+    """
+    remove_nulls_from_alerts = REMOVE_ALERTS_NULL_VALUES in excluded_alert_fields
+    demisto.debug(f"handle_excluded_data_from_alerts_param {remove_nulls_from_alerts=}, {excluded_alert_fields=}")
+    formatted_excluded_data = [field for field in excluded_alert_fields if field != REMOVE_ALERTS_NULL_VALUES]
+    return formatted_excluded_data, remove_nulls_from_alerts
 
 
 class Client(CoreClient):
@@ -203,26 +245,27 @@ class Client(CoreClient):
 
     def test_module(self, first_fetch_time):
         """
-            Performs basic get request to get item samples
+        Performs basic get request to get item samples
         """
         last_one_day, _ = parse_date_range(first_fetch_time, TIME_FORMAT)
         try:
             self.get_incidents(lte_creation_time=last_one_day, limit=1)
         except Exception as err:
-            if 'API request Unauthorized' in str(err):
+            if "API request Unauthorized" in str(err):
                 # this error is received from the XDR server when the client clock is not in sync to the server
-                raise DemistoException(f'{str(err)} please validate that your both '
-                                       f'XSOAR and XDR server clocks are in sync')
+                raise DemistoException(f"{err!s} please validate that your both XSOAR and XDR server clocks are in sync")
             else:
                 raise
 
         # XSOAR -> XDR
-        validate_custom_close_reasons_mapping(mapping=self._params.get("custom_xsoar_to_xdr_close_reason_mapping"),
-                                              direction=XSOAR_TO_XDR)
+        validate_custom_close_reasons_mapping(
+            mapping=self._params.get("custom_xsoar_to_xdr_close_reason_mapping"), direction=XSOAR_TO_XDR
+        )
 
         # XDR -> XSOAR
-        validate_custom_close_reasons_mapping(mapping=self._params.get("custom_xdr_to_xsoar_close_reason_mapping"),
-                                              direction=XDR_TO_XSOAR)
+        validate_custom_close_reasons_mapping(
+            mapping=self._params.get("custom_xdr_to_xsoar_close_reason_mapping"), direction=XDR_TO_XSOAR
+        )
 
     def handle_fetch_starred_incidents(self, limit: int, page_number: int, request_data: dict) -> List:
         """
@@ -233,13 +276,13 @@ class Client(CoreClient):
         :return: the filtered starred incidents.
         """
         res = self._http_request(
-            method='POST',
-            url_suffix='/incidents/get_incidents/',
-            json_data={'request_data': request_data},
+            method="POST",
+            url_suffix="/incidents/get_incidents/",
+            json_data={"request_data": request_data},
             headers=self.headers,
-            timeout=self.timeout
+            timeout=self.timeout,
         )
-        raw_incidents = res.get('reply', {}).get('incidents', [])
+        raw_incidents = res.get("reply", {}).get("incidents", [])
 
         # we want to avoid duplications of starred incidents in the fetch-incident command (we fetch all incidents
         # in the fetch window).
@@ -250,64 +293,76 @@ class Client(CoreClient):
             page_number += 1
             search_from = page_number * limit
             search_to = search_from + limit
-            request_data['search_from'] = search_from
-            request_data['search_to'] = search_to
+            request_data["search_from"] = search_from
+            request_data["search_to"] = search_to
 
             res = self._http_request(
-                method='POST',
-                url_suffix='/incidents/get_incidents/',
-                json_data={'request_data': request_data},
+                method="POST",
+                url_suffix="/incidents/get_incidents/",
+                json_data={"request_data": request_data},
                 headers=self.headers,
-                timeout=self.timeout
+                timeout=self.timeout,
             )
-            raw_incidents = res.get('reply', {}).get('incidents', [])
+            raw_incidents = res.get("reply", {}).get("incidents", [])
             if not raw_incidents:
                 break
             filtered_incidents += filter_and_save_unseen_incident(raw_incidents, limit, len(filtered_incidents))
 
         return filtered_incidents
 
-    def update_incident(self, incident_id, status=None, assigned_user_mail=None, assigned_user_pretty_name=None, severity=None,
-                        resolve_comment=None, unassign_user=None, add_comment=None):
+    def update_incident(
+        self,
+        incident_id,
+        status=None,
+        assigned_user_mail=None,
+        severity=None,
+        resolve_comment=None,
+        unassign_user=None,
+        add_comment=None,
+    ):
         update_data: dict[str, Any] = {}
 
-        if unassign_user and (assigned_user_mail or assigned_user_pretty_name):
+        if unassign_user and assigned_user_mail:
             raise ValueError("Can't provide both assignee_email/assignee_name and unassign_user")
         if unassign_user:
-            update_data['assigned_user_mail'] = 'none'
+            update_data["assigned_user_mail"] = "none"
 
         if assigned_user_mail:
-            update_data['assigned_user_mail'] = assigned_user_mail
-
-        if assigned_user_pretty_name:
-            update_data['assigned_user_pretty_name'] = assigned_user_pretty_name
+            update_data["assigned_user_mail"] = assigned_user_mail
 
         if status:
-            update_data['status'] = status
+            update_data["status"] = status
 
         if severity:
-            update_data['manual_severity'] = severity
+            update_data["manual_severity"] = severity
 
         if resolve_comment:
-            update_data['resolve_comment'] = resolve_comment
+            update_data["resolve_comment"] = resolve_comment
 
         if add_comment:
-            update_data['comment'] = {'comment_action': 'add', 'value': add_comment}
+            update_data["comment"] = {"comment_action": "add", "value": add_comment}
 
         request_data = {
-            'incident_id': incident_id,
-            'update_data': update_data,
+            "incident_id": incident_id,
+            "update_data": update_data,
         }
 
         self._http_request(
-            method='POST',
-            url_suffix='/incidents/update_incident/',
-            json_data={'request_data': request_data},
+            method="POST",
+            url_suffix="/incidents/update_incident/",
+            json_data={"request_data": request_data},
             headers=self.headers,
-            timeout=self.timeout
+            timeout=self.timeout,
         )
 
-    def get_incident_extra_data(self, incident_id, alerts_limit=1000):
+    def get_incident_extra_data(
+        self,
+        incident_id,
+        alerts_limit=1000,
+        exclude_artifacts: bool = False,
+        excluded_alert_fields: List = [],
+        remove_nulls_from_alerts: bool = False,
+    ):
         """
         Returns incident by id
 
@@ -315,31 +370,37 @@ class Client(CoreClient):
         :param alerts_limit: Maximum number alerts to get
         :return:
         """
-        request_data = {
-            'incident_id': incident_id,
-            'alerts_limit': alerts_limit,
-        }
+        request_data = {"incident_id": incident_id, "alerts_limit": alerts_limit, "full_alert_fields": True}
+        if excluded_alert_fields:
+            request_data["alert_fields_to_exclude"] = excluded_alert_fields
+        if remove_nulls_from_alerts:
+            request_data["drop_nulls"] = True
 
         reply = self._http_request(
-            method='POST',
-            url_suffix='/incidents/get_incident_extra_data/',
-            json_data={'request_data': request_data},
+            method="POST",
+            url_suffix="/incidents/get_incident_extra_data/",
+            json_data={"request_data": request_data},
             headers=self.headers,
-            timeout=self.timeout
+            timeout=self.timeout,
         )
 
-        incident = reply.get('reply')
+        incident = reply.get("reply")
 
+        set_sorted_paths_and_names(incident)
+        # workaround for excluding fields which is not supported with the get_incident_extra_data endpoint
+        if exclude_artifacts:
+            for field in FIELDS_TO_EXCLUDE:
+                incident.pop(field, None)
         return incident
 
     def save_modified_incidents_to_integration_context(self):
-        last_modified_incidents = self.get_incidents(limit=100, sort_by_modification_time='desc')
+        last_modified_incidents = self.get_incidents(limit=100, sort_by_modification_time="desc")
         modified_incidents_context = {}
         for incident in last_modified_incidents:
-            incident_id = incident.get('incident_id')
-            modified_incidents_context[incident_id] = incident.get('modification_time')
+            incident_id = incident.get("incident_id")
+            modified_incidents_context[incident_id] = incident.get("modification_time")
 
-        set_integration_context({'modified_incidents': modified_incidents_context})
+        set_integration_context({"modified_incidents": modified_incidents_context})
 
     def get_contributing_event_by_alert_id(self, alert_id: int) -> dict:
         request_data = {
@@ -349,46 +410,85 @@ class Client(CoreClient):
         }
 
         reply = self._http_request(
-            method='POST',
-            url_suffix='/alerts/get_correlation_alert_data/',
+            method="POST",
+            url_suffix="/alerts/get_correlation_alert_data/",
             json_data=request_data,
             headers=self.headers,
             timeout=self.timeout,
         )
 
-        return reply.get('reply', {})
+        return reply.get("reply", {})
 
     def replace_featured_field(self, field_type: str, fields: list[dict]) -> dict:
-        request_data = {
-            'request_data': {
-                'fields': fields
-            }
-        }
+        request_data = {"request_data": {"fields": fields}}
 
         reply = self._http_request(
-            method='POST',
-            url_suffix=f'/featured_fields/replace_{field_type}',
+            method="POST",
+            url_suffix=f"/featured_fields/replace_{field_type}",
             json_data=request_data,
             timeout=self.timeout,
             headers=self.headers,
-            raise_on_status=True
+            raise_on_status=True,
         )
 
-        return reply.get('reply')
+        return reply.get("reply")
+
+    def get_api_keys(self, request_data: dict):
+        """
+        Gets a list of existing API keys.
+        Args:
+            request_data (dict): The request data
+        Returns:
+            list: A list of API keys.
+        """
+        res = self._http_request(
+            method="POST",
+            url_suffix="/api_keys/get_api_keys/",
+            json_data={"request_data": request_data},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        return res.get("reply", {}).get("DATA", [])
+
+    def delete_api_keys(self, request_data: dict):
+        """
+        Deletes the specified API keys.
+        Args:
+            request_data (dict): List of API key IDs to delete.
+        Returns:
+            dict: The API response.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/api_keys/delete/",
+            json_data={"request_data": request_data},
+            headers=self.headers,
+            timeout=self.timeout,
+        )
 
     def get_tenant_info(self):
         reply = self._http_request(
-            method='POST',
-            url_suffix='/system/get_tenant_info/',
-            json_data={'request_data': {}},
+            method="POST",
+            url_suffix="/system/get_tenant_info/",
+            json_data={"request_data": {}},
             headers=self.headers,
-            timeout=self.timeout
+            timeout=self.timeout,
         )
-        return reply.get('reply', {})
+        return reply.get("reply", {})
 
-    def get_multiple_incidents_extra_data(self, exclude_artifacts, incident_id_list=[], gte_creation_time_milliseconds=0,
-                                          status=None, starred=None, starred_incidents_fetch_window=None,
-                                          page_number=0, limit=100):
+    def get_multiple_incidents_extra_data(
+        self,
+        exclude_artifacts,
+        incident_id_list=[],
+        gte_creation_time_milliseconds=0,
+        statuses=[],
+        starred=None,
+        starred_incidents_fetch_window=None,
+        page_number=0,
+        limit=100,
+        excluded_alert_fields=[],
+        remove_nulls_from_alerts=False,
+    ):
         """
         Returns incident by id
         :param incident_id_list: The list ids of incidents
@@ -396,79 +496,418 @@ class Client(CoreClient):
         Maximum number alerts to get in Maximum number alerts to get in "get_multiple_incidents_extra_data" is 50, not sorted
         """
         global ALERTS_LIMIT_PER_INCIDENTS
-        request_data = {}
-        filters: List[Any] = []
+        request_data = {
+            "search_to": limit,
+            "sort": {
+                "field": "creation_time",
+                "keyword": "asc",
+            },
+            "full_alert_fields": True,
+        }
+        filters: list[dict] = []
         if incident_id_list:
-            incident_id_list = argToList(incident_id_list, transform=lambda x: str(x))
+            incident_id_list = argToList(incident_id_list, transform=str)
             filters.append({"field": "incident_id_list", "operator": "in", "value": incident_id_list})
-        if status:
-            filters.append({
-                'field': 'status',
-                'operator': 'eq',
-                'value': status
-            })
+        if statuses:
+            filters.append({"field": "status", "operator": "in", "value": statuses})
+        demisto.debug(f"{excluded_alert_fields=}, {remove_nulls_from_alerts=}, {exclude_artifacts=}")
         if exclude_artifacts:
-            request_data['fields_to_exclude'] = FIELDS_TO_EXCLUDE  # type: ignore
+            request_data["fields_to_exclude"] = FIELDS_TO_EXCLUDE
+        if excluded_alert_fields:
+            request_data["alert_fields_to_exclude"] = excluded_alert_fields
+        if remove_nulls_from_alerts:
+            request_data["drop_nulls"] = True
 
         if starred and starred_incidents_fetch_window:
-            filters.append({
-                'field': 'starred',
-                'operator': 'eq',
-                'value': True
-            })
-            filters.append({
-                'field': 'creation_time',
-                'operator': 'gte',
-                'value': starred_incidents_fetch_window
-            })
-            if demisto.command() == 'fetch-incidents':
+            filters.append({"field": "starred", "operator": "eq", "value": True})
+            filters.append({"field": "creation_time", "operator": "gte", "value": starred_incidents_fetch_window})
+            if demisto.command() == "fetch-incidents":
                 if len(filters) > 0:
-                    request_data['filters'] = filters
+                    request_data["filters"] = filters
                 incidents = self.handle_fetch_starred_incidents(limit, page_number, request_data)
                 return incidents
         elif gte_creation_time_milliseconds:
-            filters.append({
-                'field': 'creation_time',
-                'operator': 'gte',
-                'value': gte_creation_time_milliseconds
-            })
+            filters.append({"field": "creation_time", "operator": "gte", "value": gte_creation_time_milliseconds})
         if len(filters) > 0:
-            request_data['filters'] = filters
+            request_data["filters"] = filters
 
-        reply = self._http_request(
-            method='POST',
-            url_suffix='/incidents/get_multiple_incidents_extra_data/',
-            json_data={'request_data': request_data},
+        demisto.debug(f"before fetch: {request_data=}")
+        res = self._http_request(
+            method="POST",
+            url_suffix="/incidents/get_multiple_incidents_extra_data/",
+            json_data={"request_data": request_data},
             headers=self.headers,
             timeout=self.timeout,
         )
+
+        reply = res.get("reply", {})
+        set_sorted_paths_and_names(reply)
         if ALERTS_LIMIT_PER_INCIDENTS < 0:
-            ALERTS_LIMIT_PER_INCIDENTS = arg_to_number(reply.get('reply', {}).get('alerts_limit_per_incident')) or 50
-            demisto.debug(f'Setting alerts limit per incident to {ALERTS_LIMIT_PER_INCIDENTS}')
-        incidents = reply.get('reply')
-        return incidents.get('incidents', {}) if isinstance(incidents, dict) else incidents  # type: ignore
+            ALERTS_LIMIT_PER_INCIDENTS = arg_to_number(reply.get("alerts_limit_per_incident")) or 50
+            demisto.debug(f"Setting alerts limit per incident to {ALERTS_LIMIT_PER_INCIDENTS}")
+
+        # pop the incidents and then log the reply data so as not to overload the logs
+        incidents = reply.pop("incidents", []) if isinstance(reply, dict) else reply  # type: ignore
+        demisto.debug(f"reply data: {reply}")
+        demisto.debug(f'Incidents fetched: {[i.get("incident", i).get("incident_id") for i in incidents]}')
+        return incidents
 
     def update_alerts_in_xdr_request(self, alerts_ids, severity, status, comment) -> List[Any]:
-        request_data = {"request_data": {
-            "alert_id_list": alerts_ids,
-        }}
+        request_data = {
+            "request_data": {
+                "alert_id_list": alerts_ids,
+            }
+        }
         update_data = assign_params(severity=severity, status=status, comment=comment)
-        request_data['request_data']['update_data'] = update_data
+        request_data["request_data"]["update_data"] = update_data
         response = self._http_request(
-            method='POST',
-            url_suffix='/alerts/update_alerts',
+            method="POST",
+            url_suffix="/alerts/update_alerts",
             json_data=request_data,
             headers=self.headers,
             timeout=self.timeout,
         )
         if "reply" not in response or "alerts_ids" not in response["reply"]:
             raise DemistoException(f"Parse Error. Response not in format, can't find reply key. The response {response}.")
-        return response['reply']['alerts_ids']
+        return response["reply"]["alerts_ids"]
+
+    def get_biocs(self, request_data: dict):
+        reply = self._http_request(
+            method="POST",
+            url_suffix="/bioc/get",
+            json_data=request_data,
+        )
+        return reply
+
+    def insert_or_update_biocs(self, request_data):
+        reply = self._http_request(
+            method="POST",
+            url_suffix="/bioc/insert",
+            json_data=request_data,
+        )
+        return reply
+
+    def delete_biocs(self, request_data: dict):
+        reply = self._http_request(
+            method="POST",
+            url_suffix="/bioc/delete",
+            json_data=request_data,
+        )
+        return reply
+
+    def get_correlation_rules(self, request_data: dict):
+        reply = self._http_request(
+            method="POST",
+            url_suffix="/correlations/get",
+            json_data=request_data,
+        )
+        return reply
+
+    def create_or_update_correlation_rules(self, request_data: dict):
+        reply = self._http_request(
+            method="POST",
+            url_suffix="/correlations/insert",
+            json_data=request_data,
+        )
+        return reply
+
+    def delete_correlation_rules(self, request_data: dict):
+        reply = self._http_request(
+            method="POST",
+            url_suffix="/correlations/delete",
+            json_data=request_data,
+        )
+        return reply
+
+    def get_asset(self, asset_id: str):
+        try:
+            res = self._http_request(
+                method="GET",
+                url_suffix=f"/assets/{asset_id}",
+            )
+            return res.get("reply", {}).get("data", [])
+        except DemistoException as e:
+            raise DemistoException(f"Error for asset with ID {asset_id}: {e.message}")
+
+    def list_assets(self, request_data: dict):
+        res = self._http_request(
+            method="POST",
+            url_suffix="/assets",
+            json_data=request_data,
+        )
+        return res.get("reply", {}).get("data", [])
+
+    def get_asset_schema(self):
+        res = self._http_request(
+            method="GET",
+            url_suffix="/assets/schema",
+        )
+        return res.get("reply", {}).get("data", [])
+
+    def get_asset_schema_field_options(self, field_name: str):
+        res = self._http_request(
+            method="GET",
+            url_suffix=f"/assets/enum/{field_name}",
+        )
+        return res.get("reply", {}).get("data", [])
+
+    def create_asset_group(self, request_data: dict):
+        res = self._http_request(
+            method="POST",
+            url_suffix="/asset-groups/create",
+            json_data=request_data,
+        )
+        return res.get("reply", {})
+
+    def delete_asset_group(self, group_id: str):
+        self._http_request(
+            method="POST",
+            url_suffix=f"/asset-groups/delete/{group_id}",
+        )
+
+    def list_asset_groups(self, request_data: dict):
+        res = self._http_request(
+            method="POST",
+            url_suffix="/asset-groups",
+            json_data=request_data,
+        )
+        return res.get("reply", {}).get("data", [])
+
+    def update_asset_group(self, group_id: str, request_data: dict):
+        self._http_request(
+            method="POST",
+            url_suffix=f"/asset-groups/update/{group_id}",
+            json_data=request_data,
+        )
+
+    def get_vulnerability_details(self, vulnerability_id: str):
+        """
+        Gets vulnerability details by ID.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Vulnerabilities
+        """
+        res = self._http_request(
+            method="GET",
+            url_suffix="../uvem/v1/vulnerabilities",  # we want to remove the v1 from the endpoint so we use ..
+            params={"vulnerabilityId": vulnerability_id},
+        )
+        return res
+
+    def run_healthcheck(self):
+        """
+        Runs a system health check.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/System-Health-Check
+        """
+        res = self._http_request(
+            method="GET",
+            url_suffix="/healthcheck",
+        )
+        return res
+
+    def get_triage_presets(self):
+        """
+        Gets triage presets.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-triage-presets
+        """
+        res = self._http_request(
+            method="POST",
+            url_suffix="/get_triage_presets",
+            json_data={"request_data": {}},  # required to be empty
+        )
+        return res.get("reply", {}).get("triage_presets", [])
+
+    def triage_endpoint(self, request_data: dict):
+        """
+        Initiates forensics triage on endpoints.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Initiate-Forensics-Triage
+        """
+        res = self._http_request(
+            method="POST",
+            url_suffix="/triage_endpoint",
+            json_data=request_data,
+        )
+        return res.get("reply", {})
+
+    def create_automation_script(self, files: dict):
+        """
+        Creates or updates an automation script by uploading a file.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-a-script
+
+        Args:
+            files (dict): A dictionary containing the file to upload, e.g. {'file': (filename, file_content)}.
+
+        Returns:
+            dict: The API response.
+        """
+        res = self._http_request(
+            method="POST",
+            url_suffix="/scripts/insert",
+            files=files,
+        )
+        return res
+
+    def get_automation_script(self, request_data: dict) -> bytes:
+        """
+        Gets an automation script.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-a-script
+
+        Args:
+            request_data (dict): The request data containing the filter to identify the script.
+
+        Returns:
+            bytes: The script file content.
+        """
+        return self._http_request(method="POST", url_suffix="/scripts/get", json_data=request_data, resp_type="content")
+
+    def delete_automation_script(self, request_data: dict):
+        """
+        Deletes an automation script.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-API-keys
+
+        Args:
+            request_data (dict): The request data containing the filter to identify the script to delete.
+        """
+        self._http_request(
+            method="POST",
+            url_suffix="/scripts/delete",
+            json_data=request_data,
+        )
+
+    def create_automation_playbook(self, files: dict):
+        """
+        Creates or updates an automation playbook by uploading a file.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-playbooks
+
+        Args:
+            files (dict): A dictionary containing the file to upload, e.g. {'file': (filename, file_content)}.
+
+        Returns:
+            dict: The API response.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/playbooks/insert",
+            files=files,
+        )
+
+    def get_automation_playbook(self, request_data: dict) -> bytes:
+        """
+        Gets an automation playbook.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-a-playbook
+
+        Args:
+            request_data (dict): The request data containing the filter to identify the playbook.
+
+        Returns:
+            bytes: The playbook file content.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/playbooks/get",
+            json_data=request_data,
+            resp_type="content",
+        )
+
+    def delete_automation_playbook(self, request_data: dict):
+        """
+        Deletes an automation playbook.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-a-playbook
+
+        Args:
+            request_data (dict): The request data containing the filter to identify the playbook to delete.
+        """
+        self._http_request(
+            method="POST",
+            url_suffix="/playbooks/delete",
+            json_data=request_data,
+        )
+
+    def search_cases(self, request_data: dict):
+        res = self._http_request(
+            method="POST",
+            url_suffix="/case/search",
+            json_data=request_data,
+        )
+        return res.get("reply", {}).get("DATA", [])
+
+    def update_case(self, case_id: str, request_data: dict):
+        return self._http_request(
+            method="POST", url_suffix=f"/case/update/{case_id}", json_data=request_data, resp_type="response"
+        )
+
+    def get_case_artifacts(self, case_id: str):
+        res = self._http_request(
+            method="GET",
+            url_suffix=f"/case/artifacts/{case_id}",
+        )
+        return res
+
+
+def extract_paths_and_names(paths: list) -> tuple:
+    """
+    Takes the output of map_file_path_to_file_name and returns two lists.
+
+    :param file_mapping: Dictionary mapping file names to file paths
+    :return: Tuple containing (list of file paths, list of file names)
+    """
+    from pathlib import PureWindowsPath, PurePosixPath
+
+    if not paths:
+        return [], []
+
+    file_mapping = {p: (PureWindowsPath(p).name if "\\" in p else PurePosixPath(p).name) for p in paths}
+
+    file_paths = list(file_mapping.keys())
+    file_names = list(file_mapping.values())
+
+    return file_paths, file_names
+
+
+def set_sorted_paths_and_names(reply: dict):
+    """
+    Processes file paths in alerts data and sorts them with corresponding file names.
+
+    Handles two different response formats:
+    - Single incident response from incidents/get_incident_extra_data endpoint
+    - Multiple incidents response from incidents/get_multiple_incidents_extra_data endpoint
+
+    For each alert found, extracts file paths and updates the alert data with sorted
+    file paths and corresponding file names.
+
+    :param reply: Response dictionary containing either single incident or multiple incidents data
+    :return: None (modifies the reply dictionary in-place)
+    """
+    alerts_data = reply.get("alerts", {}).get("data", [])
+    if alerts_data:
+        update_alerts_file_data(alerts_data)
+
+    else:
+        incidents = reply.get("incidents", [])
+
+        for incident in incidents:
+            alerts_data = incident.get("alerts", {}).get("data", [])
+            update_alerts_file_data(alerts_data)
+
+
+def update_alerts_file_data(alerts_data):
+    """
+    Updates alert data with sorted file paths and corresponding file names.
+
+    Iterates through alert data and processes file paths for each alert, replacing
+    the original file paths with sorted paths and adding corresponding file names.
+
+    :param alerts_data: List of alert dictionaries containing file path data
+    :return: None (modifies the alerts_data list in-place)
+    """
+    for alert in alerts_data:
+        alert_paths = alert.get("action_file_path", [])
+        paths, names = extract_paths_and_names(alert_paths)
+        alert["action_file_path"] = paths
+        alert["action_file_name"] = names
 
 
 def get_headers(params: dict) -> dict:
-    api_key = params.get('apikey_creds', {}).get('password', '') or params.get('apikey', '')
-    api_key_id = params.get('apikey_id_creds', {}).get('password', '') or params.get('apikey_id')
+    api_key = params.get("apikey_creds", {}).get("password", "") or params.get("apikey", "")
+    api_key_id = params.get("apikey_id_creds", {}).get("password", "") or params.get("apikey_id")
     nonce: str = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
     timestamp: str = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
     auth_key = f"{api_key}{nonce}{timestamp}"
@@ -491,57 +930,53 @@ def get_headers(params: dict) -> dict:
 def get_tenant_info_command(client: Client):
     tenant_info = client.get_tenant_info()
     readable_output = tableToMarkdown(
-        'Tenant Information', tenant_info, headerTransform=pascalToSpace, removeNull=True, is_auto_json_transform=True
+        "Tenant Information", tenant_info, headerTransform=pascalToSpace, removeNull=True, is_auto_json_transform=True
     )
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.TenantInformation',
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.TenantInformation",
         outputs=tenant_info,
-        raw_response=tenant_info
+        raw_response=tenant_info,
     )
 
 
 def update_incident_command(client, args):
-    incident_id = args.get('incident_id')
-    assigned_user_mail = args.get('assigned_user_mail')
-    assigned_user_pretty_name = args.get('assigned_user_pretty_name')
-    status = args.get('status')
+    incident_id = args.get("incident_id")
+    assigned_user_mail = args.get("assigned_user_mail")
+    status = args.get("status")
     demisto.debug(f"this_is_the_status {status}")
-    severity = args.get('manual_severity')
-    unassign_user = args.get('unassign_user') == 'true'
-    resolve_comment = args.get('resolve_comment')
-    add_comment = args.get('add_comment')
-    resolve_alerts = argToBoolean(args.get('resolve_alerts', False))
-
-    if assigned_user_pretty_name and not assigned_user_mail:
-        raise DemistoException('To set a new assigned_user_pretty_name, '
-                               'you must also provide a value for the "assigned_user_mail" argument.')
+    severity = args.get("manual_severity")
+    unassign_user = args.get("unassign_user") == "true"
+    resolve_comment = args.get("resolve_comment")
+    add_comment = args.get("add_comment")
+    resolve_alerts = argToBoolean(args.get("resolve_alerts", False))
 
     client.update_incident(
         incident_id=incident_id,
         assigned_user_mail=assigned_user_mail,
-        assigned_user_pretty_name=assigned_user_pretty_name,
         unassign_user=unassign_user,
         status=status,
         severity=severity,
         resolve_comment=resolve_comment,
         add_comment=add_comment,
     )
-    is_closed = resolve_comment or (status and argToList(status, '_')[0] == 'RESOLVED')
+    is_closed = resolve_comment or (status and argToList(status, "_")[0] == "RESOLVED")
     if resolve_alerts and is_closed:
-        args['status'] = args['status'].lower()
+        args["status"] = args["status"].lower()
         update_related_alerts(client, args)
 
-    return f'Incident {incident_id} has been updated', None, None
+    return f"Incident {incident_id} has been updated", None, None
 
 
 def check_if_incident_was_modified_in_xdr(incident_id, last_mirrored_in_time_timestamp, last_modified_incidents_dict):
     if incident_id in last_modified_incidents_dict:  # search the incident in the dict of modified incidents
         incident_modification_time_in_xdr = int(str(last_modified_incidents_dict[incident_id]))
 
-        demisto.debug(f"XDR incident {incident_id}\n"
-                      f"modified time:         {incident_modification_time_in_xdr}\n"
-                      f"last mirrored in time: {last_mirrored_in_time_timestamp}")
+        demisto.debug(
+            f"XDR incident {incident_id}\n"
+            f"modified time:         {incident_modification_time_in_xdr}\n"
+            f"last mirrored in time: {last_mirrored_in_time_timestamp}"
+        )
 
         if incident_modification_time_in_xdr > last_mirrored_in_time_timestamp:  # need to update this incident
             demisto.info(f"Incident '{incident_id}' was modified. performing extra-data request.")
@@ -555,14 +990,14 @@ def get_last_mirrored_in_time(args):
 
     if demisto_incidents:  # handling 5.5 version
         demisto_incident = demisto_incidents[0]
-        last_mirrored_in_time = demisto_incident.get('CustomFields', {}).get('lastmirroredintime')
+        last_mirrored_in_time = demisto_incident.get("CustomFields", {}).get("lastmirroredintime")
         if not last_mirrored_in_time:  # this is an old incident, update anyway
             return 0
-        last_mirrored_in_timestamp = arg_to_timestamp(last_mirrored_in_time, 'last_mirrored_in_time')
+        last_mirrored_in_timestamp = arg_to_timestamp(last_mirrored_in_time, "last_mirrored_in_time")
 
     else:  # handling 6.0 version
-        last_mirrored_in_time = arg_to_timestamp(args.get('last_update'), 'last_update')
-        last_mirrored_in_timestamp = (last_mirrored_in_time - (120 * 1000))
+        last_mirrored_in_time = arg_to_timestamp(args.get("last_update"), "last_update")
+        last_mirrored_in_timestamp = last_mirrored_in_time - (120 * 1000)
 
     return last_mirrored_in_timestamp
 
@@ -580,76 +1015,87 @@ def sort_incident_data(raw_incident):
             - file artifact
             - network artifacts.
     """
-    incident = raw_incident.get('incident', {})
-    raw_alerts = raw_incident.get('alerts', {}).get('data', [])
-    file_artifacts = raw_incident.get('file_artifacts', {}).get('data', [])
-    network_artifacts = raw_incident.get('network_artifacts', {}).get('data', [])
+    incident = raw_incident.get("incident", {})
+    raw_alerts = raw_incident.get("alerts", {}).get("data", [])
+    file_artifacts = raw_incident.get("file_artifacts", {}).get("data", [])
+    network_artifacts = raw_incident.get("network_artifacts", {}).get("data", [])
     context_alerts = clear_trailing_whitespace(raw_alerts)
     if context_alerts:
         for alert in context_alerts:
-            alert['host_ip_list'] = alert.get('host_ip').split(',') if alert.get('host_ip') else []
-    incident.update({
-        'alerts': context_alerts,
-        'file_artifacts': file_artifacts,
-        'network_artifacts': network_artifacts
-    })
+            alert["host_ip_list"] = alert.get("host_ip").split(",") if alert.get("host_ip") else []
+    incident.update({"alerts": context_alerts, "file_artifacts": file_artifacts, "network_artifacts": network_artifacts})
     return incident
 
 
 def get_incident_extra_data_command(client, args):
     global ALERTS_LIMIT_PER_INCIDENTS
-    incident_id = args.get('incident_id')
-    alerts_limit = int(args.get('alerts_limit', 1000))
-    exclude_artifacts = argToBoolean(args.get('excluding_artifacts', 'False'))
-    return_only_updated_incident = argToBoolean(args.get('return_only_updated_incident', 'False'))
+    incident_id = args.get("incident_id")
+    alerts_limit = int(args.get("alerts_limit", 1000))
+    exclude_artifacts = argToBoolean(args.get("excluding_artifacts", "False"))
+    alert_fields_to_exclude = args.get("alert_fields_to_exclude", [])
+    drop_nulls = args.get("drop_nulls", False)
+    demisto.debug(f"{exclude_artifacts=} , {alert_fields_to_exclude=}, {drop_nulls=}")
+    return_only_updated_incident = argToBoolean(args.get("return_only_updated_incident", "False"))
     if return_only_updated_incident:
         last_mirrored_in_time = get_last_mirrored_in_time(args)
-        last_modified_incidents_dict = get_integration_context().get('modified_incidents', {})
+        last_modified_incidents_dict = get_integration_context().get("modified_incidents", {})
 
         if check_if_incident_was_modified_in_xdr(incident_id, last_mirrored_in_time, last_modified_incidents_dict):
             pass  # the incident was modified. continue to perform extra-data request
 
         else:  # the incident was not modified
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
-    raw_incident = client.get_multiple_incidents_extra_data(incident_id_list=[incident_id], exclude_artifacts=exclude_artifacts)
+    raw_incident = client.get_multiple_incidents_extra_data(
+        incident_id_list=[incident_id],
+        exclude_artifacts=exclude_artifacts,
+        excluded_alert_fields=alert_fields_to_exclude,
+        remove_nulls_from_alerts=drop_nulls,
+    )
+
     if not raw_incident:
-        raise DemistoException(f'Incident {incident_id} is not found')
+        raise DemistoException(f"Incident {incident_id} is not found")
     if isinstance(raw_incident, list):
         raw_incident = raw_incident[0]
-    if raw_incident.get('incident', {}).get('alert_count') > ALERTS_LIMIT_PER_INCIDENTS:
+    if raw_incident.get("incident", {}).get("alert_count") > ALERTS_LIMIT_PER_INCIDENTS:
         demisto.debug(f'for incident:{incident_id} using the old call since "\
             "alert_count:{raw_incident.get("incident", {}).get("alert_count")} >" \
             "limit:{ALERTS_LIMIT_PER_INCIDENTS}')
-        raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
-    readable_output = [tableToMarkdown(f'Incident {incident_id}', raw_incident.get('incident'), removeNull=True)]
+        raw_incident = client.get_incident_extra_data(
+            incident_id,
+            alerts_limit,
+            exclude_artifacts=exclude_artifacts,
+            excluded_alert_fields=alert_fields_to_exclude,
+            remove_nulls_from_alerts=drop_nulls,
+        )
+    readable_output = [tableToMarkdown(f"Incident {incident_id}", raw_incident.get("incident"), removeNull=True)]
 
     incident = sort_incident_data(raw_incident)
 
-    if incident_alerts := incident.get('alerts'):
-        readable_output.append(tableToMarkdown('Alerts', incident_alerts,
-                                               headers=[key for key in incident_alerts[0]
-                                                        if key != 'host_ip'], removeNull=True))
-    readable_output.append(tableToMarkdown('Network Artifacts', incident.get('network_artifacts'), removeNull=True))
-    readable_output.append(tableToMarkdown('File Artifacts', incident.get('file_artifacts'), removeNull=True))
+    if incident_alerts := incident.get("alerts"):
+        readable_output.append(
+            tableToMarkdown(
+                "Alerts", incident_alerts, headers=[key for key in incident_alerts[0] if key != "host_ip"], removeNull=True
+            )
+        )
+    readable_output.append(tableToMarkdown("Network Artifacts", incident.get("network_artifacts"), removeNull=True))
+    readable_output.append(tableToMarkdown("File Artifacts", incident.get("file_artifacts"), removeNull=True))
 
-    account_context_output = assign_params(
-        Username=incident.get('users', '')
-    )
+    account_context_output = assign_params(Username=incident.get("users", ""))
     endpoint_context_output = []
 
-    for alert in incident.get('alerts') or []:
+    for alert in incident.get("alerts") or []:
         alert_context = {}
-        if hostname := alert.get('host_name'):
-            alert_context['Hostname'] = hostname
-        if endpoint_id := alert.get('endpoint_id'):
-            alert_context['ID'] = endpoint_id
+        if hostname := alert.get("host_name"):
+            alert_context["Hostname"] = hostname
+        if endpoint_id := alert.get("endpoint_id"):
+            alert_context["ID"] = endpoint_id
         if alert_context:
             endpoint_context_output.append(alert_context)
-    context_output = {f'{INTEGRATION_CONTEXT_BRAND}.Incident(val.incident_id==obj.incident_id)': incident}
+    context_output = {f"{INTEGRATION_CONTEXT_BRAND}.Incident(val.incident_id==obj.incident_id)": incident}
     if account_context_output:
-        context_output['Account(val.Username==obj.Username)'] = account_context_output
+        context_output["Account(val.Username==obj.Username)"] = account_context_output
     if endpoint_context_output:
-        context_output['Endpoint(val.Hostname==obj.Hostname)'] = endpoint_context_output
+        context_output["Endpoint(val.Hostname==obj.Hostname)"] = endpoint_context_output
     file_context, process_context, domain_context, ip_context = get_indicators_context(incident)
     if file_context:
         context_output[Common.File.CONTEXT_PATH] = file_context
@@ -658,17 +1104,14 @@ def get_incident_extra_data_command(client, args):
     if ip_context:
         context_output[Common.IP.CONTEXT_PATH] = ip_context
     if process_context:
-        context_output['Process(val.Name && val.Name == obj.Name)'] = process_context
+        context_output["Process(val.Name && val.Name == obj.Name)"] = process_context
 
-    return (
-        '\n'.join(readable_output),
-        context_output,
-        raw_incident
-    )
+    return ("\n".join(readable_output), context_output, raw_incident)
 
 
-def create_parsed_alert(product, vendor, local_ip, local_port, remote_ip, remote_port, event_timestamp, severity,
-                        alert_name, alert_description):
+def create_parsed_alert(
+    product, vendor, local_ip, local_port, remote_ip, remote_port, event_timestamp, severity, alert_name, alert_description
+):
     alert = {
         "product": product,
         "vendor": vendor,
@@ -679,29 +1122,23 @@ def create_parsed_alert(product, vendor, local_ip, local_port, remote_ip, remote
         "event_timestamp": event_timestamp,
         "severity": severity,
         "alert_name": alert_name,
-        "alert_description": alert_description
+        "alert_description": alert_description,
     }
 
     return alert
 
 
 def insert_parsed_alert_command(client, args):
-    product = args.get('product')
-    vendor = args.get('vendor')
-    local_ip = args.get('local_ip')
-    local_port = arg_to_int(
-        arg=args.get('local_port'),
-        arg_name='local_port'
-    )
-    remote_ip = args.get('remote_ip')
-    remote_port = arg_to_int(
-        arg=args.get('remote_port'),
-        arg_name='remote_port'
-    )
+    product = args.get("product")
+    vendor = args.get("vendor")
+    local_ip = args.get("local_ip")
+    local_port = arg_to_int(arg=args.get("local_port"), arg_name="local_port")
+    remote_ip = args.get("remote_ip")
+    remote_port = arg_to_int(arg=args.get("remote_port"), arg_name="remote_port")
 
-    severity = args.get('severity')
-    alert_name = args.get('alert_name')
-    alert_description = args.get('alert_description', '')
+    severity = args.get("severity")
+    alert_name = args.get("alert_name")
+    alert_description = args.get("alert_description", "")
 
     event_timestamp = int(round(time.time() * 1000)) if args.get("event_timestamp") is None else int(args.get("event_timestamp"))
 
@@ -715,90 +1152,83 @@ def insert_parsed_alert_command(client, args):
         event_timestamp=event_timestamp,
         severity=severity,
         alert_name=alert_name,
-        alert_description=alert_description
+        alert_description=alert_description,
     )
 
     client.insert_alerts([alert])
 
-    return (
-        'Alert inserted successfully',
-        None,
-        None
-    )
+    return ("Alert inserted successfully", None, None)
 
 
 def insert_cef_alerts_command(client, args):
     # parsing alerts list. the reason we don't use argToList is because cef_alerts could contain comma (,) so
     # we shouldn't split them by comma
-    alerts = args.get('cef_alerts')
+    alerts = args.get("cef_alerts")
     if isinstance(alerts, list):
         pass
     elif isinstance(alerts, str):
         alerts = json.loads(alerts) if alerts[0] == "[" and alerts[-1] == "]" else [alerts]
     else:
-        raise ValueError('Invalid argument "cef_alerts". It should be either list of strings (cef alerts), '
-                         'or single string')
+        raise ValueError('Invalid argument "cef_alerts". It should be either list of strings (cef alerts), or single string')
 
     client.insert_cef_alerts(alerts)
 
-    return (
-        'Alerts inserted successfully',
-        None,
-        None
-    )
+    return ("Alerts inserted successfully", None, None)
 
 
 def sort_all_list_incident_fields(incident_data):
     """Sorting all lists fields in an incident - without this, elements may shift which results in false
     identification of changed fields"""
-    if incident_data.get('hosts', []):
-        incident_data['hosts'] = sorted(incident_data.get('hosts', []))
-        incident_data['hosts'] = [host.upper() for host in incident_data.get('hosts', [])]
+    if incident_data.get("hosts", []):
+        incident_data["hosts"] = sorted(incident_data.get("hosts", []))
+        incident_data["hosts"] = [host.upper() for host in incident_data.get("hosts", [])]
 
-    if incident_data.get('users', []):
-        incident_data['users'] = sorted(incident_data.get('users', []))
-        incident_data['users'] = [user.upper() for user in incident_data.get('users', [])]
+    if incident_data.get("users", []):
+        incident_data["users"] = sorted(incident_data.get("users", []))
+        incident_data["users"] = [user.upper() for user in incident_data.get("users", [])]
 
-    if incident_data.get('incident_sources', []):
-        incident_data['incident_sources'] = sorted(incident_data.get('incident_sources', []))
-    format_sublists = not argToBoolean(demisto.params().get('dont_format_sublists', False))
-    if incident_data.get('alerts', []):
-        incident_data['alerts'] = sort_by_key(incident_data.get('alerts', []), main_key='alert_id', fallback_key='name')
+    if incident_data.get("incident_sources", []):
+        incident_data["incident_sources"] = sorted(incident_data.get("incident_sources", []))
+    format_sublists = not argToBoolean(demisto.params().get("dont_format_sublists", False))
+    if incident_data.get("alerts", []):
+        incident_data["alerts"] = sort_by_key(incident_data.get("alerts", []), main_key="alert_id", fallback_key="name")
         if format_sublists:
-            reformat_sublist_fields(incident_data['alerts'])
+            reformat_sublist_fields(incident_data["alerts"])
 
-    if incident_data.get('file_artifacts', []):
-        incident_data['file_artifacts'] = sort_by_key(incident_data.get('file_artifacts', []), main_key='file_name',
-                                                      fallback_key='file_sha256')
+    if incident_data.get("file_artifacts", []):
+        incident_data["file_artifacts"] = sort_by_key(
+            incident_data.get("file_artifacts", []), main_key="file_name", fallback_key="file_sha256"
+        )
         if format_sublists:
-            reformat_sublist_fields(incident_data['file_artifacts'])
+            reformat_sublist_fields(incident_data["file_artifacts"])
 
-    if incident_data.get('network_artifacts', []):
-        incident_data['network_artifacts'] = sort_by_key(incident_data.get('network_artifacts', []),
-                                                         main_key='network_domain', fallback_key='network_remote_ip')
+    if incident_data.get("network_artifacts", []):
+        incident_data["network_artifacts"] = sort_by_key(
+            incident_data.get("network_artifacts", []), main_key="network_domain", fallback_key="network_remote_ip"
+        )
         if format_sublists:
-            reformat_sublist_fields(incident_data['network_artifacts'])
+            reformat_sublist_fields(incident_data["network_artifacts"])
 
 
 def sync_incoming_incident_owners(incident_data):
-    if incident_data.get('assigned_user_mail') and demisto.params().get('sync_owners'):
-        user_info = demisto.findUser(email=incident_data.get('assigned_user_mail'))
+    if incident_data.get("assigned_user_mail") and demisto.params().get("sync_owners"):
+        user_info = demisto.findUser(email=incident_data.get("assigned_user_mail"))
         if user_info:
-            demisto.debug(f"Syncing incident owners: XDR incident {incident_data.get('incident_id')}, "
-                          f"owner {user_info.get('username')}")
-            incident_data['owner'] = user_info.get('username')
+            demisto.debug(
+                f"Syncing incident owners: XDR incident {incident_data.get('incident_id')}, owner {user_info.get('username')}"
+            )
+            incident_data["owner"] = user_info.get("username")
 
         else:
-            demisto.debug(f"The user assigned to XDR incident {incident_data.get('incident_id')} "
-                          f"is not registered on XSOAR")
+            demisto.debug(f"The user assigned to XDR incident {incident_data.get('incident_id')} is not registered on XSOAR")
 
 
 def handle_incoming_user_unassignment(incident_data):
-    incident_data['assigned_user_mail'] = ''
-    incident_data['assigned_user_pretty_name'] = ''
-    if demisto.params().get('sync_owners'):
+    incident_data["assigned_user_mail"] = ""
+    incident_data["assigned_user_pretty_name"] = ""
+    if demisto.params().get("sync_owners"):
         demisto.debug(f'Unassigning owner from XDR incident {incident_data.get("incident_id")}')
-        incident_data['owner'] = ''
+        incident_data["owner"] = ""
 
 
 def resolve_xsoar_close_reason(xdr_close_reason: str):
@@ -817,14 +1247,10 @@ def resolve_xsoar_close_reason(xdr_close_reason: str):
         # XDR raw status/close-reason is prefixed with 'resolved_' and is given in snake_case format,
         # e.g. 'resolved_false_positive', whilst custom XDR->XSOAR close-reason mapping
         # is using title case format e.g. 'False Positive', therefore we need to adapt it accordingly.
-        title_cased_xdr_close_reason = (
-            xdr_close_reason.replace("resolved_", "").replace("_", " ").title()
-        )
+        title_cased_xdr_close_reason = xdr_close_reason.replace("resolved_", "").replace("_", " ").title()
         xsoar_close_reason = custom_xdr_to_xsoar_close_reason_mapping.get(title_cased_xdr_close_reason)
         if xsoar_close_reason in possible_xsoar_close_reasons:
-            demisto.debug(
-                f"XDR->XSOAR custom close-reason exists, using {xdr_close_reason}={xsoar_close_reason}"
-            )
+            demisto.debug(f"XDR->XSOAR custom close-reason exists, using {xdr_close_reason}={xsoar_close_reason}")
             return xsoar_close_reason
 
     # Otherwise, we use default mapping.
@@ -835,48 +1261,53 @@ def resolve_xsoar_close_reason(xdr_close_reason: str):
     return xsoar_close_reason
 
 
-def handle_incoming_closing_incident(incident_data) -> dict:
-    incident_id = incident_data.get("incident_id")
-    demisto.debug(f"handle_incoming_closing_incident {incident_data=} {incident_id=}")
-    closing_entry = {}  # type: Dict
+def close_incident_in_xsoar(incident_data):
+    xsoar_close_reason = resolve_xsoar_close_reason(incident_data.get("status"))
+    closing_entry: dict = {
+        "Type": EntryType.NOTE,
+        "Contents": {
+            "dbotIncidentClose": True,
+            "closeReason": xsoar_close_reason,
+            "closeNotes": incident_data.get("resolve_comment", ""),
+        },
+        "ContentsFormat": EntryFormat.JSON,
+    }
+    incident_data["closeReason"] = closing_entry["Contents"]["closeReason"]
+    incident_data["closeNotes"] = closing_entry["Contents"]["closeNotes"]
+    demisto.debug(f"close_incident_in_xsoar {incident_data['closeReason']=} {incident_data['closeNotes']=}")
 
-    if incident_data.get("status") in XDR_RESOLVED_STATUS_TO_XSOAR:
-        demisto.debug(
-            f"handle_incoming_closing_incident {incident_data.get('status')=} {incident_id=}"
-        )
-        demisto.debug(f"Closing XDR issue {incident_id=}")
-        xsoar_close_reason = resolve_xsoar_close_reason(incident_data.get("status"))
-        closing_entry = {
-            "Type": EntryType.NOTE,
-            "Contents": {
-                "dbotIncidentClose": True,
-                "closeReason": xsoar_close_reason,
-                "closeNotes": incident_data.get("resolve_comment", ""),
-            },
-            "ContentsFormat": EntryFormat.JSON,
-        }
-        incident_data["closeReason"] = closing_entry["Contents"]["closeReason"]
-        incident_data["closeNotes"] = closing_entry["Contents"]["closeNotes"]
-        demisto.debug(
-            f"handle_incoming_closing_incident {incident_id=} {incident_data['closeReason']=} "
-            f"{incident_data['closeNotes']=}"
-        )
-
-        if incident_data.get("status") == "resolved_known_issue":
-            close_notes = f'Known Issue.\n{incident_data.get("closeNotes", "")}'
-            closing_entry["Contents"]["closeNotes"] = close_notes
-            incident_data["closeNotes"] = close_notes
-            demisto.debug(
-                f"handle_incoming_closing_incident {incident_id=} {close_notes=}"
-            )
-
+    if incident_data.get("status") == "resolved_known_issue":
+        close_notes = f'Known Issue.\n{incident_data.get("closeNotes", "")}'
+        closing_entry["Contents"]["closeNotes"] = close_notes
+        incident_data["closeNotes"] = close_notes
+        demisto.debug(f"close_incident_in_xsoar {close_notes=}")
+    demisto.debug(f"The closing entry, {closing_entry=}")
     return closing_entry
+
+
+def reopen_incident_in_xsoar():
+    opening_entry = {"Type": EntryType.NOTE, "Contents": {"dbotIncidentReopen": True}, "ContentsFormat": EntryFormat.JSON}
+    demisto.debug(f"The opening entry, {opening_entry=}")
+    return opening_entry
+
+
+def handle_incoming_incident(incident_data) -> dict:
+    incident_id = incident_data.get("incident_id")
+    incoming_incident_status = incident_data.get("status")
+    demisto.debug(f"handle_incoming_incident {incoming_incident_status=}, {incident_id=}, {incident_data=}")
+    if incoming_incident_status in XDR_RESOLVED_STATUS_TO_XSOAR:
+        demisto.debug(f"handle_incoming_incident Incident is closed: {incident_id}")
+        return close_incident_in_xsoar(incident_data)
+    elif incoming_incident_status in XDR_OPEN_STATUS_TO_XSOAR:
+        demisto.debug(f"handle_incoming_incident Incident is opened (or reopened): {incident_id}")
+        return reopen_incident_in_xsoar()
+    return {}
 
 
 def get_mapping_fields_command():
     xdr_incident_type_scheme = SchemeTypeMapping(type_name=XDR_INCIDENT_TYPE_NAME)
     for field in XDR_INCIDENT_FIELDS:
-        xdr_incident_type_scheme.add_field(name=field, description=XDR_INCIDENT_FIELDS[field].get('description'))
+        xdr_incident_type_scheme.add_field(name=field, description=XDR_INCIDENT_FIELDS[field].get("description"))
 
     mapping_response = GetMappingFieldsResponse()
     mapping_response.add_scheme_type(xdr_incident_type_scheme)
@@ -884,61 +1315,81 @@ def get_mapping_fields_command():
     return mapping_response
 
 
-def get_modified_remote_data_command(client, args, mirroring_last_update: str = '', xdr_delay: int = 1):
+def get_modified_remote_data_command(client, args, mirroring_last_update: str = "", xdr_delay: int = 1):
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update: str = mirroring_last_update or remote_args.last_update
-    last_update_utc = dateparser.parse(last_update,
-                                       settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
+    last_update: str
+    if mirroring_last_update:
+        last_update = mirroring_last_update
+        demisto.debug(f"using {mirroring_last_update=} for last_update")
+    else:
+        last_update = remote_args.last_update
+        demisto.debug(f"using {remote_args.last_update=} for last_update")
 
-    if last_update_utc:
-        gte_modification_time_milliseconds = last_update_utc - timedelta(minutes=xdr_delay)
-        lte_modification_time_milliseconds = gte_modification_time_milliseconds + timedelta(minutes=1)
+    if not last_update:
+        default_last_update = datetime_to_string(datetime.utcnow() - timedelta(minutes=xdr_delay + 1))
+        demisto.debug(f"Mirror last update is: {last_update=} will set it to {default_last_update=}")
+        last_update = default_last_update
+
+    last_update_utc = dateparser.parse(
+        last_update, settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": False}
+    )  # convert to utc format
+    if not last_update_utc:
+        raise DemistoException(f"Failed to parse {last_update=} got {last_update_utc=}")
+
+    gte_modification_time_milliseconds = last_update_utc
+    lte_modification_time_milliseconds = datetime.utcnow() - timedelta(minutes=xdr_delay)
     demisto.debug(
-        f'Performing get-modified-remote-data command {last_update=} | {gte_modification_time_milliseconds=} |'
-        f'{lte_modification_time_milliseconds=}'
+        f"Performing get-modified-remote-data command {last_update=} | {gte_modification_time_milliseconds=} |"
+        f"{lte_modification_time_milliseconds=}"
     )
     raw_incidents = client.get_incidents(
         gte_modification_time_milliseconds=gte_modification_time_milliseconds,
         lte_modification_time_milliseconds=lte_modification_time_milliseconds,
-        limit=100)
-    last_run_mirroring = (lte_modification_time_milliseconds + timedelta(milliseconds=1))
-    # Format with milliseconds as string, truncate microseconds
-    last_run_mirroring_str = last_run_mirroring.replace(tzinfo=pytz.UTC).strftime(  # type: ignore
-        '%Y-%m-%d %H:%M:%S.%f')[:-3] + '+02:00'  # type: ignore
-    modified_incident_ids = []
-    for raw_incident in raw_incidents:
-        incident_id = raw_incident.get('incident_id')
-        modified_incident_ids.append(incident_id)
-    return GetModifiedRemoteDataResponse(modified_incident_ids), last_run_mirroring_str
+        limit=100,
+    )
+    last_run_mirroring = lte_modification_time_milliseconds + timedelta(milliseconds=1)
+    last_run_mirroring_str = last_run_mirroring.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+
+    id_to_modification_time = {raw.get("incident_id"): raw.get("modification_time") for raw in raw_incidents}
+    demisto.debug(f"{last_run_mirroring_str=}, modified incidents {id_to_modification_time=}")
+
+    return GetModifiedRemoteDataResponse(list(id_to_modification_time.keys())), last_run_mirroring_str
 
 
-def get_remote_data_command(client, args):
+def get_remote_data_command(client, args, excluded_alert_fields=[], remove_nulls_from_alerts=False):
+    demisto.debug(f"{excluded_alert_fields=}, {remove_nulls_from_alerts=}")
     remote_args = GetRemoteDataArgs(args)
-    demisto.debug(f'Performing get-remote-data command with incident id: {remote_args.remote_incident_id}')
+    demisto.debug(f"Performing get-remote-data command with incident id: {remote_args.remote_incident_id}")
 
     incident_data = {}
     try:
         # when Demisto version is 6.1.0 and above, this command will only be automatically executed on incidents
         # returned from get_modified_remote_data_command so we want to perform extra-data request on those incidents.
-        return_only_updated_incident = not is_demisto_version_ge('6.1.0')  # True if version is below 6.1 else False
-
-        incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
-                                                                 "alerts_limit": 1000,
-                                                                 "return_only_updated_incident": return_only_updated_incident,
-                                                                 "last_update": remote_args.last_update})
-        if 'The incident was not modified' not in incident_data[0]:
+        return_only_updated_incident = not is_demisto_version_ge("6.1.0")  # True if version is below 6.1 else False
+        requested_data = {
+            "incident_id": remote_args.remote_incident_id,
+            "alerts_limit": 1000,
+            "return_only_updated_incident": return_only_updated_incident,
+            "last_update": remote_args.last_update,
+        }
+        if excluded_alert_fields:
+            requested_data["alert_fields_to_exclude"] = excluded_alert_fields
+        if remove_nulls_from_alerts:
+            requested_data["drop_nulls"] = True
+        incident_data = get_incident_extra_data_command(client, requested_data)
+        if "The incident was not modified" not in incident_data[0]:
             demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
 
-            incident_data = incident_data[2].get('incident')
-            incident_data['id'] = incident_data.get('incident_id')
+            incident_data = incident_data[2].get("incident")
+            incident_data["id"] = incident_data.get("incident_id")
 
             sort_all_list_incident_fields(incident_data)
 
             # deleting creation time as it keeps updating in the system
-            del incident_data['creation_time']
+            del incident_data["creation_time"]
 
             # handle unasignment
-            if incident_data.get('assigned_user_mail') is None:
+            if incident_data.get("assigned_user_mail") is None:
                 handle_incoming_user_unassignment(incident_data)
 
             else:
@@ -946,251 +1397,261 @@ def get_remote_data_command(client, args):
                 sync_incoming_incident_owners(incident_data)
 
             # handle closed issue in XDR and handle outgoing error entry
-            entries = [handle_incoming_closing_incident(incident_data)]
+            entries = []
+            if argToBoolean(client._params.get("close_xsoar_incident", True)):
+                entries = [handle_incoming_incident(incident_data)]
 
             reformatted_entries = []
             for entry in entries:
                 if entry:
                     reformatted_entries.append(entry)
 
-            incident_data['in_mirror_error'] = ''
+            incident_data["in_mirror_error"] = ""
 
-            return GetRemoteDataResponse(
-                mirrored_object=incident_data,
-                entries=reformatted_entries
-            )
+            return GetRemoteDataResponse(mirrored_object=incident_data, entries=reformatted_entries)
 
         else:  # no need to update this incident
-            incident_data = {
-                'id': remote_args.remote_incident_id,
-                'in_mirror_error': ""
-            }
+            incident_data = {"id": remote_args.remote_incident_id, "in_mirror_error": ""}
 
-            return GetRemoteDataResponse(
-                mirrored_object=incident_data,
-                entries=[]
-            )
+            return GetRemoteDataResponse(mirrored_object=incident_data, entries=[])
 
     except Exception as e:
-        demisto.debug(f"Error in XDR incoming mirror for incident {remote_args.remote_incident_id} \n"
-                      f"Error message: {str(e)}")
+        demisto.debug(f"Error in XDR incoming mirror for incident {remote_args.remote_incident_id} \nError message: {e!s}")
 
         if "Rate limit exceeded" in str(e):
             return_error("API rate limit")
 
         if incident_data:
-            incident_data['in_mirror_error'] = str(e)
+            incident_data["in_mirror_error"] = str(e)
             sort_all_list_incident_fields(incident_data)
 
             # deleting creation time as it keeps updating in the system
-            del incident_data['creation_time']
+            del incident_data["creation_time"]
 
         else:
-            incident_data = {
-                'id': remote_args.remote_incident_id,
-                'in_mirror_error': str(e)
-            }
+            incident_data = {"id": remote_args.remote_incident_id, "in_mirror_error": str(e)}
 
-        return GetRemoteDataResponse(
-            mirrored_object=incident_data,
-            entries=[]
-        )
+        return GetRemoteDataResponse(mirrored_object=incident_data, entries=[])
 
 
 def update_remote_system_command(client, args):
-    remote_args = UpdateRemoteSystemArgs(args)
-    incident_id = remote_args.remote_incident_id
-    remote_data = remote_args.data
-    demisto.debug(f"update_remote_system_command {incident_id=} {remote_args=}")
-    demisto.debug(f"update_remote_system_command {incident_id=} , {remote_data.get('closeReason')=}, "
-                  f"{remote_data.get('closeNotes')=}")
+    parsed_args = UpdateRemoteSystemArgs(args)
+    demisto.debug(
+        f"update_remote_system_command command args are:"
+        f"id: {parsed_args.remote_incident_id}, "
+        f"data: {parsed_args.data}, "
+        f"entries: {parsed_args.entries}, "
+        f"incident_changed: {parsed_args.incident_changed}, "
+        f"remote_incident_id: {parsed_args.remote_incident_id}, "
+        f"inc_status: {parsed_args.inc_status}, "
+        f"delta: {parsed_args.delta}"
+    )
 
-    if remote_args.delta:
-        demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
-                      f'incident {remote_args.remote_incident_id}')
     try:
-        if remote_args.incident_changed:
-            demisto.debug(f"update_remote_system_command {incident_id=} {remote_args.incident_changed=}")
-            update_args = get_update_args(remote_args)
+        if parsed_args.incident_changed:
+            demisto.debug(
+                f"For incident ID: {parsed_args.remote_incident_id} got the following"
+                f" delta keys {list(parsed_args.delta.keys())!s} to update."
+            )
+            xsoar_to_xdr_delta = get_update_args(parsed_args)
+            demisto.debug(f"update_remote_system_command: After returning from get_update_args, {xsoar_to_xdr_delta=}")
+            xsoar_to_xdr_delta["incident_id"] = parsed_args.remote_incident_id
 
-            update_args['incident_id'] = remote_args.remote_incident_id
-            demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
-            demisto.debug(f"Before checking status {update_args=}")
-            current_remote_status = remote_args.data.get('status') if remote_args.data else None
-            is_closed_delta = (update_args.get('close_reason') or update_args.get('closeReason') or update_args.get('closeNotes')
-                               or update_args.get('resolve_comment') or update_args.get('closingUserId'))
-            is_closed_data = (remote_data.get('closeReason') or remote_data.get('close_reason') or remote_data.get('closeNotes'))
-            demisto.debug(f"update_remote_system_command {is_closed_delta=}, {is_closed_data=}")
-            is_closed = is_closed_delta or is_closed_data
-            closed_without_status = not update_args.get('close_reason') and not update_args.get('closeReason')
-            remote_is_already_closed = current_remote_status in XDR_RESOLVED_STATUS_TO_XSOAR
-            demisto.debug(f"{remote_is_already_closed=}")
-            if is_closed and closed_without_status and not remote_is_already_closed:
-                update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
-            demisto.debug(f"After checking status {update_args=}")
-            update_incident_command(client, update_args)
+            should_close_xdr_incident = argToBoolean(client._params.get("close_xdr_incident", True))
+            status = ""
+            # If the client does not want to close the incident in XDR, temporarily remove the status from the arguments
+            # to update the incident, and add it back later to close the alerts.
+            if not should_close_xdr_incident and (xsoar_to_xdr_delta.get("status") in XSOAR_RESOLVED_STATUS_TO_XDR.values()):
+                status = xsoar_to_xdr_delta.pop("status")
+                resolve_comment = xsoar_to_xdr_delta.pop("resolve_comment", None)
+                demisto.debug(
+                    f"Popped status {status} and {resolve_comment=} from update_args,"
+                    f" incident status won't be updated in XDR."
+                )
 
-            close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
-            # Check all relevant fields for an incident being closed in XSOAR UI
-            demisto.debug(f"Defining whether to close related alerts by: {is_closed=} {close_alerts_in_xdr=}")
-            if is_closed and closed_without_status and remote_is_already_closed:
-                update_args['status'] = current_remote_status
-            if close_alerts_in_xdr and is_closed:
-                update_related_alerts(client, update_args)
+            demisto.debug(f"update_remote_system_command: Update incident with the following delta {xsoar_to_xdr_delta}")
+            update_incident_command(client, xsoar_to_xdr_delta)  # updating xdr with the delta
 
+            should_close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
+
+            if should_close_alerts_in_xdr and xsoar_to_xdr_delta.get("status") in XDR_RESOLVED_STATUS_TO_XSOAR:
+                if status:
+                    xsoar_to_xdr_delta["status"] = status
+                    demisto.debug(f"Restored {status=} in order to update the alerts status.")
+                update_related_alerts(client, xsoar_to_xdr_delta)
+                demisto.debug("update_remote_system_command: closed xdr alerts")
         else:
-            demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
-                          f'as it is not new nor changed')
-
-        return remote_args.remote_incident_id
+            demisto.debug(
+                f"Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is not new nor changed"
+            )
+        return parsed_args.remote_incident_id
 
     except Exception as e:
-        demisto.debug(f"Error in outgoing mirror for incident {remote_args.remote_incident_id} \n"
-                      f"Error message: {str(e)}")
+        demisto.debug(f"Error in outgoing mirror for incident {parsed_args.remote_incident_id} \nError message: {e!s}")
 
-        return remote_args.remote_incident_id
+        return parsed_args.remote_incident_id
 
 
 def update_related_alerts(client: Client, args: dict):
-    new_status = args.get('status')
-    incident_id = args.get('incident_id')
+    new_status = args.get("status")
+    incident_id = args.get("incident_id")
     comment = f"Resolved by XSOAR, due to incident {incident_id} that has been resolved."
     demisto.debug(f"{new_status=}, {comment=}")
     if not new_status:
-        raise DemistoException(f"Failed to update alerts related to incident {incident_id},"
-                               "no status found")
-    incident_extra_data = client.get_incident_extra_data(incident_id)
-    if 'alerts' in incident_extra_data and 'data' in incident_extra_data['alerts']:
-        alerts_array = incident_extra_data['alerts']['data']
-        related_alerts_ids_array = [str(alert['alert_id']) for alert in alerts_array if 'alert_id' in alert]
+        raise DemistoException(f"Failed to update alerts related to incident {incident_id},no status found")
+    incident_extra_data = client.get_incident_extra_data(incident_id=incident_id)
+    if "alerts" in incident_extra_data and "data" in incident_extra_data["alerts"]:
+        alerts_array = incident_extra_data["alerts"]["data"]
+        related_alerts_ids_array = [str(alert["alert_id"]) for alert in alerts_array if "alert_id" in alert]
         demisto.debug(f"{related_alerts_ids_array=}")
-        args_for_command = {'alert_ids': related_alerts_ids_array, 'status': new_status, 'comment': comment}
+        args_for_command = {"alert_ids": related_alerts_ids_array, "status": new_status, "comment": comment}
         return_results(update_alerts_in_xdr_command(client, args_for_command))
 
 
-def fetch_incidents(client, first_fetch_time, integration_instance, exclude_artifacts: bool, last_run: dict = None,
-                    max_fetch: int = 10, statuses: List = [], starred: Optional[bool] = None,
-                    starred_incidents_fetch_window: str = None):
+def fetch_incidents(
+    client: Client,
+    first_fetch_time,
+    integration_instance,
+    exclude_artifacts: bool,
+    last_run: dict,
+    max_fetch: int = 10,
+    statuses: list = [],
+    starred: Optional[bool] = None,
+    starred_incidents_fetch_window: str = None,
+    excluded_alert_fields: list = [],
+    remove_nulls_from_alerts: bool = True,
+):
     global ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
-    last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
-    incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
-                                                                                                dict) else []
+    last_fetch = last_run.get("time")
+    incidents_from_previous_run = last_run.get("incidents_from_previous_run", [])
+
+    next_dedup_incidents = dedup_incidents = last_run.get("dedup_incidents") or []
+
+    demisto.debug(f"{incidents_from_previous_run=}")
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
         last_fetch, _ = parse_date_range(first_fetch_time, to_timestamp=True)
+        demisto.debug(f"last_fetch after parsing date range {last_fetch}")
 
     if starred:
         starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
+        demisto.debug(f"starred_incidents_fetch_window after parsing date range {starred_incidents_fetch_window}")
 
-    incidents = []
     if incidents_from_previous_run:
+        demisto.debug("Using incidents from last run")
         raw_incidents = incidents_from_previous_run
-        ALERTS_LIMIT_PER_INCIDENTS = last_run.get('alerts_limit_per_incident', -1) if isinstance(last_run, dict) else -1
+        ALERTS_LIMIT_PER_INCIDENTS = last_run.get("alerts_limit_per_incident", -1)
+        demisto.debug(f"{ALERTS_LIMIT_PER_INCIDENTS=}")
     else:
-        if statuses:
-            raw_incidents = []
-            for status in statuses:
-                raw_incident_status = client.get_multiple_incidents_extra_data(
-                    gte_creation_time_milliseconds=last_fetch,
-                    status=status,
-                    limit=max_fetch, starred=starred,
-                    starred_incidents_fetch_window=starred_incidents_fetch_window,
-                    exclude_artifacts=exclude_artifacts)
-                raw_incidents.extend(raw_incident_status)
-            raw_incidents = sorted(raw_incidents, key=lambda inc: inc.get('incident', {}).get('creation_time'))
-        else:
-            raw_incidents = client.get_multiple_incidents_extra_data(
-                gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
-                starred=starred,
-                starred_incidents_fetch_window=starred_incidents_fetch_window,
-                exclude_artifacts=exclude_artifacts)
+        demisto.debug("Fetching incidents")
+        raw_incidents = client.get_multiple_incidents_extra_data(
+            gte_creation_time_milliseconds=last_fetch,
+            # adding len of deduped events so that we don't loop on the same incidents infinitely.
+            # There might be a case where deduped incident doesn't come back and we are returning more than the limit.
+            statuses=statuses,
+            limit=max_fetch + len(dedup_incidents),
+            starred=starred,
+            starred_incidents_fetch_window=starred_incidents_fetch_window,
+            exclude_artifacts=exclude_artifacts,
+            excluded_alert_fields=excluded_alert_fields,
+            remove_nulls_from_alerts=remove_nulls_from_alerts,
+        )
+
+    # remove duplicate incidents
+    raw_incidents = [inc for inc in raw_incidents if inc.get("incident", inc).get("incident_id") not in dedup_incidents]
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
 
     # maintain a list of non created incidents in a case of a rate limit exception
     non_created_incidents: list = raw_incidents.copy()
-    next_run = {}
     try:
-        count_incidents = 0
-
+        incidents = []
         for raw_incident in raw_incidents:
-            incident_data: dict[str, Any] = sort_incident_data(raw_incident) if raw_incident.get('incident') else raw_incident
-            incident_id = incident_data.get('incident_id')
-            alert_count = arg_to_number(incident_data.get('alert_count')) or 0
+            incident_data: dict[str, Any] = sort_incident_data(raw_incident) if raw_incident.get("incident") else raw_incident
+            incident_id = incident_data.get("incident_id")
+            incident_name = incident_data.get("incident_name")
+            alert_count = arg_to_number(incident_data.get("alert_count")) or 0
             if alert_count > ALERTS_LIMIT_PER_INCIDENTS:
                 demisto.debug(f'for incident:{incident_id} using the old call since alert_count:{alert_count} >" \
                               "limit:{ALERTS_LIMIT_PER_INCIDENTS}')
-                raw_incident_ = client.get_incident_extra_data(incident_id=incident_id)
+                raw_incident_ = client.get_incident_extra_data(
+                    incident_id=incident_id,
+                    exclude_artifacts=exclude_artifacts,
+                    excluded_alert_fields=excluded_alert_fields,
+                    remove_nulls_from_alerts=remove_nulls_from_alerts,
+                )
                 incident_data = sort_incident_data(raw_incident_)
             sort_all_list_incident_fields(incident_data)
-            incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
-                                                                     None)
-            incident_data['mirror_instance'] = integration_instance
-            incident_data['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
-            description = incident_data.get('description')
-            occurred = timestamp_to_datestring(incident_data['creation_time'], TIME_FORMAT + 'Z')
-            incident: Dict[str, Any] = {
-                'name': f'XDR Incident {incident_id} - {description}',
-                'occurred': occurred,
-                'rawJSON': json.dumps(incident_data),
+            incident_data |= {
+                "mirror_direction": MIRROR_DIRECTION.get(demisto.params().get("mirror_direction", "None")),
+                "mirror_instance": integration_instance,
+                "last_mirrored_in": int(datetime.now().timestamp() * 1000),
             }
-            if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
-                incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
+            description = incident_data.get("description")
+            occurred = timestamp_to_datestring(incident_data["creation_time"], TIME_FORMAT + "Z")
+            incident: dict[str, Any] = {
+                "name": f"XDR Incident {incident_id} - {incident_name or description}",
+                "occurred": occurred,
+                "rawJSON": json.dumps(incident_data),
+                "details": description,
+            }
+            if demisto.params().get("sync_owners") and incident_data.get("assigned_user_mail"):
+                incident["owner"] = demisto.findUser(email=incident_data["assigned_user_mail"]).get("username")
             # Update last run and add incident if the incident is newer than last fetch
-            if incident_data.get('creation_time', 0) > last_fetch:
-                last_fetch = incident_data['creation_time']
+            creation_time = incident_data.get("creation_time", 0)
+            demisto.debug(f"creation time for {incident_id=} {creation_time=}")
+            if creation_time > last_fetch:
+                demisto.debug(f"updating last_fetch,  {incident_id=}")
+                last_fetch = incident_data["creation_time"]
+                next_dedup_incidents = [incident_id]
+            elif creation_time == last_fetch:
+                demisto.debug(f"got incident at same time for dedup, {incident_id=}")
+                next_dedup_incidents.append(incident_id)
+            else:
+                demisto.debug(f"{incident_data['creation_time']=} < last_fetch; {incident_id=}")
+
             incidents.append(incident)
             non_created_incidents.remove(raw_incident)
 
-            count_incidents += 1
-            if count_incidents == max_fetch:
-                break
-
     except Exception as e:
         if "Rate limit exceeded" in str(e):
-            demisto.info(f"Cortex XDR - rate limit exceeded, number of non created incidents is: "
-                         f"'{len(non_created_incidents)}'.\n The incidents will be created in the next fetch")
+            demisto.info(
+                f"Cortex XDR - rate limit exceeded, number of non created incidents is: "
+                f"{len(non_created_incidents)!r}.\n The incidents will be created in the next fetch"
+            )
         else:
             raise
 
+    next_run = {"incidents_from_previous_run": non_created_incidents, "time": last_fetch, "dedup_incidents": next_dedup_incidents}
+
     if non_created_incidents:
-        next_run['incidents_from_previous_run'] = non_created_incidents
-        next_run['alerts_limit_per_incident'] = ALERTS_LIMIT_PER_INCIDENTS  # type: ignore[assignment]
-    else:
-        next_run['incidents_from_previous_run'] = []
+        next_run["alerts_limit_per_incident"] = ALERTS_LIMIT_PER_INCIDENTS  # type: ignore[assignment]
 
-    next_run['time'] = last_fetch + 1
-
+    demisto.debug(f"{next_run=}")
     return next_run, incidents
 
 
 def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResults:
-    status = args.get('status')
+    status = args.get("status")
 
     status = argToList(status)
-    last_seen_gte = arg_to_timestamp(
-        arg=args.get('last_seen_gte'),
-        arg_name='last_seen_gte'
-    )
+    last_seen_gte = arg_to_timestamp(arg=args.get("last_seen_gte"), arg_name="last_seen_gte")
 
-    last_seen_lte = arg_to_timestamp(
-        arg=args.get('last_seen_lte'),
-        arg_name='last_seen_lte'
-    )
+    last_seen_lte = arg_to_timestamp(arg=args.get("last_seen_lte"), arg_name="last_seen_lte")
 
-    endpoints_count, raw_res = client.get_endpoints_by_status(status, last_seen_gte=last_seen_gte,
-                                                              last_seen_lte=last_seen_lte)
+    endpoints_count, raw_res = client.get_endpoints_by_status(status, last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte)
 
-    ec = {'status': status, 'count': endpoints_count}
+    ec = {"status": status, "count": endpoints_count}
 
     return CommandResults(
-        readable_output=f'{status} endpoints count: {endpoints_count}',
-        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.EndpointsStatus',
-        outputs_key_field='status',
+        readable_output=f"{status} endpoints count: {endpoints_count}",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EndpointsStatus",
+        outputs_key_field="status",
         outputs=ec,
-        raw_response=raw_res)
+        raw_response=raw_res,
+    )
 
 
 def file_details_results(client: Client, args: Dict, add_to_context: bool) -> None:
@@ -1201,91 +1662,1271 @@ def file_details_results(client: Client, args: Dict, add_to_context: bool) -> No
 
 
 def get_contributing_event_command(client: Client, args: Dict) -> CommandResults:
-    if alert_ids := argToList(args.get('alert_ids')):
+    if alert_ids := argToList(args.get("alert_ids")):
         alerts = []
 
         for alert_id in alert_ids:
             if alert := client.get_contributing_event_by_alert_id(int(alert_id)):
-                page_number = max(int(args.get('page_number', 1)), 1) - 1  # Min & default zero (First page)
-                page_size = max(int(args.get('page_size', 50)), 0)  # Min zero & default 50
+                page_number = max(int(args.get("page_number", 1)), 1) - 1  # Min & default zero (First page)
+                page_size = max(int(args.get("page_size", 50)), 0)  # Min zero & default 50
                 offset = page_number * page_size
-                limit = max(int(args.get('limit', 0)), 0) or offset + page_size
+                limit = max(int(args.get("limit", 0)), 0) or offset + page_size
 
                 alert_with_events = {
-                    'alertID': str(alert_id),
-                    'events': alert.get('events', [])[offset:limit],
+                    "alertID": str(alert_id),
+                    "events": alert.get("events", [])[offset:limit],
                 }
                 alerts.append(alert_with_events)
 
         readable_output = tableToMarkdown(
-            'Contributing events', alerts, headerTransform=pascalToSpace, removeNull=True, is_auto_json_transform=True
+            "Contributing events", alerts, headerTransform=pascalToSpace, removeNull=True, is_auto_json_transform=True
         )
         return CommandResults(
             readable_output=readable_output,
-            outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ContributingEvent',
-            outputs_key_field='alertID',
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ContributingEvent",
+            outputs_key_field="alertID",
             outputs=alerts,
-            raw_response=alerts
+            raw_response=alerts,
         )
 
     else:
-        return CommandResults(readable_output='The alert_ids argument cannot be empty.')
+        return CommandResults(readable_output="The alert_ids argument cannot be empty.")
 
 
 def replace_featured_field_command(client: Client, args: Dict) -> CommandResults:
-    field_type = args.get('field_type', '')
-    values = argToList(args.get('values'))
+    field_type = args.get("field_type", "")
+    values = argToList(args.get("values"))
     len_values = len(values)
-    comments = argToList(args.get('comments'))[:len_values]
-    ad_type = argToList(args.get('ad_type', 'group'))[:len_values]
+    comments = argToList(args.get("comments"))[:len_values]
+    ad_type = argToList(args.get("ad_type", "group"))[:len_values]
 
-    if field_type == 'ad_groups':
+    if field_type == "ad_groups":
         fields = [
-            {
-                'value': field[0], 'comment': field[1], 'type': field[2]
-            } for field in zip_longest(values, comments, ad_type, fillvalue='')
+            {"value": field[0], "comment": field[1], "type": field[2]}
+            for field in zip_longest(values, comments, ad_type, fillvalue="")
         ]
     else:
-        fields = [
-            {'value': field[0], 'comment': field[1]} for field in zip_longest(values, comments, fillvalue='')
-        ]
+        fields = [{"value": field[0], "comment": field[1]} for field in zip_longest(values, comments, fillvalue="")]
 
     client.replace_featured_field(field_type, fields)
 
-    result = {'fieldType': field_type, 'fields': fields}
+    result = {"fieldType": field_type, "fields": fields}
 
     readable_output = tableToMarkdown(
-        f'Replaced featured: {result.get("fieldType")}', result.get('fields'), headerTransform=pascalToSpace
+        f'Replaced featured: {result.get("fieldType")}', result.get("fields"), headerTransform=pascalToSpace
     )
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.FeaturedField',
-        outputs_key_field='fieldType',
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.FeaturedField",
+        outputs_key_field="fieldType",
         outputs=result,
-        raw_response=result
+        raw_response=result,
     )
 
 
 def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
-    alerts_list = argToList(args.get('alert_ids'))
+    alerts_list = argToList(args.get("alert_ids"))
     array_of_all_ids = []
-    severity = args.get('severity')
-    status = args.get('status')
-    comment = args.get('comment')
+    severity = args.get("severity")
+    status = args.get("status")
+    comment = args.get("comment")
     if not severity and not status and not comment:
         raise DemistoException(
-            f"Can not find a field to update for alerts {alerts_list}, please fill in severity/status/comment.")
+            f"Can not find a field to update for alerts {alerts_list}, please fill in severity/status/comment."
+        )
     # API is limited to 100 alerts per request, doing the request in batches of 100.
     for index in range(0, len(alerts_list), 100):
-        alerts_sublist = alerts_list[index:index + 100]
-        demisto.debug(f'{alerts_sublist=}, {severity=}, {status=}, {comment=}')
+        alerts_sublist = alerts_list[index : index + 100]
+        demisto.debug(f"{alerts_sublist=}, {severity=}, {status=}, {comment=}")
         array_of_sublist_ids = client.update_alerts_in_xdr_request(alerts_sublist, severity, status, comment)
         array_of_all_ids += array_of_sublist_ids
     if not array_of_all_ids:
         raise DemistoException("Could not find alerts to update, please make sure you used valid alert IDs.")
-    return CommandResults(readable_output="Alerts with IDs {} have been updated successfully.".format(",".join(array_of_all_ids))
-                          )
+    return CommandResults(readable_output="Alerts with IDs {} have been updated successfully.".format(",".join(array_of_all_ids)))
+
+
+def create_filters_for_bioc_and_correlation_rules(args: dict) -> list:
+    """
+    Creates a list of filters for BIOC and correlation rules based on the provided arguments.
+
+    Args:
+        args (dict): The command arguments containing filter criteria.
+
+    Returns:
+        list: A list of filter dictionaries compatible with the Cortex XDR API.
+    """
+    filters = []
+    if name := args.get("name"):
+        filters.append({"field": "name", "operator": "EQ", "value": name})
+    if severity := args.get("severity"):
+        filters.append({"field": "severity", "operator": "EQ", "value": BIOC_AND_CR_SEVERITY_MAPPING.get(severity, severity)})
+    if bioc_type := args.get("type"):
+        filters.append({"field": "type", "operator": "EQ", "value": bioc_type})
+    if is_xql := args.get("is_xql"):
+        filters.append({"field": "is_xql", "operator": "EQ", "value": argToBoolean(is_xql)})
+    if comment := args.get("comment"):
+        filters.append({"field": "comment", "operator": "EQ", "value": comment})
+    if status := args.get("status"):
+        filters.append({"field": "status", "operator": "EQ", "value": status})
+    if indicator := args.get("indicator"):
+        filters.append({"field": "indicator", "operator": "EQ", "value": indicator})
+    if mitre_technique := argToList(args.get("mitre_technique_id_and_name")):
+        filters.append({"field": "mitre_technique_id_and_name", "operator": "EQ", "value": mitre_technique})
+    if mitre_tactic := argToList(args.get("mitre_tactic_id_and_name")):
+        filters.append({"field": "mitre_tactic_id_and_name", "operator": "EQ", "value": mitre_tactic})
+    if xql_query := args.get("xql_query"):
+        filters.append({"field": "xql_query", "operator": "EQ", "value": xql_query})
+    if is_enabled := args.get("is_enabled"):
+        filters.append({"field": "is_enabled", "operator": "EQ", "value": argToBoolean(is_enabled)})
+    if description := args.get("description"):
+        filters.append({"field": "description", "operator": "EQ", "value": description})
+    if alert_name := args.get("alert_name"):
+        filters.append({"field": "alert_name", "operator": "EQ", "value": alert_name})
+    if alert_category := args.get("alert_category"):
+        filters.append({"field": "alert_category", "operator": "EQ", "value": alert_category})
+    if alert_description := args.get("alert_description"):
+        filters.append({"field": "alert_description", "operator": "EQ", "value": alert_description})
+    if alert_fields := argToList(args.get("alert_fields")):
+        filters.append({"field": "alert_fields", "operator": "EQ", "value": alert_fields})
+    if execution_mode := args.get("execution_mode"):
+        filters.append({"field": "execution_mode", "operator": "EQ", "value": execution_mode})
+    if search_window := args.get("search_window"):
+        filters.append({"field": "search_window", "operator": "EQ", "value": search_window})
+    if simple_schedule := args.get("schedule"):
+        filters.append({"field": "schedule", "operator": "EQ", "value": simple_schedule})
+    if timezone := args.get("timezone"):
+        filters.append({"field": "timezone", "operator": "EQ", "value": timezone})
+    if crontab := args.get("schedule_linux"):
+        filters.append({"field": "schedule_linux", "operator": "EQ", "value": crontab})
+    if suppression_enabled := args.get("suppression_enabled"):
+        filters.append({"field": "suppression_enabled", "operator": "EQ", "value": argToBoolean(suppression_enabled)})
+    if suppression_duration := args.get("suppression_duration"):
+        filters.append({"field": "suppression_duration", "operator": "EQ", "value": suppression_duration})
+    if suppression_fields := args.get("suppression_fields"):
+        filters.append({"field": "suppression_fields", "operator": "EQ", "value": suppression_fields})
+    if dataset := args.get("dataset"):
+        filters.append({"field": "dataset", "operator": "EQ", "value": dataset})
+    if user_defined_severity := args.get("user_defined_severity"):
+        filters.append({"field": "user_defined_severity", "operator": "EQ", "value": user_defined_severity})
+    if user_defined_category := args.get("user_defined_category"):
+        filters.append({"field": "user_defined_category", "operator": "EQ", "value": user_defined_category})
+    if mitre_defs := args.get("mitre_defs_json"):
+        try:
+            mitre_defs_json = json.loads(mitre_defs)
+        except ValueError:
+            raise DemistoException("Unable to parse 'mitre_defs'. Please use the JSON format.")
+        filters.append({"field": "mitre_defs", "operator": "EQ", "value": mitre_defs_json})
+    if investigation_query_link := args.get("investigation_query_link"):
+        filters.append({"field": "investigation_query_link", "operator": "EQ", "value": investigation_query_link})
+    if drilldown_query_timeframe := args.get("drilldown_query_timeframe"):
+        filters.append({"field": "drilldown_query_timeframe", "operator": "EQ", "value": drilldown_query_timeframe})
+    if mapping_strategy := args.get("mapping_strategy"):
+        filters.append({"field": "mapping_strategy", "operator": "EQ", "value": mapping_strategy})
+    if alert_domain := args.get("alert_domain"):
+        filters.append({"field": "alert_domain", "operator": "EQ", "value": alert_domain})
+    return filters
+
+
+def bioc_list_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-BIOCs
+    Returns a list of BIOCs.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    filters = create_filters_for_bioc_and_correlation_rules(args)
+    page = arg_to_number(args.get("page")) or 0
+    limit = arg_to_number(args.get("limit")) or 50
+    page_size = arg_to_number(args.get("page_size")) or limit
+    extended_view = argToBoolean(args.get("extra_data", False))
+
+    request_data = assign_params(
+        extended_view=extended_view,
+        search_from=page * page_size,
+        search_to=(page + 1) * page_size,
+    )
+    request_data["filters"] = filters
+    reply = client.get_biocs({"request_data": request_data})
+    biocs = reply.get("objects", [])
+    readable_output = tableToMarkdown(
+        name="BIOCs List",
+        t=biocs,
+        headerTransform=string_to_table_header,
+        headers=["rule_id", "name", "type", "severity", "status"],
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.BIOC",
+        outputs_key_field="rule_id",
+        outputs=biocs,
+        raw_response=reply,
+    )
+
+
+def bioc_create_or_update_helper(client: Client, args: Dict) -> dict:
+    """
+    Creates or updates BIOC indicators based on provided arguments.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments containing rule configuration.
+    Returns:
+        dict: The raw response from the client containing the update/creation results.
+    """
+    bioc_data = {
+        # required for updating
+        "rule_id": args.get("rule_id"),
+        # required fields
+        "name": args.get("name"),
+        "severity": BIOC_AND_CR_SEVERITY_MAPPING.get(args.get("severity", "")),
+        # not required but need to be null
+        "type": args.get("type"),
+        "is_xql": argToBoolean(args.get("is_xql")) if args.get("is_xql") else None,
+        "comment": args.get("comment"),
+        "status": args.get("status"),
+        "mitre_technique_id_and_name": args.get("mitre_technique_id_and_name") or [],
+        "mitre_tactic_id_and_name": args.get("mitre_tactic_id_and_name") or [],
+    }
+    indicator = args.get("indicator")  # required
+    if indicator:
+        try:
+            indicator = json.loads(indicator)
+            bioc_data["indicator"] = indicator
+        except ValueError:
+            raise DemistoException("Unable to parse 'indicator'. Please use the JSON format.")
+
+    return client.insert_or_update_biocs({"request_data": [bioc_data]})
+
+
+def bioc_create_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs
+    Creates a new BIOC.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    reply = bioc_create_or_update_helper(client, args)
+    if added_objects := reply.get("added_objects", []):
+        message = added_objects[0].get("status")
+        outputs = {"rule_id": added_objects[0].get("id")}
+    else:
+        message = "No BIOCs created."
+        outputs = {}
+
+    return CommandResults(
+        readable_output=message,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.BIOC",
+        outputs_key_field="rule_id",
+        outputs=outputs,
+        raw_response=reply,
+    )
+
+
+def bioc_update_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs
+    Updates an existing BIOC.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    reply = bioc_create_or_update_helper(client, args)
+    if updated_objects := reply.get("updated_objects"):
+        message = updated_objects[0].get("status")
+        outputs = {"rule_id": updated_objects[0].get("id")}
+    else:
+        message = "No BIOCs updated."
+        outputs = {}
+
+    return CommandResults(
+        readable_output=message,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.BIOC",
+        outputs_key_field="rule_id",
+        outputs=outputs,
+        raw_response=reply,
+    )
+
+
+def bioc_delete_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-BIOCs
+    Deletes a BIOC.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        str: Success message.
+    """
+    filters: list = create_filters_for_bioc_and_correlation_rules(args)
+    request_data = {"request_data": {"filters": filters}}
+    res = client.delete_biocs(request_data)
+    rule_ids = res.get("objects", [])
+    count = len(rule_ids)
+
+    if count == 1:
+        return CommandResults(readable_output=f"BIOC with id {rule_ids[0]} deleted successfully.")
+
+    elif count > 1:
+        ids_str = ", ".join(map(str, rule_ids))
+        return CommandResults(readable_output=f"BIOCs with ids {ids_str} deleted successfully.")
+
+    else:
+        return CommandResults(readable_output="No BIOCs were found to delete.")
+
+
+def correlation_rule_list_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Returns a list of correlation rules.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    filters = create_filters_for_bioc_and_correlation_rules(args)
+    if filter_json := args.get("filter_json"):
+        try:
+            filter_json = json.loads(filter_json)
+            filters.extend(filter_json)
+        except ValueError:
+            raise DemistoException("Unable to parse 'filter_json'. Please use the JSON format.")
+
+    page = arg_to_number(args.get("page")) or 0
+    limit = arg_to_number(args.get("limit")) or 50
+    page_size = arg_to_number(args.get("page_size")) or limit
+
+    request_data = assign_params(
+        extended_view=argToBoolean(args.get("extra_data", False)),
+        search_from=page * page_size,
+        search_to=(page + 1) * page_size,
+    )
+    request_data["filters"] = filters
+    reply = client.get_correlation_rules({"request_data": request_data})
+    rules = reply.get("objects", [])
+    readable_output = tableToMarkdown(
+        name="Correlation Rules List",
+        t=rules,
+        headers=["rule_id", "name", "severity", "description", "is_enabled"],
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CorrelationRule",
+        outputs_key_field="rule_id",
+        outputs=rules,
+        raw_response=reply,
+    )
+
+
+def correlation_rule_create_or_update_helper(client: Client, args: Dict) -> dict:
+    """
+    Creates or updates correlation rules based on provided arguments.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments containing rule configuration.
+    Returns:
+        dict: The raw response from the client containing the update/creation results.
+    """
+    severity_arg = args.get("severity")
+    severity_mapped = BIOC_AND_CR_SEVERITY_MAPPING.get(severity_arg) if severity_arg else None
+
+    rule_data = {
+        # Required fields
+        "rule_id": args.get("rule_id"),
+        "name": args.get("name"),
+        "severity": severity_mapped,
+        "xql_query": args.get("xql_query"),
+        "is_enabled": argToBoolean(args.get("is_enabled")) if args.get("is_enabled") else None,
+        "action": "ALERTS",
+        "timezone": args.get("timezone"),
+        "dataset": args.get("dataset"),
+        "alert_category": args.get("alert_category", "").upper() if args.get("alert_category") else None,
+        "execution_mode": args.get("execution_mode", "").upper() if args.get("execution_mode") else None,
+        "mapping_strategy": args.get("mapping_strategy", "").upper() if args.get("mapping_strategy") else None,
+        # Use 'or None' to convert empty strings ("") into JSON null. We must put a value for those fields.
+        "description": args.get("description") or None,
+        "alert_name": args.get("alert_name") or None,
+        "alert_description": args.get("alert_description") or None,
+        "search_window": args.get("search_window") or None,
+        "crontab": args.get("schedule_linux") or None,
+        "simple_schedule": args.get("schedule") or None,
+        "drilldown_query_timeframe": args.get("drilldown_query_timeframe") or None,
+        "investigation_query_link": args.get("investigation_query_link") or None,
+        "suppression_enabled": argToBoolean(args.get("suppression_enabled")) if args.get("suppression_enabled") else None,
+        "suppression_duration": args.get("suppression_duration") or None,
+        "suppression_fields": args.get("suppression_fields") or None,
+        # User Defined Severity (Must be None unless Severity is "User Defined")
+        "user_defined_severity": args.get("user_defined_severity") or None,
+        "user_defined_category": args.get("user_defined_category") or None,
+        # Defaults to "{}" string if missing so json.loads doesn't fail
+        "mitre_defs": json.loads(args.get("mitre_defs_json") or "{}"),
+        "alert_fields": json.loads(args.get("alert_fields") or "{}"),
+    }
+
+    return client.create_or_update_correlation_rules({"request_data": [rule_data]})
+
+
+def correlation_rule_create_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-Correlation-Rules
+    Creates a new correlation rule.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    reply = correlation_rule_create_or_update_helper(client, args)
+    if added_objects := reply.get("added_objects", []):
+        message = added_objects[0].get("status")
+        outputs = {"rule_id": added_objects[0].get("id")}
+    else:
+        message = "No Correlation Rules created."
+        outputs = {}
+    return CommandResults(
+        readable_output=message,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CorrelationRule",
+        outputs_key_field="rule_id",
+        outputs=outputs,
+        raw_response=reply,
+    )
+
+
+def correlation_rule_update_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-Correlation-Rules
+    Updates an existing correlation rule.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    reply = correlation_rule_create_or_update_helper(client, args)
+    if updated_objects := reply.get("updated_objects"):
+        message = updated_objects[0].get("status")
+        outputs = {"rule_id": updated_objects[0].get("id")}
+    else:
+        message = "No Correlation Rules updated."
+        outputs = {}
+    return CommandResults(
+        readable_output=message,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CorrelationRule",
+        outputs_key_field="rule_id",
+        outputs=outputs,
+        raw_response=reply,
+    )
+
+
+def correlation_rule_delete_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs  https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-Correlation-Rules
+    Deletes correlation rules.
+    Args:
+        client (Client): The client to use.
+        args (Dict): The command arguments.
+    Returns:
+        str: Success message.
+    """
+    rule_ids = argToList(args.get("rule_id"))
+    rule_id_list = []
+    for rule_id in rule_ids:
+        try:
+            rule_id_list.append({"field": "rule_id", "operator": "EQ", "value": int(rule_id)})
+        except (ValueError, TypeError):
+            # If rule_id is None, "abc", or "", skip it safely
+            continue
+
+    reply = client.delete_correlation_rules({"request_data": {"filters": rule_id_list}})
+    deleted_ids = reply.get("objects", [])
+    objects_count = reply.get("objects_count")
+
+    if objects_count == 0:
+        status = "Could not find any correlation rules to delete."
+    elif objects_count == 1:
+        status = f"Correlation Rule {deleted_ids[0]} was deleted."
+    else:
+        ids_str = ", ".join(map(str, deleted_ids))
+        status = f"Correlation Rules {ids_str} were deleted."
+
+    return CommandResults(readable_output=status, raw_response=reply)
+
+
+def api_key_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-existing-API-keys
+    Gets a list of existing API keys.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+    Returns:
+        CommandResults: The results of the command.
+    """
+    api_ids = [int(x) for x in argToList(args.get("api_id", []))] or None
+    roles_list = argToList(args.get("role", []))
+    expires_before = (
+        arg_to_timestamp(args.get("expires_before"), arg_name="expires_before") if args.get("expires_before") else None
+    )
+    expires_after = arg_to_timestamp(args.get("expires_after"), arg_name="expires_after") if args.get("expires_after") else None
+
+    filters = []
+
+    if api_ids:
+        filters.append({"field": "id", "operator": "in", "value": api_ids})
+
+    if roles_list:
+        filters.append({"field": "roles", "operator": "contains", "value": roles_list})
+
+    if expires_before:
+        filters.append({"field": "expiration", "operator": "lte", "value": expires_before})
+
+    if expires_after:
+        filters.append({"field": "expiration", "operator": "gte", "value": expires_after})
+
+    api_keys = client.get_api_keys({"filters": filters})
+    readable_output = tableToMarkdown(
+        name="API Keys",
+        t=api_keys,
+        headers=["id", "roles", "created_by", "creation_time", "expiration", "comment"],
+        date_fields=["creation_time", "expiration"],
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.APIKeyData",
+        outputs=api_keys,
+        outputs_key_field="id",
+        raw_response=api_keys,
+    )
+
+
+def api_key_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-API-keys
+    Deletes the specified API keys.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+    Returns:
+        CommandResults: The results of the command.
+    """
+    api_ids = [int(x) for x in argToList(args.get("api_id", []))] or None
+    request_data = {"filters": [{"field": "id", "operator": "in", "value": api_ids}]}
+    client.delete_api_keys(request_data=request_data)
+    return CommandResults(readable_output="API Keys deleted successfully.")
+
+
+def get_asset_list_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Returns a list of assets.
+
+    Parameters:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object containing the assets.
+    """
+    asset_id_list = argToList(args.get("asset_id", ""))
+    sort_field = args.get("sort_field", "").lower()
+    sort_order = args.get("sort_order", "").upper()
+    filter_json = args.get("filter_json", "")
+    if filter_json:
+        try:
+            filter_json = json.loads(filter_json)
+        except ValueError:
+            raise DemistoException("Unable to parse 'filter_json'. Please use the JSON format.")
+    limit = arg_to_number(args.get("limit")) or 50
+    page_size = arg_to_number(args.get("page_size")) or limit
+    page = arg_to_number(args.get("page")) or 0
+
+    assets = []
+    if asset_id_list:
+        for asset_id in asset_id_list:
+            assets.extend(client.get_asset(asset_id))
+    else:
+        request_data: Dict[str, Any] = {
+            "request_data": {
+                "search_from": page * page_size,
+                "search_to": (page + 1) * page_size,
+            }
+        }
+        if filter_json:
+            request_data["request_data"]["filters"] = filter_json
+        if sort_field:
+            request_data["request_data"]["sort"] = [{"FIELD": sort_field, "ORDER": sort_order or "ASC"}]
+        assets = client.list_assets(request_data=request_data)
+
+    readable_assets = []
+    for asset in assets:
+        readable_asset = {
+            "ID": asset.get("xdm.asset.id"),
+            "Name": asset.get("xdm.asset.name"),
+            "Critical Cases Count": asset.get("xdm.asset.related_issues.critical_assets"),
+            "Critical Issues Count": asset.get("xdm.asset.related_issues.critical_issues"),
+        }
+        if asset.get("xdm.asset.first_observed"):
+            readable_asset["First Observed"] = timestamp_to_datestring(asset.get("xdm.asset.first_observed"))
+        if asset.get("xdm.asset.last_observed"):
+            readable_asset["Last Observed"] = timestamp_to_datestring(asset.get("xdm.asset.last_observed"))
+        readable_assets.append(readable_asset)
+
+    readable_output = tableToMarkdown(
+        name="Cortex XDR Assets",
+        t=readable_assets,
+        headers=["ID", "Name", "First Observed", "Last Observed", "Critical Cases Count", "Critical Issues Count"],
+        removeNull=True,
+    )
+
+    assets = replace_dots_in_keys(assets)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Asset",
+        outputs_key_field="xdm_asset_id",
+        outputs=assets,
+        raw_response=assets,
+    )
+
+
+def get_asset_schema_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Gets the schema of the asset inventory.
+
+    Parameters:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments (not in use).
+
+    Returns:
+    - CommandResults: A CommandResults object containing the asset schema.
+    """
+    schema = client.get_asset_schema()
+    readable_output = tableToMarkdown(
+        name="Cortex XDR Asset Schema",
+        t=schema,
+        headerTransform=string_to_table_header,
+        headers=["field_pretty_name", "field_name", "field_type"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetSchema",
+        outputs=schema,
+        outputs_key_field="field_name",
+        raw_response=schema,
+    )
+
+
+def get_asset_schema_field_options_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Gets the enum values of a specified field in the asset schema.
+
+    Parameters:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object containing the field options.
+    """
+    field_name = args.get("field_name", "")
+    options = client.get_asset_schema_field_options(field_name)
+
+    readable_output = tableToMarkdown(
+        name=f"Cortex XDR Asset Schema Options for {field_name}",
+        t=options,
+        headerTransform=string_to_table_header,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetSchema",
+        outputs_key_field="field_name",
+        outputs={"field_name": field_name, "options": options},
+        raw_response=options,
+    )
+
+
+def create_asset_group_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Creates an asset group.
+
+    Parameters:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object containing the created asset group.
+    """
+    group_name = args.get("group_name", "")
+    group_type = args.get("group_type", "")
+    group_description = args.get("group_description", "")
+    membership_predicate_json = args.get("membership_predicate_json", "")
+    if membership_predicate_json:
+        try:
+            membership_predicate_json = json.loads(membership_predicate_json)
+        except ValueError:
+            raise DemistoException("Unable to parse 'membership_predicate_json'. Please use the JSON format.")
+
+    update_data = assign_params(
+        group_name=group_name,
+        group_type=group_type,
+        group_description=group_description,
+    )
+
+    request_data = {"request_data": {"asset_group": update_data}}
+    if membership_predicate_json:
+        request_data["request_data"]["asset_group"]["membership_predicate"] = membership_predicate_json
+
+    res = client.create_asset_group(request_data=request_data)
+
+    return CommandResults(readable_output="Asset group created successfully", raw_response=res)
+
+
+def delete_asset_group_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Deletes an asset group.
+
+    Parameters:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object.
+    """
+    group_id = args.get("group_id", "")
+    client.delete_asset_group(group_id)
+    return CommandResults(readable_output="Asset group deleted successfully.")
+
+
+def list_asset_groups_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Returns a list of asset groups.
+
+    Parameters:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object containing the asset groups.
+    """
+    sort_field = args.get("sort_field", "").upper()
+    sort_order = args.get("sort_order", "").upper()
+    filter_json = args.get("filter_json", "")
+    if filter_json:
+        try:
+            filter_json = json.loads(filter_json)
+        except ValueError:
+            raise DemistoException("Unable to parse 'filter_json'. Please use the JSON format.")
+    limit = arg_to_number(args.get("limit")) or 50
+    page_size = arg_to_number(args.get("page_size")) or limit
+    page = arg_to_number(args.get("page")) or 0
+
+    request_data: Dict[str, Any] = {
+        "request_data": {
+            "search_from": page * page_size,
+            "search_to": (page + 1) * page_size,
+        }
+    }
+    if filter_json:
+        request_data["request_data"]["filters"] = filter_json
+    if sort_field:
+        request_data["request_data"]["sort"] = [{"FIELD": sort_field, "ORDER": sort_order or "ASC"}]
+
+    groups = client.list_asset_groups(request_data=request_data)
+
+    readable_groups = []
+    for group in groups:
+        readable_asset = {
+            "ID": group.get("XDM.ASSET_GROUP.ID"),
+            "Name": group.get("XDM.ASSET_GROUP.NAME"),
+            "Type": group.get("XDM.ASSET_GROUP.TYPE"),
+            "Description": group.get("XDM.ASSET_GROUP.DESCRIPTION"),
+        }
+        readable_groups.append(readable_asset)
+
+    readable_output = tableToMarkdown(
+        name="Cortex XDR Asset Groups",
+        t=readable_groups,
+        headers=["ID", "Name", "Type", "Description"],
+        headerTransform=string_to_table_header,
+        removeNull=True,
+    )
+
+    groups = replace_dots_in_keys(groups)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroup",
+        outputs_key_field="XDM_ASSET_GROUP_ID",
+        outputs=groups,
+        raw_response=groups,
+    )
+
+
+def update_asset_group_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Updates an asset group.
+
+    Parameters:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object.
+    """
+    group_id = args.get("group_id", "")
+    group_name = args.get("group_name", "")
+    group_type = args.get("group_type", "")
+    group_description = args.get("group_description", "")
+    membership_predicate_json = args.get("membership_predicate_json", "")
+    if membership_predicate_json:
+        try:
+            membership_predicate_json = json.loads(membership_predicate_json)
+        except ValueError:
+            raise DemistoException("Unable to parse 'membership_predicate_json'. Please use the JSON format.")
+
+    update_data = assign_params(
+        group_name=group_name,
+        group_type=group_type,
+        group_description=group_description,
+        membership_predicate=membership_predicate_json,
+    )
+    request_data = {"request_data": {"asset_group": update_data}}
+    client.update_asset_group(group_id, request_data=request_data)
+
+    return CommandResults(readable_output="Asset group updated successfully")
+
+
+def get_vulnerability_details_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Vulnerabilities
+    Gets vulnerability details by ID.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    vulnerability_id = args.get("vulnerability_id", "")
+    response = client.get_vulnerability_details(vulnerability_id)
+
+    hr_data = {
+        "Vulnerability ID": response.get("vulnerabilityID"),
+        "Description": response.get("description"),
+        "Score": response.get("cvss", {}).get("score"),
+        "Publish Date": arg_to_timestamp(response.get("publishedDate"), "publishedDate")
+        if response.get("publishedDate")
+        else None,
+    }
+
+    readable_output = tableToMarkdown(
+        name="Vulnerability Details",
+        t=hr_data,
+        headers=["Vulnerability ID", "Description", "Score", "Publish Date"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Vulnerability",
+        outputs_key_field="vulnerabilityID",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def endpoint_triage_preset_list_command(client: Client) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-triage-presets
+    Gets triage presets.
+    Args:
+        client (Client): The Cortex XDR client.
+    Returns:
+        CommandResults: The command results.
+    """
+    presets: list = client.get_triage_presets()
+    readable_output = tableToMarkdown(
+        name="Endpoint Triage Presets",
+        t=presets,
+        headers=["name", "uuid", "os", "type", "created_by", "description"],
+        headerTransform=string_to_table_header,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EndpointTriagePreset",
+        outputs=presets,
+        outputs_key_field="uuid",
+        raw_response=presets,
+    )
+
+
+def healthcheck_run_command(client: Client) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/System-Health-Check
+    Runs a system health check.
+    Args:
+        client (Client): The Cortex XDR client.
+    Returns:
+        CommandResults: The command results.
+    """
+    response = client.run_healthcheck()
+    status = response.get("status", "unknown")
+
+    return CommandResults(
+        readable_output=f"**Cortex XDR health status: {status}**",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.HealthStatus",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def endpoint_triage_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Initiate-Forensics-Triage
+    Initiates forensics triage on endpoints.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    agent_ids = argToList(args.get("endpoint_id"))
+    collector_uuid = args.get("collector_uuid")
+
+    request_data: Dict[str, Any] = {"agent_ids": agent_ids}
+    if collector_uuid:
+        request_data["collector_uuid"] = collector_uuid
+
+    raw_response = client.triage_endpoint({"request_data": request_data})
+
+    readable_output = tableToMarkdown(
+        name="Triage Endpoint Results",
+        t=raw_response,
+        headers=["TRIAGE_ID", "SUCCESSFUL_AGENT_IDS", "UNSUCCESSFUL_AGENT_IDS"],
+        headerTransform=string_to_table_header,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EndpointTriage",
+        outputs=raw_response,
+        outputs_key_field="EndpointTriage",
+        raw_response=raw_response,
+    )
+
+
+def automation_script_create_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Creates or updates an automation script by uploading a file.
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-a-script
+
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The results of the command.
+    """
+    entry_id = args.get("entry_id")
+    file_info = demisto.getFilePath(entry_id)
+
+    file_path = file_info.get("path", "")
+    file_name = file_info.get("name", "")
+    demisto.debug(f"Got file info {file_info}")
+
+    with open(file_path, "rb") as f:
+        file_content = f.read()
+
+    files = {"file": (file_name, file_content)}
+    client.create_automation_script(files)
+    return CommandResults(readable_output="Automation script created successfully.")
+
+
+def automation_script_get_command(client: Client, args: Dict) -> dict:
+    """
+    Gets an automation script and returns it as a file.
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-a-script
+
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+
+    Returns:
+        dict: A file result dictionary.
+    """
+    field = args.get("field", "")
+    value = args.get("value", "")
+
+    request_data = {"request_data": {"filter": {"field": field, "value": value}}}
+    file_content = client.get_automation_script(request_data)
+    return fileResult(filename=f"automation_script_{value}", data=file_content)
+
+
+def automation_script_delete_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Deletes an automation script.
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-API-keys
+
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The results of the command.
+    """
+    field = args.get("field", "")
+    value = args.get("value", "")
+
+    request_data = {"request_data": {"filter": {"field": field, "value": value}}}
+    client.delete_automation_script(request_data)
+    return CommandResults(readable_output="Automation script deleted successfully.")
+
+
+def automation_playbook_create_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Creates or updates an automation playbook by uploading a file.
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-playbooks
+
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The results of the command.
+    """
+    entry_id = args.get("entry_id")
+    file_info = demisto.getFilePath(entry_id)
+
+    demisto.debug(f"Got file info {file_info}")
+    file_path = file_info.get("path", "")
+    file_name = file_info.get("name", "")
+
+    with open(file_path, "rb") as f:
+        file_content = f.read()
+
+    files = {"file": (file_name, file_content)}
+    client.create_automation_playbook(files)
+    return CommandResults(readable_output="Automation playbook created successfully.")
+
+
+def automation_playbook_get_command(client: Client, args: Dict) -> dict:
+    """
+    Gets an automation playbook and returns it as a file.
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-a-playbook
+
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+
+    Returns:
+        dict: A file result dictionary.
+    """
+    field = args.get("field", "")
+    value = args.get("value", "")
+
+    request_data = {"request_data": {"filter": {"field": field, "value": value}}}
+    file_content = client.get_automation_playbook(request_data)
+    return fileResult(filename=f"automation_playbook_{value}", data=file_content)
+
+
+def automation_playbook_delete_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Deletes an automation playbook.
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-a-playbook
+
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The results of the command.
+    """
+    field = args.get("field", "")
+    value = args.get("value", "")
+    request_data = {"request_data": {"filter": {"field": field, "value": value}}}
+    client.delete_automation_playbook(request_data)
+    return CommandResults(readable_output="Automation playbook deleted successfully.")
+
+
+def case_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Retrieve-cases-based-on-filters
+    Returns a list of cases.
+
+    Args:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object.
+    """
+    case_ids = argToList(args.get("case_id"))
+    case_domains = argToList(args.get("case_domain"))
+    severities = argToList(args.get("severity"))
+    statuses = argToList(args.get("status"))
+    created_before = arg_to_timestamp(args.get("created_before"), "created_before") if args.get("created_before") else None
+    created_after = arg_to_timestamp(args.get("created_after"), "created_after") if args.get("created_after") else None
+    sort_field = args.get("sort_field")
+    sort_order = args.get("sort_order")
+    limit = arg_to_number(args.get("limit")) or 50
+    page_size = arg_to_number(args.get("page_size")) or limit
+    page = arg_to_number(args.get("page")) or 0
+
+    filters = []
+    if case_ids:
+        try:
+            converted_ids = list(map(int, case_ids))
+            filters.append({"field": "case_id", "operator": "in", "value": converted_ids})
+        except ValueError:
+            raise DemistoException(f"Invalid case IDs: {case_ids}. Case IDs must be a comma-separated list of integers.")
+    if case_domains:
+        filters.append({"field": "case_domain", "operator": "in", "value": case_domains})
+    if severities:
+        filters.append({"field": "severity", "operator": "in", "value": severities})
+    if statuses:
+        filters.append({"field": "status_progress", "operator": "in", "value": statuses})
+    if created_before:
+        filters.append({"field": "creation_time", "operator": "lte", "value": created_before})
+    if created_after:
+        filters.append({"field": "creation_time", "operator": "gte", "value": created_after})
+
+    request_data = {
+        "search_from": page * page_size,
+        "search_to": (page + 1) * page_size,
+        "filters": filters,
+    }
+    if sort_field:
+        request_data["sort"] = {"field": sort_field, "keyword": sort_order or "desc"}
+    else:
+        request_data["sort"] = {}
+
+    cases = client.search_cases({"request_data": request_data})
+
+    readable_output = tableToMarkdown(
+        name="Cortex XDR Cases",
+        t=cases,
+        headers=["case_id", "case_name", "case_domain", "creation_time", "modification_time", "description"],
+        date_fields=["creation_time", "modification_time"],
+        headerTransform=string_to_table_header,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
+        outputs_key_field="case_id",
+        outputs=cases,
+        raw_response=cases,
+    )
+
+
+def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Update-existing-case
+    Updates an existing case.
+
+    Args:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - CommandResults: A CommandResults object.
+    """
+    resolve_reason_mapper = {
+        "resolved_known_issue": "Resolved - Known Issue",
+        "resolved_duplicate": "Resolved - Duplicate Issue",
+        "resolved_false_positive": "Resolved - False Positive",
+        "resolved_other": "Resolved - Other",
+    }
+
+    case_id = args.get("case_id", "")  # required
+    status = args.get("status", "").upper() if args.get("status") else None
+    resolve_reason = resolve_reason_mapper.get(args.get("resolve_reason", ""))
+    resolve_comment = args.get("resolve_comment")
+
+    update_data = assign_params(
+        status_progress=status,
+        resolve_reason=resolve_reason,
+        resolve_comment=resolve_comment,
+    )
+
+    client.update_case(case_id, request_data={"request_data": {"update_data": update_data}})
+
+    return CommandResults(readable_output=f"Case {case_id} updated successfully")
+
+
+def case_artifact_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Retrieve-Case-Artifacts-by-Case-Id
+    Retrieves artifacts for a specific case.
+    Args:
+    - client (Client): The client to use for the request.
+    - args (dict): The command arguments.
+
+    Returns:
+    - List[CommandResults]: A list of CommandResults objects.
+    """
+    case_id = args.get("case_id", "")
+    artifacts = client.get_case_artifacts(case_id)
+    if isinstance(artifacts, list) and len(artifacts) > 0:
+        artifacts = artifacts[0]
+
+    network_artifacts = artifacts.get("network_artifacts", {}).get("DATA", [])
+    file_artifacts = artifacts.get("file_artifacts", {}).get("DATA", [])
+
+    command_results = []
+
+    if network_artifacts:
+        command_results.append(
+            CommandResults(
+                readable_output=tableToMarkdown(
+                    name=f"Network Artifacts for Case {case_id}",
+                    t=network_artifacts,
+                    headerTransform=string_to_table_header,
+                    removeNull=True,
+                ),
+                outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CaseNetworkArtifact",
+                outputs=network_artifacts,
+                raw_response=network_artifacts,
+            )
+        )
+
+    if file_artifacts:
+        command_results.append(
+            CommandResults(
+                readable_output=tableToMarkdown(
+                    name=f"File Artifacts for Case {case_id}",
+                    t=file_artifacts,
+                    headerTransform=string_to_table_header,
+                    removeNull=True,
+                ),
+                outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CaseFileArtifact",
+                outputs=file_artifacts,
+                raw_response=file_artifacts,
+            )
+        )
+
+    if not command_results:
+        command_results.append(CommandResults(readable_output=f"No artifacts found for case {case_id}"))
+
+    return command_results
 
 
 def main():  # pragma: no cover
@@ -1294,445 +2935,564 @@ def main():  # pragma: no cover
     """
     command = demisto.command()
     params = demisto.params()
-    LOG(f'Command being called is {command}')
+    LOG(f"Command being called is {command}")
     # using two different credentials object as they both fields need to be encrypted
-    first_fetch_time = params.get('fetch_time', '3 days')
-    base_url = urljoin(params.get('url'), '/public_api/v1')
-    proxy = params.get('proxy')
-    verify_cert = not params.get('insecure', False)
-    statuses = params.get('status')
-    starred = True if params.get('starred') else None
-    starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
-    exclude_artifacts = argToBoolean(params.get('exclude_fields', True))
-    xdr_delay = arg_to_number(params.get('xdr_delay')) or 1
+    first_fetch_time = params.get("fetch_time", "3 days")
+    base_url = urljoin(params.get("url"), "/public_api/v1")
+    proxy = params.get("proxy")
+    verify_cert = not params.get("insecure", False)
+    statuses = params.get("status")
+    starred = True if params.get("starred") else None
+    starred_incidents_fetch_window = params.get("starred_incidents_fetch_window", "3 days")
+    exclude_artifacts = argToBoolean(params.get("exclude_fields", True))
+    excluded_alert_fields = argToList(params.get("excluded_alert_fields"))
+    excluded_alert_fields, remove_nulls_from_alerts = handle_excluded_data_from_alerts_param(excluded_alert_fields)
+    xdr_delay = arg_to_number(params.get("xdr_delay")) or 1
     try:
-        timeout = int(params.get('timeout', 120))
+        timeout = int(params.get("timeout", 120))
     except ValueError as e:
-        demisto.debug(f'Failed casting timeout parameter to int, falling back to 120 - {e}')
+        demisto.debug(f"Failed casting timeout parameter to int, falling back to 120 - {e}")
         timeout = 120
     try:
-        max_fetch = int(params.get('max_fetch', 10))
+        max_fetch = int(params.get("max_fetch", 10))
     except ValueError as e:
-        demisto.debug(f'Failed casting max fetch parameter to int, falling back to 10 - {e}')
+        demisto.debug(f"Failed casting max fetch parameter to int, falling back to 10 - {e}")
         max_fetch = 10
 
-    client = Client(
-        base_url=base_url,
-        proxy=proxy,
-        verify=verify_cert,
-        timeout=timeout,
-        params=params
-    )
+    client = Client(base_url=base_url, proxy=proxy, verify=verify_cert, timeout=timeout, params=params)
 
     args = demisto.args()
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
     try:
-        if command == 'test-module':
+        if command == "test-module":
             client.test_module(first_fetch_time)
-            demisto.results('ok')
+            demisto.results("ok")
 
-        elif command == 'fetch-incidents':
+        elif command == "fetch-incidents":
             integration_instance = demisto.integrationInstance()
-            next_run, incidents = fetch_incidents(client=client,
-                                                  first_fetch_time=first_fetch_time,
-                                                  integration_instance=integration_instance,
-                                                  exclude_artifacts=exclude_artifacts,
-                                                  last_run=demisto.getLastRun().get('next_run'),
-                                                  max_fetch=max_fetch,
-                                                  statuses=statuses,
-                                                  starred=starred,
-                                                  starred_incidents_fetch_window=starred_incidents_fetch_window,
-                                                  )
+            last_run = demisto.getLastRun().get("next_run", {})
+            demisto.debug(f"Before starting a new cycle of fetch incidents\n{last_run=}\n{integration_instance=}")
+            next_run, incidents = fetch_incidents(
+                client=client,
+                first_fetch_time=first_fetch_time,
+                integration_instance=integration_instance,
+                exclude_artifacts=exclude_artifacts,
+                last_run=last_run,
+                max_fetch=max_fetch,
+                statuses=statuses,
+                starred=starred,
+                starred_incidents_fetch_window=starred_incidents_fetch_window,
+                excluded_alert_fields=excluded_alert_fields,
+                remove_nulls_from_alerts=remove_nulls_from_alerts,
+            )
+            demisto.debug(f"Finished a fetch incidents cycle, {next_run=}.Fetched {len(incidents)} incidents.")
+            # demisto.debug(f"{incidents=}") # uncomment to debug, otherwise spams the log
+
             last_run_obj = demisto.getLastRun()
-            last_run_obj['next_run'] = next_run
+            last_run_obj["next_run"] = next_run
+            demisto.debug(f"full next run: {last_run_obj=}")
             demisto.setLastRun(last_run_obj)
             demisto.incidents(incidents)
 
-        elif command == 'xdr-get-incidents':
+        elif command == "xdr-get-incidents":
+            # This command is Deprecated
             return_outputs(*get_incidents_command(client, args))
 
-        elif command == 'xdr-get-incident-extra-data':
+        elif command == "xdr-asset-list":
+            return_results(get_asset_list_command(client, args))
+
+        elif command == "xdr-asset-schema-get":
+            return_results(get_asset_schema_command(client, args))
+
+        elif command == "xdr-asset-schema-field-options-get":
+            return_results(get_asset_schema_field_options_command(client, args))
+
+        elif command == "xdr-asset-group-create":
+            return_results(create_asset_group_command(client, args))
+
+        elif command == "xdr-asset-group-delete":
+            return_results(delete_asset_group_command(client, args))
+
+        elif command == "xdr-asset-group-list":
+            return_results(list_asset_groups_command(client, args))
+
+        elif command == "xdr-asset-group-update":
+            return_results(update_asset_group_command(client, args))
+
+        elif command == "xdr-get-incident-extra-data":
             return_outputs(*get_incident_extra_data_command(client, args))
 
-        elif command == 'xdr-update-incident':
+        elif command == "xdr-update-incident":
+            # This command is Deprecated
             return_outputs(*update_incident_command(client, args))
 
-        elif command == 'xdr-get-endpoints':
+        elif command == "xdr-get-endpoints":
             return_results(get_endpoints_command(client, args))
 
-        elif command == 'xdr-endpoint-alias-change':
+        elif command == "xdr-endpoint-alias-change":
             return_results(endpoint_alias_change_command(client, **args))
 
-        elif command == 'xdr-insert-parsed-alert':
+        elif command == "xdr-insert-parsed-alert":
             return_outputs(*insert_parsed_alert_command(client, args))
 
-        elif command == 'xdr-insert-cef-alerts':
+        elif command == "xdr-insert-cef-alerts":
             return_outputs(*insert_cef_alerts_command(client, args))
 
-        elif command == 'xdr-isolate-endpoint':
+        elif command == "xdr-isolate-endpoint":
             return_results(isolate_endpoint_command(client, args))
 
-        elif command == 'xdr-endpoint-isolate':
-            polling_args = {
-                **args,
-                "endpoint_id_list": args.get('endpoint_id')
-            }
-            return_results(run_polling_command(client=client,
-                                               args=polling_args,
-                                               cmd="xdr-endpoint-isolate",
-                                               command_function=isolate_endpoint_command,
-                                               command_decision_field="action_id",
-                                               results_function=get_endpoints_command,
-                                               polling_field="is_isolated",
-                                               polling_value=["AGENT_ISOLATED"],
-                                               stop_polling=True))
+        elif command == "xdr-endpoint-isolate":
+            polling_args = {**args, "endpoint_id_list": args.get("endpoint_id")}
+            return_results(
+                run_polling_command(
+                    client=client,
+                    args=polling_args,
+                    cmd="xdr-endpoint-isolate",
+                    command_function=isolate_endpoint_command,
+                    command_decision_field="action_id",
+                    results_function=get_endpoints_command,
+                    polling_field="is_isolated",
+                    polling_value=["AGENT_ISOLATED"],
+                    stop_polling=True,
+                )
+            )
 
-        elif command == 'xdr-unisolate-endpoint':
+        elif command == "xdr-unisolate-endpoint":
             return_results(unisolate_endpoint_command(client, args))
 
-        elif command == 'xdr-endpoint-unisolate':
-            polling_args = {
-                **args,
-                "endpoint_id_list": args.get('endpoint_id')
-            }
-            return_results(run_polling_command(client=client,
-                                               args=polling_args,
-                                               cmd="xdr-endpoint-unisolate",
-                                               command_function=unisolate_endpoint_command,
-                                               command_decision_field="action_id",
-                                               results_function=get_endpoints_command,
-                                               polling_field="is_isolated",
-                                               polling_value=["AGENT_UNISOLATED",
-                                                              "CANCELLED",
-                                                              "ֿPENDING_ABORT",
-                                                              "ABORTED",
-                                                              "EXPIRED",
-                                                              "COMPLETED_PARTIAL",
-                                                              "COMPLETED_SUCCESSFULLY",
-                                                              "FAILED",
-                                                              "TIMEOUT"],
-                                               stop_polling=True))
+        elif command == "xdr-endpoint-unisolate":
+            polling_args = {**args, "endpoint_id_list": args.get("endpoint_id")}
+            return_results(
+                run_polling_command(
+                    client=client,
+                    args=polling_args,
+                    cmd="xdr-endpoint-unisolate",
+                    command_function=unisolate_endpoint_command,
+                    command_decision_field="action_id",
+                    results_function=get_endpoints_command,
+                    polling_field="is_isolated",
+                    polling_value=[
+                        "AGENT_UNISOLATED",
+                        "CANCELLED",
+                        "ֿPENDING_ABORT",
+                        "ABORTED",
+                        "EXPIRED",
+                        "COMPLETED_PARTIAL",
+                        "COMPLETED_SUCCESSFULLY",
+                        "FAILED",
+                        "TIMEOUT",
+                    ],
+                    stop_polling=True,
+                )
+            )
 
-        elif command == 'xdr-get-distribution-url':
-            return_outputs(*get_distribution_url_command(client, args))
+        elif command == "xdr-get-distribution-url":
+            return_results(get_distribution_url_command(client, args))
 
-        elif command == 'xdr-get-create-distribution-status':
+        elif command == "xdr-get-create-distribution-status":
             return_outputs(*get_distribution_status_command(client, args))
 
-        elif command == 'xdr-get-distribution-versions':
+        elif command == "xdr-get-distribution-versions":
             return_outputs(*get_distribution_versions_command(client, args))
 
-        elif command == 'xdr-create-distribution':
+        elif command == "xdr-create-distribution":
             return_outputs(*create_distribution_command(client, args))
 
-        elif command == 'xdr-get-audit-management-logs':
+        elif command == "xdr-get-audit-management-logs":
             return_outputs(*get_audit_management_logs_command(client, args))
 
-        elif command == 'xdr-get-audit-agent-reports':
+        elif command == "xdr-get-audit-agent-reports":
             return_outputs(*get_audit_agent_reports_command(client, args))
 
-        elif command == 'xdr-quarantine-files':
+        elif command == "xdr-quarantine-files":
             return_results(quarantine_files_command(client, args))
 
-        elif command == 'xdr-file-quarantine':
-            return_results(run_polling_command(client=client,
-                                               args=args,
-                                               cmd="xdr-file-quarantine",
-                                               command_function=quarantine_files_command,
-                                               command_decision_field="action_id",
-                                               results_function=action_status_get_command,
-                                               polling_field="status",
-                                               polling_value=["PENDING",
-                                                              "IN_PROGRESS",
-                                                              "PENDING_ABORT"]))
+        elif command == "xdr-file-quarantine":
+            return_results(
+                run_polling_command(
+                    client=client,
+                    args=args,
+                    cmd="xdr-file-quarantine",
+                    command_function=quarantine_files_command,
+                    command_decision_field="action_id",
+                    results_function=action_status_get_command,
+                    polling_field="status",
+                    polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
+                )
+            )
 
-        elif command == 'core-quarantine-files':
-            polling_args = {
-                **args,
-                "endpoint_id": argToList(args.get("endpoint_id_list"))[0]
-            }
-            return_results(run_polling_command(client=client,
-                                               args=polling_args,
-                                               cmd="core-quarantine-files",
-                                               command_function=quarantine_files_command,
-                                               command_decision_field="action_id",
-                                               results_function=action_status_get_command,
-                                               polling_field="status",
-                                               polling_value=["PENDING",
-                                                              "IN_PROGRESS",
-                                                              "PENDING_ABORT"]))
+        elif command == "core-quarantine-files":
+            polling_args = {**args, "endpoint_id": argToList(args.get("endpoint_id_list"))[0]}
+            return_results(
+                run_polling_command(
+                    client=client,
+                    args=polling_args,
+                    cmd="core-quarantine-files",
+                    command_function=quarantine_files_command,
+                    command_decision_field="action_id",
+                    results_function=action_status_get_command,
+                    polling_field="status",
+                    polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
+                )
+            )
 
-        elif command == 'xdr-get-quarantine-status':
+        elif command == "xdr-get-quarantine-status":
             return_results(get_quarantine_status_command(client, args))
 
-        elif command == 'xdr-restore-file':
+        elif command == "xdr-restore-file":
             return_results(restore_file_command(client, args))
 
-        elif command == 'xdr-file-restore':
-            return_results(run_polling_command(client=client,
-                                               args=args,
-                                               cmd="xdr-file-restore",
-                                               command_function=restore_file_command,
-                                               command_decision_field="action_id",
-                                               results_function=action_status_get_command,
-                                               polling_field="status",
-                                               polling_value=["PENDING",
-                                                              "IN_PROGRESS",
-                                                              "PENDING_ABORT"]))
+        elif command == "xdr-file-restore":
+            return_results(
+                run_polling_command(
+                    client=client,
+                    args=args,
+                    cmd="xdr-file-restore",
+                    command_function=restore_file_command,
+                    command_decision_field="action_id",
+                    results_function=action_status_get_command,
+                    polling_field="status",
+                    polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
+                )
+            )
 
-        elif command == 'xdr-endpoint-scan':
+        elif command == "xdr-endpoint-scan":
             return_results(endpoint_scan_command(client, args))
 
-        elif command == 'xdr-endpoint-scan-execute':
-            return_results(run_polling_command(client=client,
-                                               args=args,
-                                               cmd="xdr-endpoint-scan-execute",
-                                               command_function=endpoint_scan_command,
-                                               command_decision_field="action_id",
-                                               results_function=action_status_get_command,
-                                               polling_field="status",
-                                               polling_value=["PENDING",
-                                                              "IN_PROGRESS",
-                                                              "PENDING_ABORT"]))
+        elif command == "xdr-endpoint-scan-execute":
+            return_results(
+                run_polling_command(
+                    client=client,
+                    args=args,
+                    cmd="xdr-endpoint-scan-execute",
+                    command_function=endpoint_scan_command,
+                    command_decision_field="action_id",
+                    results_function=action_status_get_command,
+                    polling_field="status",
+                    polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
+                )
+            )
 
-        elif command == 'xdr-endpoint-scan-abort':
+        elif command == "xdr-endpoint-scan-abort":
             return_results(endpoint_scan_abort_command(client, args))
 
-        elif command == 'get-mapping-fields':
+        elif command == "get-mapping-fields":
             return_results(get_mapping_fields_command())
 
-        elif command == 'get-remote-data':
-            return_results(get_remote_data_command(client, args))
+        elif command == "get-remote-data":
+            return_results(get_remote_data_command(client, args, excluded_alert_fields, remove_nulls_from_alerts))
 
-        elif command == 'update-remote-system':
+        elif command == "update-remote-system":
             return_results(update_remote_system_command(client, args))
 
-        elif command == 'xdr-delete-endpoints':
+        elif command == "xdr-delete-endpoints":
             return_outputs(*delete_endpoints_command(client, args))
 
-        elif command == 'xdr-get-policy':
+        elif command == "xdr-get-policy":
             return_outputs(*get_policy_command(client, args))
 
-        elif command == 'xdr-get-endpoint-device-control-violations':
+        elif command == "xdr-get-endpoint-device-control-violations":
             return_outputs(*get_endpoint_device_control_violations_command(client, args))
 
-        elif command == 'xdr-retrieve-files':
+        elif command == "xdr-retrieve-files":
             return_results(retrieve_files_command(client, args))
 
-        elif command == 'xdr-file-retrieve':
-            polling = run_polling_command(client=client,
-                                          args=args,
-                                          cmd="xdr-file-retrieve",
-                                          command_function=retrieve_files_command,
-                                          command_decision_field="action_id",
-                                          results_function=action_status_get_command,
-                                          polling_field="status",
-                                          polling_value=["PENDING",
-                                                         "IN_PROGRESS",
-                                                         "PENDING_ABORT"])
+        elif command == "xdr-file-retrieve":
+            polling = run_polling_command(
+                client=client,
+                args=args,
+                cmd="xdr-file-retrieve",
+                command_function=retrieve_files_command,
+                command_decision_field="action_id",
+                results_function=action_status_get_command,
+                polling_field="status",
+                polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
+            )
             raw = polling.raw_response
             # raw is the response returned by the get-action-status
             if polling.scheduled_command:
                 return_results(polling)
                 return
-            status = raw[0].get('status')  # type: ignore
-            if status == 'COMPLETED_SUCCESSFULLY':
+            status = raw[0].get("status")  # type: ignore
+            if status == "COMPLETED_SUCCESSFULLY":
                 file_details_results(client, args, True)
             else:  # status is not in polling value and operation was not COMPLETED_SUCCESSFULLY
-                polling.outputs_prefix = f'{args.get("integration_context_brand", "CoreApiModule")}' \
-                                         f'.RetrievedFiles(val.action_id == obj.action_id)'
+                polling.outputs_prefix = (
+                    f'{args.get("integration_context_brand", "CoreApiModule")}.RetrievedFiles(val.action_id == obj.action_id)'
+                )
                 return_results(polling)
 
-        elif command == 'xdr-retrieve-file-details':
+        elif command == "xdr-retrieve-file-details":
             file_details_results(client, args, False)
 
-        elif command == 'xdr-get-scripts':
+        elif command == "xdr-get-scripts":
             return_outputs(*get_scripts_command(client, args))
 
-        elif command == 'xdr-get-script-metadata':
+        elif command == "xdr-get-script-metadata":
             return_outputs(*get_script_metadata_command(client, args))
 
-        elif command == 'xdr-get-script-code':
+        elif command == "xdr-get-script-code":
             return_outputs(*get_script_code_command(client, args))
 
-        elif command == 'xdr-action-status-get':
+        elif command == "xdr-action-status-get":
             return_results(action_status_get_command(client, args))
 
-        elif command == 'get-modified-remote-data':
-            last_run_mirroring: Dict[str, Any] = demisto.getLastRun()
+        elif command == "get-modified-remote-data":
+            last_run_mirroring: Dict[Any, Any] = get_last_mirror_run() or {}
+            demisto.debug(f"before get-modified-remote-data, last run={last_run_mirroring}")
 
             modified_incidents, next_mirroring_time = get_modified_remote_data_command(
                 client=client,
                 args=demisto.args(),
-                mirroring_last_update=last_run_mirroring.get('mirroring_last_update', ''),
+                mirroring_last_update=last_run_mirroring.get("mirroring_last_update", ""),
                 xdr_delay=xdr_delay,
             )
-            last_run_mirroring['mirroring_last_update'] = next_mirroring_time
-            demisto.setLastRun(last_run_mirroring)
+            last_run_mirroring["mirroring_last_update"] = next_mirroring_time
+            set_last_mirror_run(last_run_mirroring)
+            demisto.debug(f"after get-modified-remote-data, last run={last_run_mirroring}")
+            demisto.debug(f"IDs of modified remote incidents {modified_incidents.modified_incident_ids=}")
             return_results(modified_incidents)
 
-        elif command == 'xdr-script-run':  # used with polling = true always
+        elif command == "xdr-script-run":  # used with polling = true always
             return_results(script_run_polling_command(args, client))
 
-        elif command == 'xdr-run-script':
+        elif command == "xdr-run-script":
             return_results(run_script_command(client, args))
 
-        elif command == 'xdr-run-snippet-code-script':
+        elif command == "xdr-run-snippet-code-script":
             return_results(run_snippet_code_script_command(client, args))
 
-        elif command == 'xdr-snippet-code-script-execute':
-            return_results(run_polling_command(client=client,
-                                               args=args,
-                                               cmd="xdr-snippet-code-script-execute",
-                                               command_function=run_snippet_code_script_command,
-                                               command_decision_field="action_id",
-                                               results_function=action_status_get_command,
-                                               polling_field="status",
-                                               polling_value=["PENDING",
-                                                              "IN_PROGRESS",
-                                                              "PENDING_ABORT"]))
+        elif command == "xdr-snippet-code-script-execute":
+            return_results(
+                run_polling_command(
+                    client=client,
+                    args=args,
+                    cmd="xdr-snippet-code-script-execute",
+                    command_function=run_snippet_code_script_command,
+                    command_decision_field="action_id",
+                    results_function=action_status_get_command,
+                    polling_field="status",
+                    polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
+                )
+            )
 
-        elif command == 'xdr-get-script-execution-status':
+        elif command == "xdr-get-script-execution-status":
             return_results(get_script_execution_status_command(client, args))
 
-        elif command == 'xdr-get-script-execution-results':
+        elif command == "xdr-get-script-execution-results":
             return_results(get_script_execution_results_command(client, args))
 
-        elif command == 'xdr-get-script-execution-result-files':
+        elif command == "xdr-get-script-execution-result-files":
             return_results(get_script_execution_result_files_command(client, args))
 
-        elif command == 'xdr-get-cloud-original-alerts':
+        elif command == "xdr-get-cloud-original-alerts":
             return_results(get_original_alerts_command(client, args))
 
-        elif command == 'xdr-get-alerts':
+        elif command == "xdr-get-alerts":
             return_results(get_alerts_by_filter_command(client, args))
 
-        elif command == 'xdr-run-script-execute-commands':
+        elif command == "xdr-run-script-execute-commands":
             return_results(run_script_execute_commands_command(client, args))
 
-        elif command == 'xdr-script-commands-execute':
-            return_results(run_polling_command(client=client,
-                                               args=args,
-                                               cmd="xdr-script-commands-execute",
-                                               command_function=run_script_execute_commands_command,
-                                               command_decision_field="action_id",
-                                               results_function=action_status_get_command,
-                                               polling_field="status",
-                                               polling_value=["PENDING",
-                                                              "IN_PROGRESS",
-                                                              "PENDING_ABORT"]))
+        elif command == "xdr-script-commands-execute":
+            return_results(
+                run_polling_command(
+                    client=client,
+                    args=args,
+                    cmd="xdr-script-commands-execute",
+                    command_function=run_script_execute_commands_command,
+                    command_decision_field="action_id",
+                    results_function=action_status_get_command,
+                    polling_field="status",
+                    polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
+                )
+            )
 
-        elif command == 'xdr-run-script-delete-file':
+        elif command == "xdr-run-script-delete-file":
             return_results(run_script_delete_file_command(client, args))
 
-        elif command == 'xdr-file-delete-script-execute':
-            return_results(run_polling_command(client=client,
-                                               args=args,
-                                               cmd="xdr-file-delete-script-execute",
-                                               command_function=run_script_delete_file_command,
-                                               command_decision_field="action_id",
-                                               results_function=action_status_get_command,
-                                               polling_field="status",
-                                               polling_value=["PENDING",
-                                                              "IN_PROGRESS",
-                                                              "PENDING_ABORT"]))
+        elif command == "xdr-file-delete-script-execute":
+            return_results(
+                run_polling_command(
+                    client=client,
+                    args=args,
+                    cmd="xdr-file-delete-script-execute",
+                    command_function=run_script_delete_file_command,
+                    command_decision_field="action_id",
+                    results_function=action_status_get_command,
+                    polling_field="status",
+                    polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
+                )
+            )
 
-        elif command == 'xdr-run-script-file-exists':
+        elif command == "xdr-run-script-file-exists":
             return_results(run_script_file_exists_command(client, args))
 
-        elif command == 'xdr-file-exist-script-execute':
-            return_results(run_polling_command(client=client,
-                                               args=args,
-                                               cmd="xdr-file-exist-script-execute",
-                                               command_function=run_script_file_exists_command,
-                                               command_decision_field="action_id",
-                                               results_function=action_status_get_command,
-                                               polling_field="status",
-                                               polling_value=["PENDING",
-                                                              "IN_PROGRESS",
-                                                              "PENDING_ABORT"]))
+        elif command == "xdr-file-exist-script-execute":
+            return_results(
+                run_polling_command(
+                    client=client,
+                    args=args,
+                    cmd="xdr-file-exist-script-execute",
+                    command_function=run_script_file_exists_command,
+                    command_decision_field="action_id",
+                    results_function=action_status_get_command,
+                    polling_field="status",
+                    polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
+                )
+            )
 
-        elif command == 'xdr-run-script-kill-process':
+        elif command == "xdr-run-script-kill-process":
             return_results((client, args))
 
-        elif command == 'xdr-kill-process-script-execute':
-            return_results(run_polling_command(client=client,
-                                               args=args,
-                                               cmd="xdr-kill-process-script-execute",
-                                               command_function=run_script_kill_process_command,
-                                               command_decision_field="action_id",
-                                               results_function=action_status_get_command,
-                                               polling_field="status",
-                                               polling_value=["PENDING",
-                                                              "IN_PROGRESS",
-                                                              "PENDING_ABORT"]))
+        elif command == "xdr-kill-process-script-execute":
+            return_results(
+                run_polling_command(
+                    client=client,
+                    args=args,
+                    cmd="xdr-kill-process-script-execute",
+                    command_function=run_script_kill_process_command,
+                    command_decision_field="action_id",
+                    results_function=action_status_get_command,
+                    polling_field="status",
+                    polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
+                )
+            )
 
-        elif command == 'endpoint':
+        elif command == "endpoint":
             return_results(endpoint_command(client, args))
 
-        elif command == 'xdr-get-endpoints-by-status':
+        elif command == "xdr-get-endpoints-by-status":
             return_results(get_endpoints_by_status_command(client, args))
 
-        elif command == 'xdr-blocklist-files':
+        elif command == "xdr-blocklist-files":
             return_results(blocklist_files_command(client, args))
 
-        elif command == 'xdr-blacklist-files':
-            args['prefix'] = 'blacklist'
+        elif command == "xdr-blacklist-files":
+            args["prefix"] = "blacklist"
             return_results(blocklist_files_command(client, args))
 
-        elif command == 'xdr-allowlist-files':
+        elif command == "xdr-allowlist-files":
             return_results(allowlist_files_command(client, args))
 
-        elif command == 'xdr-whitelist-files':
-            args['prefix'] = 'whitelist'
+        elif command == "xdr-whitelist-files":
+            args["prefix"] = "whitelist"
             return_results(allowlist_files_command(client, args))
 
-        elif command == 'xdr-remove-blocklist-files':
+        elif command == "xdr-remove-blocklist-files":
             return_results(remove_blocklist_files_command(client, args))
 
-        elif command == 'xdr-remove-allowlist-files':
+        elif command == "xdr-remove-allowlist-files":
             return_results(remove_allowlist_files_command(client, args))
 
-        elif command == 'xdr-get-contributing-event':
+        elif command == "xdr-get-contributing-event":
             return_results(get_contributing_event_command(client, args))
 
-        elif command == 'xdr-replace-featured-field':
+        elif command == "xdr-replace-featured-field":
             return_results(replace_featured_field_command(client, args))
 
-        elif command == 'xdr-endpoint-tag-add':
+        elif command == "xdr-endpoint-tag-add":
             return_results(add_tag_to_endpoints_command(client, args))
 
-        elif command == 'xdr-endpoint-tag-remove':
+        elif command == "xdr-endpoint-tag-remove":
             return_results(remove_tag_from_endpoints_command(client, args))
 
-        elif command == 'xdr-get-tenant-info':
+        elif command == "xdr-get-tenant-info":
             return_results(get_tenant_info_command(client))
 
-        elif command == 'xdr-list-users':
+        elif command == "xdr-list-users":
             return_results(list_users_command(client, args))
 
-        elif command == 'xdr-list-risky-users':
+        elif command == "xdr-list-risky-users":
             return_results(list_risky_users_or_host_command(client, "user", args))
 
-        elif command == 'xdr-list-risky-hosts':
+        elif command == "xdr-list-risky-hosts":
             return_results(list_risky_users_or_host_command(client, "host", args))
 
-        elif command == 'xdr-list-user-groups':
+        elif command == "xdr-list-user-groups":
             return_results(list_user_groups_command(client, args))
 
-        elif command == 'xdr-list-roles':
+        elif command == "xdr-list-roles":
             return_results(list_roles_command(client, args))
 
-        elif command in ('xdr-set-user-role', 'xdr-remove-user-role'):
+        elif command in ("xdr-set-user-role", "xdr-remove-user-role"):
             return_results(change_user_role_command(client, args))
 
-        elif command == 'xdr-update-alert':
+        elif command == "xdr-update-alert":
             return_results(update_alerts_in_xdr_command(client, args))
+
+        elif command == "xdr-bioc-list":
+            return_results(bioc_list_command(client, args))
+
+        elif command == "xdr-bioc-create":
+            return_results(bioc_create_command(client, args))
+
+        elif command == "xdr-bioc-update":
+            return_results(bioc_update_command(client, args))
+
+        elif command == "xdr-bioc-delete":
+            return_results(bioc_delete_command(client, args))
+
+        elif command == "xdr-correlation-rule-list":
+            return_results(correlation_rule_list_command(client, args))
+
+        elif command == "xdr-correlation-rule-create":
+            return_results(correlation_rule_create_command(client, args))
+
+        elif command == "xdr-correlation-rule-update":
+            return_results(correlation_rule_update_command(client, args))
+
+        elif command == "xdr-correlation-rule-delete":
+            return_results(correlation_rule_delete_command(client, args))
+
+        elif command == "xdr-api-key-list":
+            return_results(api_key_list_command(client, args))
+
+        elif command == "xdr-api-key-delete":
+            return_results(api_key_delete_command(client, args))
+
+        elif command == "xdr-vulnerability-details-get":
+            return_results(get_vulnerability_details_command(client, args))
+
+        elif command == "xdr-healthcheck-run":
+            return_results(healthcheck_run_command(client))
+
+        elif command == "xdr-endpoint-triage-preset-list":
+            return_results(endpoint_triage_preset_list_command(client))
+
+        elif command == "xdr-endpoint-triage":
+            return_results(endpoint_triage_command(client, args))
+        elif command == "xdr-automation-script-create":
+            return_results(automation_script_create_command(client, args))
+
+        elif command == "xdr-automation-script-get":
+            return_results(automation_script_get_command(client, args))
+
+        elif command == "xdr-automation-script-delete":
+            return_results(automation_script_delete_command(client, args))
+
+        elif command == "xdr-automation-playbook-create":
+            return_results(automation_playbook_create_command(client, args))
+
+        elif command == "xdr-automation-playbook-get":
+            return_results(automation_playbook_get_command(client, args))
+
+        elif command == "xdr-automation-playbook-delete":
+            return_results(automation_playbook_delete_command(client, args))
+
+        elif command == "xdr-case-list":
+            return_results(case_list_command(client, args))
+
+        elif command == "xdr-case-update":
+            return_results(case_update_command(client, args))
+
+        elif command == "xdr-case-artifact-list":
+            return_results(case_artifact_list_command(client, args))
 
     except Exception as err:
         return_error(str(err))
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

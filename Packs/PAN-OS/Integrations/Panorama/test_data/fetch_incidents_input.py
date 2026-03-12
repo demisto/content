@@ -1,6 +1,6 @@
 from datetime import datetime
-import dateparser
 
+import dateparser
 
 """ Last Run Dict Structure Example
 lastRun =
@@ -39,7 +39,7 @@ def assert_datetime_objects(returned: datetime | None, expected: datetime | None
 case_query_without_time_filter = (
     "(query without time filter)",
     utc_time_twelve,
-    "(query without time filter) and (time_generated geq '2022/01/01 12:00:00')",
+    "((query without time filter)) and (time_generated geq '2022/01/01 12:00:00')",
 )
 test_add_time_filter_to_query_parameter_args = [case_query_without_time_filter]
 
@@ -117,12 +117,8 @@ case_first_fetch = (
     first_fetch,
     {"X_log_type": "(X_log_type query)", "Y_log_type": "(Y_log_type query)"},
     {
-        "X_log_type": dateparser.parse(
-            "2022-01-01 11:00:00 UTC", settings={"TIMEZONE": "UTC"}
-        ),
-        "Y_log_type": dateparser.parse(
-            "2022-01-01 11:00:00 UTC", settings={"TIMEZONE": "UTC"}
-        ),
+        "X_log_type": dateparser.parse("2022-01-01 11:00:00 UTC", settings={"TIMEZONE": "UTC"}),
+        "Y_log_type": dateparser.parse("2022-01-01 11:00:00 UTC", settings={"TIMEZONE": "UTC"}),
     },
 )
 
@@ -131,12 +127,8 @@ case_one_incident_type_previously_fetched_fetch = (
     first_fetch,
     {"X_log_type": "(X_log_type query)", "Y_log_type": "(Y_log_type query)"},
     {
-        "X_log_type": dateparser.parse(
-            "2022-01-01 11:00:00 UTC", settings={"TIMEZONE": "UTC"}
-        ),
-        "Y_log_type": dateparser.parse(
-            "2022-01-01 11:00:00 UTC", settings={"TIMEZONE": "UTC"}
-        ),
+        "X_log_type": dateparser.parse("2022-01-01 11:00:00 UTC", settings={"TIMEZONE": "UTC"}),
+        "Y_log_type": dateparser.parse("2022-01-01 11:00:00 UTC", settings={"TIMEZONE": "UTC"}),
     },
 )
 
@@ -145,12 +137,8 @@ case_two_incidents_types_previously_fetched_fetch = (
     first_fetch,
     {"X_log_type": "(X_log_type query)", "Y_log_type": "(Y_log_type query)"},
     {
-        "X_log_type": dateparser.parse(
-            "2022-01-01 11:00:00 UTC", settings={"TIMEZONE": "UTC"}
-        ),
-        "Y_log_type": dateparser.parse(
-            "2022-01-01 13:00:00 UTC", settings={"TIMEZONE": "UTC"}
-        ),
+        "X_log_type": dateparser.parse("2022-01-01 11:00:00 UTC", settings={"TIMEZONE": "UTC"}),
+        "Y_log_type": dateparser.parse("2022-01-01 13:00:00 UTC", settings={"TIMEZONE": "UTC"}),
     },
 )
 

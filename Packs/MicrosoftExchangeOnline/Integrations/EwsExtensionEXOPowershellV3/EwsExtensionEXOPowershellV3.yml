@@ -1,4 +1,5 @@
 category: Email
+provider: Microsoft
 sectionorder:
 - Connect
 - Collect
@@ -384,6 +385,103 @@ script:
       type: string
     description: Add new items to the Tenant Allow/Block Lists.  Uses PowerShell New-TenantAllowBlockListItems cmdlet.
     execution: true
+  - name: ews-email-security-block-sender-office-365-quick-action
+    prettyname: "[Email Security] Block Sender - Office 365"
+    quickaction: true
+    hidden: true
+    arguments:
+    - name: entries
+      required: true
+      description: A comma-separated list of entries to add to the list (e.g. "Item1,Item2").
+      isArray: true
+      prettyname: Email Sender
+      prettypredefined:
+        Issue email sender: ${issue.xdmemailsender}
+    - name: list_type
+      defaultValue: sender
+      auto: PREDEFINED
+      predefined:
+      - sender
+      - filehash
+      - url
+      description: List type to add items to.
+    - name: list_subtype
+      auto: PREDEFINED
+      predefined:
+      - Tenant
+      - AdvancedDelivery
+      - Submission
+      description: List subtype to add items to.
+      defaultValue: Tenant
+    - name: action
+      hidden: true
+      defaultValue: Block
+      auto: PREDEFINED
+      predefined:
+      - Block
+      - Allow
+      description: Action to set for new entries.
+    - name: notes
+      description: Notes to include on new list entries.
+    - name: expiration_date
+      description: Enter a specific date and time for the new entries to expire using ISO format "YYYY-MM-DDTHH:MM:SSZ" for UTC time.  Alternately, a PowerShell **GetDate** statement can be used.
+    - name: no_expiration
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      description: Specify whether to create list entries with no expiration date.  Cannot be used with "expiration_date".  If left false and no expiration date is set, default of 30 days will be used.
+      defaultValue: 'true'
+    outputs:
+    - contextPath: EWS.NewTenantBlocks.Action
+      description: List type ('Block' or 'Allow').
+      type: string
+    - contextPath: EWS.NewTenantBlocks.EntryValueHash
+      description: Entry Value Hash.
+      type: string
+    - contextPath: EWS.NewTenantBlocks.Error
+      description: Error (if any) returned by remote command.
+    - contextPath: EWS.NewTenantBlocks.ExpirationDate
+      description: DateTime the entry will expire and be removed.
+      type: string
+    - contextPath: EWS.NewTenantBlocks.Identity
+      description: Unique identifier for the entry.
+      type: string
+    - contextPath: EWS.NewTenantBlocks.LastModifiedDateTime
+      description: DateTime of last modification.
+      type: string
+    - contextPath: EWS.NewTenantBlocks.ListSubType
+      description: List sub type (Tenant or AdvancedDelivery).
+      type: string
+    - contextPath: EWS.NewTenantBlocks.ModifiedBy
+      description: User / App Registration which last modified this entry.
+      type: string
+    - contextPath: EWS.NewTenantBlocks.Notes
+      description: Custom notes added to the entry.
+      type: string
+    - contextPath: EWS.NewTenantBlocks.ObjectState
+      description: State of the object (e.g. New/Modified/Deleted).
+      type: string
+    - contextPath: EWS.NewTenantBlocks.PSComputerName
+      description: Name of Remote Powershell endpoint.
+      type: string
+    - contextPath: EWS.NewTenantBlocks.PSShowComputerName
+      description: Flag whether or not remote computer name is shown in PS prompt.
+      type: boolean
+    - contextPath: EWS.NewTenantBlocks.RunspaceId
+      description: RunspaceID of the entry.
+      type: string
+    - contextPath: EWS.NewTenantBlocks.SubmissionID
+      description: SubmissionID of the entry.
+      type: string
+    - contextPath: EWS.NewTenantBlocks.SysManaged
+      description: SysManaged property of the entry.
+      type: boolean
+    - contextPath: EWS.NewTenantBlocks.Value
+      description: The value of the new entry created.
+      type: string
+    description: Add new items to the Tenant Allow/Block Lists.  Uses PowerShell New-TenantAllowBlockListItems cmdlet.
+    execution: true
   - name: ews-get-tenant-allow-block-list-items
     arguments:
     - name: list_type
@@ -607,15 +705,13 @@ script:
     - description: A comma-separated list of recipient email addresses by which to filter the results.
       isArray: true
       name: recipient_address
-    - description: The source IP address by which to filter the results. For incoming messages, the value of from_ip is the public IP address of the SMTP email server that sent the message. For outgoing messages from Exchange Online, the value is blank.
-      isArray: true
+    - description: The source IP address used to filter results. For incoming messages, from_ip is the public IP of the SMTP server that sent the message. For outgoing messages from Exchange Online, the value is blank.
       name: from_ip
-    - description: The destination IP address by which to filter the results. For outgoing messages, the value of to_ip is the public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, the value is blank.
-      isArray: true
+    - description: The destination IP address used to filter results. For outgoing messages, the to_ip value is the public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, this value is blank.
       name: to_ip
     - description: The Message-ID header field of the message by which to filter the results. This value is also known as the Client ID. The format of the Message-ID depends on the messaging server that sent the message. The value should be unique for each message. However, not all messaging servers create values for the Message-ID in the same way. Be sure to include the full Message ID string (which may include angle brackets) and enclose the value in quotation marks (for example,"d9683b4c-127b-413a-ae2e-fa7dfb32c69d@DM3NAM06BG401.Eop-nam06.prod.protection.outlook.com").
       name: message_id
-    - description: The message trace ID to be used with the recipient address to uniquely identify a message trace and obtain more details. A message trace ID is generated for every message that''s processed by the system.
+    - description: The message trace ID to be used with the recipient address to uniquely identify a message trace and obtain more details. A message trace ID is generated for every message that's processed by the system.
       name: message_trace_id
     - defaultValue: '1'
       description: The page number of the results you want to view. Can be an integer between 1 and 1000.
@@ -638,12 +734,13 @@ script:
       - Expanded
       - Quarantined
       - FilteredAsSpam
-    description: 'Searches message data for the last 10 days. If you run this command without any arguments, only data from the last 48 hours is returned.
+    description: '(Deprecated) Searches message data for the last 10 days. If you run this command without any arguments, only data from the last 48 hours is returned.
 
       If you enter a start date that is older than 10 days, you will receive an error and the command will return no results.
 
       This command returns a maximum of 1,000,000 results, and will timeout on very large queries. If your query returns too many results, consider splitting it up using shorter start_date and end_date intervals.'
     name: ews-message-trace-get
+    deprecated: true
     outputs:
     - contextPath: EWS.MessageTrace.FromIP
       description: The public IP address of the SMTP email server that sent the message.
@@ -681,6 +778,83 @@ script:
     - contextPath: EWS.MessageTrace.EndDate
       description: Message trace end date.
       type: Date
+    - contextPath: EWS.MessageTrace.Status
+      description: Message status.
+      type: String
+    - contextPath: EWS.MessageTrace.Subject
+      description: Message subject.
+      type: String
+  - arguments:
+    - description: A comma-separated list of sender email addresses used to filter results.
+      isArray: true
+      name: sender_address
+    - description: A comma-separated list of recipient email addresses used to filter results.
+      isArray: true
+      name: recipient_address
+    - description: The source IP address used to filter results. For incoming messages, from_ip is the public IP of the SMTP server that sent the message. For outgoing messages from Exchange Online, the value is blank.
+      name: from_ip
+    - description: The destination IP address used to filter results. For outgoing messages, the to_ip value is the public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, this value is blank.
+      name: to_ip
+    - description: The Message-ID header field used to filter results, also known as the Client ID, should be unique for each message. The format depends on the sending server, and not all servers generate it the same way. Include the full Message-ID string (may include angle brackets) and enclose it in quotes, e.g., "d9683b4c-127b-413a-ae2e-fa7dfb32c69d@DM3NAM06BG401.Eop-nam06.prod.protection.outlook.com".
+      isArray: true
+      name: message_id
+    - description: The message trace ID to be used with the recipient address to uniquely identify a message trace and obtain more details. A message trace ID is generated for every message that's processed by the system.
+      name: message_trace_id
+    - description: "The start date of the date range. Use the short date format defined in the Regional Options settings on the computer where you run the command. For example, if the format is mm/dd/yyyy, enter 09/01/2018 to specify September 1, 2018. You can enter the date only, or the date and time. If entering both date and time, enclose the value in quotation marks (\") — for example, \"09/01/2018 5:00 PM. Valid input is from 10 days ago until now. The default is 48 hours ago."
+      name: start_date
+    - description: "The end date of the date range. Use the short date format defined in the Regional Options settings on the computer where you run the command. For example, enter 09/01/2018 to specify September 1, 2018. You can enter the date only, or the date and time (enclose the value in quotation marks, e.g., \"09/01/2018 5:00 PM\"). Valid input is from the start_date until now. The default is now."
+      name: end_date
+    - auto: PREDEFINED
+      description: "The status of the message. Can be one of the following:\n  * GettingStatus: The message is pending a status update.\n  * Failed: The message delivery was attempted but failed, or the message was filtered as spam, malware, or by transport rules.\n  * Pending: Message delivery is in progress or was deferred and is being retried.\n  * Delivered: The message was successfully delivered to its destination.\n  * Expanded: No message was delivered because the message was sent to a distribution group; the group's membership was expanded instead.\n  * Quarantined: The message was quarantined.\n  * FilteredAsSpam: The message was marked as spam.\n"
+      isArray: true
+      name: status
+      predefined:
+      - GettingStatus
+      - Failed
+      - Pending
+      - Delivered
+      - Expanded
+      - Quarantined
+      - FilteredAsSpam
+    - description: Filters results by the subject of the message. If the value contains spaces, enclose it in quotation marks (").
+      name: subject
+    - description: "The subject_filter_type parameter specifies how the value of the subject parameter is evaluated. Valid values are:\n  * Contains\n  * EndsWith\n  * StartsWith\n It is recommend to use StartsWith or EndsWith instead of Contains whenever possible."
+      name: subject_filter_type
+    - description: The starting_recipient_address parameter is used with the end_date parameter to query subsequent data while avoiding duplicates. For subsequent queries, use the Recipient address and Received Time from the last record of the previous results as the values for starting_recipient_address and end_date, respectively.
+      name: starting_recipient_address
+    - description: The limit parameter specifies the maximum number of results to return. A valid value is from 1 to 5000. The default value is 1000.
+      name: limit
+    description: 'Searches message data from the last 90 days. If you run this command without any arguments, only data from the last 48 hours is returned.
+
+      If you enter a start date that is older than 90 days, you will receive an error and the command will return no results.
+
+      This command returns a maximum of 1,000,000 results, and will timeout on very large queries. If your query returns too many results, consider splitting it up using shorter start_date and end_date intervals.'
+    name: ews-message-trace-list
+    outputs:
+    - contextPath: EWS.MessageTrace.FromIP
+      description: The public IP address of the SMTP email server that sent the message.
+      type: String
+    - contextPath: EWS.MessageTrace.ToIP
+      description: The public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, the value is blank.
+      type: String
+    - contextPath: EWS.MessageTrace.MessageId
+      description: Message-ID header field of the message.
+      type: String
+    - contextPath: EWS.MessageTrace.MessageTraceId
+      description: Message trace ID of the message.
+      type: String
+    - contextPath: EWS.MessageTrace.Received
+      description: Message receive time.
+      type: Date
+    - contextPath: EWS.MessageTrace.RecipientAddress
+      description: Message recipient address.
+      type: String
+    - contextPath: EWS.MessageTrace.SenderAddress
+      description: Message sender address.
+      type: String
+    - contextPath: EWS.MessageTrace.Size
+      description: Message size in bytes.
+      type: Number
     - contextPath: EWS.MessageTrace.Status
       description: Message status.
       type: String
@@ -2000,6 +2174,12 @@ script:
       - 'true'
       description: Specify whether the output should be compressed.
     - name: entity_type
+      auto: PREDEFINED
+      predefined:
+        - Email
+        - SharePointOnline
+        - Teams
+        - DataLossPrevention
       description: The type of entity being exported.
     - name: force_conversion_to_mime
       auto: PREDEFINED
@@ -2008,11 +2188,11 @@ script:
       - 'true'
       description: Specify whether to force conversion to MIME format.
     - name: password
-      description: Password to encrypt the exported file.
+      description: Password to encrypt the exported file. Using this argument requires 'compress_output' argument to be set to true.
     - name: reason_for_export
-      description: Reason for exporting the message.
+      description: Reason for exporting the message. Using this argument requires 'compress_output' argument to be set to true.
     - name: recipient_address
-      description: Email address to send the exported message to.
+      description: Filters the results by the recipient's email address.
     outputs:
     - contextPath: EWS.ExportQuarantineMessage.BodyEncoding
       description: Encoding used for the body of the message.
@@ -2026,37 +2206,57 @@ script:
     - contextPath: EWS.ExportQuarantineMessage.Organization
       description: Identifier for the organization associated with the message.
       type: string
-    description: Export quarantine messages. Uses PowerShell Export-QuarantineMessage
-      cmdlet.
+    description: Export quarantine messages. Uses PowerShell Export-QuarantineMessage cmdlet.
     execution: true
   - name: ews-get-quarantinemessage
     arguments:
     - name: identity
       description: The identity of a single message to retrieve.
     - name: entity_type
-      description: The type of entity being retrieved.
+      auto: PREDEFINED
+      predefined:
+      - Email
+      - SharePointOnline
+      - Teams
+      - DataLossPrevention
+      description: Filters by entity workload type.
     - name: recipient_address
-      description: Email address of the recipient.
+      description: Filters by the recipient email address.
     - name: sender_address
-      description: Email address of the sender.
+      description: Filters by the sender email address.
     - name: teams_conversation_types
-      description: Types of Teams conversations to retrieve.
+      hidden: true
+      deprecated: true
+      auto: PREDEFINED
+      predefined:
+      - ResultNotFound
+      - OneOnOne
+      - GroupChat
+      - TeamChat
+      - MeetingChat
+      - Sms
+      description: Filters by one or more Teams conversation types.
+      isArray: true
     - name: direction
-      description: Direction of the message (Inbound/Outbound).
+      auto: PREDEFINED
+      predefined:
+      - Inbound
+      - Outbound
+      description: The message direction (inbound or outbound).
     - name: domain
       description: Domain associated with the message.
     - name: end_expires_date
       description: End date for the message expiration.
     - name: end_received_date
-      description: End date for when the message was received.
+      description: The end of the received message date range. Supports the format 'MM/dd/yyyy HH:mm:ss'.
     - name: include_messages_from_blocked_sender_address
       auto: PREDEFINED
       predefined:
       - 'false'
       - 'true'
-      description: Include messages from blocked sender addresses.
+      description: Whether to include messages from blocked sender addresses.
     - name: message_id
-      description: ID of the message.
+      description: The internet message ID (client ID) found in the email headers.
     - name: my_items
       auto: PREDEFINED
       predefined:
@@ -2066,27 +2266,63 @@ script:
     - name: page
       description: Page number for pagination.
     - name: page_size
-      description: Number of items per page.
+      description: The number of items per page. Maximum is 1000.
+      defaultValue: '50'
     - name: policy_name
       description: Name of the policy associated with the message.
     - name: policy_types
-      description: Types of policies associated with the message.
+      auto: PREDEFINED
+      predefined:
+      - SafeAttachmentPolicy
+      - HostedContentFilterPolicy
+      - ExchangeTransportRule
+      - DataLossPreventionRule
+      - AntiMalwarePolicy
+      - AntiPhishPolicy
+      description: Filter by types of policies.
+      isArray: true
     - name: quarantine_types
-      description: Types of quarantine associated with the message.
+      auto: PREDEFINED
+      predefined:
+      - Spam
+      - TransportRule
+      - Bulk
+      - Phish
+      - HighConfPhish
+      - Malware
+      - SPOMalware
+      - DataLossPrevention
+      - FileTypeBlock
+      - AdminTriggered
+      - PPI
+      description: Filters by one or more quarantine types.
+      isArray: true
     - name: recipient_tag
-      description: Tag associated with the recipient.
+      auto: PREDEFINED
+      predefined:
+      - "Priority Account"
+      description: Filters by the priority tag associated with the recipient.
     - name: release_status
-      description: Release status of the message.
+      auto: PREDEFINED
+      predefined:
+      - Approved
+      - Denied
+      - Error
+      - NotReleased
+      - PreparingToRelease
+      - Released
+      - Requested
+      description: Filters by the message release status.
     - name: reported
       auto: PREDEFINED
       predefined:
       - 'false'
       - 'true'
-      description: Include only reported messages.
+      description: Whether to include only reported messages.
     - name: start_expires_date
       description: Start date for the message expiration.
     - name: start_received_date
-      description: Start date for when the message was received.
+      description: The start of the received message date range. Supported format  'MM/dd/yyyy HH:mm:ss'.
     - name: subject
       description: Subject of the message.
     - name: type
@@ -2224,13 +2460,12 @@ script:
     - contextPath: EWS.GetQuarantineMessage.Type
       description: Type of the message.
       type: string
-    description: Retrieve quarantine messages. Uses PowerShell Get-QuarantineMessage
-      cmdlet.
+    description: Retrieve quarantine messages. Uses PowerShell Get-QuarantineMessage cmdlet.
     execution: true
   - name: ews-release-quarantinemessage
     arguments:
     - name: user
-      description: The user associated with the quarantine message.
+      description: The email address of the user you want to release the quarantined message to.
     - name: identities
       description: A comma-separated list of identities of the messages to release.
       isArray: true
@@ -2249,7 +2484,13 @@ script:
       - 'true'
       description: Specify whether to allow the sender.
     - name: entity_type
-      description: The type of entity being released.
+      auto: PREDEFINED
+      predefined:
+      - Email
+      - SharePointOnline
+      - Teams
+      - DataLossPrevention
+      description: The entity workload type being released.
     - name: force
       auto: PREDEFINED
       predefined:
@@ -2263,9 +2504,14 @@ script:
       - 'true'
       description: Specify whether to report the message as a false positive.
     - name: action_type
-      description: The type of action to take when releasing the message.
-    description: Release quarantine messages. Uses PowerShell Release-QuarantineMessage
-      cmdlet.
+      auto: PREDEFINED
+      predefined:
+      - Release
+      - Deny
+      - Request
+      description: The action to perform on the quarantined message.
+      defaultValue: 'Release'
+    description: Releases the quarantined messages. Uses the PowerShell Release-QuarantineMessage cmdlet.
     execution: true
   - name: ews-remove-tenant-allow-block-list-items
     arguments:
@@ -2339,7 +2585,82 @@ script:
     - contextPath: EWS.RemovedTenantBlocks.Value
       description: The value of the entry that was removed.
       type: string
-    description: Remove items from the Tenant Allow/Block Lists.   You can delete items by their value or by unique ID.  Uses PowerShell cmdlet Remove-TenantAllowBlockListItems cmdlet.
+    description: Remove items from the tenant's Allow/Block Lists. You can delete items by their value or by their unique ID. Uses the PowerShell cmdlet Remove-TenantAllowBlockListItems cmdlet.
+  - name: ews-email-security-unblock-sender-office-365-quick-action
+    prettyname: "[Email Security] Unblock Sender - Office 365"
+    quickaction: true
+    hidden: true
+    arguments:
+    - name: entries
+      required: true
+      description: Entries to remove from the list.  Either use this OR 'ids' to specify items to remove.  Separate multiple entries with a comma (e.g. "Item1,Item2").
+      isArray: true
+      prettyname: Email Sender
+      prettypredefined:
+        Issue email sender: ${issue.xdmemailsender}
+    - name: ids
+      description: Entry IDs to remove from the list.  Either use this OR 'entries' to specify items to remove.  Separate multiple entries with a comma (e.g. "Item1,Item2").
+    - name: list_type
+      defaultValue: sender
+      description: List type to remove items from.
+    - name: list_subtype
+      auto: PREDEFINED
+      predefined:
+      - Tenant
+      - AdvancedDelivery
+      - Submission
+      description: List the subtype to remove items from.
+      defaultValue: Tenant
+    outputs:
+    - contextPath: EWS.RemovedTenantBlocks.Action
+      description: Action.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.EntryValueHash
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.Error
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.ExpirationDate
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.Identity
+      description: Blank for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.LastModifiedDateTime
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.ListSubType
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.ModifiedBy
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.Notes
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.ObjectState
+      description: State of the object (Deleted).
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.PSComputerName
+      description: Name of Remote Powershell endpoint.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.PSShowComputerName
+      description: Flag whether or not remote computer name is shown in PS prompt.
+      type: boolean
+    - contextPath: EWS.RemovedTenantBlocks.RunspaceId
+      description: RunspaceID of the entry.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.SubmissionID
+      description: SubmissionID of the entry.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.SysManaged
+      description: SysManaged property of the entry.
+      type: boolean
+    - contextPath: EWS.RemovedTenantBlocks.Value
+      description: The value of the entry that was removed.
+      type: string
+    description: Remove items from the Tenant's Allow/Block Lists. You can delete items by their value or by their unique ID. Uses the PowerShell cmdlet Remove-TenantAllowBlockListItems cmdlet.
   - name: ews-rule-list
     arguments:
     - name: mailbox
@@ -2349,18 +2670,18 @@ script:
       description: Maximum number of rules to get. A value of 0 means to get all rules.
       name: limit
     outputs:
-      - contextPath: EWS.Rule.RuleIdentity
-        description: The rule identity.
-        type: string
-      - contextPath: EWS.Rule.Name
-        description: The rule name.
-        type: string
-      - contextPath: EWS.Rule.Enabled
-        description: Whether the rule is enabled or not.
-        type: string
-      - contextPath: EWS.Rule.Priority
-        description: The priorty of the rule.
-        type: string
+    - contextPath: EWS.Rule.RuleIdentity
+      description: The rule identity.
+      type: string
+    - contextPath: EWS.Rule.Name
+      description: The rule name.
+      type: string
+    - contextPath: EWS.Rule.Enabled
+      description: Whether the rule is enabled or not.
+      type: string
+    - contextPath: EWS.Rule.Priority
+      description: The priorty of the rule.
+      type: string
     description: Retrieve a list of an Inbox rules.
   - name: ews-get-rule
     arguments:
@@ -2402,9 +2723,183 @@ script:
       description: The Inbox rule that you want to remove.
       required: true
     description: Remove an Inbox rule.
+  - name: ews-rule-disable
+    arguments:
+    - name: mailbox
+      description: The mailbox that contains the inbox rule.
+      required: true
+    - name: identity
+      description: The inbox rule that you want to disable.
+      required: true
+    description: Disable an existing inbox rule in a given mailbox.
+  - name: ews-rule-enable
+    arguments:
+    - name: mailbox
+      description: The mailbox that contains the inbox rule.
+      required: true
+    - name: identity
+      description: The inbox rule that you want to enable.
+      required: true
+    description: Enable an existing inbox rule in a given mailbox.
+  - name: ews-mail-flow-rules-list
+    arguments:
+    - name: extended_output
+      description: Determine whether the output will be in verbose format or not.
+      required: false
+      defaultValue: false
+    - name: limit
+      description: The maximum number of results to retrieve. Default is 1000.
+      required: false
+      defaultValue: '1000'
+    outputs:
+    - contextPath: EWS.MailFlowRule.Size
+      description: The size of the mail flow rule in bytes, typically related to the storage or data usage of the rule.
+      type: Number
+    - contextPath: EWS.MailFlowRule.ExpiryDate
+      description: The date and time when the mail flow rule is set to expire and no longer apply.
+      type: Date
+    - contextPath: EWS.MailFlowRule.Mode
+      description: The operational mode of the rule, indicating whether it is active (`Enforce`), in testing mode (`Test`), or disabled.
+      type: string
+    - contextPath: EWS.MailFlowRule.Quarantine
+      description: Specifies whether the rule actions include quarantining messages that match the rule.
+      type: Boolean
+    - contextPath: EWS.MailFlowRule.Guid
+      description: The unique identifier (Globally Unique Identifier) for the mail flow rule.
+      type: string
+    - contextPath: EWS.MailFlowRule.OrganizationId
+      description: The identifier for the organization where the mail flow rule is configured, typically used in multi-tenant environments.
+      type: string
+    - contextPath: EWS.MailFlowRule.DistinguishedName
+      description: The distinguished name of the mail flow rule in the Exchange directory structure.
+      type: string
+    - contextPath: EWS.MailFlowRule.IsValid
+      description: Indicates whether the mail flow rule is valid and functional.
+      type: Boolean
+    - contextPath: EWS.MailFlowRule.Conditions
+      description: The conditions that trigger the mail flow rule, such as specific senders, recipients, or message properties.
+      type: Unknown
+    - contextPath: EWS.MailFlowRule.Comments
+      description: Free-form text field for adding comments or notes about the rule, typically used for documentation.
+      type: Unknown
+    - contextPath: EWS.MailFlowRule.WhenChanged
+      description: The date and time when the mail flow rule was last modified.
+      type: Date
+    - contextPath: EWS.MailFlowRule.Description
+      description: A brief description of the mail flow rule's purpose or functionality.
+      type: string
+    - contextPath: EWS.MailFlowRule.Actions
+      description: The actions taken when a message matches the rule's conditions, such as redirecting, blocking, or adding headers.
+      type: Unknown
+    - contextPath: EWS.MailFlowRule.ImmutableId
+      description: A persistent, unchangeable identifier for the mail flow rule, ensuring it remains identifiable across modifications.
+      type: Unknown
+    - contextPath: EWS.MailFlowRule.Identity
+      description: The identity of the rule, often combining the name and unique identifiers, used to reference the rule programmatically.
+      type: string
+    - contextPath: EWS.MailFlowRule.Name
+      description: The user-friendly name of the mail flow rule, typically used for easy identification.
+      type: string
+    - contextPath: EWS.MailFlowRule.CreatedBy
+      description: The user or process that created the mail flow rule.
+      type: string
+    - contextPath: EWS.MailFlowRule.RouteMessageOutboundConnector
+      description: Specifies whether messages matching the rule should be routed through a specific outbound connector.
+      type: Unknown
+    description: List all mail flow rules (transport rules) in the organization.
+  - name: ews-mail-flow-rule-get
+    arguments:
+    - name: identity
+      description: The rule that you want to view.
+      required: true
+    - name: extended_output
+      description: Determine whether the output will be in verbose format or not.
+      required: false
+      defaultValue: false
+    outputs:
+    - contextPath: EWS.MailFlowRule.Size
+      description: The size of the mail flow rule in bytes, typically related to the storage or data usage of the rule.
+      type: Number
+    - contextPath: EWS.MailFlowRule.ExpiryDate
+      description: The date and time when the mail flow rule is set to expire and no longer apply.
+      type: Date
+    - contextPath: EWS.MailFlowRule.Mode
+      description: The operational mode of the rule, indicating whether it is active (`Enforce`), in testing mode (`Test`), or disabled.
+      type: string
+    - contextPath: EWS.MailFlowRule.Quarantine
+      description: Specifies whether the rule actions include quarantining messages that match the rule.
+      type: Boolean
+    - contextPath: EWS.MailFlowRule.Guid
+      description: The unique identifier (Globally Unique Identifier) for the mail flow rule.
+      type: string
+    - contextPath: EWS.MailFlowRule.OrganizationId
+      description: The identifier for the organization where the mail flow rule is configured, typically used in multi-tenant environments.
+      type: string
+    - contextPath: EWS.MailFlowRule.DistinguishedName
+      description: The distinguished name of the mail flow rule in the Exchange directory structure.
+      type: string
+    - contextPath: EWS.MailFlowRule.IsValid
+      description: Indicates whether the mail flow rule is valid and functional.
+      type: Boolean
+    - contextPath: EWS.MailFlowRule.Conditions
+      description: The conditions that trigger the mail flow rule, such as specific senders, recipients, or message properties.
+      type: Unknown
+    - contextPath: EWS.MailFlowRule.Comments
+      description: Free-form text field for adding comments or notes about the rule, typically used for documentation.
+      type: Unknown
+    - contextPath: EWS.MailFlowRule.WhenChanged
+      description: The date and time when the mail flow rule was last modified.
+      type: Date
+    - contextPath: EWS.MailFlowRule.Description
+      description: A brief description of the mail flow rule's purpose or functionality.
+      type: string
+    - contextPath: EWS.MailFlowRule.Actions
+      description: The actions taken when a message matches the rule's conditions, such as redirecting, blocking, or adding headers.
+      type: Unknown
+    - contextPath: EWS.MailFlowRule.ImmutableId
+      description: A persistent, unchangeable identifier for the mail flow rule, ensuring it remains identifiable across modifications.
+      type: Unknown
+    - contextPath: EWS.MailFlowRule.Identity
+      description: The identity of the rule, often combining the name and unique identifiers, used to reference the rule programmatically.
+      type: string
+    - contextPath: EWS.MailFlowRule.Name
+      description: The user-friendly name of the mail flow rule, typically used for easy identification.
+      type: string
+    - contextPath: EWS.MailFlowRule.CreatedBy
+      description: The user or process that created the mail flow rule.
+      type: string
+    - contextPath: EWS.MailFlowRule.RouteMessageOutboundConnector
+      description: Specifies whether messages matching the rule should be routed through a specific outbound connector.
+      type: Unknown
+    description: Get a mail flow rule (transport rules) in the organization.
+  - name: ews-mail-flow-rule-remove
+    arguments:
+    - name: identity
+      description: The rule that you want to remove.
+      required: true
+    description: Remove a mail flow rule (transport rule) from the organization.
+  - name: ews-mail-flow-rule-disable
+    arguments:
+    - name: identity
+      description: The rule that you want to disable.
+      required: true
+    description: Disable a mail flow rule (transport rule) in the organization.
+  - name: ews-mail-flow-rule-enable
+    arguments:
+    - name: identity
+      description: The rule that you want to enable.
+      required: true
+    description: Enable a mail flow rule (transport rule) in the organization.
+  - name: ews-mail-forwarding-disable
+    arguments:
+    - name: identity
+      description: The mailbox that you want to modify.
+      required: true
+    description: Disable mail forwarding for a given user.
   script: ''
   type: powershell
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.88371
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.6863931
 fromversion: 5.5.0
+supportsquickactions: true
 tests:
 - playbook-O365-EWS-Extension-Powershell-Online-V3-Test

@@ -2,22 +2,26 @@ id: Microsoft Graph User - Test
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Microsoft Graph User - Test
+description: Tests the validity of the MS Graph User commands
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a6c3b28e-1c92-4368-8585-0383f89348d9
+    taskid: 10636e3a-e1d7-4418-8150-97f4bd51e735
     type: start
     task:
-      id: a6c3b28e-1c92-4368-8585-0383f89348d9
+      id: 10636e3a-e1d7-4418-8150-97f4bd51e735
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -34,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 07ae9872-744c-47cd-8a11-9c80a9bed7a9
+    taskid: 2ffd55a8-972b-4205-8820-e8fcee061254
     type: regular
     task:
-      id: 07ae9872-744c-47cd-8a11-9c80a9bed7a9
+      id: 2ffd55a8-972b-4205-8820-e8fcee061254
       version: -1
       name: 'Create test user #1'
       description: Creates a new user.
@@ -45,6 +49,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "2"
@@ -59,8 +65,9 @@ tasks:
         simple: ${NEW_PASSWORD}
       user_principal_name:
         simple: ${GeneratedUUID}-1@${inputs.baseurl}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -77,10 +84,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 4a3bcf74-8bc1-454a-8717-87eacc13deba
+    taskid: 34143a03-4343-41db-88b2-6cc470310ea9
     type: regular
     task:
-      id: 4a3bcf74-8bc1-454a-8717-87eacc13deba
+      id: 34143a03-4343-41db-88b2-6cc470310ea9
       version: -1
       name: 'Get User #1'
       description: Retrieve the properties and relationships of user object. [link](https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0)
@@ -88,6 +95,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "3"
@@ -95,6 +104,7 @@ tasks:
       user:
         simple: ${MSGraphUser.UserPrincipalName}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -111,10 +121,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: a3738dee-a7ac-4990-85dd-4ee24405f5e9
+    taskid: 2a3d6afc-845d-4ffd-8d1e-dbe04c001b29
     type: regular
     task:
-      id: a3738dee-a7ac-4990-85dd-4ee24405f5e9
+      id: 2a3d6afc-845d-4ffd-8d1e-dbe04c001b29
       version: -1
       name: 'Update user #1 phone number'
       description: Update the properties of a user object.
@@ -122,6 +132,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "8"
@@ -131,6 +143,7 @@ tasks:
       user:
         simple: ${MSGraphUser.UserPrincipalName}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -147,10 +160,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 182605c5-e6a6-4a68-8ddd-d145cfb67f45
+    taskid: ad650dcc-937d-4936-84ca-66f697eac8cb
     type: regular
     task:
-      id: 182605c5-e6a6-4a68-8ddd-d145cfb67f45
+      id: ad650dcc-937d-4936-84ca-66f697eac8cb
       version: -1
       name: Get Delta (mobilePhone)
       description: Get newly created, updated, or deleted users without having to
@@ -159,6 +172,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "26"
@@ -168,6 +183,7 @@ tasks:
       properties:
         simple: mobilePhone
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -184,10 +200,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: e98269da-805e-4026-82b6-496e1efb0a1e
+    taskid: 112cec24-f38f-4e35-8470-10ba825bce2f
     type: regular
     task:
-      id: e98269da-805e-4026-82b6-496e1efb0a1e
+      id: 112cec24-f38f-4e35-8470-10ba825bce2f
       version: -1
       name: 'Block user #2'
       description: |-
@@ -198,6 +214,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "6"
@@ -205,6 +223,7 @@ tasks:
       user:
         simple: ${GeneratedUUID}-2@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -221,10 +240,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 35fcb220-f916-46f2-8ca1-14e7b6abc98d
+    taskid: b507d4a0-dddb-4007-8196-107121d2a226
     type: regular
     task:
-      id: 35fcb220-f916-46f2-8ca1-14e7b6abc98d
+      id: b507d4a0-dddb-4007-8196-107121d2a226
       version: -1
       name: Sleep for 30 seconds
       description: Sleep for X seconds
@@ -232,6 +251,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "7"
@@ -239,6 +260,7 @@ tasks:
       seconds:
         simple: "30"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -255,10 +277,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 4184f17d-dfeb-41da-8838-1712909cac76
+    taskid: ba671ba8-23c7-4756-8713-452eb0616868
     type: regular
     task:
-      id: 4184f17d-dfeb-41da-8838-1712909cac76
+      id: ba671ba8-23c7-4756-8713-452eb0616868
       version: -1
       name: 'Unblock User #2'
       description: Unblock a user.
@@ -266,6 +288,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "15"
@@ -273,6 +297,7 @@ tasks:
       user:
         simple: ${GeneratedUUID}-2@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -289,10 +314,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 17112c9b-5d76-4eb8-825a-39591e559b0f
+    taskid: 4923d7d4-57f2-4736-8858-9a01d059e97c
     type: regular
     task:
-      id: 17112c9b-5d76-4eb8-825a-39591e559b0f
+      id: 4923d7d4-57f2-4736-8858-9a01d059e97c
       version: -1
       name: 'Delete user #1'
       description: Deletes an exsiting user.
@@ -300,6 +325,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "4"
@@ -307,6 +334,7 @@ tasks:
       user:
         simple: ${GeneratedUUID}-1@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -323,21 +351,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 9bb1ba01-c064-4ea4-8744-a80fc119509d
+    taskid: c5640a5f-0768-4951-84b6-d0b7a33561b2
     type: title
     task:
-      id: 9bb1ba01-c064-4ea4-8744-a80fc119509d
+      id: c5640a5f-0768-4951-84b6-d0b7a33561b2
       version: -1
       name: Done!
       type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4570
+          "y": 5270
         }
       }
     note: false
@@ -349,10 +380,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 39313b4f-702a-4735-8db2-4fd49dee119a
+    taskid: b6e61d95-377d-4da0-8f6b-b362b28fa7bc
     type: regular
     task:
-      id: 39313b4f-702a-4735-8db2-4fd49dee119a
+      id: b6e61d95-377d-4da0-8f6b-b362b28fa7bc
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -360,13 +391,17 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
+      - "39"
       - "18"
     scriptarguments:
       all:
         simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -383,10 +418,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: c71b2563-3a4a-47d0-893d-434f94acb8cd
+    taskid: 078d59e3-acd8-423c-80d9-0ce243a97990
     type: regular
     task:
-      id: c71b2563-3a4a-47d0-893d-434f94acb8cd
+      id: 078d59e3-acd8-423c-80d9-0ce243a97990
       version: -1
       name: List Users
       description: Retrieve a list of user objects.
@@ -394,6 +429,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "35"
@@ -401,6 +438,7 @@ tasks:
       properties:
         simple: id,userPrincipalName
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -417,10 +455,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: e7b49a21-e0c5-49c2-8c9f-30725a199d8a
+    taskid: 04f02fff-e5eb-4641-8235-6db2be56760c
     type: regular
     task:
-      id: e7b49a21-e0c5-49c2-8c9f-30725a199d8a
+      id: 04f02fff-e5eb-4641-8235-6db2be56760c
       version: -1
       name: 'Create test user #3 with no "Other_properties"'
       description: Creates a new user.
@@ -428,6 +466,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "16"
@@ -441,6 +481,7 @@ tasks:
       user_principal_name:
         simple: ${GeneratedUUID}-3@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -457,10 +498,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: e087abc8-8d54-48ed-8f59-813ad1b9c17b
+    taskid: 159bd270-9126-4ea4-8201-f8083a8cb94c
     type: regular
     task:
-      id: e087abc8-8d54-48ed-8f59-813ad1b9c17b
+      id: 159bd270-9126-4ea4-8201-f8083a8cb94c
       version: -1
       name: 'Get User #3'
       description: 'Retrieves the properties and relationships of user object. for
@@ -469,6 +510,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "27"
@@ -476,6 +519,7 @@ tasks:
       user:
         simple: ${GeneratedUUID}-3@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -492,10 +536,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 97916901-a270-4dc8-80e5-3b8ce19f9dc3
+    taskid: 4e856ad8-8fda-47f7-8199-a9a89c0c35d3
     type: regular
     task:
-      id: 97916901-a270-4dc8-80e5-3b8ce19f9dc3
+      id: 4e856ad8-8fda-47f7-8199-a9a89c0c35d3
       version: -1
       name: 'Delete User #2'
       description: Deletes an exsiting user.
@@ -503,6 +547,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "30"
@@ -510,11 +556,12 @@ tasks:
       user:
         simple: ${GeneratedUUID}-2@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4045
+          "y": 4695
         }
       }
     note: false
@@ -526,10 +573,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 19407b61-0e53-4440-8e30-a68744b7ec0c
+    taskid: d9a61073-7ecd-4085-888f-ee6ed4bba259
     type: regular
     task:
-      id: 19407b61-0e53-4440-8e30-a68744b7ec0c
+      id: d9a61073-7ecd-4085-888f-ee6ed4bba259
       version: -1
       name: Generate UUID for user principal name
       description: Generates random UUID
@@ -537,10 +584,13 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "34"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -557,10 +607,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 29927e84-a1dd-4031-89b0-a7688a49b466
+    taskid: 0f01bb85-f9e4-4e04-88d9-8ed2b05d0023
     type: regular
     task:
-      id: 29927e84-a1dd-4031-89b0-a7688a49b466
+      id: 0f01bb85-f9e4-4e04-88d9-8ed2b05d0023
       version: -1
       name: 'Assign manager #4 to test user #3'
       description: 'Assigns a manager to the user. Permissions: - User.ReadWrite.All
@@ -569,6 +619,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "22"
@@ -578,6 +630,7 @@ tasks:
       user:
         simple: ${GeneratedUUID}-3@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -594,10 +647,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 142e2e97-884e-4e9e-87e7-c8b23a6f104e
+    taskid: d81fb549-f5ff-4cd7-8ac1-e9ff50d3d7f9
     type: regular
     task:
-      id: 142e2e97-884e-4e9e-87e7-c8b23a6f104e
+      id: d81fb549-f5ff-4cd7-8ac1-e9ff50d3d7f9
       version: -1
       name: 'Get test user #3 manager'
       description: Retrieves the properties from the manager of a user
@@ -605,6 +658,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "25"
@@ -612,6 +667,7 @@ tasks:
       user:
         simple: ${GeneratedUUID}-3@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -628,10 +684,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 19037efc-deb2-4d90-874a-e402fa27e544
+    taskid: fe6da0e1-a53e-4c8d-8b06-c808ec781751
     type: regular
     task:
-      id: 19037efc-deb2-4d90-874a-e402fa27e544
+      id: fe6da0e1-a53e-4c8d-8b06-c808ec781751
       version: -1
       name: 'Get user #4 direct reports'
       description: Retrieves the direct reports for a user. Direct reports are the
@@ -640,6 +696,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "28"
@@ -647,6 +705,7 @@ tasks:
       user:
         simple: ${GeneratedUUID}-4@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -663,15 +722,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 7b928096-57ca-4546-8fc0-41e8be3e113c
+    taskid: ac0175a5-5a6a-4e69-82f5-1b18133d660a
     type: condition
     task:
-      id: 7b928096-57ca-4546-8fc0-41e8be3e113c
+      id: ac0175a5-5a6a-4e69-82f5-1b18133d660a
       version: -1
       name: Validate user manager assignment and retrieval
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - "32"
@@ -730,6 +791,7 @@ tasks:
           right:
             value:
               simple: ${GeneratedUUID}-4@${inputs.baseurl}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -746,10 +808,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 284a4795-aa5e-4993-834c-f61f515dfbb8
+    taskid: 9171c168-bedf-40ae-8bf7-0648a133554f
     type: regular
     task:
-      id: 284a4795-aa5e-4993-834c-f61f515dfbb8
+      id: 9171c168-bedf-40ae-8bf7-0648a133554f
       version: -1
       name: 'Create test user #2'
       description: Creates a new user.
@@ -757,6 +819,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "5"
@@ -771,8 +835,9 @@ tasks:
         simple: ${NEW_PASSWORD}
       user_principal_name:
         simple: ${GeneratedUUID}-2@${inputs.baseurl}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -789,10 +854,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 1050930a-c905-4b7f-876f-bd1b21833e5a
+    taskid: 49675cea-6a86-411c-860f-3ab2dd6d2fc0
     type: regular
     task:
-      id: 1050930a-c905-4b7f-876f-bd1b21833e5a
+      id: 49675cea-6a86-411c-860f-3ab2dd6d2fc0
       version: -1
       name: 'Create test user #4'
       description: Creates a new user.
@@ -800,6 +865,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "21"
@@ -814,8 +881,9 @@ tasks:
         simple: ${NEW_PASSWORD}
       user_principal_name:
         simple: ${GeneratedUUID}-4@${inputs.baseurl}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -832,15 +900,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 96097715-edae-4021-8297-286a51f6c57a
+    taskid: 8a8bc4d8-14a1-4409-8ce8-3f9fa1551e53
     type: condition
     task:
-      id: 96097715-edae-4021-8297-286a51f6c57a
+      id: 8a8bc4d8-14a1-4409-8ce8-3f9fa1551e53
       version: -1
       name: Validate user direct reports retrieval
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - "33"
@@ -860,6 +930,7 @@ tasks:
           right:
             value:
               simple: ${GeneratedUUID}-3@${inputs.baseurl}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -876,10 +947,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 8f8018af-d230-45ed-8973-39376d43f9c9
+    taskid: 3622f0c2-c199-4fca-871b-869f2ba90e55
     type: regular
     task:
-      id: 8f8018af-d230-45ed-8973-39376d43f9c9
+      id: 3622f0c2-c199-4fca-871b-869f2ba90e55
       version: -1
       name: 'Delete User #3'
       description: Deletes an exsiting user.
@@ -887,6 +958,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "31"
@@ -894,11 +967,12 @@ tasks:
       user:
         simple: ${GeneratedUUID}-3@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4220
+          "y": 4890
         }
       }
     note: false
@@ -910,10 +984,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: d99d2f31-d74e-40d8-8954-3ff0fa3cc37a
+    taskid: 8ac01956-77b1-4ec3-8435-5218169c6c66
     type: regular
     task:
-      id: d99d2f31-d74e-40d8-8954-3ff0fa3cc37a
+      id: 8ac01956-77b1-4ec3-8435-5218169c6c66
       version: -1
       name: 'Delete User #4'
       description: Deletes an exsiting user.
@@ -921,6 +995,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "9"
@@ -928,11 +1004,12 @@ tasks:
       user:
         simple: ${GeneratedUUID}-4@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4395
+          "y": 5095
         }
       }
     note: false
@@ -944,10 +1021,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: b0138cfe-6c71-47ee-8e60-a2708eba30f1
+    taskid: 81e0762d-fba7-4ee0-855d-4cb090fa6052
     type: regular
     task:
-      id: b0138cfe-6c71-47ee-8e60-a2708eba30f1
+      id: 81e0762d-fba7-4ee0-855d-4cb090fa6052
       version: -1
       name: Failed to assign and retrieve manager
       description: Prints an error entry with a given message
@@ -955,10 +1032,13 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     scriptarguments:
       message:
         simple: Could not correctly retrieve the assigned manager.
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -975,10 +1055,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: c26d8708-e962-40ec-8d8e-4b85203cf1d6
+    taskid: 5be7f66a-0725-44b1-8a9d-8c44c768230f
     type: regular
     task:
-      id: c26d8708-e962-40ec-8d8e-4b85203cf1d6
+      id: 5be7f66a-0725-44b1-8a9d-8c44c768230f
       version: -1
       name: Failed to retrieve the direct reports
       description: Prints an error entry with a given message
@@ -986,10 +1066,13 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     scriptarguments:
       message:
         simple: Could not correctly retrieve the direct reports.
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1006,10 +1089,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 163aa9a0-d4b4-4776-8ff9-29c40b5bd3cc
+    taskid: bf5e7f7b-c798-489b-8324-135e5567583f
     type: regular
     task:
-      id: 163aa9a0-d4b4-4776-8ff9-29c40b5bd3cc
+      id: bf5e7f7b-c798-489b-8324-135e5567583f
       version: -1
       name: GeneratePassword
       description: "This function generates a password and allows various parameters
@@ -1026,6 +1109,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "1"
@@ -1047,6 +1132,7 @@ tasks:
       min_ucase:
         simple: "2"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1063,10 +1149,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: e428fb47-7a4a-4b14-81ff-b67477f41006
+    taskid: 9c93bfa5-a5ab-4f60-8987-9bf86ead8b91
     type: regular
     task:
-      id: e428fb47-7a4a-4b14-81ff-b67477f41006
+      id: 9c93bfa5-a5ab-4f60-8987-9bf86ead8b91
       version: -1
       name: 'Revoke session for user #4'
       description: |-
@@ -1076,13 +1162,16 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "17"
+      - "36"
     scriptarguments:
       user:
         simple: ${GeneratedUUID}-4@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1097,13 +1186,580 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 3db097dc-653d-4339-827d-022d6fc73260
+    type: regular
+    task:
+      id: 3db097dc-653d-4339-827d-022d6fc73260
+      version: -1
+      name: 'create TAP policy for user #2'
+      description: |-
+        Tests the creation of the new TAP policy for an existing user.
+        Also, tests the generation of a password-protected ZIP file containing the TAP password
+
+        Permission: UserAuthenticationMethod.ReadWrite.All
+      script: '|||msgraph-user-tap-policy-create'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      user_id:
+        simple: ${GeneratedUUID}-2@${inputs.baseurl}
+      zip_password:
+        simple: "12345"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 78777250-7bc5-4913-883b-aa4cd02569eb
+    type: regular
+    task:
+      id: 78777250-7bc5-4913-883b-aa4cd02569eb
+      version: -1
+      name: 'get the TAP policy for user #2'
+      description: "Tests the existence of the new TAP policy that was created on
+        #36.\n*This command will only return a single object in the collection \nas
+        a user can have only one Temporary Access Pass method.\n\nPermission:UserAuthenticationMethod.Read.All"
+      script: '|||msgraph-user-tap-policy-list'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      policy_id:
+        simple: ${MSGraphUser.TAPPolicy.ID}
+      user_id:
+        simple: ${GeneratedUUID}-2@${inputs.baseurl}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: ff8b5363-39f8-4672-81a4-9049a377b767
+    type: regular
+    task:
+      id: ff8b5363-39f8-4672-81a4-9049a377b767
+      version: -1
+      name: 'delete TAP policy for user #2'
+      description: |-
+        Tests the delete operation of the existing TAP policy that was created on #36.
+
+        Permission:UserAuthenticationMethod.ReadWrite.All
+      script: '|||msgraph-user-tap-policy-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      policy_id:
+        simple: ${MSGraphUser.TAPPolicy.ID}
+      user_id:
+        simple: ${GeneratedUUID}-2@${inputs.baseurl}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: a0ee0b8f-308a-47f7-a106-a4f6e5115ab7
+    type: regular
+    task:
+      id: a0ee0b8f-308a-47f7-a106-a4f6e5115ab7
+      version: -1
+      name: msgraph-user-owned-devices-list
+      description: "Lists the devices that are owned by the user.\nPermission: User.Read.All,Directory.Read.All
+        - Delegated "
+      script: Microsoft Graph User|||msgraph-user-owned-devices-list
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph User
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      limit:
+        simple: "1"
+      user:
+        simple: 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1171.25,
+          "y": 378.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: cd0d8513-010b-4d7d-a1bb-c49922717db1
+    type: condition
+    task:
+      id: cd0d8513-010b-4d7d-a1bb-c49922717db1
+      version: -1
+      name: Verify msgraph-user-owned-devices-list
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MSGraphUser.OwnedDevice.ID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1171.25,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 06571be2-8f19-411b-bab4-cd69dd6a7461
+    type: regular
+    task:
+      id: 06571be2-8f19-411b-bab4-cd69dd6a7461
+      version: -1
+      name: msgraph-user-fido2-method-list
+      description: |-
+        Lists the FIDO2 authentication methods registered to a user, or retrieves a specific FIDO2 method by ID.
+        Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All
+      script: Microsoft Graph User|||msgraph-user-fido2-method-list
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph User
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    scriptarguments:
+      limit:
+        simple: "1"
+      user:
+        simple: 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1171.25,
+          "y": 1973.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: b9600d4f-fbbc-4f63-9f41-67a15600dfe9
+    type: regular
+    task:
+      id: b9600d4f-fbbc-4f63-9f41-67a15600dfe9
+      version: -1
+      name: msgraph-user-email-method-list
+      description: |-
+        Lists the email authentication methods registered to a user, or retrieves a specific email method by ID.
+        Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+      script: Microsoft Graph User|||msgraph-user-email-method-list
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph User
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      user:
+        simple: 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1171.25,
+          "y": 695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 1f504716-3495-4958-aa58-67107f40bb0a
+    type: condition
+    task:
+      id: 1f504716-3495-4958-aa58-67107f40bb0a
+      version: -1
+      name: Verify msgraph-user-email-method-list
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MSGraphUser.EmailAuthMethod.ID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1171.25,
+          "y": 845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 3044dd35-74be-4209-a3a3-dda059ec7138
+    type: regular
+    task:
+      id: 3044dd35-74be-4209-a3a3-dda059ec7138
+      version: -1
+      name: msgraph-user-authenticator-method-list
+      description: |-
+        Lists the Microsoft Authenticator authentication methods registered to a user, or retrieves a specific method by ID.
+        Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+      script: Microsoft Graph User|||msgraph-user-authenticator-method-list
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph User
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      limit:
+        simple: "1"
+      user:
+        simple: 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1172.5,
+          "y": 1015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: c1417b2a-b135-4e0a-9670-5d074f1e1258
+    type: condition
+    task:
+      id: c1417b2a-b135-4e0a-9670-5d074f1e1258
+      version: -1
+      name: Verify msgraph-user-authenticator-method-list
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MSGraphUser.UserAuthMethod.ID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1172.5,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 8efd2326-5587-4b20-9475-fd3d5e8ba0bd
+    type: regular
+    task:
+      id: 8efd2326-5587-4b20-9475-fd3d5e8ba0bd
+      version: -1
+      name: msgraph-user-phone-method-list
+      description: |-
+        Lists the phone authentication methods registered to a user, or retrieves a specific phone method by ID.
+        Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+      script: Microsoft Graph User|||msgraph-user-phone-method-list
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph User
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      user:
+        simple: 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1171.25,
+          "y": 1351.25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 36c258ff-11b3-4349-945f-4d5b234affe9
+    type: condition
+    task:
+      id: 36c258ff-11b3-4349-945f-4d5b234affe9
+      version: -1
+      name: verify msgraph-user-phone-method-list
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MSGraphUser.PhoneAuthMethod.ID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1171.25,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 7ff15d4f-46f7-487c-836f-f95df497fc88
+    type: regular
+    task:
+      id: 7ff15d4f-46f7-487c-836f-f95df497fc88
+      version: -1
+      name: msgraph-user-software-oath-method-list
+      description: |-
+        Lists the software OATH authentication methods registered to a user, or retrieves a specific method by ID.
+        Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+      script: Microsoft Graph User|||msgraph-user-software-oath-method-list
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph User
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      user:
+        simple: 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1171.25,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: f16a017f-083c-4217-bfdd-9464bc6c8e49
+    type: regular
+    task:
+      id: f16a017f-083c-4217-bfdd-9464bc6c8e49
+      version: -1
+      name: msgraph-user-windows-hello-method-list
+      description: |-
+        Lists the Windows Hello for Business authentication methods registered to a user, or retrieves a specific method by ID.
+        Permission: UserAuthenticationMethod.Read.All or UserAuthenticationMethod.ReadWrite.All - Delegated or Application
+      script: Microsoft Graph User|||msgraph-user-windows-hello-method-list
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph User
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      user:
+        simple: 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1171.25,
+          "y": 1825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4585,
-        "width": 1025,
+        "height": 5280,
+        "width": 1502.5,
         "x": 50,
         "y": 50
       }
@@ -1117,4 +1773,3 @@ inputs:
   description: Base url of your instance
   playbookInputQuery: null
 outputs: []
-fromversion: 5.0.0

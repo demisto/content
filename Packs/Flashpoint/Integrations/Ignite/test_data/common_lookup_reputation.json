@@ -1,35 +1,83 @@
-[
-    {
-        "Attribute": {
-            "Event": {
-                "RelatedEvent": [],
-                "Tags": [
-                    "asn:as10000",
-                    "infrastructure:c2",
-                    "mitre:T1071",
-                    "source:scan",
-                    "tool:strike"
-                ],
-                "attack_ids": [
-                    "T1001"
-                ],
-                "event_uuid": "00000000-0000-0000-0000-000000000001",
-                "fpid": "0000000000000000000001",
-                "href": "https://api.flashpoint.io/technical-intelligence/v1/event/0000000000000000000001",
-                "info": "Observation: StrikeVariant [2024-05-26 14:04:56]",
-                "reports": [],
-                "timestamp": "1716758167"
+{
+    "items": [
+        {
+            "id": "dummy_id",
+            "type": "file",
+            "value": "00000000000000000000000000000001",
+            "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id",
+            "entity_type": "indicator",
+            "score": {
+                "value": "malicious",
+                "last_scored_at": "2025-01-02T01:00:00.000001"
             },
-            "category": "Network activity",
-            "fpid": "0000000000000000000001",
-            "href": "https://api.flashpoint.io/technical-intelligence/v1/attribute/0000000000000000000001",
-            "timestamp": "1716737486",
-            "type": "ip-dst",
-            "uuid": "00000000-0000-0000-0000-000000000001",
-            "value": {
-                "comment": "",
-                "ip-dst": "0.0.0.1"
-            }
+            "modified_at": "2025-01-02T01:00:00.000001",
+            "created_at": "2025-01-01T01:00:00.000000",
+            "last_seen_at": "2025-01-02T01:00:00.000001",
+            "sort_date": "2025-01-02T01:00:00.000001",
+            "platform_urls": {
+                "ignite": "https://mock_dummy.com/cti/malware/iocs/dummy_id"
+            },
+            "apt_description": "N/A",
+            "external_references": [],
+            "hashes": {
+                "md5": "00000000000000000000000000000001",
+                "sha1": "0000000000000000000000000000000000000001",
+                "sha256": "0000000000000000000000000000000000000000000000000000000000000001"
+            },
+            "malware_description": "dummy description.",
+            "mitre_attack_ids": [
+                {
+                    "id": "dummy_mitre_id",
+                    "name": "dummy name",
+                    "tactics": [
+                        "Defense Evasion"
+                    ]
+                }
+            ],
+            "sightings": [
+                {
+                    "source": "flashpoint_detection",
+                    "sighted_at": "2025-01-02T01:00:00.000000",
+                    "tags": [
+                        "malware:pony",
+                        "os:windows",
+                        "source:flashpoint_detection",
+                        "type:stealer"
+                    ],
+                    "related_iocs": [
+                        {
+                            "id": "dummy_id",
+                            "type": "file",
+                            "value": "00000000000000000000000000000001",
+                            "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id"
+                        }
+                    ]
+                }
+            ],
+            "latest_sighting": {
+                "source": "flashpoint_detection",
+                "sighted_at": "2025-01-02T01:00:00.000000",
+                "tags": [
+                    "malware:pony",
+                    "os:windows",
+                    "source:flashpoint_detection",
+                    "type:stealer"
+                ],
+                "related_iocs": [
+                    {
+                        "id": "dummy_id",
+                        "type": "file",
+                        "value": "00000000000000000000000000000002",
+                        "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id"
+                    }
+                ]
+            },
+            "total_sightings": 1
         }
+    ],
+    "total": null,
+    "pagination": {
+        "next": null,
+        "prev": null
     }
-]
+}

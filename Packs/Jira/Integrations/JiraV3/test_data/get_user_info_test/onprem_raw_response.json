@@ -1,0 +1,26 @@
+{
+    "active": true,
+    "applicationRoles": {
+        "items": [],
+        "size": 2
+    },
+    "avatarUrls": {
+        "16x16": "https://secure.gravatar.com/avatar/image.png",
+        "24x24": "https://secure.gravatar.com/avatar/image.png",
+        "32x32": "https://secure.gravatar.com/avatar/image.png",
+        "48x48": "https://secure.gravatar.com/avatar/image.png"
+    },
+    "deleted": false,
+    "displayName": "Example User",
+    "emailAddress": "user@example.com",
+    "expand": "groups,applicationRoles",
+    "groups": {
+        "items": [],
+        "size": 3
+    },
+    "key": "JIRAUSER10000",
+    "locale": "en_US",
+    "name": "firstlast",
+    "self": "https://jira.example.com/rest/api/2/user?username=firstlast",
+    "timeZone": "America/Detroit"
+}

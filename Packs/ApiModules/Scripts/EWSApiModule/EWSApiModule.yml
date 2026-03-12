@@ -1,0 +1,18 @@
+commonfields:
+  id: EWSApiModule
+  version: -1
+name: EWSApiModule
+script: ''
+type: python
+subtype: python3
+tags:
+- infra
+- server
+comment: EWS Api Module, provides EWSClient and other generic logic to EWS integrations.
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/py3ews:5.5.0.115535
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

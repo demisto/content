@@ -1,6 +1,7 @@
 Sets a Threat Intel Report as unpublished.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Sets a Threat Intel Report as unpublished.
 | Cortex XSOAR Version | 6.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +19,6 @@ Sets a Threat Intel Report as unpublished.
 | object | The Threat Intel Report object to unpublish. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

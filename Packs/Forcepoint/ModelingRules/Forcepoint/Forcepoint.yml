@@ -1,6 +1,13 @@
 fromversion: 6.10.0
-id: Forcepoint_NGFW
-name: Forcepoint NGFW
+id: Forcepoint_NGFW_ModelingRule
+name: Forcepoint NGFW Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam
+- agentix
+- X1
+- X3
+- X5
+- ENT_PLUS

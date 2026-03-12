@@ -1496,7 +1496,7 @@ outputs:
   description: Link to the device details page in ExtraHop.
   type: string
 - contextPath: Endpoint.IPAddress
-  description: The endpoint IP address.
+  description: The endpoint IP address or list of IP addresses.
   type: string
 - contextPath: Endpoint.ID
   description: The endpoint ID.
@@ -1985,4 +1985,8 @@ outputs:
 tests:
 - Endpoint Enrichment - Generic v2.1.6.8 - Test
 fromversion: 6.8.0
+supportedModules:
+- cloud_runtime_security
+- xsiam
+- edr
 system: true

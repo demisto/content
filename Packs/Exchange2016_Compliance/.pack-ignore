@@ -3,3 +3,7 @@ ignore=RM104
 
 [file:Exchange2016_Compliance.yml]
 ignore=BA108,BA109
+
+[file:playbook-Exchange_2016_Search_and_Delete.yml]
+ignore=GR107
+

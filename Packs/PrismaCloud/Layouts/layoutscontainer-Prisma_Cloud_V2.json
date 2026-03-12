@@ -554,11 +554,18 @@
                 "id": "workPlan",
                 "name": "Work Plan",
                 "type": "workPlan"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas",
+                "hidden": false
             }
         ]
     },
-	"marketplaces": [
-        "marketplacev2"
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
     ],
     "group": "incident",
     "id": "Prisma Cloud V2",

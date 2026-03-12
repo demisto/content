@@ -1,6 +1,7 @@
 Use this pack to create and manage AWS users and groups.
 
 ## What does this pack do?
+
 - Create an AWS user.
 - Update an existing AWS user.
 - Get the details of an existing AWS user.

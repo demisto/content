@@ -268,8 +268,6 @@ tasks:
     scriptarguments:
       created_by:
         simple: ${inputs.created_by_id}
-      data:
-        simple: ${inputs.data}
       description:
         simple: ${inputs.description}
       external_references_id:
@@ -375,60 +373,51 @@ inputs:
   value: {}
   required: false
   description: A label name to add to the new indicator.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: type
   value: {}
   required: true
-  description: 'The type of indicator to create. Possible values:  Account, Domain,
-    Email, File-md5, File-sha1, File-sha256, Host, IP, IPV6, Registry
-    Key and URL.'
-  playbookInputQuery: null
+  description: 'The type of indicator to create. Possible values:  Account, Domain, Email, File-md5, File-sha1, File-sha256, Host, IP, IPV6, Registry Key and URL.'
+  playbookInputQuery:
 - key: marking_definition_id
   value: {}
   required: false
-  description: 'The marking definition ID to add to the new indicator. Use opencti-marking-definition-list
-    to get the marking definition ID.'
-  playbookInputQuery: null
+  description: 'The marking definition ID to add to the new indicator. Use opencti-marking-definition-list to get the marking definition ID.'
+  playbookInputQuery:
 - key: created_by_id
   value: {}
   required: false
-  description: Creator of the new indicator. Use opencti-organization-list to get the IDs
-    of all the organizations in opencti, or use  opencti-organization-create to create a 
-    new organization ID.
-  playbookInputQuery: null
+  description: Creator of the new indicator. Use opencti-organization-list to get the IDs of all the organizations in opencti, or use  opencti-organization-create to create a new organization ID.
+  playbookInputQuery:
 - key: external_reference_source_name
   value: {}
   required: false
-  description: External references source name. In order to use external references,
-    external_reference_url and external_reference_source_name are mandatory.
-  playbookInputQuery: null
+  description: External references source name. In order to use external references, external_reference_url and external_reference_source_name are mandatory.
+  playbookInputQuery:
 - key: external_reference_url
   value: {}
   required: false
-  description: External references URL. In order to use external references, external_reference_url
-    and external_reference_source_name are mandatory.
-  playbookInputQuery: null
+  description: External references URL. In order to use external references, external_reference_url and external_reference_source_name are mandatory.
+  playbookInputQuery:
 - key: description
   value: {}
   required: false
   description: New indicator description.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: score
   value: {}
   required: false
   description: 'New indicator score. Valid values are 0 - 100.'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: value
   value: {}
   required: false
   description: Indicator value.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: OpenCTI.Indicator.id
   description: New indicator ID.
   type: string
-- contextPath: OpenCTI.Indicator.data
-  description: New indicator data.
 fromversion: 5.0.0
 tests:
 - OpenCTI Test

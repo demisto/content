@@ -5,6 +5,7 @@
   "Incident ID": null,
   "Categories": "",
   "Impacted entities": "",
+  "Impacted mailboxes": "",
   "Active alerts": "0 / 0",
   "Service sources": "",
   "Detection sources": "",

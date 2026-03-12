@@ -296,6 +296,9 @@ tasks:
       device-group:
         complex:
           root: inputs.device-group
+      type:
+        complex:
+          root: inputs.type
     separatecontext: true
     loop:
       iscommand: false

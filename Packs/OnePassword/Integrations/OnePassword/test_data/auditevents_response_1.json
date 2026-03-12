@@ -1,0 +1,54 @@
+{
+    "cursor": "qwerty4567",
+    "has_more": true,
+    "items": [
+        {
+            "uuid": "first event",
+            "timestamp": "2024-12-02T11:54:19.710457472Z",
+            "actor_details": {
+                "name": "Test User",
+                "email": "userA@example.com"
+            },
+            "action": "create",
+            "object_type": "device",
+            "aux_details": {
+                "name": "Test User",
+                "email": "userA@example.com"
+            },
+            "session": {
+                "login_time": "2024-12-02T11:54:19.693369325Z",
+                "ip": "8.8.8.8"
+            },
+            "location": {
+                "country": "Israel",
+                "region": "Tel Aviv",
+                "city": "Tel Aviv"
+            },
+            "actor_type": "user"
+        },
+        {
+            "uuid": "middle event",
+            "timestamp": "2024-12-02T11:55:20.710457472Z",
+            "actor_details": {
+                "name": "Test User",
+                "email": "userA@example.com"
+            },
+            "action": "patch",
+            "object_type": "device",
+            "aux_details": {
+                "name": "Test User",
+                "email": "userA@example.com"
+            },
+            "session": {
+                "login_time": "2024-12-02T11:54:22.773369325Z",
+                "ip": "8.8.8.8"
+            },
+            "location": {
+                "country": "Israel",
+                "region": "Tel Aviv",
+                "city": "Tel Aviv"
+            },
+            "actor_type": "user"
+        }
+    ]
+}

@@ -1143,7 +1143,7 @@
 <h5 id="human-readable-output">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52179606-40d1dc00-27e5-11e9-90fb-8b675105c75d.png" alt="image"></p>
+<p><img src="../../doc_files/52179606-40d1dc00-27e5-11e9-90fb-8b675105c75d.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-information-for-an-ip-address">2. Get information for an IP address</h3>
@@ -1330,7 +1330,7 @@
 <h5 id="human-readable-output-1">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52179711-3fed7a00-27e6-11e9-9365-894b22815c11.png" alt="image"></p>
+<p><img src="../../doc_files/52179711-3fed7a00-27e6-11e9-9365-894b22815c11.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-information-for-a-file">3. Get information for a file</h3>
@@ -1542,7 +1542,7 @@
 <h5 id="human-readable-output-2">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52179776-141ec400-27e7-11e9-91f7-fa24c1e290c2.png" alt="image"></p>
+<p><img src="../../doc_files/52179776-141ec400-27e7-11e9-91f7-fa24c1e290c2.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-information-for-a-url">4. Get information for a URL</h3>
@@ -1687,7 +1687,7 @@
 <h5 id="command-example-3">Command Example</h5>
 </div>
 <div class="cl-preview-section">
-<pre>![image](https://user-images.githubusercontent.com/35098543/52180293-1421c280-27ed-11e9-82ec-cbb1669b20dc.png)</pre>
+<pre>![image](../../doc_files/52180293-1421c280-27ed-11e9-82ec-cbb1669b20dc.png)</pre>
 </div>
 <div class="cl-preview-section">
 <h5 id="context-example-3">Context Example</h5>
@@ -1696,20 +1696,20 @@
 <pre>{
     "URL": {
         "Malicious": {
-            "Vendor": "Recorded Future", 
+            "Vendor": "Recorded Future",
             "Description": "Score above 70"
-        }, 
-        "Data": "https://www.obfuscated.com", 
+        },
+        "Data": "https://www.obfuscated.com",
         "RecordedFuture": {
-            "FirstSeen": "2019-02-02T00:00:00.000Z", 
-            "Criticality": "Malicious", 
+            "FirstSeen": "2019-02-02T00:00:00.000Z",
+            "Criticality": "Malicious",
             "LastSeen": "2019-02-02T23:59:59.000Z"
         }
-    }, 
+    },
     "DBotScore": {
-        "Vendor": "Recorded Future", 
-        "Indicator": "https://www.obfuscated.com", 
-        "Score": 3, 
+        "Vendor": "Recorded Future",
+        "Indicator": "https://www.obfuscated.com",
+        "Score": 3,
         "Type": "url"
     }
 }
@@ -1719,7 +1719,7 @@
 <h5 id="human-readable-output-3">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52180330-af1a9c80-27ed-11e9-9be2-c8fd4ff93b58.png" alt="image"></p>
+<p><img src="../../doc_files/52180330-af1a9c80-27ed-11e9-9be2-c8fd4ff93b58.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-threat-intelligence-context-for-an-indicator">5. Get threat intelligence context for an indicator</h3>
@@ -2204,30 +2204,30 @@
 <div class="cl-preview-section">
 <pre>{
     "Domain": {
-        "Name": "www.google.com", 
+        "Name": "www.google.com",
         "RecordedFuture": {
             "RelatedEntities": {
                 "Malware": [
                     {
-                        "Count": 5150, 
-                        "ID": "KeKudK", 
+                        "Count": 5150,
+                        "ID": "KeKudK",
                         "Name": "Mydoom"
-                    }, 
+                    },
                     {
-                        "Count": 1757, 
-                        "ID": "J21f9C", 
+                        "Count": 1757,
+                        "ID": "J21f9C",
                         "Name": "Zeus"
-                    }, 
+                    },
                     {
-                        "Count": 1230, 
-                        "ID": "eKnXx", 
+                        "Count": 1230,
+                        "ID": "eKnXx",
                         "Name": "FakeAV"
-                    }, 
+                    },
                     {
-                        "Count": 877, 
-                        "ID": "Kj0AOY", 
+                        "Count": 877,
+                        "ID": "Kj0AOY",
                         "Name": "Adload"
-                    }, 
+                    },
                     {
                         "Count": 839,  ...
 </pre>
@@ -2236,7 +2236,7 @@
 <h5 id="human-readable-output-4">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52180426-7d560580-27ee-11e9-9494-3867242aa829.png" alt="image"></p>
+<p><img src="../../doc_files/52180426-7d560580-27ee-11e9-9494-3867242aa829.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-hash-threats">6. Get hash threats</h3>
@@ -2410,20 +2410,20 @@
 <div class="cl-preview-section">
 <pre>{
     "DBotScore": {
-        "Vendor": "Recorded Future", 
-        "Indicator": "c4efca7808662973b7dc5ec04f82ea232b5f8fa4bb9bdd45cdfadc815c9ceeb9", 
-        "Score": 3, 
+        "Vendor": "Recorded Future",
+        "Indicator": "c4efca7808662973b7dc5ec04f82ea232b5f8fa4bb9bdd45cdfadc815c9ceeb9",
+        "Score": 3,
         "Type": "file"
-    }, 
+    },
     "File": {
         "Malicious": {
-            "Vendor": "Recorded Future", 
+            "Vendor": "Recorded Future",
             "Description": "Score above 65"
-        }, 
-        "SHA256": "c4efca7808662973b7dc5ec04f82ea232b5f8fa4bb9bdd45cdfadc815c9ceeb9", 
+        },
+        "SHA256": "c4efca7808662973b7dc5ec04f82ea232b5f8fa4bb9bdd45cdfadc815c9ceeb9",
         "RecordedFuture": {
-            "FirstSeen": "2018-09-12T05:39:01.057Z", 
-            "Criticality": "Malicious", 
+            "FirstSeen": "2018-09-12T05:39:01.057Z",
+            "Criticality": "Malicious",
             "LastSeen": "2019-02-01T06:39:01.306Z"
         }
     }
@@ -2434,7 +2434,7 @@
 <h5 id="human-readable-output-5">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52180463-09682d00-27ef-11e9-8092-979b44295d54.png" alt="image"></p>
+<p><img src="../../doc_files/52180463-09682d00-27ef-11e9-8092-979b44295d54.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-ip-threats">7. Get IP threats</h3>
@@ -2583,20 +2583,20 @@
 <pre>{
     "IP": {
         "RecordedFuture": {
-            "FirstSeen": "2012-12-26T11:01:01.939Z", 
-            "Criticality": "Malicious", 
+            "FirstSeen": "2012-12-26T11:01:01.939Z",
+            "Criticality": "Malicious",
             "LastSeen": "2019-02-03T17:37:08.283Z"
-        }, 
+        },
         "Malicious": {
-            "Vendor": "Recorded Future", 
+            "Vendor": "Recorded Future",
             "Description": "Score above 74"
-        }, 
+        },
         "Address": "1.2.0.1"
-    }, 
+    },
     "DBotScore": {
-        "Vendor": "Recorded Future", 
-        "Indicator": "1.2.0.1", 
-        "Score": 3, 
+        "Vendor": "Recorded Future",
+        "Indicator": "1.2.0.1",
+        "Score": 3,
         "Type": "ip"
     }
 }
@@ -2606,7 +2606,7 @@
 <h5 id="human-readable-output-6">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52180478-50eeb900-27ef-11e9-8860-fc088b799368.png" alt="image"></p>
+<p><img src="../../doc_files/52180478-50eeb900-27ef-11e9-8860-fc088b799368.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-url-threats">8. Get URL threats</h3>
@@ -2745,20 +2745,20 @@
 <pre>{
     "URL": {
         "Malicious": {
-            "Vendor": "Recorded Future", 
+            "Vendor": "Recorded Future",
             "Description": "Score above 65"
-        }, 
-        "Data": "obfuscated.com", 
+        },
+        "Data": "obfuscated.com",
         "RecordedFuture": {
-            "FirstSeen": "2019-02-03T00:00:00.000Z", 
-            "Criticality": "Malicious", 
+            "FirstSeen": "2019-02-03T00:00:00.000Z",
+            "Criticality": "Malicious",
             "LastSeen": "2019-02-03T23:59:59.000Z"
         }
-    }, 
+    },
     "DBotScore": {
-        "Vendor": "Recorded Future", 
-        "Indicator": "https://obfuscated.com", 
-        "Score": 3, 
+        "Vendor": "Recorded Future",
+        "Indicator": "https://obfuscated.com",
+        "Score": 3,
         "Type": "url"
     }
 }
@@ -2768,7 +2768,7 @@
 <h5 id="human-readable-output-7">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52180512-e12cfe00-27ef-11e9-8f37-8fe5fdf33843.png" alt="image"></p>
+<p><img src="../../doc_files/52180512-e12cfe00-27ef-11e9-8f37-8fe5fdf33843.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-domain-threats">9. Get domain threats</h3>
@@ -2906,20 +2906,20 @@
 <div class="cl-preview-section">
 <pre>{
     "DBotScore": {
-        "Vendor": "Recorded Future", 
-        "Indicator": "obfuscated.com", 
-        "Score": 3, 
+        "Vendor": "Recorded Future",
+        "Indicator": "obfuscated.com",
+        "Score": 3,
         "Type": "domain"
-    }, 
+    },
     "Domain": {
         "Malicious": {
-            "Vendor": "Recorded Future", 
+            "Vendor": "Recorded Future",
             "Description": "Score above 94"
-        }, 
-        "Name": "obfuscated.com", 
+        },
+        "Name": "obfuscated.com",
         "RecordedFuture": {
-            "FirstSeen": "2016-09-16T21:06:34.240Z", 
-            "Criticality": "Very Malicious", 
+            "FirstSeen": "2016-09-16T21:06:34.240Z",
+            "Criticality": "Very Malicious",
             "LastSeen": "2019-02-03T16:09:03.653Z"
         }
     }
@@ -2930,7 +2930,7 @@
 <h5 id="human-readable-output-8">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52180529-091c6180-27f0-11e9-8224-ad3ac75ed7dc.png" alt="image"></p>
+<p><img src="../../doc_files/52180529-091c6180-27f0-11e9-8224-ad3ac75ed7dc.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-vulnerability-threats">10. Get vulnerability threats</h3>
@@ -3048,10 +3048,10 @@
 <div class="cl-preview-section">
 <pre>{
     "CVE": {
-        "ID": "CVE-2017-0147", 
+        "ID": "CVE-2017-0147",
         "RecordedFuture": {
-            "FirstSeen": "2017-03-14T16:59:26.413Z", 
-            "Criticality": "Very Critical", 
+            "FirstSeen": "2017-03-14T16:59:26.413Z",
+            "Criticality": "Very Critical",
             "LastSeen": "2019-02-03T17:19:59.183Z"
         }
     }
@@ -3062,7 +3062,7 @@
 <h5 id="human-readable-output-9">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52180553-6e705280-27f0-11e9-9ef7-c1c13029eb58.png" alt="image"></p>
+<p><img src="../../doc_files/52180553-6e705280-27f0-11e9-9ef7-c1c13029eb58.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-domain-risk-list">11. Get the domain risk list</h3>
@@ -3163,11 +3163,11 @@
 <div class="cl-preview-section">
 <pre>{
     "InfoFile": {
-        "Info": "text/csv; charset=utf-8", 
-        "Name": "domain_risk_list.csv", 
-        "Extension": "csv", 
-        "EntryID": "72047@cc00e449-9e7b-4609-8a68-1c8c01114562", 
-        "Type": "ASCII text, with very long lines\n", 
+        "Info": "text/csv; charset=utf-8",
+        "Name": "domain_risk_list.csv",
+        "Extension": "csv",
+        "EntryID": "72047@cc00e449-9e7b-4609-8a68-1c8c01114562",
+        "Type": "ASCII text, with very long lines\n",
         "Size": 2803398
     }
 }
@@ -3177,7 +3177,7 @@
 <h5 id="human-readable-output-10">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52209971-3ddef600-288e-11e9-8e00-e964cea64913.png" alt="image"></p>
+<p><img src="../../doc_files/52209971-3ddef600-288e-11e9-8e00-e964cea64913.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-url-risk-list">12. Get the URL risk list</h3>
@@ -3278,11 +3278,11 @@
 <div class="cl-preview-section">
 <pre>{
     "InfoFile": {
-        "Info": "text/csv; charset=utf-8", 
-        "Name": "url_risk_list.csv", 
-        "Extension": "csv", 
-        "EntryID": "72055@cc00e449-9e7b-4609-8a68-1c8c01114562", 
-        "Type": "ASCII text, with very long lines\n", 
+        "Info": "text/csv; charset=utf-8",
+        "Name": "url_risk_list.csv",
+        "Extension": "csv",
+        "EntryID": "72055@cc00e449-9e7b-4609-8a68-1c8c01114562",
+        "Type": "ASCII text, with very long lines\n",
         "Size": 2990
     }
 }
@@ -3292,7 +3292,7 @@
 <h5 id="human-readable-output-11">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52210045-7b438380-288e-11e9-8ea5-81a8ac075eea.png" alt="image"></p>
+<p><img src="../../doc_files/52210045-7b438380-288e-11e9-8ea5-81a8ac075eea.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-ip-address-risk-list">13. Get the IP address risk list</h3>
@@ -3393,11 +3393,11 @@
 <div class="cl-preview-section">
 <pre>{
     "InfoFile": {
-        "Info": "text/csv; charset=utf-8", 
-        "Name": "ip_risk_list.csv", 
-        "Extension": "csv", 
-        "EntryID": "72063@cc00e449-9e7b-4609-8a68-1c8c01114562", 
-        "Type": "UTF-8 Unicode text, with very long lines\n", 
+        "Info": "text/csv; charset=utf-8",
+        "Name": "ip_risk_list.csv",
+        "Extension": "csv",
+        "EntryID": "72063@cc00e449-9e7b-4609-8a68-1c8c01114562",
+        "Type": "UTF-8 Unicode text, with very long lines\n",
         "Size": 254932
     }
 }
@@ -3407,7 +3407,7 @@
 <h5 id="human-readable-output-12">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52210168-dbd2c080-288e-11e9-8be5-96f62b1d62f0.png" alt="image"></p>
+<p><img src="../../doc_files/52210168-dbd2c080-288e-11e9-8be5-96f62b1d62f0.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-vulnerability-risk-list">14. Get the vulnerability risk list</h3>
@@ -3508,11 +3508,11 @@
 <div class="cl-preview-section">
 <pre>{
     "InfoFile": {
-        "Info": "text/csv; charset=utf-8", 
-        "Name": "cve_risk_list.csv", 
-        "Extension": "csv", 
-        "EntryID": "72073@cc00e449-9e7b-4609-8a68-1c8c01114562", 
-        "Type": "UTF-8 Unicode text, with very long lines\n", 
+        "Info": "text/csv; charset=utf-8",
+        "Name": "cve_risk_list.csv",
+        "Extension": "csv",
+        "EntryID": "72073@cc00e449-9e7b-4609-8a68-1c8c01114562",
+        "Type": "UTF-8 Unicode text, with very long lines\n",
         "Size": 3611
     }
 }
@@ -3522,7 +3522,7 @@
 <h5 id="human-readable-output-13">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52210325-67e4e800-288f-11e9-9434-5def18e623d0.png" alt="image"></p>
+<p><img src="../../doc_files/52210325-67e4e800-288f-11e9-9434-5def18e623d0.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-hash-risk-list">15. Get the hash risk list</h3>
@@ -3623,11 +3623,11 @@
 <div class="cl-preview-section">
 <pre>{
     "InfoFile": {
-        "Info": "text/csv; charset=utf-8", 
-        "Name": "hash_list.csv", 
-        "Extension": "csv", 
-        "EntryID": "72081@cc00e449-9e7b-4609-8a68-1c8c01114562", 
-        "Type": "ASCII text, with very long lines\n", 
+        "Info": "text/csv; charset=utf-8",
+        "Name": "hash_list.csv",
+        "Extension": "csv",
+        "EntryID": "72081@cc00e449-9e7b-4609-8a68-1c8c01114562",
+        "Type": "ASCII text, with very long lines\n",
         "Size": 8995
     }
 }
@@ -3637,7 +3637,7 @@
 <h5 id="human-readable-output-14">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52210449-d164f680-288f-11e9-861b-54c725025772.png" alt="image"></p>
+<p><img src="../../doc_files/52210449-d164f680-288f-11e9-861b-54c725025772.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-domain-risk-rules">16. Get the domain risk rules</h3>
@@ -3713,63 +3713,63 @@
         "RiskRule": {
             "Domain": [
                 {
-                    "Count": 1263174, 
-                    "Description": "Linked to Cyber Attack", 
-                    "Criticality": "Suspicious", 
+                    "Count": 1263174,
+                    "Description": "Linked to Cyber Attack",
+                    "Criticality": "Suspicious",
                     "Name": "linkedToCyberAttack"
-                }, 
+                },
                 {
-                    "Count": 118450670, 
-                    "Description": "Linked to Malware", 
-                    "Criticality": "Suspicious", 
+                    "Count": 118450670,
+                    "Description": "Linked to Malware",
+                    "Criticality": "Suspicious",
                     "Name": "linkedToMalware"
-                }, 
+                },
                 {
-                    "Count": 1542009, 
-                    "Description": "Linked to Attack Vector", 
-                    "Criticality": "Suspicious", 
+                    "Count": 1542009,
+                    "Description": "Linked to Attack Vector",
+                    "Criticality": "Suspicious",
                     "Name": "linkedToVector"
-                }, 
+                },
                 {
-                    "Count": 342012, 
-                    "Description": "Linked to Vulnerability", 
-                    "Criticality": "Suspicious", 
+                    "Count": 342012,
+                    "Description": "Linked to Vulnerability",
+                    "Criticality": "Suspicious",
                     "Name": "linkedToVuln"
-                }, 
+                },
                 {
-                    "Count": 2615, 
-                    "Description": "Malware SSL Certificate Fingerprint", 
-                    "Criticality": "Malicious", 
+                    "Count": 2615,
+                    "Description": "Malware SSL Certificate Fingerprint",
+                    "Criticality": "Malicious",
                     "Name": "malwareSsl"
-                }, 
+                },
                 {
-                    "Count": 171016408, 
-                    "Description": "Positive Malware Verdict", 
-                    "Criticality": "Malicious", 
+                    "Count": 171016408,
+                    "Description": "Positive Malware Verdict",
+                    "Criticality": "Malicious",
                     "Name": "positiveMalwareVerdict"
-                }, 
+                },
                 {
-                    "Count": 48382, 
-                    "Description": "Threat Researcher", 
-                    "Criticality": "Unusual", 
+                    "Count": 48382,
+                    "Description": "Threat Researcher",
+                    "Criticality": "Unusual",
                     "Name": "threatResearcher"
-                }, 
+                },
                 {
-                    "Count": 2136, 
-                    "Description": "Reported by Insikt Group", 
-                    "Criticality": "Unusual", 
+                    "Count": 2136,
+                    "Description": "Reported by Insikt Group",
+                    "Criticality": "Unusual",
                     "Name": "analystNote"
-                }, 
+                },
                 {
-                    "Count": 5, 
-                    "Description": "Trending in Recorded Future Analyst Community", 
-                    "Criticality": "Unusual", 
+                    "Count": 5,
+                    "Description": "Trending in Recorded Future Analyst Community",
+                    "Criticality": "Unusual",
                     "Name": "rfTrending"
-                }, 
+                },
                 {
-                    "Count": 1018, 
-                    "Description": "Historically Reported in Threat List", 
-                    "Criticality": "Unusual", 
+                    "Count": 1018,
+                    "Description": "Historically Reported in Threat List",
+                    "Criticality": "Unusual",
                     "Name": "historicalThreatListMembership"
                 }
             ]
@@ -3782,7 +3782,7 @@
 <h5 id="human-readable-output-15">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52210580-26a10800-2890-11e9-95f3-1206fcfd4422.png" alt="image"></p>
+<p><img src="../../doc_files/52210580-26a10800-2890-11e9-95f3-1206fcfd4422.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-has-risk-rules">17. Get the has risk rules</h3>
@@ -3858,63 +3858,63 @@
         "RiskRule": {
             "Hash": [
                 {
-                    "Count": 1263174, 
-                    "Description": "Linked to Cyber Attack", 
-                    "Criticality": "Suspicious", 
+                    "Count": 1263174,
+                    "Description": "Linked to Cyber Attack",
+                    "Criticality": "Suspicious",
                     "Name": "linkedToCyberAttack"
-                }, 
+                },
                 {
-                    "Count": 118449991, 
-                    "Description": "Linked to Malware", 
-                    "Criticality": "Suspicious", 
+                    "Count": 118449991,
+                    "Description": "Linked to Malware",
+                    "Criticality": "Suspicious",
                     "Name": "linkedToMalware"
-                }, 
+                },
                 {
-                    "Count": 1542002, 
-                    "Description": "Linked to Attack Vector", 
-                    "Criticality": "Suspicious", 
+                    "Count": 1542002,
+                    "Description": "Linked to Attack Vector",
+                    "Criticality": "Suspicious",
                     "Name": "linkedToVector"
-                }, 
+                },
                 {
-                    "Count": 342012, 
-                    "Description": "Linked to Vulnerability", 
-                    "Criticality": "Suspicious", 
+                    "Count": 342012,
+                    "Description": "Linked to Vulnerability",
+                    "Criticality": "Suspicious",
                     "Name": "linkedToVuln"
-                }, 
+                },
                 {
-                    "Count": 2615, 
-                    "Description": "Malware SSL Certificate Fingerprint", 
-                    "Criticality": "Malicious", 
+                    "Count": 2615,
+                    "Description": "Malware SSL Certificate Fingerprint",
+                    "Criticality": "Malicious",
                     "Name": "malwareSsl"
-                }, 
+                },
                 {
-                    "Count": 171015323, 
-                    "Description": "Positive Malware Verdict", 
-                    "Criticality": "Malicious", 
+                    "Count": 171015323,
+                    "Description": "Positive Malware Verdict",
+                    "Criticality": "Malicious",
                     "Name": "positiveMalwareVerdict"
-                }, 
+                },
                 {
-                    "Count": 48382, 
-                    "Description": "Threat Researcher", 
-                    "Criticality": "Unusual", 
+                    "Count": 48382,
+                    "Description": "Threat Researcher",
+                    "Criticality": "Unusual",
                     "Name": "threatResearcher"
-                }, 
+                },
                 {
-                    "Count": 2136, 
-                    "Description": "Reported by Insikt Group", 
-                    "Criticality": "Unusual", 
+                    "Count": 2136,
+                    "Description": "Reported by Insikt Group",
+                    "Criticality": "Unusual",
                     "Name": "analystNote"
-                }, 
+                },
                 {
-                    "Count": 5, 
-                    "Description": "Trending in Recorded Future Analyst Community", 
-                    "Criticality": "Unusual", 
+                    "Count": 5,
+                    "Description": "Trending in Recorded Future Analyst Community",
+                    "Criticality": "Unusual",
                     "Name": "rfTrending"
-                }, 
+                },
                 {
-                    "Count": 1018, 
-                    "Description": "Historically Reported in Threat List", 
-                    "Criticality": "Unusual", 
+                    "Count": 1018,
+                    "Description": "Historically Reported in Threat List",
+                    "Criticality": "Unusual",
                     "Name": "historicalThreatListMembership"
                 }
             ]
@@ -3927,7 +3927,7 @@
 <h5 id="human-readable-output-16">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52210727-84cdeb00-2890-11e9-9f2b-05575fb07f43.png" alt="image"></p>
+<p><img src="../../doc_files/52210727-84cdeb00-2890-11e9-9f2b-05575fb07f43.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-ip-address-risk-rules">18. Get the IP address risk rules</h3>
@@ -4003,27 +4003,27 @@
         "RiskRule": {
             "IP": [
                 {
-                    "Count": 1187, 
-                    "Description": "Recently Defaced Site", 
-                    "Criticality": "Suspicious", 
+                    "Count": 1187,
+                    "Description": "Recently Defaced Site",
+                    "Criticality": "Suspicious",
                     "Name": "recentlyDefaced"
-                }, 
+                },
                 {
-                    "Count": 233465, 
-                    "Description": "Historically Reported by DHS AIS", 
-                    "Criticality": "Unusual", 
+                    "Count": 233465,
+                    "Description": "Historically Reported by DHS AIS",
+                    "Criticality": "Unusual",
                     "Name": "dhsAis"
-                }, 
+                },
                 {
-                    "Count": 76, 
-                    "Description": "Recently Reported by DHS AIS", 
-                    "Criticality": "Suspicious", 
+                    "Count": 76,
+                    "Description": "Recently Reported by DHS AIS",
+                    "Criticality": "Suspicious",
                     "Name": "recentDhsAis"
-                }, 
+                },
                 {
-                    "Count": 65391, 
-                    "Description": "Historical Botnet Traffic", 
-                    "Criticality": "Unusual", 
+                    "Count": 65391,
+                    "Description": "Historical Botnet Traffic",
+                    "Criticality": "Unusual",
                     "Name": "botnet"
                 },  ...
 </pre>
@@ -4032,7 +4032,7 @@
 <h5 id="human-readable-output-17">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52210851-d5454880-2890-11e9-8375-82058307dd3a.png" alt="image"></p>
+<p><img src="../../doc_files/52210851-d5454880-2890-11e9-8375-82058307dd3a.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-url-risk-rules">19. Get the URL risk rules</h3>
@@ -4108,45 +4108,45 @@
         "RiskRule": {
             "URL": [
                 {
-                    "Count": 151947, 
-                    "Description": "Historically Reported as a Defanged URL", 
-                    "Criticality": "Suspicious", 
+                    "Count": 151947,
+                    "Description": "Historically Reported as a Defanged URL",
+                    "Criticality": "Suspicious",
                     "Name": "defangedURL"
-                }, 
+                },
                 {
-                    "Count": 2389, 
-                    "Description": "Recently Reported as a Defanged URL", 
-                    "Criticality": "Malicious", 
+                    "Count": 2389,
+                    "Description": "Recently Reported as a Defanged URL",
+                    "Criticality": "Malicious",
                     "Name": "recentDefangedURL"
-                }, 
+                },
                 {
-                    "Count": 2242, 
-                    "Description": "Compromised URL", 
-                    "Criticality": "Malicious", 
+                    "Count": 2242,
+                    "Description": "Compromised URL",
+                    "Criticality": "Malicious",
                     "Name": "compromisedUrl"
-                }, 
+                },
                 {
-                    "Count": 2259, 
-                    "Description": "Active Phishing URL", 
-                    "Criticality": "Malicious", 
+                    "Count": 2259,
+                    "Description": "Active Phishing URL",
+                    "Criticality": "Malicious",
                     "Name": "phishingUrl"
-                }, 
+                },
                 {
-                    "Count": 88, 
-                    "Description": "C&amp;C URL", 
-                    "Criticality": "Very Malicious", 
+                    "Count": 88,
+                    "Description": "C&amp;C URL",
+                    "Criticality": "Very Malicious",
                     "Name": "cncUrl"
-                }, 
+                },
                 {
-                    "Count": 9, 
-                    "Description": "Ransomware Distribution URL", 
-                    "Criticality": "Very Malicious", 
+                    "Count": 9,
+                    "Description": "Ransomware Distribution URL",
+                    "Criticality": "Very Malicious",
                     "Name": "ransomwareDistribution"
-                }, 
+                },
                 {
-                    "Count": 176069, 
-                    "Description": "Historically Reported in Threat List", 
-                    "Criticality": "Unusual", 
+                    "Count": 176069,
+                    "Description": "Historically Reported in Threat List",
+                    "Criticality": "Unusual",
                     "Name": "historicalThreatListMembership"
                 }
             ]
@@ -4159,7 +4159,7 @@
 <h5 id="human-readable-output-18">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52210941-12113f80-2891-11e9-9be2-bb944ef37462.png" alt="image"></p>
+<p><img src="../../doc_files/52210941-12113f80-2891-11e9-9be2-bb944ef37462.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-vulnerability-risk-rules">20. Get the vulnerability risk rules</h3>
@@ -4235,27 +4235,27 @@
         "RiskRule": {
             "Vulnerability": [
                 {
-                    "Count": 1, 
-                    "Description": "Cyber Exploit Signal: Critical", 
-                    "Criticality": "Critical", 
+                    "Count": 1,
+                    "Description": "Cyber Exploit Signal: Critical",
+                    "Criticality": "Critical",
                     "Name": "cyberSignalCritical"
-                }, 
+                },
                 {
-                    "Count": 4, 
-                    "Description": "Cyber Exploit Signal: Important", 
-                    "Criticality": "High", 
+                    "Count": 4,
+                    "Description": "Cyber Exploit Signal: Important",
+                    "Criticality": "High",
                     "Name": "cyberSignalHigh"
-                }, 
+                },
                 {
-                    "Count": 105, 
-                    "Description": "Cyber Exploit Signal: Medium", 
-                    "Criticality": "Medium", 
+                    "Count": 105,
+                    "Description": "Cyber Exploit Signal: Medium",
+                    "Criticality": "Medium",
                     "Name": "cyberSignalMedium"
-                }, 
+                },
                 {
-                    "Count": 22203, 
-                    "Description": "Linked to Historical Cyber Exploit", 
-                    "Criticality": "Low", 
+                    "Count": 22203,
+                    "Description": "Linked to Historical Cyber Exploit",
+                    "Criticality": "Low",
                     "Name": "linkedToCyberExploit"
                 },  ...
 </pre>
@@ -4264,7 +4264,7 @@
 <h5 id="human-readable-output-19">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52211023-4ab11900-2891-11e9-92e2-05f407dfe2f2.png" alt="image"></p>
+<p><img src="../../doc_files/52211023-4ab11900-2891-11e9-92e2-05f407dfe2f2.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-a-list-of-alert-rules">21. Get a list of alert rules</h3>
@@ -4355,11 +4355,11 @@
     "RecordedFuture": {
         "AlertRule": [
             {
-                "ID": "Y8wa3G", 
+                "ID": "Y8wa3G",
                 "Name": "Global Trends, Trending Vulnerabilities"
-            }, 
+            },
             {
-                "ID": "Y8wa3F", 
+                "ID": "Y8wa3F",
                 "Name": "Global Trends, Trending Attackers"
             }
         ]
@@ -4370,7 +4370,7 @@
 <h5 id="human-readable-output-20">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52211907-dcba2100-2893-11e9-83ce-f048959938f9.png" alt="image"></p>
+<p><img src="../../doc_files/52211907-dcba2100-2893-11e9-83ce-f048959938f9.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-a-list-of-alerts">22. Get a list of alerts</h3>
@@ -4520,57 +4520,57 @@
     "RecordedFuture": {
         "Alert": [
             {
-                "Status": "no-action", 
-                "Name": "DJIA Cyber - New references in 10 documents", 
-                "Triggered": "2019-02-04T10:06:28.619Z", 
-                "Rule": "DJIA Cyber", 
-                "Assignee": null, 
-                "Type": "EVENT", 
+                "Status": "no-action",
+                "Name": "DJIA Cyber - New references in 10 documents",
+                "Triggered": "2019-02-04T10:06:28.619Z",
+                "Rule": "DJIA Cyber",
+                "Assignee": null,
+                "Type": "EVENT",
                 "ID": "Y_7dPz"
-            }, 
+            },
             {
-                "Status": "no-action", 
-                "Name": "DJIA Cyber - New references in 6 documents", 
-                "Triggered": "2019-02-04T06:06:59.791Z", 
-                "Rule": "DJIA Cyber", 
-                "Assignee": null, 
-                "Type": "EVENT", 
+                "Status": "no-action",
+                "Name": "DJIA Cyber - New references in 6 documents",
+                "Triggered": "2019-02-04T06:06:59.791Z",
+                "Rule": "DJIA Cyber",
+                "Assignee": null,
+                "Type": "EVENT",
                 "ID": "Y_zJEj"
-            }, 
+            },
             {
-                "Status": "no-action", 
-                "Name": "DJIA Cyber - New references in 1 document", 
-                "Triggered": "2019-02-04T02:05:50.210Z", 
-                "Rule": "DJIA Cyber", 
-                "Assignee": null, 
-                "Type": "EVENT", 
+                "Status": "no-action",
+                "Name": "DJIA Cyber - New references in 1 document",
+                "Triggered": "2019-02-04T02:05:50.210Z",
+                "Rule": "DJIA Cyber",
+                "Assignee": null,
+                "Type": "EVENT",
                 "ID": "Y_s-Pu"
-            }, 
+            },
             {
-                "Status": "no-action", 
-                "Name": "DJIA Cyber - New references in 12 documents", 
-                "Triggered": "2019-02-03T22:05:45.377Z", 
-                "Rule": "DJIA Cyber", 
-                "Assignee": null, 
-                "Type": "EVENT", 
+                "Status": "no-action",
+                "Name": "DJIA Cyber - New references in 12 documents",
+                "Triggered": "2019-02-03T22:05:45.377Z",
+                "Rule": "DJIA Cyber",
+                "Assignee": null,
+                "Type": "EVENT",
                 "ID": "Y_lnjO"
-            }, 
+            },
             {
-                "Status": "no-action", 
-                "Name": "DJIA Cyber - New references in 11 documents", 
-                "Triggered": "2019-02-03T18:05:36.142Z", 
-                "Rule": "DJIA Cyber", 
-                "Assignee": null, 
-                "Type": "EVENT", 
+                "Status": "no-action",
+                "Name": "DJIA Cyber - New references in 11 documents",
+                "Triggered": "2019-02-03T18:05:36.142Z",
+                "Rule": "DJIA Cyber",
+                "Assignee": null,
+                "Type": "EVENT",
                 "ID": "Y_esMY"
-            }, 
+            },
             {
-                "Status": "no-action", 
-                "Name": "DJIA Cyber - New references in 8 documents", 
-                "Triggered": "2019-02-03T14:05:21.965Z", 
-                "Rule": "DJIA Cyber", 
-                "Assignee": null, 
-                "Type": "EVENT", 
+                "Status": "no-action",
+                "Name": "DJIA Cyber - New references in 8 documents",
+                "Triggered": "2019-02-03T14:05:21.965Z",
+                "Rule": "DJIA Cyber",
+                "Assignee": null,
+                "Type": "EVENT",
                 "ID": "Y_X-vd"
             }
         ]
@@ -4582,7 +4582,7 @@
 <h5 id="human-readable-output-21">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/52212030-30c50580-2894-11e9-84e2-d8e40d9f4c65.png" alt="image"></p>
+<p><img src="../../doc_files/52212030-30c50580-2894-11e9-84e2-d8e40d9f4c65.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h2 id="additional-information">Additional Information</h2>
@@ -4611,5 +4611,5 @@
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
-<p>The <a href="https://support.recordedfuture.com/hc/en-us/articles/115005362948-Recorded-Future-API-Credits-and-Quota-Enforcement" target="_blank" rel="noopener">Recorded Future API</a> enforces a quota<br> <br> For alerts:<br> <img src="https://user-images.githubusercontent.com/35098543/52214134-9e276500-2899-11e9-8acd-d7166a2c24db.png" alt="image"><br> (From the Recorded Future support site)</p>
+<p>The <a href="https://support.recordedfuture.com/hc/en-us/articles/115005362948-Recorded-Future-API-Credits-and-Quota-Enforcement" target="_blank" rel="noopener">Recorded Future API</a> enforces a quota<br> <br> For alerts:<br> <img src="../../doc_files/52214134-9e276500-2899-11e9-8acd-d7166a2c24db.png" alt="image"><br> (From the Recorded Future support site)</p>
 </div>

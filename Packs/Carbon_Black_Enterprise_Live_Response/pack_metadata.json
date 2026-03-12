@@ -2,7 +2,7 @@
     "name": "Carbon Black Enterprise Live Response",
     "description": "Collect information and take action on remote endpoints in real time with Carbon Black Enterprise Live Response.",
     "support": "xsoar",
-    "currentVersion": "1.1.6",
+    "currentVersion": "1.1.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,6 +15,18 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix",
+        "xsiam",
+        "edr",
+        "cloud",
+        "cloud_runtime_security"
     ]
 }

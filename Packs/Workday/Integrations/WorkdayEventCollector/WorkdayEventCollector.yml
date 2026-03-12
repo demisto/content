@@ -1,5 +1,6 @@
 category: Analytics & SIEM
-sectionOrder:
+provider: Workday
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -77,7 +78,7 @@ name: Workday Event Collector
 script:
   commands:
   - name: workday-get-activity-logging
-    description: Returns activity loggings extracted from Workday.
+    description: Returns activity loggings extracted from Workday. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
     arguments:
     - name: limit
       description: The maximum number of loggings to return.
@@ -101,15 +102,31 @@ script:
       defaultValue: ""
       predefined:
       - ""
+    - name: should_push_events
+      auto: PREDEFINED
+      defaultValue: "false"
+      description: If true, the command creates events; otherwise, it only displays them.
+      predefined:
+        - "true"
+        - "false"
+      required: false
     outputs: []
   runonce: false
   script: "-"
   type: python
   subtype: python3
   isfetchevents: true
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.12.8.3296088
 fromversion: 8.2.0
 tests:
 - No tests (auto formatted)
 marketplaces:
 - marketplacev2
+- platform
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- xsiam

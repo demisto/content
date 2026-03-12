@@ -48,7 +48,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -184,7 +186,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -347,7 +351,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -513,7 +519,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -683,7 +691,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -727,19 +737,19 @@ view: |-
 inputs:
 - key: limit
   value:
-    simple: "5"
+    simple: "4"
   required: false
   description: The max mobile devices to return
   playbookInputQuery: null
 - key: page_size
   value:
-    simple: "3"
+    simple: "2"
   required: false
   description: The page size
   playbookInputQuery: null
 - key: mobile_device_id
   value:
-    simple: 311fc9cb34adecd6
+    simple: 841D2E2E-2458-4C38-ACBA-0BFA2F26C60A
   required: false
   description: The mobile device id to perform the action command on it.
   playbookInputQuery: null

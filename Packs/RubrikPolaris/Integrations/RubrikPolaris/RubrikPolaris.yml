@@ -1,44 +1,110 @@
 category: Data Enrichment & Threat Intelligence
+provider: Rubrik
 commonfields:
   id: RubrikPolaris
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - display: Service Account JSON
   name: service_account_json
   type: 4
   required: false
+  section: Connect
 - display: Rubrik Account (e.g. ${rubrikAccount}.my.rubrik.com)
   name: url
   type: 0
   required: false
+  section: Connect
 - display: Email
   name: email
   type: 9
   required: false
+  section: Connect
 - defaultvalue: 'false'
   display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
+- defaultvalue: Event,Threat Monitoring Object
+  display: RSC Fetch Types
+  additionalinfo: "Select RSC types to fetch as incidents.\n\nNote: Supports the listed options only. If not provided, it will fetch all listed options."
+  name: rsc_fetch_types
+  options:
+  - Event
+  - Threat Monitoring Object
+  type: 16
+  required: false
+  section: Collect
+- defaultvalue: ANOMALY,THREAT_MONITORING
+  display: Event types to fetch as incidents
+  additionalinfo: "Event types to fetch as incidents.\nNote: Supports the listed options only. If not provided, it will fetch events for all listed options. Applies only when RSC fetch type is set to \"Event\"."
+  name: event_types
+  options:
+  - ANOMALY
+  - THREAT_MONITORING
+  type: 16
+  required: false
+  section: Collect
+- defaultvalue: SEVERITY_CRITICAL
+  display: Event severities to fetch as incidents
+  additionalinfo: "Event severities to fetch as incidents.\nNote: Supports the listed options only. If not provided, it will fetch events for critical severity level. Applies only when RSC fetch type is set to \"Event\"."
+  name: event_severities
+  options:
+  - SEVERITY_CRITICAL
+  - SEVERITY_WARNING
+  - SEVERITY_INFO
+  type: 16
+  required: false
+  section: Collect
+- additionalinfo: "Select Threat Monitoring Match Types to fetch as incidents. Default is all.\n\nNote: Applies only when RSC fetch type is set to \"Threat Monitoring object\"."
+  display: Threat Monitoring Match Types
+  name: threat_monitoring_match_types
+  options:
+  - INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE
+  - INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME
+  - INDICATOR_OF_COMPROMISE_TYPE_HASH
+  type: 16
+  required: false
+  section: Collect
+- additionalinfo: "Select Threat Monitoring Object Types to fetch as incidents. Default is all.\n\nNote: Applies only when RSC fetch type is set to \"Threat Monitoring object\"."
+  display: Threat Monitoring Object Types
+  name: threat_monitoring_object_types
+  options:
+  - ShareFileset
+  - NutanixVirtualMachine
+  - VolumeGroup
+  - HypervVirtualMachine
+  - LinuxFileset
+  - WindowsFileset
+  - VmwareVirtualMachine
+  type: 16
+  required: false
+  section: Collect
 - additionalinfo: The time interval for the first fetch (retroactive). Examples of supported values can be found at https://dateparser.readthedocs.io/en/latest/#relative-dates.
   defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
   type: 0
   required: false
-- additionalinfo: Maximum number of incidents to fetch every time. The maximum value is 1000.
+  section: Collect
+- additionalinfo: "Maximum number of incidents to fetch every time. The maximum value is 1000.\n\nNote: If both Threat Monitoring objects and events are selected, the limit is split equally to fetch both types optimally."
   defaultvalue: '20'
   display: Fetch Limit (Maximum of 1000)
   name: max_fetch
   type: 0
   required: false
-- additionalinfo: When a Anomaly event of Critical severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
+  section: Collect
+- additionalinfo: When an event of Critical severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
   defaultvalue: XSOAR HIGH
-  display: Anomaly Event Critical Severity Level Mapping
+  display: Event Critical Severity Level Mapping
   name: radar_critical_severity_mapping
   options:
   - XSOAR CRITICAL
@@ -47,9 +113,10 @@ configuration:
   - XSOAR LOW
   type: 15
   required: false
-- additionalinfo: When a Anomaly event of Warning severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
+  section: Collect
+- additionalinfo: When an event of Warning severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
   defaultvalue: XSOAR LOW
-  display: Anomaly Event Warning Severity Level Mapping
+  display: Event Warning Severity Level Mapping
   name: radar_warning_severity_mapping
   options:
   - XSOAR CRITICAL
@@ -58,16 +125,46 @@ configuration:
   - XSOAR LOW
   type: 15
   required: false
+  section: Collect
+- additionalinfo: When a threat monitoring object is fetched, this setting indicates what severity will get assigned within XSOAR.
+  defaultvalue: XSOAR HIGH
+  display: Threat Monitoring Object Severity Level Mapping
+  name: threat_monitoring_severity_mapping
+  options:
+  - XSOAR CRITICAL
+  - XSOAR HIGH
+  - XSOAR MEDIUM
+  - XSOAR LOW
+  type: 15
+  required: false
+  section: Collect
+- name: integration_reliability
+  display: Source Reliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: A - Completely reliable
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
+  section: Collect
 - additionalinfo: Whether to use XSOAR's system proxy settings to connect to the API.
   display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - additionalinfo: Whether to allow connections without verifying SSL certificates validity.
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 description: The Rubrik Security Cloud integration will fetch the Rubrik Anomaly Event and is rich with commands to perform the on-demand scans, backups, recoveries and many more features to manage and protect the organizational data.
 display: Rubrik Security Cloud
 name: RubrikPolaris
@@ -906,13 +1003,20 @@ script:
     - description: "The unique ID of the cluster.\n\nNote: Users can retrieve the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
       name: cluster_id
       required: true
-    - description: "The snapshot ID.\n\nNote: Users can retrieve the list of snapshot IDs by executing the \"rubrik-polaris-vm-object-snapshot-list\" command."
+    - description: "The CDM snapshot ID.\n\nNote: Users can retrieve the list of snapshot IDs by executing the \"rubrik-polaris-vm-object-snapshot-list\" command.\nUse the \"rubrik-radar-suspicious-file-list\" command to retrieve the actual CDM ID from the Anomaly ID.\nExample format to get the snapshot CDM ID from Anomaly ID: \"<Cluster-ID>:::VirtualMachine:::<Snappable-ID>:::<CDM-ID>\"."
       name: snapshot_id
       required: true
-    - description: "The VM object ID.\n\nNote: Users can retrieve the list of object IDs by executing the \"rubrik-polaris-vm-objects-list\" command."
+    - description: "The VM object ID (Snappable ID).\n\nNote: Users can retrieve the list of Snappable IDs by executing the \"rubrik-polaris-vm-objects-list\" command.\nExample format to get the Snappable ID: \"VirtualMachine:::<Snappable-ID>\"."
       name: object_id
       required: true
-    description: Request for the analysis and retrieve the download link for the Radar CSV analyzed file.
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: If set to True, the command downloads the anomaly analysis CSV file directly on XSOAR server.
+      name: download_file
+      predefined:
+      - "True"
+      - "False"
+    description: Request for the analysis and retrieve the download link or directly download file for the Radar CSV analyzed file.
     name: rubrik-radar-anomaly-csv-analysis
     outputs:
     - contextPath: RubrikPolaris.RadarAnomalyCSV.clusterId
@@ -926,6 +1030,39 @@ script:
       type: String
     - contextPath: RubrikPolaris.RadarAnomalyCSV.investigationCsvDownloadLink.downloadLink
       description: The download link of the CSV analysis.
+      type: String
+    - contextPath: File.Size
+      description: File size in bytes.
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 hash of file.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash of file.
+      type: String
+    - contextPath: File.SHA512
+      description: SHA512 hash of file.
+      type: String
+    - contextPath: File.Name
+      description: File name.
+      type: String
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: Unknown
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
       type: String
   - arguments:
     - description: "ID of the snapshot.\n\nNote: Users can retrieve the list of snapshot IDs by executing the \"rubrik-polaris-vm-object-snapshot-list\"  command."
@@ -2277,11 +2414,11 @@ script:
       description: "The comma-separated list of risk levels.\n\nSupported values are: UNKNOWN_RISK, HIGH_RISK, MEDIUM_RISK, LOW_RISK, NO_RISK.\n\nNote: For any other values, whether the obtained result is filtered or not, is not confirmed."
       name: risk_levels
       predefined:
-        - UNKNOWN_RISK
-        - HIGH_RISK
-        - MEDIUM_RISK
-        - LOW_RISK
-        - NO_RISK
+      - UNKNOWN_RISK
+      - HIGH_RISK
+      - MEDIUM_RISK
+      - LOW_RISK
+      - NO_RISK
     - description: 'Specify the group ID to filter with.'
       name: group_id
     - auto: PREDEFINED
@@ -2296,10 +2433,10 @@ script:
       description: "Specify the principal summary category to filter with.\n\nSupported values are: PRINCIPAL_SUMMARY_CATEGORY_UNSPECIFIED, USERS_WITH_SENSITIVE_ACCESS, NEW_USERS_WITH_SENSITIVE_ACCESS, USERS_WITH_RISK_LEVEL_INCREASE.\n\nNote: For any other values, whether the obtained result is filtered or not, is not confirmed."
       name: principal_summary_category
       predefined:
-        - PRINCIPAL_SUMMARY_CATEGORY_UNSPECIFIED
-        - USERS_WITH_SENSITIVE_ACCESS
-        - NEW_USERS_WITH_SENSITIVE_ACCESS
-        - USERS_WITH_RISK_LEVEL_INCREASE
+      - PRINCIPAL_SUMMARY_CATEGORY_UNSPECIFIED
+      - USERS_WITH_SENSITIVE_ACCESS
+      - NEW_USERS_WITH_SENSITIVE_ACCESS
+      - USERS_WITH_RISK_LEVEL_INCREASE
     - defaultValue: 50
       description: Number of results to retrieve in the response. The maximum allowed size is 1000.
       name: limit
@@ -2311,13 +2448,13 @@ script:
       description: "Specify the field to use for sorting the response.\n\nSupported values are: RISK_LEVEL, RISK_SENSITIVE_FILES, RISK_SENSITIVE_HITS, TOTAL_SENSITIVE_HITS, TOTAL_SENSITIVE_FILES, SID, TOTAL_SENSITIVE_OBJECTS.\n\nNote: For any other values, whether the obtained result is filtered or not, is not confirmed."
       name: sort_by
       predefined:
-        - RISK_LEVEL
-        - RISK_SENSITIVE_FILES
-        - RISK_SENSITIVE_HITS
-        - TOTAL_SENSITIVE_HITS
-        - TOTAL_SENSITIVE_FILES
-        - SID
-        - TOTAL_SENSITIVE_OBJECTS
+      - RISK_LEVEL
+      - RISK_SENSITIVE_FILES
+      - RISK_SENSITIVE_HITS
+      - TOTAL_SENSITIVE_HITS
+      - TOTAL_SENSITIVE_FILES
+      - SID
+      - TOTAL_SENSITIVE_OBJECTS
     - auto: PREDEFINED
       defaultValue: DESC
       description: "Specify the order to sort the data in.\n\nPossible values are: \"ASC\", \"DESC\"."
@@ -2732,21 +2869,21 @@ script:
       description: "Specify the field to use for sorting the response.\n\nSupported values are: HITS, NAME, DAILY_CHANGE, LAST_ACCESS_TIME, OPEN_ACCESS_TYPE, FILES_WITH_HITS, FILES_WITH_OPEN_ACCESS_HITS, STALE_FILES_WITH_HITS, CLUSTER, OBJECT_NAME, OBJECT_LOCATION, SNAPSHOT_TIME, NUM_ACTIVITIES, NUM_ACTIVITIES_DELTA, NATIVE_PATH.\n\nNote: For any other values, whether the obtained result is filtered or not, is not confirmed."
       name: sort_by
       predefined:
-        - HITS
-        - NAME
-        - DAILY_CHANGE
-        - LAST_ACCESS_TIME
-        - OPEN_ACCESS_TYPE
-        - FILES_WITH_HITS
-        - FILES_WITH_OPEN_ACCESS_HITS
-        - STALE_FILES_WITH_HITS
-        - CLUSTER
-        - OBJECT_NAME
-        - OBJECT_LOCATION
-        - SNAPSHOT_TIME
-        - NUM_ACTIVITIES
-        - NUM_ACTIVITIES_DELTA
-        - NATIVE_PATH
+      - HITS
+      - NAME
+      - DAILY_CHANGE
+      - LAST_ACCESS_TIME
+      - OPEN_ACCESS_TYPE
+      - FILES_WITH_HITS
+      - FILES_WITH_OPEN_ACCESS_HITS
+      - STALE_FILES_WITH_HITS
+      - CLUSTER
+      - OBJECT_NAME
+      - OBJECT_LOCATION
+      - SNAPSHOT_TIME
+      - NUM_ACTIVITIES
+      - NUM_ACTIVITIES_DELTA
+      - NATIVE_PATH
     - auto: PREDEFINED
       defaultValue: DESC
       description: "Specify the order to sort the data in.\n\nPossible values are: \"ASC\", \"DESC\"."
@@ -3018,6 +3155,12 @@ script:
     - contextPath: RubrikPolaris.SuspiciousFile.encryption
       description: 'The encryption standard of the anomaly.'
       type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.resolutionStatus
+      description: 'The resolution status of the anomaly.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.anomalyType
+      description: 'The type of the anomaly.'
+      type: String
     - contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.strainId
       description: 'The ID of the Ransomware Strain.'
       type: String
@@ -3060,7 +3203,1456 @@ script:
     - contextPath: RubrikPolaris.SuspiciousFile.__typename
       description: 'The type name of the suspicious file response.'
       type: String
-  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.92981
+  - name: ip
+    description: Retrieve the sensitive information available for the given IP address(es).
+    arguments:
+    - name: ip
+      description: The IP address(es) for which to retrieve sensitive information.
+      required: true
+      isArray: true
+      default: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    - contextPath: IP.Relationships.EntityA
+      description: The source of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityB
+      description: The destination of the relationship.
+      type: String
+    - contextPath: IP.Relationships.Relationship
+      description: The name of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: String
+    - contextPath: IP.ASN
+      description: 'The autonomous system name for the IP address, for example: "AS8948".'
+      type: String
+    - contextPath: IP.Hostname
+      description: The hostname that is mapped to this IP address.
+      type: String
+    - contextPath: IP.Geo.Location
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
+      type: String
+    - contextPath: IP.Geo.Country
+      description: The country in which the IP address is located.
+      type: String
+    - contextPath: IP.Geo.Description
+      description: Additional information about the location.
+      type: String
+    - contextPath: IP.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: Number
+    - contextPath: IP.PositiveDetections
+      description: The number of engines that positively detected the indicator as malicious.
+      type: Number
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
+    - contextPath: IP.Tags
+      description: Tags of the IP address.
+      type: Unknown
+    - contextPath: IP.FeedRelatedIndicators.value
+      description: Indicators that are associated with the IP address.
+      type: String
+    - contextPath: IP.FeedRelatedIndicators.type
+      description: The type of the indicators that are associated with the IP address.
+      type: String
+    - contextPath: IP.FeedRelatedIndicators.description
+      description: The description of the indicators that are associated with the IP address.
+      type: String
+    - contextPath: IP.MalwareFamily
+      description: The malware family associated with the IP address.
+      type: String
+    - contextPath: IP.Organization.Name
+      description: The organization of the IP address.
+      type: String
+    - contextPath: IP.Organization.Type
+      description: The organization type of the IP address.
+      type: String
+    - contextPath: IP.ASOwner
+      description: The autonomous system owner of the IP address.
+      type: String
+    - contextPath: IP.Region
+      description: The region in which the IP address is located.
+      type: String
+    - contextPath: IP.Port
+      description: Ports that are associated with the IP address.
+      type: String
+    - contextPath: IP.Internal
+      description: Whether the IP address is internal or external.
+      type: Boolean
+    - contextPath: IP.UpdatedDate
+      description: The date that the IP address was last updated.
+      type: Date
+    - contextPath: IP.Registrar.Abuse.Name
+      description: The name of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Address
+      description: The address of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Country
+      description: The country of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Network
+      description: The network of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Phone
+      description: The phone number of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Email
+      description: The email address of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Campaign
+      description: The campaign associated with the IP address.
+      type: String
+    - contextPath: IP.TrafficLightProtocol
+      description: The Traffic Light Protocol (TLP) color that is suitable for the IP address.
+      type: String
+    - contextPath: IP.CommunityNotes.note
+      description: Notes on the IP address that were given by the community.
+      type: String
+    - contextPath: IP.CommunityNotes.timestamp
+      description: The time in which the note was published.
+      type: Date
+    - contextPath: IP.Publications.source
+      description: The source in which the article was published.
+      type: String
+    - contextPath: IP.Publications.title
+      description: The name of the article.
+      type: String
+    - contextPath: IP.Publications.link
+      description: A link to the original article.
+      type: String
+    - contextPath: IP.Publications.timestamp
+      description: The time in which the article was published.
+      type: Date
+    - contextPath: IP.ThreatTypes.threatcategory
+      description: The threat category associated to this indicator by the source vendor. For example, Phishing, Control, TOR, etc.
+      type: String
+    - contextPath: IP.ThreatTypes.threatcategoryconfidence
+      description: The confidence level provided by the vendor for the threat type category For example, a confidence of 90 for the threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware.
+      type: String
+    - contextPath: RubrikPolaris.IP.ip
+      description: 'IP address of the object.'
+      type: String
+    - contextPath: RubrikPolaris.IP.generalInfo.fid
+      description: 'The foreign ID of the object.'
+      type: String
+    - contextPath: RubrikPolaris.IP.generalInfo.name
+      description: 'The name of the object.'
+      type: String
+    - contextPath: RubrikPolaris.IP.generalInfo.objectType
+      description: 'The type of the object.'
+      type: String
+    - contextPath: RubrikPolaris.IP.generalInfo.protectionStatus
+      description: 'The protection status of the object.'
+      type: String
+    - contextPath: RubrikPolaris.IP.generalInfo.lastSnapshot
+      description: 'The timestamp of the last snapshot of the object.'
+      type: Date
+    - contextPath: RubrikPolaris.IP.generalInfo.redirectLink
+      description: 'The link to the object in the Rubrik UI.'
+      type: String
+    - contextPath: RubrikPolaris.IP.sensitiveInfo.riskLevel
+      description: 'The risk level of the object.'
+      type: String
+    - contextPath: RubrikPolaris.IP.sensitiveInfo.sensitiveFiles.mediumCount
+      description: 'The number of sensitive files of medium risk level.'
+      type: String
+    - contextPath: RubrikPolaris.IP.sensitiveInfo.sensitiveHits
+      description: 'The number of sensitive files.'
+      type: Number
+    - contextPath: RubrikPolaris.IP.sensitiveInfo.openAccessFiles
+      description: 'The number of open access files.'
+      type: Number
+    - contextPath: RubrikPolaris.IP.sensitiveInfo.staleFiles
+      description: 'The number of stale files.'
+      type: Number
+    - contextPath: RubrikPolaris.IP.sensitiveInfo.redirectLink
+      description: 'The link to the sensitive information in the Rubrik UI.'
+      type: String
+    - contextPath: RubrikPolaris.IP.sensitiveInfo.policyNames
+      description: 'The names of the policies associated with the object.'
+      type: String
+    - contextPath: RubrikPolaris.IP.anomalyInfo.severity
+      description: 'The severity of the anomaly.'
+      type: String
+    - contextPath: RubrikPolaris.IP.anomalyInfo.detectionTime
+      description: 'The timestamp of the anomaly detection.'
+      type: Date
+    - contextPath: RubrikPolaris.IP.anomalyInfo.createdFileCount
+      description: 'The number of created files.'
+      type: String
+    - contextPath: RubrikPolaris.IP.anomalyInfo.deletedFileCount
+      description: 'The number of deleted files.'
+      type: String
+    - contextPath: RubrikPolaris.IP.anomalyInfo.modifiedFileCount
+      description: 'The number of modified files.'
+      type: String
+    - contextPath: RubrikPolaris.IP.anomalyInfo.suspiciousFileCount
+      description: 'The number of suspicious files.'
+      type: String
+    - contextPath: RubrikPolaris.IP.anomalyInfo.redirectLink
+      description: 'The link to the anomaly information in the Rubrik UI.'
+      type: String
+    - contextPath: RubrikPolaris.IP.threatHuntInfo.latestThreatHunt.huntId
+      description: 'The ID of the latest threat hunt.'
+      type: String
+    - contextPath: RubrikPolaris.IP.threatHuntInfo.latestThreatHunt.huntStartTime
+      description: 'The timestamp of the latest threat hunt.'
+      type: Date
+    - contextPath: RubrikPolaris.IP.threatHuntInfo.latestThreatHunt.isMalicious
+      description: 'Whether the latest threat hunt is malicious.'
+      type: String
+    - contextPath: RubrikPolaris.IP.threatHuntInfo.latestMaliciousThreatHunt.huntId
+      description: 'The ID of the latest malicious threat hunt.'
+      type: String
+    - contextPath: RubrikPolaris.IP.threatHuntInfo.latestMaliciousThreatHunt.huntStartTime
+      description: 'The timestamp of the latest malicious threat hunt.'
+      type: Date
+    - contextPath: RubrikPolaris.IP.threatHuntInfo.latestMaliciousThreatHunt.isMalicious
+      description: 'Whether the latest malicious threat hunt is malicious.'
+      type: String
+    - contextPath: RubrikPolaris.IP.threatHuntInfo.redirectLink
+      description: 'The link to the threat hunt information in the Rubrik UI.'
+      type: String
+    - contextPath: RubrikPolaris.IP.threatMonitoringInfo.latestThreatMonitoring.snapshotFid
+      description: 'The foreign ID of the latest threat monitoring snapshot.'
+      type: String
+    - contextPath: RubrikPolaris.IP.threatMonitoringInfo.latestThreatMonitoring.monitoringScanTime
+      description: 'The timestamp of the latest threat monitoring scan.'
+      type: Date
+    - contextPath: RubrikPolaris.IP.threatMonitoringInfo.latestThreatMonitoring.isMalicious
+      description: 'Whether the latest threat monitoring snapshot is malicious.'
+      type: String
+    - contextPath: RubrikPolaris.IP.threatMonitoringInfo.latestMaliciousThreatMonitoring.snapshotFid
+      description: 'The foreign ID of the latest malicious threat monitoring snapshot.'
+      type: String
+    - contextPath: RubrikPolaris.IP.threatMonitoringInfo.latestMaliciousThreatMonitoring.monitoringScanTime
+      description: 'The timestamp of the latest malicious threat monitoring scan.'
+      type: Date
+    - contextPath: RubrikPolaris.IP.threatMonitoringInfo.latestMaliciousThreatMonitoring.isMalicious
+      description: 'Whether the latest malicious threat monitoring snapshot is malicious.'
+      type: String
+    - contextPath: RubrikPolaris.IP.threatMonitoringInfo.redirectLink
+      description: 'The link to the threat monitoring information in the Rubrik UI.'
+      type: String
+  - name: domain
+    description: Retrieve the sensitive information available for the given domain(s).
+    arguments:
+    - name: domain
+      description: The domain(s) for which to retrieve sensitive information.
+      required: true
+      isArray: true
+      default: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: Domain.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: Domain.DNS
+      description: A list of IP objects resolved by DNS.
+      type: String
+    - contextPath: Domain.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: Number
+    - contextPath: Domain.PositiveDetections
+      description: The number of engines that positively detected the indicator as malicious.
+      type: Number
+    - contextPath: Domain.CreationDate
+      description: The date that the domain was created.
+      type: Date
+    - contextPath: Domain.UpdatedDate
+      description: The date that the domain was last updated.
+      type: String
+    - contextPath: Domain.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.DomainStatus
+      description: The status of the domain.
+      type: Datte
+    - contextPath: Domain.NameServers
+      description: (List<String>) Name servers of the domain.
+      type: Unknown
+    - contextPath: Domain.Organization
+      description: The organization of the domain.
+      type: String
+    - contextPath: Domain.Subdomains
+      description: (List<String>) Subdomains of the domain.
+      type: Unknown
+    - contextPath: Domain.Admin.Country
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Email
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Name
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Phone
+      description: The phone number of the domain administrator.
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Email
+      description: The email address of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Phone
+      description: The phone number for receiving abuse reports.
+      type: String
+    - contextPath: Domain.Tags
+      description: Tags of the domain.
+      type: Unknown
+    - contextPath: Domain.FeedRelatedIndicators.value
+      description: Indicators that are associated with the domain.
+      type: String
+    - contextPath: Domain.FeedRelatedIndicators.type
+      description: The type of the indicators that are associated with the domain.
+      type: String
+    - contextPath: Domain.FeedRelatedIndicators.description
+      description: The description of the indicators that are associated with the domain.
+      type: String
+    - contextPath: Domain.MalwareFamily
+      description: The malware family associated with the domain.
+      type: String
+    - contextPath: Domain.WHOIS.DomainStatus
+      description: The status of the domain.
+      type: String
+    - contextPath: Domain.WHOIS.NameServers
+      description: (List<String>) Name servers of the domain.
+      type: String
+    - contextPath: Domain.WHOIS.CreationDate
+      description: The date that the domain was created.
+      type: Date
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: The date that the domain was last updated.
+      type: Date
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.WHOIS.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Email
+      description: The email address of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Phone
+      description: The phone number of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: 'The name of the registrar, for example: "GoDaddy".'
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.AbuseEmail
+      description: The email address of the contact for reporting abuse.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.AbusePhone
+      description: The phone number of contact for reporting abuse.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Name
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Email
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Phone
+      description: The phone number of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS/History
+      description: List of Whois objects.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor reporting the domain as malicious.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description explaining why the domain was reported as malicious.
+      type: String
+    - contextPath: Domain.DomainIDNName
+      description: The internationalized domain name (IDN) of the domain.
+      type: String
+    - contextPath: Domain.Port
+      description: Ports that are associated with the domain.
+      type: String
+    - contextPath: Domain.Internal
+      description: Whether or not the domain is internal or external.
+      type: Bool
+    - contextPath: Domain.Category
+      description: The category associated with the indicator.
+      type: String
+    - contextPath: Domain.Campaign
+      description: The campaign associated with the domain.
+      type: String
+    - contextPath: Domain.TrafficLightProtocol
+      description: The Traffic Light Protocol (TLP) color that is suitable for the domain.
+      type: String
+    - contextPath: Domain.ThreatTypes.threatcategory
+      description: The threat category associated to this indicator by the source vendor. For example, Phishing, Control, TOR, etc.
+      type: String
+    - contextPath: Domain.ThreatTypes.threatcategoryconfidence
+      description: Threat Category Confidence is the confidence level provided by the vendor for the threat type category For example a confidence of 90 for threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware.
+      type: String
+    - contextPath: Domain.Geo.Location
+      description: 'The geolocation where the domain address is located, in the format: latitude:longitude.'
+      type: String
+    - contextPath: Domain.Geo.Country
+      description: The country in which the domain address is located.
+      type: String
+    - contextPath: Domain.Geo.Description
+      description: Additional information about the location.
+      type: String
+    - contextPath: Domain.Tech.Country
+      description: The country of the domain technical contact.
+      type: String
+    - contextPath: Domain.Tech.Name
+      description: The name of the domain technical contact.
+      type: String
+    - contextPath: Domain.Tech.Organization
+      description: The organization of the domain technical contact.
+      type: String
+    - contextPath: Domain.Tech.Email
+      description: The email address of the domain technical contact.
+      type: String
+    - contextPath: Domain.CommunityNotes.note
+      description: Notes on the domain that were given by the community.
+      type: String
+    - contextPath: Domain.CommunityNotes.timestamp
+      description: The time in which the note was published.
+      type: Date
+    - contextPath: Domain.Publications.source
+      description: The source in which the article was published.
+      type: String
+    - contextPath: Domain.Publications.title
+      description: The name of the article.
+      type: String
+    - contextPath: Domain.Publications.link
+      description: A link to the original article.
+      type: String
+    - contextPath: Domain.Publications.timestamp
+      description: The time in which the article was published.
+      type: Date
+    - contextPath: Domain.Billing
+      description: The billing address of the domain.
+      type: String
+    - contextPath: RubrikPolaris.Domain.domain
+      description: 'The domain of the object.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.generalInfo.fid
+      description: 'The foreign ID of the object.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.generalInfo.name
+      description: 'The name of the object.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.generalInfo.objectType
+      description: 'The type of the object.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.generalInfo.protectionStatus
+      description: 'The protection status of the object.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.generalInfo.lastSnapshot
+      description: 'The timestamp of the last snapshot of the object.'
+      type: Date
+    - contextPath: RubrikPolaris.Domain.generalInfo.redirectLink
+      description: 'The link to the object in the Rubrik UI.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.sensitiveInfo.riskLevel
+      description: 'The risk level of the object.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.sensitiveInfo.sensitiveFiles.mediumCount
+      description: 'The number of sensitive files of medium risk level.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.sensitiveInfo.sensitiveHits
+      description: 'The number of sensitive files.'
+      type: Number
+    - contextPath: RubrikPolaris.Domain.sensitiveInfo.openAccessFiles
+      description: 'The number of open access files.'
+      type: Number
+    - contextPath: RubrikPolaris.Domain.sensitiveInfo.staleFiles
+      description: 'The number of stale files.'
+      type: Number
+    - contextPath: RubrikPolaris.Domain.sensitiveInfo.redirectLink
+      description: 'The link to the sensitive information in the Rubrik UI.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.sensitiveInfo.policyNames
+      description: 'The names of the policies associated with the object.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.anomalyInfo.severity
+      description: 'The severity of the anomaly.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.anomalyInfo.detectionTime
+      description: 'The timestamp of the anomaly detection.'
+      type: Date
+    - contextPath: RubrikPolaris.Domain.anomalyInfo.createdFileCount
+      description: 'The number of created files.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.anomalyInfo.deletedFileCount
+      description: 'The number of deleted files.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.anomalyInfo.modifiedFileCount
+      description: 'The number of modified files.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.anomalyInfo.suspiciousFileCount
+      description: 'The number of suspicious files.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.anomalyInfo.redirectLink
+      description: 'The link to the anomaly information in the Rubrik UI.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.threatHuntInfo.latestThreatHunt.huntId
+      description: 'The ID of the latest threat hunt.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.threatHuntInfo.latestThreatHunt.huntStartTime
+      description: 'The timestamp of the latest threat hunt.'
+      type: Date
+    - contextPath: RubrikPolaris.Domain.threatHuntInfo.latestThreatHunt.isMalicious
+      description: 'Whether the latest threat hunt is malicious.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.threatHuntInfo.latestMaliciousThreatHunt.huntId
+      description: 'The ID of the latest malicious threat hunt.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.threatHuntInfo.latestMaliciousThreatHunt.huntStartTime
+      description: 'The timestamp of the latest malicious threat hunt.'
+      type: Date
+    - contextPath: RubrikPolaris.Domain.threatHuntInfo.latestMaliciousThreatHunt.isMalicious
+      description: 'Whether the latest malicious threat hunt is malicious.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.threatHuntInfo.redirectLink
+      description: 'The link to the threat hunt information in the Rubrik UI.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.threatMonitoringInfo.latestThreatMonitoring.snapshotFid
+      description: 'The foreign ID of the latest threat monitoring snapshot.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.threatMonitoringInfo.latestThreatMonitoring.monitoringScanTime
+      description: 'The timestamp of the latest threat monitoring scan.'
+      type: Date
+    - contextPath: RubrikPolaris.Domain.threatMonitoringInfo.latestThreatMonitoring.isMalicious
+      description: 'Whether the latest threat monitoring snapshot is malicious.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.threatMonitoringInfo.latestMaliciousThreatMonitoring.snapshotFid
+      description: 'The foreign ID of the latest malicious threat monitoring snapshot.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.threatMonitoringInfo.latestMaliciousThreatMonitoring.monitoringScanTime
+      description: 'The timestamp of the latest malicious threat monitoring scan.'
+      type: Date
+    - contextPath: RubrikPolaris.Domain.threatMonitoringInfo.latestMaliciousThreatMonitoring.isMalicious
+      description: 'Whether the latest malicious threat monitoring snapshot is malicious.'
+      type: String
+    - contextPath: RubrikPolaris.Domain.threatMonitoringInfo.redirectLink
+      description: 'The link to the threat monitoring information in the Rubrik UI.'
+      type: String
+  - name: rubrik-radar-anomaly-status-update
+    description: "Updates the status of the Anomaly detection.\n\nNote: Run the \"rubrik-radar-suspicious-file-list\" command first to check the resolution status of the Anomaly Detection snapshot before executing this command."
+    arguments:
+    - name: anomaly_type
+      description: "The type of the anomaly.\n\nNote: For Anomaly Type, users can execute the \"rubrik-radar-suspicious-file-list\" command."
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'FILESYSTEM'
+      - 'HYPERVISOR'
+    - name: anomaly_id
+      description: "The ID of the Anomaly or Activity Series ID.\n\nNote: For Activity Series ID, users can execute the \"rubrik-event-list\" command with the \"activity_type\" argument set to \"ANOMALY\"."
+      required: true
+    - name: workload_id
+      description: "The workload ID (Snappable ID).\n\nNote: Users can execute the \"rubrik-event-list\" command with the \"activity_type\" argument set to \"ANOMALY\" and get the value of \"fid\" from the context."
+      required: true
+    - name: false_positive_type
+      description: The type for marking the anomaly as a false positive.
+      auto: PREDEFINED
+      predefined:
+      - 'FP_TYPE_UNSPECIFIED'
+      - 'OS_UPDATE'
+      - 'APPLICATION_UPDATE'
+      - 'LOG_ROTATION'
+      - 'OTHER'
+      - 'NFA_SCHEDULED_MAINTENANCE'
+      - 'NFA_UNSCHEDULED_MAINTENANCE'
+    - name: false_positive_reason
+      description: "The reason for marking the anomaly as a false positive when the \"false_positive_type\" argument is set to OTHER."
+    outputs:
+    - contextPath: RubrikPolaris.AnomalyStatus.command_name
+      description: The name of the command.
+      type: String
+    - contextPath: RubrikPolaris.AnomalyStatus.anomaly_type
+      description: The type of the Anomaly.
+      type: String
+    - contextPath: RubrikPolaris.AnomalyStatus.anomaly_id
+      description: The ID of the Anomaly.
+      type: String
+    - contextPath: RubrikPolaris.AnomalyStatus.workload_id
+      description: The workload ID.
+      type: String
+    - contextPath: RubrikPolaris.AnomalyStatus.is_resloved
+      description: Whether the Anomaly is resolved.
+      type: Boolean
+    - contextPath: RubrikPolaris.AnomalyStatus.false_positive_type
+      description: The type of the false positive.
+      type: String
+    - contextPath: RubrikPolaris.AnomalyStatus.false_positive_reason
+      description: The reason for marking the Anomaly detection snapshot as a false positive.
+      type: String
+  - name: rubrik-threat-monitoring-matched-object-list
+    description: "List the matched objects for Threat Monitoring."
+    arguments:
+    - name: cluster_id
+      description: "The unique ID of the cluster. Supports comma separated values.\n\nNote: Users can retrieve the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
+      isArray: true
+    - name: object_type
+      description: "Filter the objects based on the provided object types. Supports comma separated values.\n\nNote: Values not included in the options can be found in the documentation."
+      auto: PREDEFINED
+      predefined:
+      - ShareFileset
+      - NutanixVirtualMachine
+      - VolumeGroup
+      - HypervVirtualMachine
+      - LinuxFileset
+      - WindowsFileset
+      - VmwareVirtualMachine
+      isArray: true
+    - name: object_name
+      description: "Filter objects by their name. Supports partial matches."
+    - name: match_type
+      description: Filter the objects by the match type. Supports comma separated values.
+      auto: PREDEFINED
+      predefined:
+      - INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME
+      - INDICATOR_OF_COMPROMISE_TYPE_HASH
+      - INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE
+      isArray: true
+    - name: start_time
+      defaultValue: "7 days"
+      description: "Filter the objects detected after this time.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 June 2025, 01 June 2025 04:45:33, 2025-06-17T14:05:44Z."
+    - name: limit
+      defaultValue: "50"
+      description: "Number of results to retrieve in the response. The maximum allowed size is 1000."
+    - name: next_page_token
+      description: "The next page cursor to retrieve the next set of results."
+    outputs:
+    - contextPath: RubrikPolaris.ThreatMonitoring.objectFid
+      description: The unique identifier (FID) of the object.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.objectName
+      description: The name of the matched object.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.objectType
+      description: The type of the matched object.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.matchType
+      description: A list of match types found for the object.
+      type: Unknown
+    - contextPath: RubrikPolaris.ThreatMonitoring.filesMatched
+      description: The number of files matched with the threat monitoring object.
+      type: Number
+    - contextPath: RubrikPolaris.ThreatMonitoring.lastDetection
+      description: The timestamp of the most recent detection.
+      type: Date
+    - contextPath: RubrikPolaris.ThreatMonitoring.cluster.name
+      description: The name of the cluster the object belongs to.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.cluster.id
+      description: The unique identifier of the cluster.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.cluster.__typename
+      description: The GraphQL typename of the cluster object.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.__typename
+      description: The GraphQL typename of the matched object.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.ThreatMonitoring.endCursor
+      description: The end cursor of the threat monitoring data.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.ThreatMonitoring.hasNextPage
+      description: A flag indicating if there is a next page of threat monitoring data.
+      type: Boolean
+    - contextPath: RubrikPolaris.PageToken.ThreatMonitoring.hasPreviousPage
+      description: A flag indicating if there is a previous page of threat monitoring data.
+      type: Boolean
+    - contextPath: RubrikPolaris.PageToken.ThreatMonitoring.name
+      description: The name of the threat monitoring data.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.ThreatMonitoring.total_matched_count
+      description: The total number of matched objects.
+      type: Number
+    - contextPath: RubrikPolaris.PageToken.ThreatMonitoring.startCursor
+      description: The start cursor of the threat monitoring data.
+      type: String
+  - name: rubrik-threat-monitoring-matched-object-get
+    description: "Get the matched object for Threat Monitoring."
+    arguments:
+    - name: object_id
+      description: "The object ID for the threat monitoring object.\n\nNote: Users can retrieve the object ID by executing the \"rubrik-threat-monitoring-matched-object-list\" command."
+      required: true
+    outputs:
+    - contextPath: RubrikPolaris.ThreatMonitoring.id
+      description: The ID of the threat monitoring data.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.name
+      description: The name of the threat monitoring data.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.objectType
+      description: The object type of the threat monitoring data.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.slaAssignment
+      description: The SLA assignment of the threat monitoring data.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.slaPauseStatus
+      description: The SLA pause status of the threat monitoring data.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.effectiveSlaDomain.id
+      description: The ID of the effective SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.effectiveSlaDomain.name
+      description: The name of the effective SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.effectiveSlaDomain.version
+      description: The version of the effective SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.effectiveSlaDomain.__typename
+      description: The type name of the effective SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.snapshotDistribution.id
+      description: The ID of the snapshot distribution.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.snapshotDistribution.totalCount
+      description: The total count of the snapshot distribution.
+      type: Integer
+    - contextPath: RubrikPolaris.ThreatMonitoring.snapshotDistribution.scheduledCount
+      description: The scheduled count of the snapshot distribution.
+      type: Integer
+    - contextPath: RubrikPolaris.ThreatMonitoring.snapshotDistribution.onDemandCount
+      description: The on-demand count of the snapshot distribution.
+      type: Integer
+    - contextPath: RubrikPolaris.ThreatMonitoring.snapshotDistribution.retrievedCount
+      description: The retrieved count of the snapshot distribution.
+      type: Integer
+    - contextPath: RubrikPolaris.ThreatMonitoring.snapshotDistribution.__typename
+      description: The type name of the snapshot distribution.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.effectiveRetentionSlaDomain.id
+      description: The ID of the effective retention SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.effectiveRetentionSlaDomain.name
+      description: The name of the effective retention SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.effectiveRetentionSlaDomain.version
+      description: The version of the effective retention SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.effectiveRetentionSlaDomain.__typename
+      description: The type name of the effective retention SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.configuredSlaDomain.id
+      description: The ID of the configured SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.configuredSlaDomain.name
+      description: The name of the configured SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.configuredSlaDomain.version
+      description: The version of the configured SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.configuredSlaDomain.__typename
+      description: The type name of the configured SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.effectiveSlaSourceObject.fid
+      description: The FID of the effective SLA source object.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.effectiveSlaSourceObject.name
+      description: The name of the effective SLA source object.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.effectiveSlaSourceObject.objectType
+      description: The object type of the effective SLA source object.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.effectiveSlaSourceObject.__typename
+      description: The type name of the effective SLA source object.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.logicalPath.fid
+      description: The FID of the logical path.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.logicalPath.name
+      description: The name of the logical path.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.logicalPath.objectType
+      description: The object type of the logical path.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.logicalPath.__typename 
+      description: The type name of the logical path. 
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.physicalPath.fid 
+      description: The FID of the physical path. 
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.physicalPath.name 
+      description: The name of the physical path. 
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.physicalPath.objectType 
+      description: The object type of the physical path. 
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.physicalPath.__typename 
+      description: The type name of the physical path. 
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.numWorkloadDescendants 
+      description: The number of workload descendants. 
+      type: Integer
+    - contextPath: RubrikPolaris.ThreatMonitoring.allOrgs.id 
+      description: The ID of the organization. 
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.allOrgs.name 
+      description: The name of the organization. 
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.allOrgs.description 
+      description: The description of the organization. 
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.allOrgs.mfaStatus 
+      description: The MFA status of the organization. 
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.allOrgs.allUrls 
+      description: The all URLs of the organization. 
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.allOrgs.__typename 
+      description: The type name of the organization.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.securityMetadata.lowSensitiveHits 
+      description: The low sensitive hits of the security metadata. 
+      type: Integer
+    - contextPath: RubrikPolaris.ThreatMonitoring.securityMetadata.mediumSensitiveHits 
+      description: The medium sensitive hits of the security metadata. 
+      type: Integer
+    - contextPath: RubrikPolaris.ThreatMonitoring.securityMetadata.highSensitiveHits 
+      description: The high sensitive hits of the security metadata. 
+      type: Integer
+    - contextPath: RubrikPolaris.ThreatMonitoring.securityMetadata.sensitivityStatus 
+      description: The sensitivity status of the security metadata. 
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.securityMetadata.isLaminarEnabled 
+      description: A flag indicating whether laminar is enabled for the security metadata. 
+      type: Boolean
+    - contextPath: RubrikPolaris.ThreatMonitoring.securityMetadata.dataTypeResults.id 
+      description: The ID of the data type result. 
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.securityMetadata.dataTypeResults.name 
+      description: The name of the data type result. 
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.securityMetadata.dataTypeResults.totalHits 
+      description: The total hits of the data type result. 
+      type: Integer
+    - contextPath: RubrikPolaris.ThreatMonitoring.securityMetadata.dataTypeResults.totalViolatedHits 
+      description: The total violated hits of the data type result. 
+      type: Integer
+    - contextPath: RubrikPolaris.ThreatMonitoring.securityMetadata.dataTypeResults.__typename 
+      description: The type name of the data type result. 
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.securityMetadata.__typename 
+      description: The type name of the security metadata. 
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoring.__typename 
+      description: The type name of the threat monitoring data. 
+      type: String
+  - name: rubrik-threat-monitoring-matched-file-list
+    description: List the matched files for the Threat Monitoring object.
+    arguments:
+    - name: object_id
+      description: "The object ID for the threat monitoring object.\n\nNote: Users can retrieve the object ID by executing the \"rubrik-threat-monitoring-matched-object-list\" command."
+      required: true
+    - name: file_name
+      description: Filter files by their name. Supports partial matches.
+    - name: limit
+      description: Number of results to retrieve in the response. The maximum allowed size is 1000.
+      defaultValue: 50
+    - name: next_page_token
+      description: The next page cursor to retrieve the next set of results.
+    outputs:
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.filepath
+      description: The full path of the matched file.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.detectedTime
+      description: The timestamp when the file was detected.
+      type: Date
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.fileName
+      description: The name of the matched file.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.fileSize
+      description: The size of the matched file in bytes.
+      type: Number
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.matchedSnapshotDate
+      description: The date of the snapshot where the match occurred.
+      type: Date
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.matchedSnapshotFid
+      description: The FID of the snapshot where the match occurred.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.isMatchedSnapshotExpired
+      description: A flag indicating whether the matched snapshot has expired.
+      type: Boolean
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.isFirstObservedSnapshotExpired
+      description: A flag indicating whether the first observed snapshot has expired.
+      type: Boolean
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.matchType
+      description: The type of indicator match.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.isQuarantinedInFirstObservedSnapshot
+      description: A flag indicating whether the file is quarantined in the first observed snapshot.
+      type: Boolean
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.objectFid
+      description: The FID of the associated object.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.firstObservedSnapshotFid
+      description: The FID of the first observed snapshot.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.firstObservedSnapshotDate
+      description: The date of the first observed snapshot.
+      type: Date
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.objectType
+      description: The type of the associated object.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.objectName
+      description: The name of the associated object.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.matchId
+      description: The ID of the match event.
+      type: Number
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.__typename
+      description: The GraphQL typename of the file match object.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.ThreatMonitoringFile.endCursor
+      description: The end cursor of the threat monitoring file data.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.ThreatMonitoringFile.hasNextPage
+      description: A flag indicating if there is a next page of threat monitoring file data.
+      type: Boolean
+    - contextPath: RubrikPolaris.PageToken.ThreatMonitoringFile.hasPreviousPage
+      description: A flag indicating if there is a previous page of threat monitoring file data.
+      type: Boolean
+    - contextPath: RubrikPolaris.PageToken.ThreatMonitoringFile.name
+      description: The name of the threat monitoring file data.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.ThreatMonitoringFile.total_matched_count
+      description: The total number of matched files.
+      type: Number
+    - contextPath: RubrikPolaris.PageToken.ThreatMonitoringFile.startCursor
+      description: The start cursor of the threat monitoring file data.
+      type: String
+  - name: rubrik-threat-monitoring-matched-file-get
+    description: Get the matched file for the Threat Monitoring object.
+    arguments:
+    - name: matched_snapshot_id
+      description: "ID of the snapshot where the threat monitoring match was found.\n\nNote: Users can retrieve the matched snapshot ID by executing the \"rubrik-threat-monitoring-matched-file-list\" command."
+      required: true
+    - name: file_path
+      description: "Path of the file.\n\nNote: Users can retrieve the file path by executing the \"rubrik-threat-monitoring-matched-file-list\" command."
+      required: true
+    outputs:
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.matchedFileMd5
+      description: The MD5 hash of the matched file.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.matchedFileSha1
+      description: The SHA1 hash of the matched file.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.matchedFileSha256
+      description: The SHA256 hash of the matched file.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.iocDetails.matchType
+      description: The type of IOC match.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.iocDetails.intelFeedName
+      description: The name of the intelligence feed that provided the IOC.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.iocDetails.malwareName
+      description: The name of the malware associated with the IOC.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.iocDetails.iocRuleAuthor
+      description: The author of the IOC rule.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.iocDetails.malwareDescription
+      description: The description of the malware associated with the IOC.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.iocDetails.iocHashHex
+      description: The hash value of the IOC in hexadecimal format.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.iocDetails.iocStatus
+      description: The status of the IOC.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.iocDetails.__typename
+      description: The GraphQL typename of the IOC details.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.isQuarantinedInFirstObservedSnapshot
+      description: A flag indicating whether the file was quarantined in the first observed snapshot.
+      type: Boolean
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.detectedSnapshotDate
+      description: The date when the file was detected in the snapshot.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.firstDetectedSnapshotFid
+      description: The ID of the first snapshot where the file was detected.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.filePath
+      description: The full path of the file.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.fileName
+      description: The name of the file.
+      type: String
+    - contextPath: RubrikPolaris.ThreatMonitoringFile.__typename
+      description: The GraphQL typename of the threat monitoring file.
+      type: String
+  - name: rubrik-ioc-scan-list-v2
+    description: List details of the Turbo and Advance Threat Hunt.
+    arguments:
+    - name: cluster_id
+      description: "The ID of the cluster whose IOC scans are to be listed. Supports comma separated values.\n\nNote: Users can retrieve the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
+      isArray: true
+    - name: ioc_match
+      description: Filter hunts on any matches.
+      auto: PREDEFINED
+      predefined:
+      - MATCHES_FOUND
+      - NO_MATCHES
+      - UNSCANNED
+    - name: hunt_status
+      description: Filter by hunt status.
+      auto: PREDEFINED
+      predefined:
+      - ABORTED
+      - CANCELED
+      - CANCELING
+      - FAILED
+      - IN_PROGRESS
+      - PARTIALLY_SUCCEEDED
+      - PENDING
+      - SUCCEEDED
+    - name: quarantine_status
+      description: Filter by quarantine matches.
+      auto: PREDEFINED
+      predefined:
+      - QUARANTINED_MATCHES
+      - NO_QUARANTINED_MATCHES
+    - name: start_time
+      description: "Filter the threat hunts that started after this time.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 June 2025, 01 June 2025 04:45:33, 2025-06-17T14:05:44Z."
+      defaultValue: "7 days"
+    - name: end_time
+      description: "Filter the threat hunts that ended before this time.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 June 2025, 01 June 2025 04:45:33, 2025-06-17T14:05:44Z."
+    - name: limit
+      description: Number of results to retrieve in the response. The maximum allowed size is 1000.
+      defaultValue: 50
+    - name: next_page_token
+      description: The next page cursor to retrieve the next set of results.
+    outputs:
+    - contextPath: RubrikPolaris.IOCScan.huntId
+      description: The unique identifier for the threat hunt.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.name
+      description: The name of the threat hunt.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.createdBy.id
+      description: The ID of the user who initiated the hunt.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.createdBy.username
+      description: The username of the user who initiated the hunt.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.createdBy.email
+      description: The email of the user who initiated the hunt.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.createdBy.__typename
+      description: The GraphQL typename of the user object.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.huntType
+      description: The type of the threat hunt.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.startTime
+      description: The start time of the threat hunt.
+      type: date
+    - contextPath: RubrikPolaris.IOCScan.status
+      description: The current status of the threat hunt.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.stats.totalProcessedSnapshots
+      description: The total number of processed snapshots.
+      type: number
+    - contextPath: RubrikPolaris.IOCScan.stats.totalAffectedObjects
+      description: The total number of affected objects.
+      type: number
+    - contextPath: RubrikPolaris.IOCScan.stats.totalAffectedSnapshots
+      description: The total number of affected snapshots.
+      type: number
+    - contextPath: RubrikPolaris.IOCScan.stats.totalUniqueMatchedPaths
+      description: The total number of unique matched file paths.
+      type: number
+    - contextPath: RubrikPolaris.IOCScan.stats.totalSucceededScans
+      description: The total number of successful scans.
+      type: number
+    - contextPath: RubrikPolaris.IOCScan.stats.totalSnapshotsScanned
+      description: The total number of snapshots scanned.
+      type: number
+    - contextPath: RubrikPolaris.IOCScan.stats.totalUniqueQuarantinedPaths
+      description: The total number of unique quarantined file paths.
+      type: number
+    - contextPath: RubrikPolaris.IOCScan.stats.totalObjectsScanned
+      description: The total number of objects scanned.
+      type: number
+    - contextPath: RubrikPolaris.IOCScan.stats.totalIocs
+      description: The total number of IOCs used in the scan.
+      type: number
+    - contextPath: RubrikPolaris.IOCScan.stats.__typename
+      description: The GraphQL typename of the stats object.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.huntDetails.startTime
+      description: The start time of the detailed threat hunt process.
+      type: date
+    - contextPath: RubrikPolaris.IOCScan.huntDetails.endTime
+      description: The end time of the detailed threat hunt process.
+      type: date
+    - contextPath: RubrikPolaris.IOCScan.huntDetails.cluster.id
+      description: The ID of the cluster used in the hunt.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.huntDetails.cluster.name
+      description: The name of the cluster used in the hunt.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.huntDetails.cluster.__typename
+      description: The GraphQL typename of the cluster object.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.huntDetails.config.name
+      description: The name of the configuration used in the hunt.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.huntDetails.config.indicatorsOfCompromise
+      description: The list of indicators of compromise.
+      type: unknown
+    - contextPath: RubrikPolaris.IOCScan.huntDetails.config.__typename
+      description: The GraphQL typename of the hunt config object.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.huntDetails.__typename
+      description: The GraphQL typename of the hunt details object.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.__typename
+      description: The GraphQL typename of the top-level threat hunt object.
+      type: string
+    - contextPath: RubrikPolaris.PageToken.IOCScan.endCursor
+      description: The end cursor of the IOC scan data.
+      type: string
+    - contextPath: RubrikPolaris.PageToken.IOCScan.hasNextPage
+      description: A flag indicating if there is a next page of IOC scan data.
+      type: boolean
+    - contextPath: RubrikPolaris.PageToken.IOCScan.hasPreviousPage
+      description: A flag indicating if there is a previous page of IOC scan data.
+      type: boolean
+    - contextPath: RubrikPolaris.PageToken.IOCScan.name
+      description: The name of the IOC scan data.
+      type: string
+    - contextPath: RubrikPolaris.PageToken.IOCScan.startCursor
+      description: The start cursor of the IOC scan data.
+      type: string
+    - contextPath: RubrikPolaris.PageToken.IOCScan.total_matched_count
+      description: The total number of matched IOC scans.
+      type: number
+  - name: rubrik-ioc-scan-results-v2
+    description: Retrieve details of the Turbo and Advance Threat Hunt.
+    arguments:
+    - name: hunt_id
+      description: "The ID of the threat hunt.\n\nNote: Users can retrieve the hunt ID by executing the \"rubrik-ioc-scan-list-v2\" command."
+      required: true
+    outputs:
+    - contextPath: RubrikPolaris.IOCScan.hunt_id
+      description: The ID of the threat hunt.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.totalObjectFids
+      description: The total number of object FIDs involved in the threat hunt.
+      type: number
+    - contextPath: RubrikPolaris.IOCScan.startTime
+      description: The start time of the threat hunt.
+      type: date
+    - contextPath: RubrikPolaris.IOCScan.endTime
+      description: The end time of the threat hunt.
+      type: date
+    - contextPath: RubrikPolaris.IOCScan.status
+      description: The current status of the threat hunt.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.totalMatchedSnapshots
+      description: The total number of matched snapshots.
+      type: number
+    - contextPath: RubrikPolaris.IOCScan.totalScannedSnapshots
+      description: The total number of scanned snapshots.
+      type: number
+    - contextPath: RubrikPolaris.IOCScan.totalUniqueFileMatches
+      description: The total number of unique file matches.
+      type: number
+    - contextPath: RubrikPolaris.IOCScan.clusters.id
+      description: The ID of the cluster.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.clusters.name
+      description: The name of the cluster.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.clusters.type
+      description: The type of the cluster.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.clusters.__typename
+      description: The GraphQL typename of the cluster object.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.baseConfig.name
+      description: The name of the base configuration used in the threat hunt.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.baseConfig.notes
+      description: The notes added to the hunt configuration.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.baseConfig.maxMatchesPerSnapshot
+      description: The maximum number of matches allowed per snapshot.
+      type: number
+    - contextPath: RubrikPolaris.IOCScan.baseConfig.threatHuntType
+      description: The type of the threat hunt.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.baseConfig.__typename
+      description: The GraphQL typename of the base configuration object.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.baseConfig.ioc.__typename
+      description: The GraphQL typename of the IOC object.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.baseConfig.ioc.iocList.__typename
+      description: The GraphQL typename of the IOC list container.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.baseConfig.ioc.iocList.indicatorsOfCompromise.iocKind
+      description: The type of IOC.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.baseConfig.ioc.iocList.indicatorsOfCompromise.iocValue
+      description: The value of the IOC indicator.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.baseConfig.ioc.iocList.indicatorsOfCompromise.__typename
+      description: The GraphQL typename of the IOC indicator.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.baseConfig.snapshotScanLimit.__typename
+      description: The GraphQL typename of the snapshot scan limit object.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.baseConfig.snapshotScanLimit.scanLimit.__typename
+      description: The GraphQL typename of the scan limit configuration.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.baseConfig.snapshotScanLimit.scanLimit.scanConfig.maxSnapshotsPerObject
+      description: The maximum snapshots to scan per object.
+      type: number
+    - contextPath: RubrikPolaris.IOCScan.baseConfig.snapshotScanLimit.scanLimit.scanConfig.startTime
+      description: The start time for the snapshot scan window.
+      type: date
+    - contextPath: RubrikPolaris.IOCScan.baseConfig.snapshotScanLimit.scanLimit.scanConfig.endTime
+      description: The end time for the snapshot scan window.
+      type: date
+    - contextPath: RubrikPolaris.IOCScan.baseConfig.snapshotScanLimit.scanLimit.scanConfig.__typename
+      description: The GraphQL typename of the scan limit configuration.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.baseConfig.snapshotScanLimit.scanLimit.objectSnapshotConfig
+      description: An object snapshot configuration.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.baseConfig.fileScanCriteria
+      description: A file scan criteria.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.threatHuntObjectMetrics.totalObjectsScanned
+      description: The total number of objects scanned during the hunt.
+      type: number
+    - contextPath: RubrikPolaris.IOCScan.threatHuntObjectMetrics.totalAffectedObjects
+      description: The total number of affected objects.
+      type: number
+    - contextPath: RubrikPolaris.IOCScan.threatHuntObjectMetrics.totalUnaffectedObjects
+      description: The total number of unaffected objects.
+      type: number
+    - contextPath: RubrikPolaris.IOCScan.threatHuntObjectMetrics.totalObjectsUnscannable
+      description: The total number of objects that couldn't be scanned.
+      type: number
+    - contextPath: RubrikPolaris.IOCScan.threatHuntObjectMetrics.unaffectedObjectsFromDb
+      description: The number of clean objects retrieved from the database.
+      type: number
+    - contextPath: RubrikPolaris.IOCScan.threatHuntObjectMetrics.cleanRecoverableObjectLimit
+      description: The maximum number of clean recoverable objects allowed.
+      type: number
+    - contextPath: RubrikPolaris.IOCScan.threatHuntObjectMetrics.__typename
+      description: The GraphQL typename of the object metrics reply.
+      type: string
+    - contextPath: RubrikPolaris.IOCScan.__typename
+      description: The GraphQL typename of the root hunt details object.
+      type: string
+  - name: rubrik-turbo-ioc-scan
+    description: Start a new turbo threat hunt.
+    arguments:
+    - name: ioc
+      description: "The value of the indicator to scan for. Supports comma separated values.\n\nNote: Users can retrieve the Md5, SHA1 or SHA256 by executing the \"rubrik-threat-monitoring-matched-file-get\" command."
+      required: true
+      isArray: true
+    - name: scan_name
+      description: Name of the new turbo threat hunt scan.
+      defaultValue: "PAXSOAR-1.6.0"
+    - name: cluster_id
+      description: "The ID of the cluster on which to perform a scan. If not provided, all the clusters will be scanned.\n\nNote: Users can retrieve the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
+      isArray: true
+    - name: start_time
+      description: "Filter the snapshots from the provided date. Any snapshots taken before the provided date-time will be excluded.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.\n\nFor example: 01 June 2025, 01 June 2025 04:45:33, 2025-06-17T14:05:44Z."
+    - name: end_time
+      description: "Filter the snapshots until the provided date. Any snapshots taken after the provided date-time will be excluded.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.\n\nFor example: 01 June 2025, 01 June 2025 04:45:33, 2025-06-17T14:05:44Z."
+    - name: max_snapshots_per_object
+      description: Maximum number of snapshots to scan per object.
+    outputs:
+    - contextPath: RubrikPolaris.TurboIOCScan.huntId
+      description: The ID of the new turbo threat hunt.
+      type: String
+    - contextPath: RubrikPolaris.TurboIOCScan.__typename
+      description: The type of the new turbo threat hunt.
+      type: String
+  - name: rubrik-advance-ioc-scan
+    description: Start a new advance threat hunt.
+    arguments:
+    - name: object_id
+      description: "The Object ID of the system on which to perform the scan. Supports comma separated values.\n\nNote: Users can get the list of object IDs by executing the \"rubrik-polaris-object-list\" command."
+      required: true
+      isArray: true
+    - name: ioc_type
+      description: "The type of the indicator to scan.\n\nNote: To provide multiple IOCs use the argument \"advance_ioc\"."
+      auto: PREDEFINED
+      predefined:
+      - INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME
+      - INDICATOR_OF_COMPROMISE_TYPE_HASH
+      - INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE
+    - name: ioc_value
+      description: "The value of the indicator to scan.\n\nNote: To provide multiple IOCs use the argument \"advance_ioc\"."
+    - name: scan_name
+      description: Name of the new advanced threat hunt scan.
+      defaultValue: PAXSOAR-1.6.0
+    - name: advance_ioc
+      description: "Json encoded Indicators Of Compromise to scan. Json keys signify the type of IOC and the corresponding list of values are the values of the IOC's. If provided, will ignore the ioc_type and ioc_value arguments.\n\nPossible keys to indicate type of indicator: \nINDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME, INDICATOR_OF_COMPROMISE_TYPE_HASH, INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE\n\nFormat Accepted:\n{\n\"<ioc_type1>\": [\"<ioc_value1>\", \"<ioc_value2>\"],\n\"<ioc_type2>\": \"<ioc_value3>\"\n}\n\nExample:\n{\n\"INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME\": [\"C:\\\\Users\\\\Malware_Executible.ps1\", \"\\\\bin\\\\Malware_Executible\"],\n\"INDICATOR_OF_COMPROMISE_TYPE_HASH\": [\"e5c1b9c44be582f895eaea3d3738c5b4\", \"f541b9844be897f895eaea3d3738cfb2\"],\n\"INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE\": \"rule match_everything {condition:true}\"\n}."
+    - name: max_matches_per_snapshot
+      description: Maximum number of IOC matches allowed per snapshot.
+    - name: start_date
+      description: "Filter the snapshots from the provided date. Any snapshots taken before the provided date-time will be excluded.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.\n\nFor example: 01 June 2025, 01 June 2025 04:45:33, 2025-06-17T14:05:44Z."
+    - name: end_date
+      description: "Filter the snapshots until the provided date. Any snapshots taken after the provided date-time will be excluded.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.\n\nFor example: 01 June 2025, 01 June 2025 04:45:33, 2025-06-17T14:05:44Z."
+    - name: max_snapshots_per_object
+      description: Maximum number of snapshots to scan per object.
+    - name: min_file_size
+      description: Minimum size of the file in bytes that will be included in the scan.
+    - name: max_file_size
+      description: Maximum size of the file in bytes that will be included in the scan.
+    - name: paths_to_include
+      description: "Paths to include in the scan. Supports comma separated values.\n\nFormat accepted: \"path_to_include_1, path_to_include_2\"."
+      isArray: true
+    - name: paths_to_exclude
+      description: "Paths to exclude from the scan. Supports comma separated values.\n\nFormat accepted: \"path_to_exclude_1, path_to_exclude_2\"."
+      isArray: true
+    - name: paths_to_exempt
+      description: "Paths to exempt from exclusion. Supports comma separated values.\n\nFormat accepted: \"path_to_exempt_1, path_to_exempt_2\"."
+      isArray: true
+    outputs:
+    - contextPath: RubrikPolaris.AdvanceIOCScan.huntId
+      description: The ID of the new advance threat hunt.
+      type: string
+    - contextPath: RubrikPolaris.AdvanceIOCScan.huntName
+      description: The name or label of the advanced threat hunt.
+      type: string
+    - contextPath: RubrikPolaris.AdvanceIOCScan.config.huntType
+      description: The type of threat hunt configuration.
+      type: string
+    - contextPath: RubrikPolaris.AdvanceIOCScan.config.clusterUuids
+      description: The list of cluster UUIDs included in the hunt config.
+      type: unknown
+    - contextPath: RubrikPolaris.AdvanceIOCScan.config.objectFids
+      description: The list of object FIDs targeted by the hunt.
+      type: unknown
+    - contextPath: RubrikPolaris.AdvanceIOCScan.config.__typename
+      description: The GraphQL typename for the HuntConfig object.
+      type: string
+    - contextPath: RubrikPolaris.AdvanceIOCScan.status
+      description: The status of the threat hunt execution.
+      type: string
+    - contextPath: RubrikPolaris.AdvanceIOCScan.__typename
+      description: The GraphQL typename for the HuntResponse object.
+      type: string
+  - arguments:
+    - description: "The unique ID of the cluster.\n\nNote: Users can retrieve the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
+      name: cluster_id
+      required: true
+    - description: "The CDM snapshot ID.\n\nNote: Use the \"rubrik-radar-suspicious-file-list\" command to retrieve the actual CDM ID from the Anomaly ID.\nExample format to get the snapshot CDM ID from Anomaly ID: \"<Cluster-ID>:::VirtualMachine:::<Snappable-ID>:::<CDM-ID>\"."
+      name: snapshot_id
+      required: true
+    - description: "The VM object ID (Snappable ID).\n\nNote: Users can retrieve the list of Snappable IDs by executing the \"rubrik-polaris-vm-objects-list\" command.\nExample format to get the Snappable ID: \"VirtualMachine:::<Snappable-ID>\"."
+      name: object_id
+      required: true
+    - name: polling
+      description: "Whether to poll for the command."
+      required: false
+      hidden: true
+    description: Request for the analysis and directly download the anomaly CSV analyzed file.
+    name: rubrik-anomaly-csv-analysis-v2
+    polling: true
+    outputs:
+    - contextPath: RubrikPolaris.AnomalyCSVv2.clusterId
+      description: The ID of the cluster.
+      type: String
+    - contextPath: RubrikPolaris.AnomalyCSVv2.snapshotId
+      description: The ID of the snapshot.
+      type: String
+    - contextPath: RubrikPolaris.AnomalyCSVv2.objectId
+      description: The ID of the object.
+      type: String
+    - contextPath: RubrikPolaris.AnomalyCSVv2.externalId
+      description: The external ID of the CSV file.
+      type: String
+    - contextPath: RubrikPolaris.AnomalyCSVv2.isSuccessful
+      description: Whether the CSV analysis was successful or not.
+      type: Boolean
+    - contextPath: InfoFile.Name
+      description: FileName.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.2072916
   isfetch: true
   runonce: false
   script: '-'

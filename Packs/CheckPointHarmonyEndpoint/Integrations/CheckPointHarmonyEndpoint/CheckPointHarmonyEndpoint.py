@@ -1,6 +1,5 @@
 import dataclasses
 import http
-from typing import Tuple
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -262,9 +261,7 @@ SCHEDULED_COMMANDS_MAPPER = {
         message="Rule {id} modification:",
         headers=["id", "name", "family", "connectionState", "lastModifiedBy", "job_id"],
     ),
-    "harmony-ep-policy-rule-metadata-list": ScheduleCommandMetadata(
-        outputs_prefix="Rule", message="Rule metadata list:"
-    ),
+    "harmony-ep-policy-rule-metadata-list": ScheduleCommandMetadata(outputs_prefix="Rule", message="Rule metadata list:"),
     "harmony-ep-push-operation-status-list": ScheduleCommandMetadata(
         outputs_prefix="PushOperation",
         message="Push operations status list:",
@@ -449,13 +446,8 @@ class Client(BaseClient):
             self._headers["x-mgmt-api-token"] = response["apiToken"]
 
         except DemistoException as exc:
-            if (
-                exc.res is not None
-                and exc.res.status_code == http.HTTPStatus.BAD_REQUEST
-            ):
-                raise DemistoException(
-                    f"Authentication failed: cookie not found. {exc}"
-                )
+            if exc.res is not None and exc.res.status_code == http.HTTPStatus.BAD_REQUEST:
+                raise DemistoException(f"Authentication failed: cookie not found. {exc}")
 
     def job_status_get(self, job_id: str) -> dict[str, Any]:
         """Get job status and data by ID.
@@ -525,9 +517,7 @@ class Client(BaseClient):
         return self._http_request(
             method="PUT",
             url_suffix="/ioc/edit",
-            json_data=[
-                {"comment": comment, "id": ioc_id, "type": ioc_type, "value": value}
-            ],
+            json_data=[{"comment": comment, "id": ioc_id, "type": ioc_type, "value": value}],
         )
 
     def ioc_create(
@@ -595,9 +585,7 @@ class Client(BaseClient):
             f"/policy/{rule_id}/assignments",
         )
 
-    def rule_assignments_add(
-        self, rule_id: str, entities_ids: list[str]
-    ) -> dict[str, Any]:
+    def rule_assignments_add(self, rule_id: str, entities_ids: list[str]) -> dict[str, Any]:
         """Assigns the specified entities to the given rule.
             Specified IDs that are already assigned to the rule are ignored.
 
@@ -617,9 +605,7 @@ class Client(BaseClient):
             json_data=entities_ids,
         )
 
-    def rule_assignments_remove(
-        self, rule_id: str, entities_ids: list[str]
-    ) -> dict[str, Any]:
+    def rule_assignments_remove(self, rule_id: str, entities_ids: list[str]) -> dict[str, Any]:
         """Removes the specified entities from the given rule's assignments.
             Specified IDs that are not assigned to the rule are ignored.
 
@@ -703,9 +689,7 @@ class Client(BaseClient):
             params=params,
         )
 
-    def push_operation_status_list(
-        self, remediation_operation_id: str | None
-    ) -> dict[str, Any]:
+    def push_operation_status_list(self, remediation_operation_id: str | None) -> dict[str, Any]:
         """Gets the current statuses of all remediation operations or if a specific ID is specified,
         retrieve the current status of the given remediation operation.
 
@@ -719,11 +703,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "GET",
-            (
-                f"/remediation/{remediation_operation_id}/status"
-                if remediation_operation_id
-                else "/remediation/status"
-            ),
+            (f"/remediation/{remediation_operation_id}/status" if remediation_operation_id else "/remediation/status"),
         )
 
     def push_operation_get(
@@ -885,9 +865,7 @@ class Client(BaseClient):
             json_data=request_body,
         )
 
-    def remediation_computer_isolate(
-        self, request_body: dict[str, Any]
-    ) -> dict[str, Any]:
+    def remediation_computer_isolate(self, request_body: dict[str, Any]) -> dict[str, Any]:
         """Isolates the computers matching the given query. Isolation is the act of denying all
         network access from a given computer.
 
@@ -905,9 +883,7 @@ class Client(BaseClient):
             json_data=request_body,
         )
 
-    def remediation_computer_deisolate(
-        self, request_body: dict[str, Any]
-    ) -> dict[str, Any]:
+    def remediation_computer_deisolate(self, request_body: dict[str, Any]) -> dict[str, Any]:
         """De-Isolates the computers matching the given query. De-isolating a computer restores
             its access to network resources.
 
@@ -1307,17 +1283,11 @@ def ioc_delete_command(args: dict[str, Any], client: Client) -> CommandResults:
     client.ioc_delete(ioc_ids=ioc_ids, delete_all=delete_all)
 
     return CommandResults(
-        readable_output=(
-            "All IOCs were deleted successfully."
-            if delete_all
-            else f"IOCs {ioc_ids} was deleted successfully."
-        )
+        readable_output=("All IOCs were deleted successfully." if delete_all else f"IOCs {ioc_ids} was deleted successfully.")
     )
 
 
-def rule_assignments_get_command(
-    args: dict[str, Any], client: Client
-) -> CommandResults:
+def rule_assignments_get_command(args: dict[str, Any], client: Client) -> CommandResults:
     """Gets all entities directly assigned to the given rule.
 
     Args:
@@ -1349,9 +1319,7 @@ def rule_assignments_get_command(
     )
 
 
-def rule_assignments_add_command(
-    args: dict[str, Any], client: Client
-) -> CommandResults:
+def rule_assignments_add_command(args: dict[str, Any], client: Client) -> CommandResults:
     """Assigns the specified entities to the given rule. Specified IDs that are already assigned to the rule are ignored.
 
     Args:
@@ -1365,14 +1333,10 @@ def rule_assignments_add_command(
     entities_ids = argToList(args.get("entities_ids"))
 
     client.rule_assignments_add(rule_id=rule_id, entities_ids=entities_ids)
-    return CommandResults(
-        readable_output=f"Entities {entities_ids} were assigned to rule {rule_id} successfully."
-    )
+    return CommandResults(readable_output=f"Entities {entities_ids} were assigned to rule {rule_id} successfully.")
 
 
-def rule_assignments_remove_command(
-    args: dict[str, Any], client: Client
-) -> CommandResults:
+def rule_assignments_remove_command(args: dict[str, Any], client: Client) -> CommandResults:
     """Removes the specified entities from the given rule's assignments.
 
     Args:
@@ -1386,9 +1350,7 @@ def rule_assignments_remove_command(
     entities_ids = argToList(args.get("entities_ids"))
 
     client.rule_assignments_remove(rule_id=rule_id, entities_ids=entities_ids)
-    return CommandResults(
-        readable_output=f"Entities {entities_ids} were removed from rule {rule_id} successfully."
-    )
+    return CommandResults(readable_output=f"Entities {entities_ids} were removed from rule {rule_id} successfully.")
 
 
 @polling_function(
@@ -1434,9 +1396,7 @@ def rule_modifications_get_command(args: dict[str, Any], client: Client) -> Poll
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
     rule_id = args.get("rule_id", "")
-    SCHEDULED_COMMANDS_MAPPER[
-        "harmony-ep-policy-rule-modifications-get"
-    ].format_message(rule_id)
+    SCHEDULED_COMMANDS_MAPPER["harmony-ep-policy-rule-modifications-get"].format_message(rule_id)
 
     if not args.get("job_id"):
         response = client.rule_modifications_get(rule_id=rule_id)
@@ -1499,9 +1459,7 @@ def rule_metadata_list_command(args: dict[str, Any], client: Client) -> CommandR
     poll_message="Fetch remediation status list request is executing",
     requires_polling_arg=False,
 )
-def push_operation_status_list_command(
-    args: dict[str, Any], client: Client
-) -> PollResult:
+def push_operation_status_list_command(args: dict[str, Any], client: Client) -> PollResult:
     """Gets the current statuses of all remediation operations or if a specific ID is specified,
         retrieve the current status of the given remediation operation.
 
@@ -1515,9 +1473,7 @@ def push_operation_status_list_command(
 
     if not args.get("job_id"):
         remediation_operation_id = args.get("remediation_operation_id")
-        response = client.push_operation_status_list(
-            remediation_operation_id=remediation_operation_id
-        )
+        response = client.push_operation_status_list(remediation_operation_id=remediation_operation_id)
         args["job_id"] = response.get("jobId")
 
     return schedule_command(args, client, "harmony-ep-push-operation-status-list")
@@ -1578,13 +1534,11 @@ def push_operation_abort_command(args: dict[str, Any], client: Client) -> PollRe
     """
     if not args.get("job_id"):
         remediation_operation_id = args.get("remediation_operation_id", "")
-        SCHEDULED_COMMANDS_MAPPER["harmony-ep-push-operation-abort"].message = (
-            f"Remediation operation {remediation_operation_id} was aborted successfully."
-        )
+        SCHEDULED_COMMANDS_MAPPER[
+            "harmony-ep-push-operation-abort"
+        ].message = f"Remediation operation {remediation_operation_id} was aborted successfully."
 
-        response = client.push_operation_abort(
-            remediation_operation_id=remediation_operation_id
-        )
+        response = client.push_operation_abort(remediation_operation_id=remediation_operation_id)
         args["job_id"] = response.get("jobId")
 
     return schedule_command(args, client, "harmony-ep-push-operation-abort")
@@ -1779,9 +1733,7 @@ def file_restore_command(args: dict[str, Any], client: Client) -> PollResult:
     poll_message="Computer isolate request is executing",
     requires_polling_arg=False,
 )
-def remediation_computer_isolate_command(
-    args: dict[str, Any], client: Client
-) -> PollResult:
+def remediation_computer_isolate_command(args: dict[str, Any], client: Client) -> PollResult:
     """Isolates the computers matching the given query. Isolation is the act of denying all network access from a given computer.
 
     Args:
@@ -1806,9 +1758,7 @@ def remediation_computer_isolate_command(
     poll_message="Computer de-isolate request is executing",
     requires_polling_arg=False,
 )
-def remediation_computer_deisolate_command(
-    args: dict[str, Any], client: Client
-) -> PollResult:
+def remediation_computer_deisolate_command(args: dict[str, Any], client: Client) -> PollResult:
     """De-Isolates the computers matching the given query. De-isolating a computer restores its access to network resources.
 
     Args:
@@ -2036,9 +1986,7 @@ def agent_registry_key_add_command(args: dict[str, Any], client: Client) -> Poll
     poll_message="Registry key remove request is executing",
     requires_polling_arg=False,
 )
-def agent_registry_key_delete_command(
-    args: dict[str, Any], client: Client
-) -> PollResult:
+def agent_registry_key_delete_command(args: dict[str, Any], client: Client) -> PollResult:
     """Removes the given registry key or value to the registry of computers matching the given query.
 
     Args:
@@ -2226,8 +2174,7 @@ def test_module(client: Client) -> str:
         client.ioc_list(0, 1)
     except DemistoException as exc:
         if exc.res is not None and (
-            exc.res.status_code == http.HTTPStatus.UNAUTHORIZED
-            or exc.res.status_code == http.HTTPStatus.FORBIDDEN
+            exc.res.status_code == http.HTTPStatus.UNAUTHORIZED or exc.res.status_code == http.HTTPStatus.FORBIDDEN
         ):
             return "Authorization Error: Invalid URL or credentials."
         raise exc
@@ -2238,9 +2185,7 @@ def test_module(client: Client) -> str:
 # Helper Commands #
 
 
-def schedule_command(
-    args: dict[str, Any], client: Client, command_name: str
-) -> PollResult:
+def schedule_command(args: dict[str, Any], client: Client, command_name: str) -> PollResult:
     """Build scheduled command in case:
         - Job state is not 'DONE'
         - Job state is 'DONE' but the API response data is a remediation operation ID.
@@ -2268,22 +2213,17 @@ def schedule_command(
 
             # Save new schedule arguments in integration context
             # (cause for the second run there are new arguments or/and values)
-            set_integration_context(
-                {"job_id": response["jobId"], "remediation_operation_id": command_data}
-            )
+            set_integration_context({"job_id": response["jobId"], "remediation_operation_id": command_data})
             return PollResult(
                 response=command_results,
                 continue_to_poll=True,
                 args_for_next_run=args,
             )
         else:
-
-            updated_command_readable_output, updated_command_response = (
-                prepare_command_output_and_readable_output(
-                    command_data=command_data,
-                    command_name=command_name,
-                    job_id=args["job_id"],
-                )
+            updated_command_readable_output, updated_command_response = prepare_command_output_and_readable_output(
+                command_data=command_data,
+                command_name=command_name,
+                job_id=args["job_id"],
             )
 
             command_results.readable_output = get_readable_output(
@@ -2306,9 +2246,7 @@ def schedule_command(
     if sample_state == "FAILED":
         clear_integration_context()
         # In case the job not succeeded raise the error
-        raise DemistoException(
-            f"Executing {args['job_id']} for Harmony Endpoint failed. Error: {command_results.raw_response}"
-        )
+        raise DemistoException(f"Executing {args['job_id']} for Harmony Endpoint failed. Error: {command_results.raw_response}")
 
     return PollResult(
         response=command_results,
@@ -2335,9 +2273,7 @@ def update_command_results(
     command_results.raw_response = updated_command_response
     command_results.outputs = updated_command_response
     command_results.outputs_key_field = "job_id"
-    command_results.outputs_prefix = (
-        f"HarmonyEP.{SCHEDULED_COMMANDS_MAPPER[command_name].outputs_prefix}"
-    )
+    command_results.outputs_prefix = f"HarmonyEP.{SCHEDULED_COMMANDS_MAPPER[command_name].outputs_prefix}"
 
     return command_results
 
@@ -2456,7 +2392,7 @@ def prepare_computer_list_output_and_readable_output(
 def prepare_push_operation_output_and_readable_output(
     command_data: list[dict[str, Any]],
     job_id: str,
-) -> Tuple[list | dict[str, Any], list | dict[str, Any]]:
+) -> tuple[list | dict[str, Any], list | dict[str, Any]]:
     """Update the API response data for the readable output in case the API response is push operation data.
 
     Args:
@@ -2475,17 +2411,11 @@ def prepare_push_operation_output_and_readable_output(
                 "machine_id": dict_safe_get(data, ["machine", "id"]),
                 "machine_name": dict_safe_get(data, ["machine", "name"]),
                 "operation_status": dict_safe_get(data, ["operation", "status"]),
-                "operation_response_status": dict_safe_get(
-                    data, ["operation", "response", "status"]
-                ),
-                "operation_response_output": dict_safe_get(
-                    data, ["operation", "response", "output"]
-                ),
+                "operation_response_status": dict_safe_get(data, ["operation", "response", "status"]),
+                "operation_response_output": dict_safe_get(data, ["operation", "response", "output"]),
             }
         )
-        data["operation"] |= {
-            "id": dict_safe_get(get_integration_context(), ["remediation_operation_id"])
-        }
+        data["operation"] |= {"id": dict_safe_get(get_integration_context(), ["remediation_operation_id"])}
         data["job_id"] = job_id
 
     return updated_command_readable_output, command_data
@@ -2507,9 +2437,7 @@ def validate_pagination_arguments(
         ValueError: Appropriate error message.
     """
     if page_size and (page_size < MIN_PAGE_SIZE or page_size > MAX_PAGE_SIZE):
-        raise ValueError(
-            f"page_size argument must be greater than {MIN_PAGE_SIZE} and smaller than {MAX_PAGE_SIZE}."
-        )
+        raise ValueError(f"page_size argument must be greater than {MIN_PAGE_SIZE} and smaller than {MAX_PAGE_SIZE}.")
     if page and page < MIN_PAGE_NUM:
         raise ValueError(f"page argument must be greater than {MIN_PAGE_NUM - 1}.")
     if limit and limit <= MIN_LIMIT:
@@ -2539,9 +2467,7 @@ def get_pagination_args(args: dict[str, Any]) -> tuple:
         new_page_size = page_size
         new_page = page - 1
 
-    pagination_message = (
-        f"Showing page {new_page+1}.\nCurrent page size: {new_page_size}."
-    )
+    pagination_message = f"Showing page {new_page+1}.\nCurrent page size: {new_page_size}."
 
     return new_page, new_page_size, pagination_message
 
@@ -2557,14 +2483,10 @@ def validate_filter_arguments(column_name: str | None = None, filter_type: str =
         ValueError: Raise error in case column_name or filter_type values are not allowed.
     """
     if column_name and column_name not in COLUMN_NAMES:
-        raise ValueError(
-            f"'column_name' must be one of the followings: {COLUMN_NAMES}."
-        )
+        raise ValueError(f"'column_name' must be one of the followings: {COLUMN_NAMES}.")
 
     if filter_type and filter_type not in FILTER_TYPES:
-        raise ValueError(
-            f"'filter_type' must be one of the followings: {FILTER_TYPES}."
-        )
+        raise ValueError(f"'filter_type' must be one of the followings: {FILTER_TYPES}.")
 
 
 def extract_query_filter(args: dict[str, Any]) -> list[dict[str, Any]]:
@@ -2585,9 +2507,7 @@ def extract_query_filter(args: dict[str, Any]) -> list[dict[str, Any]]:
             query_parts = query.split(" ")
 
             if len(query_parts) != 3:
-                raise ValueError(
-                    "'filter' must be in the following format: 'column_name filter_type filter_value'."
-                )
+                raise ValueError("'filter' must be in the following format: 'column_name filter_type filter_value'.")
 
             column_name = query_parts[0]
             filter_type = query_parts[1]
@@ -2616,9 +2536,7 @@ def extract_query_filter(args: dict[str, Any]) -> list[dict[str, Any]]:
         computer_last_connection_times = argToList(computer_last_connection)
 
         if len(computer_last_connection_times) != 2:
-            raise ValueError(
-                "'computer_last_connection' must be in the following format: 'YYYY-MM-DD HH:MM, YYYY-MM-DD HH:MM'."
-            )
+            raise ValueError("'computer_last_connection' must be in the following format: 'YYYY-MM-DD HH:MM, YYYY-MM-DD HH:MM'.")
 
         query_filter += [
             {
@@ -2717,7 +2635,6 @@ def convert_unix_to_date_string(unix_timestamp: int) -> str:
 
 
 def main() -> None:
-
     params: dict[str, Any] = demisto.params()
     args: dict[str, Any] = demisto.args()
     base_url = params.get("base_url", "")
@@ -2731,7 +2648,6 @@ def main() -> None:
     demisto.debug(f"Command being called is {command}")
 
     try:
-
         client: Client = Client(
             base_url=base_url,
             client_id=client_id,

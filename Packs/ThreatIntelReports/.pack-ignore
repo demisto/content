@@ -4,3 +4,15 @@ ignore=BA124
 [file:UnpublishThreatIntelReport.yml]
 ignore=BA124
 
+# GR103 is temporary, see CIAC-11705
+[file:layoutscontainer-ThreatIntelReport-ThreatActorReport.json]
+ignore=GR103,LO107
+[file:layoutscontainer-ThreatIntelReport-ExecutiveBriefReport.json]
+ignore=GR103,LO107
+[file:layoutscontainer-ThreatIntelReport-VulnerabilityReport.json]
+ignore=GR103,LO107
+[file:layoutscontainer-ThreatIntelReport-CampaignReport.json]
+ignore=GR103,LO107
+[file:layoutscontainer-ThreatIntelReport-MalwareReport.json]
+ignore=GR103,LO107
+

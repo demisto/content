@@ -1,6 +1,7 @@
 Transformer that returns a filtered list of IPv4 addresses, based on whether they match a comma-separated list of IPv4 ranges.  Useful for filtering in internal IP address space.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Transformer that returns a filtered list of IPv4 addresses, based on whether the
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,5 +20,6 @@ Transformer that returns a filtered list of IPv4 addresses, based on whether the
 | cidr_ranges | Array or comma-separated list of IPv4 ranges, in CIDR notation, against which to match the IPv4 addresses. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

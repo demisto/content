@@ -1164,7 +1164,7 @@ outputs:
   description: Reliability of the source providing the intelligence data.
   type: string
 - contextPath: Endpoint.IPAddress
-  description: The endpoint IP address.
+  description: The endpoint IP address or list of IP addresses.
   type: string
 - contextPath: Endpoint.ID
   description: The endpoint ID.
@@ -1632,5 +1632,6 @@ outputs:
 tests:
 - no test - each enrichment sub-playbook has or will have its own test
 marketplaces:
-  - xsoar
-  - marketplacev2
+- xsoar
+- marketplacev2
+- platform

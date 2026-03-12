@@ -101,53 +101,53 @@
     "Bigfix": {
         "Site": [
             {
-                "Resource": "https://xsoar-example:20021/api/site/master/ActionSite", 
-                "Description": null, 
-                "GatherURL": "http://WIN-CQD6UQJIA7J:52311/cgi-bin/bfgather.exe/actionsite", 
-                "GlobalReadPermission": "false", 
-                "Name": "ActionSite", 
-                "Type": "master", 
+                "Resource": "https://xsoar-example:20021/api/site/master/ActionSite",
+                "Description": null,
+                "GatherURL": "http://WIN-CQD6UQJIA7J:52311/cgi-bin/bfgather.exe/actionsite",
+                "GlobalReadPermission": "false",
+                "Name": "ActionSite",
+                "Type": "master",
                 "Subscription": {
                     "Mode": "All"
                 }
-            }, 
+            },
             {
-                "Resource": "https://xsoar-example:20021/api/site/external/BES Support", 
-                "Description": null, 
-                "GatherURL": "http://sync.bigfix.com/cgi-bin/bfgather/bessupport", 
-                "GlobalReadPermission": "true", 
-                "Name": "BES Support", 
-                "Type": "external", 
+                "Resource": "https://xsoar-example:20021/api/site/external/BES Support",
+                "Description": null,
+                "GatherURL": "http://sync.bigfix.com/cgi-bin/bfgather/bessupport",
+                "GlobalReadPermission": "true",
+                "Name": "BES Support",
+                "Type": "external",
                 "Subscription": {
                     "Mode": "All"
                 }
-            }, 
+            },
             {
-                "Resource": "https://xsoar-example:20021/api/site/external/BES Inventory and License", 
-                "Description": null, 
-                "GatherURL": "http://sync.bigfix.com/cgi-bin/bfgather/besinventory", 
-                "GlobalReadPermission": "false", 
-                "Name": "BES Inventory and License", 
-                "Type": "external", 
+                "Resource": "https://xsoar-example:20021/api/site/external/BES Inventory and License",
+                "Description": null,
+                "GatherURL": "http://sync.bigfix.com/cgi-bin/bfgather/besinventory",
+                "GlobalReadPermission": "false",
+                "Name": "BES Inventory and License",
+                "Type": "external",
                 "Subscription": {
                     "Mode": "None"
                 }
-            }, 
+            },
             {
-                "Resource": "https://xsoar-example:20021/api/site/external/BES Asset Discovery", 
-                "Description": null, 
-                "GatherURL": "http://sync.bigfix.com/cgi-bin/bfgather/assetdiscovery", 
-                "GlobalReadPermission": "false", 
-                "Name": "BES Asset Discovery", 
-                "Type": "external", 
+                "Resource": "https://xsoar-example:20021/api/site/external/BES Asset Discovery",
+                "Description": null,
+                "GatherURL": "http://sync.bigfix.com/cgi-bin/bfgather/assetdiscovery",
+                "GlobalReadPermission": "false",
+                "Name": "BES Asset Discovery",
+                "Type": "external",
                 "Subscription": {
                     "Mode": "None"
                 }
-            }, 
+            },
             {
-                "GatherURL": "http://WIN-CQD6UQJIA7J:52311/cgi-bin/bfgather.exe/actionsite", 
-                "Type": "operator", 
-                "Resource": "https://xsoar-example:20021/api/site/operator/admin", 
+                "GatherURL": "http://WIN-CQD6UQJIA7J:52311/cgi-bin/bfgather.exe/actionsite",
+                "Type": "operator",
+                "Resource": "https://xsoar-example:20021/api/site/operator/admin",
                 "Name": "admin"
             }
         ]
@@ -155,7 +155,7 @@
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/7270217/47254258-ab465280-d468-11e8-9704-04bfb8f7d653.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/47254258-ab465280-d468-11e8-9704-04bfb8f7d653.png" alt="image" width="749" height="261"></a></p>
+<p><a href="../../doc_files/47254258-ab465280-d468-11e8-9704-04bfb8f7d653.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47254258-ab465280-d468-11e8-9704-04bfb8f7d653.png" alt="image" width="749" height="261"></a></p>
 <h3 id="h_8123010261041540901803930">2. Get a single site</h3>
 <hr>
 <p>Retrieves a single site by name and type.</p>
@@ -244,12 +244,12 @@
 <pre><code>{
     "Bigfix": {
         "Site": {
-            "Resource": "https://xsoar-example:20021/api/site/master/None", 
-            "Description": null, 
-            "GatherURL": "http://WIN-CQD6UQJIA7J:52311/cgi-bin/bfgather.exe/actionsite", 
-            "GlobalReadPermission": "false", 
-            "Name": "ActionSite", 
-            "Type": "master", 
+            "Resource": "https://xsoar-example:20021/api/site/master/None",
+            "Description": null,
+            "GatherURL": "http://WIN-CQD6UQJIA7J:52311/cgi-bin/bfgather.exe/actionsite",
+            "GlobalReadPermission": "false",
+            "Name": "ActionSite",
+            "Type": "master",
             "Subscription": {
                 "Mode": "All"
             }
@@ -258,7 +258,7 @@
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/7270217/47254275-f2ccde80-d468-11e8-80a0-92c666923ece.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/47254275-f2ccde80-d468-11e8-80a0-92c666923ece.png" alt="image" width="752" height="243"></a></p>
+<p><a href="../../doc_files/47254275-f2ccde80-d468-11e8-80a0-92c666923ece.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47254275-f2ccde80-d468-11e8-80a0-92c666923ece.png" alt="image" width="752" height="243"></a></p>
 <h3 id="h_1621334852051540901856934">3. Get all patches for a site</h3>
 <hr>
 <p>Retrieves all the patches (fixlets) of site.</p>
@@ -377,41 +377,41 @@
     "Bigfix": {
         "Patch": [
             {
-                "Category": null, 
-                "Resource": "https://xsoar-example:20021/api/fixlet/master/38", 
-                "Description": "This is a description of foo patch", 
-                "DownloadSize": null, 
-                "SourceID": null, 
-                "LastModified": "Fri, 15 Jun 2018 13:31:17 +0000", 
-                "SourceReleaseDate": "2018-06-15", 
-                "Source": "Internal", 
-                "ActionID": "Action1", 
+                "Category": null,
+                "Resource": "https://xsoar-example:20021/api/fixlet/master/38",
+                "Description": "This is a description of foo patch",
+                "DownloadSize": null,
+                "SourceID": null,
+                "LastModified": "Fri, 15 Jun 2018 13:31:17 +0000",
+                "SourceReleaseDate": "2018-06-15",
+                "Source": "Internal",
+                "ActionID": "Action1",
                 "ActionScript": {
-                    "@MIMEType": "application/x-sh", 
+                    "@MIMEType": "application/x-sh",
                     "#text": "#!/bin/sh\n# Enter your action script here\necho \"Hello World\""
-                }, 
-                "Relevance": null, 
-                "SourceSeverity": null, 
-                "ID": "38", 
+                },
+                "Relevance": null,
+                "SourceSeverity": null,
+                "ID": "38",
                 "Name": "Anar Fixlet"
-            }, 
+            },
             {
-                "Category": null, 
-                "Resource": "https://xsoar-example:20021/api/fixlet/master/39", 
-                "Description": "Test Fixlet", 
-                "DownloadSize": null, 
-                "SourceID": null, 
-                "LastModified": "Fri, 15 Jun 2018 19:37:29 +0000", 
-                "SourceReleaseDate": "2018-06-15", 
-                "Source": "Internal", 
-                "ActionID": "Action1", 
+                "Category": null,
+                "Resource": "https://xsoar-example:20021/api/fixlet/master/39",
+                "Description": "Test Fixlet",
+                "DownloadSize": null,
+                "SourceID": null,
+                "LastModified": "Fri, 15 Jun 2018 19:37:29 +0000",
+                "SourceReleaseDate": "2018-06-15",
+                "Source": "Internal",
+                "ActionID": "Action1",
                 "ActionScript": {
-                    "@MIMEType": "application/x-Fixlet-Windows-Shell", 
+                    "@MIMEType": "application/x-Fixlet-Windows-Shell",
                     "#text": "// Enter your action script here"
-                }, 
-                "Relevance": "true", 
-                "SourceSeverity": null, 
-                "ID": "39", 
+                },
+                "Relevance": "true",
+                "SourceSeverity": null,
+                "ID": "39",
                 "Name": "Custom Fixlet"
             }
         ]
@@ -419,7 +419,7 @@
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/7270217/47254399-9cf93600-d46a-11e8-83a6-f120afec4208.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/47254399-9cf93600-d46a-11e8-83a6-f120afec4208.png" alt="image" width="755" height="183"></a></p>
+<p><a href="../../doc_files/47254399-9cf93600-d46a-11e8-83a6-f120afec4208.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47254399-9cf93600-d46a-11e8-83a6-f120afec4208.png" alt="image" width="755" height="183"></a></p>
 <h3 id="h_7616200173051540902077626">4. Get all endpoints</h3>
 <hr>
 <p>Retrieves all endpoints (computers).</p>
@@ -613,132 +613,132 @@
     "Bigfix": {
         "Endpoint": [
             {
-                "UserName": "Administrator", 
-                "BESRootServer": "win-cqd6uqjia7j (0)", 
-                "TotalSizeofSystemDrive": "101896 MB", 
-                "AgentType": "Native", 
-                "DNSName": "WIN-CQD6UQJIA7J", 
-                "Resource": "https://xsoar-example:20021/api/computer/2696130", 
-                "CPU": "2200 MHz Xeon Gold 5120", 
-                "LicenseType": "Windows Server", 
-                "Relay": "BES Root Server", 
-                "BESRelayServiceInstalled": "Automatic", 
-                "RAM": "8192 MB", 
-                "BIOS": "07/28/2017", 
-                "AgentVersion": "9.5.9.62", 
-                "IPAddress": "192.168.1.57", 
-                "RelayNameOfClient": "WIN-CQD6UQJIA7J", 
-                "FreeSpaceonSystemDrive": "71399 MB", 
-                "BESRelaySelectionMethod": "Automatic", 
-                "ComputerName": "WIN-CQD6UQJIA7J", 
-                "SubscribedSites": "http://sync.bigfix.com/cgi-bin/bfgather/bessupport", 
-                "Locked": "No", 
+                "UserName": "Administrator",
+                "BESRootServer": "win-cqd6uqjia7j (0)",
+                "TotalSizeofSystemDrive": "101896 MB",
+                "AgentType": "Native",
+                "DNSName": "WIN-CQD6UQJIA7J",
+                "Resource": "https://xsoar-example:20021/api/computer/2696130",
+                "CPU": "2200 MHz Xeon Gold 5120",
+                "LicenseType": "Windows Server",
+                "Relay": "BES Root Server",
+                "BESRelayServiceInstalled": "Automatic",
+                "RAM": "8192 MB",
+                "BIOS": "07/28/2017",
+                "AgentVersion": "9.5.9.62",
+                "IPAddress": "192.168.1.57",
+                "RelayNameOfClient": "WIN-CQD6UQJIA7J",
+                "FreeSpaceonSystemDrive": "71399 MB",
+                "BESRelaySelectionMethod": "Automatic",
+                "ComputerName": "WIN-CQD6UQJIA7J",
+                "SubscribedSites": "http://sync.bigfix.com/cgi-bin/bfgather/bessupport",
+                "Locked": "No",
                 "ClientSettings": [
-                    "CVE-2014-0160=rotated", 
-                    "_BESClient_ActionManager_SkipVoluntaryOnForceShutdown=1", 
-                    "_BESClient_LastShutdown_Reason=Service manager shutdown request", 
-                    "_BESClient_Resource_StartupNormalSpeed=0", 
-                    "_BESClient_Upgrade_UTF8Settings=1", 
-                    "_BESClient_UploadManager_BufferDirectory=C:\\Program Files (x86)\\BigFix Enterprise\\BES Client\\__BESData\\__Global\\Upload", 
-                    "_BESGather_Comm_UseDownloadService=0", 
-                    "_BESGather_Download_CacheLimitMB=1024", 
-                    "_BESGather_Download_CheckInternetFlag=1", 
-                    "_BESGather_Download_CheckParentFlag=0", 
-                    "_BESGather_Download_InactivityTimeout=300", 
-                    "_BESRelay_HTTPServer_HttpLogDirectoryPath=", 
-                    "_BESRelay_HTTPServer_LogFilePath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESRelay.log", 
-                    "_BESRelay_HTTPServer_PortNumber=52311", 
-                    "_BESRelay_HTTPServer_ServerRootPath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\wwwrootbes\\", 
-                    "_BESRelay_UploadManager_BufferDirectory=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\UploadManagerData\\BufferDir", 
-                    "_BESRelay_UploadManager_ParentURL=", 
-                    "_Enterprise Server_ClientRegister_RegistrationListReplicatePeriod=3600", 
-                    "_Enterprise Server_ClientRegister_UDPMessagePort=52311", 
-                    "_HTTPServer_Referrer_CheckEnabled=1", 
-                    "_WebReports_HTTPRedirect_PortNumber=8080", 
-                    "_WebReports_HTTPServer_HostName=http://WIN-CQD6UQJIA7J:52311", 
-                    "_WebReports_HTTPServer_HttpLogDirectoryPath=", 
-                    "_WebReports_HTTPServer_LogFilePath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESWebReportsServer.log", 
-                    "_WebReports_HTTPServer_PortNumber=8083", 
-                    "_WebReports_HTTPServer_ServerRootPath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESReportsServer\\wwwroot\\", 
-                    "_WebReports_HTTPServer_SSLCertificateFilePath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESReportsData\\SelfWRCertificate.pem", 
-                    "_WebReports_HTTPServer_UseSSLFlag=1", 
-                    "__LockState=false", 
-                    "__RelaySelect_Automatic=1", 
-                    "__RelayServer1=", 
-                    "__RelayServer2=", 
-                    "__Relay_Control_Server1=", 
+                    "CVE-2014-0160=rotated",
+                    "_BESClient_ActionManager_SkipVoluntaryOnForceShutdown=1",
+                    "_BESClient_LastShutdown_Reason=Service manager shutdown request",
+                    "_BESClient_Resource_StartupNormalSpeed=0",
+                    "_BESClient_Upgrade_UTF8Settings=1",
+                    "_BESClient_UploadManager_BufferDirectory=C:\\Program Files (x86)\\BigFix Enterprise\\BES Client\\__BESData\\__Global\\Upload",
+                    "_BESGather_Comm_UseDownloadService=0",
+                    "_BESGather_Download_CacheLimitMB=1024",
+                    "_BESGather_Download_CheckInternetFlag=1",
+                    "_BESGather_Download_CheckParentFlag=0",
+                    "_BESGather_Download_InactivityTimeout=300",
+                    "_BESRelay_HTTPServer_HttpLogDirectoryPath=",
+                    "_BESRelay_HTTPServer_LogFilePath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESRelay.log",
+                    "_BESRelay_HTTPServer_PortNumber=52311",
+                    "_BESRelay_HTTPServer_ServerRootPath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\wwwrootbes\\",
+                    "_BESRelay_UploadManager_BufferDirectory=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\UploadManagerData\\BufferDir",
+                    "_BESRelay_UploadManager_ParentURL=",
+                    "_Enterprise Server_ClientRegister_RegistrationListReplicatePeriod=3600",
+                    "_Enterprise Server_ClientRegister_UDPMessagePort=52311",
+                    "_HTTPServer_Referrer_CheckEnabled=1",
+                    "_WebReports_HTTPRedirect_PortNumber=8080",
+                    "_WebReports_HTTPServer_HostName=http://WIN-CQD6UQJIA7J:52311",
+                    "_WebReports_HTTPServer_HttpLogDirectoryPath=",
+                    "_WebReports_HTTPServer_LogFilePath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESWebReportsServer.log",
+                    "_WebReports_HTTPServer_PortNumber=8083",
+                    "_WebReports_HTTPServer_ServerRootPath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESReportsServer\\wwwroot\\",
+                    "_WebReports_HTTPServer_SSLCertificateFilePath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESReportsData\\SelfWRCertificate.pem",
+                    "_WebReports_HTTPServer_UseSSLFlag=1",
+                    "__LockState=false",
+                    "__RelaySelect_Automatic=1",
+                    "__RelayServer1=",
+                    "__RelayServer2=",
+                    "__Relay_Control_Server1=",
                     "__Relay_Control_Server2="
-                ], 
-                "SubnetAddress": "192.168.1.0", 
-                "DeviceType": "Server", 
-                "ID": "2696130", 
-                "ActiveDirectoryPath": "&lt;none&gt;", 
-                "LastReportTime": "Mon, 29 Oct 2018 22:12:04 +0000", 
-                "DistancetoBESRelay": "0", 
-                "OS": "Win2016 10.0.14393.2248 (1607)", 
+                ],
+                "SubnetAddress": "192.168.1.0",
+                "DeviceType": "Server",
+                "ID": "2696130",
+                "ActiveDirectoryPath": "&lt;none&gt;",
+                "LastReportTime": "Mon, 29 Oct 2018 22:12:04 +0000",
+                "DistancetoBESRelay": "0",
+                "OS": "Win2016 10.0.14393.2248 (1607)",
                 "ComputerType": "Virtual"
-            }, 
+            },
             {
-                "UserName": "Administrator", 
-                "BESRootServer": "win-cqd6uqjia7j (0)", 
-                "TotalSizeofSystemDrive": "101896 MB", 
-                "AgentType": "Native", 
-                "DNSName": "WIN-CQD6UQJIA7J", 
-                "Resource": "https://xsoar-example:20021/api/computer/3385267", 
-                "CPU": "2200 MHz Xeon", 
-                "LicenseType": "Windows Server", 
-                "Relay": "BES Root Server", 
-                "BESRelayServiceInstalled": "Manual", 
-                "RAM": "8192 MB", 
-                "BIOS": "04/05/2016", 
-                "AgentVersion": "9.5.9.62", 
-                "IPAddress": "192.168.1.57", 
-                "RelayNameOfClient": "WIN-CQD6UQJIA7J", 
-                "FreeSpaceonSystemDrive": "70978 MB", 
-                "BESRelaySelectionMethod": "Manual", 
-                "ComputerName": "WIN-CQD6UQJIA7J", 
-                "SubscribedSites": "http://sync.bigfix.com/cgi-bin/bfgather/bessupport", 
-                "Locked": "No", 
+                "UserName": "Administrator",
+                "BESRootServer": "win-cqd6uqjia7j (0)",
+                "TotalSizeofSystemDrive": "101896 MB",
+                "AgentType": "Native",
+                "DNSName": "WIN-CQD6UQJIA7J",
+                "Resource": "https://xsoar-example:20021/api/computer/3385267",
+                "CPU": "2200 MHz Xeon",
+                "LicenseType": "Windows Server",
+                "Relay": "BES Root Server",
+                "BESRelayServiceInstalled": "Manual",
+                "RAM": "8192 MB",
+                "BIOS": "04/05/2016",
+                "AgentVersion": "9.5.9.62",
+                "IPAddress": "192.168.1.57",
+                "RelayNameOfClient": "WIN-CQD6UQJIA7J",
+                "FreeSpaceonSystemDrive": "70978 MB",
+                "BESRelaySelectionMethod": "Manual",
+                "ComputerName": "WIN-CQD6UQJIA7J",
+                "SubscribedSites": "http://sync.bigfix.com/cgi-bin/bfgather/bessupport",
+                "Locked": "No",
                 "ClientSettings": [
-                    "_BESClient_ActionManager_SkipVoluntaryOnForceShutdown=1", 
-                    "_BESClient_Resource_StartupNormalSpeed=0", 
-                    "_BESClient_Upgrade_UTF8Settings=1", 
-                    "_BESClient_UploadManager_BufferDirectory=C:\\Program Files (x86)\\BigFix Enterprise\\BES Client\\__BESData\\__Global\\Upload", 
-                    "_BESGather_Comm_UseDownloadService=0", 
-                    "_BESGather_Download_CacheLimitMB=1024", 
-                    "_BESGather_Download_CheckInternetFlag=1", 
-                    "_BESGather_Download_CheckParentFlag=0", 
-                    "_BESGather_Download_InactivityTimeout=300", 
-                    "_BESRelay_HTTPServer_HttpLogDirectoryPath=", 
-                    "_BESRelay_HTTPServer_LogFilePath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESRelay.log", 
-                    "_BESRelay_HTTPServer_PortNumber=52311", 
-                    "_BESRelay_HTTPServer_ServerRootPath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\wwwrootbes\\", 
-                    "_BESRelay_UploadManager_BufferDirectory=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\UploadManagerData\\BufferDir", 
-                    "_BESRelay_UploadManager_ParentURL=", 
-                    "_Enterprise Server_ClientRegister_RegistrationListReplicatePeriod=3600", 
-                    "_Enterprise Server_ClientRegister_UDPMessagePort=52311", 
-                    "_HTTPServer_Referrer_CheckEnabled=1", 
-                    "_WebReports_HTTPRedirect_PortNumber=8080", 
-                    "_WebReports_HTTPServer_HostName=http://WIN-CQD6UQJIA7J:52311", 
-                    "_WebReports_HTTPServer_HttpLogDirectoryPath=", 
-                    "_WebReports_HTTPServer_LogFilePath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESWebReportsServer.log", 
-                    "_WebReports_HTTPServer_PortNumber=8083", 
-                    "_WebReports_HTTPServer_ServerRootPath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESReportsServer\\wwwroot\\", 
-                    "_WebReports_HTTPServer_SSLCertificateFilePath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESReportsData\\SelfWRCertificate.pem", 
-                    "_WebReports_HTTPServer_UseSSLFlag=1", 
-                    "__LockState=false", 
-                    "__RelayServer1=", 
-                    "__RelayServer2=", 
-                    "__Relay_Control_Server1=", 
+                    "_BESClient_ActionManager_SkipVoluntaryOnForceShutdown=1",
+                    "_BESClient_Resource_StartupNormalSpeed=0",
+                    "_BESClient_Upgrade_UTF8Settings=1",
+                    "_BESClient_UploadManager_BufferDirectory=C:\\Program Files (x86)\\BigFix Enterprise\\BES Client\\__BESData\\__Global\\Upload",
+                    "_BESGather_Comm_UseDownloadService=0",
+                    "_BESGather_Download_CacheLimitMB=1024",
+                    "_BESGather_Download_CheckInternetFlag=1",
+                    "_BESGather_Download_CheckParentFlag=0",
+                    "_BESGather_Download_InactivityTimeout=300",
+                    "_BESRelay_HTTPServer_HttpLogDirectoryPath=",
+                    "_BESRelay_HTTPServer_LogFilePath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESRelay.log",
+                    "_BESRelay_HTTPServer_PortNumber=52311",
+                    "_BESRelay_HTTPServer_ServerRootPath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\wwwrootbes\\",
+                    "_BESRelay_UploadManager_BufferDirectory=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\UploadManagerData\\BufferDir",
+                    "_BESRelay_UploadManager_ParentURL=",
+                    "_Enterprise Server_ClientRegister_RegistrationListReplicatePeriod=3600",
+                    "_Enterprise Server_ClientRegister_UDPMessagePort=52311",
+                    "_HTTPServer_Referrer_CheckEnabled=1",
+                    "_WebReports_HTTPRedirect_PortNumber=8080",
+                    "_WebReports_HTTPServer_HostName=http://WIN-CQD6UQJIA7J:52311",
+                    "_WebReports_HTTPServer_HttpLogDirectoryPath=",
+                    "_WebReports_HTTPServer_LogFilePath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESWebReportsServer.log",
+                    "_WebReports_HTTPServer_PortNumber=8083",
+                    "_WebReports_HTTPServer_ServerRootPath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESReportsServer\\wwwroot\\",
+                    "_WebReports_HTTPServer_SSLCertificateFilePath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESReportsData\\SelfWRCertificate.pem",
+                    "_WebReports_HTTPServer_UseSSLFlag=1",
+                    "__LockState=false",
+                    "__RelayServer1=",
+                    "__RelayServer2=",
+                    "__Relay_Control_Server1=",
                     "__Relay_Control_Server2="
-                ], 
-                "SubnetAddress": "192.168.1.0", 
-                "DeviceType": "Server", 
-                "ID": "3385267", 
-                "ActiveDirectoryPath": "&lt;none&gt;", 
-                "LastReportTime": "Wed, 27 Jun 2018 00:16:15 +0000", 
-                "DistancetoBESRelay": "0", 
-                "OS": "Win2016 10.0.14393.1944 (1607)", 
+                ],
+                "SubnetAddress": "192.168.1.0",
+                "DeviceType": "Server",
+                "ID": "3385267",
+                "ActiveDirectoryPath": "&lt;none&gt;",
+                "LastReportTime": "Wed, 27 Jun 2018 00:16:15 +0000",
+                "DistancetoBESRelay": "0",
+                "OS": "Win2016 10.0.14393.1944 (1607)",
                 "ComputerType": "Virtual"
             }
         ]
@@ -746,7 +746,7 @@
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/7270217/47254373-4855bb00-d46a-11e8-9f89-e4e4fa758d65.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/47254373-4855bb00-d46a-11e8-9f89-e4e4fa758d65.png" alt="image" width="750" height="399"></a></p>
+<p><a href="../../doc_files/47254373-4855bb00-d46a-11e8-9f89-e4e4fa758d65.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47254373-4855bb00-d46a-11e8-9f89-e4e4fa758d65.png" alt="image" width="750" height="399"></a></p>
 <h3 id="h_9228939254021540902117120">5. Get the details of an endpoint</h3>
 <hr>
 <p>Retrieves the details of an endpoint (computer).</p>
@@ -939,73 +939,73 @@
 <pre><code>{
     "Bigfix": {
         "Endpoint": {
-            "UserName": "Administrator", 
-            "BESRootServer": "win-cqd6uqjia7j (0)", 
-            "TotalSizeofSystemDrive": "101896 MB", 
-            "AgentType": "Native", 
-            "DNSName": "WIN-CQD6UQJIA7J", 
-            "Resource": "https://xsoar-example:20021/api/computer/3385267", 
-            "CPU": "2200 MHz Xeon", 
-            "LicenseType": "Windows Server", 
-            "Relay": "BES Root Server", 
-            "BESRelayServiceInstalled": "Manual", 
-            "RAM": "8192 MB", 
-            "BIOS": "04/05/2016", 
-            "AgentVersion": "9.5.9.62", 
-            "IPAddress": "192.168.1.57", 
-            "RelayNameOfClient": "WIN-CQD6UQJIA7J", 
-            "FreeSpaceonSystemDrive": "70978 MB", 
-            "BESRelaySelectionMethod": "Manual", 
-            "ComputerName": "WIN-CQD6UQJIA7J", 
-            "SubscribedSites": "http://sync.bigfix.com/cgi-bin/bfgather/bessupport", 
-            "Locked": "No", 
+            "UserName": "Administrator",
+            "BESRootServer": "win-cqd6uqjia7j (0)",
+            "TotalSizeofSystemDrive": "101896 MB",
+            "AgentType": "Native",
+            "DNSName": "WIN-CQD6UQJIA7J",
+            "Resource": "https://xsoar-example:20021/api/computer/3385267",
+            "CPU": "2200 MHz Xeon",
+            "LicenseType": "Windows Server",
+            "Relay": "BES Root Server",
+            "BESRelayServiceInstalled": "Manual",
+            "RAM": "8192 MB",
+            "BIOS": "04/05/2016",
+            "AgentVersion": "9.5.9.62",
+            "IPAddress": "192.168.1.57",
+            "RelayNameOfClient": "WIN-CQD6UQJIA7J",
+            "FreeSpaceonSystemDrive": "70978 MB",
+            "BESRelaySelectionMethod": "Manual",
+            "ComputerName": "WIN-CQD6UQJIA7J",
+            "SubscribedSites": "http://sync.bigfix.com/cgi-bin/bfgather/bessupport",
+            "Locked": "No",
             "ClientSettings": [
-                "_BESClient_ActionManager_SkipVoluntaryOnForceShutdown=1", 
-                "_BESClient_Resource_StartupNormalSpeed=0", 
-                "_BESClient_Upgrade_UTF8Settings=1", 
-                "_BESClient_UploadManager_BufferDirectory=C:\\Program Files (x86)\\BigFix Enterprise\\BES Client\\__BESData\\__Global\\Upload", 
-                "_BESGather_Comm_UseDownloadService=0", 
-                "_BESGather_Download_CacheLimitMB=1024", 
-                "_BESGather_Download_CheckInternetFlag=1", 
-                "_BESGather_Download_CheckParentFlag=0", 
-                "_BESGather_Download_InactivityTimeout=300", 
-                "_BESRelay_HTTPServer_HttpLogDirectoryPath=", 
-                "_BESRelay_HTTPServer_LogFilePath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESRelay.log", 
-                "_BESRelay_HTTPServer_PortNumber=52311", 
-                "_BESRelay_HTTPServer_ServerRootPath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\wwwrootbes\\", 
-                "_BESRelay_UploadManager_BufferDirectory=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\UploadManagerData\\BufferDir", 
-                "_BESRelay_UploadManager_ParentURL=", 
-                "_Enterprise Server_ClientRegister_RegistrationListReplicatePeriod=3600", 
-                "_Enterprise Server_ClientRegister_UDPMessagePort=52311", 
-                "_HTTPServer_Referrer_CheckEnabled=1", 
-                "_WebReports_HTTPRedirect_PortNumber=8080", 
-                "_WebReports_HTTPServer_HostName=http://WIN-CQD6UQJIA7J:52311", 
-                "_WebReports_HTTPServer_HttpLogDirectoryPath=", 
-                "_WebReports_HTTPServer_LogFilePath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESWebReportsServer.log", 
-                "_WebReports_HTTPServer_PortNumber=8083", 
-                "_WebReports_HTTPServer_ServerRootPath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESReportsServer\\wwwroot\\", 
-                "_WebReports_HTTPServer_SSLCertificateFilePath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESReportsData\\SelfWRCertificate.pem", 
-                "_WebReports_HTTPServer_UseSSLFlag=1", 
-                "__LockState=false", 
-                "__RelayServer1=", 
-                "__RelayServer2=", 
-                "__Relay_Control_Server1=", 
+                "_BESClient_ActionManager_SkipVoluntaryOnForceShutdown=1",
+                "_BESClient_Resource_StartupNormalSpeed=0",
+                "_BESClient_Upgrade_UTF8Settings=1",
+                "_BESClient_UploadManager_BufferDirectory=C:\\Program Files (x86)\\BigFix Enterprise\\BES Client\\__BESData\\__Global\\Upload",
+                "_BESGather_Comm_UseDownloadService=0",
+                "_BESGather_Download_CacheLimitMB=1024",
+                "_BESGather_Download_CheckInternetFlag=1",
+                "_BESGather_Download_CheckParentFlag=0",
+                "_BESGather_Download_InactivityTimeout=300",
+                "_BESRelay_HTTPServer_HttpLogDirectoryPath=",
+                "_BESRelay_HTTPServer_LogFilePath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESRelay.log",
+                "_BESRelay_HTTPServer_PortNumber=52311",
+                "_BESRelay_HTTPServer_ServerRootPath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\wwwrootbes\\",
+                "_BESRelay_UploadManager_BufferDirectory=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\UploadManagerData\\BufferDir",
+                "_BESRelay_UploadManager_ParentURL=",
+                "_Enterprise Server_ClientRegister_RegistrationListReplicatePeriod=3600",
+                "_Enterprise Server_ClientRegister_UDPMessagePort=52311",
+                "_HTTPServer_Referrer_CheckEnabled=1",
+                "_WebReports_HTTPRedirect_PortNumber=8080",
+                "_WebReports_HTTPServer_HostName=http://WIN-CQD6UQJIA7J:52311",
+                "_WebReports_HTTPServer_HttpLogDirectoryPath=",
+                "_WebReports_HTTPServer_LogFilePath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESWebReportsServer.log",
+                "_WebReports_HTTPServer_PortNumber=8083",
+                "_WebReports_HTTPServer_ServerRootPath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESReportsServer\\wwwroot\\",
+                "_WebReports_HTTPServer_SSLCertificateFilePath=C:\\Program Files (x86)\\BigFix Enterprise\\BES Server\\BESReportsData\\SelfWRCertificate.pem",
+                "_WebReports_HTTPServer_UseSSLFlag=1",
+                "__LockState=false",
+                "__RelayServer1=",
+                "__RelayServer2=",
+                "__Relay_Control_Server1=",
                 "__Relay_Control_Server2="
-            ], 
-            "SubnetAddress": "192.168.1.0", 
-            "DeviceType": "Server", 
-            "ID": "3385267", 
-            "ActiveDirectoryPath": "&lt;none&gt;", 
-            "LastReportTime": "Wed, 27 Jun 2018 00:16:15 +0000", 
-            "DistancetoBESRelay": "0", 
-            "OS": "Win2016 10.0.14393.1944 (1607)", 
+            ],
+            "SubnetAddress": "192.168.1.0",
+            "DeviceType": "Server",
+            "ID": "3385267",
+            "ActiveDirectoryPath": "&lt;none&gt;",
+            "LastReportTime": "Wed, 27 Jun 2018 00:16:15 +0000",
+            "DistancetoBESRelay": "0",
+            "OS": "Win2016 10.0.14393.1944 (1607)",
             "ComputerType": "Virtual"
         }
     }
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/7270217/47254373-4855bb00-d46a-11e8-9f89-e4e4fa758d65.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/47254373-4855bb00-d46a-11e8-9f89-e4e4fa758d65.png" alt="image" width="750" height="399"></a></p>
+<p><a href="../../doc_files/47254373-4855bb00-d46a-11e8-9f89-e4e4fa758d65.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47254373-4855bb00-d46a-11e8-9f89-e4e4fa758d65.png" alt="image" width="750" height="399"></a></p>
 <h3 id="h_3195022465001540902236656">6. Create an action to run on target computers</h3>
 <hr>
 <p>Create an action on BigFix that will run the given action from the given fixlet on target computers. The computerID parameter takes a comma-separated list of BigFix computer IDs. If no computers are specified, the action will be run on the default computers configured on BigFix. If the action should run on all computers set the computerID parameter to all.</p>
@@ -1091,7 +1091,7 @@
 <pre>!bigfix-deploy-patch site_name="BES Support" computer_ids="3385267" fixlet_id="1759" action_id="Action2"</pre>
 <h5>Context Example</h5>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/7270217/47254533-6c1a0080-d46c-11e8-9c50-bbe3287f4230.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/47254533-6c1a0080-d46c-11e8-9c50-bbe3287f4230.png" alt="image" width="748" height="219"></a></p>
+<p><a href="../../doc_files/47254533-6c1a0080-d46c-11e8-9c50-bbe3287f4230.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47254533-6c1a0080-d46c-11e8-9c50-bbe3287f4230.png" alt="image" width="748" height="219"></a></p>
 <h3 id="h_6492125645971540902329729">7. Get a patch by fixlet ID</h3>
 <hr>
 <p>Retrieves a patch (fixlet) by ID.</p>
@@ -1209,28 +1209,28 @@
 <pre><code>{
     "Bigfix": {
         "Patch": {
-            "Category": null, 
-            "Resource": "https://xsoar-example:20021/api/fixlet/master/38", 
-            "Description": "This is a description of foo patch", 
-            "DownloadSize": null, 
-            "SourceID": null, 
-            "SourceReleaseDate": "2018-06-15", 
-            "Source": "Internal", 
-            "ActionID": "Action1", 
+            "Category": null,
+            "Resource": "https://xsoar-example:20021/api/fixlet/master/38",
+            "Description": "This is a description of foo patch",
+            "DownloadSize": null,
+            "SourceID": null,
+            "SourceReleaseDate": "2018-06-15",
+            "Source": "Internal",
+            "ActionID": "Action1",
             "ActionScript": {
-                "@MIMEType": "application/x-sh", 
+                "@MIMEType": "application/x-sh",
                 "#text": "#!/bin/sh\n# Enter your action script here\necho \"Hello World\""
-            }, 
-            "Relevance": null, 
-            "SourceSeverity": null, 
-            "ID": "38", 
+            },
+            "Relevance": null,
+            "SourceSeverity": null,
+            "ID": "38",
             "Name": "Anar Fixlet"
         }
     }
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/7270217/47683576-a7d56880-dbd8-11e8-9541-ce40ec3b0bd4.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/47683576-a7d56880-dbd8-11e8-9541-ce40ec3b0bd4.png" alt="image" width="751" height="589"></a></p>
+<p><a href="../../doc_files/47683576-a7d56880-dbd8-11e8-9541-ce40ec3b0bd4.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47683576-a7d56880-dbd8-11e8-9541-ce40ec3b0bd4.png" alt="image" width="751" height="589"></a></p>
 <h3 id="h_7402382876931540902368673">8. Delete an action</h3>
 <hr>
 <p>Stops and deletes the specified action. Note: You cannot delete actions that are members of a Multiple Action Group. This note applies to HCL BigFix V9.2 and later.</p>
@@ -1259,7 +1259,7 @@
 <h5>Command Example</h5>
 <pre>!bigfix-action-delete action_id</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/7270217/47684624-2da6e300-dbdc-11e8-837c-a03944aaa7cd.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/47684624-2da6e300-dbdc-11e8-837c-a03944aaa7cd.png" alt="image" width="750" height="155"></a></p>
+<p><a href="../../doc_files/47684624-2da6e300-dbdc-11e8-837c-a03944aaa7cd.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47684624-2da6e300-dbdc-11e8-837c-a03944aaa7cd.png" alt="image" width="750" height="155"></a></p>
 <h3 id="h_9949485537861540902463288">9. Get the status of an action</h3>
 <hr>
 <p>Gets the status of an action against its targets.</p>
@@ -1312,14 +1312,14 @@
 <pre><code>{
     "Bigfix": {
         "Action": {
-            "Status": "Open", 
+            "Status": "Open",
             "ID": "56"
         }
     }
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/7270217/47684527-df91df80-dbdb-11e8-8b95-3b4ef944e40b.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/47684527-df91df80-dbdb-11e8-8b95-3b4ef944e40b.png" alt="image" width="751" height="156"></a></p>
+<p><a href="../../doc_files/47684527-df91df80-dbdb-11e8-8b95-3b4ef944e40b.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47684527-df91df80-dbdb-11e8-8b95-3b4ef944e40b.png" alt="image" width="751" height="156"></a></p>
 <h3 id="h_6364690108801540902492473">10. Stop an action</h3>
 <hr>
 <p>Stops the specified action.</p>
@@ -1348,7 +1348,7 @@
 <h5>Command Example</h5>
 <pre>!bigfix-action-stop action_id</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/7270217/47684576-06501600-dbdc-11e8-991f-7acbb506b795.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/47684576-06501600-dbdc-11e8-991f-7acbb506b795.png" alt="image" width="750" height="162"></a></p>
+<p><a href="../../doc_files/47684576-06501600-dbdc-11e8-991f-7acbb506b795.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47684576-06501600-dbdc-11e8-991f-7acbb506b795.png" alt="image" width="750" height="162"></a></p>
 <h3 id="h_11901861510551540902590354">11. Evaluate an expression and get the result</h3>
 <hr>
 <p>Evaluates an expression and gets the result. The request is processed through the server to WebReports.</p>
@@ -1397,11 +1397,11 @@
 <pre><code>{
     "Bigfix": {
         "QueryResults": [
-            "2200 MHz Xeon Gold 5120", 
+            "2200 MHz Xeon Gold 5120",
             "2200 MHz Xeon"
         ]
     }
 }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/7270217/47684400-74480d80-dbdb-11e8-951a-fa05307f269f.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/47684400-74480d80-dbdb-11e8-951a-fa05307f269f.png" alt="image" width="749" height="313"></a></p>
+<p><a href="../../doc_files/47684400-74480d80-dbdb-11e8-951a-fa05307f269f.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47684400-74480d80-dbdb-11e8-951a-fa05307f269f.png" alt="image" width="749" height="313"></a></p>

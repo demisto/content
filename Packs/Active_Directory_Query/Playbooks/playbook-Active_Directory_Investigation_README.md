@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Active Directory Investigation](https://raw.githubusercontent.com/demisto/content/ee0c80f7977b1ae2701f5499859a1b70f17cb68b/Packs/Active_Directory_Query/doc_files/Active_Directory_Investigation.png)
+![Active Directory Investigation](../doc_files/Active_Directory_Investigation.png)

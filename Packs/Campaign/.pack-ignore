@@ -24,3 +24,7 @@ ignore=BA124
 
 [file:ShowNumberOfCampaignIncidents.yml]
 ignore=BA124
+
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-Campaign_Email_To.json]
+ignore=GR103

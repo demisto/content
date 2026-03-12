@@ -2,9 +2,7 @@ id: TIM - QRadar Add Url Indicators
 version: -1
 fromversion: 5.5.0
 name: TIM - QRadar Add Url Indicators
-description: This playbook queries indicators based on a pre-defined
-  query or results from a parent playbook, and adds the resulting indicators to a QRadar
-  Reference Set. The Reference Set name must be defined in the playbook inputs.
+description: This playbook queries indicators based on a pre-defined query or results from a parent playbook, and adds the resulting indicators to a QRadar Reference Set. The Reference Set name must be defined in the playbook inputs.
 starttaskid: "0"
 tasks:
   "0":
@@ -864,9 +862,8 @@ inputs:
 - key: QRadarBlackListUrlReferenceSetName
   value: {}
   required: false
-  description: The name of the QRadar block list Url reference set to insert the data
-    in to.
-  playbookInputQuery: null
+  description: The name of the QRadar block list Url reference set to insert the data in to.
+  playbookInputQuery:
 - key: ""
   value: {}
   required: false
@@ -874,7 +871,7 @@ inputs:
   playbookInputQuery:
     query: ""
     queryEntity: indicators
-    results: null
+    results:
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -882,24 +879,29 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue: null
-        fromvalue: null
+        tovalue:
+        fromvalue:
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
 - key: QRadarWhiteListUrlReferenceSetName
   value: {}
   required: false
-  description: The name of the QRadar white list Url reference set to insert the data
-    in to.
-  playbookInputQuery: null
+  description: The name of the QRadar white list Url reference set to insert the data in to.
+  playbookInputQuery:
 - key: QRadarWatchListUrlReferenceSetName
   value: {}
   required: false
-  description: The name of the QRadar watch list Url reference set to insert the data
-    in to.
-  playbookInputQuery: null
+  description: The name of the QRadar watch list Url reference set to insert the data in to.
+  playbookInputQuery:
 outputs: []
 quiet: true
 tests:
 - No test
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- xsiam

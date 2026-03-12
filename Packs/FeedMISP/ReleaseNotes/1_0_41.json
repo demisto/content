@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "MISP Feed: Whenever an indicator of type 'hostname' is fetched from the API, the integration will create an indicator of type 'domain' instead of type 'host'."
+}

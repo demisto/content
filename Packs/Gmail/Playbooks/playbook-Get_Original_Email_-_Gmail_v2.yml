@@ -46,8 +46,7 @@ tasks:
       id: 77fd3720-3d21-4ffb-8f78-e6b62e5a5eb6
       version: -1
       name: Is Gmail enabled?
-      description: Returns 'yes' if an integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if an integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -250,9 +249,7 @@ tasks:
       key:
         simple: Email
       value:
-        simple: '${Gmail={Subject: val[''Subject''], To: val[''To''], From: val[''From''],
-          Text: val[''Body''], HTML: val[''Html''], Headers: val[''Headers''], CC:
-          val[''CC''], BCC: val[''BCC'']}}'
+        simple: '${Gmail={Subject: val[''Subject''], To: val[''To''], From: val[''From''], Text: val[''Body''], HTML: val[''Html''], Headers: val[''Headers''], CC: val[''CC''], BCC: val[''BCC'']}}'
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -332,9 +329,7 @@ inputs:
 - key: MessageID
   value: {}
   required: false
-  description: The original email message ID to retrieve. Holds the value
-    of the "Message-ID" header of the original email and not Gmail's internal ID of
-    the message.
+  description: The original email message ID to retrieve. Holds the value of the "Message-ID" header of the original email and not Gmail's internal ID of the message.
   playbookInputQuery:
 - key: UserID
   value: {}
@@ -375,3 +370,10 @@ outputs:
 tests:
 - Get Original Email - Gmail v2 - test
 fromversion: 6.0.0
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- xsiam

@@ -1,0 +1,56 @@
+{
+    "feeds": [
+        {
+            "metadata": {
+                "title": "test feed",
+                "description": "test feed"
+            },
+            "iocs": [
+                {
+                    "categorization": "Blocked",
+                    "activeTimerange": {
+                        "start": "1970-01-01T00:00:00Z",
+                        "end": "9999-12-31T23:59:59Z"
+                    },
+                    "ipAndPorts": {
+                        "ipAddress": "AAAAAQ==",
+                        "ports": [
+                            80
+                        ]
+                    },
+                    "confidenceScore": "High",
+                    "rawSeverity": "High"
+                }
+            ]
+        },
+        {
+            "metadata": {
+                "title": "test feed",
+                "description": "test feed"
+            },
+            "iocs": [
+                {
+                    "domainAndPorts": {
+                        "domain": "test.com",
+                        "ports": [
+                            44902,
+                            65178
+                        ]
+                    },
+                    "categorization": "Blocked",
+                    "activeTimerange": {
+                        "end": "2025-02-18T15:35:11Z"
+                    },
+                    "ipAndPorts": {
+                        "ipAddress": "BAMCAQ==",
+                        "ports": [
+                            80
+                        ]
+                    },
+                    "confidenceScore": "70",
+                    "rawSeverity": "Low"
+                }
+            ]
+        }
+    ]
+}

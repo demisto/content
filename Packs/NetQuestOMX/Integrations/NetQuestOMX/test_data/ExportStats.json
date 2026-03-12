@@ -1,0 +1,10 @@
+{
+    "FlowsExported": 450254,
+    "NumberOfLongFlowsExported": 9366,
+    "DataRecordsExported": 951587,
+    "IpfixPacketsSent": 37013,
+    "DataRecordsDropped": 0,
+    "TotalMacExportThruputMbps": 0.01,
+    "IpfixExportTxAvgKpps": 0,
+    "FlowRateAvgFps": 30
+}

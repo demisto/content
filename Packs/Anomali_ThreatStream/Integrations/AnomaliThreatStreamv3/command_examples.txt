@@ -1,0 +1,7 @@
+!threatstream-search-intelligence limit=1 status=inactive value=1.2.4.5
+!ip ip=23.98.23.98 threat_model_association=True
+!file file=275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f threat_model_association=True
+!url url=http://www.ujhy1.com/ threat_model_association=True
+!domain domain=y.gp threat_model_association=True
+!threatstream-clone-imported-indicator indicator_id="61553027362"
+!threatstream-edit-classification import_id="12942804" data="{\"is_public\":false,\"circles\":[11111]}"

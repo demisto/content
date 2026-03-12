@@ -1,0 +1,105 @@
+{
+    "GoogleChronicleBackstory.Events(val.id == obj.id)": [
+      {
+        "eventTimestamp": "2024-11-12T12:19:59Z",
+        "eventType": "GENERIC_EVENT",
+        "vendorName": "NewClient",
+        "productName": "Private Access",
+        "productEventType": "APP_NOT_REACHABLE",
+        "description": "0",
+        "ingestedTimestamp": "2024-11-12T12:20:03.217859Z",
+        "id": "dummy_id",
+        "logType": "NEW_XYZ",
+        "baseLabels": {
+          "logTypes": [
+            "NEW_XYZ"
+          ],
+          "allowScopedAccess": true
+        },
+        "additional": {
+          "policy_processing_time": "0",
+          "idp": "0",
+          "server_setup_time": "0",
+          "connector": "0",
+          "client_to_client": "0",
+          "app_micro_tenant_id": "0",
+          "micro_tenant_id": "0",
+          "pra_capability_policy_id": "0",
+          "client_zen": "EU-DE-9490",
+          "customer": "New Demo Center",
+          "pra_credential_policy_id": "0",
+          "connector_zen": "0",
+          "pra_approval_id": "0",
+          "double_encryption": "Off",
+          "timestamp_connection_end": "2024-11-12T12:19:59.961Z",
+          "connection_id": "dummy_connection_id"
+        },
+        "principal": {
+          "user": {
+            "userDisplayName": "New LSS Client"
+          },
+          "port": 11522,
+          "location": {
+            "city": "New City",
+            "countryOrRegion": "US",
+            "regionCoordinates": {
+              "latitude": 0,
+              "longitude": 0
+            }
+          },
+          "natIp": [
+            "0.0.0.0"
+          ]
+        },
+        "target": {
+          "hostname": "0.0.0.0",
+          "user": {
+            "groupIdentifiers": [
+              "New Enterprise Server - User Status"
+            ]
+          },
+          "port": 11522,
+          "application": "New Enterprise Server - User Status"
+        },
+        "intermediary": [
+          {
+            "application": "0",
+            "resource": {
+              "attribute": {
+                "labels": [
+                  {
+                    "key": "new_total_bytes_tx_connector",
+                    "value": "0"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "securityResult": [
+          {
+            "about": {
+              "labels": [
+                {
+                  "key": "connection_status",
+                  "value": "close"
+                }
+              ]
+            },
+            "ruleName": "0",
+            "description": "None of the App Connectors configured.",
+            "detectionFields": [
+              {
+                "key": "server",
+                "value": "0"
+              }
+            ]
+          }
+        ],
+        "network": {
+          "ipProtocol": "TCP",
+          "sessionId": "dummy"
+        }
+      }
+    ]
+  }

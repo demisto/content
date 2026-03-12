@@ -1,6 +1,7 @@
-import pytest
 import copy
+
 import demistomock as demisto
+import pytest
 
 incidents_list = [
     {
@@ -48,8 +49,7 @@ incidents_list = [
         "sub_alerts": [],
         "threat_level": "imminent",
         "threats": ["Compromised Accounts"],
-        "title": "Access to your organization's Assets was Compromised and Offered for Sale on a Compromised Endpoint "
-        "Market",
+        "title": "Access to your organization's Assets was Compromised and Offered for Sale on a Compromised Endpoint Market",
         "user_id": "5d233575f8db38787dbe24b6",
     },
 ]
@@ -176,8 +176,7 @@ expected_alert_output = [
             "cybersixgillthreattype": ["Brand Protection", "Data Leak"],
             "cybersixgillassessment": "text",
             "cybersixgillrecommendations": "",
-            "incidentlink": "https://portal.cybersixgill.com"
-            "/#/?actionable_alert=6188bd21017198385e228437",
+            "incidentlink": "https://portal.cybersixgill.com/#/?actionable_alert=6188bd21017198385e228437",
             "cybersixgillstatus": "In Treatment",
             "cybersixgillsite": "rw_everest",
             "cybersixgillactor": None,
@@ -297,7 +296,6 @@ def get_content():
 
 
 def get_content_with_cve_id():
-
     content_info_item = copy.deepcopy(info_item)
     content_info_item["additional_info"]["cve_id"] = "Sample ID"
     return content_info_item
@@ -313,9 +311,9 @@ def get_content_es_id_na():
 def get_content_item_es_id_na():
     cloned_content_item = copy.deepcopy(content_item)
     cloned_content_item["content"]["items"][1]["Additional Keywords"] = "Items"
-    cloned_content_item["content"]["items"][1]['Repository name'] = "Repository name"
-    cloned_content_item["content"]["items"][1]['Customer Keywords'] = "Customer Keywords"
-    cloned_content_item["content"]["items"][1]['GitURL'] = "GitURL"
+    cloned_content_item["content"]["items"][1]["Repository name"] = "Repository name"
+    cloned_content_item["content"]["items"][1]["Customer Keywords"] = "Customer Keywords"
+    cloned_content_item["content"]["items"][1]["GitURL"] = "GitURL"
 
     return cloned_content_item["content"]
 
@@ -341,9 +339,7 @@ def test_test_module(mocker):
 
 def test_fetch_incidents(mocker):
     mocker.patch.object(demisto, "params", return_value=init_params())
-    mocker.patch.object(
-        demisto, "getLastRun", return_value={"last_fetch_time": "2021-11-07 06:01:05"}
-    )
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch_time": "2021-11-07 06:01:05"})
     mocker.patch.object(demisto, "incidents")
 
     from sixgill.sixgill_actionable_alert_client import SixgillActionableAlertClient
@@ -377,9 +373,7 @@ def test_fetch_incidents(mocker):
 
 def test_fetch_incidents_no_last_run(mocker):
     mocker.patch.object(demisto, "params", return_value=init_params())
-    mocker.patch.object(
-        demisto, "getLastRun", return_value={}
-    )
+    mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch.object(demisto, "incidents")
 
     from sixgill.sixgill_actionable_alert_client import SixgillActionableAlertClient
@@ -391,6 +385,7 @@ def test_fetch_incidents_no_last_run(mocker):
     )
 
     from CybersixgillActionableAlerts import fetch_incidents
+
     fetch_incidents()
     assert demisto.incidents.call_count == 1
     incidents = demisto.incidents.call_args[0][0]
@@ -416,7 +411,6 @@ def test_update_alert_status(mocker):
 
 
 def test_get_alert_content(mocker):
-
     from sixgill.sixgill_actionable_alert_client import SixgillActionableAlertClient
 
     mocker.patch.object(
@@ -440,7 +434,6 @@ def test_get_alert_content(mocker):
 
 
 def test_get_alert_content_es_id_na(mocker):
-
     from sixgill.sixgill_actionable_alert_client import SixgillActionableAlertClient
 
     mocker.patch.object(

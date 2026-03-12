@@ -18,9 +18,11 @@ alt_dockerimages: # used for unit testing
 - demisto/python3:3.9.1.14969
 - demisto/python3:3.9.5.21272
 - demisto/python3:3.10.10.48392
+- demisto/python3:3.11.10.115186
+- demisto/python3:3.12.7.117934
 tests:
 - TestCommonPython
 - Test-debug-mode
 - Test-CreateDBotScore-With-Reliability
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.76921
+dockerimage: demisto/python:2.7.18.6174823

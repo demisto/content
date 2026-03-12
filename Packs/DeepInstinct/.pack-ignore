@@ -2,7 +2,7 @@
 ignore=IN126,IN136
 
 [file:README.md]
-ignore=RM104
+ignore=RM104,RM102
 
 [file:DeepInstinct_image.png]
 ignore=IM111

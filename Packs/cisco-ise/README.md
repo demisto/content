@@ -1,31 +1,55 @@
-# Cisco ISE 
-This pack includes Cortex XSIAM content.
 <~XSIAM>
-## Configuration on Server Side
 
-Complete the following to configure basic log syslog collection:
+## Overview
+
+Cisco Identity Services Engine (ISE) is a next-generation NAC solution used to manage endpoint, user, and device access to network resources within a zero-trust architecture.
+
+## This pack includes
+
+Data normalization capabilities:
+
+* Rules for parsing and modeling Cisco ISE logs that are ingested via Syslog on Cortex XSIAM.
+  * The ingested Cisco ISE logs can be queried in XQL Search using the *`cisco_ise_raw`* dataset.
+
+### Supported Timestamp Formats
+
+* MMM dd hh:mm:ss
+* yyyy-MM-dd hh:mm:ss.nnn [+|-]nn:nn
+* yyyy-MM-dd hh:mm:ss.nnn [+|-]nnnn
+
+***
+
+## Data Collection
+
+### Cisco ISE side
+
+To configure basic Syslog collection, do the following:
+
 1. Go to **Administration** > **System** > **Logging** > **Remote Logging Targets**
 2. Click **Add** and then fill the required details.
-3. Click **Save**, and then verify the creation of the new target by going to the **Remote Logging Targets** page. 
+3. Click **Save**, and then verify the creation of the new target by going to the **Remote Logging Targets** page.
 
 **Note:**
 To prevent log segmentation, set the Maximum Length of the log to **8096**.
 
-More information on remote logging configuration can be found [here](https://www.cisco.com/c/en/us/td/docs/security/ise/2-7/admin_guide/b_ise_27_admin_guide/b_ISE_admin_27_maintain_monitor.html#ID58). 
+For more information on remote logging configuration, see [here](https://www.cisco.com/c/en/us/support/docs/security/identity-services-engine/222223-configure-external-syslog-server-on-ise.html).
 
-## Collect Events from Vendor
+### Cortex XSIAM side - Broker VM
 
-In order to use the collector, use the [Broker VM](#broker-vm) option.
+To create or configure the Broker VM, see [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-and-configure-Broker-VM).
 
-### Broker VM
-To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
+Do the following to configure the Broker VM to ingest Cisco ISE logs.
 
-You can configure the specific vendor and product for this instance.
+1. Navigate to **Settings** → **Configuration** → **Data Broker** → **Broker VMs**.
+2. Under the **Brokers** tab go to the **APPS** column and add the **Syslog** app for the relevant broker instance. If the **Syslog** app already exists, hover over it and click **Configure**.
+3. Click **Add New**.
+4. Set the Syslog Collector parameters:
 
+    | Parameter    | Value                                                                                                                       |
+    |:-------------|:----------------------------------------------------------------------------------------------------------------------------|
+    | `Protocol`   | Select **UDP** for the default forwarding, **TCP** or **Secure TCP** (depends on the protocol you configured in Cisco ISE). |
+    | `Port`       | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from Cisco ISE.   |
+    | `Vendor`     | Enter cisco.                                                                                                                |
+    | `Product`    | Enter ise.                                                                                                                  |
 
-1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**. 
-2. Right-click, and select **Syslog Collector** > **Configure**.
-3. When configuring the Syslog Collector, set the following values:
-   - vendor as vendor - cisco
-   - product as product - ise
 </~XSIAM>

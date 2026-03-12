@@ -1,0 +1,22 @@
+[
+    {
+        "ID": "00000000-0000-0000-0000-000000000000",
+        "Type": "subject",
+        "Value": "Test",
+        "Status": "Active",
+        "Description": "Test",
+        "Email Direction": "inbound",
+        "Remediation Action": "quarantine",
+        "Expiry Date": "2024-01-01 00:00:00.0"
+    },
+    {
+        "ID": "00000000-0000-0000-0000-000000000000",
+        "Type": "url",
+        "Value": "https://www.example.com",
+        "Status": "Active",
+        "Description": "url to block",
+        "Email Direction": "outbound",
+        "Remediation Action": "append header",
+        "Expiry Date": "2024-01-01 00:00:00.0"
+    }
+]

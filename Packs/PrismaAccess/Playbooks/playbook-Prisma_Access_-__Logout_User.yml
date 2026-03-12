@@ -128,9 +128,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-view: "{\n  \"linkLabelsPosition\": {\n    \"2_3_#default#\": 0.52\n  },\n  \"paper\"\
-  : {\n    \"dimensions\": {\n      \"height\": 705,\n      \"width\": 660,\n    \
-  \  \"x\": 450,\n      \"y\": 50\n    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {\n    \"2_3_#default#\": 0.52\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 705,\n      \"width\": 660,\n      \"x\": 450,\n      \"y\": 50\n    }\n  }\n}"
 inputs:
 - key: username
   value: {}
@@ -151,3 +149,10 @@ outputs: []
 fromversion: 5.0.0
 tests:
 - No tests
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- xsiam

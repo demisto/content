@@ -20,7 +20,7 @@
 <ol>
 <li>Go to ‘Settings &gt; Integrations &gt; Servers &amp; Services’</li>
 <li>Locate ‘ICEBRG’ by searching for it using the search box on the top of the page.</li>
-<li>Click ‘Add instance’ to create and configure a new integration. You should configure the following settings:<br><strong>Name</strong>: A textual name for the integration instance.<br><strong>Server URL for the search API</strong>: The URL appliance.<br><strong>API username</strong>: ICEBRG API token.<br><strong>Server URL for the reports API:</strong> The server used for the reports API.<br><strong>Password</strong>: ICEBRG API password.<br><strong>ICEBRG token:</strong> The token obtained in the steps above.<strong> <br></strong><strong>Fetch incidents</strong>: Select whether to automatically create Cortex XSOAR incidents from <strong>ICEBRG </strong>offenses. <br><strong>Cortex XSOAR engine</strong>: If relevant, select the engine that acts as a proxy to the server. Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Cortex XSOAR server from accessing the remote networks.<br>For more information on Cortex XSOAR engines see:<br><a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Engines">https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Engines</a>
+<li>Click ‘Add instance’ to create and configure a new integration. You should configure the following settings:<br><strong>Name</strong>: A textual name for the integration instance.<br><strong>Server URL for the search API</strong>: The URL appliance.<br><strong>API username</strong>: ICEBRG API token.<br><strong>Server URL for the reports API:</strong> The server used for the reports API.<br><strong>Password</strong>: ICEBRG API password.<br><strong>ICEBRG token:</strong> The token obtained in the steps above.<strong> <br></strong><strong>Fetch incidents</strong>: Select whether to automatically create Cortex XSOAR incidents from <strong>ICEBRG </strong>offenses. <br><strong>Cortex XSOAR engine</strong>: If relevant, select the engine that acts as a proxy to the server. Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Cortex XSOAR server from accessing the remote networks.<br>For more information on Cortex XSOAR engines see:<br><a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Engines">Cortex XSOAR 6.13 - Engines</a><br> <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Engines">Cortex XSOAR 8 Cloud- Engines</a><br> <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Engines">Cortex XSOAR 8.7 On-prem - Engines</a>
 </li>
 <li>Press the ‘Test’ button to validate connection.
 </li>
@@ -60,12 +60,12 @@
 <tr>
 <td style="width: 678.556px;">
 <pre>{
-	"total": 135359505,
-	"offset": 0,
-	"limit": 100,
-	"order_by": "timestamp",
-	"query_type": "complex",
-	"events": [ ... ]
+ "total": 135359505,
+ "offset": 0,
+ "limit": 100,
+ "order_by": "timestamp",
+ "query_type": "complex",
+ "events": [ ... ]
 }</pre>
 </td>
 </tr>
@@ -98,19 +98,19 @@
 <tr>
 <td>
 <pre>{
- 	"history": [{
-    			"total": 3393897721,
-    			"timestamp": "2017-03-30T20:56:11.556Z",
-    			"query": "port = 80",
-    			"id": "725be4f112f5b5ae9807b7130b2cea97"
-	 },
-		{
-    			"total": 211313295,
-    			"timestamp": "2017-03-30T17:44:35.748Z",
-    			"query": "google.com",
- 			"id": "655765009424c447765d06773e711dd3"
-	}],
-	"User_id": "f3259c9f-e54a-4e93-b71d-8e995a2cd96b"
+  "history": [{
+       "total": 3393897721,
+       "timestamp": "2017-03-30T20:56:11.556Z",
+       "query": "port = 80",
+       "id": "725be4f112f5b5ae9807b7130b2cea97"
+  },
+  {
+       "total": 211313295,
+       "timestamp": "2017-03-30T17:44:35.748Z",
+       "query": "google.com",
+    "id": "655765009424c447765d06773e711dd3"
+ }],
+ "User_id": "f3259c9f-e54a-4e93-b71d-8e995a2cd96b"
  }</pre>
 </td>
 </tr>
@@ -142,14 +142,14 @@
 <tr>
 <td>
 <pre>{
-	"saved_queries": [{
-   			 "tags": [],
-    			"description": "",
-    			"title": "Test",
-    			"timestamp": "2017-03-17T00:48:34.359Z",
-    			"query": "ip='127.0.0.1'",
-    			"id": "AVrZvNBGl0ZSNz2usg93"
-		}]
+ "saved_queries": [{
+       "tags": [],
+       "description": "",
+       "title": "Test",
+       "timestamp": "2017-03-17T00:48:34.359Z",
+       "query": "ip='127.0.0.1'",
+       "id": "AVrZvNBGl0ZSNz2usg93"
+  }]
 }</pre>
 </td>
 </tr>
@@ -184,27 +184,27 @@
 <td>
 <pre>{
     "reports": [{
-		 "publishes": [{
-   			     "user_uuid": "b3fc3df4-d3cf-4202-971c-0dcfe7cccf42",
-     			     "published": "2017-01-24T10:13:13.418Z"
-  		   }],
-  		 "asset_count": 1,
- 		 "indicator_count": 5,
-  		"archived": false,
-  		"details": "On 21 January, ...",
-  		"summary": "A host was infected with Cerber ransomware after opening a<br>		           malicious Word document received via email.",
-  		"category": "Ransomware",
-  		"confidence": "high",
-  		"risk": "moderate",
-  		"title": "Cerber Malware Infection",
-  		"status": "published",
-  		"account_uuid": "6bc3d2f1-af77-4236-a9db-17dacd06e4d9",
-  		"updated_user_uuid": "b3fc3df4-d3cf-4202-971c-0dcfe7cccf42",
-  		"created_user_uuid": "b3fc3df4-d3cf-4202-971c-0dcfe7cccf42",
-  		"updated": "2017-01-24T10:12:32.534Z",
-  		"created": "2017-01-24T07:25:36.363Z",
-  		"uuid": "2d35734f-5b16-41ff-a482-b08a7c74202a"
-	}],
+   "publishes": [{
+           "user_uuid": "b3fc3df4-d3cf-4202-971c-0dcfe7cccf42",
+             "published": "2017-01-24T10:13:13.418Z"
+       }],
+     "asset_count": 1,
+    "indicator_count": 5,
+    "archived": false,
+    "details": "On 21 January, ...",
+    "summary": "A host was infected with Cerber ransomware after opening a<br>             malicious Word document received via email.",
+    "category": "Ransomware",
+    "confidence": "high",
+    "risk": "moderate",
+    "title": "Cerber Malware Infection",
+    "status": "published",
+    "account_uuid": "6bc3d2f1-af77-4236-a9db-17dacd06e4d9",
+    "updated_user_uuid": "b3fc3df4-d3cf-4202-971c-0dcfe7cccf42",
+    "created_user_uuid": "b3fc3df4-d3cf-4202-971c-0dcfe7cccf42",
+    "updated": "2017-01-24T10:12:32.534Z",
+    "created": "2017-01-24T07:25:36.363Z",
+    "uuid": "2d35734f-5b16-41ff-a482-b08a7c74202a"
+ }],
 }</pre>
 </td>
 </tr>
@@ -237,9 +237,9 @@
 <tr>
 <td>
 <pre>{
-	"assets": [{
-    			"asset" : "10.248.100.74"
-		}]
+ "assets": [{
+       "asset" : "10.248.100.74"
+  }]
 }</pre>
 </td>
 </tr>

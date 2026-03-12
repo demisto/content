@@ -15,123 +15,124 @@ GET_USERNAME_BY_ID_RAW_RESPONSE = {
 }
 
 SECRET_GET_RAW_RESPONSE = {
-    'id': 4,
-    'name': 'g1-machine',
-    'secretTemplateId': 6007,
-    'folderId': -1,
-    'active': True,
-    'items': [
+    "id": 4,
+    "name": "g1-machine",
+    "secretTemplateId": 6007,
+    "folderId": -1,
+    "active": True,
+    "items": [
         {
-            'itemId': 13,
-            'fileAttachmentId': None,
-            'filename': None,
-            'itemValue': '192.168.100.1',
-            'fieldId': 108,
-            'fieldName': 'Machine',
-            'slug': 'machine',
-            'fieldDescription': 'The Server or Location of the Unix Machine.',
-            'isFile': False,
-            'isNotes': False,
-            'isPassword': False
+            "itemId": 13,
+            "fileAttachmentId": None,
+            "filename": None,
+            "itemValue": "192.168.100.1",
+            "fieldId": 108,
+            "fieldName": "Machine",
+            "slug": "machine",
+            "fieldDescription": "The Server or Location of the Unix Machine.",
+            "isFile": False,
+            "isNotes": False,
+            "isPassword": False
         },
         {
-            'itemId': 14,
-            'fileAttachmentId': None,
-            'filename': None,
-            'itemValue': 'andy',
-            'fieldId': 111,
-            'fieldName': 'Username',
-            'slug': 'username',
-            'fieldDescription': 'The Unix Machine Username.',
-            'isFile': False,
-            'isNotes': False,
-            'isPassword': False
+            "itemId": 14,
+            "fileAttachmentId": None,
+            "filename": None,
+            "itemValue": "andy",
+            "fieldId": 111,
+            "fieldName": "Username",
+            "slug": "username",
+            "fieldDescription": "The Unix Machine Username.",
+            "isFile": False,
+            "isNotes": False,
+            "isPassword": False
         },
         {
-            'itemId': 15,
-            'fileAttachmentId': None,
-            'filename': None,
-            'itemValue': 'test00111',
-            'fieldId': 110,
-            'fieldName': 'Password',
-            'slug': 'password',
-            'fieldDescription': 'The password of the Unix Machine.',
-            'isFile': False,
-            'isNotes': False,
-            'isPassword': True
+            "itemId": 15,
+            "fileAttachmentId": None,
+            "filename": None,
+            "itemValue": "test00111",
+            "fieldId": 110,
+            "fieldName": "Password",
+            "slug": "password",
+            "fieldDescription": "The password of the Unix Machine.",
+            "isFile": False,
+            "isNotes": False,
+            "isPassword": True
         },
         {
-            'itemId': 16,
-            'fileAttachmentId': None,
-            'filename': None,
-            'itemValue': '',
-            'fieldId': 109,
-            'fieldName': 'Notes',
-            'slug': 'notes',
-            'fieldDescription': 'Any additional notes.',
-            'isFile': False,
-            'isNotes': True,
-            'isPassword': False
+            "itemId": 16,
+            "fileAttachmentId": None,
+            "filename": None,
+            "itemValue": "",
+            "fieldId": 109,
+            "fieldName": "Notes",
+            "slug": "notes",
+            "fieldDescription": "Any additional notes.",
+            "isFile": False,
+            "isNotes": True,
+            "isPassword": False
         },
         {
-            'itemId': 17,
-            'fileAttachmentId': None,
-            'filename': None,
-            'itemValue': '*** Not Valid For Display ***',
-            'fieldId': 189,
-            'fieldName': 'Private Key',
-            'slug': 'private-key',
-            'fieldDescription': 'The SSH private key.',
-            'isFile': True, 'isNotes': False,
-            'isPassword': False
+            "itemId": 17,
+            "fileAttachmentId": None,
+            "filename": None,
+            "itemValue": "*** Not Valid For Display ***",
+            "fieldId": 189,
+            "fieldName": "Private Key",
+            "slug": "private-key",
+            "fieldDescription": "The SSH private key.",
+            "isFile": True,
+            "isNotes": False,
+            "isPassword": False
         },
         {
-            'itemId': 18,
-            'fileAttachmentId': None,
-            'filename': None,
-            'itemValue': '',
-            'fieldId': 190,
-            'fieldName': 'Private Key Passphrase',
-            'slug': 'private-key-passphrase',
-            'fieldDescription': 'The passphrase for decrypting the SSH private key.',
-            'isFile': False,
-            'isNotes': False,
-            'isPassword': True
+            "itemId": 18,
+            "fileAttachmentId": None,
+            "filename": None,
+            "itemValue": "",
+            "fieldId": 190,
+            "fieldName": "Private Key Passphrase",
+            "slug": "private-key-passphrase",
+            "fieldDescription": "The passphrase for decrypting the SSH private key.",
+            "isFile": False,
+            "isNotes": False,
+            "isPassword": True
         }
     ],
-    'launcherConnectAsSecretId': -1,
-    'checkOutMinutesRemaining': 0,
-    'checkedOut': False,
-    'checkOutUserDisplayName': '',
-    'checkOutUserId': -1,
-    'isRestricted': False,
-    'isOutOfSync': False,
-    'outOfSyncReason': '',
-    'autoChangeEnabled': False,
-    'autoChangeNextPassword': 'Test000',
-    'requiresApprovalForAccess': False,
-    'requiresComment': False,
-    'checkOutEnabled': False,
-    'checkOutIntervalMinutes': -1,
-    'checkOutChangePasswordEnabled': False,
-    'accessRequestWorkflowMapId': -1,
-    'proxyEnabled': False,
-    'sessionRecordingEnabled': False,
-    'restrictSshCommands': False,
-    'allowOwnersUnrestrictedSshCommands': False,
-    'isDoubleLock': False,
-    'doubleLockId': -1,
-    'enableInheritPermissions': False,
-    'passwordTypeWebScriptId': -1,
-    'siteId': 1,
-    'enableInheritSecretPolicy': False,
-    'secretPolicyId': -1,
-    'lastHeartBeatStatus': 'Success',
-    'lastHeartBeatCheck': '2020-11-03T16:20:34.917',
-    'failedPasswordChangeAttempts': 160,
-    'lastPasswordChangeAttempt': '2020-11-10T10:32:59.217',
-    'secretTemplateName': 'Unix Account (SSH)',
-    'responseCodes': []
+    "launcherConnectAsSecretId": -1,
+    "checkOutMinutesRemaining": 0,
+    "checkedOut": False,
+    "checkOutUserDisplayName": "",
+    "checkOutUserId": -1,
+    "isRestricted": False,
+    "isOutOfSync": False,
+    "outOfSyncReason": "",
+    "autoChangeEnabled": False,
+    "autoChangeNextPassword": "Test000",
+    "requiresApprovalForAccess": False,
+    "requiresComment": False,
+    "checkOutEnabled": False,
+    "checkOutIntervalMinutes": -1,
+    "checkOutChangePasswordEnabled": False,
+    "accessRequestWorkflowMapId": -1,
+    "proxyEnabled": False,
+    "sessionRecordingEnabled": False,
+    "restrictSshCommands": False,
+    "allowOwnersUnrestrictedSshCommands": False,
+    "isDoubleLock": False,
+    "doubleLockId": -1,
+    "enableInheritPermissions": False,
+    "passwordTypeWebScriptId": -1,
+    "siteId": 1,
+    "enableInheritSecretPolicy": False,
+    "secretPolicyId": -1,
+    "lastHeartBeatStatus": "Success",
+    "lastHeartBeatCheck": "2020-11-03T16:20:34.917",
+    "failedPasswordChangeAttempts": 160,
+    "lastPasswordChangeAttempt": "2020-11-10T10:32:59.217",
+    "secretTemplateName": "Unix Account (SSH)",
+    "responseCodes": []
 }
 
 SECRET_PASSWORD_UPDATE_RAW_RESPONSE = {
@@ -212,7 +213,7 @@ FOLDER_UPDATE_RAW_RESPONSE = {
     "secretTemplates": "null"
 }
 
-USER_DELETE_RAW_RESPONSE = {
+SECRET_SERVER_USER_DELETE_RAW_RESPONSE = {
     "id": 5,
     "objectType": "User",
     "responseCodes": []
@@ -274,7 +275,7 @@ SECRET_CREATE_RAW_RESPONSE = {
     "siteId": 1
 }
 
-USER_CREATE_RAW_RESPONSE = {
+SECRET_SERVER_USER_CREATE_RAW_RESPONSE = {
     "adAccountExpires": "0001-01-01T00:00:00",
     "adGuid": "null",
     "created": "2022-06-01T08:31:15.275Z",
@@ -314,7 +315,7 @@ USER_CREATE_RAW_RESPONSE = {
     "verifyEmailSentDate": "0001-01-01T00:00:00"
 }
 
-USER_UPDATE_RAW_RESPONSE = {
+SECRET_SERVER_USER_UPDATE_RAW_RESPONSE = {
     "unixAuthenticationMethod": "Password",
     "enabled": "true",
     "passwordLastChanged": "0001-01-01T00:00:00",
@@ -384,128 +385,128 @@ SECRET_RPC_CHANGE_PASSWORD_RAW_RESPONSE = {
 }
 
 SECRET_GET_CREDENTIALS_RAW_RESPONSE = {
-    'id': 4,
-    'name': 'g1-machine',
-    'secretTemplateId': 6007,
-    'folderId': -1,
-    'active': True,
-    'items': [
-            {
-                'itemId': 14,
-                'fileAttachmentId': None,
-                'filename': None,
-                'itemValue': 'user',
-                'fieldId': 111,
-                'fieldName': 'Username',
-                'slug': 'username',
-                'fieldDescription': 'The Unix Machine Username.',
-                'isFile': False,
-                'isNotes': False,
-                'isPassword': False
-            },
+    "id": 4,
+    "name": "g1-machine",
+    "secretTemplateId": 6007,
+    "folderId": -1,
+    "active": True,
+    "items": [
         {
-                'itemId': 15,
-                'fileAttachmentId': None,
-                'filename': None,
-                'itemValue': 'password',
-                'fieldId': 110,
-                'fieldName': 'Password',
-                'slug': 'password',
-                'fieldDescription': 'The password of the Unix Machine.',
-                'isFile': False,
-                'isNotes': False,
-                'isPassword': True
-            }
+            "itemId": 14,
+            "fileAttachmentId": None,
+            "filename": None,
+            "itemValue": "user",
+            "fieldId": 111,
+            "fieldName": "Username",
+            "slug": "username",
+            "fieldDescription": "The Unix Machine Username.",
+            "isFile": False,
+            "isNotes": False,
+            "isPassword": False
+        },
+        {
+            "itemId": 15,
+            "fileAttachmentId": None,
+            "filename": None,
+            "itemValue": "password",
+            "fieldId": 110,
+            "fieldName": "Password",
+            "slug": "password",
+            "fieldDescription": "The password of the Unix Machine.",
+            "isFile": False,
+            "isNotes": False,
+            "isPassword": True
+        }
     ],
-    'launcherConnectAsSecretId': -1,
-    'checkOutMinutesRemaining': 0,
-    'checkedOut': False,
-    'checkOutUserDisplayName': '',
-    'checkOutUserId': -1,
-    'isRestricted': False,
-    'isOutOfSync': False,
-    'outOfSyncReason': '',
-    'autoChangeEnabled': False,
-    'autoChangeNextPassword': 'Test000',
-    'requiresApprovalForAccess': False,
-    'requiresComment': False,
-    'checkOutEnabled': False,
-    'checkOutIntervalMinutes': -1,
-    'checkOutChangePasswordEnabled': False,
-    'accessRequestWorkflowMapId': -1,
-    'proxyEnabled': False,
-    'sessionRecordingEnabled': False,
-    'restrictSshCommands': False,
-    'allowOwnersUnrestrictedSshCommands': False,
-    'isDoubleLock': False,
-    'doubleLockId': -1,
-    'enableInheritPermissions': False,
-    'passwordTypeWebScriptId': -1,
-    'siteId': 1,
-    'enableInheritSecretPolicy': False,
-    'secretPolicyId': -1,
-    'lastHeartBeatStatus': 'Success',
-    'lastHeartBeatCheck': '2020-11-03T16:20:34.917',
-    'failedPasswordChangeAttempts': 160,
-    'lastPasswordChangeAttempt': '2020-11-10T10:32:59.217',
-    'secretTemplateName': 'Unix Account (SSH)',
-    'responseCodes': []
+    "launcherConnectAsSecretId": -1,
+    "checkOutMinutesRemaining": 0,
+    "checkedOut": False,
+    "checkOutUserDisplayName": "",
+    "checkOutUserId": -1,
+    "isRestricted": False,
+    "isOutOfSync": False,
+    "outOfSyncReason": "",
+    "autoChangeEnabled": False,
+    "autoChangeNextPassword": "Test000",
+    "requiresApprovalForAccess": False,
+    "requiresComment": False,
+    "checkOutEnabled": False,
+    "checkOutIntervalMinutes": -1,
+    "checkOutChangePasswordEnabled": False,
+    "accessRequestWorkflowMapId": -1,
+    "proxyEnabled": False,
+    "sessionRecordingEnabled": False,
+    "restrictSshCommands": False,
+    "allowOwnersUnrestrictedSshCommands": False,
+    "isDoubleLock": False,
+    "doubleLockId": -1,
+    "enableInheritPermissions": False,
+    "passwordTypeWebScriptId": -1,
+    "siteId": 1,
+    "enableInheritSecretPolicy": False,
+    "secretPolicyId": -1,
+    "lastHeartBeatStatus": "Success",
+    "lastHeartBeatCheck": "2020-11-03T16:20:34.917",
+    "failedPasswordChangeAttempts": 160,
+    "lastPasswordChangeAttempt": "2020-11-10T10:32:59.217",
+    "secretTemplateName": "Unix Account (SSH)",
+    "responseCodes": []
 }
 
 SECRET_SEARCH_NAME_RAW_RESPONSE = {
-    'filter': {
-        'searchText': 'Sayali',
-        'searchField': None,
-        'searchFieldSlug': None,
-        'includeInactive': False,
-        'includeActive': None,
-        'includeRestricted': False,
-        'secretTemplateId': None,
-        'folderId': None,
-        'includeSubFolders': False,
-        'heartbeatStatus': None,
-        'siteId': None,
-        'scope': None,
-        'recentMinDateTime': None,
-        'recentMaxDateTime': None,
-        'onlySharedWithMe': None,
-        'extendedFields': None,
-        'permissionRequired': None,
-        'extendedTypeId': None,
-        'passwordTypeIds': None,
-        'onlyRPCEnabled': None,
-        'doubleLockId': None,
-        'isExactMatch': None,
-        'allowDoubleLocks': None,
-        'doNotCalculateTotal': None
+    "filter": {
+        "searchText": "Sayali",
+        "searchField": None,
+        "searchFieldSlug": None,
+        "includeInactive": False,
+        "includeActive": None,
+        "includeRestricted": False,
+        "secretTemplateId": None,
+        "folderId": None,
+        "includeSubFolders": False,
+        "heartbeatStatus": None,
+        "siteId": None,
+        "scope": None,
+        "recentMinDateTime": None,
+        "recentMaxDateTime": None,
+        "onlySharedWithMe": None,
+        "extendedFields": None,
+        "permissionRequired": None,
+        "extendedTypeId": None,
+        "passwordTypeIds": None,
+        "onlyRPCEnabled": None,
+        "doubleLockId": None,
+        "isExactMatch": None,
+        "allowDoubleLocks": None,
+        "doNotCalculateTotal": None
     },
-    'skip': 0,
-    'take': 10,
-    'total': 3,
-    'pageCount': 1,
-    'currentPage': 1,
-    'batchCount': 1,
-    'prevSkip': 0,
-    'nextSkip': 10,
-    'hasPrev': False,
-    'hasNext': False,
-    'records': [
+    "skip": 0,
+    "take": 10,
+    "total": 3,
+    "pageCount": 1,
+    "currentPage": 1,
+    "batchCount": 1,
+    "prevSkip": 0,
+    "nextSkip": 10,
+    "hasPrev": False,
+    "hasNext": False,
+    "records": [
         {
-            'id': 3564,
-            'value': '-1 - 6001 - alpha.thycotic.com\\ALMHitendra_sayali'
+            "id": 3564,
+            "value": "-1 - 6001 - alpha.thycotic.com\\ALMHitendra_sayali"
         },
         {
-            'id': 3566,
-            'value': '-1 - 6001 - alpha.thycotic.com\\ALMHitendra_sayali2'
+            "id": 3566,
+            "value": "-1 - 6001 - alpha.thycotic.com\\ALMHitendra_sayali2"
         },
         {
-            'id': 4241,
-            'value': '241 - 9 - xsoartest1'
+            "id": 4241,
+            "value": "241 - 9 - xsoartest1"
         }
     ],
-    'sortBy': [],
-    'success': True,
-    'severity': 'None'
+    "sortBy": [],
+    "success": True,
+    "severity": "None"
 }
 
 SECRET_SEARCH_RAW_RESPONSE = {
@@ -611,7 +612,6 @@ SECRET_SEARCH_RAW_RESPONSE = {
     "severity": "None"
 }
 
-
 FOLDER_SEARCH_RAW_RESPONSE = {
     "filter": {
         "searchText": "admin",
@@ -642,8 +642,7 @@ FOLDER_SEARCH_RAW_RESPONSE = {
     "severity": "None"
 }
 
-
-USER_SEARCH_RAW_RESPONSE = {
+SECRET_SERVER_USER_SEARCH_RAW_RESPONSE = {
     "filter": {
         "searchText": None,
         "includeInactive": False,
@@ -696,4 +695,115 @@ USER_SEARCH_RAW_RESPONSE = {
     "success": True,
     "severity": "None"
 
+}
+
+PLATFORM_USER_DELETE_RAW_RESPONSE = {
+    "id": 5,
+    "objectType": "User",
+    "responseCodes": []
+}
+
+PLATFORM_USER_CREATE_RAW_RESPONSE = {
+    "MobileNumber": "null",
+    "AccountExp": "null",
+    "Disabled": False,
+    "SendEmailInvite": True,
+    "Name": "Name",
+    "DisplayName": "XSOAR",
+    "PasswordNeverExpire": False,
+    "Mail": "example@example.com",
+    "CmaRedirectedUserUuid": "null",
+    "Password": "password",
+    "Groups": "Admins,Developers,Auditors",
+    "OfficeNumber": "null",
+    "ForcePasswordChangeNext": True,
+    "ReportsTo": "null",
+    "ServiceUser": False,
+    "Description": "Automation-created test user",
+    "HomeNumber": "null"
+}
+
+PLATFORM_USER_UPDATE_RAW_RESPONSE = {
+    "MobileNumber": "null",
+    "AccountExp": "null",
+    "Disabled": False,
+    "SendEmailInvite": True,
+    "Name": "Name",
+    "DisplayName": "XSOAR",
+    "PasswordNeverExpire": False,
+    "Mail": "example@example.com",
+    "CmaRedirectedUserUuid": "null",
+    "Password": "password",
+    "Groups": "Admins,Developers,Auditors",
+    "OfficeNumber": "null",
+    "ForcePasswordChangeNext": True,
+    "ReportsTo": "null",
+    "ServiceUser": False,
+    "Description": "Automation-created test user",
+    "HomeNumber": "null"
+}
+
+PLATFORM_USER_GET_RAW_RESPONSE = {
+    "userUuidOrUpn": "10",
+    "name": "Automation User",
+    "displayName": "Automation User",
+    "mail": "user@example.com",
+    "description": "Test user returned from mocked API",
+    "disabled": False,
+    "serviceUser": False,
+    "mobileNumber": "null",
+    "officeNumber": "null",
+    "homeNumber": "null",
+    "groups": "null",
+    "reportsTo": "null"
+}
+
+PLATFORM_GET_ALL_USERS_RAW_RESPONSE = {
+    "_embedded": {
+        "users": [
+            {
+                "uuid": "user-111",
+                "name": "John Doe",
+                "displayName": "John Doe",
+                "mail": "john@example.com",
+                "description": "Test user 1",
+                "disabled": False,
+                "serviceUser": False
+            },
+            {
+                "uuid": "user-222",
+                "name": "Jane Smith",
+                "displayName": "Jane Smith",
+                "mail": "jane@example.com",
+                "description": "Test user 2",
+                "disabled": False,
+                "serviceUser": False
+            }
+        ]
+    }
+}
+
+PLATFORM_USER_SEARCH_TEXT_RAW_RESPONSE = {
+    "_embedded": {
+        "users": [
+            {
+                "uuid": "user-111",
+                "name": "John Doe",
+                "displayName": "John Doe",
+                "mail": "john@example.com",
+                "description": "Matched by search text",
+                "disabled": False,
+                "serviceUser": False
+            },
+            {
+                "uuid": "user-222",
+                "name": "Jane Smith",
+                "displayName": "Jane Smith",
+                "mail": "jane@example.com",
+                "description": "Test user 2",
+                "disabled": False,
+                "serviceUser": False
+            }
+        ]
+    }
 }

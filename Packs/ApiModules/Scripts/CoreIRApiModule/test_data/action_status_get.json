@@ -2,7 +2,21 @@
   "reply": {
     	"data": {
             "aeec6a2cc92e46fab3b6f621722e9916": "COMPLETED_SUCCESSFULLY",
-            "23a86310665d413a958926fce5b794b3": "FAILED"
+            "23a86310665d413a958926fce5b794b3": "FAILED",
+            "5a763600a3e44928a94ba84b6088380f": "FAILED"
+        },
+        "errorReasons": {
+            "5a763600a3e44928a94ba84b6088380f": {
+                "errorData": "{\"reportIds\":[\"0ca3c1ace7694fcd8b44b735e5ba6c04\"],\"errorText\":\"\"}",
+                "terminated_by": "instance_id",
+                "errorDescription": "Element not found.\r\n",
+                "terminate_result": [
+                    {
+                        "path": null,
+                        "status": 1
+                    }
+                ]
             }
-       }
+        }
+    }
 }

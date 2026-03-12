@@ -1,0 +1,15 @@
+{
+    "Hostname":"dev-1",
+    "BiosSerial":"DEE97-B2B58-7D1B3-F5759",
+    "Relations":[],
+    "AgentVersions":[],
+    "LastSeenAdapter":"sccm",
+    "PrivateIps":[],
+    "FetchTime":"2024-12-12T17:13:49.256564",
+    "DeviceManufacturer":"VMware, Inc.",
+    "DeviceManufacturerSerial":null,
+    "Domain":"octoxlabs.com",
+    "MacAddresses":[
+        "ae:21:29:e2:7d:82"
+    ]
+}

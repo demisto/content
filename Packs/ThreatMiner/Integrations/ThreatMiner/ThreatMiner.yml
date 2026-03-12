@@ -4,17 +4,23 @@ commonfields:
 name: ThreatMiner
 display: ThreatMiner
 category: Data Enrichment & Threat Intelligence
-description: Data Mining for Threat Intelligence
+provider: ThreatConnect
+description: Data Mining for Threat Intelligence.
+sectionorder:
+  - Connect
+  - Collect
 configuration:
 - display: Maximum results per query, enter 'all' to get unlimited results
   name: limit_results
   defaultvalue: "30"
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
   name: integrationReliability
+  section: Collect
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -29,15 +35,18 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: ThreatMiner API URL
   name: threatminer_url
   defaultvalue: https://api.threatminer.org/v2/
   type: 0
   required: true
+  section: Connect
 script:
   script: ''
   type: python
@@ -88,7 +97,7 @@ script:
       description: Related samples' MD5 hash.
       type: string
     - contextPath: Domain.Name
-      description: Searched domain name
+      description: Searched domain name.
       type: string
     - contextPath: ThreatMiner.Domain.Whois.Domain
       description: Domain name that was searched.
@@ -105,10 +114,10 @@ script:
       description: Expiration date.
       type: date
     - contextPath: Domain.Whois.Registrant.Name
-      description: Name of the registrant
+      description: Name of the registrant.
       type: string
     - contextPath: Domain.Whois.Registrant.Email
-      description: Email of the registrant
+      description: Email of the registrant.
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -199,11 +208,11 @@ script:
     arguments:
     - name: file
       required: true
-      description: File hash (md5, sha1, sha256)
+      description: File hash (md5, sha1, sha256).
       default: true
       isArray: true
     - name: threshold
-      description: If ThreatScore is greater or equal than the threshold, then file will be considered malicious
+      description: If ThreatScore is greater or equal than the threshold, then file will be considered malicious.
       defaultValue: "10"
     outputs:
     - contextPath: ThreatMiner.File.MD5
@@ -292,7 +301,7 @@ script:
       type: string
     description: Retrieves data from ThreatMiner about a specified file.
   runonce: false
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.12.12.7090913
 tests:
 - ThreatMiner-Test
 fromversion: 5.0.0

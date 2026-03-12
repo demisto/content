@@ -42,28 +42,7 @@ tasks:
       id: ea482bb2-97ea-417d-815b-3d4cff43e48a
       version: -1
       name: Review the Active Directory AdminSDHolder permissions
-      description: "Review the AdminSDHolder permissions to make sure there are no unwanted users/groups. - \n\n1. AdminSDHolder is a container that exists\
-        \ in every Active Directory domain for a particular purpose. \nThe Access\
-        \ Control List (ACL) of the AdminSDHolder object is used as a template to\
-        \ copy permissions to all “protected groups” in Active Directory and their\
-        \ members. \nProtected groups include privileged groups such as Domain Admins,\
-        \ Administrators, Enterprise Admins, and Schema Admins. \nThis includes other\
-        \ groups that give login rights to domain controllers, which can be enough\
-        \ access to perpetrate attacks and to compromise the domain.\n\n\n2. Active Directory\
-        \ will take the ACL of the AdminSDHolder object and apply it to all protected\
-        \ users and groups periodically to make sure the access to these objects is\
-        \ secure. This works, in theory, because the default ACL for AdminSDHolder\
-        \ is very restrictive. \nHowever, if an attacker can manipulate the ACL for\
-        \ AdminSDHolder, those permissions will automatically be applied to all protected\
-        \ objects. \nThis will give an attacker a way to create persistent access\
-        \ to privileged accounts within the domain.\n\n\n3. The AdminSDHolder permissions\
-        \ are pushed down to all protected objects by the SDProp process. By default,\
-        \ this happens every 60 minutes, but this interval can be changed by modifying\
-        \ a registry key value. \nThis means that if an administrator sees an inappropriate\
-        \ permission on a protected object and removes it, within an hour, those permissions\
-        \ will be restored by SDProp.\n\n\n4. More information about AdminSDHolder:\
-        \ -\nhttps://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee361593(v=msdn.10)?redirectedfrom=MSDN#id0250006\n\
-        \n\n5. Review the permissions for the AdminSDHolder container for unwanted users/groups by selecting the container > Properties > Security > Advanced.\n"
+      description: "Review the AdminSDHolder permissions to make sure there are no unwanted users/groups. - \n\n1. AdminSDHolder is a container that exists in every Active Directory domain for a particular purpose. \nThe Access Control List (ACL) of the AdminSDHolder object is used as a template to copy permissions to all “protected groups” in Active Directory and their members. \nProtected groups include privileged groups such as Domain Admins, Administrators, Enterprise Admins, and Schema Admins. \nThis includes other groups that give login rights to domain controllers, which can be enough access to perpetrate attacks and to compromise the domain.\n\n\n2. Active Directory will take the ACL of the AdminSDHolder object and apply it to all protected users and groups periodically to make sure the access to these objects is secure. This works, in theory, because the default ACL for AdminSDHolder is very restrictive. \nHowever, if an attacker can manipulate the ACL for AdminSDHolder, those permissions will automatically be applied to all protected objects. \nThis will give an attacker a way to create persistent access to privileged accounts within the domain.\n\n\n3. The AdminSDHolder permissions are pushed down to all protected objects by the SDProp process. By default, this happens every 60 minutes, but this interval can be changed by modifying a registry key value. \nThis means that if an administrator sees an inappropriate permission on a protected object and removes it, within an hour, those permissions will be restored by SDProp.\n\n\n4. More information about AdminSDHolder: -\nhttps://docs.microsoft.com/en-us/previous-versions/technet-magazine/ee361593(v=msdn.10)?redirectedfrom=MSDN#id0250006\n\n\n5. Review the permissions for the AdminSDHolder container for unwanted users/groups by selecting the container > Properties > Security > Advanced.\n"
       type: regular
       iscommand: false
       brand: ""
@@ -91,22 +70,7 @@ tasks:
       id: 63dc8892-db0a-46d4-8dc6-1517a4033576
       version: -1
       name: Run the Active Directory ACL Scanner
-      description: "Identify compromised accounts. \nAttackers will aim for a high\
-        \ privileged domain account that will enable them to spread and deliver the\
-        \ malicious payload to as many endpoints/servers as possible. \n\nTo simplify\
-        \ the work of creating and documenting the delegation model in Active Directory,\
-        \ a tool with a GUI in PowerShell is provided below.\nThis tool creates reports of the\
-        \ access control list for all of your Active Directory objects. With these\
-        \ reports, you can see what/where, and when permissions have been set.\n\n\
-        To run the script, the minimum requirements are: PowerShell 2.0 and Windows 7/Windows\
-        \ Server 2008 (Windows Server 2003 can be used, but it will have limited functionality).\n\nEnable\
-        \ unsigned scripting in PowerShell by using the command:\nSet-ExecutionPolicy Unrestricted.\n\nIf you are not\
-        \ a local admin and cannot set it on your machine, you can set it for your\
-        \ profile:\nSet-ExecutionPolicy Unrestricted - Scope CurrentUser.\nYou do not\
-        \ need Powershell Module for Active Directory.\n\nMicrosoft article about\
-        \ Active Directory forensics with ACL Scanner:\nhttps://docs.microsoft.com/en-us/archive/blogs/pfesweplat/forensics-active-directory-acl-investigation\n\
-        \nMicrosoft article about AD ACL scanner tool:\nhttps://docs.microsoft.com/en-us/archive/blogs/pfesweplat/take-control-over-ad-permissions-and-the-ad-acl-scanner-tool\n\
-        \nAD ACL Scanner Github project:\nhttps://github.com/canix1/ADACLScanner\n"
+      description: "Identify compromised accounts. \nAttackers will aim for a high privileged domain account that will enable them to spread and deliver the malicious payload to as many endpoints/servers as possible. \n\nTo simplify the work of creating and documenting the delegation model in Active Directory, a tool with a GUI in PowerShell is provided below.\nThis tool creates reports of the access control list for all of your Active Directory objects. With these reports, you can see what/where, and when permissions have been set.\n\nTo run the script, the minimum requirements are: PowerShell 2.0 and Windows 7/Windows Server 2008 (Windows Server 2003 can be used, but it will have limited functionality).\n\nEnable unsigned scripting in PowerShell by using the command:\nSet-ExecutionPolicy Unrestricted.\n\nIf you are not a local admin and cannot set it on your machine, you can set it for your profile:\nSet-ExecutionPolicy Unrestricted - Scope CurrentUser.\nYou do not need Powershell Module for Active Directory.\n\nMicrosoft article about Active Directory forensics with ACL Scanner:\nhttps://docs.microsoft.com/en-us/archive/blogs/pfesweplat/forensics-active-directory-acl-investigation\n\nMicrosoft article about AD ACL scanner tool:\nhttps://docs.microsoft.com/en-us/archive/blogs/pfesweplat/take-control-over-ad-permissions-and-the-ad-acl-scanner-tool\n\nAD ACL Scanner Github project:\nhttps://github.com/canix1/ADACLScanner\n"
       type: regular
       iscommand: false
       brand: ""
@@ -236,18 +200,7 @@ tasks:
       id: c6fbeaa0-7dc1-4fc0-82dd-03ca65a1a096
       version: -1
       name: Review the Active Directory event log
-      description: "Partial list of domain controller events to pay attention to: \nNote: If\
-        \ ACL Scanner returned positive results, search for more events around the\
-        \ time and date of the results.\n\n4794 DSRM account password change attempt\
-        \ - If this isn’t expected, could be malicious.\n4780 ACLs set on admin accounts\
-        \ - If this isn’t expected, could be malicious.\n4739/643 Domain Policy was\
-        \ changed - If this isn’t expected, could be malicious.\n4713/617 Kerberos\
-        \ policy was changed - If this isn’t expected, could be malicious.\n4724/628\
-        \ Attempt to reset an account’s password - Monitor for admin & sensitive account\
-        \ PW reset.\n4735/639 Security-enabled local group changed- Monitor admin/sensitive\
-        \ group membership changes.\n4737/641 Security-enabled global group changed\
-        \ -Monitor admin/sensitive group membership changes.\n4755/659 Security-enabled\
-        \ universal group changed - Monitor admin & sensitive group membership."
+      description: "Partial list of domain controller events to pay attention to: \nNote: If ACL Scanner returned positive results, search for more events around the time and date of the results.\n\n4794 DSRM account password change attempt - If this isn’t expected, could be malicious.\n4780 ACLs set on admin accounts - If this isn’t expected, could be malicious.\n4739/643 Domain Policy was changed - If this isn’t expected, could be malicious.\n4713/617 Kerberos policy was changed - If this isn’t expected, could be malicious.\n4724/628 Attempt to reset an account’s password - Monitor for admin & sensitive account PW reset.\n4735/639 Security-enabled local group changed- Monitor admin/sensitive group membership changes.\n4737/641 Security-enabled global group changed -Monitor admin/sensitive group membership changes.\n4755/659 Security-enabled universal group changed - Monitor admin & sensitive group membership."
       type: regular
       iscommand: false
       brand: ""
@@ -702,3 +655,10 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- xsiam

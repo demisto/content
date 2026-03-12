@@ -1,0 +1,4 @@
+ip ip="8.8.8.8"
+domain domain="demisto.com"
+url url="https://demisto.com"
+file file="178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1"

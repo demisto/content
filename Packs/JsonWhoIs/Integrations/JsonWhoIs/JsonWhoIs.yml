@@ -1,5 +1,6 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+provider: JsonWhois
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -60,7 +61,7 @@ script:
       description: Expiration date of the domain.
       type: Date
     - contextPath: Domain.WHOIS.Registrant.Name
-      description: Registrant name
+      description: Registrant name.
       type: String
     - contextPath: Domain.WHOIS.Registrant.Email
       description: Registrant email address.
@@ -89,7 +90,7 @@ script:
     - contextPath: Domain.WHOIS.Admin.Phone
       description: Admin phone number.
       type: String
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'
   type: python

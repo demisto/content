@@ -350,7 +350,7 @@ tasks:
       measurestomitigate: {}
       multi2: {}
       name:
-        simple: Review Indicators Manually For Whitelisting
+        simple: Review Indicators Manually For Allowlisting
       niststage: {}
       numberofports: {}
       numberofuniqueports: {}
@@ -481,7 +481,7 @@ tasks:
       travelmaplink: {}
       triggeredsecurityprofile: {}
       type:
-        simple: Review Indicators Manually For Whitelisting
+        simple: Review Indicators Manually For Allowlisting
       urlsslverification: {}
       user: {}
       useraccountcontrol: {}
@@ -680,14 +680,14 @@ inputs:
 - key: TagValueForIndicators
   value: {}
   required: false
-  description: This input specifies the tag value to apply to the indicators. An example value can be whitelist_review.
+  description: This input specifies the tag value to apply to the indicators. An example value can be allowlist_review.
     This input should be used only if The ActionToPerform input value is TagIndicators.
   playbookInputQuery: null
 - key: OpenIncidentToReviewIndicatorsManually
   value:
     simple: "No"
   required: false
-  description: This input determines if processed indicators that have the whitelist
+  description: This input determines if processed indicators that have the allowlist
     review tag are reviewed in a new incident. To create an incident, enter any value
     other than 'No'.
   playbookInputQuery: null

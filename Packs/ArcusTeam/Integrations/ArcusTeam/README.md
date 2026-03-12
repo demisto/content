@@ -1,63 +1,63 @@
 The ArcusTeam API allows the user to inspect connected devices' attack surface. By feeding device identifiers and the software it runs: DeviceTotal will return a map of the device’s attack surface. DeviceTotal was built from the ground up in order to provide complete visibility into connected devices and mitigate 3rd party risk. DeviceTotal can continuously identify & predict such that the connected device security posture is being assessed, prioritized and mitigated effectively.
 This integration was integrated and tested with version 6.11.0 of ArcusTeam
+
 ## Get Your API Key
+
 Please visit our [dedicated page](https://arcusteam.com/pa-partnership/) to obtain your API key.
 
-## Configure ArcusTeam on Cortex XSOAR
+## Configure ArcusTeam in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ArcusTeam.
-3. Click **Add instance** to create and configure a new integration instance.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://web.prod.arcusteam.com) | The FQDN/IP the integration should connect to. | True |
+| API Key |  The API Key required to authenticate to the service. | True |
+| The client ID | The client ID from ArcusTeam dashboard | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. https://web.prod.arcusteam.com) | The FQDN/IP the integration should connect to. | True |
-    | API Key |  The API Key required to authenticate to the service. | True |
-    | The client ID | The client ID from ArcusTeam dashboard | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### arcusteam-get-devices
+
 ***
  Find ArcusTeam Device
-
 
 #### Base Command
 
 `arcusteam-get-devices`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vendor | Device vendor. | Required | 
-| model | Device model. | Optional | 
-| series |  Device series. | Optional | 
-| firmware_version | Firmware version. | Optional | 
-
+| vendor | Device vendor. | Required |
+| model | Device model. | Optional |
+| series |  Device series. | Optional |
+| firmware_version | Firmware version. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ArcusTeamDevices.devices.categories | Unknown |  Device categories | 
-| ArcusTeamDevices.devices.device_key | string |  Arcus Team Device ID | 
-| ArcusTeamDevices.devices.model | string |  Device model | 
-| ArcusTeamDevices.devices.series | string |  Device series | 
-| ArcusTeamDevices.devices.vendor | string |  Device vendor | 
-| ArcusTeamDevices.devices.score | number | The similarity score | 
-| ArcusTeamDevices.devices.firmware.firmwareid | string |  Firmware ID | 
-| ArcusTeamDevices.devices.firmware.name | string |  Firmware name | 
-| ArcusTeamDevices.devices.firmware.version | string | Firmware version | 
-
+| ArcusTeamDevices.devices.categories | Unknown |  Device categories |
+| ArcusTeamDevices.devices.device_key | string |  Arcus Team Device ID |
+| ArcusTeamDevices.devices.model | string |  Device model |
+| ArcusTeamDevices.devices.series | string |  Device series |
+| ArcusTeamDevices.devices.vendor | string |  Device vendor |
+| ArcusTeamDevices.devices.score | number | The similarity score |
+| ArcusTeamDevices.devices.firmware.firmwareid | string |  Firmware ID |
+| ArcusTeamDevices.devices.firmware.name | string |  Firmware name |
+| ArcusTeamDevices.devices.firmware.version | string | Firmware version |
 
 #### Command Example
+
 ```!arcusteam-get-devices vendor="Cisco" model="Nexus 6001" series="Nexus 6000"```
 
 #### Context Example
+
 ```json
 {
     "ArcusTeamDevices": {
@@ -641,15 +641,20 @@ After you successfully execute a command, a DBot message appears in the War Room
 #### Human Readable Output
 
 >## Found 2 devices
+>
 >---
+>
 >### Device Nexus 6001 Switch
+>
 >**Model Name**: Nexus 6001 Switch
 >**Vendor**: CISCO
 >**Series**: Nexus 6000 Series Switches
 >**Categories**: SWITCH,NETWORK
 >**DeviceID**: e91e3216d1d0f6480a89acbd9536a1ca
 >**Match Score**: 76.0%
+>
 >### Firmwares
+>
 >|firmwareid|version|name|
 >|---|---|---|
 >| a2eca61d015b73f4401dad8fd93d4ac4 | 7.2(1)N1(1) | NX-OS System Software |
@@ -727,15 +732,20 @@ After you successfully execute a command, a DBot message appears in the War Room
 >| 02c3dfdb2bb77566084f0e4199701abe | 7.1(0)N1(1) | NX-OS XML Schema Definition |
 >| 8adcfea7ee4132853217aa3d7b8ee59e | 7.0(4)N1(1) | NX-OS XML Schema Definition |
 >| 6d168afb5ec0e3efde8a1e091dafaefd | 7.3(5)N1(1) | NX-OS Kick Start |
+>
 >---
+>
 >### Device Nexus 6004 Switch
+>
 >**Model Name**: Nexus 6004 Switch
 >**Vendor**: CISCO
 >**Series**: Nexus 6000 Series Switches
 >**Categories**: SWITCH,NETWORK
 >**DeviceID**: 688f206b8f4766c2eb9db9fc970c924c
 >**Match Score**: 61.0%
+>
 >### Firmwares
+>
 >|firmwareid|version|name|
 >|---|---|---|
 >| 8dd3916ab0c4d04720aeadd81fd77f78 | 7.1(1)N1(1) | NX-OS Kick Start |
@@ -773,52 +783,52 @@ After you successfully execute a command, a DBot message appears in the War Room
 >| 9e6af5b38fc11b70820e6257f2147695 | 7.0(0)N1(1) | NX-OS Kick Start |
 >| 88211351b6739a8f9aa0c0ac01162b70 | 7.3(7)N1(1a) | NX-OS Kick Start |
 
-
 ### arcusteam-get-vulnerabilities
+
 ***
  Retrieve CVEs for an ArcusTeam device
-
 
 #### Base Command
 
 `arcusteam-get-vulnerabilities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| firmware_id |  ArcusTeam Firmware ID (as returned by the arcusteam-get-devices command). | Required | 
-| device_id |  ArcusTeam Device ID (as returned by the arcusteam-get-devices command). | Required | 
-| page_size | Page size. Minimum page size is 1, maximum is 100. Default is 10. | Optional | 
-| page_number |  Page number. Default is 1. | Optional | 
-| sort_order |  Sorting order (“asc”,”desc”). Possible values are: desc, asc. Default is desc. | Optional | 
-| sort_field |  Sorting field. Possible values are: risk, cve, description, codename, cwe, exploit_published, exploit_used, modified_date. Default is risk. | Optional | 
-| return_fields |  The fields to return. Possible values are: risk, cve, description, codename, cwe, exploit_published, exploit_used, modified_date. Default is cve,risk. | Optional | 
-
+| firmware_id |  ArcusTeam Firmware ID (as returned by the arcusteam-get-devices command). | Required |
+| device_id |  ArcusTeam Device ID (as returned by the arcusteam-get-devices command). | Required |
+| page_size | Page size. Minimum page size is 1, maximum is 100. Default is 10. | Optional |
+| page_number |  Page number. Default is 1. | Optional |
+| sort_order |  Sorting order (“asc”,”desc”). Possible values are: desc, asc. Default is desc. | Optional |
+| sort_field |  Sorting field. Possible values are: risk, cve, description, codename, cwe, exploit_published, exploit_used, modified_date. Default is risk. | Optional |
+| return_fields |  The fields to return. Possible values are: risk, cve, description, codename, cwe, exploit_published, exploit_used, modified_date. Default is cve,risk. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ArcusTeamVulnerabilities.max_items | number | Number of results | 
-| ArcusTeamVulnerabilities.has_next | boolean | If there is another page | 
-| ArcusTeamVulnerabilities.results.cve | string | CVE name | 
-| ArcusTeamVulnerabilities.results.risk | number | CVE risk | 
-| ArcusTeamVulnerabilities.results.description | string | CVE description | 
-| ArcusTeamVulnerabilities.results.codename | string | CVE codename | 
-| ArcusTeamVulnerabilities.results.cwe | string | CVE cwe | 
-| ArcusTeamVulnerabilities.results.exploit_published | string | If exploit was published | 
-| ArcusTeamVulnerabilities.results.exploit_used | string | If exploit was used | 
-| ArcusTeamVulnerabilities.results.modified_date | string | If date was modified | 
-| ArcusTeamVulnerabilities.results.ownership | string | CVE ownership | 
-| ArcusTeamVulnerabilities.results.published_date | string | The date the CVE was published  | 
-| ArcusTeamVulnerabilities.results.title | string | CVE title | 
-| ArcusTeamVulnerabilities.results.url | string | CVE url | 
-
+| ArcusTeamVulnerabilities.max_items | number | Number of results |
+| ArcusTeamVulnerabilities.has_next | boolean | If there is another page |
+| ArcusTeamVulnerabilities.results.cve | string | CVE name |
+| ArcusTeamVulnerabilities.results.risk | number | CVE risk |
+| ArcusTeamVulnerabilities.results.description | string | CVE description |
+| ArcusTeamVulnerabilities.results.codename | string | CVE codename |
+| ArcusTeamVulnerabilities.results.cwe | string | CVE cwe |
+| ArcusTeamVulnerabilities.results.exploit_published | string | If exploit was published |
+| ArcusTeamVulnerabilities.results.exploit_used | string | If exploit was used |
+| ArcusTeamVulnerabilities.results.modified_date | string | If date was modified |
+| ArcusTeamVulnerabilities.results.ownership | string | CVE ownership |
+| ArcusTeamVulnerabilities.results.published_date | string | The date the CVE was published  |
+| ArcusTeamVulnerabilities.results.title | string | CVE title |
+| ArcusTeamVulnerabilities.results.url | string | CVE url |
 
 #### Command Example
+
 ```!arcusteam-get-vulnerabilities firmware_id=f5db998da08c1917bb76ea98b051bff6 device_id=e91e3216d1d0f6480a89acbd9536a1ca return_fields=risk,cve,cwe,description,exploit_published,exploit_used,modified_date```
 
 #### Context Example
+
 ```json
 {
     "ArcusTeamVulnerabilities": {
@@ -923,7 +933,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 #### Human Readable Output
 
 >## Scan results
+>
 >### Number of CVE's found: 15
+>
 >|risk|cve|cwe|description|exploit_published|exploit_used|modified_date|
 >|---|---|---|---|---|---|---|
 >| 88.0% | CVE-2021-1368 | CWE-787 | A vulnerability in the Unidirectional Link Detection (UDLD) feature of Cisco FXOS Software and Cisco NX-OS Software could allow an unauthenticated, adjacent attacker to execute arbitrary code with administrative privileges or cause a denial of service (DoS) condition on an affected device. This vulnerability is due to insufficient input validation. An attacker could exploit this vulnerability by sending crafted Cisco UDLD protocol packets to a directly connected, affected device. A successful exploit could allow the attacker to execute arbitrary code with administrative privileges or cause the Cisco UDLD process to crash and restart multiple times, causing the affected device to reload and resulting in a DoS condition. Note: The UDLD feature is disabled by default, and the conditions to exploit this vulnerability are strict. The attacker needs full control of a directly connected device. That device must be connected over a port channel that has UDLD enabled. To trigger arbitrary code execution, both the UDLD-enabled port channel and specific system conditions must exist. In the absence of either the UDLD-enabled port channel or the system conditions, attempts to exploit this vulnerability will result in a DoS condition. It is possible, but highly unlikely, that an attacker could control the necessary conditions for exploitation. The CVSS score reflects this possibility. However, given the complexity of exploitation, Cisco has assigned a Medium Security Impact Rating (SIR) to this vulnerability. |  |  | 1614799320 |
@@ -936,4 +948,3 @@ After you successfully execute a command, a DBot message appears in the War Room
 >| 75.0% | CVE-2019-1962 | CWE-20 | A vulnerability in the Cisco Fabric Services component of Cisco NX-OS Software could allow an unauthenticated, remote attacker to cause process crashes, which can result in a denial of service (DoS) condition on an affected system. The vulnerability is due to insufficient validation of TCP packets when processed by the Cisco Fabric Services over IP (CFSoIP) feature. An attacker could exploit this vulnerability by sending a malicious Cisco Fabric Services TCP packet to an affected device. A successful exploit could allow the attacker to cause process crashes, resulting in a device reload and a DoS condition. Note: There are three distribution methods that can be configured for Cisco Fabric Services. This vulnerability affects only distribution method CFSoIP, which is disabled by default. See the Details section for more information. |  |  | 1570664880 |
 >| 72.0% | CVE-2020-3454 | CWE-78 | A vulnerability in the Call Home feature of Cisco NX-OS Software could allow an authenticated, remote attacker to inject arbitrary commands that could be executed with root privileges on the underlying operating system (OS). The vulnerability is due to insufficient input validation of specific Call Home configuration parameters when the software is configured for transport method HTTP. An attacker could exploit this vulnerability by modifying parameters within the Call Home configuration on an affected device. A successful exploit could allow the attacker to execute arbitrary commands with root privileges on the underlying OS. |  |  | 1599182340 |
 >| 67.0% | CVE-2019-12662 | CWE-347 |  | false | false | 1569427200 |
-

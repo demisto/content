@@ -9,7 +9,9 @@ Enhancement automation for type indicator, to enrich the value from Cofense Tria
 | Version | 6.0.0 |
 
 ## Dependencies
+
 This script uses the following commands and scripts.
+
 * cofense-threat-indicator-list
 
 ## Inputs
@@ -19,13 +21,15 @@ This script uses the following commands and scripts.
 | threat_value | Value to look up - Supports Email, Domain, URL, Hash, Hostname, SHA1, SHA256, MD5. |
 
 ## Outputs
+
 There are no outputs for this script.
 
-
 ## Script Example
+
 ```!CofenseTriageThreatEnrichmentScript threat_value=12345a7965b72b5a02247dc580b6a75280ef8309ef58dcdc14152234d2123457```
 
 ## Context Example
+
 ```json
 {
     "Cofense": {
@@ -116,6 +120,7 @@ There are no outputs for this script.
 ## Human Readable Output
 
 >### Threat Indicator(s)
+>
 >|Threat Indicator ID|Threat Level|Threat Type|Threat Value|Threat Source|Created At|Updated At|
 >|---|---|---|---|---|---|---|
 >| 1 | Malicious | SHA256 | 12345a7965b72b5a02247dc580b6a75280ef8309ef58dcdc14152234d2123457 | Triage-UI | 2020-10-26T10:47:09.675Z | 2021-03-15T11:23:17.453Z |

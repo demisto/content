@@ -1,0 +1,18 @@
+{
+  "id": "3ca266d3-4eb6-4852-a46a-9f42545fc412",
+  "risk-type": "exposed-credential",
+  "classification": "exposed-credential-alert",
+  "state": "closed",
+  "portal-shortcode": "BBCBBK",
+  "portal-id": "BBCBBK",
+  "title": "Exposed Credential caelan.fry@domaintest.test",
+  "risk-level": "low",
+  "raised": "2020-09-24T16:30:09.943Z",
+  "updated": "2023-11-07T17:08:07.487058Z",
+  "source-updated": "2020-09-24T16:30:09.943Z",
+  "source": {
+    "alert-id": "cd712e42-9f16-4ed8-8261-c58fb4ee36a2",
+    "incident-id": null
+  },
+  "assignee": null
+}

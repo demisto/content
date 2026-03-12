@@ -1,0 +1,1132 @@
+{
+    "meta": {
+        "api_version": "v3.0",
+        "total_items": 19
+    },
+    "links": {
+        "self": "https://example.my.redcanary.co/openapi/v3/detections/106/timeline?page=1",
+        "first": "https://example.my.redcanary.co/openapi/v3/detections/106/timeline?page=1",
+        "prev": null,
+        "next": "https://example.my.redcanary.co/openapi/v3/detections/106/timeline?page=2",
+        "count": "https://example.my.redcanary.co/openapi/v3/detections/106/timeline?count_mode=true"
+    },
+    "data": [
+        {
+            "type": "activity_timelines.ActivityOccurred",
+            "attributes": {
+                "occurred_at": "2025-05-12T05:21:58.000Z",
+                "analyst_notes": [],
+                "type": "process_activity_occurred",
+                "is_indicator_of_compromise": false,
+                "process_execution": {
+                    "type": "primitive_activities.ProcessExecution",
+                    "attributes": {
+                        "operating_system_process": {
+                            "type": "primitives.OperatingSystemProcess",
+                            "attributes": {
+                                "started_at": "2025-05-12T05:21:58.000Z",
+                                "operating_system_pid": 28020,
+                                "native_id": "13383e1230254824a906f2ea3c6ab033:654438231234",
+                                "image": {
+                                    "type": "primitives.File",
+                                    "attributes": {
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
+                                        "path": "\\Device\\HarddiskVolume\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\1.2.3\\simulator\\simulator.exe",
+                                        "file_type": null,
+                                        "binary": {
+                                            "type": "primitives.Binary",
+                                            "attributes": {
+                                                "md5": "md5",
+                                                "sha256": null,
+                                                "digital_signature": {
+                                                    "type": "primitives.BinaryDigitalSignature",
+                                                    "attributes": {
+                                                        "publisher": null,
+                                                        "issuer": null,
+                                                        "subject": null,
+                                                        "product": null,
+                                                        "signing_time": null
+                                                    }
+                                                },
+                                                "file_metadata": [],
+                                                "internal_name": null
+                                            }
+                                        }
+                                    }
+                                },
+                                "command_line": {
+                                    "type": "primitives.ProcessCommandLine",
+                                    "attributes": {
+                                        "command_line": "\"C:\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\1.2.3\\simulator\\simulator.exe\"",
+                                        "command_line_decoded": "\"C:\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\1.2.3\\simulator\\simulator.exe\"",
+                                        "identified_encodings": []
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "activity_timelines.ActivityOccurred",
+            "attributes": {
+                "occurred_at": "2025-05-12T11:20:35.000Z",
+                "analyst_notes": [],
+                "type": "process_activity_occurred",
+                "is_indicator_of_compromise": false,
+                "process_execution": {
+                    "type": "primitive_activities.ProcessExecution",
+                    "attributes": {
+                        "operating_system_process": {
+                            "type": "primitives.OperatingSystemProcess",
+                            "attributes": {
+                                "started_at": "2025-05-12T11:20:35.000Z",
+                                "operating_system_pid": 32044,
+                                "native_id": "13383e1230254824a906f2ea3c6ab033:664227512345",
+                                "image": {
+                                    "type": "primitives.File",
+                                    "attributes": {
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
+                                        "path": "\\Device\\HarddiskVolume\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\1.2.3\\simulation\\random_gold.exe.exe",
+                                        "file_type": null,
+                                        "binary": {
+                                            "type": "primitives.Binary",
+                                            "attributes": {
+                                                "md5": "md5",
+                                                "sha256": null,
+                                                "digital_signature": {
+                                                    "type": "primitives.BinaryDigitalSignature",
+                                                    "attributes": {
+                                                        "publisher": null,
+                                                        "issuer": null,
+                                                        "subject": null,
+                                                        "product": null,
+                                                        "signing_time": null
+                                                    }
+                                                },
+                                                "file_metadata": [],
+                                                "internal_name": null
+                                            }
+                                        }
+                                    }
+                                },
+                                "command_line": {
+                                    "type": "primitives.ProcessCommandLine",
+                                    "attributes": {
+                                        "command_line": "\"C:\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\currentVersion\\simulation\\random_gold.exe.exe\" some_process",
+                                        "command_line_decoded": "\"C:\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\currentVersion\\simulation\\random_gold.exe.exe\" some_process",
+                                        "identified_encodings": []
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "activity_timelines.ActivityOccurred",
+            "attributes": {
+                "occurred_at": "2025-05-12T11:20:39.000Z",
+                "analyst_notes": [
+                    "Command Processor (`cmd`) is launching powershell with malicious parameters"
+                ],
+                "type": "process_activity_occurred",
+                "is_indicator_of_compromise": false,
+                "process_execution": {
+                    "type": "primitive_activities.ProcessExecution",
+                    "attributes": {
+                        "operating_system_process": {
+                            "type": "primitives.OperatingSystemProcess",
+                            "attributes": {
+                                "started_at": "2025-05-12T11:20:39.000Z",
+                                "operating_system_pid": 28128,
+                                "native_id": "13383e1230254824a906f2ea3c6ab033:664231614444",
+                                "image": {
+                                    "type": "primitives.File",
+                                    "attributes": {
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
+                                        "path": "\\Device\\HarddiskVolume3\\Windows\\System32\\cmd.exe",
+                                        "file_type": null,
+                                        "binary": {
+                                            "type": "primitives.Binary",
+                                            "attributes": {
+                                                "md5": "md5",
+                                                "sha256": null,
+                                                "digital_signature": {
+                                                    "type": "primitives.BinaryDigitalSignature",
+                                                    "attributes": {
+                                                        "publisher": null,
+                                                        "issuer": null,
+                                                        "subject": null,
+                                                        "product": null,
+                                                        "signing_time": null
+                                                    }
+                                                },
+                                                "file_metadata": [
+                                                    {
+                                                        "kind": "FileMetadata",
+                                                        "confidence": 225,
+                                                        "source_name": "microsoft_atp",
+                                                        "created_at": "2025-03-25T17:34:17.987Z",
+                                                        "updated_at": "2025-03-25T17:34:17.987Z",
+                                                        "product_name": "microsoftÂ® windowsÂ® operating system",
+                                                        "product_version": null,
+                                                        "version": null,
+                                                        "description": "windows command processor",
+                                                        "original_name": null,
+                                                        "internal_name": "cmd",
+                                                        "language_code": null,
+                                                        "icon": null
+                                                    }
+                                                ],
+                                                "internal_name": "cmd"
+                                            }
+                                        }
+                                    }
+                                },
+                                "command_line": {
+                                    "type": "primitives.ProcessCommandLine",
+                                    "attributes": {
+                                        "command_line": "C:\\WINDOWS\\system32\\cmd.exe /c \"echo some_process >NUL & C:\\WINDOWS\\System32\\WindowsPowershell\\v1.0\\powershell.exe -exec bypass -File C:\\WINDOWS\\TEMP\\temp\\some_process_1234_s\\T1480.ps1 & exit\"",
+                                        "command_line_decoded": "C:\\WINDOWS\\system32\\cmd.exe /c \"echo some_process >NUL & C:\\WINDOWS\\System32\\WindowsPowershell\\v1.0\\powershell.exe -exec bypass -File C:\\WINDOWS\\TEMP\\temp\\some_process_1234_s\\T1480.ps1 & exit\"",
+                                        "identified_encodings": []
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "activity_timelines.ActivityOccurred",
+            "attributes": {
+                "occurred_at": "2025-05-12T11:28:54.509Z",
+                "analyst_notes": [],
+                "type": "process_activity_occurred",
+                "is_indicator_of_compromise": false,
+                "process_execution": {
+                    "type": "primitive_activities.ProcessExecution",
+                    "attributes": {
+                        "operating_system_process": {
+                            "type": "primitives.OperatingSystemProcess",
+                            "attributes": {
+                                "started_at": "2025-05-12T11:28:54.509Z",
+                                "operating_system_pid": 28112,
+                                "native_id": "13383e1230254824a906f2ea3c6ab033:664427910000",
+                                "image": {
+                                    "type": "primitives.File",
+                                    "attributes": {
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
+                                        "path": "\\Device\\HarddiskVolume3\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\1.2.3\\simulation\\random_gold.exe",
+                                        "file_type": null,
+                                        "binary": {
+                                            "type": "primitives.Binary",
+                                            "attributes": {
+                                                "md5": "md5",
+                                                "sha256": null,
+                                                "digital_signature": {
+                                                    "type": "primitives.BinaryDigitalSignature",
+                                                    "attributes": {
+                                                        "publisher": null,
+                                                        "issuer": null,
+                                                        "subject": null,
+                                                        "product": null,
+                                                        "signing_time": null
+                                                    }
+                                                },
+                                                "file_metadata": [],
+                                                "internal_name": null
+                                            }
+                                        }
+                                    }
+                                },
+                                "command_line": {
+                                    "type": "primitives.ProcessCommandLine",
+                                    "attributes": {
+                                        "command_line": "\"C:\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\currentVersion\\simulation\\random_gold.exe\" blabla",
+                                        "command_line_decoded": "\"C:\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\currentVersion\\simulation\\random_gold.exe\" blabla",
+                                        "identified_encodings": []
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "activity_timelines.EventActivityOccurred",
+            "attributes": {
+                "analyst_notes": [],
+                "occurred_at": "2025-05-12T11:29:00.000Z",
+                "type": "primitive_activities.generic_activity",
+                "activity": {
+                    "ingest_ts": "2025-05-12T11:30:04Z",
+                    "schema_ver": null,
+                    "description": "Crowdstrike Falcon emitted high severity ALERT-46877\n\n\n",
+                    "engine_type": "endpoint",
+                    "enrichments": null,
+                    "customer_name": "example",
+                    "event_type_cd": "primitive_activities.generic_activity",
+                    "activity_at_ts": "2025-05-12T11:29:00Z",
+                    "subject_endpoint": null,
+                    "subject_identity": null,
+                    "threat_assessment": null,
+                    "subject_endpoint_process": null
+                }
+            }
+        },
+        {
+            "type": "activity_timelines.ActivityOccurred",
+            "attributes": {
+                "occurred_at": "2025-05-12T11:30:28.000Z",
+                "analyst_notes": [],
+                "type": "process_activity_occurred",
+                "is_indicator_of_compromise": false,
+                "process_execution": {
+                    "type": "primitive_activities.ProcessExecution",
+                    "attributes": {
+                        "operating_system_process": {
+                            "type": "primitives.OperatingSystemProcess",
+                            "attributes": {
+                                "started_at": "2025-05-12T11:30:28.000Z",
+                                "operating_system_pid": 27824,
+                                "native_id": "13383e1230254824a906f2ea3c6ab033:664509881234",
+                                "image": {
+                                    "type": "primitives.File",
+                                    "attributes": {
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
+                                        "path": "\\Device\\HarddiskVolume3\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\1.2.3\\simulation\\random_gold.exe",
+                                        "file_type": null,
+                                        "binary": {
+                                            "type": "primitives.Binary",
+                                            "attributes": {
+                                                "md5": "md5",
+                                                "sha256": null,
+                                                "digital_signature": {
+                                                    "type": "primitives.BinaryDigitalSignature",
+                                                    "attributes": {
+                                                        "publisher": null,
+                                                        "issuer": null,
+                                                        "subject": null,
+                                                        "product": null,
+                                                        "signing_time": null
+                                                    }
+                                                },
+                                                "file_metadata": [],
+                                                "internal_name": null
+                                            }
+                                        }
+                                    }
+                                },
+                                "command_line": {
+                                    "type": "primitives.ProcessCommandLine",
+                                    "attributes": {
+                                        "command_line": "\"C:\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\currentVersion\\simulation\\random_gold.exe\" random",
+                                        "command_line_decoded": "\"C:\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\currentVersion\\simulation\\random_gold.exe\" random",
+                                        "identified_encodings": []
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "activity_timelines.ActivityOccurred",
+            "attributes": {
+                "occurred_at": "2025-05-12T11:30:32.000Z",
+                "analyst_notes": [
+                    "Command Processor (`cmd`) is launching powershell with malicious parameters"
+                ],
+                "type": "process_activity_occurred",
+                "is_indicator_of_compromise": false,
+                "process_execution": {
+                    "type": "primitive_activities.ProcessExecution",
+                    "attributes": {
+                        "operating_system_process": {
+                            "type": "primitives.OperatingSystemProcess",
+                            "attributes": {
+                                "started_at": "2025-05-12T11:30:32.000Z",
+                                "operating_system_pid": 29752,
+                                "native_id": "13383e1230254824a906f2ea3c6ab033:664514284567",
+                                "image": {
+                                    "type": "primitives.File",
+                                    "attributes": {
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
+                                        "path": "\\Device\\HarddiskVolume3\\Windows\\System32\\cmd.exe",
+                                        "file_type": null,
+                                        "binary": {
+                                            "type": "primitives.Binary",
+                                            "attributes": {
+                                                "md5": "md5",
+                                                "sha256": null,
+                                                "digital_signature": {
+                                                    "type": "primitives.BinaryDigitalSignature",
+                                                    "attributes": {
+                                                        "publisher": null,
+                                                        "issuer": null,
+                                                        "subject": null,
+                                                        "product": null,
+                                                        "signing_time": null
+                                                    }
+                                                },
+                                                "file_metadata": [
+                                                    {
+                                                        "kind": "FileMetadata",
+                                                        "confidence": 225,
+                                                        "source_name": "microsoft_atp",
+                                                        "created_at": "2025-03-25T17:34:17.987Z",
+                                                        "updated_at": "2025-03-25T17:34:17.987Z",
+                                                        "product_name": "microsoftÂ® windowsÂ® operating system",
+                                                        "product_version": null,
+                                                        "version": null,
+                                                        "description": "windows command processor",
+                                                        "original_name": null,
+                                                        "internal_name": "cmd",
+                                                        "language_code": null,
+                                                        "icon": null
+                                                    }
+                                                ],
+                                                "internal_name": "cmd"
+                                            }
+                                        }
+                                    }
+                                },
+                                "command_line": {
+                                    "type": "primitives.ProcessCommandLine",
+                                    "attributes": {
+                                        "command_line": "C:\\WINDOWS\\system32\\cmd.exe /c \"echo random >NUL & C:\\WINDOWS\\System32\\WindowsPowershell\\v1.0\\powershell.exe -exec bypass -Command \"try { Do-Something | Out-String } catch { \\\"Something is disabled.\\\" }\" & exit\"",
+                                        "command_line_decoded": "C:\\WINDOWS\\system32\\cmd.exe /c \"echo random >NUL & C:\\WINDOWS\\System32\\WindowsPowershell\\v1.0\\powershell.exe -exec bypass -Command \"try { Do-Something | Out-String } catch { \\\"Something is disabled.\\\" }\" & exit\"",
+                                        "identified_encodings": []
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "activity_timelines.ActivityOccurred",
+            "attributes": {
+                "occurred_at": "2025-05-12T11:30:41.000Z",
+                "analyst_notes": [],
+                "type": "process_activity_occurred",
+                "is_indicator_of_compromise": false,
+                "process_execution": {
+                    "type": "primitive_activities.ProcessExecution",
+                    "attributes": {
+                        "operating_system_process": {
+                            "type": "primitives.OperatingSystemProcess",
+                            "attributes": {
+                                "started_at": "2025-05-12T11:30:41.000Z",
+                                "operating_system_pid": 25988,
+                                "native_id": "13383e1230254824a906f2ea3c6ab033:664531608617",
+                                "image": {
+                                    "type": "primitives.File",
+                                    "attributes": {
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
+                                        "path": "\\Device\\HarddiskVolume3\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\1.2.3\\simulation\\random_gold.exe",
+                                        "file_type": null,
+                                        "binary": {
+                                            "type": "primitives.Binary",
+                                            "attributes": {
+                                                "md5": "md5",
+                                                "sha256": null,
+                                                "digital_signature": {
+                                                    "type": "primitives.BinaryDigitalSignature",
+                                                    "attributes": {
+                                                        "publisher": null,
+                                                        "issuer": null,
+                                                        "subject": null,
+                                                        "product": null,
+                                                        "signing_time": null
+                                                    }
+                                                },
+                                                "file_metadata": [],
+                                                "internal_name": null
+                                            }
+                                        }
+                                    }
+                                },
+                                "command_line": {
+                                    "type": "primitives.ProcessCommandLine",
+                                    "attributes": {
+                                        "command_line": "\"C:\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\currentVersion\\simulation\\random_gold.exe\" blabla",
+                                        "command_line_decoded": "\"C:\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\currentVersion\\simulation\\random_gold.exe\" blabla",
+                                        "identified_encodings": []
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "activity_timelines.ActivityOccurred",
+            "attributes": {
+                "occurred_at": "2025-05-12T11:30:45.000Z",
+                "analyst_notes": [
+                    "Command Processor (`cmd`) is launching powershell with malicious parameters"
+                ],
+                "type": "process_activity_occurred",
+                "is_indicator_of_compromise": false,
+                "process_execution": {
+                    "type": "primitive_activities.ProcessExecution",
+                    "attributes": {
+                        "operating_system_process": {
+                            "type": "primitives.OperatingSystemProcess",
+                            "attributes": {
+                                "started_at": "2025-05-12T11:30:45.000Z",
+                                "operating_system_pid": 31188,
+                                "native_id": "13383e1230254824a906f2ea3c6ab033:66453587111",
+                                "image": {
+                                    "type": "primitives.File",
+                                    "attributes": {
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
+                                        "path": "\\Device\\HarddiskVolume3\\Windows\\System32\\cmd.exe",
+                                        "file_type": null,
+                                        "binary": {
+                                            "type": "primitives.Binary",
+                                            "attributes": {
+                                                "md5": "md5",
+                                                "sha256": null,
+                                                "digital_signature": {
+                                                    "type": "primitives.BinaryDigitalSignature",
+                                                    "attributes": {
+                                                        "publisher": null,
+                                                        "issuer": null,
+                                                        "subject": null,
+                                                        "product": null,
+                                                        "signing_time": null
+                                                    }
+                                                },
+                                                "file_metadata": [
+                                                    {
+                                                        "kind": "FileMetadata",
+                                                        "confidence": 225,
+                                                        "source_name": "microsoft_atp",
+                                                        "created_at": "2025-03-25T17:34:17.987Z",
+                                                        "updated_at": "2025-03-25T17:34:17.987Z",
+                                                        "product_name": "microsoftÂ® windowsÂ® operating system",
+                                                        "product_version": null,
+                                                        "version": null,
+                                                        "description": "windows command processor",
+                                                        "original_name": null,
+                                                        "internal_name": "cmd",
+                                                        "language_code": null,
+                                                        "icon": null
+                                                    }
+                                                ],
+                                                "internal_name": "cmd"
+                                            }
+                                        }
+                                    }
+                                },
+                                "command_line": {
+                                    "type": "primitives.ProcessCommandLine",
+                                    "attributes": {
+                                        "command_line": "C:\\WINDOWS\\system32\\cmd.exe /c \"echo blabla >NUL & C:\\WINDOWS\\System32\\WindowsPowershell\\v1.0\\powershell.exe -exec bypass -Command \"try { Do-Something | Out-String } catch { \\\"Something is disabled.\\\" }\" & exit\"",
+                                        "command_line_decoded": "C:\\WINDOWS\\system32\\cmd.exe /c \"echo blabla >NUL & C:\\WINDOWS\\System32\\WindowsPowershell\\v1.0\\powershell.exe -exec bypass -Command \"try { Do-Something | Out-String } catch { \\\"Something is disabled.\\\" }\" & exit\"",
+                                        "identified_encodings": []
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "activity_timelines.ActivityOccurred",
+            "attributes": {
+                "occurred_at": "2025-05-12T11:32:49.000Z",
+                "analyst_notes": [],
+                "type": "process_activity_occurred",
+                "is_indicator_of_compromise": false,
+                "process_execution": {
+                    "type": "primitive_activities.ProcessExecution",
+                    "attributes": {
+                        "operating_system_process": {
+                            "type": "primitives.OperatingSystemProcess",
+                            "attributes": {
+                                "started_at": "2025-05-12T11:32:49.000Z",
+                                "operating_system_pid": 2368,
+                                "native_id": "13383e1230254824a906f2ea3c6ab033:664554766210",
+                                "image": {
+                                    "type": "primitives.File",
+                                    "attributes": {
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
+                                        "path": "\\Device\\HarddiskVolume3\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\1.2.3\\simulation\\random_gold.exe",
+                                        "file_type": null,
+                                        "binary": {
+                                            "type": "primitives.Binary",
+                                            "attributes": {
+                                                "md5": "md5",
+                                                "sha256": null,
+                                                "digital_signature": {
+                                                    "type": "primitives.BinaryDigitalSignature",
+                                                    "attributes": {
+                                                        "publisher": null,
+                                                        "issuer": null,
+                                                        "subject": null,
+                                                        "product": null,
+                                                        "signing_time": null
+                                                    }
+                                                },
+                                                "file_metadata": [],
+                                                "internal_name": null
+                                            }
+                                        }
+                                    }
+                                },
+                                "command_line": {
+                                    "type": "primitives.ProcessCommandLine",
+                                    "attributes": {
+                                        "command_line": "\"C:\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\currentVersion\\simulation\\random_gold.exe\" random",
+                                        "command_line_decoded": "\"C:\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\currentVersion\\simulation\\random_gold.exe\" random",
+                                        "identified_encodings": []
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "activity_timelines.ActivityOccurred",
+            "attributes": {
+                "occurred_at": "2025-05-12T11:32:52.000Z",
+                "analyst_notes": [
+                    "Command Processor (`cmd`) is launching powershell with malicious parameters"
+                ],
+                "type": "process_activity_occurred",
+                "is_indicator_of_compromise": false,
+                "process_execution": {
+                    "type": "primitive_activities.ProcessExecution",
+                    "attributes": {
+                        "operating_system_process": {
+                            "type": "primitives.OperatingSystemProcess",
+                            "attributes": {
+                                "started_at": "2025-05-12T11:32:52.000Z",
+                                "operating_system_pid": 28880,
+                                "native_id": "13383e1230254824a906f2ea3c6ab033:664561071234",
+                                "image": {
+                                    "type": "primitives.File",
+                                    "attributes": {
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
+                                        "path": "\\Device\\HarddiskVolume3\\Windows\\System32\\cmd.exe",
+                                        "file_type": null,
+                                        "binary": {
+                                            "type": "primitives.Binary",
+                                            "attributes": {
+                                                "md5": "md5",
+                                                "sha256": null,
+                                                "digital_signature": {
+                                                    "type": "primitives.BinaryDigitalSignature",
+                                                    "attributes": {
+                                                        "publisher": null,
+                                                        "issuer": null,
+                                                        "subject": null,
+                                                        "product": null,
+                                                        "signing_time": null
+                                                    }
+                                                },
+                                                "file_metadata": [
+                                                    {
+                                                        "kind": "FileMetadata",
+                                                        "confidence": 225,
+                                                        "source_name": "microsoft_atp",
+                                                        "created_at": "2025-03-25T17:34:17.987Z",
+                                                        "updated_at": "2025-03-25T17:34:17.987Z",
+                                                        "product_name": "microsoftÂ® windowsÂ® operating system",
+                                                        "product_version": null,
+                                                        "version": null,
+                                                        "description": "windows command processor",
+                                                        "original_name": null,
+                                                        "internal_name": "cmd",
+                                                        "language_code": null,
+                                                        "icon": null
+                                                    }
+                                                ],
+                                                "internal_name": "cmd"
+                                            }
+                                        }
+                                    }
+                                },
+                                "command_line": {
+                                    "type": "primitives.ProcessCommandLine",
+                                    "attributes": {
+                                        "command_line": "C:\\WINDOWS\\system32\\cmd.exe /c \"echo random >NUL & C:\\WINDOWS\\System32\\WindowsPowershell\\v1.0\\powershell.exe -exec bypass -Command \"try { Get-SomeProduct | Out-String } catch { \\\"Some Product is not enabled or not supported on this platform.\\\" }\" & exit\"",
+                                        "command_line_decoded": "C:\\WINDOWS\\system32\\cmd.exe /c \"echo random >NUL & C:\\WINDOWS\\System32\\WindowsPowershell\\v1.0\\powershell.exe -exec bypass -Command \"try { Get-SomeProduct | Out-String } catch { \\\"Some Product is not enabled or not supported on this platform.\\\" }\" & exit\"",
+                                        "identified_encodings": []
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "activity_timelines.ActivityOccurred",
+            "attributes": {
+                "occurred_at": "2025-05-12T11:33:00.000Z",
+                "analyst_notes": [],
+                "type": "process_activity_occurred",
+                "is_indicator_of_compromise": false,
+                "process_execution": {
+                    "type": "primitive_activities.ProcessExecution",
+                    "attributes": {
+                        "operating_system_process": {
+                            "type": "primitives.OperatingSystemProcess",
+                            "attributes": {
+                                "started_at": "2025-05-12T11:33:00.000Z",
+                                "operating_system_pid": 31784,
+                                "native_id": "13383e1230254824a906f2ea3c6ab033:664564462250",
+                                "image": {
+                                    "type": "primitives.File",
+                                    "attributes": {
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
+                                        "path": "\\Device\\HarddiskVolume3\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\1.2.3\\simulation\\random_gold.exe",
+                                        "file_type": null,
+                                        "binary": {
+                                            "type": "primitives.Binary",
+                                            "attributes": {
+                                                "md5": "md5",
+                                                "sha256": null,
+                                                "digital_signature": {
+                                                    "type": "primitives.BinaryDigitalSignature",
+                                                    "attributes": {
+                                                        "publisher": null,
+                                                        "issuer": null,
+                                                        "subject": null,
+                                                        "product": null,
+                                                        "signing_time": null
+                                                    }
+                                                },
+                                                "file_metadata": [],
+                                                "internal_name": null
+                                            }
+                                        }
+                                    }
+                                },
+                                "command_line": {
+                                    "type": "primitives.ProcessCommandLine",
+                                    "attributes": {
+                                        "command_line": "\"C:\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\currentVersion\\simulation\\random_gold.exe\" random",
+                                        "command_line_decoded": "\"C:\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\currentVersion\\simulation\\random_gold.exe\" random",
+                                        "identified_encodings": []
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "activity_timelines.LatestIndicationSeen",
+            "attributes": {
+                "occurred_at": "2025-05-12T11:33:04.000Z",
+                "analyst_notes": []
+            }
+        },
+        {
+            "type": "activity_timelines.ActivityOccurred",
+            "attributes": {
+                "occurred_at": "2025-05-12T11:33:04.000Z",
+                "analyst_notes": [
+                    "Command Processor (`cmd`) is launching powershell with malicious parameters"
+                ],
+                "type": "process_activity_occurred",
+                "is_indicator_of_compromise": false,
+                "process_execution": {
+                    "type": "primitive_activities.ProcessExecution",
+                    "attributes": {
+                        "operating_system_process": {
+                            "type": "primitives.OperatingSystemProcess",
+                            "attributes": {
+                                "started_at": "2025-05-12T11:33:04.000Z",
+                                "operating_system_pid": 29620,
+                                "native_id": "13383e1230254824a906f2ea3c6ab033:664569593176",
+                                "image": {
+                                    "type": "primitives.File",
+                                    "attributes": {
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
+                                        "path": "\\Device\\HarddiskVolume\\Windows\\System32\\cmd.exe",
+                                        "file_type": null,
+                                        "binary": {
+                                            "type": "primitives.Binary",
+                                            "attributes": {
+                                                "md5": "md5",
+                                                "sha256": null,
+                                                "digital_signature": {
+                                                    "type": "primitives.BinaryDigitalSignature",
+                                                    "attributes": {
+                                                        "publisher": null,
+                                                        "issuer": null,
+                                                        "subject": null,
+                                                        "product": null,
+                                                        "signing_time": null
+                                                    }
+                                                },
+                                                "file_metadata": [
+                                                    {
+                                                        "kind": "FileMetadata",
+                                                        "confidence": 225,
+                                                        "source_name": "microsoft_atp",
+                                                        "created_at": "2025-03-25T17:34:17.987Z",
+                                                        "updated_at": "2025-03-25T17:34:17.987Z",
+                                                        "product_name": "microsoftÂ® windowsÂ® operating system",
+                                                        "product_version": null,
+                                                        "version": null,
+                                                        "description": "windows command processor",
+                                                        "original_name": null,
+                                                        "internal_name": "cmd",
+                                                        "language_code": null,
+                                                        "icon": null
+                                                    }
+                                                ],
+                                                "internal_name": "cmd"
+                                            }
+                                        }
+                                    }
+                                },
+                                "command_line": {
+                                    "type": "primitives.ProcessCommandLine",
+                                    "attributes": {
+                                        "command_line": "C:\\WINDOWS\\system32\\cmd.exe /example of command line",
+                                        "command_line_decoded": "C:\\WINDOWS\\system32\\cmd.exe /example of command line",
+                                        "identified_encodings": []
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "activity_timelines.ThreatDetected",
+            "attributes": {
+                "occurred_at": "2025-05-12T11:33:46.053Z",
+                "analyst_notes": []
+            }
+        },
+        {
+            "type": "activity_timelines.AnalystConfirmed",
+            "attributes": {
+                "occurred_at": "2025-05-12T11:46:11.264Z",
+                "analyst_notes": []
+            }
+        },
+        {
+            "type": "exec.PlaybookExecution",
+            "id": 100000407742044,
+            "playbook_id": 126619,
+            "playbook": {
+                "type": "exec.Playbook",
+                "id": 126619,
+                "name": "Threat email to SOC Mgmt",
+                "description": "",
+                "created_at": "2025-02-28T19:38:51.024Z",
+                "updated_at": "2025-03-07T20:58:28.067Z",
+                "deleted_at": null,
+                "editable?": true,
+                "public?": false,
+                "private?": true,
+                "is_response?": false,
+                "active": true,
+                "red_canary_managed": false
+            },
+            "trigger": {
+                "type": "exec.Trigger",
+                "id": 100000000069518,
+                "name": "Threat is published",
+                "trigger": "detection_published",
+                "active": true,
+                "created_at": "2025-03-03T16:03:56.979Z",
+                "updated_at": "2025-03-03T16:03:56.979Z",
+                "deleted_at": null,
+                "conditions": [],
+                "associated_playbook_ids": [
+                    126619
+                ],
+                "provided_resources": [
+                    "Detection",
+                    "Endpoint",
+                    "EndpointUser",
+                    "IntelligenceProfile",
+                    "CurrentTime",
+                    "Subdomain"
+                ]
+            },
+            "manual_execution": false,
+            "executing_user": {
+                "type": "PortalUser",
+                "attributes": {
+                    "id": 2124,
+                    "email": "noreply@redcanary.com",
+                    "name": "Red Canary",
+                    "name_and_email": "Red Canary (noreply@redcanary.com)"
+                }
+            },
+            "resource_name": "THREAT-106",
+            "resource_url": "https://example.my.redcanary.co/threats/106",
+            "created_at": "2025-05-12T11:46:12.784Z",
+            "updated_at": "2025-05-12T11:46:15.982Z",
+            "attribute_hash": {
+                "Endpoint": {
+                    "hostname": "hostname",
+                    "platform": "Windows",
+                    "sensor_group": [
+                        "ALL_WORKSTATIONS",
+                        "BETA_WORKSTATIONS",
+                        "ALL_WORKSTATIONS, BETA_WORKSTATIONS"
+                    ],
+                    "endpoint_type": "workstation",
+                    "reporting_tags": "{\"endpoint_type\"=>\"workstation\", \"endpoint_platform\"=>\"Windows\", \"endpoint_sensor_group\"=>\"ALL_WORKSTATIONS, BETA_WORKSTATIONS\", \"endpoint_operating_system\"=>\"Windows 11\"}",
+                    "short_hostname": "shorthostname",
+                    "decommissioned?": "false",
+                    "endpoint_status": "online",
+                    "external_service": "328e646a",
+                    "days_since_last_checkin": "0"
+                },
+                "NilClass": {},
+                "Detection": {
+                    "severity": "high",
+                    "ioc_network_ips": [],
+                    "ioc_process_md5s": [],
+                    "ioc_process_names": [],
+                    "ioc_process_paths": [],
+                    "subclassifications": [
+                        "61"
+                    ],
+                    "ioc_network_domains": [],
+                    "root_classification": "1",
+                    "relevant_process_names": [
+                        "random_gold.exe",
+                        "cmd.exe"
+                    ],
+                    "marked_acknowledged_by_user": {}
+                },
+                "Subdomain": {},
+                "CurrentTime": {
+                    "execution_time": "2025-05-12 11:46:12 UTC"
+                },
+                "EndpointUser": {
+                    "uid": "s-1-5-18",
+                    "domain": "",
+                    "username": "5cg32173jf$",
+                    "reporting_tags": "{\"logon_domain\"=>nil, \"local_account\"=>true, \"domain_account\"=>false, \"system_account\"=>true}",
+                    "username_without_domain": ""
+                }
+            }
+        },
+        {
+            "type": "exec.ActionExecution",
+            "id": 100000411630759,
+            "playbook_execution_id": 100000407742044,
+            "state": "succeeded",
+            "message": "This action succeeded.",
+            "action": {
+                "type": "exec/actions/send_mail",
+                "id": 249202,
+                "title": "Send Email",
+                "playbook_id": 126619,
+                "required_resources": [
+                    "Detection"
+                ],
+                "supported_services": [
+                    "any"
+                ],
+                "row_order": 0,
+                "data": {
+                    "to": "some@user1.com,some@user2.com,some@user3.com",
+                    "body": "Detection headline - $Detection.headline \n\nDetection URL - $Detection.url \n\nDetection details - $Detection.details \n",
+                    "active": "true",
+                    "subject": "$Detection.severity Severity $Detection.headline ",
+                    "reply_to": "",
+                    "template": "custom",
+                    "special_message": "",
+                    "smtp_authentication": "plain",
+                    "smtp_enable_starttls": "true"
+                },
+                "secure_data": {
+                    "smtp_password": ""
+                },
+                "async": true,
+                "active": true,
+                "valid": true,
+                "requires_human_approval": null,
+                "created_at": "2025-03-03T16:30:05.956Z",
+                "updated_at": "2025-03-07T20:59:39.836Z",
+                "deleted_at": null,
+                "should_run_if_playbook_successful": false,
+                "indicator": null
+            },
+            "runtime_attributes": {},
+            "human_approval_config": {},
+            "created_at": "2025-05-12T11:46:12.897Z",
+            "updated_at": "2025-05-12T11:46:15.771Z",
+            "approved_by": null,
+            "approved_at": null,
+            "denied_by": null,
+            "denied_at": null,
+            "result": {},
+            "notes": null,
+            "playbookExecution": {
+                "type": "exec.PlaybookExecution",
+                "id": 100000407742044,
+                "playbook_id": 126619,
+                "playbook": {
+                    "type": "exec.Playbook",
+                    "id": 126619,
+                    "name": "Threat email to SOC Mgmt",
+                    "description": "",
+                    "created_at": "2025-02-28T19:38:51.024Z",
+                    "updated_at": "2025-03-07T20:58:28.067Z",
+                    "deleted_at": null,
+                    "editable?": true,
+                    "public?": false,
+                    "private?": true,
+                    "is_response?": false,
+                    "active": true,
+                    "red_canary_managed": false
+                },
+                "trigger": {
+                    "type": "exec.Trigger",
+                    "id": 100000000069518,
+                    "name": "Threat is published",
+                    "trigger": "detection_published",
+                    "active": true,
+                    "created_at": "2025-03-03T16:03:56.979Z",
+                    "updated_at": "2025-03-03T16:03:56.979Z",
+                    "deleted_at": null,
+                    "conditions": [],
+                    "associated_playbook_ids": [
+                        126619
+                    ],
+                    "provided_resources": [
+                        "Detection",
+                        "Endpoint",
+                        "EndpointUser",
+                        "IntelligenceProfile",
+                        "CurrentTime",
+                        "Subdomain"
+                    ]
+                },
+                "manual_execution": false,
+                "executing_user": {
+                    "type": "PortalUser",
+                    "attributes": {
+                        "id": 2124,
+                        "email": "noreply@redcanary.com",
+                        "name": "Red Canary",
+                        "name_and_email": "Red Canary (noreply@redcanary.com)"
+                    }
+                },
+                "resource_name": "THREAT-106",
+                "resource_url": "https://example.my.redcanary.co/threats/106",
+                "created_at": "2025-05-12T11:46:12.784Z",
+                "updated_at": "2025-05-12T11:46:15.982Z",
+                "attribute_hash": {
+                    "Endpoint": {
+                        "hostname": "hostname",
+                        "platform": "Windows",
+                        "sensor_group": [
+                            "ALL_WORKSTATIONS",
+                            "BETA_WORKSTATIONS",
+                            "ALL_WORKSTATIONS, BETA_WORKSTATIONS"
+                        ],
+                        "endpoint_type": "workstation",
+                        "reporting_tags": "{\"endpoint_type\"=>\"workstation\", \"endpoint_platform\"=>\"Windows\", \"endpoint_sensor_group\"=>\"ALL_WORKSTATIONS, BETA_WORKSTATIONS\", \"endpoint_operating_system\"=>\"Windows 11\"}",
+                        "short_hostname": "5cg32173jf",
+                        "decommissioned?": "false",
+                        "endpoint_status": "online",
+                        "external_service": "328e646a",
+                        "days_since_last_checkin": "0"
+                    },
+                    "NilClass": {},
+                    "Detection": {
+                        "severity": "high",
+                        "ioc_network_ips": [],
+                        "ioc_process_md5s": [],
+                        "ioc_process_names": [],
+                        "ioc_process_paths": [],
+                        "subclassifications": [
+                            "61"
+                        ],
+                        "ioc_network_domains": [],
+                        "root_classification": "1",
+                        "relevant_process_names": [
+                            "random_gold.exe",
+                            "cmd.exe"
+                        ],
+                        "marked_acknowledged_by_user": {}
+                    },
+                    "Subdomain": {},
+                    "CurrentTime": {
+                        "execution_time": "2025-05-12 11:46:12 UTC"
+                    },
+                    "EndpointUser": {
+                        "uid": "s-1-5-18",
+                        "domain": "",
+                        "username": "randomusername",
+                        "reporting_tags": "{\"logon_domain\"=>nil, \"local_account\"=>true, \"domain_account\"=>false, \"system_account\"=>true}",
+                        "username_without_domain": ""
+                    }
+                }
+            },
+            "playbook": {
+                "type": "exec.Playbook",
+                "id": 126619,
+                "name": "Threat email to SOC Mgmt",
+                "description": "",
+                "created_at": "2025-02-28T19:38:51.024Z",
+                "updated_at": "2025-03-07T20:58:28.067Z",
+                "deleted_at": null,
+                "editable?": true,
+                "public?": false,
+                "private?": true,
+                "is_response?": false,
+                "active": true,
+                "red_canary_managed": false
+            },
+            "state_timeline_badge_props": {
+                "color": "green",
+                "title": "Succeeded",
+                "icon_classes": "fas fa-check"
+            }
+        },
+        {
+            "type": "activity_timelines.MarkedAs",
+            "attributes": {
+                "occurred_at": "2025-05-12T11:49:37.360Z",
+                "analyst_notes": [],
+                "action": "not remediated (this was testing)",
+                "actor": "name@exanple"
+            }
+        }
+    ]
+}

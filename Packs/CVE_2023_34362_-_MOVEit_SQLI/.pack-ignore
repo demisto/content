@@ -1,0 +1,3 @@
+[file:playbook-CVE-2023-34362_-_MOVEit_Transfer_SQL_Injection.yml]
+ignore=GR107
+

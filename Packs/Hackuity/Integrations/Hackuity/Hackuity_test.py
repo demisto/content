@@ -62,9 +62,7 @@ TEST_DATA_PATH = Path("test_data")
 
 
 def util_get_json(directory, filename):
-    with (TEST_DATA_PATH / directory / filename).with_suffix(".json").open(
-        mode="rb"
-    ) as f:
+    with (TEST_DATA_PATH / directory / filename).with_suffix(".json").open(mode="rb") as f:
         return json.loads(f.read())
 
 

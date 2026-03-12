@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The endpoint command may now return a list of IP addresses under endpoint.IPAddress rather than a single entry."
+}

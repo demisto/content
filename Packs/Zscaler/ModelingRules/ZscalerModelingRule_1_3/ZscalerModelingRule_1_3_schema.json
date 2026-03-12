@@ -247,6 +247,38 @@
     "sourcetype": {
       "type": "string",
       "is_array": false
+    },
+    "src_ipv4": {
+      "type": "string",
+      "is_array": false
+    },
+    "dest_ipv4": {
+      "type": "string",
+      "is_array": false
+    },
+    "src_ipv6": {
+      "type": "string",
+      "is_array": false
+    },
+    "dest_ipv6": {
+      "type": "string",
+      "is_array": false
+    },
+    "proto": {
+      "type": "string",
+      "is_array": false
+    },
+    "url_category": {
+      "type": "string",
+      "is_array": false
+    },
+    "os": {
+      "type": "string",
+      "is_array": false
+    },
+    "user": {
+      "type": "string",
+      "is_array": false
     }
   }
 }

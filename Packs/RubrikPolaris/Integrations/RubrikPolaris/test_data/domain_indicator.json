@@ -1,0 +1,16 @@
+{
+    "Domain(val.Name && val.Name == obj.Name)": {
+        "Name": "DEMO-RADAR",
+        "UpdatedDate": "2024-10-18T05:51:31Z",
+        "WHOIS": {
+            "UpdatedDate": "2024-10-18T05:51:31Z"
+        }
+    },
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        "Indicator": "DEMO-RADAR",
+        "Reliability": "A - Completely reliable",
+        "Type": "domain",
+        "Vendor": "Rubrik Security Cloud",
+        "Score": 2
+    }
+}

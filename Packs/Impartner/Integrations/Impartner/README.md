@@ -15,7 +15,8 @@ This integration was integrated and tested with version v1 of [Impartner Objects
 
 4. Click **Test** to validate the URLs, token, and connection.
 5. to get API key, please reach out to Impartner contact
-6. 
+6.
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -34,27 +35,30 @@ Get account IDs from Impartner
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | query for searching accounts. | Optional | 
-| fields | Comma separated list of fields to retrieve. | Optional | 
-| filter | Optional where clause (eg, Field1 = Val1 and Field2 &gt; Val2). | Optional | 
-| orderby | Comma separated list of fields to sort by. | Optional | 
-| skip | Number of results to skip for pagination. | Optional | 
-| take | Number of results to take for pagination. | Optional | 
+| query | query for searching accounts. | Optional |
+| fields | Comma separated list of fields to retrieve. | Optional |
+| filter | Optional where clause (eg, Field1 = Val1 and Field2 &gt; Val2). | Optional |
+| orderby | Comma separated list of fields to sort by. | Optional |
+| skip | Number of results to skip for pagination. | Optional |
+| take | Number of results to take for pagination. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Impartner.Account.count | String | Number of results returned. | 
-| Impartner.Account.entity | String | Type of entity returned. | 
-| Impartner.Account.results.id | String | ID of account. | 
-| Impartner.Account.results.name | String | Name of account. | 
-| Impartner.Account.results.recordLink | String | Link to account. | 
-| Impartner.Account.results.tech_BD_Assigned_for_XSOAR__cf | String | Tech partner BD assigned to account. | 
+| Impartner.Account.count | String | Number of results returned. |
+| Impartner.Account.entity | String | Type of entity returned. |
+| Impartner.Account.results.id | String | ID of account. |
+| Impartner.Account.results.name | String | Name of account. |
+| Impartner.Account.results.recordLink | String | Link to account. |
+| Impartner.Account.results.tech_BD_Assigned_for_XSOAR__cf | String | Tech partner BD assigned to account. |
 
 #### Command example
+
 ```!impartner-get-account-list```
+
 #### Context Example
+
 ```json
 {
     "Impartner": {
@@ -133,6 +137,7 @@ Get account IDs from Impartner
 #### Human Readable Output
 
 >### List of account ID's
+>
 >| id   | name | recordLink |  tech_BBD_Assigned_for_XSOAR__cf|
 >|------|------|------|------|------|
 >| 1111 | 1111 | https://prod.impartner.live/load/ACT/1111 | |
@@ -145,7 +150,6 @@ Get account IDs from Impartner
 >| 1118 | 1118 | https://prod.impartner.live/load/ACT/1118 | |
 >| 1119 | 1119 | https://prod.impartner.live/load/ACT/1119 | |
 >| 1120 | 1120 | https://prod.impartner.live/load/ACT/1120 | |
-
 
 ### impartner-get-account-id
 
@@ -168,30 +172,32 @@ Get account details from Impartner
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Impartner.Account.id | Number | Account ID. | 
-| Impartner.Account.isActive | Boolean | Is account active. | 
-| Impartner.Account.tech_BD_Assigned_for_XSOAR__cf | String | Tech partner BD assigned to account. | 
-| Impartner.Account.mailingCity | String | City of account. | 
-| Impartner.Account.mailingCountry | String | Country of account. | 
-| Impartner.Account.mailingPostalCode | String | Account postal code. | 
-| Impartner.Account.mailingState | String | State of account. | 
-| Impartner.Account.mailingStreet | String | Street of account. | 
-| Impartner.Account.name | String | Account Name. | 
-| Impartner.Account.recordLink | Date | Link to account in Impartner. | 
-| Impartner.Account.website | Number | Account website. | 
-| Impartner.Account.mainProductToIntegrate | String | Partner main product they are looking to integrate with. | 
-| Impartner.Account.mutualCustomer | String | Partner mutual customer with XSOAR. | 
-| Impartner.Account.tpA_Product_s__cf | String | Cortex products TPA is signed for. | 
-| Impartner.Account.target_customers__cf | String | Target customers for partner. | 
-| Impartner.Account.company_Main_Market_Segment__cf | String | Partner main market segment. | 
-| Impartner.Account.panW_Integration_Product__cf | String | Cortex integrated products. | 
-| Impartner.Account.account_Integration_Status__cf | String | Account integration status. | 
-| Impartner.Account.accountTimeline | String | Account timeline. | 
- 
+| Impartner.Account.id | Number | Account ID. |
+| Impartner.Account.isActive | Boolean | Is account active. |
+| Impartner.Account.tech_BD_Assigned_for_XSOAR__cf | String | Tech partner BD assigned to account. |
+| Impartner.Account.mailingCity | String | City of account. |
+| Impartner.Account.mailingCountry | String | Country of account. |
+| Impartner.Account.mailingPostalCode | String | Account postal code. |
+| Impartner.Account.mailingState | String | State of account. |
+| Impartner.Account.mailingStreet | String | Street of account. |
+| Impartner.Account.name | String | Account Name. |
+| Impartner.Account.recordLink | Date | Link to account in Impartner. |
+| Impartner.Account.website | Number | Account website. |
+| Impartner.Account.mainProductToIntegrate | String | Partner main product they are looking to integrate with. |
+| Impartner.Account.mutualCustomer | String | Partner mutual customer with XSOAR. |
+| Impartner.Account.tpA_Product_s__cf | String | Cortex products TPA is signed for. |
+| Impartner.Account.target_customers__cf | String | Target customers for partner. |
+| Impartner.Account.company_Main_Market_Segment__cf | String | Partner main market segment. |
+| Impartner.Account.panW_Integration_Product__cf | String | Cortex integrated products. |
+| Impartner.Account.account_Integration_Status__cf | String | Account integration status. |
+| Impartner.Account.accountTimeline | String | Account timeline. |
 
 #### Command example
+
 ```!impartner-get-account-id id=2247998```
+
 #### Context Example
+
 ```json
 {
     "Impartner": {
@@ -224,7 +230,7 @@ Get account details from Impartner
 #### Human Readable Output
 
 >### Account Details
+>
 >|Name|ID|Link|PST Engineer|
 >|---|---|---|---|
 >| test_account | 11111111 | https://prod.impartner.live/load/ACT/11111111 | Edi |
-

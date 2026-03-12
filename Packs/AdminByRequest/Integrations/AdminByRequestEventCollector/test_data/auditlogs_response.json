@@ -1,0 +1,155 @@
+[
+    {
+        "installs": [],
+        "uninstalls": [],
+        "elevatedApplications": [
+            {
+                "name": "Elavated Application Dummy",
+                "path": "/exmaple/dummy",
+                "file": "dummyfile",
+                "version": null,
+                "vendor": null,
+                "sha256": "",
+                "scanResult": "Clean",
+                "scanResultCode": 0,
+                "threat": null,
+                "virustotalLink": "https://example.com"
+            }
+        ],
+        "scanResults": [],
+        "id": 1,
+        "traceNo": "123456",
+        "settingsName": "",
+        "type": "",
+        "typeCode": 0,
+        "status": "Finished",
+        "statusCode": 2,
+        "application": {
+            "application" : "dummy"
+        },
+        "user": {
+            "account": "dummy_user",
+            "fullName": "Dummy User",
+            "email": "example@example.com",
+            "phone": "000000000",
+            "isAdmin": false
+        },
+        "reason": "Dummy",
+        "approvedBy": "Dummy",
+        "approvedByEmail": "example@example.com",
+        "deniedReason": null,
+        "deniedBy": null,
+        "deniedByEmail": null,
+        "ssoValidated": false,
+        "requestTime": "2025-05-05T08:13:41",
+        "requestTimeUTC": "2025-05-05T14:13:41",
+        "startTime": "2025-05-05T08:13:41",
+        "startTimeUTC": "2025-05-05T14:13:41",
+        "endTime": "2025-05-05T08:18:25",
+        "endTimeUTC": "2025-05-05T14:18:25",
+        "responseTime": "18:02:41.8130000",
+        "auditlogLink": "https://example.com"
+    },
+    {
+        "installs": [],
+        "uninstalls": [],
+        "elevatedApplications": [
+            {
+                "name": "Elavated Application Dummy",
+                "path": "/exmaple/dummy",
+                "file": "dummyfile",
+                "version": null,
+                "vendor": null,
+                "sha256": "",
+                "scanResult": "Clean",
+                "scanResultCode": 0,
+                "threat": null,
+                "virustotalLink": "https://example.com"
+            }
+        ],
+        "scanResults": [],
+        "id": 2,
+        "traceNo": "123456",
+        "settingsName": "",
+        "type": "",
+        "typeCode": 0,
+        "status": "Finished",
+        "statusCode": 2,
+        "application": {
+            "application" : "dummy"
+        },
+        "user": {
+            "account": "dummy_user",
+            "fullName": "Dummy User",
+            "email": "example@example.com",
+            "phone": "000000000",
+            "isAdmin": false
+        },
+        "reason": "Dummy",
+        "approvedBy": "Dummy",
+        "approvedByEmail": "example@example.com",
+        "deniedReason": null,
+        "deniedBy": null,
+        "deniedByEmail": null,
+        "ssoValidated": false,
+        "requestTime": "2025-05-05T08:13:41",
+        "requestTimeUTC": "2025-05-05T14:13:41",
+        "startTime": "2025-05-05T08:13:41",
+        "startTimeUTC": "2025-05-05T14:13:41",
+        "endTime": "2025-05-05T08:18:25",
+        "endTimeUTC": "2025-05-05T14:18:25",
+        "responseTime": "18:02:41.8130000",
+        "auditlogLink": "https://example.com"
+    },
+    {
+        "installs": [],
+        "uninstalls": [],
+        "elevatedApplications": [
+            {
+                "name": "Elavated Application Dummy",
+                "path": "/exmaple/dummy",
+                "file": "dummyfile",
+                "version": null,
+                "vendor": null,
+                "sha256": "",
+                "scanResult": "Clean",
+                "scanResultCode": 0,
+                "threat": null,
+                "virustotalLink": "https://example.com"
+            }
+        ],
+        "scanResults": [],
+        "id": 3,
+        "traceNo": "123456",
+        "settingsName": "",
+        "type": "",
+        "typeCode": 0,
+        "status": "Finished",
+        "statusCode": 2,
+        "application": {
+            "application" : "dummy"
+        },
+        "user": {
+            "account": "dummy_user",
+            "fullName": "Dummy User",
+            "email": "example@example.com",
+            "phone": "000000000",
+            "isAdmin": false
+        },
+        "reason": "Dummy",
+        "approvedBy": "Dummy",
+        "approvedByEmail": "example@example.com",
+        "deniedReason": null,
+        "deniedBy": null,
+        "deniedByEmail": null,
+        "ssoValidated": false,
+        "requestTime": "2025-05-05T08:13:41",
+        "requestTimeUTC": "2025-05-05T14:13:41",
+        "startTime": "2025-05-05T08:13:41",
+        "startTimeUTC": "2025-05-05T14:13:41",
+        "endTime": "2025-05-05T08:18:25",
+        "endTimeUTC": "2025-05-05T14:18:25",
+        "responseTime": "18:02:41.8130000",
+        "auditlogLink": "https://example.com"
+    }
+]

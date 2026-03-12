@@ -1,3 +1,10 @@
+## Important note: Retirement of RBAC Application Impersonation
+
+As of February 2025, the Impersonation access type of the integration is deprecated by Microsoft, read about it [here](https://techcommunity.microsoft.com/blog/exchange/critical-update-applicationimpersonation-rbac-role-deprecation-in-exchange-onlin/4295762).
+To avoid disruptions, it is imperative that administrators begin transitioning their applications immediately.
+To identify accounts using the ApplicationImpersonation role use the Exchange Online PowerShell command:
+`Get-ManagementRoleAssignment -Role ApplicationImpersonation -GetEffectiveUsers -Delegating:$false`
+
 ## Set up the Third Party System
 
 There are two application authentication methods available.
@@ -13,7 +20,7 @@ Follow your preferred method's guide on how to use the admin consent flow in ord
 
 In order to function as expected, set the following permissions:
 
-**Impersonation rights** to the service account.
+**Impersonation rights** to the service account - Deprecated.
 **eDiscovery** permissions to the Exchange Server.
 **full_access_as_app** to the _application used for authentication_.
 

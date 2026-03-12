@@ -1,0 +1,56 @@
+{
+    "proofpoint_isolation_raw": {
+        "userId": {
+            "type": "string",
+            "is_array": false
+        },
+        "userName": {
+            "type": "string",
+            "is_array": false
+        },
+        "url": {
+            "type": "string",
+            "is_array": false
+        },
+        "region": {
+            "type": "string",
+            "is_array": false
+        },
+        "zone": {
+            "type": "string",
+            "is_array": false
+        },
+        "disposition": {
+            "type": "string",
+            "is_array": false
+        },
+        "classification": {
+            "type": "string",
+            "is_array": false
+        },
+        "fileName": {
+            "type": "string",
+            "is_array": false
+        },
+        "parentPageURL": {
+            "type": "string",
+            "is_array": false
+        },
+        "isiFrame": {
+            "type": "string",
+            "is_array": false
+        },
+        "fileSize": {
+            "type": "int",
+            "is_array": false
+        },
+        "fileMimeType": {
+            "type": "string",
+            "is_array": false
+        },
+        "categories": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+  }

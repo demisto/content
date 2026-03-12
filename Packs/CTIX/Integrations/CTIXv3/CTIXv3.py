@@ -1,19 +1,21 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-from http import HTTPStatus
-import urllib3
-import requests
-from typing import Any, cast
-from collections.abc import Callable
-import urllib.parse
-import time
-import json
-import hmac
-import hashlib
 import base64
+import hashlib
+import hmac
+import json
+import time
+import urllib.parse
 import uuid
+from collections.abc import Callable
 from datetime import datetime
+from http import HTTPStatus
+from typing import Any, cast
+
+import demistomock as demisto
+import requests
+import urllib3
+from CommonServerPython import *
+
+from CommonServerUserPython import *
 
 
 def is_valid_uuid(uuid_string):
@@ -22,6 +24,7 @@ def is_valid_uuid(uuid_string):
         return True
     except ValueError:
         return False
+
 
 # register_module_line("CTIX v3", "start", __line__())
 # Uncomment while development=
@@ -105,12 +108,14 @@ class Client(BaseClient):
         base_url: str,
         access_id: str,
         secret_key: str,
+        timeout: int,
         verify: bool,
         proxies: dict,
     ) -> None:
         self.base_url = base_url
         self.access_id = access_id
         self.secret_key = secret_key
+        self.timeout = timeout
         self.verify = verify
         self.proxies = proxies
 
@@ -121,12 +126,10 @@ class Client(BaseClient):
         :param int expires: Epoch time in which time when signature will expire
         :return str signature : signature queryset
         """
-        to_sign = "%s\n%i" % (self.access_id, expires)
-        return base64.b64encode(
-            hmac.new(
-                self.secret_key.encode("utf-8"), to_sign.encode("utf-8"), hashlib.sha1
-            ).digest()
-        ).decode("utf-8")
+        to_sign = f"{self.access_id}\n{expires}"
+        return base64.b64encode(hmac.new(self.secret_key.encode("utf-8"), to_sign.encode("utf-8"), hashlib.sha1).digest()).decode(
+            "utf-8"
+        )
 
     def add_common_params(self, params: dict):
         """
@@ -141,8 +144,7 @@ class Client(BaseClient):
         params["Signature"] = self.signature(expires)
         return params
 
-    def get_http_request(self, full_url: str, payload: dict = None,
-                         fallback_full_url: str = None, **kwargs):
+    def get_http_request(self, full_url: str, payload: dict = None, fallback_full_url: str = None, params: dict = None, **kwargs):
         """
         GET HTTP Request
 
@@ -153,6 +155,7 @@ class Client(BaseClient):
         :return dict: Response object
         """
         kwargs = self.add_common_params(kwargs)
+        params and kwargs.update(params)
         full_url = full_url + "?" + urllib.parse.urlencode(kwargs)
 
         headers = {"content-type": "application/json"}
@@ -160,7 +163,7 @@ class Client(BaseClient):
             full_url,
             verify=self.verify,
             proxies=self.proxies,
-            timeout=5,
+            timeout=self.timeout,
             headers=headers,
             json=payload,
         )
@@ -179,8 +182,7 @@ class Client(BaseClient):
             else:
                 return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
 
-    def post_http_request(self, full_url: str, payload: dict, params: dict,
-                          fallback_full_url: str = None):
+    def post_http_request(self, full_url: str, payload: dict, params: dict, fallback_full_url: str = None):
         """
         POST HTTP Request
 
@@ -199,7 +201,7 @@ class Client(BaseClient):
             proxies=self.proxies,
             json=payload,
             headers=headers,
-            timeout=15,
+            timeout=self.timeout,
         )
         status_code = resp.status_code
         try:
@@ -234,7 +236,7 @@ class Client(BaseClient):
             proxies=self.proxies,
             json=payload,
             headers=headers,
-            timeout=15,
+            timeout=self.timeout,
         )
         status_code = resp.status_code
         try:
@@ -247,7 +249,7 @@ class Client(BaseClient):
             else:
                 return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
 
-    def delete_http_request(self, full_url: str, payload: dict = None, **kwargs):
+    def delete_http_request(self, full_url: str, payload: dict = None, params: dict = None, **kwargs):
         """
         DELETE HTTP Request
 
@@ -257,13 +259,14 @@ class Client(BaseClient):
         :return dict: Response object
         """
         kwargs = self.add_common_params(kwargs)
+        params and kwargs.update(params)
         full_url = full_url + "?" + urllib.parse.urlencode(kwargs)
         headers = {"content-type": "application/json"}
         resp = requests.delete(
             full_url,
             verify=self.verify,
             proxies=self.proxies,
-            timeout=5,
+            timeout=self.timeout,
             headers=headers,
             json=payload,
         )
@@ -322,16 +325,16 @@ class Client(BaseClient):
             params["q"] = q  # type: ignore
         return self.get_http_request(client_url, params)
 
-    def delete_tag(self, tag_id: str):
-        """Deletes a tag from the ctix instance
-        :type tag_id: ``str``
-        :param name: id of the tag to be deleted
+    def disable_or_enable_tag(self, tag_ids: list, action: str):
+        """Enables or Disables a tag from the ctix instance
+        :type tag_ids: ``list``
+        :param tag_ids: id of the tag to be disabled or enabled
+        :type action: ``str``
+        :param action: Action to be performed. Possible values are 'enabled' and 'disabled'
         """
         url_suffix = "ingestion/tags/bulk-actions/"
         client_url = self.base_url + url_suffix
-        return self.post_http_request(
-            client_url, {"ids": tag_id, "action": "delete"}, {}
-        )
+        return self.post_http_request(client_url, {"ids": tag_ids, "action": action}, {"component": "tags"})
 
     def whitelist_iocs(self, ioc_type, values, reason):
         url_suffix = "conversion/allowed_indicators/"  # for CTIX >= 3.6
@@ -339,8 +342,7 @@ class Client(BaseClient):
         client_url = self.base_url + url_suffix
         fallback_client_url = self.base_url + fallback_url_suffix
         payload = {"type": ioc_type, "values": values, "reason": reason}
-        return self.post_http_request(client_url, payload, {},
-                                      fallback_full_url=fallback_client_url)
+        return self.post_http_request(client_url, payload, {}, fallback_full_url=fallback_client_url)
 
     def get_whitelist_iocs(self, page: int, page_size: int, q: str):
         """Paginated list of tags from ctix platform using page_number and page_size
@@ -360,19 +362,20 @@ class Client(BaseClient):
         params = {"page": page, "page_size": page_size}
         if q:
             params["q"] = q  # type: ignore
-        return self.get_http_request(client_url, {}, fallback_full_url=fallback_client_url,
-                                     **params)
+        return self.get_http_request(client_url, {}, fallback_full_url=fallback_client_url, params=params)
 
     def remove_whitelisted_ioc(self, whitelist_id: str):
         """Removes whitelisted ioc with given `whitelist_id`
         :type whitelist_id: str
         :param whitelist_id: id of the whitelisted ioc to be removed
         """
-        url_suffix = "conversion/whitelist/bulk-actions/"
+        url_suffix = "conversion/allowed_indicators/bulk-actions/"
+        payload = {
+            "ids": whitelist_id,
+            "action": "delete",
+        }
         client_url = self.base_url + url_suffix
-        return self.post_http_request(
-            client_url, {"ids": whitelist_id, "action": "delete"}, {}
-        )
+        return self.post_http_request(full_url=client_url, payload=payload, params={})
 
     def get_threat_data(self, page: int, page_size: int, query: str):
         """
@@ -400,7 +403,7 @@ class Client(BaseClient):
         url_suffix = "ingestion/saved-searches/"
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size}
-        return self.get_http_request(client_url, {}, None, **params)
+        return self.get_http_request(client_url, {}, None, params=params)
 
     def get_server_collections(self, page: int, page_size: int):
         """
@@ -413,7 +416,7 @@ class Client(BaseClient):
         url_suffix = "publishing/collection/"
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size}
-        return self.get_http_request(client_url, {}, None, **params)
+        return self.get_http_request(client_url, {}, params=params)
 
     def get_actions(self, page: int, page_size: int, params: dict[str, Any]):
         """
@@ -428,7 +431,7 @@ class Client(BaseClient):
         client_url = self.base_url + url_suffix
         params["page"] = page
         params["page_size"] = page_size
-        return self.get_http_request(client_url, **params)
+        return self.get_http_request(client_url, params=params)
 
     def add_indicator_as_false_positive(self, object_ids: List[str], object_type: str):
         """
@@ -502,25 +505,25 @@ class Client(BaseClient):
 
         return self.post_http_request(client_url, payload, {})
 
-    def saved_result_set(self, page: int, page_size: int, label_name: str, query: str):
+    def saved_result_set(self, page: str, page_size: str, label_name: str = None, version: str = None):
         """
         Saved Result Set
 
-        :param int page: Paginated number from where data will be polled
-        :param int page_size: Size of the result
+        :param str page: Paginated number from where data will be polled
+        :param str page_size: Size of the result
         :param str label_name: Label name used to get the data from the rule
         :param str query: CQL query to get specific data
+        :param str version: Saved Result Set version
         :return dict: Returns response for query
         """
-        url_suffix = "ingestion/threat-data/list/"
+        url_suffix = "ingestion/rules/save_result_set/"
         client_url = self.base_url + url_suffix
         params = {}
+        version and params.update({"version": version})
         params.update({"page": page})
         params.update({"page_size": page_size})
-        if query is None:
-            query = "type=indicator"
-        payload = {"label_name": label_name, "query": query}
-        return self.post_http_request(client_url, payload, params)
+        label_name and params.update({"label_name": label_name})
+        return self.get_http_request(client_url, {}, params=params)
 
     def tag_indicator_updation(
         self,
@@ -544,25 +547,24 @@ class Client(BaseClient):
         :param str operation: Addition or Removal of tag operation
         :return dict: Returns response for query
         """
-        tags_data = self.get_indicator_tags(
-            object_type, object_id, {"page": page, "page_size": page_size}
-        )["data"]
+        tags_data = self.get_indicator_tags(object_type, object_id, {"page": page, "page_size": page_size})["data"]
         tags = [_["id"] for _ in tags_data["tags"]]
+        data = {}
+        url_suffix = ""
         if operation == "add_tag_indicator":
+            url_suffix = "ingestion/threat-data/bulk-action/add_tag/"
             tags.extend([_.strip() for _ in tag_id.split(",")])
+            data = {"tag_id": list(set(tags))}
         elif operation == "remove_tag_from_indicator":
-            removable_tags = [_.strip() for _ in tag_id.split(",")]
-            for r_tag in removable_tags:
-                if r_tag in tags:
-                    tags.remove(r_tag)
-        final_tags = list(set(tags))
-        url_suffix = "ingestion/threat-data/action/add_tag/"
+            url_suffix = "ingestion/threat-data/bulk-action/remove_tag/"
+            tags = [_.strip() for _ in tag_id.split(",")]
+            data = {"tag_id": list(set(tags))}
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size, "q": q}
         payload = {
-            "object_id": object_id,
+            "object_ids": [object_id],
             "object_type": object_type,
-            "data": {"tag_id": final_tags},
+            "data": data,
         }
         return self.post_http_request(client_url, payload, params)
 
@@ -638,9 +640,7 @@ class Client(BaseClient):
         client_url = self.base_url + url_suffix
         return self.get_http_request(client_url, **params)
 
-    def get_lookup_threat_data(
-        self, object_type: str, ioc_type: list, object_names: list, params: dict
-    ):
+    def get_lookup_threat_data(self, object_type: str, ioc_type: list, object_names: list, params: dict):
         """
         Get Lookup Threat Data
 
@@ -674,17 +674,9 @@ class Client(BaseClient):
 
         payload = {
             "ioc_values": object_names,
-            "metadata": {
-                "tlp": "AMBER",
-                "confidence": 100,
-                "tags": []
-            },
-            "source": {
-                "source_name": source
-            },
-            "collection": {
-                "collection_name": collection
-            }
+            "metadata": {"tlp": "AMBER", "confidence": 100, "tags": []},
+            "source": {"source_name": source},
+            "collection": {"collection_name": collection},
         }
 
         return self.post_http_request(client_url, payload, params)
@@ -701,7 +693,7 @@ class Client(BaseClient):
         url_suffix = f"ingestion/threat-data/vulnerability/{obj_id}/product-details/"
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size}
-        return self.get_http_request(client_url, {}, None, **params)
+        return self.get_http_request(client_url, {}, None, params=params)
 
     def get_vulnerability_cvss_score(self, obj_id: str, page: int, page_size: int):
         """
@@ -715,7 +707,7 @@ class Client(BaseClient):
         url_suffix = f"ingestion/threat-data/vulnerability/{obj_id}/cvss-score/"
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size}
-        return self.get_http_request(client_url, {}, None, **params)
+        return self.get_http_request(client_url, {}, None, params=params)
 
     def get_vulnerability_source_description(self, obj_id: str, source_id: str, page: int, page_size: int):
         """
@@ -730,7 +722,7 @@ class Client(BaseClient):
         url_suffix = f"ingestion/threat-data/vulnerability/{obj_id}/source-description/"
         client_url = self.base_url + url_suffix
         params = {"source_id": source_id, "page": page, "page_size": page_size}
-        return self.get_http_request(client_url, {}, None, **params)
+        return self.get_http_request(client_url, {}, None, params=params)
 
 
 """ HELPER FUNCTIONS """
@@ -740,6 +732,8 @@ def to_dbot_score(ctix_score: int) -> int:
     """
     Maps CTIX Score to DBotScore
     """
+    if isinstance(ctix_score, str):
+        ctix_score = 10
     if ctix_score == 0:
         dbot_score = Common.DBotScore.NONE  # unknown
     elif ctix_score <= 30:
@@ -789,14 +783,10 @@ def iter_dbot_score(
                     score=score,
                     reliability=reliability,
                 )
-                ip_standard_context = Common.IP(
-                    ip=value.get("name"), asn=value.get("asn"), dbot_score=dbot_score
-                )
+                ip_standard_context = Common.IP(ip=value.get("name"), asn=value.get("asn"), dbot_score=dbot_score)
                 final_data.append(
                     CommandResults(
-                        readable_output=tableToMarkdown(
-                            table_name, value, removeNull=True
-                        ),
+                        readable_output=tableToMarkdown(table_name, value, removeNull=True),
                         outputs_prefix=output_prefix,
                         outputs_key_field=outputs_key_field,
                         outputs=value,
@@ -812,9 +802,7 @@ def iter_dbot_score(
                     score=score,
                     reliability=reliability,
                 )
-                file_standard_context = Common.File(
-                    name=value.get("name"), dbot_score=dbot_score
-                )
+                file_standard_context = Common.File(name=value.get("name"), dbot_score=dbot_score)
                 file_key = value.get("name")
                 hash_type = value.get("attribute_field", "Unknown").lower()
                 if hash_type == "md5":
@@ -828,9 +816,7 @@ def iter_dbot_score(
 
                 final_data.append(
                     CommandResults(
-                        readable_output=tableToMarkdown(
-                            table_name, value, removeNull=True
-                        ),
+                        readable_output=tableToMarkdown(table_name, value, removeNull=True),
                         outputs_prefix=output_prefix,
                         outputs_key_field=outputs_key_field,
                         outputs=value,
@@ -846,14 +832,10 @@ def iter_dbot_score(
                     score=score,
                     reliability=reliability,
                 )
-                domain_standard_context = Common.Domain(
-                    domain=value.get("name"), dbot_score=dbot_score
-                )
+                domain_standard_context = Common.Domain(domain=value.get("name"), dbot_score=dbot_score)
                 final_data.append(
                     CommandResults(
-                        readable_output=tableToMarkdown(
-                            table_name, value, removeNull=True
-                        ),
+                        readable_output=tableToMarkdown(table_name, value, removeNull=True),
                         outputs_prefix=output_prefix,
                         outputs_key_field=outputs_key_field,
                         outputs=value,
@@ -869,14 +851,10 @@ def iter_dbot_score(
                     score=score,
                     reliability=reliability,
                 )
-                email_standard_context = Common.Domain(
-                    domain=value.get("name"), dbot_score=dbot_score
-                )
+                email_standard_context = Common.Domain(domain=value.get("name"), dbot_score=dbot_score)
                 final_data.append(
                     CommandResults(
-                        readable_output=tableToMarkdown(
-                            table_name, value, removeNull=True
-                        ),
+                        readable_output=tableToMarkdown(table_name, value, removeNull=True),
                         outputs_prefix=output_prefix,
                         outputs_key_field=outputs_key_field,
                         outputs=value,
@@ -892,14 +870,10 @@ def iter_dbot_score(
                     score=score,
                     reliability=reliability,
                 )
-                url_standard_context = Common.URL(
-                    url=value.get("name"), dbot_score=dbot_score
-                )
+                url_standard_context = Common.URL(url=value.get("name"), dbot_score=dbot_score)
                 final_data.append(
                     CommandResults(
-                        readable_output=tableToMarkdown(
-                            table_name, value, removeNull=True
-                        ),
+                        readable_output=tableToMarkdown(table_name, value, removeNull=True),
                         outputs_prefix=output_prefix,
                         outputs_key_field=outputs_key_field,
                         outputs=value,
@@ -910,9 +884,7 @@ def iter_dbot_score(
             else:  # indicator_type == 'custom'
                 final_data.append(
                     CommandResults(
-                        readable_output=tableToMarkdown(
-                            table_name, value, removeNull=True
-                        ),
+                        readable_output=tableToMarkdown(table_name, value, removeNull=True),
                         outputs_prefix=output_prefix,
                         outputs_key_field=outputs_key_field,
                         outputs=value,
@@ -997,26 +969,25 @@ def get_tags_command(client: Client, args=dict[str, Any]) -> List[CommandResults
         return results
 
 
-def delete_tag_command(client: Client, args: dict) -> CommandResults:
+def disable_or_enable_tags_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
-    delete_tag command: Deletes a tag with given tag_name
+    Disable/Enable Tags command
+
+    :Description Disable or Enable tags in CTIX platform
+    :param Dict[str, Any] args: Paramters to be send to in request
+    :return CommandResults: XSOAR based result
     """
-    tag_name = argToList(args.get("tag_name"))
-    final_result = []
-    for tag in tag_name:
-        search_result = client.get_tags(1, 10, tag)
-        tags = search_result.get("data", {}).get("results", [])
-        response = client.delete_tag(tags[0]["id"])
-        final_result.append(response.get("data"))
+    tag_ids = argToList(args.get("tag_ids"))
+    action = args.get("action") or "enabled"
+    response = client.disable_or_enable_tag(tag_ids=tag_ids, action=action.lower())
+    final_result = response.get("data", {})
     final_result = no_result_found(final_result)
     if isinstance(final_result, CommandResults):
         return final_result
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown(
-                "Tag Response", final_result, removeNull=True
-            ),
-            outputs_prefix="CTIX.DeleteTag",
+            readable_output=tableToMarkdown("Tag Response", [final_result], removeNull=True),
+            outputs_prefix="CTIX.TagAction",
             outputs_key_field="result",
             outputs=final_result,
             raw_response=final_result,
@@ -1037,11 +1008,7 @@ def whitelist_iocs_command(client: Client, args: dict[str, Any]) -> CommandResul
     values = argToList(values)
     reason = args.get("reason")
 
-    data = (
-        client.whitelist_iocs(ioc_type, values, reason)
-        .get("data", {})
-        .get("details", {})
-    )
+    data = client.whitelist_iocs(ioc_type, values, reason).get("data", {}).get("details", {})
     data = no_result_found(data)
     if isinstance(data, CommandResults):
         return data
@@ -1055,9 +1022,7 @@ def whitelist_iocs_command(client: Client, args: dict[str, Any]) -> CommandResul
         return results
 
 
-def get_whitelist_iocs_command(
-    client: Client, args=dict[str, Any]
-) -> List[CommandResults]:
+def get_whitelist_iocs_command(client: Client, args=dict[str, Any]) -> List[CommandResults]:
     """
     get_tags commands: Returns paginated list of tags
     """
@@ -1076,9 +1041,7 @@ def get_whitelist_iocs_command(
         for ioc in ioc_list:
             results.append(
                 CommandResults(
-                    readable_output=tableToMarkdown(
-                        "Whitelist IOC", ioc, removeNull=True
-                    ),
+                    readable_output=tableToMarkdown("Whitelist IOC", ioc, removeNull=True),
                     outputs_prefix="CTIX.IOC",
                     outputs_key_field="value",
                     outputs=ioc,
@@ -1087,9 +1050,7 @@ def get_whitelist_iocs_command(
         return results
 
 
-def remove_whitelisted_ioc_command(
-    client: Client, args=dict[str, Any]
-) -> CommandResults:
+def remove_whitelisted_ioc_command(client: Client, args=dict[str, Any]) -> CommandResults:
     """
     remove_whitelist_ioc: Deletes a whitelisted ioc with given id
     """
@@ -1110,9 +1071,7 @@ def remove_whitelisted_ioc_command(
         return results
 
 
-def get_threat_data_command(
-    client: Client, args=dict[str, Any]
-) -> List[CommandResults]:
+def get_threat_data_command(client: Client, args=dict[str, Any]) -> List[CommandResults]:
     """
     get_threat_data: List thread data and allow query
     """
@@ -1167,9 +1126,7 @@ def get_saved_searches_command(client: Client, args=dict[str, Any]) -> CommandRe
         return result
 
 
-def get_server_collections_command(
-    client: Client, args=dict[str, Any]
-) -> CommandResults:
+def get_server_collections_command(client: Client, args=dict[str, Any]) -> CommandResults:
     """
     get_server_collections: List server collections
     """
@@ -1185,9 +1142,7 @@ def get_server_collections_command(
         return results
     else:
         result = CommandResults(
-            readable_output=tableToMarkdown(
-                "Server Collection", results, removeNull=True
-            ),
+            readable_output=tableToMarkdown("Server Collection", results, removeNull=True),
             outputs_prefix="CTIX.ServerCollection",
             outputs_key_field="id",
             outputs=results,
@@ -1228,9 +1183,7 @@ def get_actions_command(client: Client, args=dict[str, Any]) -> CommandResults:
         return result
 
 
-def add_indicator_as_false_positive_command(
-    client: Client, args: dict[str, str]
-) -> CommandResults:
+def add_indicator_as_false_positive_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Add Indicator as False Positive Command
 
@@ -1248,9 +1201,7 @@ def add_indicator_as_false_positive_command(
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown(
-                "Indicator False Positive", data, removeNull=True
-            ),
+            readable_output=tableToMarkdown("Indicator False Positive", data, removeNull=True),
             outputs_prefix="CTIX.IndicatorFalsePositive",
             outputs=data,
             raw_response=data,
@@ -1383,32 +1334,28 @@ def saved_result_set_command(client: Client, args: dict[str, Any]) -> CommandRes
     page = args["page"]
     page = check_for_empty_variable(page, 1)
     page_size = args["page_size"]
+    version = args.get("version")
     page_size = check_for_empty_variable(page_size, 10)
-    label_name = args.get("label_name", "test")
-    query = args.get("query", "type=indicator")
-    response = client.saved_result_set(page, page_size, label_name, query)
-    data_list = response.get("data", {}).get("results", [])
-    results = no_result_found(data_list)
-    reliability = args.get("reliability")
+    label_name = args.get("label_name")
+    response = client.saved_result_set(page, page_size, label_name, version)
+    data = response.get("data", {})
+    data_list = data.get("results", [])
+    data_list = no_result_found(data_list)
 
-    if isinstance(results, CommandResults):
-        return results
+    if isinstance(data_list, CommandResults):
+        return data_list
     else:
-        results = iter_dbot_score(
-            results,
-            "confidence_score",
-            "ioc_type",
-            "Saved Result Set",
-            "CTIX.SavedResultSet",
-            "id",
-            reliability,
+        results = CommandResults(
+            readable_output=tableToMarkdown("Saved Result Set", data_list, removeNull=True),
+            outputs_prefix="CTIX.SavedResultSet",
+            outputs_key_field="id",
+            outputs=data_list,
+            raw_response=data,
         )
         return results
 
 
-def tag_indicator_updation_command(
-    client: Client, args: dict[str, Any], operation: str
-) -> CommandResults:
+def tag_indicator_updation_command(client: Client, args: dict[str, Any], operation: str) -> CommandResults:
     """
     Tag Indicator Updation Command
 
@@ -1423,18 +1370,14 @@ def tag_indicator_updation_command(
     tag_id = args["tag_id"]
     query = args.get("q", {})
 
-    response = client.tag_indicator_updation(
-        query, page, page_size, object_id, object_type, tag_id, operation
-    )
+    response = client.tag_indicator_updation(query, page, page_size, object_id, object_type, tag_id, operation)
     data = response.get("data")
     data = no_result_found(data)
     if isinstance(data, CommandResults):
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown(
-                "Tag Indicator Updation", data, removeNull=True
-            ),
+            readable_output=tableToMarkdown("Tag Indicator Updation", data, removeNull=True),
             outputs_prefix="CTIX.TagUpdation",
             outputs=data,
             raw_response=data,
@@ -1493,9 +1436,7 @@ def get_indicator_details_command(client: Client, args: dict[str, Any]) -> Comma
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown(
-                "Get Indicator Details", data, removeNull=True
-            ),
+            readable_output=tableToMarkdown("Get Indicator Details", data, removeNull=True),
             outputs_prefix="CTIX.IndicatorDetails",
             outputs=data,
             raw_response=data,
@@ -1524,9 +1465,7 @@ def get_indicator_tags_command(client: Client, args: dict[str, Any]) -> CommandR
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown(
-                "Get Indicator Tags", data, removeNull=True
-            ),
+            readable_output=tableToMarkdown("Get Indicator Tags", data, removeNull=True),
             outputs_prefix="CTIX.IndicatorTags",
             outputs=data,
             raw_response=data,
@@ -1555,9 +1494,7 @@ def get_indicator_relations_command(client: Client, args: dict[str, Any]) -> Com
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown(
-                "Get Indicator Relations", data, removeNull=True
-            ),
+            readable_output=tableToMarkdown("Get Object Relations", data, removeNull=True),
             outputs_prefix="CTIX.IndicatorRelations",
             outputs=data,
             raw_response=data,
@@ -1592,9 +1529,7 @@ def get_indicator_observations_command(client: Client, args: dict[str, Any]) -> 
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown(
-                "Get Indicator Observations", data, removeNull=True
-            ),
+            readable_output=tableToMarkdown("Get Indicator Observations", data, removeNull=True),
             outputs_prefix="CTIX.IndicatorObservations",
             outputs=data,
             raw_response=data,
@@ -1632,9 +1567,7 @@ def get_conversion_feed_source_command(client: Client, args: dict[str, Any]) -> 
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown(
-                "Conversion Feed Source", data, removeNull=True
-            ),
+            readable_output=tableToMarkdown("Conversion Feed Source", data, removeNull=True),
             outputs_prefix="CTIX.ConversionFeedSource",
             outputs=data,
             raw_response=data,
@@ -1643,9 +1576,7 @@ def get_conversion_feed_source_command(client: Client, args: dict[str, Any]) -> 
         return results
 
 
-def get_lookup_threat_data_command(
-    client: Client, args: dict[str, Any]
-) -> List[CommandResults]:
+def get_lookup_threat_data_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """
     Get Lookup Threat Data Command
     :Description Get Lookup Threat Data
@@ -1657,9 +1588,7 @@ def get_lookup_threat_data_command(
     object_names = argToList(args.get("object_names"))
     page_size = args.get("page_size", 10)
     params = {"page_size": page_size}
-    response = client.get_lookup_threat_data(
-        object_type, ioc_type, object_names, params
-    )
+    response = client.get_lookup_threat_data(object_type, ioc_type, object_names, params)
     data_set = response.get("data").get("results")
     results = no_result_found(data_set)
     reliability = args.get("reliability")
@@ -1668,20 +1597,12 @@ def get_lookup_threat_data_command(
         return [results]
     else:
         results = iter_dbot_score(
-            results,
-            "confidence_score",
-            "ioc_type",
-            "Lookup Data",
-            "CTIX.ThreatDataLookup",
-            "id",
-            reliability
+            results, "confidence_score", "ioc_type", "Lookup Data", "CTIX.ThreatDataLookup", "id", reliability
         )
         return results
 
 
-def get_create_threat_data_command(
-    client: Client, args: dict[str, Any]
-) -> List[CommandResults]:
+def get_create_threat_data_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """
     Get or Create Threat Data Command
 
@@ -1703,18 +1624,24 @@ def get_create_threat_data_command(
     invalid_values = response["values_not_found"]["invalid_values"]
 
     if created_after_lookup:
-        created_after_lookup_results.append(CommandResults(
-            readable_output=tableToMarkdown("Not Found: Created", created_after_lookup, headers=['Name'], removeNull=True),
-            outputs_prefix="CTIX.ThreatDataGetCreate.NotFoundCreated",
-            outputs=created_after_lookup,
-        ))
+        created_after_lookup_results.append(
+            CommandResults(
+                readable_output=tableToMarkdown("Not Found: Created", created_after_lookup, headers=["Name"], removeNull=True),
+                outputs_prefix="CTIX.ThreatDataGetCreate.NotFoundCreated",
+                outputs=created_after_lookup,
+            )
+        )
 
     if invalid_values:
-        invalid_values_results.append([CommandResults(
-            readable_output=tableToMarkdown("Not Found: Invalid", invalid_values, headers=['Name'], removeNull=True),
-            outputs_prefix="CTIX.ThreatDataGetCreate.NotFoundInvalid",
-            outputs=invalid_values,
-        )])
+        invalid_values_results.append(
+            [
+                CommandResults(
+                    readable_output=tableToMarkdown("Not Found: Invalid", invalid_values, headers=["Name"], removeNull=True),
+                    outputs_prefix="CTIX.ThreatDataGetCreate.NotFoundInvalid",
+                    outputs=invalid_values,
+                )
+            ]
+        )
 
     if isinstance(results, CommandResults):
         return [results]
@@ -1780,7 +1707,7 @@ def get_all_notes(client: Client, args: dict[str, Any]) -> CommandResults:
         if not is_valid_uuid(object_id):
             return_error("Error: The object ID that was provided is not valid.")
         else:
-            params['object_id'] = object_id
+            params["object_id"] = object_id
 
     client_url = client.base_url + "ingestion/notes/"
     response = client.get_http_request(client_url, **params)
@@ -1803,10 +1730,8 @@ def get_note_details(client: Client, args: dict[str, Any]) -> CommandResults:
     client_url = client.base_url + f"ingestion/notes/{id}/"
     response = client.get_http_request(client_url)
 
-    if response['status'] == HTTPStatus.BAD_REQUEST:
-        return_error(
-            "Error: Note details could not be retrieved because a note with the provided ID could not be found."
-        )
+    if response["status"] == HTTPStatus.BAD_REQUEST:
+        return_error("Error: Note details could not be retrieved because a note with the provided ID could not be found.")
 
     note_detail = response.get("data", {})
     note_detail = no_result_found(note_detail)
@@ -1823,11 +1748,11 @@ def get_note_details(client: Client, args: dict[str, Any]) -> CommandResults:
 
 
 def create_note(client: Client, args: dict[str, Any]) -> CommandResults:
-    text = args['text']
+    text = args["text"]
     client_url = client.base_url + "ingestion/notes/"
-    object_id = args.get('object_id', None)
+    object_id = args.get("object_id", None)
     object_id = check_for_empty_variable(object_id, None)
-    object_type = args.get('object_type', None)
+    object_type = args.get("object_type", None)
     object_type = check_for_empty_variable(object_type, None)
 
     if object_id and not is_valid_uuid(object_id):
@@ -1837,13 +1762,7 @@ def create_note(client: Client, args: dict[str, Any]) -> CommandResults:
     elif object_type and not object_id:
         return_error("Error: `object_id` must be set as well if `object_type` is provided.")
 
-    payload = {
-        "text": text,
-        "type": "notes",
-        "meta_data": {
-            "component": "notes"
-        }
-    }
+    payload = {"text": text, "type": "notes", "meta_data": {"component": "notes"}}
 
     if object_id:
         payload["meta_data"]["component"] = "threatdata"
@@ -1868,12 +1787,12 @@ def create_note(client: Client, args: dict[str, Any]) -> CommandResults:
 
 
 def update_note(client: Client, args: dict[str, Any]) -> CommandResults:
-    id = args['id']
+    id = args["id"]
     text = args.get("text", None)
     client_url = client.base_url + f"ingestion/notes/{id}/"
-    object_id = args.get('object_id', None)
+    object_id = args.get("object_id", None)
     object_id = check_for_empty_variable(object_id, None)
-    object_type = args.get('object_type', None)
+    object_type = args.get("object_type", None)
     object_type = check_for_empty_variable(object_type, None)
 
     if object_id and not is_valid_uuid(object_id):
@@ -1886,7 +1805,7 @@ def update_note(client: Client, args: dict[str, Any]) -> CommandResults:
     payload = {}
 
     if text:
-        payload['text'] = text
+        payload["text"] = text
 
     if object_id:
         payload["meta_data"] = {}
@@ -1901,7 +1820,7 @@ def update_note(client: Client, args: dict[str, Any]) -> CommandResults:
 
     response = client.put_http_request(client_url, payload=payload, params={})
 
-    if response['status'] == HTTPStatus.BAD_REQUEST:
+    if response["status"] == HTTPStatus.BAD_REQUEST:
         return_error("Error: The note could not be updated because a note with the provided ID could not be found.")
 
     resp = response.get("data", {})
@@ -1919,11 +1838,11 @@ def update_note(client: Client, args: dict[str, Any]) -> CommandResults:
 
 
 def delete_note(client: Client, args: dict[str, Any]) -> CommandResults:
-    id = args['id']
+    id = args["id"]
     client_url = client.base_url + f"ingestion/notes/{id}/"
     response = client.delete_http_request(client_url)
 
-    if response['status'] == HTTPStatus.BAD_REQUEST:
+    if response["status"] == HTTPStatus.BAD_REQUEST:
         return_error("Error: The note could not be deleted because a note with the provided ID could not be found.")
 
     resp = response.get("data", {})
@@ -1941,20 +1860,20 @@ def delete_note(client: Client, args: dict[str, Any]) -> CommandResults:
 
 
 def make_request(client: Client, args: dict[str, Any]) -> List[CommandResults]:
-    type = args['type']
-    body = json.loads(args.get('body', "{}"))
-    params = json.loads(args.get('params', "{}"))
-    client_url = client.base_url + args['endpoint']
+    type = args["type"]
+    body = json.loads(args.get("body", "{}"))
+    params = json.loads(args.get("params", "{}"))
+    client_url = client.base_url + args["endpoint"].lstrip("/")
     response = {}
 
     if type == "GET":
-        response = client.get_http_request(client_url, body, **params)
+        response = client.get_http_request(client_url, body, params=params)
     elif type == "POST":
-        response = client.post_http_request(client_url, body, params)
+        response = client.post_http_request(client_url, body, params=params)
     elif type == "PUT":
-        response = client.put_http_request(client_url, body, params)
+        response = client.put_http_request(client_url, body, params=params)
     elif type == "DELETE":
-        response = client.delete_http_request(client_url, body, **params)
+        response = client.delete_http_request(client_url, body, params=params)
 
     resp = response.get("data", {})
 
@@ -2013,9 +1932,7 @@ def _lookup_cve_result(client: Client, cve_detail: dict[str, Any], page: int, pa
     modified = str(datetime.fromtimestamp(cve_detail.get("modified", 0)))
     name = cve_detail.get("name")
     extra_field_values = {k: cve_detail.get(k, None) for k in extra_fields}
-    cve_sources = [
-        source.get("id") for source in cve_detail.get("sources", []) if source.get("id")
-    ]
+    cve_sources = [source.get("id") for source in cve_detail.get("sources", []) if source.get("id")]
 
     response = client.get_vulnerability_product_details(cve_uuid, page, page_size)
     product_details_list = response.get("data", {}).get("results", [])
@@ -2024,12 +1941,8 @@ def _lookup_cve_result(client: Client, cve_detail: dict[str, Any], page: int, pa
 
     response = client.get_vulnerability_cvss_score(cve_uuid, page, page_size)
     cvss_score_list = response.get("data", {}).get("results", [])
-    cvss2 = next(
-        (result.get("cssv2") for result in cvss_score_list if result.get("cssv2")), None
-    )
-    cvss3 = next(
-        (result.get("cssv3") for result in cvss_score_list if result.get("cssv3")), None
-    )
+    cvss2 = next((result.get("cssv2") for result in cvss_score_list if result.get("cssv2")), None)
+    cvss3 = next((result.get("cssv3") for result in cvss_score_list if result.get("cssv3")), None)
     cvss_map_value = 0
     if cvss3:
         cvss_map_value = cvss3
@@ -2047,9 +1960,7 @@ def _lookup_cve_result(client: Client, cve_detail: dict[str, Any], page: int, pa
     description = None
     if cve_sources:
         for source in cve_sources:
-            response = client.get_vulnerability_source_description(
-                cve_uuid, source, page, page_size
-            )
+            response = client.get_vulnerability_source_description(cve_uuid, source, page, page_size)
             source_description = response.get("data", {}).get("result", {})
             if source_description:
                 description = source_description.get("description")
@@ -2086,16 +1997,13 @@ def main() -> None:
     access_id = params.get("access_id")
     secret_key = params.get("secret_key")
     verify = not params.get("insecure", False)
+    timeout = arg_to_number(params.get("timeout")) or 15
     reliability = params.get("integrationReliability", DBotScoreReliability.C)
 
     if DBotScoreReliability.is_valid_type(reliability):
-        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
-            reliability
-        )
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
-        raise Exception(
-            "Please provide a valid value for the Source Reliability parameter."
-        )
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
     args["reliability"] = reliability
     proxies = handle_proxy(proxy_param_name="proxy")
@@ -2103,18 +2011,14 @@ def main() -> None:
 
     try:
         client = Client(
-            base_url=base_url,
-            access_id=access_id,
-            secret_key=secret_key,
-            verify=verify,
-            proxies=proxies,
+            base_url=base_url, access_id=access_id, secret_key=secret_key, verify=verify, proxies=proxies, timeout=timeout
         )
 
         CMD_TO_FUNC = {
             "test-module": (test_module, (client,)),
             "ctix-create-tag": (create_tag_command, (client, args)),
             "ctix-get-tags": (get_tags_command, (client, args)),
-            "ctix-delete-tag": (delete_tag_command, (client, args)),
+            "ctix-disable-or-enable-tags": (disable_or_enable_tags_command, (client, args)),
             "ctix-allowed-iocs": (whitelist_iocs_command, (client, args)),
             "ctix-get-allowed-iocs": (get_whitelist_iocs_command, (client, args)),
             "ctix-remove-allowed-ioc": (remove_whitelisted_ioc_command, (client, args)),
@@ -2132,7 +2036,7 @@ def main() -> None:
             "ctix-search-for-tag": (search_for_tag_command, (client, args)),
             "ctix-get-indicator-details": (get_indicator_details_command, (client, args)),
             "ctix-get-indicator-tags": (get_indicator_tags_command, (client, args)),
-            "ctix-get-indicator-relations": (get_indicator_relations_command, (client, args)),
+            "ctix-get-object-relations": (get_indicator_relations_command, (client, args)),
             "ctix-get-indicator-observations": (get_indicator_observations_command, (client, args)),
             "ctix-get-conversion-feed-source": (get_conversion_feed_source_command, (client, args)),
             "ctix-get-lookup-threat-data": (get_lookup_threat_data_command, (client, args)),
@@ -2158,7 +2062,7 @@ def main() -> None:
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)} \
+            f"Failed to execute {demisto.command()} command.\nError:\n{e!s} \
             {traceback.format_exc()}"
         )
 

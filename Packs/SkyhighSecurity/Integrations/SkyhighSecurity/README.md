@@ -1,5 +1,6 @@
 
 ### Additional information
+
 Skyhigh Security is a cloud-based, multi-tenant service that enables Cloud Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
 This integration was integrated and tested with version 1 of Skyhigh Security.
 
@@ -8,11 +9,7 @@ This integration was integrated and tested with version 1 of Skyhigh Security.
 Do to [API](https://success.myshn.net/Skyhigh_CASB/Skyhigh_CASB_APIs/Incidents_API/02_Incidents_API_Paths#_responses_3) limitations, keep in mind that over time the integration can start to work more slowly.
 The solution is to restart the last-run.
 
-## Configure Skyhigh Security on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Skyhigh Security.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure Skyhigh Security in Cortex
 
    | **Parameter**  | **Description** | **Required** |
    | ---- | -------- | ------------ |
@@ -23,11 +20,9 @@ The solution is to restart the last-run.
    | Trust any certificate (not secure) |  | False  |
    | Use system proxy settings |  | False   |
 
-4. Click **Test** to validate the URLs, token, and connection.
-
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### skyhigh-security-incident-query

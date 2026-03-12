@@ -1,12 +1,12 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import re
 import subprocess
 import traceback
-from typing import Any, Dict
+from typing import Any
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
-''' STANDALONE FUNCTION '''
+""" STANDALONE FUNCTION """
 
 
 def dig_result(server: str, name: str):
@@ -26,7 +26,7 @@ def dig_result(server: str, name: str):
         if server:
             server = f"@{server}"
             dig_output = subprocess.check_output(
-                ['dig', server, name, '+short', '+identify'], stderr=subprocess.STDOUT, universal_newlines=True
+                ["dig", server, name, "+short", "+identify"], stderr=subprocess.STDOUT, universal_newlines=True
             )
 
             if not dig_output:
@@ -38,7 +38,7 @@ def dig_result(server: str, name: str):
 
         else:
             dig_output = subprocess.check_output(
-                ['dig', name, '+short', '+identify'], stderr=subprocess.STDOUT, universal_newlines=True
+                ["dig", name, "+short", "+identify"], stderr=subprocess.STDOUT, universal_newlines=True
             )
 
             if not dig_output:
@@ -69,7 +69,7 @@ def reverse_dig_result(server: str, name: str):
         if server:
             server = f"@{server}"
             dig_output = subprocess.check_output(
-                ['dig', server, '+answer', '-x', name, '+short', '+identify'], stderr=subprocess.STDOUT, universal_newlines=True
+                ["dig", server, "+answer", "-x", name, "+short", "+identify"], stderr=subprocess.STDOUT, universal_newlines=True
             )
 
             if not dig_output:
@@ -81,7 +81,7 @@ def reverse_dig_result(server: str, name: str):
 
         else:
             dig_output = subprocess.check_output(
-                ['dig', '+answer', '-x', name, '+short', '+identify'], stderr=subprocess.STDOUT, universal_newlines=True
+                ["dig", "+answer", "-x", name, "+short", "+identify"], stderr=subprocess.STDOUT, universal_newlines=True
             )
 
             if not dig_output:
@@ -109,17 +109,16 @@ def regex_result(dig_output: str, reverse_lookup: bool):
         (list[str],str): tuple of the resolved addresses and the dns server
     """
     # regex phrase to catch a number between 0 to 255
-    num_0_255 = r'(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])'
+    num_0_255 = r"(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])"
     try:
         if not reverse_lookup:
-            regex_results_ip = re.findall(rf'\b(?:{num_0_255}(?:\[\.\]|\.)){{3}}{num_0_255}\b', dig_output)
+            regex_results_ip = re.findall(rf"\b(?:{num_0_255}(?:\[\.\]|\.)){{3}}{num_0_255}\b", dig_output)
             if not regex_results_ip:
                 raise ValueError("Couldn't find results:\n")
             resolved_addresses = regex_results_ip[::2]
             dns_server = regex_results_ip[1]
         else:
-            regex_results_domain = re.findall(
-                rf'\b^[\S]+|(?:{num_0_255}(?:\[\.\]|\.)){{3}}{num_0_255}\b', dig_output)
+            regex_results_domain = re.findall(rf"\b^[\S]+|(?:{num_0_255}(?:\[\.\]|\.)){{3}}{num_0_255}\b", dig_output)
             if not regex_results_domain:
                 raise ValueError("Couldn't find results:\n")
             resolved_addresses = regex_results_domain[0]
@@ -129,10 +128,10 @@ def regex_result(dig_output: str, reverse_lookup: bool):
     return resolved_addresses, dns_server
 
 
-''' COMMAND FUNCTION '''
+""" COMMAND FUNCTION """
 
 
-def dig_command(args: Dict[str, Any]) -> CommandResults:
+def dig_command(args: dict[str, Any]) -> CommandResults:
     """Run Dig command on the server and get A record for the specified host
 
     Args:
@@ -141,8 +140,8 @@ def dig_command(args: Dict[str, Any]) -> CommandResults:
     Returns:
         CommandResults: XSOAR command results
     """
-    server = args.get('server', None)
-    name = args.get('name', None)
+    server = args.get("server", None)
+    name = args.get("name", None)
     reverse_lookup = argToBoolean(args.get("reverseLookup"))
 
     if reverse_lookup:
@@ -150,14 +149,10 @@ def dig_command(args: Dict[str, Any]) -> CommandResults:
     else:
         result = dig_result(server, name)
 
-    return CommandResults(
-        outputs_prefix='digresults',
-        outputs=result,
-        ignore_auto_extract=True
-    )
+    return CommandResults(outputs_prefix="digresults", outputs=result, ignore_auto_extract=True)
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():  # pragma: no cover
@@ -165,11 +160,11 @@ def main():  # pragma: no cover
         return_results(dig_command(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute Dig. Error: {str(ex)}')
+        return_error(f"Failed to execute Dig. Error: {ex!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -31,13 +31,19 @@
 <~XSOAR_SAAS>
 1. Go to **Settings & Info** > **Settings** > **Integrations** > **API Keys**.
 2. Click the **Copy URL** button in the top right corner.
-<~XSOAR_SAAS>
+</~XSOAR_SAAS>
 
 <~XSOAR_ON_PREM>
 Enter the server URL.
 </~XSOAR_ON_PREM>
 
+### NOTES:
 <~XSOAR_ON_PREM>
-### NOTE
 You do not need to provide an API Key ID.
 </~XSOAR_ON_PREM>
+<~XSOAR_SAAS>
+Make sure your API key has the proper permissions. For more information, please refer to the [Roles Management](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Roles-management) documentation.
+</~XSOAR_SAAS>
+<~XSIAM>
+Make sure your API key has the proper permissions. For more information, please refer to the [Roles Management](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Manage-Roles) documentation.
+</~XSIAM>

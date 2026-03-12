@@ -1,0 +1,40 @@
+{
+    "id": "Rubrik Threat Monitoring Object",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Rubrik Threat Monitoring Object",
+    "prevName": "Rubrik Threat Monitoring Object",
+    "color": "#F06292",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Rubrik Threat Monitoring Object",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "rubrikcdmclusterid": {
+                "extractAsIsIndicatorTypeId": "domainRepUnified",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "rubrikpolarisobjectname": {
+                "extractAsIsIndicatorTypeId": "domainRepUnified",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            }
+        }
+    },
+    "fromVersion": "6.10.0"
+}

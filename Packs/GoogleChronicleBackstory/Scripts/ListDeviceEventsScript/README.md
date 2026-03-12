@@ -1,5 +1,7 @@
 List all of the events discovered within your enterprise on a particular device within 2 hours earlier than the current time.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,11 +11,14 @@ List all of the events discovered within your enterprise on a particular device 
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * gcb-list-events
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -21,6 +26,7 @@ This script uses the following commands and scripts.
 | asset_identifier | Host Name, IP Address or MAC Address of the asset. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -390,9 +396,11 @@ This script uses the following commands and scripts.
 There are no outputs for this script.
 
 ## Script Example
+
 ```!ListDeviceEvents asset_identifier="ray-xxx-laptop"```
 
 ##### Context Example
+
 ```
 {
     "GoogleChronicleBackstory.Events": [
@@ -443,7 +451,9 @@ There are no outputs for this script.
 ```
 
 ##### Human Readable Output
+>
 >### Event(s) Details
+>
 >|Event Timestamp|Event Type|Principal Asset Identifier|Target Asset Identifier|Queried Domain|
 >|---|---|---|---|---|
 >| 2020-01-01T23:59:38Z | NETWORK_DNS | ray-xxx-laptop | 8.8.8.8 | ninthdecimal.com |

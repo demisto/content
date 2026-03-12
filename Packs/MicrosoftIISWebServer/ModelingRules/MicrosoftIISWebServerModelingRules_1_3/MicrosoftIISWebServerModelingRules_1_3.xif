@@ -59,7 +59,7 @@ alter // extract pre-parsed fields from the parsed_fields JSON object
         is_successful, XDM_CONST.OUTCOME_SUCCESS,
         log_type = "Error Log" or (sc_status_int >= 400 and sc_status_int <= 599), XDM_CONST.OUTCOME_FAILED,
         sc_win32_status_int > 0 and sc_status_int < 400, XDM_CONST.OUTCOME_PARTIAL),
-    xdm.event.outcome_reason = if(not is_successful, arraystring(arraycreate(coalesce(full_status_code, sc_status), sc_win32_status_reason, sc_status_reason, s_reason), "; ")),
+    xdm.event.outcome_reason = if(not is_successful and sc_status != null, arraystring(arraycreate(coalesce(full_status_code, sc_status), sc_win32_status_reason, sc_status_reason, s_reason), "; ")),
     xdm.event.type = log_type, 
     xdm.observer.name = s_computername,
     xdm.network.application_protocol = if(cs_version != "-", cs_version),

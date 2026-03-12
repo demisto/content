@@ -3,6 +3,7 @@
 If you have several Generic Export Indicators Service integration instances, make sure to use **different listening ports** to separate the outbound feeds.
 Note: After a successful configuration of an instance, if the 'test button' is clicked again, it may result in a failure due to an incorrect assumption that the port is already in use. Nevertheless, it is important to highlight that despite this issue, the instance will continue to function correctly.
 
+The Generic Export Indicators Service is a long-running integration. For more information about long-running integrations, check out the <~XSIAM>[Forward requests to long-running integrations](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Forward-Requests-to-Long-Running-Integrations) article.</~XSIAM> <~XSOAR_SAAS>Forward Requests to Long-Running Integrations article: [Cortex XSOAR 8 Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Forward-Requests-to-Long-Running-Integrations) or [Cortex XSOAR 8 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Integration-commands-in-the-CLI) documentation.</~XSOAR_SAAS>
 
 <~XSIAM>
 ### Access the Generic Export Indicators Service by Instance Name (HTTPS)
@@ -94,8 +95,9 @@ Use the following arguments in the URL to change the request:
 Make sure you run the ***!export-indicators-list-update*** command for the first time to initialize the export process.
 
 ### Important Notes:
-- If constantly using different queries for the same EDL instance through the *q* inline argument, it is recommended to use different instances of the EDL (one for each query), and set each one with a default query for better performance.
-- When using the *q* inline argument, the number of exported indicators is limited to 100,000 due to performance reasons. To export more than 100,000 indicators, create a new instance of the integration with the desired Indicator Query and List Size.
+- If you frequently use different queries for the same EDL instance through the *q* inline argument, use separate EDL instances (one per query) and set a default query for each to improve performance.
+- When using the *q* inline argument, the number of exported indicators is limited to 100,000 for performance reasons. To export more than 100,000 indicators, create a new integration instance with the desired Indicator Query and List Size.
+- When the integration is configured with ***Update list on demand only***, the indicator list refreshes based on the value set in the ***Refresh Rate*** parameter.
 
 ## Troubleshoot
 

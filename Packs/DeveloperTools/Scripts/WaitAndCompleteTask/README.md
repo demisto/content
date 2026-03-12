@@ -1,6 +1,7 @@
 Wait and complete tasks by given status. Used for test playbooks.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Wait and complete tasks by given status. Used for test playbooks.
 | Cortex XSOAR Version | 6.1.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -23,6 +25,7 @@ Wait and complete tasks by given status. Used for test playbooks.
 | complete_task | Whether to complete the task in addition to checking if it is completed. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -30,11 +33,14 @@ Wait and complete tasks by given status. Used for test playbooks.
 | WaitAndCompleteTask.CompletedTask | Task name that was completed by the script. | String |
 | WaitAndCompleteTask.FoundTask | Tasks that were found by the script. | Unknown |
 
-
 ## Script Examples
+
 ### Example command
+
 ```!WaitAndCompleteTask incident_id=6209 task_states=Waiting complete_task=true```
+
 ### Context Example
+
 ```json
 {
     "WaitAndCompleteTask": {

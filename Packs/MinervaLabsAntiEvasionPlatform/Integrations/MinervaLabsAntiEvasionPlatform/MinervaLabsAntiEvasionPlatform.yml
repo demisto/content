@@ -4,6 +4,7 @@ commonfields:
 name: Minerva Labs Anti-Evasion Platform
 display: Minerva Labs Anti-Evasion Platform
 category: Endpoint
+provider: Rapid7
 description: Minerva eliminates the endpoint security gap while empowering companies to embrace technology fearlessly.
 configuration:
 - display: Minerva Management Console URL
@@ -41,7 +42,7 @@ script:
     arguments:
     - name: data
       required: true
-      description: data
+      description: data.
     - name: type
       required: true
       auto: PREDEFINED
@@ -92,7 +93,7 @@ script:
       predefined:
       - 'True'
       - 'False'
-      description: isMonitorOnly
+      description: isMonitorOnly.
       defaultValue: 'False'
     outputs:
     - contextPath: Minerva.Vaccine.Name
@@ -143,7 +144,7 @@ script:
       description: A condition to apply to the search.
     - name: value
       required: true
-      description: value
+      description: value.
     outputs:
     - contextPath: Minerva.Process.Endpoint
       description: The name of the endpoint on which the process was run.
@@ -194,7 +195,7 @@ script:
       description: A condition to apply to the search.
     - name: value
       required: true
-      description: value
+      description: value.
     outputs:
     - contextPath: Minerva.Endpoint.Group
       description: The group to which the endpoint belongs.
@@ -314,7 +315,7 @@ script:
     description: Moves all the events from Archive state to New event state.
   isfetch: true
   runonce: false
-  dockerimage: demisto/python3:3.10.14.100715
+  dockerimage: demisto/python3:3.12.8.3296088
 tests:
 - No tests
 fromversion: 5.0.0

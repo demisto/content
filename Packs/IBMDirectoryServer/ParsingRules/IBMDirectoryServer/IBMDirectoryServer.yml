@@ -1,0 +1,6 @@
+id: IBM_LDAP_ParsingRule
+name: IBM LDAP Parsing Rule
+fromversion: 8.4.0   # Will be updated with XSIAM version updates 
+tags: []
+rules: ''
+samples: ''

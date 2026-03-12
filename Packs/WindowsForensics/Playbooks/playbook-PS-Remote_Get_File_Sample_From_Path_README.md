@@ -38,4 +38,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![PS Remote Get File Sample From Path](https://raw.githubusercontent.com/demisto/content/65c9d37bc1973acdb297e39173648cb1ba7cb0fb/Packs/WindowsForensicsPack/doc_files/PS_Remote_-_Get_File_Sample_From_Path.png)
+![PS Remote Get File Sample From Path](../doc_files/PS-Remote_Get_File_Sample_From_Path.png)

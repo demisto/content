@@ -1,4 +1,5 @@
 category: Utilities
+provider: Google
 commonfields:
   id: GoogleCloudTranslate
   version: -1
@@ -67,7 +68,7 @@ script:
     - contextPath: GoogleCloudTranslate.TranslateText.translated_text
       description: The translated text.
       type: String
-  dockerimage: demisto/google-cloud-translate:1.0.0.85793
+  dockerimage: demisto/google-cloud-translate:1.0.0.117475
   runonce: false
   script: '-'
   type: python

@@ -1,49 +1,47 @@
 Query dns names over https from Cloudflare or Google.
 
-## Configure DNSOverHttps on Cortex XSOAR
+## Configure DNSOverHttps in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for DNSOverHttps.
-3. Click **Add instance** to create and configure a new integration instance.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| DNS over HTTPS resolver | Select Cloudflare or Google DNS over HTTPS server to use | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | DNS over HTTPS resolver | Select Cloudflare or Google DNS over HTTPS server to use | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### doh-resolve
+
 ***
 Resolve a name to IP over HTTPS
-
 
 #### Base Command
 
 `doh-resolve`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | domain you want to resolve to IP. | Required | 
-| type | Type of DNS records you want to get. Possible values are: A, AAAA, TXT, MX, DNSKEY, NS. Default is A. | Optional | 
-| only_answers | If you only want to return the answers. Possible values are: True, False. Default is True. | Optional | 
-
+| domain | domain you want to resolve to IP. | Required |
+| type | Type of DNS records you want to get. Possible values are: A, AAAA, TXT, MX, DNSKEY, NS. Default is A. | Optional |
+| only_answers | If you only want to return the answers. Possible values are: True, False. Default is True. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DNSOverHTTPS.Results | List | DNS query results | 
-
+| DNSOverHTTPS.Results | List | DNS query results |
 
 #### Command Example
+
 ```!doh-resolve domain=domain.com```
 
 #### Context Example
+
 ```json
 {
     "DNSOverHTTPS": {
@@ -74,6 +72,7 @@ Resolve a name to IP over HTTPS
 #### Human Readable Output
 
 >### Results
+>
 >|TTL|data|name|type|
 >|---|---|---|---|
 >| 3600 | domain.com.edgekey.net. | www.domain.com | 5 |

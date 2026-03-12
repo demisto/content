@@ -1,0 +1,167 @@
+commonfields:
+  id: MicrosoftAtpScIndicatorCreate
+  version: -1
+name: MicrosoftAtpScIndicatorCreate
+script: ''
+type: python
+tags:
+  - Utilities
+comment: A polling wrapper script; creates a new indicator in Microsoft Defender for Endpoint.
+enabled: true
+args:
+  - description: The value of the indicator to update.
+    name: indicator_value
+    required: true
+  - description: Indicator Type.
+    name: indicator_type
+    auto: PREDEFINED
+    required: true
+    predefined:
+    - FileSha1
+    - FileSha256
+    - FileMd5
+    - IpAddress
+    - DomainName
+    - Url
+  - auto: PREDEFINED
+    description: The action taken if the indicator is discovered in the organization.
+    name: action
+    required: true
+    predefined:
+    - Audit
+    - Block
+    - BlockAndRemediate
+    - Allowed
+    - Warn
+  - auto: PREDEFINED
+    description: 'The severity of the malicious behavior identified by the data within the indicator, where High is the most severe and Informational is not severe at all.'
+    name: severity
+    predefined:
+    - Informational
+    - Low
+    - Medium
+    - High
+  - description: 'DateTime string indicating when the indicator expires. Format: (<number> <time unit>, e.g., 12 hours, 7 days).'
+    defaultValue: 14 days
+    name: expiration_time
+  - description: Brief description (100 characters or less) of the threat represented by the indicator.
+    name: indicator_description
+    required: true
+  - description: The indicator alert title.
+    name: indicator_title
+    required: true
+  - description: The application associated with the indicator.
+    name: indicator_application
+  - description: The indicator alert recommended actions.
+    name: recommended_actions
+  - description: A comma-separated list of RBAC group names the indicator is applied to.
+    isArray: true
+    name: rbac_group_names
+  - description: Flag for the rate limit retry.
+    name: ran_once_flag
+    deprecated: true
+  - description: Whether to generate an alert for the indicator.
+    name: generate_alert
+outputs:
+  - contextPath: MicrosoftATP.Indicators.id
+    description: Created by the system when the indicator is ingested. Generated GUID/unique identifier.
+    type: String
+  - contextPath: MicrosoftATP.Indicators.action
+    description: "The action to apply if the indicator is matched from within the targetProduct security tool. Possible values: unknown, allow, block, alert."
+    type: String
+  - contextPath: MicrosoftATP.Indicators.description
+    description: Brief description (100 characters or less) of the threat represented by the indicator.
+    type: String
+  - contextPath: MicrosoftATP.Indicators.expirationTime
+    description: "DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
+    type: Date
+  - contextPath: MicrosoftATP.Indicators.severity
+    description: "The severity of the malicious behavior identified by the data within the indicator. Possible values: Informational, Low, Medium, and High, where High is the most severe and Informational is not severe at all."
+    type: String
+  - contextPath: MicrosoftATP.Indicators.indicatorValue
+    description: The value of the indicator.
+    type: String
+  - contextPath: MicrosoftATP.Indicators.recommendedActions
+    description: Recommended actions for the indicator.
+    type: String
+  - contextPath: MicrosoftATP.Indicators.generateAlert
+    description: Whether an alert was generated.
+    type: Boolean
+  - contextPath: MicrosoftATP.Indicators.rbacGroupNames
+    description: A list of RBAC device group names where the indicator is exposed and active. Empty list if it is exposed to all devices.
+    type: Unknown
+  - contextPath: MicrosoftATP.Indicators.mitreTechniques
+    description: A list of MITRE techniques.
+    type: Unknown
+  - contextPath: MicrosoftATP.Indicators.indicatorType
+    description: "The indicator Type. Possible values: FileSha1, FileSha256, IpAddress, DomainName and Url."
+    type: String
+  - contextPath: MicrosoftATP.Indicators.lastUpdateTime
+    description: The last time the indicator was updated.
+    type: Date
+  - contextPath: MicrosoftATP.Indicators.createdByDisplayName
+    description: The display name of the created app.
+    type: String
+  - contextPath: MicrosoftATP.Indicators.application
+    description: The application associated with the indicator.
+    type: String
+  - contextPath: MicrosoftATP.Indicators.title
+    description: The indicator title.
+    type: String
+  - contextPath: MicrosoftATP.Indicators.createdBySource
+    description: The source that created the indicator. For example, PublicApi.
+    type: String
+  - contextPath: MicrosoftATP.Indicators.historicalDetection
+    description: Whether a historical detection exists.
+    type: Boolean
+  - contextPath: MicrosoftATP.Indicators.lastUpdatedBy
+    description: The identity of the user/application that last updated the indicator.
+    type: String
+  - contextPath: MicrosoftATP.Indicators.creationTimeDateTimeUtc
+    description: The date and time the indicator was created.
+    type: Date
+  - contextPath: MicrosoftATP.Indicators.category
+    description: An number representing the indicator category.
+    type: Number
+  - contextPath: MicrosoftATP.Indicators.createdBy
+    description: Unique identity of the user/application that submitted the indicator.
+    type: String
+  - contextPath: File.MD5
+    description: The MD5 hash of the file.
+    type: String
+  - contextPath: File.SHA1
+    description: The SHA1 hash of the file.
+    type: String
+  - contextPath: File.SHA256
+    description: The SHA256 hash of the file.
+    type: String
+  - contextPath: Domain.Name
+    description: 'The domain name. For example: "google.com".'
+    type: String
+  - contextPath: IP.Address
+    description: IP address.
+    type: String
+  - contextPath: URL.Data
+    description: The URL.
+    type: String
+  - contextPath: DBotScore.Indicator
+    description: The indicator that was tested.
+    type: String
+  - contextPath: DBotScore.Type
+    description: The indicator type.
+    type: String
+  - contextPath: DBotScore.Vendor
+    description: The vendor used to calculate the score.
+    type: String
+  - contextPath: DBotScore.Score
+    description: The actual score.
+    type: Number
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.11.4508456
+fromversion: 6.1.0
+isInternal: true
+tests:
+  - No tests (auto formatted)
+marketplaces:
+  - platform

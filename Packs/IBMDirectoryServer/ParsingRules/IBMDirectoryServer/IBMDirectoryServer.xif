@@ -1,0 +1,4 @@
+[INGEST:vendor = "ibm", product = "ldap", target_dataset = "ibm_ldap_raw", no_hit = keep]
+filter _raw_log ~= "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z"
+| alter
+_time = parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", _raw_log -> start);

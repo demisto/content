@@ -1,9 +1,22 @@
+## ⚠️ Important: Microsoft Graph Security Legacy Alerts Deprecation
+
+> **Note:** Microsoft has announced the deprecation of the **Legacy Alerts** API on **April 10, 2026**.
+
+According to [Microsoft documentation](https://learn.microsoft.com/fi-fi/graph/api/resources/alert?view=graph-rest-beta), the Legacy Alerts option will be fully deprecated on **April 10, 2026**.
+
+* **Impact:** After this date, configuring this integration to use the "Legacy Alerts" option will stop returning data.
+* **Action Required:** Users currently utilizing Legacy Alerts must migrate to the new **Alerts v2** API option to ensure continued data ingestion.
+
+__________________________________________________________________________________________________
+The eDiscovery APIs in Microsoft Graph only work with eDiscovery (Premium) cases.
+The legacy content search solution has been retired; you can now search by a [case](https://learn.microsoft.com/en-us/purview/ediscovery).
+
 # Authentication
-You can authenticate either by Azure Active Directory applications or by Azure Managed Identities.
+You can authenticate either by Entra ID applications or by Azure Managed Identities.
 
-### Authentication Based on Azure Active Directory Applications
+### Authentication Based on Entra ID Applications
 
-Microsoft integrations (Graph and Azure) in Cortex XSOAR use Azure Active Directory applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard compliant authentication services, which use an application to sign in or delegate authentication. For more information, see the Microsoft identity platform overview.
+Microsoft integrations (Graph and Azure) in Cortex XSOAR use Entra ID applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard compliant authentication services, which use an application to sign in or delegate authentication. For more information, see the Microsoft identity platform overview.
 
 There are two application authentication methods available:
 
@@ -19,6 +32,7 @@ If you previously had an API V1 configured based on the credentials obtained fro
 ### Important
 1. The ***eDiscovery*** and ***Threat Assessment*** commands are only supported when using the `Authorization Code flow` with `Delegated (work or school account)` permission type.
 2. When using `Authorization Code flow`, the connection should be tested using the ***!msg-auth-test*** command.
+3. When using the `Authorization Code flow` for this integration, you should log in as an administrator or a user with administrative privileges (`Security Reader` or `Security Administrator`) after running the ***msg-generate-login-url*** command and the login window appears. For more information, see [here](https://learn.microsoft.com/en-us/graph/security-authorization).
 
 ### Authentication Based on Azure Managed Identities
 ##### Note: This option is relevant only if the integration is running on Azure VM.

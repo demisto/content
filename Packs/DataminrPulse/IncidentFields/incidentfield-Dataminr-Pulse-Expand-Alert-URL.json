@@ -20,7 +20,8 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "Dataminr Pulse Alert"
+        "Dataminr Pulse Alert",
+        "Dataminr Pulse ReGenAI Alert"
     ],
     "associatedToAll": false,
     "unmapped": false,

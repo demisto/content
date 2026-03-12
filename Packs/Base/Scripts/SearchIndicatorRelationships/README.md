@@ -1,6 +1,7 @@
 This automation outputs the indicator relationships to context according to the provided query, using the entities, entityTypes, and relationships arguments. All arguments will use the AND operator. For example, using the following arguments entities=8.8.8.8 entities_types=Domain will provide only relationships that the 8.8.8.8 indicator has with indicators of type domain.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ This automation outputs the indicator relationships to context according to the 
 | Cortex XSOAR Version | 6.2.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -20,8 +22,10 @@ This automation outputs the indicator relationships to context according to the 
 | limit | The number of results to return. Default is 20. |
 | verbose | Whether all of the relationships attributes will be returned or just the basic attributes. Default is false and the returned values will be name, entity A value, entity A type, entity B value, entity B type, relationships type. If true, all attributes will be returned. |
 | revoked | The status of the relationships to return. Default is false. |
+| searchAfter | Use the searchAfter token from the preceding response to indicate the starting point for retrieving the subsequent batch of relationships. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -40,12 +44,16 @@ This automation outputs the indicator relationships to context according to the 
 | Relationships.LastSeenBySource | The last time seen by the source of the relationship. | string |
 | Relationships.Description | The description of the relationship. | string |
 | Relationships.Type | The type of the relationship. | string |
-
+| RelationshipsPagination | The searchAfter token for retrieving the next batch of relationships. | string |
 
 ## Script Examples
+
 ### Example command
+
 ```!SearchIndicatorRelationships entities=google.com entities_types=IP```
+
 ### Context Example
+
 ```json
 {
     "Relationships": [
@@ -67,15 +75,21 @@ This automation outputs the indicator relationships to context according to the 
             "Relationship": "related-to",
             "Reverse": "related-to"
         }
+    ],
+    "RelationshipsPagination": [
+    [
+      "1766338283557",
+      "8f8a88336e02a52ef31b3827b3b25d85"
     ]
+  ]
 }
 ```
 
 ### Human Readable Output
 
 >### Relationships
+>
 >|Entity A|Entity A Type|Entity B|Entity B Type|Relationship|
 >|---|---|---|---|---|
 >| 4.4.4.4 | IP | google.com | Domain | related-to |
 >| 8.8.8.8 | IP | google.com | Domain | related-to |
-

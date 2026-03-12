@@ -1,4 +1,5 @@
 category: Network Security
+provider: Palo Alto Networks
 commonfields:
   id: Palo Alto Networks - Prisma SASE
   version: -1
@@ -278,10 +279,10 @@ script:
     - description: Polling timeout in seconds.
       name: polling_timeout_in_seconds
       defaultValue: '600'
-    - description: For polling use - the job id of the push job.
+    - description: For polling use - the job ID of the push job.
       name: job_id
       deprecated: true
-    - description: For polling use - wether the paret process finished and child processes were creted.
+    - description: For polling use - whether the parent process finished and child processes were created.
       name: parent_finished
       deprecated: true
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
@@ -294,7 +295,7 @@ script:
       description: Configuration job ID.
       type: String
     - contextPath: PrismaSase.CandidateConfig.result
-      description: The configuration push result, e.g. OK, FAIL.
+      description: The configuration push result, e.g., OK, FAIL.
       type: String
     - contextPath: PrismaSase.CandidateConfig.details
       description: The configuration push details.
@@ -1295,10 +1296,10 @@ script:
       - weekly
       - monthly
     - name: frequency_hour
-      description: The frequency hour. If the frequency argument is daily, weekly or monthly, value must be provided. Possible values are 00-23.
+      description: The frequency hour. If the frequency argument is daily, weekly or monthly, a value must be provided. Possible values are 00-23.
     - auto: PREDEFINED
       name: day_of_week
-      description: The day of the week. If the frequency argument is weekly or monthly, value must be provided.
+      description: The day of the week. If the frequency argument is weekly or monthly, a value must be provided.
       predefined:
       - monday
       - tuesday
@@ -1308,7 +1309,7 @@ script:
       - saturday
       - sunday
     - name: day_of_month
-      description: The day of the month. If the frequency argument is monthly, value must be provided. Possible values are between 1 and 31.
+      description: The day of the month. If the frequency argument is monthly, a value must be provided. Possible values are between 1 and 31.
     - name: exception_list
       description: The user can exclude certain addresses from the list depending on the type of list.
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
@@ -1377,7 +1378,7 @@ script:
       - panw-bulletproof-ip-list
       - panw-highrisk-ip-list
       - panw-known-ip-list
-      description: The predefined ip list. If the type is predefined_ip, a value must be provided.
+      description: The predefined IP list. If the type is predefined_ip, a value must be provided.
     - auto: PREDEFINED
       name: predefined_url_list
       description: The predefined URL list. If the type is predefined_url, a value must be provided.
@@ -1395,7 +1396,7 @@ script:
       - weekly
       - monthly
     - name: frequency_hour
-      description: The frequency hour. If the frequency argument is daily, weekly or monthly, value must be provided. Possible values are 00-23.
+      description: The frequency hour. If the frequency argument is daily, weekly or monthly, a value must be provided. Possible values are 00-23.
     - auto: PREDEFINED
       name: day_of_week
       description: The day of the week. If the frequency argument is weekly or monthly, a value must be provided.
@@ -1469,14 +1470,60 @@ script:
       name: tsg_id
     description: Quarantine a host.
     name: prisma-sase-quarantine-host
-  dockerimage: demisto/python3:3.10.13.89009
+  - arguments:
+    - description: The domain of the directory-sync connected to the CIE.
+      name: domain
+      required: true
+    - description: The attribute value for the filter.
+      name: value_for_filter
+      required: true
+    - description: A comma-separated list of attributes to return.
+      defaultValue: "Common-Name, Unique Identifier, Manager, User Principal Name, Name, Distinguished Name"
+      isArray: true
+      name: attributes_to_return
+      required: false
+    - description: A comma-separated list of attributes to filter by.
+      defaultValue: "Distinguished Name, Unique Identifier, Common-Name, Name, User Principal Name"
+      isArray: true
+      name: attributes_to_filter_by
+      required: false
+    - description: The operator.
+      defaultValue: "Equal"
+      predefined:
+      - "Equal"
+      - "Starts With"
+      - "Ends With"
+      - "Contain"
+      - "Text Search"
+      name: operator
+      auto: PREDEFINED
+      required: false
+    description: Get the CIE user.
+    outputs:
+    - contextPath: PrismaSase.CIE.User.common_name
+      description: The common name.
+      type: String
+    - contextPath: PrismaSase.CIE.User.distinguished_name
+      description: The distinguished name.
+      type: String
+    - contextPath: PrismaSase.CIE.User.manager
+      description: The manager.
+      type: String
+    - contextPath: PrismaSase.CIE.User.name
+      description: The name.
+      type: String
+    - contextPath: PrismaSase.CIE.User.unique_identifier
+      description: The unique identifier.
+      type: String
+    name: prisma-sase-cie-user-get
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
 - PrismaSASE Test
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 fromversion: 6.5.0

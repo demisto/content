@@ -6,6 +6,7 @@ The script provides base functionality for other scripts that are supposed to be
 to the **Feed Related Indicators**.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -15,6 +16,7 @@ to the **Feed Related Indicators**.
 | XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -23,10 +25,12 @@ to the **Feed Related Indicators**.
 | columns | *Optional* Comma-separated column list (for instance `Value,Indicator Type`). If not provided, the full list of supported columns is assumed. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
 ## Human Readable Output
+
 ---
 
 | Indicator Type | Value | Reputation | Relationship Type | Entity Category | Timestamp UTC |

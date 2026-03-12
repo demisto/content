@@ -2,7 +2,7 @@
     "name": "Malware Lateral Movement Assessment and Response",
     "description": "This playbook identifies and remediates malware's lateral movement impact due to a phishing campaign in an organization.",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Accenture",
     "url": "",
     "email": "",
@@ -19,6 +19,15 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

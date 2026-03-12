@@ -1,6 +1,7 @@
 Takes Excel files (entryID) as an input and parses the contents to the War Room and context.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Takes Excel files (entryID) as an input and parses the contents to the War Room 
 | Tags | - |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -16,6 +18,7 @@ Takes Excel files (entryID) as an input and parses the contents to the War Room 
 | entryId | The entry ID of the Excel file. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

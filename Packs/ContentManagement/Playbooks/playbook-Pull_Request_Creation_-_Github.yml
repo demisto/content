@@ -127,6 +127,9 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
+      cicd_keep_placeholders_in_files:
+        complex:
+          root: inputs.CICDKeepPlaceholdersInFiles
       branch:
         complex:
           root: BranchName
@@ -1088,6 +1091,11 @@ inputs:
   required: true
   description: The name of the branch you want the changes pulled into, which must be an existing branch on the current repository.
   playbookInputQuery:
+- key: CICDKeepPlaceholdersInFiles
+  value: {}
+  required: false
+  description: Set to true if the files should be preserving ${} placeholders instead of replacing them with the context data.
+  playbookInputQuery: null
 outputs: []
 tests:
 - No tests (auto formatted)

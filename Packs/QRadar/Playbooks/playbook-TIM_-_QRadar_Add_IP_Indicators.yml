@@ -2,9 +2,7 @@ id: TIM - QRadar Add IP Indicators
 version: -1
 fromversion: 5.5.0
 name: TIM - QRadar Add IP Indicators
-description: This playbook queries indicators based on a pre-defined
-  query or results from a parent playbook, and adds the resulting indicators to a QRadar
-  Reference Set. The Reference Set name must be defined in the playbook inputs.
+description: This playbook queries indicators based on a pre-defined query or results from a parent playbook, and adds the resulting indicators to a QRadar Reference Set. The Reference Set name must be defined in the playbook inputs.
 starttaskid: "0"
 tasks:
   "0":
@@ -722,9 +720,8 @@ inputs:
 - key: QRadarBlackListIPReferenceSetName
   value: {}
   required: false
-  description: The name of the QRadar block list IP reference set to insert the data
-    to.
-  playbookInputQuery: null
+  description: The name of the QRadar block list IP reference set to insert the data to.
+  playbookInputQuery:
 - key: ""
   value: {}
   required: false
@@ -732,7 +729,7 @@ inputs:
   playbookInputQuery:
     query: ""
     queryEntity: indicators
-    results: null
+    results:
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -740,24 +737,29 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue: null
-        fromvalue: null
+        tovalue:
+        fromvalue:
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
 - key: QRadarWhiteListIPReferenceSetName
   value: {}
   required: false
-  description: The name of the QRadar allow list IP reference set to insert the data
-    in to.
-  playbookInputQuery: null
+  description: The name of the QRadar allow list IP reference set to insert the data in to.
+  playbookInputQuery:
 - key: QRadarWatchListIPReferenceSetName
   value: {}
   required: false
-  description: The name of the QRadar watch list IP reference set to insert the data
-    in to.
-  playbookInputQuery: null
+  description: The name of the QRadar watch list IP reference set to insert the data in to.
+  playbookInputQuery:
 outputs: []
 quiet: true
 tests:
 - No test
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- xsiam

@@ -1,6 +1,7 @@
+import base64
+
 import demistomock as demisto
 from CommonServerPython import *
-import base64
 
 MULTIPLIER = 4
 PADDING_CHAR = "="
@@ -21,7 +22,7 @@ def add_padding(value: str) -> str:
     # Since white spaces are ignored, we must ignore them when calculating the length in order to calculate the correct padding.
     value_length = len(value) - value.count(" ")
     padding_length = (MULTIPLIER - (value_length % MULTIPLIER)) % MULTIPLIER
-    return f"{value}{PADDING_CHAR*padding_length}"
+    return f"{value}{PADDING_CHAR * padding_length}"
 
 
 def decode(value: str) -> CommandResults:
@@ -38,7 +39,7 @@ def main():  # pragma: no cover
     try:
         return_results(decode(value))
     except Exception as e:
-        return_error(f"Failed to execute command." f"\nError:\n{str(e)}")
+        return_error(f"Failed to execute command.\nError:\n{e!s}")
 
 
 if __name__ in ("__main__", "builtins", "__builtin__"):

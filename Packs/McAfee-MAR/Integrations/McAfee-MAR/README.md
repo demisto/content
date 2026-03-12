@@ -21,13 +21,13 @@
 <h4>Prerequisite</h4>
 <p>Before you create a McAfee DXL certificate, make sure you have a Broker CA certificate (<code>brokercerts.crt</code>).</p>
 <ol>
-<li>Generate a certificate signing request (CSR) with a tool such as <a href="https://csrgenerator.com/" target="_blank" rel="noopener">CSR generator.</a><br><img src="https://user-images.githubusercontent.com/46249224/51332801-15c95780-1a85-11e9-9c10-9c80ce2644a5.png" alt="image">
+<li>Generate a certificate signing request (CSR) with a tool such as <a href="https://csrgenerator.com/" target="_blank" rel="noopener">CSR generator.</a><br><img src="../../doc_files/51332801-15c95780-1a85-11e9-9c10-9c80ce2644a5.png" alt="image">
 </li>
 <li>Save the CSR and the private key as separate files.</li>
 <li>Access your McAfee ePolicy Orchestrator environment.</li>
-<li>Navigate to <strong>Server Settings</strong>.<br><img src="https://user-images.githubusercontent.com/46249224/51327213-7eaad280-1a79-11e9-98a4-f38eaac9eb5f.png" alt="image">
+<li>Navigate to <strong>Server Settings</strong>.<br><img src="../../doc_files/51327213-7eaad280-1a79-11e9-98a4-f38eaac9eb5f.png" alt="image">
 </li>
-<li>Select <strong>DXL Certificates</strong> and click <strong>Edit</strong>.<br><img src="https://user-images.githubusercontent.com/46249224/51330887-237cde00-1a81-11e9-9cbf-e748467a1e87.png" alt="image">
+<li>Select <strong>DXL Certificates</strong> and click <strong>Edit</strong>.<br><img src="../../doc_files/51330887-237cde00-1a81-11e9-9cbf-e748467a1e87.png" alt="image">
 </li>
 <li>Click <strong>Import CSR</strong> and select the CSR file you created previously.</li>
 <li>Select your certificate and click <strong>Export Certificate</strong>.<br>This generates a CRT file.</li>
@@ -48,7 +48,7 @@
 </ul>
 </li>
 </ol>
-<p class="wysiwyg-indent3"><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-McAfee-MAR_McAfee_Active_Response.png" alt="McAfee_Active_Response.png"></p>
+<p class="wysiwyg-indent3"><img src="../../doc_files/integration-McAfee-MAR_McAfee_Active_Response.png" alt="McAfee_Active_Response.png"></p>
 <div class="cl-preview-section">
 <h2 id="configure-mcafee-active-response-on-demisto">Configure McAfee Active Response on Cortex XSOAR</h2>
 </div>
@@ -195,27 +195,27 @@
     "MAR": {
         "Services": [
             {
-                "status": "Running", 
-                "description": "Base Filtering Engine", 
-                "startuptype": "Automatic", 
-                "created_at": "2019-02-06T17:16:25.193Z", 
-                "user": "NT AUTHORITY\\LocalService", 
+                "status": "Running",
+                "description": "Base Filtering Engine",
+                "startuptype": "Automatic",
+                "created_at": "2019-02-06T17:16:25.193Z",
+                "user": "NT AUTHORITY\\LocalService",
                 "name": "BFE"
-            }, 
+            },
             {
-                "status": "Running", 
-                "description": "Diagnostic Policy Service", 
-                "startuptype": "Automatic (Delayed Start)", 
-                "created_at": "2019-02-06T17:16:25.193Z", 
-                "user": "NT AUTHORITY\\LocalService", 
+                "status": "Running",
+                "description": "Diagnostic Policy Service",
+                "startuptype": "Automatic (Delayed Start)",
+                "created_at": "2019-02-06T17:16:25.193Z",
+                "user": "NT AUTHORITY\\LocalService",
                 "name": "DPS"
-            }, 
+            },
             {
-                "status": "Stopped", 
-                "description": "Encrypting File System (EFS)", 
-                "startuptype": "Manual", 
-                "created_at": "2019-02-06T17:16:25.193Z", 
-                "user": "LocalSystem", 
+                "status": "Stopped",
+                "description": "Encrypting File System (EFS)",
+                "startuptype": "Manual",
+                "created_at": "2019-02-06T17:16:25.193Z",
+                "user": "LocalSystem",
                 "name": "EFS"
             }
         ]
@@ -227,7 +227,7 @@
 <h5 id="human-readable-output">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/46249224/53962321-6f4c1b00-40f3-11e9-9694-46e36aa9a85c.png" alt="image"></p>
+<p><img src="../../doc_files/53962321-6f4c1b00-40f3-11e9-9694-46e36aa9a85c.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-a-list-of-collectors">2. Get a list of collectors</h3>
@@ -264,7 +264,7 @@
 <h5 id="human-readable-output-1">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/46249224/53962359-8c80e980-40f3-11e9-95ec-01be67333154.png" alt="image"></p>
+<p><img src="../../doc_files/53962359-8c80e980-40f3-11e9-95ec-01be67333154.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="search-endpoint-data-crossed-by-multiple-collectors">3. Search endpoint data crossed by multiple collectors</h3>
@@ -361,25 +361,25 @@
     "MAR": {
         "SearchMultiple": [
             {
-                "status": "Stopped", 
-                "description": "Volume Shadow Copy", 
-                "startuptype": "Manual", 
-                "ip_address": "192.168.1.156", 
-                "created_at": "2019-02-06T17:20:57.204Z", 
-                "hostname": "WIN-AQ0LQQOG4Q7", 
-                "user": "LocalSystem", 
-                "os": "Microsoft Windows [Version 6.3.9600]", 
+                "status": "Stopped",
+                "description": "Volume Shadow Copy",
+                "startuptype": "Manual",
+                "ip_address": "192.168.1.156",
+                "created_at": "2019-02-06T17:20:57.204Z",
+                "hostname": "WIN-AQ0LQQOG4Q7",
+                "user": "LocalSystem",
+                "os": "Microsoft Windows [Version 6.3.9600]",
                 "name": "VSS"
-            }, 
+            },
             {
-                "status": "Running", 
-                "description": "Network Store Interface Service", 
-                "startuptype": "Automatic", 
-                "ip_address": "192.168.1.156", 
-                "created_at": "2019-02-06T17:20:57.204Z", 
-                "hostname": "WIN-AQ0LQQOG4Q7", 
-                "user": "NT Authority\\LocalService", 
-                "os": "Microsoft Windows [Version 6.3.9600]", 
+                "status": "Running",
+                "description": "Network Store Interface Service",
+                "startuptype": "Automatic",
+                "ip_address": "192.168.1.156",
+                "created_at": "2019-02-06T17:20:57.204Z",
+                "hostname": "WIN-AQ0LQQOG4Q7",
+                "user": "NT Authority\\LocalService",
+                "os": "Microsoft Windows [Version 6.3.9600]",
                 "name": "nsi"
             }
         ]
@@ -391,7 +391,7 @@
 <h5 id="human-readable-output-2">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/46249224/53962402-a7535e00-40f3-11e9-90d7-65d334ae475f.png" alt="image"></p>
+<p><img src="../../doc_files/53962402-a7535e00-40f3-11e9-90d7-65d334ae475f.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-information-for-services">4. Get information for services</h3>
@@ -498,27 +498,27 @@
     "MAR": {
         "Services": [
             {
-                "Status": "Running", 
-                "Description": "Base Filtering Engine", 
-                "Startuptype": "Automatic", 
-                "created_at": "2019-03-06T15:04:16.193Z", 
-                "User": "NT AUTHORITY\\LocalService", 
+                "Status": "Running",
+                "Description": "Base Filtering Engine",
+                "Startuptype": "Automatic",
+                "created_at": "2019-03-06T15:04:16.193Z",
+                "User": "NT AUTHORITY\\LocalService",
                 "Name": "BFE"
-            }, 
+            },
             {
-                "Status": "Running", 
-                "Description": "Diagnostic Policy Service", 
-                "Startuptype": "Automatic (Delayed Start)", 
-                "created_at": "2019-03-06T15:04:16.193Z", 
-                "User": "NT AUTHORITY\\LocalService", 
+                "Status": "Running",
+                "Description": "Diagnostic Policy Service",
+                "Startuptype": "Automatic (Delayed Start)",
+                "created_at": "2019-03-06T15:04:16.193Z",
+                "User": "NT AUTHORITY\\LocalService",
                 "Name": "DPS"
-            }, 
+            },
             {
-                "Status": "Stopped", 
-                "Description": "Encrypting File System (EFS)", 
-                "Startuptype": "Manual", 
-                "created_at": "2019-03-06T15:04:16.193Z", 
-                "User": "LocalSystem", 
+                "Status": "Stopped",
+                "Description": "Encrypting File System (EFS)",
+                "Startuptype": "Manual",
+                "created_at": "2019-03-06T15:04:16.193Z",
+                "User": "LocalSystem",
                 "Name": "EFS"
             }
         ]
@@ -530,7 +530,7 @@
 <h5 id="human-readable-output-3">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/46249224/53962439-c18d3c00-40f3-11e9-9716-4876d3291139.png" alt="image"></p>
+<p><img src="../../doc_files/53962439-c18d3c00-40f3-11e9-9716-4876d3291139.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-information-for-processes">5. Get information for processes</h3>
@@ -677,35 +677,35 @@
     "MAR": {
         "Processes": [
             {
-                "Uptime": 8468384, 
-                "Imagepath": "C:\\WINDOWS\\SYSTEM32\\CSRSS.EXE", 
-                "User_id": "S-1-5-18", 
-                "Name": "CSRSS.EXE", 
-                "Usertime": 3, 
-                "created_at": "2019-02-07T09:16:39.195Z", 
-                "Parentname": "-", 
-                "Cmdline": "-", 
-                "Sha1": "C79E4586989EBB8E8F8084B5EB49AFBFD243A625", 
-                "User": "NT AUTHORITY\\SYSTEM", 
-                "Kerneltime": 16, 
-                "Size": 2048, 
-                "Id": 336, 
+                "Uptime": 8468384,
+                "Imagepath": "C:\\WINDOWS\\SYSTEM32\\CSRSS.EXE",
+                "User_id": "S-1-5-18",
+                "Name": "CSRSS.EXE",
+                "Usertime": 3,
+                "created_at": "2019-02-07T09:16:39.195Z",
+                "Parentname": "-",
+                "Cmdline": "-",
+                "Sha1": "C79E4586989EBB8E8F8084B5EB49AFBFD243A625",
+                "User": "NT AUTHORITY\\SYSTEM",
+                "Kerneltime": 16,
+                "Size": 2048,
+                "Id": 336,
                 "Md5": "B2D3F07F5E8A13AF988A8B3C0A800880"
-            }, 
+            },
             {
-                "Uptime": 8468383, 
-                "Imagepath": "C:\\WINDOWS\\SYSTEM32\\WININIT.EXE", 
-                "User_id": "S-1-5-18", 
-                "Name": "WININIT.EXE", 
-                "Usertime": "-", 
-                "created_at": "2019-02-07T09:16:39.195Z", 
-                "Parentname": "-", 
-                "Cmdline": "wininit.exe", 
-                "Sha1": "83D158A31A41C3FC37DB569F187108C754C629C8", 
-                "User": "NT AUTHORITY\\SYSTEM", 
-                "Kerneltime": "-", 
-                "Size": 840, 
-                "Id": 388, 
+                "Uptime": 8468383,
+                "Imagepath": "C:\\WINDOWS\\SYSTEM32\\WININIT.EXE",
+                "User_id": "S-1-5-18",
+                "Name": "WININIT.EXE",
+                "Usertime": "-",
+                "created_at": "2019-02-07T09:16:39.195Z",
+                "Parentname": "-",
+                "Cmdline": "wininit.exe",
+                "Sha1": "83D158A31A41C3FC37DB569F187108C754C629C8",
+                "User": "NT AUTHORITY\\SYSTEM",
+                "Kerneltime": "-",
+                "Size": 840,
+                "Id": 388,
                 "Md5": "D9516405E05F24EDCD90B1988FAF3948"
             }
         ]
@@ -717,7 +717,7 @@
 <h5 id="human-readable-output-4">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/46249224/53962484-db2e8380-40f3-11e9-80d6-a3b6b5b3f688.png" alt="image"></p>
+<p><img src="../../doc_files/53962484-db2e8380-40f3-11e9-80d6-a3b6b5b3f688.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-information-for-winregistry">6. Get information for WinRegistry</h3>
@@ -1165,39 +1165,39 @@
     "MAR": {
        "UserProfiles": [
             {
-                "Domain": "-", 
-                "Installdate": "2017-10-02T06:15:20.000Z", 
-                "Localaccount": "False", 
-                "created_at": "2019-03-06T15:39:44.193Z", 
-                "Sid": "S-1-5-80-3880006512-4290199581-1648723128-3569869737-3631323133", 
-                "Accountname": "MSSQL$SQLEXPRESS", 
-                "Lockedout": "-", 
-                "Fullname": "-", 
-                "Accountdisabled": "-", 
+                "Domain": "-",
+                "Installdate": "2017-10-02T06:15:20.000Z",
+                "Localaccount": "False",
+                "created_at": "2019-03-06T15:39:44.193Z",
+                "Sid": "S-1-5-80-3880006512-4290199581-1648723128-3569869737-3631323133",
+                "Accountname": "MSSQL$SQLEXPRESS",
+                "Lockedout": "-",
+                "Fullname": "-",
+                "Accountdisabled": "-",
                 "Passwordexpires": "-"
-            }, 
+            },
             {
-                "Domain": "WIN-AQ0LQQOG4Q7", 
-                "Installdate": "2017-09-17T02:20:46.000Z", 
-                "Localaccount": "True", 
-                "created_at": "2019-03-06T15:39:44.193Z", 
-                "Sid": "S-1-5-21-2851129524-1971544412-1620677069-500", 
-                "Accountname": "Administrator", 
-                "Lockedout": "False", 
-                "Fullname": "-", 
-                "Accountdisabled": "False", 
+                "Domain": "WIN-AQ0LQQOG4Q7",
+                "Installdate": "2017-09-17T02:20:46.000Z",
+                "Localaccount": "True",
+                "created_at": "2019-03-06T15:39:44.193Z",
+                "Sid": "S-1-5-21-2851129524-1971544412-1620677069-500",
+                "Accountname": "Administrator",
+                "Lockedout": "False",
+                "Fullname": "-",
+                "Accountdisabled": "False",
                 "Passwordexpires": "False"
-            }, 
+            },
             {
-                "Domain": "WIN-AQ0LQQOG4Q7", 
-                "Installdate": "-", 
-                "Localaccount": "True", 
-                "created_at": "2019-03-06T15:39:44.193Z", 
-                "Sid": "S-1-5-21-2851129524-1971544412-1620677069-501", 
-                "Accountname": "Guest", 
-                "Lockedout": "False", 
-                "Fullname": "-", 
-                "Accountdisabled": "True", 
+                "Domain": "WIN-AQ0LQQOG4Q7",
+                "Installdate": "-",
+                "Localaccount": "True",
+                "created_at": "2019-03-06T15:39:44.193Z",
+                "Sid": "S-1-5-21-2851129524-1971544412-1620677069-501",
+                "Accountname": "Guest",
+                "Lockedout": "False",
+                "Fullname": "-",
+                "Accountdisabled": "True",
                 "Passwordexpires": "False"
             }
         ]
@@ -1209,7 +1209,7 @@
 <h5 id="human-readable-output-5">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/46249224/53962572-192ba780-40f4-11e9-8e89-f8b1bd3bb2d4.png" alt="image"></p>
+<p><img src="../../doc_files/53962572-192ba780-40f4-11e9-8e89-f8b1bd3bb2d4.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-information-for-scheduled-tasks">10. Get information for scheduled tasks</h3>
@@ -1321,21 +1321,21 @@
     "MAR": {
        "ScheduledTasks": [
             {
-                "Status": "Ready", 
-                "Username": "SYSTEM", 
-                "created_at": "2019-03-06T15:41:29.195Z", 
-                "Schedule_on": "Log On, Daily", 
-                "Last_run": "2019-03-05T16:54:08.000Z", 
-                "Taskname": "GoogleUpdateTaskMachineCore", 
+                "Status": "Ready",
+                "Username": "SYSTEM",
+                "created_at": "2019-03-06T15:41:29.195Z",
+                "Schedule_on": "Log On, Daily",
+                "Last_run": "2019-03-05T16:54:08.000Z",
+                "Taskname": "GoogleUpdateTaskMachineCore",
                 "Folder": "/"
-            }, 
+            },
             {
-                "Status": "Disabled", 
-                "Username": "SYSTEM", 
-                "created_at": "2019-03-06T15:41:29.195Z", 
-                "Schedule_on": "Idle", 
-                "Last_run": "2017-09-17T02:32:59.000Z", 
-                "Taskname": ".NET Framework NGEN v4.0.30319 64 Critical", 
+                "Status": "Disabled",
+                "Username": "SYSTEM",
+                "created_at": "2019-03-06T15:41:29.195Z",
+                "Schedule_on": "Idle",
+                "Last_run": "2017-09-17T02:32:59.000Z",
+                "Taskname": ".NET Framework NGEN v4.0.30319 64 Critical",
                 "Folder": "/Microsoft/Windows/.NET Framework"
             }
         ]
@@ -1347,7 +1347,7 @@
 <h5 id="human-readable-output-6">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/46249224/53962702-6e67b900-40f4-11e9-825a-06f1e377c323.png" alt="image"></p>
+<p><img src="../../doc_files/53962702-6e67b900-40f4-11e9-825a-06f1e377c323.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-information-for-hosts">11. Get information for hosts</h3>
@@ -1444,9 +1444,9 @@
     "MAR": {
        "HostInfo": [
             {
-                "Os": "Microsoft Windows [Version 6.3.9600]", 
-                "created_at": "2019-03-06T15:44:10.192Z", 
-                "Hostname": "WIN-AQ0LQQOG4Q7", 
+                "Os": "Microsoft Windows [Version 6.3.9600]",
+                "created_at": "2019-03-06T15:44:10.192Z",
+                "Hostname": "WIN-AQ0LQQOG4Q7",
                 "Ip_address": "192.168.1.156"
             }
         ]
@@ -1458,6 +1458,6 @@
 <h5 id="human-readable-output-7">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/46249224/53962741-88a19700-40f4-11e9-8443-73e9bba8badb.png" alt="image"></p>
+<p><img src="../../doc_files/53962741-88a19700-40f4-11e9-8443-73e9bba8badb.png" alt="image"></p>
 </div>
 </div>

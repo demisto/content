@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "From now on, the ***microsoft-atp-get-machine-by-ip*** command will return the full API response under `raw_response`.ֿ\nThe `raw_response` for the ***endpoint*** command was reverted to its behavior prior to version 1.16.34."
+}

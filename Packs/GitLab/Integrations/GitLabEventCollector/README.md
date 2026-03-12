@@ -1,29 +1,48 @@
-An event collector for Gitlab audit events and events using Gitlab's API.  
+An event collector for GitLab audit events using Gitlab's API.
 
-[Audit events API documentation](https://docs.gitlab.com/ee/api/audit_events.html)  
-[Events API documentation](https://docs.gitlab.com/ee/api/events.html)
-## Configure Gitlab Event Collector on Cortex XSIAM
+[Audit events API documentation](https://docs.gitlab.com/ee/api/audit_events.html)
 
-1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
-2. Search for Gitlab Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
+## Prerequisites
+
+To retrieve audit events using the API, you must authenticate yourself as an Administrator.
+
+You must use [Personal access tokens](https://docs.gitlab.com/user/profile/personal_access_tokens.html):
+
+### Create a Personal Access Token
+
+1. In the upper-right corner, select your avatar.
+2. Select **Edit profile**.
+3. On the left sidebar, select **Personal access tokens**.
+4. Select **Add new token**.
+5. In **Token name**, enter a name for the token.
+6. Optional. In **Token description**, enter a description for the token.
+7. In **Expiration date**, enter an expiration date for the token.
+   - The token expires on that date at midnight UTC. A token with the expiration date of 2024-01-01 expires at 00:00:00 UTC on 2024-01-01.
+   - If you do not enter an expiration date, the expiration date is automatically set to 365 days later than the current date.
+   - By default, this date can be a maximum of 365 days later than the current date. In GitLab 17.6 or later, you can extend this limit to 400 days.
+8. Select the desired scopes (see [PAT scopes](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html)).
+9. Select **Create personal access token**.
+
+## Configure Gitlab Event Collector in Cortex
 
 | **Parameter** | **Description** | **Required** |
-|-------|-----------|-------|
-| Server Host   | Gitlab Git URL. | True     |
-| API key  | The request API key provided by Gitlab.  | True   |
-| Groups IDs  | A comma-separated list of group IDs to retrieve. To view your groups or to create a group, see [Manage Groups](https://docs.gitlab.com/ee/user/group/manage.html) in the Gitlab documentation. | False   |
-| Projects IDs    | A comma-separated list of project IDs to get. To view your projects or to create a project, see [Manage Projects](https://docs.gitlab.com/ee/user/project/working_with_projects.html#manage-projects) in the Gitlab documentation. | True         |
-| First fetch timestamp    | The period to retrieve events for.  In the format (\[number] \[time unit]). For example, 12 hours, 1 day, 3 months. | False |
-| The maximum number of events to fetch for each event type | Each fetch will bring the `limit` number of events for each type (audits, groups and projects) and each group/project ID. For example, if `limit` is set to 500 and groups/projects IDs are given as well, then the fetch will bring 500 audit events and 500 group/project events for each group/project ID. | False |
-| Trust any certificate (not secure) | Use SSL secure connection or ‘None’.  | False  |
-| User system proxy settings  | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.  | False  |
+| --- | --- | --- |
+| Server URL |  | True |
+| API Key | The personal access token created above with Administrator authorization. | True |
+| Fetch Instance Audit Events | When checked, the fetch mechanism will fetch events from the audit_events endpoint. That endpoint requires Administrator authorization. See [Audit Events API documentation](https://docs.gitlab.com/api/audit_events/) for more details. |  |
+| Groups IDs |  | False |
+| Projects IDS |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, for example, 12 hours, 7 days, 3 months, 1 year) |  | True |
+| The maximum number of events per fetch for each event type | Each fetch will bring the \`limit\` number of events for each type \(audits, groups and projects\) and each group/project ID. For example, if \`limit\` is set to 500 and groups/projects IDs are given as well, then the fetch will bring 500 audit events and 500 group/project events for each group/project ID. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, tokens, and connection.
 ## Commands
+
 You can execute the following command from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 #### gitlab-get-events
+
 ***
 Manual command to fetch events and display them.
 
@@ -35,9 +54,7 @@ Manual command to fetch events and display them.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Default is False. | True | 
-
-
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Default is False. | True |
 
 #### Context Output
 

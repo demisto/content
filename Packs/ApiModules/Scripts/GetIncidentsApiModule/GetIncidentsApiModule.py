@@ -1,4 +1,5 @@
 from CommonServerPython import *
+from datetime import datetime
 
 DEFAULT_LIMIT = 500
 DEFAULT_PAGE_SIZE = 100
@@ -57,14 +58,14 @@ def format_incident(inc: dict, fields_to_populate: list[str], include_context: b
     Returns:
         dict: The formatted incident.
     """
-    custom_fields = inc.pop('CustomFields', {})
+    custom_fields = inc.pop("CustomFields", {})
     inc.update(custom_fields or {})
     if fields_to_populate:
         inc = {k: v for k, v in inc.items() if k.lower() in {val.lower() for val in fields_to_populate}}
         if any(f.lower() == "customfields" for f in fields_to_populate):
             inc["CustomFields"] = custom_fields
     if include_context:
-        inc['context'] = execute_command("getContext", {"id": inc["id"]}, extract_contents=True)
+        inc["context"] = execute_command("getContext", {"id": inc["id"]}, extract_contents=True)
     return inc
 
 
@@ -100,27 +101,27 @@ def get_incidents_with_pagination(
     demisto.debug(f"Running getIncidents with {query=}")
     while len(incidents) < limit:
         page += 1
-        page_results = execute_command(
-            "getIncidents",
-            args={
-                "query": query,
-                "fromdate": from_date,
-                "todate": to_date,
-                "page": page,
-                "populateFields": populate_fields,
-                "size": page_size,
-                "sort": sort,
-            },
-            extract_contents=True,
-            fail_on_error=True,
-        ).get('data') or []
+        page_results = (
+            execute_command(
+                "getIncidents",
+                args={
+                    "query": query,
+                    "fromdate": from_date,
+                    "todate": to_date,
+                    "page": page,
+                    "populateFields": populate_fields,
+                    "size": page_size,
+                    "sort": sort,
+                },
+                extract_contents=True,
+                fail_on_error=True,
+            ).get("data")
+            or []
+        )
         incidents += page_results
         if len(page_results) < page_size:
             break
-    return [
-        format_incident(inc, fields_to_populate, include_context)
-        for inc in incidents[:limit]
-    ]
+    return [format_incident(inc, fields_to_populate, include_context) for inc in incidents[:limit]]
 
 
 def prepare_fields_list(fields_list: list[str] | None) -> list[str]:
@@ -132,9 +133,7 @@ def prepare_fields_list(fields_list: list[str] | None) -> list[str]:
     Returns:
         list[str]: The prepared fields list.
     """
-    return list({
-        field.removeprefix("incident.") for field in fields_list if field
-    }) if fields_list else []
+    return list({field.removeprefix("incident.") for field in fields_list if field}) if fields_list else []
 
 
 def get_incidents(
@@ -143,8 +142,8 @@ def get_incidents(
     populate_fields: list[str] | None = None,
     non_empty_fields: list[str] | None = None,
     time_field: str = DEFAULT_TIME_FIELD,
-    from_date: datetime | None = None,
-    to_date: datetime | None = None,
+    from_date: datetime | None = None,  # type: ignore[name-defined]
+    to_date: datetime | None = None,  # type: ignore[name-defined]
     include_context: bool = False,
     limit: int = DEFAULT_LIMIT,
     page_size: int = DEFAULT_PAGE_SIZE,

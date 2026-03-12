@@ -5,6 +5,10 @@ name: GoogleThreatIntelligence
 display: Google Threat Intelligence
 fromversion: 6.10.0
 category: Data Enrichment & Threat Intelligence
+provider: Google
+sectionorder:
+- Connect
+- Collect
 description: Analyzes suspicious hashes, URLs, domains, and IP addresses.
 configuration:
 - display: API Key (leave empty. Fill in the API key in the password field.)
@@ -13,6 +17,7 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
+  section: Connect
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -26,92 +31,110 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   required: false
+  section: Collect
 - display: GTI Malicious Verdict. Check Google Threat Intelligence verdict to consider the file malicious.
   name: gti_malicious
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Collect
 - display: GTI Suspicious Verdict. Check Google Threat Intelligence verdict to consider the file suspicious.
   name: gti_suspicious
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Collect
 - display: File Malicious Threshold. Minimum number of positive results from VT scanners to consider the file malicious.
   name: fileThreshold
   defaultvalue: '10'
   type: 0
   required: false
+  section: Collect
 - display: File Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the file suspicious.
   name: fileSuspiciousThreshold
   defaultvalue: '5'
   type: 0
   required: false
+  section: Collect
 - display: IP Malicious Threshold. Minimum number of positive results from VT scanners to consider the IP malicious.
   name: ipThreshold
   defaultvalue: '10'
   type: 0
   required: false
+  section: Collect
 - display: IP Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the IP suspicious.
   name: ipSuspiciousThreshold
   defaultvalue: '5'
   type: 0
   required: false
+  section: Collect
 - display: Disable reputation lookups for private IP addresses
   name: disable_private_ip_lookup
   defaultvalue: 'false'
   type: 8
   required: false
   additionalinfo: To reduce the number of lookups made to the VT API, this option can be selected to gracefully skip enrichment of any IP addresses allocated for private networks.
+  section: Collect
 - display: 'URL Malicious Threshold. Minimum number of positive results from VT scanners to consider the URL malicious.'
   name: urlThreshold
   defaultvalue: '10'
   type: 0
   required: false
+  section: Collect
 - display: 'URL Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the URL suspicious.'
   name: urlSuspiciousThreshold
   defaultvalue: '5'
   type: 0
   required: false
+  section: Collect
 - display: Domain Malicious Threshold. Minimum number of positive results from VT scanners to consider the Domain malicious.
   name: domainThreshold
   defaultvalue: '10'
   type: 0
   required: false
+  section: Collect
 - display: Domain Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the Domain suspicious.
   name: domainSuspiciousThreshold
   defaultvalue: '5'
   type: 0
   required: false
-- display: 'Preferred Vendors List. CSV list of vendors who are considered more trustworthy.'
+  section: Collect
+- display: Preferred Vendors List. CSV list of vendors who are considered more trustworthy.
   name: preferredVendors
   defaultvalue: ''
   type: 12
   required: false
-- display: 'Preferred Vendor Threshold. The minimum number of highly trusted vendors required to consider a domain, IP address, URL, or file as malicious. '
+  section: Collect
+- display: Preferred Vendor Threshold. The minimum number of highly trusted vendors required to consider a domain, IP address, URL, or file as malicious.
   name: preferredVendorsThreshold
   defaultvalue: '5'
   type: 0
   required: false
-- display: 'Enable score analyzing by Crowdsourced Yara Rules, Sigma, and IDS'
+  section: Collect
+- display: Enable score analyzing by Crowdsourced Yara Rules, Sigma, and IDS.
   name: crowdsourced_yara_rules_enabled
   type: 8
   defaultvalue: 'true'
   required: false
+  section: Collect
 - display: Crowdsourced Yara Rules Threshold
   name: yaraRulesThreshold
   type: 0
   defaultvalue: '1'
   required: false
+  section: Collect
 - display: Sigma and Intrusion Detection Rules Threshold
   name: SigmaIDSThreshold
   type: 0
   defaultvalue: '5'
   required: false
-- display: 'Domain Popularity Ranking Threshold'
+  section: Collect
+- display: Domain Popularity Ranking Threshold
   name: domain_popularity_ranking
   type: 0
   defaultvalue: '10000'
   required: false
+  section: Collect
 - display: IP Relationships
   name: ip_relationships
   type: 16
@@ -123,6 +146,7 @@ configuration:
   - referrer files
   - 'urls'
   defaultvalue: 'communicating files,downloaded files,referrer files,urls'
+  section: Collect
 - additionalinfo: Select the list of relationships to retrieve from the API.
   display: Domain Relationships
   name: domain_relationships
@@ -143,6 +167,7 @@ configuration:
   type: 16
   defaultvalue: 'cname records,caa records,communicating files,downloaded files,immediate parent,mx records,ns records,parent,referrer files,siblings,soa records,subdomains,urls'
   required: false
+  section: Collect
 - additionalinfo: Select the list of relationships to retrieve from the API.
   display: URL Relationships
   name: url_relationships
@@ -160,6 +185,7 @@ configuration:
   type: 16
   defaultvalue: 'communicating files,contacted domains,contacted ips,downloaded files,last serving ip address,network location,redirecting urls,redirects to,referrer files,referrer urls'
   required: false
+  section: Collect
 - display: File Relationships
   name: file_relationships
   type: 16
@@ -189,14 +215,17 @@ configuration:
   - pe resource parents
   - 'similar files'
   defaultvalue: 'carbonblack children,carbonblack parents,compressed parents,contacted domains,contacted ips,contacted urls,dropped files,email attachments,email parents,embedded domains,embedded ips,embedded urls,execution parents,itw domains,itw ips,overlay children,overlay parents,pcap children,pcap parents,pe resource children,pe resource parents,similar files'
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 script:
   script: ''
   type: python
@@ -858,6 +887,446 @@ script:
       description: Link to the domain investigation.
       type: String
     description: Checks the reputation of a domain.
+  - name: cve
+    arguments:
+    - name: cve
+      required: true
+      description: Provide CVE ID. Supports comma-separated values.
+      isArray: true
+    outputs:
+    - contextPath: CVE.CVSS.Score
+      description: CVSS score indicating the severity of the vulnerability.
+      type: Number
+    - contextPath: CVE.CVSS.Vector
+      description: CVSS vector string representing attack metrics and impact.
+      type: String
+    - contextPath: CVE.Description
+      description: Full textual description of the CVE, including affected components and exploitation details.
+      type: String
+    - contextPath: CVE.ID
+      description: Unique identifier for the CVE (e.g., CVE-2025-14205).
+      type: String
+    - contextPath: CVE.Modified
+      description: Timestamp when the CVE record was last modified (e.g., 1766963614).
+      type: Date
+    - contextPath: CVE.Published
+      description: Timestamp when the CVE was originally published (e.g., 1766963614).
+      type: Date
+    - contextPath: CVE.Relationships.EntityA
+      description: First entity in the relationship (usually the CVE ID).
+      type: String
+    - contextPath: CVE.Relationships.EntityAType
+      description: Type of the first entity (e.g., CVE).
+      type: String
+    - contextPath: CVE.Relationships.EntityB
+      description: Second entity in the relationship (e.g., file, IP, domain).
+      type: String
+    - contextPath: CVE.Relationships.EntityBType
+      description: Type of the second entity (e.g., File, Domain, IP).
+      type: String
+    - contextPath: CVE.Relationships.Relationship
+      description: Nature of the relationship between EntityA and EntityB (e.g., related-to).
+      type: String
+    - contextPath: CVE.Relationships.STIXID
+      description: STIX ID associated with the CVE relationship.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability rating of the threat intelligence source (e.g., A - Completely reliable, B - Usually reliable).
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.id
+      description: ID of the CVE.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.type
+      description: Data type returned (usually 'cve').
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.links.self
+      description: API link to the detailed CVE resource.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.urls_count
+      description: Number of URLs associated with the CVE.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.is_content_translated
+      description: Indicates if the CVE content has been machine-translated.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.autogenerated_tags
+      description: Tags automatically generated for this CVE.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.subscribers_count
+      description: Number of GTI users subscribed to updates for this CVE.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.risk_rating
+      description: GTI-assigned risk rating (e.g., Low/Medium/High/Critical).
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.title
+      description: Title of the external reference source.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.name
+      description: Name of the external reference source.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.url
+      description: URL of the external reference source.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.source_description
+      description: Description of the reference source.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv2_0.base_score
+      description: CVSS v2 base score from the source.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv2_0.temporal_score
+      description: CVSS v2 temporal score from the source.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv2_0.vector
+      description: CVSS v2 vector string.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv3_x.base_score
+      description: CVSS v3 base score from the source.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv3_x.temporal_score
+      description: CVSS v3 temporal score from the source.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv3_x.vector
+      description: CVSS v3 vector string.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv4_x.score
+      description: CVSS v4 base score from the source.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv4_x.vector
+      description: CVSS v4 vector string.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv4_x.threat.exploit_maturity
+      description: Threat metrics associated with CVSS v4.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv3_x_translated.temporal_score
+      description: Machine-translated CVSS v3 metrics.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv3_x_translated.base_score
+      description: Machine-translated CVSS v3 metrics.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.cvss.cvssv3_x_translated.vector
+      description: Machine-translated CVSS v3 metrics.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.published_date
+      description: Source publication date for the CVE information.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.md5
+      description: MD5 hash associated with the source content.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.sources.unique_id
+      description: Unique identifier for the source entry.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.name
+      description: Name/title of the CVE entry inside GTI.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.capabilities
+      description: Attacker capabilities related to the CVE.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.technologies
+      description: Technologies impacted by the CVE.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.counters.files
+      description: Number of malicious files associated with the CVE.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.counters.domains
+      description: Number of domains associated with the CVE.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.counters.ip_addresses
+      description: Number of IP addresses linked to the CVE.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.counters.urls
+      description: Number of URLs related to the CVE.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.counters.iocs
+      description: Total indicator count associated with the CVE.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.counters.subscribers
+      description: Number of subscribers following the CVE.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.counters.attack_techniques
+      description: Count of associated attack techniques (MITRE etc.).
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.cve_id
+      description: The CVE identifier (e.g., CVE-2024-12345).
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.domains_count
+      description: Number of domains involved in CVE activity.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.version_history.date
+      description: Date when the version entry was updated.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.version_history.version_notes
+      description: Notes about changes in CVE version history.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.alt_names
+      description: Alternate names or aliases for the CVE.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.recent_activity_summary
+      description: Recent activity score or summary related to exploitation.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.exploitation.exploit_release_date
+      description: Date when exploit code was released.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.exploitation.first_exploitation
+      description: Date when the CVE was first exploited.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.exploitation.tech_details_release_date
+      description: Date technical details were publicly released.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.mitigations
+      description: Mitigation steps for the CVE.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.top_icon_md5
+      description: MD5 hash of the top-listed malicious sample.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.description
+      description: Full CVE description.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.targeted_regions
+      description: Geographic regions targeted by exploitation.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.detection_names
+      description: Security vendor detection names linked to the CVE.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.vendor_fix_references
+      description: Vendor-published fix or patch references.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.malware_roles
+      description: Malware roles (dropper, loader, etc.) related to the CVE.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.collection_links
+      description: Related collection or reference links from GTI.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.source_regions_hierarchy
+      description: Hierarchy of affected regions sourced by GTI.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.references_count
+      description: Number of references for the CVE.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.creation_date
+      description: Date when the CVE entry was created in GTI.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.risk_factors
+      description: List of risk factors contributing to severity.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.exploit_availability
+      description: Availability status of exploit (e.g., Available/None).
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.merged_actors
+      description: Threat actors linked to this vulnerability.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.first_seen_details
+      description: Details on when this CVE was first observed.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.available_mitigation
+      description: Available mitigations for exploitation prevention.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.last_modification_date
+      description: Last updated timestamp for the CVE in GTI.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.mve_id
+      description: MVE (Multi-Vulnerability Event) ID for grouping related issues.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.tags
+      description: Tags associated with the CVE inside GTI.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.cvss.cvssv2_0.base_score
+      description: CVSS v2 base score.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.cvss.cvssv2_0.temporal_score
+      description: CVSS v2 temporal score.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.cvss.cvssv2_0.vector
+      description: CVSS v2 vector notation.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.cvss.cvssv3_x.base_score
+      description: CVSS v3 base score.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.cvss.cvssv3_x.temporal_score
+      description: CVSS v3 temporal score.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.cvss.cvssv3_x.vector
+      description: CVSS v3 vector string.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.cvss.cvssv4_x.score
+      description: CVSS v4 score.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.cvss.cvssv4_x.supplemental.provider_urgency
+      description: Provider urgency supplemental metric.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.cvss.cvssv4_x.supplemental.response_effort
+      description: Response effort supplemental metric.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.cvss.cvssv4_x.supplemental.recovery
+      description: Recovery supplemental metric.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.cvss.cvssv4_x.supplemental.safety
+      description: Safety supplemental metric.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.cvss.cvssv4_x.supplemental.value_density
+      description: Value density supplemental metric.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.cvss.cvssv4_x.supplemental.automatable
+      description: Indicates if exploitation can be automated.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.cvss.cvssv4_x.vector
+      description: CVSS v4 vector string.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.cvss.cvssv4_x.threat.exploit_maturity
+      description: Exploit maturity level (e.g., High/Functional/Proof of Concept).
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.cvss.cvssv3_x_translated.base_score
+      description: Machine-translated CVSS v3 base score.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.cvss.cvssv3_x_translated.temporal_score
+      description: Machine-translated CVSS v3 temporal score.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.cvss.cvssv3_x_translated.vector
+      description: Machine-translated CVSS v3 vector.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.collection_type
+      description: Type of GTI collection this CVE belongs to.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.targeted_industries
+      description: Industries targeted by exploitation of this CVE.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.cwe.title
+      description: Title of the mapped CWE (root cause).
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.cwe.id
+      description: CWE identifier linked to the CVE.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.affected_systems
+      description: Systems or platforms affected by the vulnerability.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.tags_details
+      description: Detailed metadata for GTI tags.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.executive_summary
+      description: High-level summary of the vulnerability impact.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.priority
+      description: GTI-assigned priority score/category.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.alt_names_details
+      description: Additional details about alternate CVE names.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.targeted_regions_hierarchy
+      description: Hierarchy of targeted regions for exploitation.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.epss.percentile
+      description: EPSS percentile (Exploit Prediction Scoring System).
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.epss.score
+      description: EPSS score indicating exploitation likelihood.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.date_of_disclosure
+      description: Date when the vulnerability was publicly disclosed.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.days_to_report
+      description: Time taken from discovery to reporting.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.targeted_industries_tree
+      description: Hierarchical breakdown of targeted industries.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.status
+      description: Current vulnerability status (e.g., Active, Resolved).
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.intended_effects
+      description: Intent or malicious outcomes achieved by exploiting the CVE.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.private
+      description: Whether the CVE entry is private in GTI.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.targeted_informations
+      description: Types of information targeted by attackers.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.ip_addresses_count
+      description: Number of IPs related to the vulnerability.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.mati_genids_dict.report_id
+      description: MATI report ID linked to the CVE.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.mati_genids_dict.cve_id
+      description: CVE ID mapped within MATI dataset.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.mati_genids_dict.mve_id
+      description: MVE ID mapped within MATI dataset.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.exploitation_state
+      description: Current exploitation state (Known Exploited / No Evidence).
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.field_sources.source.sources
+      description: Source list for specific enriched fields.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.field_sources.source.source_url
+      description: URL of the field’s data source.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.field_sources.source.field_type
+      description: Type of field data (e.g., text, reference).
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.field_sources.source.source_name
+      description: Name of the field’s data source provider.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.field_sources.field
+      description: Field name being sourced.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.field_sources.source.sources.source_names
+      description: Names of the sources contributing to this field.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.field_sources.source.sources.source_urls
+      description: URLs of the sources contributing to this field.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.exploitation_vectors
+      description: Methods or vectors used to exploit the vulnerability.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.threat_scape
+      description: Threat landscape and context around the CVE.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.operating_systems
+      description: Operating systems impacted by the CVE.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.last_seen_details
+      description: Last observed exploitation activity details.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.workarounds
+      description: Workarounds available to mitigate the vulnerability.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.motivations
+      description: Attacker motivations behind exploiting this CVE.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.predicted_risk_rating
+      description: AI-generated predicted risk rating.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.files_count
+      description: Number of files linked to the CVE.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.exploitation_consequence
+      description: Possible consequences of exploitation.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.origin
+      description: Origin/source of the CVE data.
+      type: String
+    - contextPath: GoogleThreatIntelligence.CVE.attributes.aggregations
+      description: Aggregated threat or metadata information.
+      type: List
+    - contextPath: GoogleThreatIntelligence.CVE.context_attributes.shared_with_me
+      description: Indicates if the CVE is shared with the user.
+      type: Boolean
+    - contextPath: GoogleThreatIntelligence.CVE.context_attributes.role
+      description: User role for viewing this CVE in GTI.
+      type: String
+    description: Retrieves CVE information from Google Threat Intelligence.
   - name: file-scan
     arguments:
     - name: entryID
@@ -1679,8 +2148,94 @@ script:
     - contextPath: GoogleThreatIntelligence.Submission.Type
       description: Type of the file.
       type: String
+  - name: gti-privatescanning-url
+    description: Checks the reputation of a private URL.
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: Private URL to check.
+      isArray: true
+    outputs:
+    - contextPath: GoogleThreatIntelligence.URL.attributes.favicon.raw_md5
+      description: The MD5 hash of the URL.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.favicon.dhash
+      description: Difference hash.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_content_length
+      description: The last HTTPS response length.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_headers.date
+      description: The last response header date.
+      type: Date
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_headers.x-sinkhole
+      description: DNS sinkhole from last response.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_headers.content-length
+      description: The content length of the last response.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_headers.content-type
+      description: The content type of the last response.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_content_sha256
+      description: The SHA-256 hash of the content of the last response.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_http_response_code
+      description: Last response status code.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_final_url
+      description: Last final URL.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.url
+      description: The URL itself.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.title
+      description: Title of the page.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_analysis_stats.harmless
+      description: The number of engines that found the domain to be harmless.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_analysis_stats.malicious
+      description: The number of engines that found the indicator to be malicious.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_analysis_stats.suspicious
+      description: The number of engines that found the indicator to be suspicious.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_analysis_stats.undetected
+      description: The number of engines that could not detect the indicator.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.last_analysis_stats.timeout
+      description: The number of engines that timed out for the indicator.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.URL.attributes.outgoing_links
+      description: Outgoing links of the URL page.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.type
+      description: Type of the indicator (private_url).
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.id
+      description: ID of the indicator.
+      type: String
+    - contextPath: GoogleThreatIntelligence.URL.links.self
+      description: Link to the response.
+      type: String
+  - name: gti-privatescanning-url-scan
+    description: Submits an URL for private scanning. Use the gti-privatescanning-analysis-get command to get the scan results.
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: The private URL to scan.
+    outputs:
+    - contextPath: GoogleThreatIntelligence.Submission.Type
+      description: The type of the submission (private_analysis).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Submission.id
+      description: The ID of the submission.
+      type: String
   - name: gti-privatescanning-analysis-get
-    description: Get analysis of a private file submitted to GoogleThreatIntelligence.
+    description: Get analysis of a private file or URL submitted to GoogleThreatIntelligence.
     arguments:
     - name: id
       required: true
@@ -1693,20 +2248,35 @@ script:
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.status
       description: Status of the analysis.
       type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.sha256
+      description: SHA-256 hash of the private file.
+      type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.threat_severity_level
-      description: Threat severity level of the private file.
+      description: Threat severity level of the private file (if analysis is completed).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.popular_threat_category
-      description: Popular threat category of the private file.
+      description: Popular threat category of the private file (if analysis is completed).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.threat_verdict
-      description: Threat verdict of the private file.
+      description: Threat verdict of the private file (if analysis is completed).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.url
+      description: URL submitted.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.title
+      description: Title of the private URL (if analysis is completed).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.last_http_response_content_sha256
+      description: Last HTTP response content SHA-256 hash of the private URL (if analysis is completed).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.positives
+      description: Ratio of malicious detections to the total number of engines that scanned the private URL (if analysis is completed).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.id
       description: ID of the analysis.
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.type
-      description: Type of object (analysis).
+      description: Type of object (private_analysis).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.meta.file_info.sha256
       description: SHA-256 hash of the file.
@@ -1720,6 +2290,12 @@ script:
     - contextPath: GoogleThreatIntelligence.Analysis.meta.file_info.size
       description: Size of the file.
       type: Number
+    - contextPath: GoogleThreatIntelligence.Analysis.meta.url_info.id
+      description: ID of the URL.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.meta.url_info.url
+      description: URL submitted.
+      type: String
     - contextPath: GoogleThreatIntelligence.Analysis.id
       description: The analysis ID.
       type: String
@@ -2050,20 +2626,23 @@ script:
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.status
       description: Status of the analysis.
       type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.sha256
+      description: SHA-256 hash of the private file.
+      type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.threat_severity_level
-      description: Threat severity level of the private file.
+      description: Threat severity level of the private file (if analysis is completed).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.popular_threat_category
-      description: Popular threat category of the private file.
+      description: Popular threat category of the private file (if analysis is completed).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.threat_verdict
-      description: Threat verdict of the private file.
+      description: Threat verdict of the private file (if analysis is completed).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.id
       description: ID of the analysis.
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.data.type
-      description: Type of object (analysis).
+      description: Type of object (private_analysis).
       type: String
     - contextPath: GoogleThreatIntelligence.Analysis.meta.file_info.sha256
       description: SHA-256 hash of the file.
@@ -2272,6 +2851,60 @@ script:
     - contextPath: GoogleThreatIntelligence.Analysis.id
       description: The analysis ID.
       type: String
+  - name: gti-private-url-scan-and-analysis-get
+    description: Scan and get the analysis of a private URL submitted to GoogleThreatIntelligence.
+    polling: true
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: The URL to scan.
+    - name: id
+      description: This is an internal argument used for the polling process, not to be used by the user.
+    - name: extended_data
+      description: Whether to return extended data.
+      defaultValue: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: interval_in_seconds
+      description: Interval in seconds between each poll.
+      defaultValue: '60'
+    outputs:
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.date
+      description: Date of the analysis in epoch format.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.status
+      description: Status of the analysis.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.url
+      description: URL submitted.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.title
+      description: Title of the private URL (if analysis is completed).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.last_http_response_content_sha256
+      description: Last HTTP response content SHA-256 hash of the private URL (if analysis is completed).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.positives
+      description: Ratio of malicious detections to the total number of engines that scanned the private URL (if analysis is completed).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.id
+      description: ID of the analysis.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.type
+      description: Type of object (private_analysis).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.meta.url_info.id
+      description: ID of the URL.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.meta.url_info.url
+      description: URL submitted.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.id
+      description: The analysis ID.
+      type: String
   - name: gti-curated-campaigns-get
     description: Retrieves GTI curated campaigns for a given resource.
     arguments:
@@ -2383,6 +3016,6 @@ script:
     - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.targeted_industries
       description: Targeted industries of the curated threat actors.
       type: list
-  dockerimage: demisto/python3:3.11.9.101916
+  dockerimage: demisto/python3:3.12.12.6391686
 tests:
 - GoogleThreatIntelligence-test

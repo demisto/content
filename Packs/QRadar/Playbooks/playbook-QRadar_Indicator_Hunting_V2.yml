@@ -3078,3 +3078,13 @@ tests:
 - QRadar_v3-test
 - QRadar Indicator Hunting Test
 fromversion: 5.0.0
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- xsiam
+- edr
+- cloud
+- cloud_runtime_security

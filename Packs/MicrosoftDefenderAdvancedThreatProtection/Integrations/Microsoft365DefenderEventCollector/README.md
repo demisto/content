@@ -1,11 +1,20 @@
-Microsoft 365 Defender event collector integration for Cortex XSIAM.
+Microsoft Defender for Endpoint Alerts integration for Cortex XSIAM (Deprecated).
 
+## Deprecation Announcement
+
+Following [this](https://learn.microsoft.com/en-us/defender-endpoint/configure-siem) announcement by Microsoft about migrating from the deprecated SIEM API to the Graph API, this Event Collector is now deprecated.
+
+### Replacement Option
+
+In XSIAM `Office 365` Data Source, select `Microsoft Graph API` -> `Alerts`, and select `Use Microsoft Graph API V2`.
+
+***
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Configure Microsoft 365 Defender Event Collector on Cortex XSIAM
+## Configure Microsoft Defender for Endpoint Alerts on Cortex XSIAM
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Microsoft 365 Defender Event Collector.
+2. Search for Microsoft Defender for Endpoint Alerts.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter**                                                                          | **Description**                                                                                                                                                        | **Required** |
@@ -34,7 +43,7 @@ This is the default integration for this content pack when configured by the Dat
     | US GCC-High      | Microsoft Defender for Endpoint for the USA Government Cloud Community High (GCC-High) |
     | DoD              | Microsoft Defender for Endpoint for the USA Department of Defense (DoD)                |
     | Custom           | Custom endpoint configuration to the Microsoft Defender for Endpoint. See note below.  |
-   
+
    - Note: In most cases setting Endpoint type is preferred to setting Server URL. Only use it in cases where a custom URL is required for accessing a national cloud or for cases of self-deployment.
 
 5. Click **Test** to validate the URLs, token, and connection.
@@ -49,7 +58,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Returns a list of alerts
 
-
 #### Base Command
 
 `microsoft-365-defender-get-events`
@@ -58,9 +66,8 @@ Returns a list of alerts
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of alerts per fetch. Default is 10000. | Optional | 
-| first_fetch | The first fetch time (&lt;number&gt; &lt;time unit&gt;, for example 12 hours, 1 day, 3 months). Default is 3 days. | Optional | 
-
+| limit | The maximum number of alerts per fetch. Default is 10000. | Optional |
+| first_fetch | The first fetch time (&lt;number&gt; &lt;time unit&gt;, for example 12 hours, 1 day, 3 months). Default is 3 days. | Optional |
 
 #### Context Output
 
@@ -108,7 +115,6 @@ There is no context output for this command.
     }
 }
 ```
-
 
 ### microsoft-365-defender-auth-reset
 

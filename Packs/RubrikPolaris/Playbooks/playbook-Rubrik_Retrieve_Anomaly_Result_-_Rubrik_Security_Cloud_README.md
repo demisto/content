@@ -7,10 +7,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * Rubrik Poll Async Result - Rubrik Polaris
+* Rubrik Update Anomaly Status- Rubrik Security Cloud
 
 ### Integrations
 
-* RubrikPolaris
+This playbook does not use any integrations.
 
 ### Scripts
 
@@ -19,9 +20,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
+* closeInvestigation
+* rubrik-anomaly-csv-analysis-v2
+* rubrik-event-list
 * rubrik-gps-snapshot-files-download
 * rubrik-radar-suspicious-file-list
-* rubrik-event-list
 
 ## Playbook Inputs
 
@@ -31,6 +34,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | --- | --- | --- | --- |
 | file_paths | The absolute path of the file\(s\) for which a downloadable link needs to be generated. |  | Optional |
 | snapshot_id | The snapshot ID for which to retrieve the anomaly results. Default can be received from incident \(activity series ID\) if present.<br/><br/>Note: Users can get the list of the snapshot IDs by executing the "rubrik-polaris-object-snapshot-list" command. For the Activity Series ID, the users can execute the "rubrik-event-list" command with the "activity_type" argument set to "ANOMALY". | incident.rubrikpolarisactivityseriesid | Optional |
+| download_csv_file | If set to True, the playbook downloads the anomaly analysis csv file directly on XSOAR server. | True | Optional |
+| close_notes | Add notes for closing the incident. | Closing the incident as the anomaly detection was resolved in RSC. | Optional |
+| object_id | The Object ID or the Snappable ID.<br/><br/>Note: Users can get the list of the object IDs by executing the "rubrik-polaris-object-list" command. | incident.rubrikpolarisobjectid | Optional |
 
 ## Playbook Outputs
 

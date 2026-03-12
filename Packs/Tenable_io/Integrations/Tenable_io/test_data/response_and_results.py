@@ -70,11 +70,7 @@ MOCK_RAW_ASSET_BY_IP = {
     }
 }
 
-MOCK_RAW_ASSET_ATTRIBUTES = {
-    "attributes": [
-        {"name": "owner", "id": "fake_asset_id", "value": "owner@demisto.com"}
-    ]
-}
+MOCK_RAW_ASSET_ATTRIBUTES = {"attributes": [{"name": "owner", "id": "fake_asset_id", "value": "owner@demisto.com"}]}
 
 EXPECTED_ASSET_INFO_RESULTS = {
     "attributes": [{"owner": "owner@demisto.com"}],

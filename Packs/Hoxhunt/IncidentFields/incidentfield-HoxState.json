@@ -1,0 +1,38 @@
+{
+    "id": "incident_hoxstate",
+    "version": -1,
+    "modified": "2024-10-09T05:41:11.259096166Z",
+    "fromVersion": "6.10.0",
+    "name": "Hox State",
+    "ownerOnly": false,
+    "description": "State of the incident (open, resolved)",
+    "cliName": "hoxstate",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "OPEN",
+        "RESOLVED"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Hoxhunt BEC",
+        "Hoxhunt Campaign",
+        "Hoxhunt User Acted"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}

@@ -5,7 +5,7 @@ on:
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       checks: write
       pull-requests: write
@@ -31,6 +31,20 @@ jobs:
     - name: Install dependencies
       run: poetry install
 
+    - name: Cleanup Disk
+      run: |
+        USAGE=$(df / | tail -1 | awk '{print $5}' | sed 's/%//')
+        df -h
+        echo "Disk usage: ${USAGE}%"
+        if [ "$USAGE" -gt 75 ]; then
+          echo "Cleaning old Docker images"
+          docker image prune -af --filter "until=24h" || true
+          echo "Disk usage after cleanup:"
+          df -h
+        else
+          echo "Disk usage below threshold, skipping cleanup."
+        fi
+
     - name: Cache Pre commit
       id: cache-pre-commit
       uses: actions/cache@v3
@@ -44,6 +58,14 @@ jobs:
         DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
         BRANCH_NAME: ${{ github.head_ref }}
       run: |
+        LABEL_NAMES=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r '.[].name')
+        if echo "$LABEL_NAMES" | grep -q "Contribution"; then
+            echo "Label 'Contribution' found!"
+            export DEMISTO_SDK_XSOAR_LINTER_WARNING_ANNOTATIONS=true
+        else
+          echo "Label 'Contribution' not found."
+        fi
+
         source .venv/bin/activate
         if [[ "$BRANCH_NAME" =~ ^AUD-demisto/.* ]]; then
           echo "In docker auto update branch, pre commit on docker_autoupdate mode."
@@ -52,8 +74,16 @@ jobs:
           echo "In packwise branch, pre commit with ignore flag."
           demisto-sdk pre-commit -g --mode=packwise --show-diff-on-failure --verbose
         else
-          echo "Not in docker auto update branch, pre commit on CI mode."
-          demisto-sdk pre-commit -g --validate --no-secrets --show-diff-on-failure --verbose --mode=ci
+          echo "Not in docker auto update or packwise branch, pre-commit on CI mode."
+          echo "GITHUB_ACTIONS is: ${GITHUB_ACTIONS:-unset}"
+
+          if [[ "$GITHUB_ACTIONS" == "true" ]]; then
+            echo "Detected GitHub Actions"
+            demisto-sdk pre-commit -g --validate --show-diff-on-failure --verbose --mode=check_private_packs
+          else
+            echo "Not in GitHub Actions mode"
+            demisto-sdk pre-commit -g --validate --show-diff-on-failure --verbose --mode=ci
+          fi
         fi
 
     - name: "Check coverage.xml exists"
@@ -68,7 +98,7 @@ jobs:
       id: check-pytest-junit-exists
       uses: andstor/file-existence-action@v2
       with:
-        files: ".report_pytest.xml"
+        files: "report_pytest.xml"
 
     - name: Create pack-wise pytest report
       run: poetry run python .github/github_workflow_scripts/parse_junit_per_pack.py
@@ -78,7 +108,7 @@ jobs:
         github.event.pull_request.head.repo.fork == false
 
     - name: Upload junit & pack-wise pytest report
-      uses: actions/upload-artifact@v4
+      uses: PaloAltoNetworks/upload-secure-artifact@v1.0.6
       if: |
         always() && 
         steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
@@ -87,7 +117,7 @@ jobs:
         name: pytest
         path: |
           packwise_pytest_time.csv
-          .report_pytest.xml
+          report_pytest.xml
         if-no-files-found: error
 
     - name: Pytest coverage comment
@@ -100,7 +130,7 @@ jobs:
       continue-on-error: true  # may fail on output > 65k chars
       with:
         pytest-xml-coverage-path: coverage_report/coverage.xml
-        junitxml-path: .report_pytest.xml
+        junitxml-path: report_pytest.xml
     
     - uses: actions/cache/save@v3
       if: always()

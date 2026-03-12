@@ -2,23 +2,21 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 args = demisto.args()
-updated = args.get('updates') == 'true'
+updated = args.get("updates") == "true"
 
-packs = demisto.executeCommand("core-api-get", {"uri": "/contentpacks/installed-expired"})[0]['Contents'].get('response')
-parsed_packs = [{
-    "name": x.get('name'),
-    "version": x.get('currentVersion'),
-    "update": x.get('updateAvailable', False)
-} for x in packs]
+packs = demisto.executeCommand("core-api-get", {"uri": "/contentpacks/installed-expired"})[0]["Contents"].get("response")
+parsed_packs = [
+    {"name": x.get("name"), "version": x.get("currentVersion"), "update": x.get("updateAvailable", False)} for x in packs
+]
 
 if updated:
-    parsed_packs[:] = [x for x in parsed_packs if x.get('update')]
+    parsed_packs[:] = [x for x in parsed_packs if x.get("update")]
 
 command_results = CommandResults(
     outputs_prefix="InstalledPacks",
     outputs_key_field="name",
     outputs=parsed_packs,
-    readable_output=tableToMarkdown("Installed Content Packs:", parsed_packs, ["name", "version", "update"])
+    readable_output=tableToMarkdown("Installed Content Packs:", parsed_packs, ["name", "version", "update"]),
 )
 
 return_results(command_results)

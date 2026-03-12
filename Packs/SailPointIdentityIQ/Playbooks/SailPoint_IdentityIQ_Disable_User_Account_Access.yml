@@ -1,8 +1,7 @@
 id: SailPoint IdentityIQ Disable User Account Access
 version: -1
 name: SailPoint IdentityIQ Disable User Account Access
-description: "Checks if the risk score of an identity exceeds a set threshold of 500\
-  \ and disables the accounts."
+description: "Checks if the risk score of an identity exceeds a set threshold of 500 and disables the accounts."
 starttaskid: "0"
 tasks:
   "0":
@@ -40,8 +39,7 @@ tasks:
       id: d619c184-12aa-405c-877f-2e97db01875d
       version: -1
       name: Get Identities By Incident Details Email
-      description: Search identities by search/filter parameters (id, email, risk
-        & active) using IdentityIQ SCIM API's.
+      description: Search identities by search/filter parameters (id, email, risk & active) using IdentityIQ SCIM API's.
       script: '|||identityiq-search-identities'
       type: regular
       iscommand: true
@@ -76,9 +74,7 @@ tasks:
       id: 31a79536-3538-4fcd-8692-9e344ccee781
       version: -1
       name: Get Account
-      description: Fetch accounts by search/filter parameters (id, display_name, last_refresh,
-        native_identity, last_target_agg, identity_name & application_name) using
-        IdentityIQ SCIM API's.
+      description: Fetch accounts by search/filter parameters (id, display_name, last_refresh, native_identity, last_target_agg, identity_name & application_name) using IdentityIQ SCIM API's.
       script: '|||identityiq-get-accounts'
       type: regular
       iscommand: true
@@ -632,3 +628,10 @@ outputs: []
 fromversion: 6.0.0
 tests:
 - SailPointIdentityIQ-Test
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- xsiam

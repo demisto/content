@@ -1,7 +1,7 @@
 {
     "id": "incident_cyberinttargetedbrands",
     "version": -1,
-    "name": "CyberInt Targeted Brands",
+    "name": "Cyberint Targeted Brands",
     "ownerOnly": false,
     "cliName": "cyberinttargetedbrands",
     "type": "multiSelect",

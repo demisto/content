@@ -16,7 +16,7 @@ $script:INTEGRATION_NAME = "EWS extension"
 $script:COMMAND_PREFIX = "ews"
 $script:INTEGRATION_ENTRY_CONTEXT = "EWS"
 $script:JUNK_RULE_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEXT.Rule.Junk(val.Email && val.Email == obj.Email)"
-$script:MESSAGE_TRACE_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEXT.MessageTrace(val.MessageId && val.MessageId == obj.MessageId)"
+$script:MESSAGE_TRACE_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEXT.MessageTrace(val.messageTraceId.value && val.messageTraceId.value == obj.messageTraceId.value)"
 
 
 function ParseJunkRulesToEntryContext([PSObject]$raw_response) {
@@ -54,22 +54,32 @@ function ParseMessageTraceToEntryContext([PSObject]$raw_response) {
     if ($raw_response) {
         $entry_context = @{
             $script:MESSAGE_TRACE_ENTRY_CONTEXT = $raw_response | ForEach-Object {
-                @{
+                $entry = @{
                     "MessageId"        = $_.MessageId
                     "MessageTraceId"   = $_.MessageTraceId
-                    "Organization"     = $_.Organization
                     "Received"         = $_.Received
                     "RecipientAddress" = $_.RecipientAddress
                     "SenderAddress"    = $_.SenderAddress
                     "Size"             = $_.Size
-                    "StartDate"        = $_.StartDate
-                    "EndDate"          = $_.EndDate
                     "Status"           = $_.Status
                     "Subject"          = $_.Subject
                     "ToIP"             = $_.ToIP
                     "FromIP"           = $_.FromIP
-                    "Index"            = $_.Index
                 }
+
+                if ($_.EndDate -ne $null) {
+                    $entry["EndDate"] = $_.EndDate
+                }
+                if ($_.StartDate -ne $null) {
+                    $entry["StartDate"] = $_.StartDate
+                }
+                if ($_.Organization -ne $null) {
+                    $entry["Organization"] = $_.Organization
+                }
+                if ($_.Index -ne $null) {
+                    $entry["Index"] = $_.Index
+                }
+                return $entry
             }
         }
     }
@@ -112,6 +122,80 @@ function ParseRawResponse([PSObject]$response) {
     return $items
 }
 
+function MailFlowRuleHelperFunction($raw_response, $extended_output) {
+    $parsed_raw_response = ParseRawResponse $raw_response
+    $entry_context = if ($extended_output -eq "false") {
+        MailFlowRuleCreateEntryContext $parsed_raw_response
+    } else {
+        @{"$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRules(obj.Guid === val.Guid)" = $parsed_raw_response}
+    }
+    $md_columns = $raw_response | Select-Object -Property Name, State, Priority, Comment, WhenChanged, CreatedBy
+    $human_readable = TableToMarkdown $md_columns "Results of $command"
+    return $human_readable, $entry_context, $parsed_raw_response
+    <#
+        .DESCRIPTION
+        A helper function to process the mail flow rule response.
+        This function takes the raw response from a mail flow rule operation, parses it, and generates
+        the necessary output for display and further processing.
+
+        .PARAMETER raw_response
+        The raw response obtained from the mail flow rule operation.
+
+        .PARAMETER extended_output
+        A flag indicating whether to include extended output in the response.
+
+        .EXAMPLE
+        $response = MailFlowRuleHelperFunction $raw_response $extended_output
+
+        .OUTPUTS
+        - $human_readable: The response formatted as a human-readable Markdown table.
+        - $entry_context: The entry context hashtable.
+        - $parsed_raw_response: The parsed raw response object.
+    #>
+}
+
+function MailFlowRuleCreateEntryContext($parsed_raw_response) {
+    $entry_context = @{}
+    $entries = @()
+    $parsed_raw_response | ForEach-Object {
+        $entry = @{
+            "Size"                          = $_.Size
+            "ExpiryDate"                    = $_.ExpiryDate
+            "Mode"                          = $_.Mode
+            "Quarantine"                    = $_.Quarantine
+            "Guid"                          = $_.Guid
+            "OrganizationId"                = $_.OrganizationId
+            "DistinguishedName"             = $_.DistinguishedName
+            "IsValid"                       = $_.IsValid
+            "Conditions"                    = $_.Conditions
+            "Comments"                      = $_.Comments
+            "WhenChanged"                   = $_.WhenChanged
+            "Description"                   = $_.Description
+            "Actions"                       = $_.Actions
+            "ImmutableId"                   = $_.ImmutableId
+            "Identity"                      = $_.Identity
+            "Name"                          = $_.Name
+            "CreatedBy"                     = $_.CreatedBy
+            "RouteMessageOutboundConnector" = $_.RouteMessageOutboundConnector
+        }
+        $entries += $entry
+    }
+    $entry_context["$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRules(obj.Guid === val.Guid)"] = $entries
+    return $entry_context
+    <#
+        .DESCRIPTION
+        Parse Maile flow rule raw response for limited output.
+
+        .PARAMETER raw_response
+        Mail Rule parsed raw response.
+
+        .EXAMPLE
+        MailFlowRuleCreateEntryContext $parsed_raw_response
+
+        .OUTPUTS
+        PSObject - entries context.
+    #>
+}
 
 class ExchangeOnlinePowershellV3Client
 {
@@ -149,11 +233,13 @@ class ExchangeOnlinePowershellV3Client
             "Organization" = $this.organization
             "Certificate" = $this.certificate
         }
-        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration,Get-InboxRule,Remove-InboxRule,Export-QuarantineMessage,Get-QuarantineMessage,Release-QuarantineMessage -WarningAction:SilentlyContinue | Out-Null
+        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Get-MessageTraceV2,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration,Get-InboxRule,Remove-InboxRule,Export-QuarantineMessage,Get-QuarantineMessage,Release-QuarantineMessage,Disable-InboxRule,Enable-InboxRule,Get-TransportRule,Remove-TransportRule,Disable-TransportRule,Enable-TransportRule,Set-Mailbox -WarningAction:SilentlyContinue | Out-Null
     }
     DisconnectSession()
     {
         Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue 6>$null | Out-Null
+        # Remove any lingering tmpEXO_ directories to prevent filling the disk
+        Remove-Item -Path "/tmp/tmpEXO_*" -Recurse -Force
     }
     [PSObject]
     GetEXOCASMailbox(
@@ -484,11 +570,13 @@ class ExchangeOnlinePowershellV3Client
         [string]$recipient_address
     )
     {
+        $zipErrMsg = "Using this argument requires 'compress_output' argument to be set to true."
         $results = ""
         try {
             $cmd_params = @{ }
             if ($identities)
             {
+                $identities = $identities.Split(",").Trim()
                 $cmd_params.Identities = $identities
             }
             if ($identity)
@@ -497,7 +585,7 @@ class ExchangeOnlinePowershellV3Client
             }
             if ($compress_output)
             {
-                $cmd_params.CompressOutput = $null
+                $cmd_params.CompressOutput = $true
             }
             if ($entity_type)
             {
@@ -505,14 +593,20 @@ class ExchangeOnlinePowershellV3Client
             }
             if ($force_conversion_to_mime)
             {
-                $cmd_params.ForceConversionToMime = $null
+                $cmd_params.ForceConversionToMime = $true
             }
             if ($password)
             {
-                $cmd_params.Password = $password
+                if ($compress_output -eq $false) {
+                    throw $zipErrMsg
+                }
+                $cmd_params.PasswordV2 = $password
             }
             if ($reason_for_export)
             {
+                if ($compress_output -eq $false) {
+                    throw $zipErrMsg
+                }
                 $cmd_params.ReasonForExport = $reason_for_export
             }
             if ($recipient_address)
@@ -602,6 +696,7 @@ class ExchangeOnlinePowershellV3Client
                 $cmd_params.ReleaseToAll = $release_to_all
             }
             if ($identities) {
+                $identities = $identities.Split(",").Trim()
                 $cmd_params.Identities = $identities
             }
             if ($identity) {
@@ -914,7 +1009,7 @@ class ExchangeOnlinePowershellV3Client
         #>
     }
 
-    [PSObject]GetMessageTrace([string[]]$sender_address, [string[]]$recipient_address, [string[]]$from_ip, [string[]]$to_ip, [string[]]$message_id,
+    [PSObject]GetMessageTrace([string[]]$sender_address, [string[]]$recipient_address, [string]$from_ip, [string]$to_ip, [string[]]$message_id,
         [string]$message_trace_id, [int32]$page, [int32]$page_size, [String]$start_date, [String]$end_date, [string]$status) {
         $response = ""
         try {
@@ -1029,6 +1124,145 @@ class ExchangeOnlinePowershellV3Client
 
             .LINK
             https://docs.microsoft.com/en-us/powershell/module/exchange/get-messagetrace?view=exchange-ps
+        #>
+    }
+
+    [PSObject]GetMessageTraceList([string[]]$sender_address, [string[]]$recipient_address, [string]$from_ip, [string]$to_ip, [string[]]$message_id,
+        [string]$message_trace_id, [string]$start_date, [string]$end_date, [string[]]$status, [string]$subject, [string]$subject_filter_type,
+        [string]$starting_recipient_address, [int32]$limit) {
+        $response = ""
+        try {
+            # Create Exchange Online session
+            $this.CreateSession()
+            $cmd_params = @{}
+            # Import and Execute a command
+            if ($sender_address) {
+                $cmd_params.SenderAddress = $sender_address
+            }
+            if ($recipient_address) {
+                $cmd_params.RecipientAddress = $recipient_address
+            }
+            if ($status) {
+                $cmd_params.Status = $status
+            }
+            if ($start_date) {
+                $cmd_params.StartDate = $start_date
+                if ($end_date) {
+                    $cmd_params.EndDate = $end_date
+                }
+                else {
+                    $cmd_params.EndDate = Get-Date -UFormat "%D %I:%M %p"
+                }
+            }
+            if ($from_ip) {
+                $cmd_params.FromIP = $from_ip
+            }
+            if ($to_ip) {
+                $cmd_params.ToIP = $to_ip
+            }
+            if ($message_id) {
+                $cmd_params.MessageId = $message_id
+            }
+            if ($message_trace_id) {
+                $cmd_params.MessageTraceId = $message_trace_id
+            }
+            if ($subject) {
+                $cmd_params.Subject = $subject
+            }
+            if ($subject_filter_type) {
+                $cmd_params.SubjectFilterType = $subject_filter_type
+            }
+            if ($starting_recipient_address) {
+                $cmd_params.StartingRecipientAddress = $starting_recipient_address
+            }
+            if ($limit) {
+                $cmd_params.ResultSize = $limit
+            }
+
+            $response = Get-MessageTraceV2 @cmd_params
+        }
+        finally {
+            # Disconnect Exchange Online session
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+            .DESCRIPTION
+            Search message data from the last 90 days.
+
+            .PARAMETER sender_address
+            The sender_address parameter filters the results by the sender's email address.
+
+            .PARAMETER recipient_address
+            The recipient_address parameter filters the results by the recipient's email address. You can specify multiple values separated by commas.
+
+            .PARAMETER from_ip
+            The from_ip parameter filters the results by the source IP address.
+            For incoming messages, the value of from_ip is the public IP address of the SMTP email server that sent the message.
+            For outgoing messages from Exchange Online, the value is blank.
+
+            .PARAMETER to_ip
+            The to_ip parameter filters the results by the destination IP address.
+            For outgoing messages, the value of to_ip is the public IP address in the resolved MX record for the destination domain.
+            For incoming messages to Exchange Online, the value is blank.
+
+            .PARAMETER message_id
+            The message_id parameter filters the results by the Message-ID header field of the message.
+            This value is also known as the Client ID. The format of the Message-ID depends on the messaging server that sent the message.
+            The value should be unique for each message. However, not all messaging servers create values for the Message-ID in the same way.
+            Besure to include the full Message ID string (which may include angle brackets) and enclose the value in quotation marks (for example,"d9683b4c-127b-413a-ae2e-fa7dfb32c69d@DM3NAM06BG401.Eop-nam06.prod.protection.outlook.com").
+
+            .PARAMETER message_trace_id
+            The message_trace_id parameter can be used with the recipient address to uniquely identify a message trace and obtain more details.
+            A message trace ID is generated for every message that's processed by the system.
+
+            .PARAMETER start_date
+            The start_date parameter specifies the start date of the date range.
+            Use the short date format defined in the computer's Regional Options settings. For example, if the computer is configured to use the short date format mm/dd/yyyy, enter 09/01/2018 to specify September 1, 2018.
+            You can enter the date only, or you can enter the date and time of day.
+            If you enter the date and time of day, enclose the value in quotation marks ("), for example, "09/01/2018 5:00 PM".
+            Valid input is from 10 days ago up to the current time. The default is 48 hours ago.
+
+            .PARAMETER end_date
+            The end_date parameter specifies the end date of the date range.
+            Use the short date format in the computer's Regional Options settings.
+            For example, if the computer is configured to use the short date format mm/dd/yyyy, enter 09/01/2018 to specify September 1, 2018.
+            You can enter the date only, or you can enter the date and time of day.
+            If you enter the date and time of day, enclose the value in quotation marks ("), for example, "09/01/2018 5:00 PM".
+            Valid input is from start_date up to the current time. The default is the current time.
+
+            .PARAMETER status
+            * GettingStatus: The message is pending a status update.
+            * Failed: The message delivery was attempted but failed, or the message was filtered as spam, malware, or by transport rules.
+            * Pending: Message delivery is in progress or was deferred and is being retried
+            * Delivered: The message was successfully delivered to its destination.
+            * Expanded: No message was delivered because the message was sent to a distribution group; the group's membership was expanded instead.
+            * Quarantined: The message was quarantined.
+            * FilteredAsSpam: The message was marked as spam.
+
+            .PARAMETER subject
+            Filters results by the subject of the message. If the value contains spaces, enclose it in quotation marks (")
+
+            .PARAMETER subject_filter_type
+            The subject_filter_type parameter specifies how the value of the subject parameter is evaluated. Valid values are:
+            * Contains
+            * EndsWith
+            * StartsWith
+            It is recommend to use StartsWith or EndsWith instead of Contains whenever possible.
+
+            .PARAMETER starting_recipient_address
+            The starting_recipient_address parameter is used with the end_date parameter to query subsequent data while avoiding duplicates.
+            For subsequent queries, use the Recipient address and Received Time from the last record of the previous results as the values for starting_recipient_address and end_date, respectively.
+
+            .PARAMETER limit
+            The limit parameter specifies the maximum number of results to return.
+            Valid values are 1 to 5000. The default is 1000.
+
+            .OUTPUTS
+            [PSObject] – Returns the raw response.
+
+            .LINK
+            https://docs.microsoft.com/en-us/powershell/module/exchange/get-messagetracev2?view=exchange-ps
         #>
     }
 
@@ -1417,6 +1651,322 @@ class ExchangeOnlinePowershellV3Client
         #>
     }
 
+    [PSObject]DisableRule(
+    [string]$mailbox,
+    [string]$identity
+    )
+    {
+        $response = ""
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            $cmd_params = @{ }
+            if ($mailbox) {
+                $cmd_params.Mailbox = $mailbox
+            }
+
+            if ($identity) {
+                $cmd_params.Identity = $identity
+            }
+            $response = Disable-InboxRule -Confirm:$false @cmd_params -WarningAction:SilentlyContinue
+        } finally {
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+        .DESCRIPTION
+        Disable an existing inbox rule in a given mailbox.
+
+        .PARAMETER mailbox
+        The mailbox that contains the Inbox rule.
+
+        .PARAMETER identity
+        Specifies the Inbox rule that you want to disable.
+
+        .EXAMPLE
+        Disable-InboxRule -Identity "MoveAnnouncements" -Mailbox "example@example.com"
+
+        .OUTPUTS
+        PSObject - Raw response
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/disable-inboxrule?view=exchange-ps
+        #>
+    }
+
+    [PSObject]EnableRule(
+    [string]$mailbox,
+    [string]$identity
+    )
+    {
+        $response = ""
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            $cmd_params = @{ }
+            if ($mailbox) {
+                $cmd_params.Mailbox = $mailbox
+            }
+
+            if ($identity) {
+                $cmd_params.Identity = $identity
+            }
+            $response = Enable-InboxRule @cmd_params -WarningAction:SilentlyContinue
+        } finally {
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+        .DESCRIPTION
+        Enable an existing inbox rule in a given mailbox.
+
+        .PARAMETER mailbox
+        The mailbox that contains the Inbox rule.
+
+        .PARAMETER identity
+        Specifies the Inbox rule that you want to enable.
+
+        .EXAMPLE
+        Enable-InboxRule "Move To Junk Mail" -Mailbox "User 1"
+
+        .OUTPUTS
+        PSObject - Raw response
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/enable-inboxrule?view=exchange-ps
+        #>
+    }
+
+    [PSObject]ListMailFlowRules([int]$limit)
+    {
+        $response = ""
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            $cmd_params = @{ }
+            if ($limit -gt 0){
+                $cmd_params.ResultSize = $limit
+            }
+            $response = Get-TransportRule @cmd_params -WarningAction:SilentlyContinue
+        } finally {
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+        .DESCRIPTION
+        List all mail flow rules (transport rules) in the organization.
+
+        .PARAMETER limit
+        The amount of mail flow rules to return.
+
+        .EXAMPLE
+        Get-TransportRule
+
+        .OUTPUTS
+        PSObject - Raw response
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/get-transportrule?view=exchange-ps
+        #>
+    }
+
+    [PSObject]GetMailFlowRule([string]$identity)
+    {
+        $response = ""
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            $cmd_params = @{ }
+            if ($identity) {
+                $cmd_params.Identity = $identity
+            }
+            $response = Get-TransportRule @cmd_params -WarningAction:SilentlyContinue
+        } finally {
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+        .DESCRIPTION
+        Get a mail flow rule (transport rules) in the organization.
+
+        .PARAMETER identity
+        Specifies the rule that you want to view.
+
+        .EXAMPLE
+        Get-TransportRule "Ethical Wall - Sales and Brokerage Departments" | Format-List
+
+        .OUTPUTS
+        PSObject - Raw response
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/get-transportrule?view=exchange-ps
+        #>
+    }
+
+    [PSObject]RemoveMailFlowRule([string]$identity)
+    {
+        $response = ""
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            $cmd_params = @{ }
+            if ($identity) {
+                $cmd_params.Identity = $identity
+            }
+            $response = Remove-TransportRule -Confirm:$false @cmd_params -WarningAction:SilentlyContinue
+        } finally {
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+        .DESCRIPTION
+        Remove a mail flow rule (transport rule) from the organization.
+
+        .PARAMETER identity
+        Specifies the rule that you want to remove.
+
+        .EXAMPLE
+        Remove-TransportRule -Identity "Redirect messages from example1@example.com to example2@example.com"
+
+        .OUTPUTS
+        PSObject - Raw response
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/remove-transportrule?view=exchange-ps
+        #>
+    }
+
+    [PSObject]DisableMailFlowRule([string]$identity)
+    {
+        $response = ""
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            $cmd_params = @{ }
+            if ($identity) {
+                $cmd_params.Identity = $identity
+            }
+            $response = Disable-TransportRule -Confirm:$false @cmd_params -WarningAction:SilentlyContinue
+        } finally {
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+        .DESCRIPTION
+        Disable a mail flow rule (transport rule) in the organization.
+
+        .PARAMETER identity
+        Specifies the rule that you want to disable.
+
+        .EXAMPLE
+        Disable-TransportRule -Identity "Sales Disclaimer"
+
+        .OUTPUTS
+        PSObject - Raw response
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/disable-transportrule?view=exchange-ps
+        #>
+    }
+
+    [PSObject]EnableMailFlowRule([string]$identity)
+    {
+        $response = ""
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            $cmd_params = @{ }
+            if ($identity) {
+                $cmd_params.Identity = $identity
+            }
+            $response = Enable-TransportRule @cmd_params -WarningAction:SilentlyContinue
+        } finally {
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+        .DESCRIPTION
+        Enable a mail flow rule (transport rule) in the organization.
+
+        .PARAMETER identity
+        Specifies the rule that you want to enable.
+
+        .EXAMPLE
+        Enable-TransportRule -Identity "Disclaimer-Finance"
+
+        .OUTPUTS
+        PSObject - Raw response
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/enable-transportrule?view=exchange-ps
+        #>
+    }
+
+    [PSObject]DisableMailForwarding([string]$identity)
+    {
+        $response = ""
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            $cmd_params = @{ }
+            if ($identity) {
+                $cmd_params.Identity = $identity
+            }
+            $response = Set-Mailbox @cmd_params -ForwardingAddress $null -ForwardingSmtpAddress $null -DeliverToMailboxAndForward $false -WarningAction:SilentlyContinue
+        } finally {
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+        .DESCRIPTION
+        Disable mail forwarding for a given user.
+
+        .PARAMETER identity
+        Specifies the mailbox that you want to modify.
+
+        .EXAMPLE
+        Set-Mailbox -Identity "John Woods" -DeliverToMailboxAndForward $true -ForwardingSMTPAddress example@example.com
+
+        .OUTPUTS
+        PSObject - Raw response
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/set-mailbox?view=exchange-ps
+        #>
+    }
+}
+
+function Remove-EmptyItems {
+    param (
+        [PSObject]$inputObject
+    )
+
+    $newDict = @{}
+
+    foreach ($property in $inputObject.PSObject.Properties) {
+        $value = $property.Value
+
+        # Check if the value is not null, whitespace, or an empty collection
+        if (-not [string]::IsNullOrWhiteSpace($value)) {
+            # Check if it's an IEnumerable (like array or list) and if the collection is not empty
+            if ($value -is [System.Collections.IEnumerable] -and -not ($value -is [string]) -and $value.Count -eq 0) {
+                continue
+            }
+
+            # If it's not an empty collection, add it to the new dictionary
+            $newDict[$property.Name] = $value
+        }
+    }
+
+    return $newDict
 }
 
 function GetEXORecipientCommand
@@ -1641,14 +2191,14 @@ function EXOExportQuarantineMessageCommand
     )
 
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.ExportQuarantineMessage(obj.Guid === val.Guid)" = $raw_response }
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.ExportQuarantineMessage(obj.Identity === val.Identity)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
 
 function EXOGetQuarantineMessageCommand {
     [CmdletBinding()]
     Param (
-        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [Parameter(Mandatory)]$client,
         [hashtable]$kwargs
     )
 
@@ -1657,7 +2207,6 @@ function EXOGetQuarantineMessageCommand {
         EntityType = $kwargs.entity_type
         RecipientAddress = $kwargs.recipient_address
         SenderAddress = $kwargs.sender_address
-        TeamsConversationTypes = $kwargs.teams_conversation_types
         Direction = $kwargs.direction
         Domain = $kwargs.domain
         EndExpiresDate = $kwargs.end_expires_date
@@ -1668,8 +2217,8 @@ function EXOGetQuarantineMessageCommand {
         Page = $kwargs.page
         PageSize = $kwargs.page_size
         PolicyName = $kwargs.policy_name
-        PolicyTypes = $kwargs.policy_types
-        QuarantineTypes = $kwargs.quarantine_types
+        PolicyTypes = ArgToList $kwargs.policy_types
+        QuarantineTypes = ArgToList $kwargs.quarantine_types
         RecipientTag = $kwargs.recipient_tag
         ReleaseStatus = $kwargs.release_status
         Reported = if ($kwargs.reported -eq "true") { $true } else { $false }
@@ -1679,10 +2228,26 @@ function EXOGetQuarantineMessageCommand {
         Type = $kwargs.type
     }
 
-    $raw_response = $client.EXOGetQuarantineMessage($params)
+    $client_response = $client.EXOGetQuarantineMessage($params)
+    
+    # Ensure raw_response is always an array, but handle null properly
+    if ($null -eq $client_response) {
+        $raw_response = @()
+    } else {
+        $raw_response = @($client_response)
+    }
 
-    $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.GetQuarantineMessage(obj.Guid === val.Guid)" = $raw_response}
+    # Process all items using foreach and collect results efficiently
+    $newResults = @(foreach ($item in $raw_response) {
+        if ($null -ne $item) {
+            Remove-EmptyItems -inputObject $item
+        }
+    })
+
+    # Ensure $newResults is passed correctly to formatting
+    $human_readable = TableToMarkdown $newResults "Results of $command"
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.GetQuarantineMessage(obj.Identity === val.Identity)" = $raw_response }
+    
     Write-Output $human_readable, $entry_context, $raw_response
 }
 
@@ -1806,12 +2371,32 @@ function GetMessageTraceCommand([ExchangeOnlinePowershellV3Client]$client, [hash
     # Parse arguments
     $sender_address = ArgToList $kwargs.sender_address
     $recipient_address = ArgToList $kwargs.recipient_address
-    $from_ip = ArgToList $kwargs.from_ip
-    $to_ip = ArgToList $kwargs.to_ip
 
-    $raw_response = $client.GetMessageTrace($sender_address, $recipient_address, $from_ip, $to_ip, $kwargs.message_id,
+    $raw_response = $client.GetMessageTrace($sender_address, $recipient_address, $kwargs.from_ip, $kwargs.to_ip, $kwargs.message_id,
         $kwargs.message_trace_id, $kwargs.page, $kwargs.page_size, $kwargs.start_date,
         $kwargs.end_date, $kwargs.status)
+
+    $entry_context = ParseMessageTraceToEntryContext $raw_response
+    if ($entry_context.($script:MESSAGE_TRACE_ENTRY_CONTEXT)) {
+        $human_readable = TableToMarkdown $entry_context.($script:MESSAGE_TRACE_ENTRY_CONTEXT)  "$script:INTEGRATION_NAME - Messages trace"
+    }
+    else {
+        $human_readable = "**No messages trace found**"
+    }
+
+    return $human_readable, $entry_context, $raw_response
+}
+
+function GetMessageTraceListCommand([ExchangeOnlinePowershellV3Client]$client, [hashtable]$kwargs) {
+    # Parse arguments
+    $sender_address = ArgToList $kwargs.sender_address
+    $recipient_address = ArgToList $kwargs.recipient_address
+    $message_id = ArgToList $kwargs.message_id
+    $status = ArgToList $kwargs.status
+
+    $raw_response = $client.GetMessageTraceList($sender_address, $recipient_address, $kwargs.from_ip, $kwargs.to_ip, $message_id,
+        $kwargs.message_trace_id, $kwargs.start_date, $kwargs.end_date, $status, $kwargs.subject, $kwargs.subject_filter_type,
+        $kwargs.starting_recipient_address, $kwargs.limit)
 
     $entry_context = ParseMessageTraceToEntryContext $raw_response
     if ($entry_context.($script:MESSAGE_TRACE_ENTRY_CONTEXT)) {
@@ -1957,6 +2542,114 @@ function RemoveRuleCommand {
     $entry_context = @{}
     Write-Output $human_readable, $entry_context, $raw_response
 }
+function DisableRuleCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [hashtable]$kwargs
+    )
+    $mailbox = $kwargs.mailbox
+    $identity = $kwargs.identity
+    $raw_response = $client.DisableRule($mailbox, $identity)
+    $human_readable = "Rule $identity has been disabled successfully"
+    $entry_context = @{}
+    Write-Output $human_readable, $entry_context, $raw_response
+}
+function EnableRuleCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [hashtable]$kwargs
+    )
+    $mailbox = $kwargs.mailbox
+    $identity = $kwargs.identity
+    $raw_response = $client.EnableRule($mailbox, $identity)
+    $human_readable = "Rule $identity has been enabled successfully"
+    $entry_context = @{}
+    Write-Output $human_readable, $entry_context, $raw_response
+}
+function ListMailFlowRulesCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [hashtable]$kwargs
+    )
+    $extended_output = $kwargs.extended_output
+    $limit = $kwargs.limit -as [int]
+    $raw_response = $client.ListMailFlowRules($limit)
+    if ($raw_response -eq $null) {
+        Write-Output "No Mail Flow Rules were found."
+    }
+    else {
+        $response = MailFlowRuleHelperFunction $raw_response $extended_output
+        Write-Output $response
+    }
+}
+function GetMailFlowRuleCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [hashtable]$kwargs
+    )
+    $identity = $kwargs.identity
+    $extended_output = $kwargs.extended_output
+    $raw_response = $client.GetMailFlowRule($identity)
+    if($raw_response -eq $null){
+        Write-Output "No Mail Flow Rule were found."
+    }
+    else{
+        $response = MailFlowRuleHelperFunction $raw_response $extended_output
+        Write-Output $response
+    }
+}
+function RemoveMailFlowRuleCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [hashtable]$kwargs
+    )
+    $identity = $kwargs.identity
+    $raw_response = $client.RemoveMailFlowRule($identity)
+    $human_readable = "Mail flow rule $identity has been removed successfully"
+    $entry_context = @{}
+    Write-Output $human_readable, $entry_context, $raw_response
+}
+function DisableMailFlowRuleCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [hashtable]$kwargs
+    )
+    $identity = $kwargs.identity
+    $raw_response = $client.DisableMailFlowRule($identity)
+    $human_readable = "Mail flow rule $identity has been disabled successfully"
+    $entry_context = @{}
+    Write-Output $human_readable, $entry_context, $raw_response
+}
+function EnableMailFlowRuleCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [hashtable]$kwargs
+    )
+    $identity = $kwargs.identity
+    $raw_response = $client.EnableMailFlowRule($identity)
+    $human_readable = "Mail flow rule $identity has been enabled successfully"
+    $entry_context = @{}
+    Write-Output $human_readable, $entry_context, $raw_response
+}
+function DisableMailForwardingCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [hashtable]$kwargs
+    )
+    $identity = $kwargs.identity
+    $raw_response = $client.DisableMailForwarding($identity)
+    $human_readable = "Mail forwarding for user $identity has been disabled successfully"
+    $entry_context = @{}
+    Write-Output $human_readable, $entry_context, $raw_response
+}
 function TestModuleCommand($client)
 {
     try
@@ -1977,7 +2670,6 @@ function Main
     $command = $demisto.GetCommand()
     $command_arguments = $demisto.Args()
     $integration_params = [Hashtable] $demisto.Params()
-
     if ($integration_params.password.password)
     {
         $password = ConvertTo-SecureString $integration_params.password.password -AsPlainText -Force
@@ -2021,6 +2713,9 @@ function Main
             "$script:COMMAND_PREFIX-new-tenant-allow-block-list-items" {
                 ($human_readable, $entry_context, $raw_response) = EXONewTenantAllowBlockListCommand $exo_client $command_arguments
             }
+            "$script:COMMAND_PREFIX-email-security-block-sender-office-365-quick-action" {
+                ($human_readable, $entry_context, $raw_response) = EXONewTenantAllowBlockListCommand $exo_client $command_arguments
+            }
             "$script:COMMAND_PREFIX-get-tenant-allow-block-list-items" {
                 ($human_readable, $entry_context, $raw_response) = EXOGetTenantAllowBlockListCommand $exo_client $command_arguments
             }
@@ -2028,6 +2723,9 @@ function Main
                 ($human_readable, $entry_context, $raw_response) = EXOCountTenantAllowBlockListCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-remove-tenant-allow-block-list-items" {
+                ($human_readable, $entry_context, $raw_response) = EXORemoveTenantAllowBlockListCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-email-security-unblock-sender-office-365-quick-action" {
                 ($human_readable, $entry_context, $raw_response) = EXORemoveTenantAllowBlockListCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-export-quarantinemessage" {
@@ -2050,6 +2748,9 @@ function Main
             }
             "$script:COMMAND_PREFIX-message-trace-get" {
                 ($human_readable, $entry_context, $raw_response) = GetMessageTraceCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-message-trace-list" {
+                ($human_readable, $entry_context, $raw_response) = GetMessageTraceListCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-federation-trust-get" {
                 ($human_readable, $entry_context, $raw_response) = GetFederationTrustCommand $exo_client $command_arguments
@@ -2074,6 +2775,30 @@ function Main
             }
             "$script:COMMAND_PREFIX-remove-rule" {
                 ($human_readable, $entry_context, $raw_response) = RemoveRuleCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-rule-disable" {
+                ($human_readable, $entry_context, $raw_response) = DisableRuleCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-rule-enable" {
+                ($human_readable, $entry_context, $raw_response) = EnableRuleCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-mail-flow-rules-list" {
+                ($human_readable, $entry_context, $raw_response) = ListMailFlowRulesCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-mail-flow-rule-get" {
+                ($human_readable, $entry_context, $raw_response) = GetMailFlowRuleCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-mail-flow-rule-remove" {
+                ($human_readable, $entry_context, $raw_response) = RemoveMailFlowRuleCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-mail-flow-rule-disable" {
+                ($human_readable, $entry_context, $raw_response) = DisableMailFlowRuleCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-mail-flow-rule-enable" {
+                ($human_readable, $entry_context, $raw_response) = EnableMailFlowRuleCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-mail-forwarding-disable" {
+                ($human_readable, $entry_context, $raw_response) = DisableMailForwardingCommand $exo_client $command_arguments
             }
             default {
                 ReturnError "Could not recognize $command"

@@ -3,5 +3,12 @@ id: slack_modeling_rule
 name: Slack Modeling Rule
 rules: ''
 schema: ''
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- xsiam
 tags: slack
 toversion: 6.9.9

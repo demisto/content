@@ -1,4 +1,5 @@
 category: Messaging and Conferencing
+provider: Twilio
 commonfields:
   id: SendGrid
   version: -1
@@ -345,7 +346,7 @@ script:
     outputs:
     - contextPath: Sendgrid.DeleteListJobId
       description: Job id of the async job.
-  dockerimage: demisto/py3-tools:1.0.0.102774
+  dockerimage: demisto/py3-tools:1.0.0.117220
   script: ''
   subtype: python3
   type: python

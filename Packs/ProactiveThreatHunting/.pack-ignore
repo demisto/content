@@ -27,3 +27,8 @@ ignore=IF113
 
 [file:playbook-Proactive_Threat_Hunting_-_Block_Indicators.yml]
 ignore=PB121
+
+
+# Temporary ignore GR-107 until CIAC-12403 is resolved
+[file:playbook-Proactive_Threat_Hunting_-_Execute_Query.yml]
+ignore=GR107

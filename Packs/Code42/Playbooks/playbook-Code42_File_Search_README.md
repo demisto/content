@@ -16,10 +16,6 @@ This playbook does not use any sub-playbooks.
 
 This playbook does not use any scripts.
 
-### Commands
-
-* code42-securitydata-search
-
 ## Playbook Inputs
 
 ---

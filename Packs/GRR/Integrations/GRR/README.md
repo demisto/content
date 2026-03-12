@@ -118,26 +118,26 @@
 <h5>Context Example</h5>
 <pre>"Flow": [
         {
-            "Expires": null, 
-            "IsRobot": null, 
-            "Description": null, 
-            "Creator": "admin", 
-            "NestedFlow": null, 
-            "LastActiveAt": 1535900542748033, 
+            "Expires": null,
+            "IsRobot": null,
+            "Description": null,
+            "Creator": "admin",
+            "NestedFlow": null,
+            "LastActiveAt": 1535900542748033,
             "Args": {
                 "request": {}
-            }, 
-            "State": "RUNNING", 
-            "StartedAt": 1535900542745106, 
-            "ID": "F:B51D6EAB", 
-            "Created": null, 
+            },
+            "State": "RUNNING",
+            "StartedAt": 1535900542745106,
+            "ID": "F:B51D6EAB",
+            "Created": null,
             "Name": "AnalyzeClientMemory"
         }
     ]
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/44957392-5c515780-aed2-11e8-9660-173f343e1da4.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/44957392-5c515780-aed2-11e8-9660-173f343e1da4.png" alt="image" width="752" height="325"></a></p>
+<p><a href="../../doc_files/grr_set_flows.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/grr_set_flows.png" alt="image" width="752" height="325"></a></p>
 <h3 id="h_7791868101241535960968842">2. Get a list of flows</h3>
 <hr>
 <p>Lists flows launched on a specified client.</p>
@@ -226,42 +226,42 @@
 <pre>{
     "Flow": [
         {
-            "Expires": null, 
-            "IsRobot": null, 
-            "Description": null, 
-            "Creator": "admin", 
-            "NestedFlow": [], 
-            "LastActiveAt": 1535900632278975, 
+            "Expires": null,
+            "IsRobot": null,
+            "Description": null,
+            "Creator": "admin",
+            "NestedFlow": [],
+            "LastActiveAt": 1535900632278975,
             "Args": {
                 "request": {}
-            }, 
-            "State": "TERMINATED", 
-            "StartedAt": 1535900542745106, 
-            "ID": "F:B51D6EAB", 
-            "Created": null, 
+            },
+            "State": "TERMINATED",
+            "StartedAt": 1535900542745106,
+            "ID": "F:B51D6EAB",
+            "Created": null,
             "Name": "AnalyzeClientMemory"
-        }, 
+        },
         {
-            "Expires": null, 
-            "IsRobot": null, 
-            "Description": null, 
-            "Creator": "admin", 
-            "NestedFlow": [], 
-            "LastActiveAt": 1535854160731193, 
+            "Expires": null,
+            "IsRobot": null,
+            "Description": null,
+            "Creator": "admin",
+            "NestedFlow": [],
+            "LastActiveAt": 1535854160731193,
             "Args": {
                 "request": {}
-            }, 
-            "State": "TERMINATED", 
-            "StartedAt": 1535853917723700, 
-            "ID": "F:88F4F65D", 
-            "Created": null, 
+            },
+            "State": "TERMINATED",
+            "StartedAt": 1535853917723700,
+            "ID": "F:88F4F65D",
+            "Created": null,
             "Name": "AnalyzeClientMemory"
         }
     ]
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/44957436-f44f4100-aed2-11e8-83ac-ca734bce7c9d.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/44957436-f44f4100-aed2-11e8-83ac-ca734bce7c9d.png" alt="image" width="751" height="146"></a></p>
+<p><a href="../../doc_files/grr_get_flows.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/grr_get_flows.png" alt="image" width="751" height="146"></a></p>
 <h3 id="h_8647633621871535960975987">3. Get a list of available hunts</h3>
 <hr>
 <p>Renders list of available hunts</p>
@@ -364,30 +364,30 @@
 <pre>{
     "Hunt": [
         {
-            "Expires": 1537063517000000, 
-            "Description": "", 
-            "Creator": "admin", 
-            "IsRobot": false, 
-            "State": "PAUSED", 
-            "ID": "H:7B7F45F", 
-            "Created": 1535853917657925, 
+            "Expires": 1537063517000000,
+            "Description": "",
+            "Creator": "admin",
+            "IsRobot": false,
+            "State": "PAUSED",
+            "ID": "H:7B7F45F",
+            "Created": 1535853917657925,
             "Name": "GenericHunt"
-        }, 
+        },
         {
-            "Expires": 1537059453000000, 
-            "Description": "", 
-            "Creator": "admin", 
-            "IsRobot": false, 
-            "State": "PAUSED", 
-            "ID": "H:AED24E68", 
-            "Created": 1535849853550599, 
+            "Expires": 1537059453000000,
+            "Description": "",
+            "Creator": "admin",
+            "IsRobot": false,
+            "State": "PAUSED",
+            "ID": "H:AED24E68",
+            "Created": 1535849853550599,
             "Name": "GenericHunt"
         }
     ]
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/44958397-05527f00-aee0-11e8-8810-79fea033d908.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/44958397-05527f00-aee0-11e8-8810-79fea033d908.png" alt="image" width="751" height="151"></a></p>
+<p><a href="../../doc_files/grr_get_hunts.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/grr_get_hunts.png" alt="image" width="751" height="151"></a></p>
 <h3 id="h_8459505302491535960983242">4. Get hunt summary</h3>
 <hr>
 <p>Returns the summary of a specified hunt.</p>
@@ -470,20 +470,20 @@
 <pre>{
     "Hunt": [
         {
-            "Expires": 1537063517000000, 
-            "Description": "", 
-            "Creator": "admin", 
-            "IsRobot": false, 
-            "State": "PAUSED", 
-            "ID": "H:7B7F45F", 
-            "Created": 1535853917657925, 
+            "Expires": 1537063517000000,
+            "Description": "",
+            "Creator": "admin",
+            "IsRobot": false,
+            "State": "PAUSED",
+            "ID": "H:7B7F45F",
+            "Created": 1535853917657925,
             "Name": "GenericHunt"
         }
     ]
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/44958498-865e4600-aee1-11e8-8ed9-f5475b8f3347.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/44958498-865e4600-aee1-11e8-8ed9-f5475b8f3347.png" alt="image" width="750" height="364"></a></p>
+<p><a href="../../doc_files/grr_get_hunt_hunt_id.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/grr_get_hunt_hunt_id.png" alt="image" width="750" height="364"></a></p>
 <h3 id="h_7579103053101535960989172">5. Set a hunt</h3>
 <hr>
 <p>Handles hunt creation request.</p>
@@ -525,20 +525,20 @@
 <pre>{
     "Hunt": [
         {
-            "Expires": 1537117003000000, 
-            "Description": "", 
-            "Creator": "admin", 
-            "IsRobot": false, 
-            "State": "PAUSED", 
-            "ID": "H:74EB48EE", 
-            "Created": 1535907403638694, 
+            "Expires": 1537117003000000,
+            "Description": "",
+            "Creator": "admin",
+            "IsRobot": false,
+            "State": "PAUSED",
+            "ID": "H:74EB48EE",
+            "Created": 1535907403638694,
             "Name": "GenericHunt"
         }
     ]
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/44958552-1603f480-aee2-11e8-8acb-eed94aa56d85.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/44958552-1603f480-aee2-11e8-8acb-eed94aa56d85.png" alt="image" width="751" height="371"></a></p>
+<p><a href="../../doc_files/grr_set_hunts.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/grr_set_hunts.png" alt="image" width="751" height="371"></a></p>
 <h3 id="h_3546057193691535960996178">6. Get a list of clients</h3>
 <hr>
 <p>Returns results of a client search.</p>
@@ -648,95 +648,95 @@
     "Client": [
         {
             "HardwareInfo": {
-                "system_product_name": "HVM domU", 
-                "bios_rom_size": "64 kB", 
-                "bios_vendor": "Xen", 
-                "system_sku_number": "Not Specified", 
-                "system_family": "Not Specified", 
-                "system_uuid": "EC2EDE26-BB13-B80C-1915-DC53118B923F", 
-                "system_manufacturer": "Xen", 
-                "bios_release_date": "08/24/2006", 
-                "bios_version": "4.2.amazon", 
-                "serial_number": "ec2ede26-bb13-b80c-1915-dc53118b923f", 
+                "system_product_name": "HVM domU",
+                "bios_rom_size": "64 kB",
+                "bios_vendor": "Xen",
+                "system_sku_number": "Not Specified",
+                "system_family": "Not Specified",
+                "system_uuid": "EC2EDE26-BB13-B80C-1915-DC53118B923F",
+                "system_manufacturer": "Xen",
+                "bios_release_date": "08/24/2006",
+                "bios_version": "4.2.amazon",
+                "serial_number": "ec2ede26-bb13-b80c-1915-dc53118b923f",
                 "bios_revision": "4.2"
-            }, 
-            "LastClock": 1535907460060247, 
+            },
+            "LastClock": 1535907460060247,
             "Interfaces": [
                 {
-                    "ifname": "lo", 
+                    "ifname": "lo",
                     "addresses": [
                         {
-                            "packed_bytes": "fwAAAQ==", 
+                            "packed_bytes": "fwAAAQ==",
                             "address_type": "INET"
-                        }, 
+                        },
                         {
-                            "packed_bytes": "AAAAAAAAAAAAAAAAAAAAAQ==", 
+                            "packed_bytes": "AAAAAAAAAAAAAAAAAAAAAQ==",
                             "address_type": "INET6"
                         }
-                    ], 
+                    ],
                     "mac_address": "AAAAAAAA"
-                }, 
+                },
                 {
-                    "ifname": "eth0", 
+                    "ifname": "eth0",
                     "addresses": [
                         {
-                            "packed_bytes": "rB8sWw==", 
+                            "packed_bytes": "rB8sWw==",
                             "address_type": "INET"
-                        }, 
+                        },
                         {
-                            "packed_bytes": "/oAAAAAAAAAE1kv//h5yfg==", 
+                            "packed_bytes": "/oAAAAAAAAAE1kv//h5yfg==",
                             "address_type": "INET6"
                         }
-                    ], 
+                    ],
                     "mac_address": "BtZLHnJ+"
                 }
-            ], 
+            ],
             "OS": {
-                "kernel": "4.4.0-1065-aws", 
-                "install_date": 1534280169000000, 
-                "system": "Linux", 
-                "fqdn": "ip-172-31-44-91.eu-central-1.compute.internal", 
-                "machine": "x86_64", 
-                "version": "16.4", 
+                "kernel": "4.4.0-1065-aws",
+                "install_date": 1534280169000000,
+                "system": "Linux",
+                "fqdn": "ip-172-31-44-91.eu-central-1.compute.internal",
+                "machine": "x86_64",
+                "version": "16.4",
                 "release": "Ubuntu"
-            }, 
+            },
             "AgentInfo": {
-                "client_name": "grr", 
-                "client_description": "grr linux amd64", 
-                "client_version": 3232, 
+                "client_name": "grr",
+                "client_description": "grr linux amd64",
+                "client_version": 3232,
                 "build_time": "2018-06-28 09:37:57"
-            }, 
-            "Labels": [], 
-            "LastBootedAt": 1535292604000000, 
-            "FirstSeenAt": 1535293827970976, 
+            },
+            "Labels": [],
+            "LastBootedAt": 1535292604000000,
+            "FirstSeenAt": 1535293827970976,
             "User": [
                 {
-                    "username": "ubuntu", 
-                    "shell": "/bin/bash", 
-                    "homedir": "/home/ubuntu", 
-                    "last_logon": 1535356309000000, 
-                    "gid": 1000, 
-                    "full_name": "Ubuntu", 
+                    "username": "ubuntu",
+                    "shell": "/bin/bash",
+                    "homedir": "/home/ubuntu",
+                    "last_logon": 1535356309000000,
+                    "gid": 1000,
+                    "full_name": "Ubuntu",
                     "uid": 1000
                 }
-            ], 
+            ],
             "Volumes": [
                 {
-                    "total_allocation_units": 50808745, 
-                    "bytes_per_sector": 4096, 
-                    "sectors_per_allocation_unit": 1, 
+                    "total_allocation_units": 50808745,
+                    "bytes_per_sector": 4096,
+                    "sectors_per_allocation_unit": 1,
                     "unixvolume": {
                         "mount_point": "/"
-                    }, 
+                    },
                     "actual_available_allocation_units": 50027766
                 }
-            ], 
-            "LastCrashAt": null, 
-            "LastSeenAt": 1535907460075229, 
+            ],
+            "LastCrashAt": null,
+            "LastSeenAt": 1535907460075229,
             "ID": "C.d824a5afc0ee6a46"
         }
     ]
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/44958573-582d3600-aee2-11e8-9235-73f008ec5265.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/44958573-582d3600-aee2-11e8-9235-73f008ec5265.png" alt="image" width="752" height="361"></a></p>
+<p><a href="../../doc_files/grr_get_clients.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/grr_get_clients.png" alt="image" width="752" height="361"></a></p>

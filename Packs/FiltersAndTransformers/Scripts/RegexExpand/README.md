@@ -2,6 +2,7 @@ Extract the strings matched to the patterns by doing backslash substitution on t
 This transformer allow to specify multiple regex patterns and multiple match targets, and those can be given in the input value and the argument parameters.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ This transformer allow to specify multiple regex patterns and multiple match tar
 | Tags | transformer, string, entirelist |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -24,5 +26,6 @@ This transformer allow to specify multiple regex patterns and multiple match tar
 | search_limit | The maximum limit for scanning patterns. \(0 means unlimited\) |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

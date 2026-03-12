@@ -58,7 +58,7 @@ tasks:
         simple: "yes"
       unsecure: {}
       url:
-        simple: https://github.com/demisto/content/raw/master/Packs/CommonScripts/Scripts/UnzipFile/data_test/fix_unzip.png.zip
+        simple: https://github.com/demisto/content/raw/master/Packs/CommonScripts/Scripts/UnzipFile/test_data/fix_unzip.png.zip
       username: {}
     separatecontext: false
     view: |-

@@ -1,5 +1,5 @@
-name: Oracle
-id: Oracle
+name: Oracle Parsing Rule
+id: Oracle_ParsingRule
 fromversion: 6.10.0
 tags: []
 rules: ''

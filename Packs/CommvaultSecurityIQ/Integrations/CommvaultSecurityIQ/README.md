@@ -1,11 +1,7 @@
 Commvault Cloud provides pre-built integrations, automation workflows, and playbooks to streamline operations, enhance threat intelligence integration, and gain actionable insights through advanced reporting and analytics.
 This integration was integrated and tested with version 6.9.0 of CommvaultSecurityIQ.
 
-## Configure Commvault Cloud on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Commvault Cloud.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure Commvault Cloud in Cortex
 
    | **Parameter**| **Required**|
    | ---| ---|
@@ -25,13 +21,13 @@ This integration was integrated and tested with version 6.9.0 of CommvaultSecuri
    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)| False|
    | Max events to fetch| False|
 
-4. Click **Test** to validate the URLs, token, and connection.
+##### Note :- If "Fetch Incidents" parameter is selected then make sure "Long running instance" capability of the integration is disabled
 
-##### Note :- If "Fetch Incidents" parameter is selected then make sure "Long running instance" capability of the integration is disabled.
 ##### Note :- Set Mapper (incoming) to "Commvault Suspicious File Activity Mapper"
+
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### commvault-security-set-disable-data-aging
@@ -51,7 +47,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CommvaultSecurityIQ.DisableDataAging | string | Status returned after calling disable data aging API | 
+| CommvaultSecurityIQ.DisableDataAging | string | Status returned after calling disable data aging API |
 
 ### commvault-security-get-generate-token
 
@@ -70,7 +66,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CommvaultSecurityIQ.GenerateToken | string | Status indicating whether successfully generated access token or not | 
+| CommvaultSecurityIQ.GenerateToken | string | Status indicating whether successfully generated access token or not |
 
 ### commvault-security-get-access-token-from-keyvault
 
@@ -89,7 +85,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CommvaultSecurityIQ.GetAccessToken | string | Status returned after getting the access token from KeyVault | 
+| CommvaultSecurityIQ.GetAccessToken | string | Status returned after getting the access token from KeyVault |
 
 ### commvault-security-set-disable-saml-provider
 
@@ -108,7 +104,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CommvaultSecurityIQ.DisableSaml | string | Status indicating whether successfully disabled SAML provider or not | 
+| CommvaultSecurityIQ.DisableSaml | string | Status indicating whether successfully disabled SAML provider or not |
 
 ### commvault-security-get-copy-files-list-to-war-room
 
@@ -126,6 +122,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### commvault-security-set-disable-user
 
 ***
@@ -139,13 +136,13 @@ Disables user
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_email | Email id of the user to be disabled. | Required | 
+| user_email | Email id of the user to be disabled. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CommvaultSecurityIQ.DisableUser | string | Response indicating whether successfully disabled user or not. | 
+| CommvaultSecurityIQ.DisableUser | string | Response indicating whether successfully disabled user or not. |
 
 ### commvault-security-set-cleanroom-add-vm-to-recovery-group
 
@@ -160,11 +157,11 @@ Add VM to Cleanroom
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vm_name | VM name. | Required | 
-| clean_recovery_point | Recovery point timestamp to which we add the VM. | Required | 
+| vm_name | VM name. | Required |
+| clean_recovery_point | Recovery point timestamp to which we add the VM. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CommvaultSecurityIQ.AddEntityToCleanroom | string | Response indicating whether successfully added the VM to the recovery point or not. | 
+| CommvaultSecurityIQ.AddEntityToCleanroom | string | Response indicating whether successfully added the VM to the recovery point or not. |

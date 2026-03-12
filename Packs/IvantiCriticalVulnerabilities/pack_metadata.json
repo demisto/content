@@ -2,7 +2,7 @@
     "name": "Ivanti Critical Vulnerabilities",
     "description": "This pack handles CVE-2023-46805, CVE-2024-21887, CVE-2024-21888, and CVE-2024-21893 - Ivanti critical vulnerabilities",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -31,8 +31,6 @@
         "21887",
         "21888",
         "21893"
-
-
     ],
     "dependencies": {
         "MajorBreachesInvestigationandResponse": {
@@ -42,6 +40,15 @@
     },
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

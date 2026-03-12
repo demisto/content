@@ -1,4 +1,5 @@
 category: Analytics & SIEM
+provider: Broadcom
 description: Palo Alto Networks Symantec Cloud Secure Web Gateway Event Collector integration for Cortex XSIAM.
 display: Symantec Cloud Secure Web Gateway Event Collector
 name: Symantec Cloud Secure Web Gateway Event Collector
@@ -41,7 +42,7 @@ configuration:
   section: Collect
 script:
   commands: []
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.12.8.3296088
   longRunning: true
   script: ""
   subtype: python3
@@ -50,4 +51,5 @@ tests:
 - No tests (auto formatted)
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 8.2.0

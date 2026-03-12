@@ -1,0 +1,28 @@
+!rs-search-incidents date-created-after="2024-08-07T10:00:00Z" page="1" page_size="20" return_level=partial!rs-update-incident incident-id=1234 severity=High incident-type=Malware
+!rs-incidents-get-members incident-id=1234
+!rs-get-incident incident-id=1234
+!rs-incidents-update-member incident-id=1234 members=1
+!rs-get-users
+!rs-close-incident incident-id=1234
+!rs-create-incident name=IncidentName
+!rs-incident-artifacts incident-id=1234
+!rs-incident-attachments incident-id=1234
+!rs-related-incidents incident-id=1234
+!rs-add-note incident-id=1234 note="This is a note"
+!rs-add-artifact artifact-type="IP Address" artifact-value=1.1.1.1 incident-id=1234 artifact-description="This is a description"
+!rs-incidents-get-tasks incident-id=1234
+!rs-search-incidents date-created-after="2024-08-07T10:00:00Z" page="1" page_size="20" return_level="full"
+!rs-get-incident incident-id="1234"
+!rs-update-task task_id="5678" name="Updated Task Name" owner_id="9012" due_date="2023-12-31T23:59:59Z" phase="Respond" status="Completed"
+!rs-delete-tasks task_ids="1234,5678,9012"
+!rs-upload-incident-attachment incident_id="1234" entry_id="abcdefghijklmnop1234567890"
+!rs-delete-incidents incident_ids="1234,5678,9012"
+!rs-add-custom-task incident_id="1234" name="Custom Analysis Task" owner_id="5678" description="Perform custom analysis" instructions="Follow the outlined steps for analysis" phase="Detect/Analyze" due_date="2023-12-31T23:59:59Z"
+!rs-get-task-members task_id="1234"
+!rs-delete-task-members task_id="5678"
+!rs-list-scripts
+!rs-list-task-instructions task_id="1234"
+!rs-list-incident-notes incident_id="1234"
+!rs-get-attachment incident_id="1234" attachment_id="5678"
+!rs-list-tasks
+!rs-update-incident-note incident_id="1234" note_id="5678" note="Updated information about the incident."

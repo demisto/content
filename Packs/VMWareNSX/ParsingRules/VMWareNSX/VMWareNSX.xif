@@ -1,0 +1,51 @@
+[RULE: VMWARE_NSX_PARSE_TIMESTAMP]
+//Timestamp parse
+ alter tmp_time = arrayindex(regextract(_raw_log,"(\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z)"),0)
+| filter tmp_time ~= "\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z"
+| alter _time = parse_timestamp("%Y-%m-%dT%H:%M:%E3SZ", tmp_time);
+
+//Log sample 1
+[RULE: Log_sample_1]
+call VMWARE_NSX_PARSE_TIMESTAMP 
+| alter
+    header = regextract(_raw_log, "\S+\d{2}:\d{2}:\d{2}\S*\s+\S+\s\S+\s+\S+\s+\S+\s+"),
+    raw_data = arrayindex(regextract(_raw_log, "\S+\d{2}:\d{2}:\d{2}\S*\s+\S+\s\S+\s+\S+\s+\S+\s+(.*)"),0)
+| alter
+    keys_from_raw_data = regextract(raw_data, "(?:\(|\s|,|\(\s|\s\w+\s)(\w+)="),
+    values_from_raw_data =  arraystring(regextract(raw_data, "[^\s\=]+\=([^\s,\]\)]+)"), ", ")
+| alter
+    cleaned_keys_array = arraymap(keys_from_raw_data, replex("@element","\"",""))
+| alter cleaned_keys_array = arraymap(cleaned_keys_array, replex("@element","\s",""))
+| alter cleaned_keys_array = arraymap(cleaned_keys_array, replex("@element","\<\,","<"))
+| alter cleaned_keys_array = arraymap(cleaned_keys_array, replex("@element","comp","component"))
+| alter regex_pattern = arraystring(arraymap(cleaned_keys_array, concat("(?P<", "@element", ">[^,]+)")), ",")
+| alter parsed_fields = regexcapture(values_from_raw_data, regex_pattern);
+
+
+[RULE: Log_sample_2]
+//Log sample 2
+call VMWARE_NSX_PARSE_TIMESTAMP 
+| alter
+    header = regextract(_raw_log, "\S+\d{2}:\d{2}:\d{2}\S*\s+\S+\s\S+\s+\S+\s+\S+\s+"),
+    raw_data = arrayindex(regextract(_raw_log, "\S+\d{2}:\d{2}:\d{2}\S*\s+\S+\s\S+\s+\S+\s+\S+\s+(.*)"),0)
+| alter
+    keys_from_raw_data = regextract(raw_data, "(?:\(|\s|,|\(\s|\s\w+\s)(\w+)="),
+    values_from_raw_data =  arraystring(regextract(raw_data, "(?:\(|\s|\,|\,\s\w+\s)\w+\=([^\s\,\)\]]+)"), ", ")
+| alter
+    cleaned_keys_array = arraymap(keys_from_raw_data, replex("@element","\"",""))
+| alter cleaned_keys_array = arraymap(cleaned_keys_array, replex("@element","\s",""))
+| alter cleaned_keys_array = arraymap(cleaned_keys_array, replex("@element","\<\,","<"))
+| alter cleaned_keys_array = arraymap(cleaned_keys_array, replex("@element","comp","component"))
+| alter regex_pattern = arraystring(arraymap(cleaned_keys_array, concat("(?P<", "@element", ">[^,]+)")), ",")
+| alter values_from_raw_data = replex(values_from_raw_data, "\\\"", "")
+| alter values_from_raw_data = replex(values_from_raw_data, "\"", "")
+| alter parsed_fields = regexcapture(values_from_raw_data, regex_pattern);
+
+
+[INGEST:vendor="vmware", product="nsx", target_dataset="vmware_nsx_raw",no_hit=keep]
+//Schema 1
+filter _raw_log ~= "\S+\d{2}:\d{2}:\d{2}\S*\s+\S+\s\S+\s+\S+\s+\S+\s[^\[]\s+.*"
+| call Log_sample_1;
+//Sceham 2
+filter _raw_log ~= "\S+\d{2}:\d{2}:\d{2}\S*\s+\S+\s\S+\s+\S+\s+\S+\s+\[.*"
+| call Log_sample_2;

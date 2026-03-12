@@ -1,0 +1,27 @@
+{
+    "autorun": false,
+    "color": "#AA00FF",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Backup Copy Creation Time",
+    "layout": "Triggered Alarm",
+    "locked": false,
+    "name": "Backup Copy Creation Time",
+    "onChangeRepAlg": 1,
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "weeks": 0,
+    "weeksR": 0
+}

@@ -1,0 +1,42 @@
+[MODEL: dataset=admin_by_request_raw]
+filter source_log_type = "auditlog"
+| alter additional_data = object_create("Application_Name", application -> name, "Application_Vendor", application -> vendor, "Application_Threat" , application -> threat, "Application_VT_Link", application -> virustotalLink, "Request_Reason", reason, "Approved_By", approvedBy , "Approved_By_Email", approvedByEmail , "Denied_By", deniedBy , "Denied_By_Email", deniedByEmail , "Denied_Reason", deniedReason,"Audit_Log_URL", auditLogURL)
+| alter
+    xdm.target.file.filename = application -> file,
+    xdm.target.file.path = application -> path,
+    xdm.target.file.sha256 = application -> ["sha256"],
+    xdm.target.host.os = computer -> platform,
+    xdm.event.outcome_reason = application -> scanResult,
+    xdm.event.description = additional_data,
+    xdm.target.host.hostname = computer -> name,
+    xdm.event.type = source_log_type,
+    xdm.event.operation = type,
+    xdm.source.user.username = user -> account,
+    xdm.source.user.upn = user -> email;
+filter source_log_type = "events"
+| alter 
+    event_log_level = to_string(eventLevel),
+    additional_data = object_create("Application_Name", application -> name, "Application_Vendor", application -> vendor, "Additional_Data", additionalData)
+| alter
+    xdm.target.file.filename = application -> file,
+    xdm.target.file.path = application -> path,
+    xdm.target.host.hostname = computerName,
+    xdm.event.log_level = if(event_log_level = "0", XDM_CONST.LOG_LEVEL_INFORMATIONAL , event_log_level = "1", XDM_CONST.LOG_LEVEL_WARNING , event_log_level = "2", XDM_CONST.LOG_LEVEL_ALERT),
+    xdm.event.type = source_log_type,
+    xdm.event.description = additional_data,
+    xdm.source.user.username = coalesce(userAccount,userName),
+    xdm.event.operation = eventText;
+filter source_log_type = "request"
+| alter additional_data = object_create("Application_Name", application -> name, "Application_Vendor", application -> vendor, "Application_Threat" , application -> threat, "Application_VT_Link", application -> virustotalLink, "Request_Reason", reason, "Approved_By" ,approvedBy , "Approved_By_Email", approvedByEmail , "Denied_By", deniedBy , "Denied_By_Email", deniedByEmail , "Denied_Reason", deniedReason, "Audit_Log_Link", auditlogLink)
+| alter 
+    xdm.target.file.filename = application -> file,
+    xdm.target.file.path = application -> path,
+    xdm.target.file.sha256 = application -> ["sha256"],
+    xdm.event.outcome_reason = application -> scanResult,
+    xdm.target.host.os = computer -> platform,
+    xdm.event.description = additional_data,
+    xdm.target.host.hostname = computer -> name,
+    xdm.event.type = source_log_type,
+    xdm.source.user.username = user -> account,
+    xdm.source.user.upn = user -> email,
+    xdm.event.operation = type;

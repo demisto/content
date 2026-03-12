@@ -3,9 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: PAN-OS Query Logs For Indicators
-description: 'This playbook queries the following PAN-OS log types: traffic, threat,
-  url, data-filtering and wildfire. The playbook accepts inputs such as IP. hash,
-  and url.'
+description: 'This playbook queries the following PAN-OS log types: traffic, threat, url, data-filtering and wildfire. The playbook accepts inputs such as IP. hash, and url.'
 starttaskid: "0"
 tasks:
   "0":
@@ -46,8 +44,7 @@ tasks:
       id: 46712325-47fc-42d4-8934-37612d712661
       version: -1
       name: Is Palo Alto Networks PAN-OS enabled?
-      description: Checks if there is a valid instance of the Palo Alto Networks PAN-OS.
-        integration enabled.
+      description: Checks if there is a valid instance of the Palo Alto Networks PAN-OS. integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -731,32 +728,29 @@ inputs:
   value: {}
   required: false
   description: 'URL, for example: "safebrowsing.googleapis.com".'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: filedigest
   value: {}
   required: false
   description: File hash (for WildFire logs only).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ip
   value: {}
   required: false
   description: Source or destination address
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Panorama.Monitor
   description: Monitor logs object.
   type: string
 - contextPath: Panorama.Monitor.Logs.Action
-  description: Action taken for the session. Can be "alert", "allow", "deny", "drop",
-    "drop-all-packets", "reset-client", "reset-server", "reset-both", or "block-url".
+  description: Action taken for the session. Can be "alert", "allow", "deny", "drop", "drop-all-packets", "reset-client", "reset-server", "reset-both", or "block-url".
   type: string
 - contextPath: Panorama.Monitor.Logs.Application
   description: Application associated with the session.
   type: string
 - contextPath: Panorama.Monitor.Logs.Category
-  description: For URL subtype, it is the URL category; For WildFire subtype, it is
-    the verdict on the file and is either ‘malicious’, ‘phishing’, ‘grayware’, or
-    ‘benign’; For other subtypes, the value is ‘any’.
+  description: For URL subtype, it is the URL category; For WildFire subtype, it is the verdict on the file and is either ‘malicious’, ‘phishing’, ‘grayware’, or ‘benign’; For other subtypes, the value is ‘any’.
   type: string
 - contextPath: Panorama.Monitor.Logs.DeviceName
   description: The hostname of the firewall on which the session was logged.
@@ -768,8 +762,7 @@ outputs:
   description: Username of the user to which the session was destined.
   type: string
 - contextPath: Panorama.Monitor.Logs.DestinationCountry
-  description: Destination country or internal region for private addresses. Maximum
-    length is 32 bytes.
+  description: Destination country or internal region for private addresses. Maximum length is 32 bytes.
   type: string
 - contextPath: Panorama.Monitor.Logs.DestinationPort
   description: Destination port utilized by the session.
@@ -816,10 +809,7 @@ outputs:
   description: Post-NAT source port.
   type: string
 - contextPath: Panorama.Monitor.Logs.PCAPid
-  description: The packet capture (pcap) ID is a 64 bit unsigned integral denoting
-    an ID to correlate threat pcap files with extended pcaps taken as a part of that
-    flow. All threat logs will contain either a pcap_id of 0 (no associated pcap),
-    or an ID referencing the extended pcap file.
+  description: The packet capture (pcap) ID is a 64 bit unsigned integral denoting an ID to correlate threat pcap files with extended pcaps taken as a part of that flow. All threat logs will contain either a pcap_id of 0 (no associated pcap), or an ID referencing the extended pcap file.
   type: string
 - contextPath: Panorama.Monitor.Logs.IPProtocol
   description: IP protocol associated with the session.
@@ -850,15 +840,13 @@ outputs:
   description: The serial number of the firewall on which the session was logged.
   type: string
 - contextPath: Panorama.Monitor.Logs.Severity
-  description: Severity associated with the threat. Can be "informational", "low",
-    "medium", "high", or "critical".
+  description: Severity associated with the threat. Can be "informational", "low", "medium", "high", or "critical".
   type: string
 - contextPath: Panorama.Monitor.Logs.SourceAddress
   description: Original session source IP address.
   type: string
 - contextPath: Panorama.Monitor.Logs.SourceCountry
-  description: Source country or internal region for private addresses. Maximum length
-    is 32 bytes.
+  description: Source country or internal region for private addresses. Maximum length is 32 bytes.
   type: string
 - contextPath: Panorama.Monitor.Logs.SourceUser
   description: Username of the user who initiated the session.
@@ -867,8 +855,7 @@ outputs:
   description: Source port utilized by the session.
   type: string
 - contextPath: Panorama.Monitor.Logs.Name
-  description: Palo Alto Networks identifier for the threat. It is a description string
-    followed by a 64-bit numerical identifier.
+  description: Palo Alto Networks identifier for the threat. It is a description string followed by a 64-bit numerical identifier.
   type: string
 - contextPath: Panorama.Monitor.Logs.ID
   description: Palo Alto Networks ID for the threat.
@@ -880,8 +867,7 @@ outputs:
   description: Time that the log was generated on the dataplane.
   type: string
 - contextPath: Panorama.Monitor.Logs.URLCategoryList
-  description: A list of the URL filtering categories that the firewall used to enforce
-    policy.
+  description: A list of the URL filtering categories that the firewall used to enforce policy.
   type: string
 - contextPath: Panorama.Monitor.JobID
   description: Job ID of the logs query.
@@ -894,3 +880,10 @@ outputs:
 tests:
 - PAN-OS Query Logs For Indicators Test
 fromversion: 6.2.0
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- xsiam

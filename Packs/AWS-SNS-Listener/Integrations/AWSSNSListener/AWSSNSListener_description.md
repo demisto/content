@@ -29,3 +29,7 @@ example:
 
 For more info on long running integrations on XSOAR8 or XSIAM:
 [XSOAR8 or XSIAM Long Running](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Forward-Requests-to-Long-Running-Integrations)
+
+### Notes:
+- Specify the endpoint without special characters i.e /
+- The endpoint configured in AWS and in XSOAR must be the same.

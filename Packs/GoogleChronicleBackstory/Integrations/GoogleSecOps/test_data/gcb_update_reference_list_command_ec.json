@@ -1,0 +1,13 @@
+{
+    "GoogleChronicleBackstory.ReferenceList(val.name == obj.name)": {
+        "name": "dummy_reference_list_name",
+        "description": "monitoring domain",
+        "createTime": "2025-07-14T07:50:45.350943Z",
+        "contentType": "PLAIN_TEXT",
+        "lines": [
+            "L1",
+            "L2",
+            "L3"
+        ]
+    }
+}

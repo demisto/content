@@ -19,7 +19,7 @@ def filter_severities(data: List[Dict[str, Any]], desired_severities: List[str])
     filtered_data = []
 
     for entry in data:
-        entry_severities = entry.get('complianceissues', '').split('\n\n')
+        entry_severities = entry.get("complianceissues", "").split("\n\n")
         filtered_issues = []
 
         for issue in entry_severities:
@@ -29,7 +29,7 @@ def filter_severities(data: List[Dict[str, Any]], desired_severities: List[str])
                     break
 
         if filtered_issues:
-            entry['complianceissues'] = '\n\n'.join(filtered_issues)
+            entry["complianceissues"] = "\n\n".join(filtered_issues)
             filtered_data.append(entry)
 
     return filtered_data
@@ -51,18 +51,14 @@ def filter_resources(data: List[Dict[str, Any]], resource_type: str, desired_res
         return data
 
     filtered_data = []
-    key_mapping = {
-        'host': 'hostname',
-        'container': 'containerid',
-        'image': 'imageid'
-    }
+    key_mapping = {"host": "hostname", "container": "containerid", "image": "imageid"}
 
     key = key_mapping.get(resource_type, None)
     if not key:
         raise DemistoException("Invalid resource_type. Supported types: 'host', 'container', 'image'.")
 
     for entry in data:
-        resource_value = entry.get(key, '')
+        resource_value = entry.get(key, "")
         if resource_value in desired_resources:
             filtered_data.append(entry)
 
@@ -128,19 +124,16 @@ def send_html_email(html: str, resource_type: str, to_email: str) -> None:
     {html}
     """
 
-    res = demisto.executeCommand("send-mail", {
-        "to": to_email,
-        "subject": f"IMPORTANT: Prisma Cloud Compute {resource_type.capitalize()} Compliance",
-        "htmlBody": body
-    })
+    res = demisto.executeCommand(
+        "send-mail",
+        {"to": to_email, "subject": f"IMPORTANT: Prisma Cloud Compute {resource_type.capitalize()} Compliance", "htmlBody": body},
+    )
 
     if is_error(res):
-        raise DemistoException(f'Failed to create compliance report: {str(get_error(res))}')
+        raise DemistoException(f"Failed to create compliance report: {get_error(res)!s}")
 
     demisto.results(res)
-    return_results(CommandResults(
-        readable_output=res[0]['Contents']
-    ))
+    return_results(CommandResults(readable_output=res[0]["Contents"]))
 
 
 def send_xlsx_email(file_id: str, file_name: str, to_email: str, resource_type: str) -> None:
@@ -156,21 +149,22 @@ def send_xlsx_email(file_id: str, file_name: str, to_email: str, resource_type: 
     Returns:
         None
     """
-    res = demisto.executeCommand("send-mail", {
-        "to": to_email,
-        "subject": f"IMPORTANT: Prisma Cloud Compute {resource_type.capitalize()} Compliance",
-        "attachIDs": file_id,
-        "attachNames": file_name,
-        "body": "Please find attached file for the compliance report from Prisma Cloud Compute."
-    })
+    res = demisto.executeCommand(
+        "send-mail",
+        {
+            "to": to_email,
+            "subject": f"IMPORTANT: Prisma Cloud Compute {resource_type.capitalize()} Compliance",
+            "attachIDs": file_id,
+            "attachNames": file_name,
+            "body": "Please find attached file for the compliance report from Prisma Cloud Compute.",
+        },
+    )
 
     if is_error(res):
-        raise DemistoException(f'Failed to send email with XLSX attachment: {str(get_error(res))}')
+        raise DemistoException(f"Failed to send email with XLSX attachment: {get_error(res)!s}")
 
     demisto.results(res)
-    return_results(CommandResults(
-        readable_output=res[0]['Contents']
-    ))
+    return_results(CommandResults(readable_output=res[0]["Contents"]))
 
 
 def main() -> None:
@@ -200,11 +194,12 @@ def main() -> None:
             return
 
         if output_type.lower() == "html":
-            res = demisto.executeCommand("ConvertTableToHTML", {"table": filtered_data, "title": args.get("title"),
-                                                                "headers": args.get("headers")})
+            res = demisto.executeCommand(
+                "ConvertTableToHTML", {"table": filtered_data, "title": args.get("title"), "headers": args.get("headers")}
+            )
 
             if is_error(res):
-                raise DemistoException(f'Failed to create compliance report: {str(get_error(res))}')
+                raise DemistoException(f"Failed to create compliance report: {get_error(res)!s}")
 
             html = res[0]["EntryContext"]["HTMLTable"]
             html = html.replace("\n", "<br />")  # Add line break replacement
@@ -216,11 +211,12 @@ def main() -> None:
 
         elif output_type.lower() == "xlsx":
             # New logic for XLSX output
-            res = demisto.executeCommand("ExportToXLSX", {"data": filtered_data, "file_name": "compliance_report.xlsx",
-                                                          "sheet_name": "Compliance Report"})
+            res = demisto.executeCommand(
+                "ExportToXLSX", {"data": filtered_data, "file_name": "compliance_report.xlsx", "sheet_name": "Compliance Report"}
+            )
 
             if is_error(res):
-                raise DemistoException(f'Failed to create XLSX file: {str(get_error(res))}')
+                raise DemistoException(f"Failed to create XLSX file: {get_error(res)!s}")
 
             file_id = res[0]["FileID"]
             file_name = res[0]["File"]
@@ -234,5 +230,5 @@ def main() -> None:
         return_error(e)
 
 
-if __name__ in ['__main__', '__builtin__', 'builtins']:
+if __name__ in ["__main__", "__builtin__", "builtins"]:
     main()

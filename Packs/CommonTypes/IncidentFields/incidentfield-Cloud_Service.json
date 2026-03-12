@@ -29,7 +29,8 @@
         "CrowdStrike Falcon Detection",
         "CrowdStrike Falcon Incident",
         "Skyhigh Security Alert",
-        "Skyhigh Security Threat"
+        "Skyhigh Security Threat",
+        "CrowdStrike Falcon OFP Detection"
     ],
     "systemAssociatedTypes": null,
     "associatedToAll": false,

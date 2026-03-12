@@ -38,7 +38,7 @@ ALERT_CONTEXT = {
         ({"field": "severity", "operator": "eq", "value": "LOW"}, ALERT_CONTEXT, True),
         ({"field": "severity", "operator": "eq", "value": "HIGH"}, ALERT_CONTEXT, False),
         ({"field": "severity", "operator": "eq", "value": "MEDIUM"}, {"severity": None}, False),
-    ]
+    ],
 )
 def test_evaluate_criteria_severity(test_condition, test_alert_context, expected_result):
     assert evaluate_criteria(test_condition, test_alert_context) is expected_result
@@ -50,7 +50,7 @@ def test_evaluate_criteria_severity(test_condition, test_alert_context, expected
         ({"field": "ip", "operator": "eq", "value": "1.1.1.1"}, ALERT_CONTEXT, True),
         ({"field": "ip", "operator": "eq", "value": "2.2.2.2"}, ALERT_CONTEXT, False),
         ({"field": "ip", "operator": "eq", "value": "1.1.1.1"}, {"ip": None}, False),
-    ]
+    ],
 )
 def test_evaluate_criteria_ip(test_condition, test_alert_context, expected_result):
     assert evaluate_criteria(test_condition, test_alert_context) is expected_result
@@ -62,7 +62,7 @@ def test_evaluate_criteria_ip(test_condition, test_alert_context, expected_resul
         ({"field": "tag", "operator": "eq", "value": "rdp_server"}, ALERT_CONTEXT, True),
         ({"field": "tag", "operator": "eq", "value": "env"}, ALERT_CONTEXT, True),
         ({"field": "tag", "operator": "eq", "value": "wrong"}, ALERT_CONTEXT, False),
-    ]
+    ],
 )
 def test_evaluate_criteria_tag(test_condition, test_alert_context, expected_result):
     assert evaluate_criteria(test_condition, test_alert_context) is expected_result
@@ -75,7 +75,7 @@ def test_evaluate_criteria_tag(test_condition, test_alert_context, expected_resu
         ({"field": "provider", "operator": "eq", "value": "amazon web services"}, {"provider": "Amazon Web Services"}, True),
         ({"field": "provider", "operator": "eq", "value": "amazon web services"}, {"provider": None}, False),
         ({"field": "provider", "operator": "eq", "value": "aws"}, ALERT_CONTEXT, False),
-    ]
+    ],
 )
 def test_evaluate_criteria_provider(test_condition, test_alert_context, expected_result):
     assert evaluate_criteria(test_condition, test_alert_context) is expected_result

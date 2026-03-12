@@ -3,8 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Search And Delete Emails - Gmail
-description: This playbook searches Gmail to identify and delete emails with similar
-  attributes to the malicious email.
+description: This playbook searches Gmail to identify and delete emails with similar attributes to the malicious email.
 starttaskid: "0"
 tasks:
   "0":
@@ -135,8 +134,7 @@ tasks:
       id: 6f955c81-9371-410c-8bcc-a721f65608e1
       version: -1
       name: Search Gmail for similar emails last 7 days
-      description: Searches the Gmail records for all Google users from the last 7
-        days.
+      description: Searches the Gmail records for all Google users from the last 7 days.
       script: '|||gmail-search-all-mailboxes'
       type: regular
       iscommand: true
@@ -436,8 +434,7 @@ tasks:
       id: 5a461fd8-77a4-486b-834c-10c4a9a81571
       version: -1
       name: Search Gmail for similar emails
-      description: Searches the Gmail records for all Google users to find similar
-        emails.
+      description: Searches the Gmail records for all Google users to find similar emails.
       script: '|||gmail-search-all-mailboxes'
       type: regular
       iscommand: true
@@ -714,3 +711,13 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- xsiam
+- edr
+- cloud
+- cloud_runtime_security

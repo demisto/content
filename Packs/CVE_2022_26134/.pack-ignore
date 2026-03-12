@@ -1,0 +1,6 @@
+[file:playbook-CVE-2022-26134_-_Confluence_RCE.yml]
+ignore=GR107
+
+[file:playbook-CVE-2022-26134_-_Confluence_RCE_6_5.yml]
+ignore=GR107
+

@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -34,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 16f53ca7-8bab-48f2-8485-9892fc5f1809
+    taskid: bd8049e4-8452-4cf7-8d81-2784a7d8a291
     type: regular
     task:
-      id: 16f53ca7-8bab-48f2-8485-9892fc5f1809
+      id: bd8049e4-8452-4cf7-8d81-2784a7d8a291
       version: -1
       name: Post a msg to SNS-Listener
       description: Sends http request. Returns the response as json.
@@ -50,12 +51,19 @@ tasks:
       - "7"
     scriptarguments:
       body:
-        simple: '{"Type": "Notification", "MessageId": "8b2d1fb3-991d-5620-94db-4122378cde65",
-          "TopicArn": "arn:aws:sns:eu-central-1:123456789012:demisto", "Subject":
-          "SNS-test-subject", "Message": "SNS-test-subject", "Timestamp": "2024-04-11T09:24:33.550Z",
-          "SignatureVersion": "1", "Signature": "URJNiNbbC3YJAiAL8UGzyTfbwTEh1yKgx1uPdLQ7lPRt5UmQhlgjCsuh76Tjl6IB9bTHrqsWznC6yKYXEABNMnJxpMx8EssnofmmTH+5sEB5nd/yz9U8qMCPP22mSmkGtkAAFwxi0fBo9Pg3mzhitO2l7yo3v//V4KVQu03ggbSqTXnLZNXpN3sAjgrKFfye8x9OJ0NGMdDWrnFOEYMbJEGgetkxjJV/H7L+BCz01W1V+xjPFzbfmWFIyKArjEv7cI2dytQBdIf9QhB7zOYIpKPNz/NMp0a+3e/hxt2rarBLx/sqii5yWDCT/jAVAWBNyv6ZiGQwScWgjuu8ICnzDQ==",
-          "SigningCertURL": "https://sns.eu-central-1.amazonaws.com/SimpleNotificationService-60eadc530605d63b8e62a523676ef735.pem",
-          "UnsubscribeURL": "https://sns.eu-central-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:eu-central-1:123456789012:demisto:81273f59-b8ce-423b-842c-31cc19b81cb9"}'
+        simple: |-
+          {
+            "Type": "Notification",
+            "MessageId": "8b2d1fb3-991d-5620-94db-4122378cde65",
+            "TopicArn": "{{AWS.SNS.Topics[0].TopicArn}}",
+            "Subject": "SNS-test-subject",
+            "Message": "SNS-test-subject",
+            "Timestamp": "2024-04-11T09:24:33.550Z",
+            "SignatureVersion": "1",
+            "Signature": "URJNiNbbC3YJAiAL8UGzyTfbwTEh1yKgx1uPdLQ7lPRt5UmQhlgjCsuh76Tjl6IB9bTHrqsWznC6yKYXEABNMnJxpMx8EssnofmmTH+5sEB5nd/yz9U8qMCPP22mSmkGtkAAFwxi0fBo9Pg3mzhitO2l7yo3v//V4KVQu03ggbSqTXnLZNXpN3sAjgrKFfye8x9OJ0NGMdDWrnFOEYMbJEGgetkxjJV/H7L+BCz01W1V+xjPFzbfmWFIyKArjEv7cI2dytQBdIf9QhB7zOYIpKPNz/NMp0a+3e/hxt2rarBLx/sqii5yWDCT/jAVAWBNyv6ZiGQwScWgjuu8ICnzDQ==",
+            "SigningCertURL": "https://sns.eu-central-1.amazonaws.com/SimpleNotificationService-60eadc530605d63b8e62a523676ef735.pem",
+            "UnsubscribeURL": "https://sns.eu-central-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn={{AWS.SNS.Subscriptions[0].SubscriptionArn}}"
+          }
       headers:
         simple: x-amz-sns-message-type:Notification
       method:
@@ -68,14 +76,14 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1245
+          "y": 1595
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
@@ -103,7 +111,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1770
+          "y": 2120
         }
       }
     note: false
@@ -141,7 +149,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1945
+          "y": 2295
         }
       }
     note: false
@@ -176,7 +184,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2120
+          "y": 2470
         }
       }
     note: false
@@ -252,7 +260,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1420
+          "y": 1770
         }
       }
     note: false
@@ -322,7 +330,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1595
+          "y": 1945
         }
       }
     note: false
@@ -343,13 +351,14 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 2295
+          "y": 2645
         }
       }
     note: false
@@ -448,7 +457,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "16"
     scriptarguments:
       key:
         simple: apiurl
@@ -459,7 +468,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 1070
         }
       }
@@ -494,7 +503,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 895
         }
       }
@@ -520,7 +529,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "16"
     scriptarguments:
       key:
         simple: apiurl
@@ -556,8 +565,84 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 6a8b002f-2fbd-496d-8e33-ad5cf84e9401
+    type: regular
+    task:
+      id: 6a8b002f-2fbd-496d-8e33-ad5cf84e9401
+      version: -1
+      name: Get list of topics
+      description: Returns a list of the requester's topics.
+      script: AWS - SNS|||aws-sns-list-topics
+      type: regular
+      iscommand: true
+      brand: AWS - SNS
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: d7f488a8-c98b-4b82-86d8-a79965f294e0
+    type: regular
+    task:
+      id: d7f488a8-c98b-4b82-86d8-a79965f294e0
+      version: -1
+      name: Get subscription by first topic
+      description: Returns a list of the subscriptions to a specific topic. Each call returns a limited list of subscriptions, up to 100.
+      script: '|||aws-sns-list-subscriptions-by-topic'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      topicArn:
+        complex:
+          root: AWS.SNS.Topics
+          accessor: TopicArn
+          transformers:
+          - operator: FirstArrayElement
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: TopicArn
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
         }
       }
     note: false
@@ -572,7 +657,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2310,
+        "height": 2660,
         "width": 810,
         "x": 50,
         "y": 50
@@ -581,6 +666,8 @@ view: |-
   }
 inputs: []
 outputs: []
-marketplaces: ["xsoar_on_prem"]
 fromversion: 6.10.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
 description: ''

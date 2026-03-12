@@ -14,7 +14,7 @@ If you configured the integration instance to support basic auth, provide or sel
 
 ## Using it
 
-Run the **xsoaredlchecker-get-edl** command from the command line or playbook to check the EDLs.   
+Run the **xsoaredlchecker-get-edl** command from the command line or playbook to check the EDLs.
 
 This will check all instances, then you can do some magic in the playbook to see if anything isn't OK and notify!
 

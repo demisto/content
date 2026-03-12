@@ -184,4 +184,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![CyberTotal Whois - CyCraft](https://github.com/demisto/content/raw/master/Packs/CyberTotal/doc_files/CyberTotalWhois.png)
+![CyberTotal Whois - CyCraft](../doc_files/CyberTotal_Whois_-_CyCraft.png)

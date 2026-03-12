@@ -1,6 +1,7 @@
+from unittest.mock import call
+
 import demistomock as demisto
 from FeedLivehunt import Client, fetch_indicators_command, get_indicators_command, main
-from unittest.mock import call
 from freezegun import freeze_time
 
 MOCK_VT_RESPONSE = {
@@ -26,73 +27,31 @@ MOCK_VT_RESPONSE = {
                     "ImageVersion": "0.0",
                     "OSVersion": "4.0",
                     "EntryPoint": "0x9a16",
-                    "UninitializedDataSize": "0"
+                    "UninitializedDataSize": "0",
                 },
                 "trid": [
-                    {
-                        "file_type": "Win32 Executable MS Visual C++ (generic)",
-                        "probability": 38.8
-                    },
-                    {
-                        "file_type": "Microsoft Visual C++ compiled executable (generic)",
-                        "probability": 20.5
-                    },
-                    {
-                        "file_type": "Win64 Executable (generic)",
-                        "probability": 13.0
-                    },
-                    {
-                        "file_type": "Win32 Dynamic Link Library (generic)",
-                        "probability": 8.1
-                    },
-                    {
-                        "file_type": "Win16 NE executable (generic)",
-                        "probability": 6.2
-                    }
+                    {"file_type": "Win32 Executable MS Visual C++ (generic)", "probability": 38.8},
+                    {"file_type": "Microsoft Visual C++ compiled executable (generic)", "probability": 20.5},
+                    {"file_type": "Win64 Executable (generic)", "probability": 13.0},
+                    {"file_type": "Win32 Dynamic Link Library (generic)", "probability": 8.1},
+                    {"file_type": "Win16 NE executable (generic)", "probability": 6.2},
                 ],
                 "creation_date": 1290243788,
-                "names": [
-                    "6a650da84adf6e3356227cc8890a9ee7.virus"
-                ],
+                "names": ["6a650da84adf6e3356227cc8890a9ee7.virus"],
                 "last_modification_date": 1635959808,
                 "type_tag": "peexe",
                 "times_submitted": 1,
-                "total_votes": {
-                    "harmless": 0,
-                    "malicious": 0
-                },
+                "total_votes": {"harmless": 0, "malicious": 0},
                 "size": 3723264,
                 "popular_threat_classification": {
-                    "vhash_cluster_name": [
-                        "forgiving",
-                        "unhealthful",
-                        "swordsmanship"
-                    ],
+                    "vhash_cluster_name": ["forgiving", "unhealthful", "swordsmanship"],
                     "suggested_threat_label": "trojan.wannacry/wannacryptor",
-                    "popular_threat_category": [
-                        {
-                            "count": 23,
-                            "value": "trojan"
-                        },
-                        {
-                            "count": 21,
-                            "value": "ransomware"
-                        }
-                    ],
+                    "popular_threat_category": [{"count": 23, "value": "trojan"}, {"count": 21, "value": "ransomware"}],
                     "popular_threat_name": [
-                        {
-                            "count": 10,
-                            "value": "wannacry"
-                        },
-                        {
-                            "count": 7,
-                            "value": "wannacryptor"
-                        },
-                        {
-                            "count": 6,
-                            "value": "wannacrypt"
-                        }
-                    ]
+                        {"count": 10, "value": "wannacry"},
+                        {"count": 7, "value": "wannacryptor"},
+                        {"count": 6, "value": "wannacrypt"},
+                    ],
                 },
                 "authentihash": "7adeabbcb861b786990dab55a6030a8b56ea2a2df7b2e38e09b6b3de747ce0f7",
                 "last_submission_date": 1635952526,
@@ -100,20 +59,14 @@ MOCK_VT_RESPONSE = {
                 "downloadable": True,
                 "sha256": "9ceef6e3194cb4babe53863b686a012be4a1b368aca7c108df80b77adb5a1c25",
                 "type_extension": "exe",
-                "tags": [
-                    "peexe",
-                    "cve-2017-0147",
-                    "exploit"
-                ],
+                "tags": ["peexe", "cve-2017-0147", "exploit"],
                 "last_analysis_date": 1635952526,
                 "unique_sources": 1,
                 "first_submission_date": 1635952526,
                 "sha1": "f13339bc7527261c3552cc37c619f33ca04c1321",
                 "ssdeep": "12288:GwbLgPluCtgQbaIMu7L5NVErCA4z2g6rTcbckPU82900Ve7zw+K+D85SQeuB8:VbLgdrgDdmMSirYbcMNgef0Xk+8",
                 "bloom": "eNozqDA0oC2glvlGBqOAjsBiNAhGwSgYisBkkGb10SJlJAEAAXSRWA==\n",
-                "packers": {
-                    "PEiD": "Microsoft Visual C++"
-                },
+                "packers": {"PEiD": "Microsoft Visual C++"},
                 "md5": "6a650da84adf6e3356227cc8890a9ee7",
                 "pe_info": {
                     "imphash": "9ecee117164e0b870a53dd187cdd7174",
@@ -127,9 +80,9 @@ MOCK_VT_RESPONSE = {
                     "timeout": 0,
                     "failure": 0,
                     "malicious": 60,
-                    "undetected": 9
+                    "undetected": 9,
                 },
-                "reputation": 0
+                "reputation": 0,
             },
             "type": "file",
             "id": "9ceef6e3194cb4babe53863b686a012be4a1b368aca7c108df80b77adb5a1c25",
@@ -139,52 +92,44 @@ MOCK_VT_RESPONSE = {
 
 
 def test_fetch_indicators_command(mocker):
-    client = Client('https://fake')
-    mocker.patch.object(
-        client,
-        'get_api_indicators',
-        return_value=MOCK_VT_RESPONSE
-    )
+    client = Client("https://fake")
+    mocker.patch.object(client, "get_api_indicators", return_value=MOCK_VT_RESPONSE)
 
     indicators = fetch_indicators_command(client, None, [], 1, None)
 
-    fields = indicators[0]['fields']
+    fields = indicators[0]["fields"]
 
     assert len(indicators) == 1
-    assert fields['md5'] == '6a650da84adf6e3356227cc8890a9ee7'
-    assert fields['sha1'] == 'f13339bc7527261c3552cc37c619f33ca04c1321'
-    assert fields['sha256'] == '9ceef6e3194cb4babe53863b686a012be4a1b368aca7c108df80b77adb5a1c25'
-    assert fields['ssdeep'] == '12288:GwbLgPluCtgQbaIMu7L5NVErCA4z2g6rTcbckPU82900Ve7zw+K+D85SQeuB8:VbLgdrgDdmMSirYbcMNgef0Xk+8'
-    assert fields['fileextension'] == 'exe'
-    assert fields['filetype'] == 'peexe'
-    assert fields['imphash'] == '9ecee117164e0b870a53dd187cdd7174'
-    assert fields['firstseenbysource'] == 1635952526
-    assert fields['lastseenbysource'] == 1635952526
-    assert fields['creationdate'] == 1290243788
-    assert fields['updateddate'] == 1635959808
-    assert fields['detectionengines'] == 69
-    assert fields['positivedetections'] == 60
-    assert fields['displayname'] == '6a650da84adf6e3356227cc8890a9ee7.virus'
-    assert fields['name'] == '6a650da84adf6e3356227cc8890a9ee7.virus'
-    assert fields['size'] == 3723264
+    assert fields["md5"] == "6a650da84adf6e3356227cc8890a9ee7"
+    assert fields["sha1"] == "f13339bc7527261c3552cc37c619f33ca04c1321"
+    assert fields["sha256"] == "9ceef6e3194cb4babe53863b686a012be4a1b368aca7c108df80b77adb5a1c25"
+    assert fields["ssdeep"] == "12288:GwbLgPluCtgQbaIMu7L5NVErCA4z2g6rTcbckPU82900Ve7zw+K+D85SQeuB8:VbLgdrgDdmMSirYbcMNgef0Xk+8"
+    assert fields["fileextension"] == "exe"
+    assert fields["filetype"] == "peexe"
+    assert fields["imphash"] == "9ecee117164e0b870a53dd187cdd7174"
+    assert fields["firstseenbysource"] == 1635952526
+    assert fields["lastseenbysource"] == 1635952526
+    assert fields["creationdate"] == 1290243788
+    assert fields["updateddate"] == 1635959808
+    assert fields["detectionengines"] == 69
+    assert fields["positivedetections"] == 60
+    assert fields["displayname"] == "6a650da84adf6e3356227cc8890a9ee7.virus"
+    assert fields["name"] == "6a650da84adf6e3356227cc8890a9ee7.virus"
+    assert fields["size"] == 3723264
 
 
 def test_get_indicators_command(mocker):
-    client = Client('https://fake')
-    mocker.patch.object(
-        client,
-        'get_api_indicators',
-        return_value=MOCK_VT_RESPONSE
-    )
+    client = Client("https://fake")
+    mocker.patch.object(client, "get_api_indicators", return_value=MOCK_VT_RESPONSE)
 
     params = {
-        'tlp_color': None,
-        'feedTags': [],
+        "tlp_color": None,
+        "feedTags": [],
     }
 
     args = {
-        'limit': 1,
-        'filter': None,
+        "limit": 1,
+        "filter": None,
     }
 
     result = get_indicators_command(client, params, args)
@@ -194,22 +139,20 @@ def test_get_indicators_command(mocker):
 
 def test_main_manual_command(mocker):
     params = {
-        'tlp_color': None,
-        'feedTags': [],
-        'credentials': {'password': 'xxx'},
+        "tlp_color": None,
+        "feedTags": [],
+        "credentials": {"password": "xxx"},
     }
 
     args = {
-        'limit': 7,
-        'filter': 'Wannacry',
+        "limit": 7,
+        "filter": "Wannacry",
     }
 
-    mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(demisto, 'command', return_value='vt-livehunt-get-indicators')
-    mocker.patch.object(demisto, 'args', return_value=args)
-    get_api_indicators_mock = mocker.patch.object(Client,
-                                                  'get_api_indicators',
-                                                  return_value=MOCK_VT_RESPONSE)
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="vt-livehunt-get-indicators")
+    mocker.patch.object(demisto, "args", return_value=args)
+    get_api_indicators_mock = mocker.patch.object(Client, "get_api_indicators", return_value=MOCK_VT_RESPONSE)
 
     main()
 
@@ -219,18 +162,16 @@ def test_main_manual_command(mocker):
 @freeze_time("2022-11-03 13:40:00 UTC")
 def test_main_default_command(mocker):
     params = {
-        'tlp_color': None,
-        'feedTags': [],
-        'credentials': {'password': 'xxx'},
-        'limit': 7,
-        'filter': 'Wannacry',
+        "tlp_color": None,
+        "feedTags": [],
+        "credentials": {"password": "xxx"},
+        "limit": 7,
+        "filter": "Wannacry",
     }
 
-    mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
-    get_api_indicators_mock = mocker.patch.object(Client,
-                                                  'get_api_indicators',
-                                                  return_value=MOCK_VT_RESPONSE)
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="fetch-indicators")
+    get_api_indicators_mock = mocker.patch.object(Client, "get_api_indicators", return_value=MOCK_VT_RESPONSE)
 
     Client.set_last_run()  # Emulate previous execution with saving last run
 
@@ -240,15 +181,11 @@ def test_main_default_command(mocker):
 
 
 def test_main_test_command(mocker):
-    params = {
-        'credentials': {'password': 'xxx'}
-    }
+    params = {"credentials": {"password": "xxx"}}
 
-    mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(demisto, 'command', return_value='test-module')
-    get_api_indicators_mock = mocker.patch.object(Client,
-                                                  'get_api_indicators',
-                                                  return_value=MOCK_VT_RESPONSE)
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    get_api_indicators_mock = mocker.patch.object(Client, "get_api_indicators", return_value=MOCK_VT_RESPONSE)
 
     main()
 

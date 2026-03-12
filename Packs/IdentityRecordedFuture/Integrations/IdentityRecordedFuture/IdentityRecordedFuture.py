@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 import base64
 import json
 import platform
-from typing import Any, Dict, Optional
+from typing import Any
 
 import requests
 
@@ -17,20 +17,23 @@ STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 # pylint:disable=no-member
 requests.packages.urllib3.disable_warnings()  # type: ignore
 
-__version__ = "2.0.0"
+__version__ = "2.0.4"
+
+TIMEOUT_60 = 60
+TIMEOUT_90 = 90
+TIMEOUT_120 = 120
 
 
 class Client(BaseClient):
-    def whoami(self) -> Dict[str, Any]:
+    def whoami(self) -> dict[str, Any]:
         """Entity lookup."""
         return self._http_request(
             method="get",
             url_suffix="info/whoami",
-            timeout=60,
+            timeout=TIMEOUT_60,
         )
 
     def _call(self, url_suffix: str, **kwargs):
-
         json_data = {
             "demisto_command": demisto.command(),
             "demisto_args": demisto.args(),
@@ -49,11 +52,13 @@ class Client(BaseClient):
                 v = kwargs.pop(k)
                 json_data[k] = v
 
+        method = kwargs.get("method", "post")
+
         request_kwargs = {
-            "method": "post",
+            "method": method,
             "url_suffix": url_suffix,
             "json_data": json_data,
-            "timeout": 90,
+            "timeout": TIMEOUT_90,
             "retries": 3,
             "status_list_to_retry": STATUS_TO_RETRY,
         }
@@ -92,15 +97,15 @@ class Client(BaseClient):
     ################## Identity API ####################
     #######################################################
 
-    def credentials_search(self) -> Dict[str, Any]:
+    def credentials_search(self) -> dict[str, Any]:
         """Identity search."""
         return self._call(url_suffix="/v2/identity/credentials/search")
 
-    def credentials_lookup(self) -> Dict[str, Any]:
+    def credentials_lookup(self) -> dict[str, Any]:
         """Identity Lookup."""
         return self._call(url_suffix="/v2/identity/credentials/lookup")
 
-    def password_lookup(self) -> Dict[str, Any]:
+    def password_lookup(self) -> dict[str, Any]:
         """Password Lookup."""
         return self._call(url_suffix="/v2/identity/password/lookup")
 
@@ -108,21 +113,21 @@ class Client(BaseClient):
     ################## Playbook alerts ####################
     #######################################################
 
-    def fetch_incidents(self) -> Dict[str, Any]:
+    def fetch_incidents(self) -> dict[str, Any]:
         """Fetch incidents."""
         return self._call(
             url_suffix="/playbook_alert/fetch",
-            timeout=120,
+            timeout=TIMEOUT_120,
         )
 
-    def search_playbook_alerts(self) -> Dict[str, Any]:
+    def search_playbook_alerts(self) -> dict[str, Any]:
         return self._call(url_suffix="/playbook_alert/search")
 
-    def details_playbook_alerts(self) -> Dict[str, Any]:
+    def details_playbook_alerts(self) -> dict[str, Any]:
         """Get details of a playbook alert"""
         return self._call(url_suffix="/playbook_alert/lookup")
 
-    def update_playbook_alerts(self) -> Dict[str, Any]:
+    def update_playbook_alerts(self) -> dict[str, Any]:
         return self._call(url_suffix="/playbook_alert/update")
 
 
@@ -135,10 +140,7 @@ class Actions:
     def __init__(self, rf_client: Client):
         self.client = rf_client
 
-    def _process_result_actions(
-        self, response: Union[dict, CommandResults]
-    ) -> Optional[List[CommandResults]]:
-
+    def _process_result_actions(self, response: Union[dict, CommandResults]) -> list[CommandResults] | None:
         if isinstance(response, CommandResults):
             # Case when we got 404 on response, and it was processed in self.client._call() method.
             return [response]
@@ -146,9 +148,9 @@ class Actions:
             # In case API returned a str - we don't want to call "response.get()" on a str object.
             return None
 
-        action_result: Optional[dict] = response.get("action_result")
+        action_result: dict | None = response.get("action_result")
 
-        result_actions: Optional[List[dict]] = response.get("result_actions")
+        result_actions: list[dict] | None = response.get("result_actions")
 
         if not any([action_result, result_actions]):
             return None
@@ -156,7 +158,7 @@ class Actions:
         if action_result:
             command_results = [CommandResults(**action_result)]
         elif result_actions:
-            command_results: List[CommandResults] = []  # type: ignore[no-redef]
+            command_results: list[CommandResults] = []  # type: ignore[no-redef]
             for action in result_actions:
                 if "CommandResults" in action:
                     command_results.append(CommandResults(**action["CommandResults"]))
@@ -185,7 +187,6 @@ class Actions:
     #######################################################
 
     def fetch_incidents(self) -> None:
-
         response = self.client.fetch_incidents()
 
         if isinstance(response, CommandResults):
@@ -196,59 +197,56 @@ class Actions:
             if _key == "demisto_last_run":
                 demisto.setLastRun(_val)
             if _key == "incidents":
-                _transform_incidents_attachments(_val)
+                self._transform_incidents_attachments(_val)
                 demisto.incidents(_val)
 
-    def playbook_alert_search_command(self) -> Optional[List[CommandResults]]:
+    def playbook_alert_search_command(self) -> list[CommandResults] | None:
         response = self.client.search_playbook_alerts()
         return self._process_result_actions(response=response)
 
-    def playbook_alert_details_command(self) -> Optional[List[CommandResults]]:
+    def playbook_alert_details_command(self) -> list[CommandResults] | None:
         response = self.client.details_playbook_alerts()
         return self._process_result_actions(response=response)
 
-    def playbook_alert_update_command(self) -> Optional[List[CommandResults]]:
+    def playbook_alert_update_command(self) -> list[CommandResults] | None:
         response = self.client.update_playbook_alerts()
         return self._process_result_actions(response=response)
 
-
-def _transform_incidents_attachments(incidents: list) -> None:
-    for incident in incidents:
-        attachments = []
-        incident_json = json.loads(incident.get("rawJSON", "{}"))
-        if incident_json.get("panel_evidence_summary", {}).get("screenshots"):
-            for screenshot_data in incident_json["panel_evidence_summary"][
-                "screenshots"
-            ]:
-                file_name = (
-                    f'{screenshot_data.get("image_id", "").replace("img:", "")}.png'
-                )
-                file_data = screenshot_data.get("base64", "")
-                file = fileResult(file_name, base64.b64decode(file_data))
-                attachment = {
-                    "description": screenshot_data.get("description"),
-                    "name": file.get("File"),
-                    "path": file.get("FileID"),
-                    "showMediaFile": True,
-                }
-                attachments.append(attachment)
-            incident["attachment"] = attachments
+    @staticmethod
+    def _transform_incidents_attachments(incidents: list) -> None:
+        for incident in incidents:
+            attachments = []
+            incident_json = json.loads(incident.get("rawJSON", "{}"))
+            if incident_json.get("panel_evidence_summary", {}).get("screenshots"):
+                for screenshot_data in incident_json["panel_evidence_summary"]["screenshots"]:
+                    file_name = f"{screenshot_data.get('image_id', '').replace('img:', '')}.png"
+                    file_data = screenshot_data.get("base64", "")
+                    file = fileResult(file_name, base64.b64decode(file_data))
+                    attachment = {
+                        "description": screenshot_data.get("description"),
+                        "name": file.get("File"),
+                        "path": file.get("FileID"),
+                        "showMediaFile": True,
+                    }
+                    attachments.append(attachment)
+                incident["attachment"] = attachments
 
 
-def get_client() -> Client:
+# === === === === === === === === === === === === === === ===
+# === === === === === === === MAIN === === === === === === ==
+# === === === === === === === === === === === === === === ===
+
+
+def get_client(proxies: dict) -> Client:
     demisto_params = demisto.params()
     base_url = demisto_params.get("server_url", "").rstrip("/")
     verify_ssl = not demisto_params.get("unsecure", False)
-    handle_proxy()
 
-    api_token = demisto_params.get("credential", {}).get(
-        "password"
-    ) or demisto_params.get("token")
+    api_token = demisto_params.get("credential", {}).get("password") or demisto_params.get("token")
 
     if not api_token:
         return_error(message="Please provide a valid API token")
 
-    # If user has not set password properties we will get empty string but client require empty list
     headers = {
         "X-RFToken": api_token,
         "X-RF-User-Agent": (
@@ -261,6 +259,7 @@ def get_client() -> Client:
         base_url=base_url,
         verify=verify_ssl,
         headers=headers,
+        proxy=bool(proxies),
     )
 
     return client
@@ -269,16 +268,17 @@ def get_client() -> Client:
 def main() -> None:
     """Main method used to run actions."""
     try:
-        client = get_client()
+        proxies = handle_proxy()
+        client = get_client(proxies=proxies)
         actions = Actions(client)
 
         command = demisto.command()
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
-            # Returning 'ok' indicates that the integration works like it suppose to and
+            # Returning "ok" indicates that the integration works like it suppose to and
             # connection to the service is successful.
-            # Returning 'ok' will make the test result be green.
+            # Returning "ok" will make the test result be green.
             # Any other response will make the test result be red.
 
             try:
@@ -292,8 +292,7 @@ def main() -> None:
                         message = error.get("result", {})["message"]
                 except Exception:
                     message = (
-                        "Unknown error. Please verify that the API"
-                        f" URL and Token are correctly configured. RAW Error: {err}"
+                        f"Unknown error. Please verify that the API URL and Token are correctly configured. RAW Error: {err}"
                     )
                 raise DemistoException(f"Failed due to - {message}")
 
@@ -313,18 +312,22 @@ def main() -> None:
         elif command == "fetch-incidents":
             actions.fetch_incidents()
 
+        elif command == "recordedfuture-identity-playbook-alerts-search":
+            return_results(actions.playbook_alert_search_command())
+
         elif command == "recordedfuture-identity-playbook-alerts-details":
             return_results(actions.playbook_alert_details_command())
 
         elif command == "recordedfuture-identity-playbook-alerts-update":
             return_results(actions.playbook_alert_update_command())
 
-        elif command == "recordedfuture-identity-playbook-alerts-search":
-            return_results(actions.playbook_alert_search_command())
+        else:
+            return_error(message=f"Unknown command: {command}")
 
     except Exception as e:
         return_error(
-            message=f"Failed to execute {demisto.command()} command. Error: {str(e)}"
+            message=f"Failed to execute {demisto.command()} command. Error: {e!s}",
+            error=e,
         )
 
 

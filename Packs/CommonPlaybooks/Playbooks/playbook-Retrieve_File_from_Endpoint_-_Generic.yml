@@ -2,7 +2,7 @@ id: Retrieve File from Endpoint - Generic
 version: -1
 name: Retrieve File from Endpoint - Generic
 fromversion: 5.0.0
-description: |- 
+description: |-
   Deprecated. Use `Retrieve File from Endpoint - Generic V3` instead. 
   This playbook retrieves a file sample from an endpoint using the following playbooks:
   - Get File Sample From Path - Generic

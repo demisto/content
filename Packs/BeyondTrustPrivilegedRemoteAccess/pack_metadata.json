@@ -2,17 +2,36 @@
     "name": "Beyond Trust Privileged Remote Access",
     "description": "BeyondTrust Privileged Remote Access controls, manages, and audits privileged accounts and credentials.",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": ["BeyondTrust", "Beyond Trust", "Beyond", "Remote Access", "Privileged Remote Access", "PRA", "Privileged"],
+    "keywords": [
+        "BeyondTrust",
+        "Beyond Trust",
+        "Beyond",
+        "Remote Access",
+        "Privileged Remote Access",
+        "PRA",
+        "Privileged"
+    ],
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

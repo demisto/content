@@ -7,6 +7,9 @@ ignore=BA101
 [file:MITREIndicatorsByOpenIncidentsv2.yml]
 ignore=BA124
 
+[file:Packs/FeedMitreAttackv2/Integrations/FeedMitreAttackv2/FeedMitreAttackv2.yml]
+ignore=IN122
+
 [known_words]
 stixid
 firstseenbysource

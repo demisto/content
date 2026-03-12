@@ -19,7 +19,6 @@ There are no inputs for this script.
 ---
 There are no outputs for this script.
 
-
 ## Script Examples
 
 ### Example command

@@ -23,3 +23,5 @@ ignore=BA124
 [file:CreateChannelWrapper.yml]
 ignore=BA124
 
+[file:playbook-ShiftManagment_Shift_handover.yml]
+ignore=GR107,PB119

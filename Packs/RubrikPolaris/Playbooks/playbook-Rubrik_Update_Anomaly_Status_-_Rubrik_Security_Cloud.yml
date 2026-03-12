@@ -1,0 +1,1039 @@
+id: Rubrik Update Anomaly Status- Rubrik Security Cloud
+version: -1
+name: Rubrik Update Anomaly Status- Rubrik Security Cloud
+description: This playbook updates status of the Anomaly Detection snapshot for the provided anomaly ID (or activity series ID) and workload ID (or Object ID).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fa121696-2d08-416e-83b2-26eddc2cbf77
+    type: start
+    task:
+      id: fa121696-2d08-416e-83b2-26eddc2cbf77
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1f542690-f0ba-47ed-8a64-0aed25393268
+    type: condition
+    task:
+      id: 1f542690-f0ba-47ed-8a64-0aed25393268
+      version: -1
+      name: Is Rubrik Polaris integration enabled?
+      description: Checks whether Rubrik Polaris integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RubrikPolaris
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 05007297-9cfb-4386-8f06-c93fea8b63e9
+    type: condition
+    task:
+      id: 05007297-9cfb-4386-8f06-c93fea8b63e9
+      version: -1
+      name: Check whether anomaly information is available or not.
+      description: Check weather the anomaly_id or workload_id is empty or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      Available:
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: Available
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.anomaly_id
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.workload_id
+                transformers:
+                - operator: trim
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 66166012-8a13-4fb0-8475-35e03a48f3e7
+    type: condition
+    task:
+      id: 66166012-8a13-4fb0-8475-35e03a48f3e7
+      version: -1
+      name: Mark Anomaly Detection as false positive or directly resolve.
+      description: Check that mark anomaly detection as false positive or directly resolve.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Direct Resolve:
+      - "5"
+      False Positive:
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Wants to mark Anomaly Detection as false positive?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - False Positive
+      - Direct Resolve
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: fe15cad6-3e0c-42c8-8d1d-00b12aae0138
+    type: condition
+    task:
+      id: fe15cad6-3e0c-42c8-8d1d-00b12aae0138
+      version: -1
+      name: Check whether anomaly type is File System or Hyper visor.
+      description: Check whether anomaly type is FILESYSTEM or HYPERVISOR.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      FILESYSTEM:
+      - "12"
+      HYPERVISOR:
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: FILESYSTEM
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.anomaly_type
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: Anomaly Type Information.Answers.0
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: FILESYSTEM
+          ignorecase: true
+    - label: HYPERVISOR
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.anomaly_type
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: Anomaly Type Information.Answers.0
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: HYPERVISOR
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 90b85094-f998-4751-840f-a48fd4ed2b4b
+    type: regular
+    task:
+      id: 90b85094-f998-4751-840f-a48fd4ed2b4b
+      version: -1
+      name: Updates the status of the Anomaly detection.
+      description: |-
+        Updates the status of the Anomaly detection.
+
+        Note: Run the "rubrik-radar-suspicious-file-list" command first to check the resolution status of the Anomaly Detection snapshot before executing this command.
+      script: '|||rubrik-radar-anomaly-status-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      anomaly_id:
+        complex:
+          root: inputs.anomaly_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Anomaly Information.Answers.0
+                iscontext: true
+      anomaly_type:
+        complex:
+          root: inputs.anomaly_type
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Anomaly Type Information.Answers.0
+                iscontext: true
+      false_positive_reason:
+        complex:
+          root: Get the false positive type and reason.Answers
+          accessor: "1"
+          transformers:
+          - operator: trim
+      false_positive_type:
+        complex:
+          root: Get the false positive type and reason.Answers
+          accessor: "0"
+          transformers:
+          - operator: trim
+      workload_id:
+        complex:
+          root: inputs.workload_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Anomaly Information.Answers.1
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 77f6da24-15b4-4234-8497-53596d8f8fc8
+    type: title
+    task:
+      id: 77f6da24-15b4-4234-8497-53596d8f8fc8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 2170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 9df75e89-2d5c-4d60-8fa6-a40e0a3ba186
+    type: collection
+    task:
+      id: 9df75e89-2d5c-4d60-8fa6-a40e0a3ba186
+      version: -1
+      name: Collect the anomaly information.
+      description: Collecting anomaly ID and workload ID to update the status of the anomaly detection.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the Anomaly ID.
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Specify the Workload ID.
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Anomaly Information
+      description: Input arguments required to update anomaly detection status.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 18323e53-cb0a-4556-84fb-01c026baccfb
+    type: regular
+    task:
+      id: 18323e53-cb0a-4556-84fb-01c026baccfb
+      version: -1
+      name: Set the delete keys.
+      description: |-
+        Set the delete keys.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: delete_keys_for_rubrik_update_anomaly_status_playbook
+      value:
+        simple: Anomaly Information,Get the false positive type and reason,Anomaly Type Information
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: f36f8e60-0fe0-4e83-8950-7740d5f5835c
+    type: regular
+    task:
+      id: f36f8e60-0fe0-4e83-8950-7740d5f5835c
+      version: -1
+      name: Delete context for the specified keys.
+      description: |-
+        Delete context for the specified keys.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "11"
+    scriptarguments:
+      key:
+        complex:
+          root: delete_keys_for_rubrik_update_anomaly_status_playbook
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 4ae5ec5a-b9ba-42a3-8a6c-c764bc8eeb02
+    type: collection
+    task:
+      id: 4ae5ec5a-b9ba-42a3-8a6c-c764bc8eeb02
+      version: -1
+      name: Collect the anomaly type information.
+      description: Collecting anomaly type to update the status of the anomaly detection.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the Anomaly Type.
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: FILESYSTEM
+        - simple: HYPERVISOR
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Anomaly Type Information
+      description: Input arguments required to update anomaly detection status.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 90d4d7c2-b8ae-4c2a-8f4d-402c2e05f9f5
+    type: condition
+    task:
+      id: 90d4d7c2-b8ae-4c2a-8f4d-402c2e05f9f5
+      version: -1
+      name: Check whether anomaly type is available or not.
+      description: Check weather the anomaly_type is empty or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      Available:
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: Available
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.anomaly_type
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 520373af-f410-485e-8e54-932c3ae4dbff
+    type: collection
+    task:
+      id: 520373af-f410-485e-8e54-932c3ae4dbff
+      version: -1
+      name: Collect the false positive type and reason for FILESYSTEM anomaly.
+      description: |-
+        Collecting false positive type and reason to mark anomaly as false positive.
+        Note: Provide the false positive reason if the false positive type is set to OTHER.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: False positive type.
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: OS_UPDATE
+        - simple: APPLICATION_UPDATE
+        - simple: LOG_ROTATION
+        - simple: OTHER
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The type for marking the anomaly as a false positive.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: False positive reason.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The reason for marking the anomaly as a false positive when the "false positive type" argument is set to OTHER.
+        readonly: false
+      title: Get the false positive type and reason.
+      description: Input the false positive type and reason to mark anomaly as false positive.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 4189ba04-7b11-4953-88c6-18459b1e5cee
+    type: collection
+    task:
+      id: 4189ba04-7b11-4953-88c6-18459b1e5cee
+      version: -1
+      name: Collect the false positive type and reason for HYPERVISOR anomaly.
+      description: |-
+        Collecting false positive type and reason to mark anomaly as false positive.
+        Note: Provide the false positive reason if the false positive type is set to OTHER.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: False positive type.
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: NFA_SCHEDULED_MAINTENANCE
+        - simple: NFA_UNSCHEDULED_MAINTENANCE
+        - simple: OTHER
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The type for marking the anomaly as a false positive.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: False positive reason.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The reason for marking the anomaly as a false positive when the "false positive type" argument is set to OTHER.
+        readonly: false
+      title: Get the false positive type and reason.
+      description: Input the false positive type and reason to mark anomaly as false positive.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 22e873d5-94f3-40e6-89ae-7eb3b5fd7c67
+    type: regular
+    task:
+      id: 22e873d5-94f3-40e6-89ae-7eb3b5fd7c67
+      version: -1
+      name: Close Investigation for Resolved Anomaly.
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      closeNotes:
+        simple: The anomaly has been marked as resolved in RSC using XSOAR.
+      closeReason:
+        simple: Resolved
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: ceff95a2-8152-4124-8e62-a0fd0fe497a2
+    type: regular
+    task:
+      id: ceff95a2-8152-4124-8e62-a0fd0fe497a2
+      version: -1
+      name: Close Investigation for marked as False Positive Anomaly.
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      closeNotes:
+        complex:
+          root: Get the false positive type and reason.Answers
+          accessor: "0"
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: The anomaly has been marked as False Positive with "
+              suffix:
+                value:
+                  simple: '" option in RSC using XSOAR.'
+      closeReason:
+        simple: False Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 20a9e2f3-9764-4286-8d06-6629833c27b9
+    type: condition
+    task:
+      id: 20a9e2f3-9764-4286-8d06-6629833c27b9
+      version: -1
+      name: Check whether anomaly marked as False Positive or not.
+      description: Check whether anomaly marked as False Positive or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Get the false positive type and reason.Answers.0
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 1805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_3_Available": 0.42,
+      "1_6_#default#": 0.15,
+      "1_8_yes": 0.48,
+      "21_17_#default#": 0.54,
+      "21_18_yes": 0.48,
+      "2_3_Available": 0.46,
+      "3_4_False Positive": 0.53,
+      "3_5_Direct Resolve": 0.48,
+      "4_12_FILESYSTEM": 0.59,
+      "4_13_HYPERVISOR": 0.53,
+      "4_5_#default#": 0.16
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2175,
+        "width": 1140,
+        "x": 140,
+        "y": 60
+      }
+    }
+  }
+inputs:
+- key: anomaly_type
+  value: {}
+  required: false
+  description: |-
+    The type of the anomaly.
+
+    Note: For Anomaly Type, users can execute the "rubrik-radar-suspicious-file-list" command.
+  playbookInputQuery:
+- key: anomaly_id
+  value:
+    complex:
+      root: incident
+      accessor: rubrikpolarisactivityseriesid
+      transformers:
+      - operator: trim
+  required: false
+  description: |-
+    The ID of the Anomaly or Activity Series ID.
+
+    Note: For Activity Series ID, users can execute the "rubrik-event-list" command with the "activity_type" argument set to "ANOMALY".
+  playbookInputQuery:
+- key: workload_id
+  value:
+    complex:
+      root: incident
+      accessor: rubrikpolarisobjectid
+      transformers:
+      - operator: trim
+  required: false
+  description: |-
+    The workload ID (Snappable ID).
+
+    Note: Users can execute the "rubrik-event-list" command with the "activity_type" argument set to "ANOMALY" and get the value of "fid" from the context.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

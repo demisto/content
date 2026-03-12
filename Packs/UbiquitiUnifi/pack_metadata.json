@@ -1,0 +1,34 @@
+{
+    "name": "Ubiquiti Unifi",
+    "description": "Ubiquiti UniFi is an integrated network management and security platform that provides centralized control of Wi-Fi access points, switches, gateways, and other devices. It offers unified monitoring, configuration, and security features through an intuitive cloud-based interface for businesses and organizations.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [
+        "Network",
+        "Security",
+        "IT"
+    ],
+    "useCases": [
+        "Network Security",
+        "Asset Management"
+    ],
+    "keywords": ["Ubiquiti", "Unifi"],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
+    ]
+}

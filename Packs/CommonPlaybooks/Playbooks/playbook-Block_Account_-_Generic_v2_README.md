@@ -10,7 +10,7 @@ Supported integrations for this playbook:
 * Envoy IAM
 * ExceedLMS IAM
 * Okta
-* Microsoft Graph User (Azure Active Directory Users)
+* Microsoft Graph User (Entra ID Users)
 * Google Workspace Admin
 * Slack IAM
 * ServiceNow IAM

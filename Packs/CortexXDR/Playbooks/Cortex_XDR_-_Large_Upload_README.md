@@ -21,15 +21,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* User Investigation - Generic
-* TIM - Indicator Relationships Analysis
-* Entity Enrichment - Generic v3
-* Command-Line Analysis
-* Threat Hunting - Generic
-* Cortex XDR - Isolate Endpoint
-* Cortex XDR - Endpoint Investigation
 * Cortex XDR - Search and Compare Process Executions - XDR Alerts
+* Cortex XDR - Endpoint Investigation
+* User Investigation - Generic
 * Block Indicators - Generic v3
+* Cortex XDR - Isolate Endpoint
+* Entity Enrichment - Generic v3
+* TIM - Indicator Relationships Analysis
+* Threat Hunting - Generic
+* Command-Line Analysis
 
 ### Integrations
 
@@ -37,13 +37,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
+* SetAndHandleEmpty
 * DBotFindSimilarIncidents
 * Set
 
 ### Commands
 
-* setIncident
 * xdr-get-cloud-original-alerts
+* setIncident
 
 ## Playbook Inputs
 
@@ -53,7 +54,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | --- | --- | --- | --- |
 | InternalIPRanges | A list of IP ranges to check the IP against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). | lists.PrivateIPs | Optional |
 | FurtherInvestigation | Determines whether an incident should be further investigated if similar previous false positive incidents were found.<br/>Possible values:True/False. Default: False. | False | Required |
-| AutoBlockIndicators | Determine whether the given indicators be automatically blocked, or if the user should be given the option to choose.<br/>Possible values:True/False. Default: True.<br/>If set to False - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to True - the user will be prompted to select which indicators to block. | True | Required |
+| AutoBlockIndicators | Determine whether the given indicators be automatically blocked, or if the user should be given the option to choose.<br/>Possible values:True/False. Default: True.<br/>If set to True - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to False - the user will be prompted to select which indicators to block. | True | Required |
 | BlockIndicators_UserVerification | Determine whether the blocking of any indicator requires the verification of the user.<br/>Possible values:True/False. Default: False. | False | Optional |
 | EarlyContainment | Whether early containment should be allowed when the IP address is known to be malicious.<br/>Possible values:True/False. Default: True. | True | Required |
 | AutoIsolateEndpoint | Whether to isolate the initiating endpoint automatically if the investigation verdict is malicious.<br/>Possible values:True/False. Default: False. | False | Required |

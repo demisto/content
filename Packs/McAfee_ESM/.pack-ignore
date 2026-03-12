@@ -3,3 +3,9 @@ ignore=IN126,BA108,BA109
 
 [file:McAfee_ESM_v2_image.png]
 ignore=IM111
+
+# GR103 is temporary, see CIAC-11705
+[file:McAfee_ESM_v2_(v11.3)_-_Test.yml]
+ignore=GR103
+[file:McAfee_ESM_v2_-_Test.yml]
+ignore=GR103

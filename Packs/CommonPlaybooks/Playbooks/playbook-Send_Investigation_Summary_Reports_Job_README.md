@@ -25,4 +25,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Send_Investigation_Summary_Reports_Job](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Send_Investigation_Summary_Reports_Job.png)
+![Send_Investigation_Summary_Reports_Job](../doc_files/Send_Investigation_Summary_Reports_Job.png)

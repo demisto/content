@@ -1,0 +1,28 @@
+{
+    "threat": [
+        {
+            "id": "00000000-0000-0000-0000-000000000005",
+            "type": "URL",
+            "ip": "0.0.0.0",
+            "url": "http://0.0.0.0/combinator.php",
+            "profile": "IID",
+            "property": "MalwareC2_Generic",
+            "class": "MalwareC2",
+            "threat_level": 100,
+            "expiration": "2025-10-01T10:32:58.891Z",
+            "detected": "2025-06-03T10:32:58.891Z",
+            "received": "2025-06-03T10:36:37.283Z",
+            "imported": "2025-06-03T10:36:37.283Z",
+            "up": "true",
+            "confidence": 100,
+            "batch_id": "00000000-0000-0000-0000-000000000005",
+            "extended": {
+                "attack_chain": "SAMPLE",
+                "cyberint_guid": "00000000000000000000000000000005",
+                "notes": "Exfiltration target of Cuckoo Stealer for MacOS (SHA256: 00000000000000000000000000000005)",
+                "protocol": "http",
+                "references": "https://www.example.com/gui/file/00000000000000000000000000000005"
+            }
+        }
+    ]
+}

@@ -1,4 +1,4 @@
-Trigger xMatters workflows and on-call schedules to track down the appropriate resources. Additionally, pull the latest xMatters events as Incidents into XSOAR. 
+Trigger xMatters workflows and on-call schedules to track down the appropriate resources. Additionally, pull the latest xMatters events as Incidents into XSOAR.
 
 ## What does this pack do?
 
@@ -9,8 +9,8 @@ Trigger xMatters workflows and on-call schedules to track down the appropriate r
 
 ### Trigger Event Playbook Example
 
-![xMatters - Wait For Response Playbook](https://raw.githubusercontent.com/demisto/content/master/Packs/XMatters/Playbooks/xMatters_-_Wait_for_Response.png)
+![xMatters - Wait For Response Playbook](doc_files/xMatters_-_Wait_for_Response.png)
 
 ## Installation Details
 
-For details on setting up the xMatters environment, navigate to the installation document [here](https://github.com/xmatters/xm-labs-xsoar). 
+For details on setting up the xMatters environment, navigate to the installation document [here](https://github.com/xmatters/xm-labs-xsoar).

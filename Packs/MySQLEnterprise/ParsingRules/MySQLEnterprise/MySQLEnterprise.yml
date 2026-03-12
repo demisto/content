@@ -1,5 +1,5 @@
 name: MySQLEnterprise Parsing Rule
-id: MySQLEnterprise Parsing Rule
+id: MySQL_Enterprise_ParsingRule
 fromversion: 6.10.0
 tags: []
 rules: ''

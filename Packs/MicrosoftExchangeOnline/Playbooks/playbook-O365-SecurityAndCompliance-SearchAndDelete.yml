@@ -50,8 +50,7 @@ tasks:
       id: 401e2d9a-11db-45ed-82e9-734db5db3ca8
       version: -1
       name: Emails found?
-      description: Checks if the search results exist. If not, no action should be
-        performed.
+      description: Checks if the search results exist. If not, no action should be performed.
       type: condition
       iscommand: false
       brand: ""
@@ -118,8 +117,7 @@ tasks:
       id: 326e36dd-d7cb-4001-85e4-061ec01226ef
       version: -1
       name: Remove search
-      description: Remove the compliance search by name from the Security & Compliance
-        Center.
+      description: Remove the compliance search by name from the Security & Compliance Center.
       script: '|||o365-sc-remove-search'
       type: regular
       iscommand: true
@@ -156,8 +154,7 @@ tasks:
       id: 413cef08-8ba6-43b8-8f51-aeb1ecf602f1
       version: -1
       name: Remove search action
-      description: Remove the compliance search action by searching for the action
-        name in the Security & Compliance Center.
+      description: Remove the compliance search action by searching for the action name in the Security & Compliance Center.
       script: '|||o365-sc-remove-search-action'
       type: regular
       iscommand: true
@@ -267,8 +264,7 @@ tasks:
       id: 7ef52938-a049-4864-86c8-7a1fc43373d2
       version: -1
       name: Whether to preview the results.
-      description: Whether to preview the results using the search action "Preview".
-        Possible values are "true" and "false" or leave empty to select manually.
+      description: Whether to preview the results using the search action "Preview". Possible values are "true" and "false" or leave empty to select manually.
       type: condition
       iscommand: false
       brand: ""
@@ -416,9 +412,7 @@ tasks:
       id: 2aa70f15-3594-4832-829b-f3f398480518
       version: -1
       name: Should the search action delete the results?
-      description: Specify the delete type to perform on the search results. Possible
-        values are "Hard" and "Soft" or leave empty to select manually. (Hard = Unrecoverable,
-        Soft=Recoverable)
+      description: Specify the delete type to perform on the search results. Possible values are "Hard" and "Soft" or leave empty to select manually. (Hard = Unrecoverable, Soft=Recoverable)
       type: condition
       iscommand: false
       brand: ""
@@ -677,8 +671,7 @@ tasks:
       id: 3799629e-3828-45ff-8ac6-76f91c2269af
       version: -1
       name: Remove compliance search
-      description: Remove the compliance search by name from the Security & Compliance
-        Center.
+      description: Remove the compliance search by name from the Security & Compliance Center.
       script: '|||o365-sc-remove-search'
       type: regular
       iscommand: true
@@ -714,8 +707,7 @@ tasks:
       id: def40f3a-e3ba-496d-88af-39731e3d320b
       version: -1
       name: From where should emails be searched and deleted?
-      description: Checks if a target to search and delete emails from was specified.
-        Determined by the O365ExchangeLocation playbook input.
+      description: Checks if a target to search and delete emails from was specified. Determined by the O365ExchangeLocation playbook input.
       type: condition
       iscommand: false
       brand: ""
@@ -846,80 +838,78 @@ inputs:
   value: {}
   required: false
   description: The name of the compliance search.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: case
   value: {}
   required: false
-  description: The name of a Core eDiscovery case to associate with the new compliance
-    search.
-  playbookInputQuery: null
+  description: The name of a Core eDiscovery case to associate with the new compliance search.
+  playbookInputQuery:
 - key: kql
   value: {}
   required: true
-  description: Text search string or a query that is formatted using the Keyword Query
-    Language (KQL).
-  playbookInputQuery: null
+  description: Text search string or a query that is formatted using the Keyword Query Language (KQL).
+  playbookInputQuery:
 - key: description
   value: {}
   required: false
   description: Description of the compliance search.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: allow_not_found_exchange_locations
   value:
     simple: "true"
   required: false
-  description: Whether to include mailboxes other than regular user mailboxes in the
-    compliance search. Default is "false".
-  playbookInputQuery: null
+  description: Whether to include mailboxes other than regular user mailboxes in the compliance search. Default is "false".
+  playbookInputQuery:
 - key: exchange_location
   value: {}
   required: false
-  description: Comma-separated list of mailboxes/distribution groups to include, or
-    use the value "All" to include all.
-  playbookInputQuery: null
+  description: Comma-separated list of mailboxes/distribution groups to include, or use the value "All" to include all.
+  playbookInputQuery:
 - key: exchange_location_exclusion
   value: {}
   required: false
-  description: Comma-separated list of mailboxes/distribution groups to exclude when
-    you use the value "All" for the exchange_location parameter.
-  playbookInputQuery: null
+  description: Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter.
+  playbookInputQuery:
 - key: force
   value:
     simple: "false"
   required: true
-  description: Whether to replace the existing search. If "true", the existing search
-    will be removed and a new search will be created. If "false", the existing search
-    will be used and any new search configurations will be ignored.
-  playbookInputQuery: null
+  description: Whether to replace the existing search. If "true", the existing search will be removed and a new search will be created. If "false", the existing search will be used and any new search configurations will be ignored.
+  playbookInputQuery:
 - key: preview
   value:
     simple: "true"
   required: true
-  description: 'Whether to preview the results using the search action "Preview".
-    Possible values are: "true" and "false" or leave empty to select manually.'
-  playbookInputQuery: null
+  description: 'Whether to preview the results using the search action "Preview". Possible values are: "true" and "false" or leave empty to select manually.'
+  playbookInputQuery:
 - key: delete_type
   value: {}
   required: false
-  description: Specify the delete type to perform on the search results. Possible
-    values are Hard and Soft or leave empty to select manually. (Hard = Unrecoverable,
-    Soft=Recoverable)
-  playbookInputQuery: null
+  description: Specify the delete type to perform on the search results. Possible values are Hard and Soft or leave empty to select manually. (Hard = Unrecoverable, Soft=Recoverable)
+  playbookInputQuery:
 - key: search_action_polling_timeout
   value:
     simple: "45"
   required: false
-  description: Amount of time to poll before declaring a timeout for the search action
-    and resuming the playbook (in minutes).
-  playbookInputQuery: null
+  description: Amount of time to poll before declaring a timeout for the search action and resuming the playbook (in minutes).
+  playbookInputQuery:
 - key: search_action_polling_interval
   value:
     simple: "3"
   required: false
-  description: The frequency that the polling command will run for the search action
-    that was chosen.
-  playbookInputQuery: null
+  description: The frequency that the polling command will run for the search action that was chosen.
+  playbookInputQuery:
 outputs: []
 tests:
 - O365-SecurityAndCompliance-Test
 fromversion: 5.5.0
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- cloud
+- xsiam
+- edr
+- cloud_runtime_security

@@ -1,59 +1,69 @@
-from AWSApiModule import *
-import pytest
-from pytest import raises
+from unittest.mock import MagicMock
 
-VALIDATE_CASES = \
-    [{
-     'aws_default_region': 'test',
-     'aws_role_arn': 'test',
-     'aws_role_session_name': 'test',
-     'aws_access_key_id': 'test',
-     'aws_secret_access_key': 'test'
-     },
-     {
-     'aws_default_region': 'region test',
-     'aws_role_arn': None,
-     'aws_role_session_name': None,
-     'aws_access_key_id': None,
-     'aws_secret_access_key': None
-     },
-     {
-     'aws_default_region': 'region test',
-     'aws_role_arn': None,
-     'aws_role_session_name': None,
-     'aws_access_key_id': 'test',
-     'aws_secret_access_key': 'test'
-     }]
+import pytest
+from AWSApiModule import *
+from pytest import raises  # noqa: PT013
+
+VALIDATE_CASES = [
+    {
+        "aws_default_region": "test",
+        "aws_role_arn": "test",
+        "aws_role_session_name": "test",
+        "aws_access_key_id": "test",
+        "aws_secret_access_key": "test",
+    },
+    {
+        "aws_default_region": "region test",
+        "aws_role_arn": None,
+        "aws_role_session_name": None,
+        "aws_access_key_id": None,
+        "aws_secret_access_key": None,
+    },
+    {
+        "aws_default_region": "region test",
+        "aws_role_arn": None,
+        "aws_role_session_name": None,
+        "aws_access_key_id": "test",
+        "aws_secret_access_key": "test",
+    },
+]
 
 
 VALIDATE_CASES_MISSING_PARAMS = [
-    ({
-     'aws_default_region': 'region test',
-     'aws_role_arn': None,
-     'aws_role_session_name': None,
-     'aws_access_key_id': None,
-     'aws_secret_access_key': 'secret key test'
-     },
-     'You must provide Access Key id and Secret key id to configure the instance with credentials.'),
-    ({
-     'aws_default_region': None,
-     'aws_role_arn': None,
-     'aws_role_session_name': None,
-     'aws_access_key_id': 'access key test',
-     'aws_secret_access_key': None
-     },
-     'You must specify AWS default region.'),
-    ({
-     'aws_default_region': 'region test',
-     'aws_role_arn': 'example',
-     'aws_role_session_name': None,
-     'aws_access_key_id': None,
-     'aws_secret_access_key': None
-     },
-     'Role session name is required when using role ARN.')]
+    (
+        {
+            "aws_default_region": "region test",
+            "aws_role_arn": None,
+            "aws_role_session_name": None,
+            "aws_access_key_id": None,
+            "aws_secret_access_key": "secret key test",
+        },
+        "You must provide Access Key id and Secret key id to configure the instance with credentials.",
+    ),
+    (
+        {
+            "aws_default_region": None,
+            "aws_role_arn": None,
+            "aws_role_session_name": None,
+            "aws_access_key_id": "access key test",
+            "aws_secret_access_key": None,
+        },
+        "You must specify AWS default region.",
+    ),
+    (
+        {
+            "aws_default_region": "region test",
+            "aws_role_arn": "example",
+            "aws_role_session_name": None,
+            "aws_access_key_id": None,
+            "aws_secret_access_key": None,
+        },
+        "Role session name is required when using role ARN.",
+    ),
+]
 
 
-@pytest.mark.parametrize('params, raised_message', VALIDATE_CASES_MISSING_PARAMS)
+@pytest.mark.parametrize("params, raised_message", VALIDATE_CASES_MISSING_PARAMS)
 def test_validate_params_with_missing_values(mocker, params, raised_message):
     """
     Given
@@ -70,7 +80,7 @@ def test_validate_params_with_missing_values(mocker, params, raised_message):
     assert raised_message == str(exception.value)
 
 
-@pytest.mark.parametrize('params', VALIDATE_CASES)
+@pytest.mark.parametrize("params", VALIDATE_CASES)
 def test_validate_params(mocker, params):
     """
     Given
@@ -93,15 +103,20 @@ def test_get_timeout():
     - validates the logic of setting read_timeout and connect_timeout values
     """
     (read, connect) = AWSClient.get_timeout(None)
-    assert read == 60 and connect == 10
+    assert read == 60
+    assert connect == 10
     (read, connect) = AWSClient.get_timeout("100")
-    assert read == 100 and connect == 10
+    assert read == 100
+    assert connect == 10
     (read, connect) = AWSClient.get_timeout("200,2")
-    assert read == 200 and connect == 2
+    assert read == 200
+    assert connect == 2
     (read, connect) = AWSClient.get_timeout(60)
-    assert read == 60 and connect == 10
-    (read, connect) = AWSClient.get_timeout(u"60, 10")  # testing for unicode variable
-    assert read == 60 and connect == 10
+    assert read == 60
+    assert connect == 10
+    (read, connect) = AWSClient.get_timeout("60, 10")  # testing for unicode variable
+    assert read == 60
+    assert connect == 10
 
 
 def test_AWSClient_with_session_token():
@@ -115,17 +130,17 @@ def test_AWSClient_with_session_token():
     """
 
     aws_client_args = {
-        'aws_default_region': 'us-east-1',
-        'aws_role_arn': None,
-        'aws_role_session_name': None,
-        'aws_role_session_duration': None,
-        'aws_role_policy': None,
-        'aws_access_key_id': 'test_access_key',
-        'aws_secret_access_key': 'test_secret_key',
-        'aws_session_token': 'test_sts_token',
-        'verify_certificate': False,
-        'timeout': 60,
-        'retries': 3
+        "aws_default_region": "us-east-1",
+        "aws_role_arn": None,
+        "aws_role_session_name": None,
+        "aws_role_session_duration": None,
+        "aws_role_policy": None,
+        "aws_access_key_id": "test_access_key",
+        "aws_secret_access_key": "test_secret_key",
+        "aws_session_token": "test_sts_token",
+        "verify_certificate": False,
+        "timeout": 60,
+        "retries": 3,
     }
 
     client = AWSClient(**aws_client_args)
@@ -136,10 +151,10 @@ def test_AWSClient_with_session_token():
         assert client.aws_secret_access_key
 
         try:
-            session = client.aws_session('s3')
+            session = client.aws_session("s3")
             assert session
         except Exception:
-            print('failed to create session:' + Exception)
+            print("failed to create session:" + Exception)  # noqa: T201
 
 
 def test_AWSClient_without_session_token():
@@ -153,16 +168,16 @@ def test_AWSClient_without_session_token():
     """
     # Purposfully leaving out aws_session_token to test optional argument in class instance
     aws_client_args = {
-        'aws_default_region': 'us-east-1',
-        'aws_role_arn': None,
-        'aws_role_session_name': None,
-        'aws_role_session_duration': None,
-        'aws_role_policy': None,
-        'aws_access_key_id': 'test_access_key',
-        'aws_secret_access_key': 'test_secret_key',
-        'verify_certificate': False,
-        'timeout': 60,
-        'retries': 3
+        "aws_default_region": "us-east-1",
+        "aws_role_arn": None,
+        "aws_role_session_name": None,
+        "aws_role_session_duration": None,
+        "aws_role_policy": None,
+        "aws_access_key_id": "test_access_key",
+        "aws_secret_access_key": "test_secret_key",
+        "verify_certificate": False,
+        "timeout": 60,
+        "retries": 3,
     }
 
     client = AWSClient(**aws_client_args)
@@ -172,22 +187,24 @@ def test_AWSClient_without_session_token():
         assert client.aws_secret_access_key
 
         try:
-            session = client.aws_session('s3')
+            session = client.aws_session("s3")
             assert session
         except Exception:
-            print('failed to create session:' + Exception)
+            print("failed to create session:" + Exception)  # noqa: T201
 
 
-@pytest.mark.parametrize('secret_key, session_token, expected',
-                         [
-                             ('secret_key@@@session_token', None, ('secret_key', 'session_token')),
-                             ('test1', None, ('test1', None)),
-                             ('test1', 'test2', ('test1', 'test2')),
-                             ('test1@@@test2', 'test3', ('test1@@@test2', 'test3')),
-                             ('', None, ('', None)),
-                             (None, '', (None, '')),
-                             (None, None, (None, None))
-                         ])
+@pytest.mark.parametrize(
+    "secret_key, session_token, expected",
+    [
+        ("secret_key@@@session_token", None, ("secret_key", "session_token")),
+        ("test1", None, ("test1", None)),
+        ("test1", "test2", ("test1", "test2")),
+        ("test1@@@test2", "test3", ("test1@@@test2", "test3")),
+        ("", None, ("", None)),
+        (None, "", (None, "")),
+        (None, None, (None, None)),
+    ],
+)
 def test_extract_session_from_secret(secret_key, session_token, expected):
     """
     Given
@@ -205,74 +222,53 @@ def test_extract_session_from_secret(secret_key, session_token, expected):
 
 
 @pytest.mark.parametrize(
-    'params, args, expected_assume_roles_args', [
+    "params, args, expected_assume_roles_args",
+    [
         (
             {
-                'aws_default_region': 'us-east-1',
-                'aws_role_arn': None,
-                'aws_role_session_name': None,
-                'aws_access_key_id': 'test_access_key',
-                'aws_role_session_duration': None
-
+                "aws_default_region": "us-east-1",
+                "aws_role_arn": None,
+                "aws_role_session_name": None,
+                "aws_access_key_id": "test_access_key",
+                "aws_role_session_duration": None,
             },
-            {
-                'role_arn': 'role_arn_arg',
-                'role_session_name': 'role_session_name_arg'
-            },
-            {
-                'RoleArn': 'role_arn_arg',
-                'RoleSessionName': 'role_session_name_arg'
-            }
+            {"role_arn": "role_arn_arg", "role_session_name": "role_session_name_arg"},
+            {"RoleArn": "role_arn_arg", "RoleSessionName": "role_session_name_arg"},
         ),
         (
             {
-                'aws_default_region': 'us-east-1',
-                'aws_role_arn': 'role_arn_param',
-                'aws_role_session_name': 'role_session_name_param',
-                'aws_access_key_id': 'test_access_key',
-                'aws_role_session_duration': None
+                "aws_default_region": "us-east-1",
+                "aws_role_arn": "role_arn_param",
+                "aws_role_session_name": "role_session_name_param",
+                "aws_access_key_id": "test_access_key",
+                "aws_role_session_duration": None,
             },
             {},
-            {
-                'RoleArn': 'role_arn_param',
-                'RoleSessionName': 'role_session_name_param'
-            }
+            {"RoleArn": "role_arn_param", "RoleSessionName": "role_session_name_param"},
         ),
         (
             {
-                'aws_default_region': 'us-east-1',
-                'aws_role_arn': 'role_arn_param',
-                'aws_role_session_name': 'role_session_name_param',
-                'aws_access_key_id': 'test_access_key',
-                'aws_role_session_duration': None
+                "aws_default_region": "us-east-1",
+                "aws_role_arn": "role_arn_param",
+                "aws_role_session_name": "role_session_name_param",
+                "aws_access_key_id": "test_access_key",
+                "aws_role_session_duration": None,
             },
-            {
-                'role_arn': 'role_arn_arg',
-                'role_session_name': 'role_session_name_arg'
-            },
-            {
-                'RoleArn': 'role_arn_arg',
-                'RoleSessionName': 'role_session_name_arg'
-            }
+            {"role_arn": "role_arn_arg", "role_session_name": "role_session_name_arg"},
+            {"RoleArn": "role_arn_arg", "RoleSessionName": "role_session_name_arg"},
         ),
         (
             {
-                'aws_default_region': 'us-east-1',
-                'aws_role_arn': 'role_arn_param',
-                'aws_role_session_name': 'role_session_name_param',
-                'aws_access_key_id': 'test_access_key',
-                'aws_role_session_duration': ''
+                "aws_default_region": "us-east-1",
+                "aws_role_arn": "role_arn_param",
+                "aws_role_session_name": "role_session_name_param",
+                "aws_access_key_id": "test_access_key",
+                "aws_role_session_duration": "",
             },
-            {
-                'role_arn': 'role_arn_arg',
-                'role_session_name': 'role_session_name_arg'
-            },
-            {
-                'RoleArn': 'role_arn_arg',
-                'RoleSessionName': 'role_session_name_arg'
-            }
-        )
-    ]
+            {"role_arn": "role_arn_arg", "role_session_name": "role_session_name_arg"},
+            {"RoleArn": "role_arn_arg", "RoleSessionName": "role_session_name_arg"},
+        ),
+    ],
 )
 def test_aws_session(mocker, params, args, expected_assume_roles_args):
     """
@@ -295,37 +291,31 @@ def test_aws_session(mocker, params, args, expected_assume_roles_args):
     """
     params.update(
         {
-            'aws_role_policy': None,
-            'aws_secret_access_key': 'test_secret_key',
-            'verify_certificate': False,
-            'timeout': 60,
-            'retries': 3
+            "aws_role_policy": None,
+            "aws_secret_access_key": "test_secret_key",
+            "verify_certificate": False,
+            "timeout": 60,
+            "retries": 3,
         }
     )
 
-    sts_client_mock = boto3.client('sts', region_name=params['aws_default_region'])
+    sts_client_mock = boto3.client("sts", region_name=params["aws_default_region"])
     assume_client_mock = mocker.patch.object(
         sts_client_mock,
-        'assume_role', return_value={
-            'Credentials': {
-                'AccessKeyId': '1',
-                'SecretAccessKey': '2',
-                'SessionToken': '3'
-            }
-        }
+        "assume_role",
+        return_value={"Credentials": {"AccessKeyId": "1", "SecretAccessKey": "2", "SessionToken": "3"}},
     )
 
     mocker.patch(
-        'AWSApiModule.boto3.client',
-        side_effect=[sts_client_mock, boto3.client('ec2', region_name=params['aws_default_region'])]
+        "AWSApiModule.boto3.client", side_effect=[sts_client_mock, boto3.client("ec2", region_name=params["aws_default_region"])]
     )
     aws_client = AWSClient(**params)
-    aws_client.aws_session(service='ec2', **args)
+    aws_client.aws_session(service="ec2", **args)
 
     assert assume_client_mock.call_args_list[0].kwargs == expected_assume_roles_args
 
 
-@pytest.mark.parametrize('sts_regional_endpoint', ['legacy', 'regional', ''])
+@pytest.mark.parametrize("sts_regional_endpoint", ["legacy", "regional", ""])
 def test_sts_regional_endpoint_param(mocker, sts_regional_endpoint):
     """
     Given
@@ -336,19 +326,109 @@ def test_sts_regional_endpoint_param(mocker, sts_regional_endpoint):
         - Verify the environment variable was sets correctly.
     """
     params = {
-        'aws_default_region': 'us-east-1',
-        'aws_role_arn': 'role_arn_param',
-        'aws_role_session_name': 'role_session_name_param',
-        'aws_access_key_id': 'test_access_key',
-        'aws_role_session_duration': None,
-        'aws_role_policy': None,
-        'aws_secret_access_key': 'test_secret_key',
-        'verify_certificate': False,
-        'timeout': 60,
-        'retries': 3
+        "aws_default_region": "us-east-1",
+        "aws_role_arn": "role_arn_param",
+        "aws_role_session_name": "role_session_name_param",
+        "aws_access_key_id": "test_access_key",
+        "aws_role_session_duration": None,
+        "aws_role_policy": None,
+        "aws_secret_access_key": "test_secret_key",
+        "verify_certificate": False,
+        "timeout": 60,
+        "retries": 3,
     }
 
-    mocker.patch.object(demisto, 'params', return_value={'sts_regional_endpoint': sts_regional_endpoint})
-    os.environ['AWS_STS_REGIONAL_ENDPOINTS'] = ''
+    mocker.patch.object(demisto, "params", return_value={"sts_regional_endpoint": sts_regional_endpoint})
+    os.environ["AWS_STS_REGIONAL_ENDPOINTS"] = ""
     AWSClient(**params)
-    assert os.environ['AWS_STS_REGIONAL_ENDPOINTS'] == sts_regional_endpoint
+    assert os.environ["AWS_STS_REGIONAL_ENDPOINTS"] == sts_regional_endpoint
+
+
+@pytest.mark.parametrize(
+    "params, region, expected_sts_endpoint_url",
+    [
+        (
+            {
+                "aws_default_region": "us-west-1",
+                "aws_role_arn": "role_arn_param",
+                "aws_role_session_name": "role_session_name_param",
+                "aws_access_key_id": "test_access_key",
+                "aws_role_session_duration": None,
+                "sts_endpoint_url": None,
+                "aws_role_policy": None,
+                "aws_secret_access_key": "test_secret_key",
+                "verify_certificate": False,
+                "timeout": 60,
+                "retries": 3,
+            },
+            "us-east-1",
+            None,
+        ),
+        (
+            {
+                "aws_default_region": "us-gov-west-1",
+                "aws_role_arn": "role_arn_param",
+                "aws_role_session_name": "role_session_name_param",
+                "aws_access_key_id": "test_access_key",
+                "aws_role_session_duration": None,
+                "sts_endpoint_url": None,
+                "aws_role_policy": None,
+                "aws_secret_access_key": "test_secret_key",
+                "verify_certificate": False,
+                "timeout": 60,
+                "retries": 3,
+            },
+            "us-gov-east-1",
+            "https://sts.us-gov-east-1.amazonaws.com",
+        ),
+        (
+            {
+                "aws_default_region": "us-gov-east-1",
+                "aws_role_arn": "role_arn_param",
+                "aws_role_session_name": "role_session_name_param",
+                "aws_access_key_id": "test_access_key",
+                "aws_role_session_duration": None,
+                "sts_endpoint_url": None,
+                "aws_role_policy": None,
+                "aws_secret_access_key": "test_secret_key",
+                "verify_certificate": False,
+                "timeout": 60,
+                "retries": 3,
+            },
+            "us-gov-east-1",
+            "https://sts.us-gov-east-1.amazonaws.com",
+        ),
+    ],
+)
+def test_aws_session_sts_endpoint_url(mocker, params, region, expected_sts_endpoint_url):
+    """
+    Given
+    - A region parameter and its expected sts_endpoint_url.
+
+    When
+    - Calling the aws_session method with the specified region.
+
+    Then
+    - Verify that the sts_endpoint_url is set correctly based on the region.
+    """
+    sts_client_mock = MagicMock()
+    mocker.patch.object(
+        sts_client_mock,
+        "assume_role",
+        return_value={"Credentials": {"AccessKeyId": "1", "SecretAccessKey": "2", "SessionToken": "3"}},
+    )
+    boto3_client_mock = mocker.patch("AWSApiModule.boto3.client")
+    boto3_client_mock.side_effect = [MagicMock(), MagicMock()]
+    aws_client = AWSClient(**params)
+    aws_client.aws_session(service="ec2", region=region)
+    assert aws_client.sts_endpoint_url == expected_sts_endpoint_url
+    sts_call_args = boto3_client_mock.call_args_list[0]
+    assert sts_call_args[1] == {
+        "service_name": "sts",
+        "region_name": region if region else params["aws_default_region"],
+        "aws_access_key_id": params["aws_access_key_id"],
+        "aws_secret_access_key": params["aws_secret_access_key"],
+        "verify": params["verify_certificate"],
+        "config": aws_client.config,
+        "endpoint_url": expected_sts_endpoint_url,
+    }

@@ -1,5 +1,7 @@
 Close the XSOAR incident if the IoT ServiceNow ticket was closed. This command should be run in a Job.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -18,14 +20,18 @@ corresponding ServiceNow ticket was created. Looping each one of this incident, 
 status. If the status is "Closed", we are closing the XSOAR incident.
 
 ## Used In
+
 ---
 This script is used in the following playbooks and scripts.
+
 * PANW IoT ServiceNow Tickets Check
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

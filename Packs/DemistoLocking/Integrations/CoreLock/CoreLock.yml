@@ -1,12 +1,13 @@
 commonfields:
   id: Core Lock
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Core Lock
 display: Core Lock
 category: Utilities
+provider: Palo Alto Networks
 description: Locking mechanism that prevents concurrent execution of different tasks
 configuration:
 - display: Default timeout (seconds) for wait on locks to be released
@@ -81,6 +82,7 @@ script:
     description: Release all locks
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 5.0.0
 tests:
 - No tests
