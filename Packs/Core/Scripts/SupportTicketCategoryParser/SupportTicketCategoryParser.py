@@ -98,23 +98,32 @@ def parse_and_validate(args: dict) -> CommandResults:
     demisto.debug(f"Input - classification_result: {classification_result}")
 
     parts = classification_result.split(DELIMITER)
-    issue_category = parts[0].strip() if len(parts) > 0 else None
-    problem_concentration = parts[1].strip() if len(parts) > 1 else None
+    if len(parts) != 2:
+        outputs = {
+            "IssueCategory": None,
+            "ProblemConcentration": None,
+            "IsValid": False,
+            "Warnings": "Invalid classification result.",
+        }
 
-    demisto.debug(f"Parsed - issue_category: {issue_category}, " f"problem_concentration: {problem_concentration}")
+    else:
+        issue_category = parts[0].strip() if len(parts) > 0 else None
+        problem_concentration = parts[1].strip() if len(parts) > 1 else None
 
-    taxonomy = parse_taxonomy(taxonomy_raw)
-    issue_category, problem_concentration, warnings = validate_against_taxonomy(issue_category, problem_concentration, taxonomy)
+        demisto.debug(f"Parsed - issue_category: {issue_category}, " f"problem_concentration: {problem_concentration}")
 
-    for warning in warnings:
-        demisto.debug(f"Taxonomy validation warning: {warning}")
+        taxonomy = parse_taxonomy(taxonomy_raw)
+        issue_category, problem_concentration, warnings = validate_against_taxonomy(issue_category, problem_concentration, taxonomy)
 
-    outputs = {
-        "IssueCategory": issue_category,
-        "ProblemConcentration": problem_concentration,
-        "IsValid": len(warnings) == 0,
-        "Warnings": warnings if warnings else None,
-    }
+        for warning in warnings:
+            demisto.debug(f"Taxonomy validation warning: {warning}")
+
+        outputs = {
+            "IssueCategory": issue_category,
+            "ProblemConcentration": problem_concentration,
+            "IsValid": len(warnings) == 0,
+            "Warnings": warnings if warnings else None,
+        }
 
     return CommandResults(
         outputs_prefix="Core.SupportTicketCategoryParser",

@@ -208,7 +208,6 @@ class TestParseAndValidate:
         assert outputs["ProblemConcentration"] == "Communication"
         assert outputs["IsValid"] is True
 
-
     def test_tenant_admin_valid(self):
         """Test a valid Tenant Administration category."""
         args = {

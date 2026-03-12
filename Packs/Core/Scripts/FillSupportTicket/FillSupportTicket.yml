@@ -69,7 +69,6 @@ outputs:
 scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.12.12.6391686
-fromversion: 8.14.0
 tests:
 - No tests (auto formatted)
 marketplaces:
