@@ -118,6 +118,11 @@ def check_list_of_dict(obj) -> bool:  # type: ignore
 
 
 def remove_duplicates(seq: list[str]) -> list[str]:
+    """
+    Remove duplicates from a list while preserving order.
+    :param seq: The list to remove duplicates from.
+    :return: The list without duplicates.
+    """
     seen = set()  # type: ignore
     seen_add = seen.add
     return [x for x in seq if not (x in seen or seen_add(x))]
@@ -125,7 +130,7 @@ def remove_duplicates(seq: list[str]) -> list[str]:
 
 def recursive_filter(item: list[dict] | dict, regex_patterns: list, *fieldsToRemove):
     """
-
+    Recursively filter a dictionary or list of dictionaries.
     :param item: Dict of list of Dict
     :param regex_patterns: List of regex pattern to remove from the dict
     :param fieldsToRemove: values to remove from the object
@@ -150,7 +155,7 @@ def match_one_regex(string: str, patterns) -> bool:  # type: ignore
     If string matches one or more from patterns
     :param string: string
     :param patterns: List of regex pattern
-    :return:
+    :return: True if matches, False otherwise
     """
     if not isinstance(string, str):
         return False
@@ -166,9 +171,9 @@ def match_one_regex(string: str, patterns) -> bool:  # type: ignore
 
 def normalize_json(obj) -> str:  # type: ignore
     """
-    Normalize json from removing unwantd regex pattern or stop word
+    Normalize json from removing unwanted regex pattern or stop word
     :param obj:Dumps of a json or dict
-    :return:
+    :return: Normalized string
     """
     if isinstance(obj, float) or not obj:
         return " "
@@ -214,6 +219,13 @@ def normalize_command_line(command: str) -> str:
 
 
 def fill_nested_fields(incidents_df: pd.DataFrame, incidents: dict | list, *list_of_field_list: list[str]) -> pd.DataFrame:
+    """
+    Fill nested fields in the DataFrame by extracting values from the incidents.
+    :param incidents_df: The DataFrame to fill.
+    :param incidents: The incidents data.
+    :param list_of_field_list: Lists of fields to extract.
+    :return: The updated DataFrame.
+    """
     for field_type in list_of_field_list:
         for field in field_type:
             if "." in field:
@@ -252,6 +264,7 @@ class Tfidf(BaseEstimator, TransformerMixin):
 
     def __init__(self, incident_field: str, tfidf_params: dict, normalize_function, current_incident):
         """
+        Initialize TFIDF transformer.
         :param incident_field: incident on which we want to use the transformer
         :param tfidf_params: parameters of TFIDF
         :param normalize_function: Normalize function to apply on each sample of the corpus before the vectorization
@@ -282,7 +295,7 @@ class Tfidf(BaseEstimator, TransformerMixin):
         """
         Transform x with the trained vectorizer
         :param x: DataFrame or np.array
-        :return:
+        :return: Transformed array
         """
         if self.normalize_function:
             x = x[self.incident_field].apply(self.normalize_function)
@@ -298,14 +311,33 @@ class Identity(BaseEstimator, TransformerMixin):
     """
 
     def __init__(self, feature_names, identity_params, normalize_function, x=None):
+        """
+        Initialize Identity transformer.
+        :param feature_names: Names of the features.
+        :param identity_params: Parameters for the identity transformation.
+        :param normalize_function: Function to normalize the data.
+        :param x: Optional initial data.
+        """
         self.feature_names = feature_names
         self.normalize_function = normalize_function
         self.identity_params = identity_params
 
     def fit(self, x, y=None):
+        """
+        Fit the transformer.
+        :param x: Data to fit.
+        :param y: Target values.
+        :return: self
+        """
         return self
 
     def transform(self, x, y=None):
+        """
+        Transform the data.
+        :param x: Data to transform.
+        :param y: Target values.
+        :return: Transformed data.
+        """
         if self.normalize_function:
             return x[self.feature_names].apply(self.normalize_function)
         else:
@@ -336,6 +368,7 @@ class Transformer:
 
     def __init__(self, p_transformer_type, field, p_incidents_df, p_incident_to_match, p_params):
         """
+        Initialize Transformer.
         :param p_transformer_type: One of the key value of TRANSFORMATION dict
         :param field: incident field used in this transformation
         :param p_incidents_df: DataFrame of incident (should contains one columns which same name than incident_field)
@@ -351,7 +384,7 @@ class Transformer:
     def fit_transform(self):
         """
         Fit self.incident_to_match and transform self.incidents_df and self.incident_to_match
-        :return:
+        :return: Tuple of (x_vect, incident_vect)
         """
         transformation = self.params[self.transformer_type]
         transformer = transformation["transformer"](
@@ -365,6 +398,7 @@ class Transformer:
 
     def get_score(self):
         """
+        Calculate similarity score and add it to the DataFrame.
         :return: Add one columns 'similarity %s' % self.field to self.incidents_df Dataframe with the score
         """
         scoring_function = self.params[self.transformer_type]["scoring_function"]
@@ -376,9 +410,14 @@ class Transformer:
 
 
 class Model:
+    """
+    Class for the similarity model.
+    """
     def __init__(self, p_transformation, incident_alias="incident"):
         """
+        Initialize Model.
         :param p_transformation: Dict with the transformers parameters - TRANSFORMATION
+        :param incident_alias: Alias for the incident (e.g., 'incident', 'alert', 'issue').
         """
         self.transformation = p_transformation
         self.incident_alias = incident_alias
@@ -393,14 +432,14 @@ class Model:
         p_field_for_json=[],
     ):
         """
-
+        Initialize prediction parameters.
         :param p_incident_to_match: Dataframe with one incident
         :param p_incidents_df: Dataframe with all the incidents
         :param p_field_for_command_line: list of incident fields that for the transformer 'command_line'
         :param p_field_for_potential_exact_match: list of incident fields that for the transformer 'potential_exact_match'
         :param p_field_for_display_fields_incidents: list of incident fields that for the transformer 'display_fields_incidents'
         :param p_field_for_json: list of incident fields that for the transformer 'json'
-        :return:
+        :return: None
         """
         self.incident_to_match: pd.DataFrame = p_incident_to_match
         self.incidents_df: pd.DataFrame = p_incidents_df
@@ -410,6 +449,10 @@ class Model:
         self.field_for_json = p_field_for_json
 
     def predict(self):
+        """
+        Predict similarity scores for the incidents.
+        :return: Tuple of (prepared_display_df, fields_used)
+        """
         should_proceed, all_skip_reasons = self.remove_empty_or_short_fields()
         if not should_proceed:
             raise DemistoException("\n".join(all_skip_reasons) or "  * No fields were provided for similarity calculation")
@@ -481,7 +524,7 @@ class Model:
     def get_score(self):
         """
         Apply transformation for each field in possible transformer
-        :return:
+        :return: None
         """
         for field in self.field_for_command_line:
             t = Transformer("commandline", field, self.incidents_df, self.incident_to_match, self.transformation)
@@ -498,7 +541,7 @@ class Model:
     def compute_final_score(self):
         """
         Compute final score based on average of similarity score for each field transformed
-        :return:
+        :return: None
         """
         col = self.incidents_df.loc[
             :,
@@ -510,6 +553,10 @@ class Model:
         self.incidents_df[f"similarity {self.incident_alias}"] = np.round(col.mean(axis=1), 2)
 
     def prepare_for_display(self):
+        """
+        Prepare the DataFrame for display by sorting and selecting relevant columns.
+        :return: Sorted DataFrame.
+        """
         self.compute_final_score()
         display_fields = remove_duplicates(
             self.field_for_display_fields_incidents
@@ -555,6 +602,7 @@ def prepare_incidents_for_display(
     :param fields_used: field used to compute final score
     :param aggregate: if aggragate the data that are identical according to the field - False if used indicators
     :param include_indicators_similarity: if include_indicators_similarity
+    :param incident_alias: Alias for the incident.
     :return: Clean Dataframe
     """
     if "id" in similar_incidents.columns.tolist():
@@ -591,6 +639,11 @@ def prepare_incidents_for_display(
 
 
 def extract_fields_from_args(arg: str | None) -> list[str]:
+    """
+    Extract fields from arguments and preprocess them.
+    :param arg: The argument string.
+    :return: List of preprocessed fields.
+    """
     fields_list = [preprocess_incidents_field(x.strip(), PREFIXES_TO_REMOVE) for x in argToList(arg) if x]
     return list(dict.fromkeys(fields_list))
 
@@ -600,7 +653,7 @@ def remove_fields_not_in_incident(*args, incorrect_fields):
     Return list without field in incorrect_fields
     :param args: *List of fields
     :param incorrect_fields: fields that we don't want
-    :return:
+    :return: List of lists of fields.
     """
     return [[x for x in field_type if x not in incorrect_fields] for field_type in args]
 
@@ -609,7 +662,7 @@ def dumps_json_field_in_incident(incident: dict):
     """
     Dumps value that are dict in for incident values
     :param incident: json representing the incident
-    :return:
+    :return: DataFrame of the incident.
     """
     for field in incident:
         if isinstance(incident[field], dict):
@@ -627,6 +680,7 @@ def find_incorrect_fields(
     :param populate_fields: List of fields
     :param incidents_df: DataFrame of the incidents with fields in columns
     :param global_msg: global_msg
+    :param incident_alias: Alias for the incident.
     :return: global_msg, incorrect_fields
     """
     incorrect_fields = [i for i in populate_fields if i not in incidents_df.columns.tolist()]
@@ -655,7 +709,8 @@ def prepare_current_incident(
     :param similar_json_field: similar_json_field
     :param similar_categorical_field: similar_categorical_field
     :param exact_match_fields: exact_match_fields
-    :return:
+    :param incident_alias: Alias for the incident.
+    :return: Prepared DataFrame.
     """
 
     incident_filter = incident_df.copy()[
@@ -675,7 +730,14 @@ def prepare_current_incident(
 
 
 class BaseSimilarObjectFinder:
+    """
+    Base class for finding similar objects.
+    """
     def __init__(self, args: dict):
+        """
+        Initialize BaseSimilarObjectFinder.
+        :param args: Arguments for the finder.
+        """
         self.args = args
         self.global_msg = ""
         self.incident_alias = "incident"
@@ -684,9 +746,17 @@ class BaseSimilarObjectFinder:
         self.time_format = "%Y-%m-%dT%H:%M:%S"
 
     def preprocess_args(self):
+        """
+        Preprocess arguments.
+        :return: None
+        """
         pass
 
     def get_fields(self):
+        """
+        Get fields for similarity calculation.
+        :return: Tuple of (exact_match_fields, similar_text_field, similar_categorical_field, similar_json_field)
+        """
         use_all_field = argToBoolean(self.args.get("useAllFields") or "False")
         exact_match_fields = [] if use_all_field else extract_fields_from_args(self.args.get("fieldExactMatch"))
         similar_text_field = [] if use_all_field else extract_fields_from_args(self.args.get("similarTextField"))
@@ -702,9 +772,17 @@ class BaseSimilarObjectFinder:
         return exact_match_fields, similar_text_field, similar_categorical_field, similar_json_field
 
     def get_display_fields(self):
+        """
+        Get fields to display in the results.
+        :return: List of display fields.
+        """
         return list(set([self.id_field, "created", "name"] + argToList(self.args.get("fieldsToDisplay"))))
 
     def get_dates(self):
+        """
+        Get from and to dates from arguments.
+        :return: Tuple of (from_date, to_date)
+        """
         return self.args.get("fromDate"), self.args.get("toDate")
 
     def load_current_incident(
@@ -718,6 +796,18 @@ class BaseSimilarObjectFinder:
         from_date,
         to_date,
     ):
+        """
+        Load the current incident.
+        :param incident_id: ID of the incident.
+        :param exact_match_fields: Fields for exact match.
+        :param similar_text_field: Fields for text similarity.
+        :param similar_categorical_field: Fields for categorical similarity.
+        :param similar_json_field: Fields for JSON similarity.
+        :param display_fields: Fields to display.
+        :param from_date: Start date.
+        :param to_date: End date.
+        :return: None
+        """
         raise NotImplementedError
 
     def get_all_incidents(
@@ -732,24 +822,66 @@ class BaseSimilarObjectFinder:
         to_date,
         limit,
     ):
+        """
+        Get all incidents for similarity comparison.
+        :param exact_match_fields: Fields for exact match.
+        :param similar_text_field: Fields for text similarity.
+        :param similar_categorical_field: Fields for categorical similarity.
+        :param similar_json_field: Fields for JSON similarity.
+        :param display_fields: Fields to display.
+        :param incident: The current incident.
+        :param from_date: Start date.
+        :param to_date: End date.
+        :param limit: Maximum number of incidents to fetch.
+        :return: None
+        """
         raise NotImplementedError
 
     def get_fields_to_check_existence(
         self, exact_match_fields, similar_text_field, similar_categorical_field, similar_json_field, display_fields
     ):
+        """
+        Get fields to check for existence in the incidents.
+        :param exact_match_fields: Fields for exact match.
+        :param similar_text_field: Fields for text similarity.
+        :param similar_categorical_field: Fields for categorical similarity.
+        :param similar_json_field: Fields for JSON similarity.
+        :param display_fields: Fields to display.
+        :return: None
+        """
         raise NotImplementedError
 
     def remove_incorrect_fields(
         self, display_fields, similar_text_field, similar_json_field, similar_categorical_field, incorrect_fields
     ):
+        """
+        Remove incorrect fields from the lists.
+        :param display_fields: Fields to display.
+        :param similar_text_field: Fields for text similarity.
+        :param similar_json_field: Fields for JSON similarity.
+        :param similar_categorical_field: Fields for categorical similarity.
+        :param incorrect_fields: Fields that are incorrect.
+        :return: Updated lists of fields.
+        """
         return remove_fields_not_in_incident(
             display_fields, similar_text_field, similar_json_field, similar_categorical_field, incorrect_fields=incorrect_fields
         )
 
     def enrich_with_indicators(self, similar_incidents, include_indicators_similarity):
+        """
+        Enrich similar incidents with indicator similarity.
+        :param similar_incidents: DataFrame of similar incidents.
+        :param include_indicators_similarity: Whether to include indicator similarity.
+        :return: Updated DataFrame.
+        """
         return similar_incidents
 
     def return_outputs_error(self, error_msg):
+        """
+        Return an error entry.
+        :param error_msg: The error message.
+        :return: None
+        """
         return_entry = {
             "Type": entryTypes["note"],
             "HumanReadable": error_msg,
@@ -763,6 +895,14 @@ class BaseSimilarObjectFinder:
     def return_outputs_summary(
         self, confidence: float, number_incident_fetched: int, number_incidents_found: int, fields_used: list[str]
     ):
+        """
+        Return a summary of the similarity calculation.
+        :param confidence: Confidence threshold.
+        :param number_incident_fetched: Number of incidents fetched.
+        :param number_incidents_found: Number of similar incidents found.
+        :param fields_used: Fields used for similarity.
+        :return: None
+        """
         summary = {
             "Confidence": str(confidence),
             f"Number of {self.incident_alias}s fetched with exact match ": number_incident_fetched,
@@ -772,6 +912,10 @@ class BaseSimilarObjectFinder:
         return_results(CommandResults(readable_output=self.global_msg + tableToMarkdown("Summary", summary)))
 
     def return_outputs_similar_incidents_empty(self):
+        """
+        Return an empty result when no similar incidents are found.
+        :return: None
+        """
         return_results(
             CommandResults(
                 readable_output=f"### Similar {self.incident_alias.capitalize()}\nNo Similar {self.incident_alias}s were found.",
@@ -781,9 +925,18 @@ class BaseSimilarObjectFinder:
         )
 
     def get_context_key(self):
+        """
+        Get the context key for the results.
+        :return: Context key string.
+        """
         return "DBotFindSimilarIncidents"
 
     def create_context(self, similar_incidents):
+        """
+        Create the context dictionary for the results.
+        :param similar_incidents: DataFrame of similar incidents.
+        :return: Context dictionary.
+        """
         similar_incidents = similar_incidents.replace(np.nan, "", regex=True)
         if len(similar_incidents) == 0:
             context = {"similarIncidentList": {}, "isSimilarIncidentFound": False}
@@ -793,6 +946,14 @@ class BaseSimilarObjectFinder:
         return context
 
     def return_outputs_similar_incidents(self, show_actual_incident, current_incident, similar_incidents, context):
+        """
+        Return the similar incidents results.
+        :param show_actual_incident: Whether to show the actual incident.
+        :param current_incident: The current incident DataFrame.
+        :param similar_incidents: The similar incidents DataFrame.
+        :param context: The context dictionary.
+        :return: None
+        """
         first_columns = [
             f"{self.incident_alias} ID",
             "created",
@@ -850,6 +1011,10 @@ class BaseSimilarObjectFinder:
         demisto.results(return_entry)
 
     def run(self):
+        """
+        Run the similarity finder.
+        :return: Tuple of (similar_incidents_df, global_msg)
+        """
         self.preprocess_args()
 
         exact_match_fields, similar_text_field, similar_categorical_field, similar_json_field = self.get_fields()
@@ -987,7 +1152,14 @@ class BaseSimilarObjectFinder:
 
 
 class SimilarIncidentFinder(BaseSimilarObjectFinder):
+    """
+    Finder for similar incidents.
+    """
     def __init__(self, args: dict):
+        """
+        Initialize SimilarIncidentFinder.
+        :param args: Arguments for the finder.
+        """
         super().__init__(args)
         self.incident_alias = "alert" if (is_xsiam() or is_platform()) else "incident"
         self.tag_incident = "incidents"
@@ -996,6 +1168,15 @@ class SimilarIncidentFinder(BaseSimilarObjectFinder):
     def get_fields_to_check_existence(
         self, exact_match_fields, similar_text_field, similar_categorical_field, similar_json_field, display_fields
     ):
+        """
+        Get fields to check for existence in the incidents.
+        :param exact_match_fields: Fields for exact match.
+        :param similar_text_field: Fields for text similarity.
+        :param similar_categorical_field: Fields for categorical similarity.
+        :param similar_json_field: Fields for JSON similarity.
+        :param display_fields: Fields to display.
+        :return: List of fields to check.
+        """
         populate_fields = (
             list(similar_text_field)
             + list(similar_json_field)
@@ -1017,6 +1198,18 @@ class SimilarIncidentFinder(BaseSimilarObjectFinder):
         from_date,
         to_date,
     ):
+        """
+        Load the current incident.
+        :param incident_id: ID of the incident.
+        :param exact_match_fields: Fields for exact match.
+        :param similar_text_field: Fields for text similarity.
+        :param similar_categorical_field: Fields for categorical similarity.
+        :param similar_json_field: Fields for JSON similarity.
+        :param display_fields: Fields to display.
+        :param from_date: Start date.
+        :param to_date: End date.
+        :return: Tuple of (incident_dict, incident_id)
+        """
         populate_fields = (
             list(similar_text_field)
             + list(similar_json_field)
@@ -1067,6 +1260,19 @@ class SimilarIncidentFinder(BaseSimilarObjectFinder):
         to_date,
         limit,
     ):
+        """
+        Get all incidents for similarity comparison.
+        :param exact_match_fields: Fields for exact match.
+        :param similar_text_field: Fields for text similarity.
+        :param similar_categorical_field: Fields for categorical similarity.
+        :param similar_json_field: Fields for JSON similarity.
+        :param display_fields: Fields to display.
+        :param incident: The current incident.
+        :param from_date: Start date.
+        :param to_date: End date.
+        :param limit: Maximum number of incidents to fetch.
+        :return: Tuple of (incidents_list, message)
+        """
         populate_fields = (
             list(similar_text_field)
             + list(similar_json_field)
@@ -1114,6 +1320,12 @@ class SimilarIncidentFinder(BaseSimilarObjectFinder):
         return incidents, msg
 
     def enrich_with_indicators(self, similar_incidents, include_indicators_similarity):
+        """
+        Enrich similar incidents with indicator similarity.
+        :param similar_incidents: DataFrame of similar incidents.
+        :param include_indicators_similarity: Whether to include indicator similarity.
+        :return: Updated DataFrame.
+        """
         if include_indicators_similarity == "True":
             args_defined_by_user = {key: self.args.get(key) for key in KEYS_ARGS_INDICATORS}
             full_args_indicators_script = {**CONST_PARAMETERS_INDICATORS_SCRIPT, **args_defined_by_user}
@@ -1144,7 +1356,14 @@ class SimilarIncidentFinder(BaseSimilarObjectFinder):
 
 
 class SimilarIssueFinder(BaseSimilarObjectFinder):
+    """
+    Finder for similar issues.
+    """
     def __init__(self, args: dict):
+        """
+        Initialize SimilarIssueFinder.
+        :param args: Arguments for the finder.
+        """
         super().__init__(args)
         self.incident_alias = "issue"
         self.tag_incident = "issues"
@@ -1162,6 +1381,10 @@ class SimilarIssueFinder(BaseSimilarObjectFinder):
         }
 
     def preprocess_args(self):
+        """
+        Preprocess arguments for issues.
+        :return: None
+        """
         fields_to_check = ["text_similarity_fields", "filter_equal_fields", "discrete_match_fields"]
 
         for key in fields_to_check:
@@ -1210,10 +1433,18 @@ class SimilarIssueFinder(BaseSimilarObjectFinder):
         self.args = new_args
 
     def get_display_fields(self):
+        """
+        Get fields to display for issues.
+        :return: List of display fields.
+        """
         display_fields = {"internal_id", "issue_name", "issue_description"} | set(argToList(self.args.get("fieldsToDisplay")))
         return list(display_fields)
 
     def get_dates(self):
+        """
+        Get from and to dates for issues.
+        :return: Tuple of (from_date_str, to_date_str)
+        """
         from_date = arg_to_datetime(self.args.get("fromDate"))
         to_date = arg_to_datetime(self.args.get("toDate"))
 
@@ -1224,11 +1455,29 @@ class SimilarIssueFinder(BaseSimilarObjectFinder):
     def get_fields_to_check_existence(
         self, exact_match_fields, similar_text_field, similar_categorical_field, similar_json_field, display_fields
     ):
+        """
+        Get fields to check for existence for issues.
+        :param exact_match_fields: Fields for exact match.
+        :param similar_text_field: Fields for text similarity.
+        :param similar_categorical_field: Fields for categorical similarity.
+        :param similar_json_field: Fields for JSON similarity.
+        :param display_fields: Fields to display.
+        :return: List of fields to check.
+        """
         return list(set(similar_text_field) | set(similar_json_field) | set(similar_categorical_field))
 
     def remove_incorrect_fields(
         self, display_fields, similar_text_field, similar_json_field, similar_categorical_field, incorrect_fields
     ):
+        """
+        Remove incorrect fields for issues.
+        :param display_fields: Fields to display.
+        :param similar_text_field: Fields for text similarity.
+        :param similar_json_field: Fields for JSON similarity.
+        :param similar_categorical_field: Fields for categorical similarity.
+        :param incorrect_fields: Fields that are incorrect.
+        :return: List of updated field lists.
+        """
         return [
             list(set(f) - set(incorrect_fields))
             for f in [display_fields, similar_text_field, similar_json_field, similar_categorical_field]
@@ -1245,6 +1494,18 @@ class SimilarIssueFinder(BaseSimilarObjectFinder):
         from_date,
         to_date,
     ):
+        """
+        Load the current issue.
+        :param incident_id: ID of the issue.
+        :param exact_match_fields: Fields for exact match.
+        :param similar_text_field: Fields for text similarity.
+        :param similar_categorical_field: Fields for categorical similarity.
+        :param similar_json_field: Fields for JSON similarity.
+        :param display_fields: Fields to display.
+        :param from_date: Start date.
+        :param to_date: End date.
+        :return: Tuple of (issue_dict, incident_id)
+        """
         demisto.debug(f"Calling core-get-issues for {incident_id=} between {from_date=} and {to_date=}")
         args = remove_empty_elements(
             {"issue_id": incident_id, "start_time": from_date, "end_time": to_date, "time_frame": "custom"}
@@ -1284,6 +1545,19 @@ class SimilarIssueFinder(BaseSimilarObjectFinder):
         to_date,
         limit,
     ):
+        """
+        Get all issues for similarity comparison.
+        :param exact_match_fields: Fields for exact match.
+        :param similar_text_field: Fields for text similarity.
+        :param similar_categorical_field: Fields for categorical similarity.
+        :param similar_json_field: Fields for JSON similarity.
+        :param display_fields: Fields to display.
+        :param incident: The current issue.
+        :param from_date: Start date.
+        :param to_date: End date.
+        :param limit: Maximum number of issues to fetch.
+        :return: Tuple of (issues_list, message)
+        """
         msg = ""
         base_args = {
             "start_time": from_date,
@@ -1358,9 +1632,18 @@ class SimilarIssueFinder(BaseSimilarObjectFinder):
         return all_issues, msg
 
     def get_context_key(self):
+        """
+        Get the context key for issues.
+        :return: Context key string.
+        """
         return "SimilarIssues"
 
     def create_context(self, similar_incidents):
+        """
+        Create the context dictionary for issues.
+        :param similar_incidents: DataFrame of similar issues.
+        :return: Context dictionary.
+        """
         df = similar_incidents.copy()
 
         rename_map = {
@@ -1388,6 +1671,14 @@ class SimilarIssueFinder(BaseSimilarObjectFinder):
         return context
 
     def return_outputs_similar_incidents(self, show_actual_incident, current_incident, similar_incidents, context):
+        """
+        Return the similar issues results.
+        :param show_actual_incident: Whether to show the actual issue.
+        :param current_incident: The current issue DataFrame.
+        :param similar_incidents: The similar issues DataFrame.
+        :param context: The context dictionary.
+        :return: None
+        """
         first_columns = [
             f"{self.incident_alias} ID",
             "created",
