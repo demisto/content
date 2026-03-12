@@ -1,0 +1,127 @@
+fromversion: 6.10.0
+action: ALERTS
+alert_category: User Defined
+alert_description: $alert_description
+alert_domain: DOMAIN_SECURITY
+alert_fields:
+  _device_id: device_id
+  action_file_path: filepath
+  action_file_sha256: sha256
+  action_local_ip: local_ip
+  action_process_image_sha256: sha256
+  action_remote_ip: remote_ips
+  actor_effective_username: user_name
+  actor_process_command_line: cmdline
+  actor_process_image_name: filename
+  actor_process_image_path: filepath
+  actor_process_image_sha256: sha256
+  actor_process_os_pid: local_process_id
+  additionalindicators: ioc_value
+  agent_device_domain: domain
+  agent_hostname: hostname
+  agent_id: agent_id
+  alert_description: alert_description
+  alertaction: pattern_disposition_description
+  causality_actor_causality_id: aggregate_id
+  causality_actor_process_image_sha256: grandparent_process_sha256
+  detectionid: template_instance_id
+  deviceexternalips: external_ip
+  dns_query_name: dns_queries
+  eventaction: ioc_source
+  external_pivot_url: falcon_host_link
+  externalconfidence: confidence
+  externallink: falcon_host_link
+  externalseverity: severity
+  grandparentprocesscmd: grandparent_process_cmd
+  grandparentprocessid: grandparent_local_process_id
+  grandparentprocessname: grandparent_process_name
+  grandparentprocesspath: grandparent_process_path
+  grandparentprocesssha256: grandparent_process_sha256
+  mac: mac_address
+  mitretacticid: mitre_tactic_id
+  mitretacticname: mitre_tactic
+  mitretechniqueid: mitre_technique_id
+  mitretechniquename: mitre_technique
+  objective: objective
+  originalalertid: composite_id
+  originalalertname: alert_name
+  originaldescription: alert_description
+  parentprocesscmd: parent_process_cmd
+  parentprocessid: parent_process_name
+  parentprocessids: parent_local_process_id
+  parentprocessname: parent_process_name
+  parentprocesspath: parent_process_path
+  parentprocesssha256: parent_process_sha256
+  postnatdestinationip: remote_ips
+  prenatsourceip: local_ip
+  processcreationtime: process_start_time
+  processid: grandparent_local_process_id
+  processmd5: md5
+  scenario: scenario
+  severity: severity_name
+  sourceid: aggregate_id
+  tim_main_indicator: ioc_value
+  userid: user_name
+  usersid: user_id
+alert_name: SOC CrowdStrike Falcon - $alert_name
+alert_type: null
+crontab: null
+dataset: alerts
+description: Creates an XSIAM alert for each CrowdStrike Falcon Endpoint Detection
+  Event
+drilldown_query_timeframe: ALERT
+execution_mode: REAL_TIME
+global_rule_id: SOC CrowdStrike Falcon - Endpoint Alerts
+investigation_query_link: '// All (stitched) activity from host - assuming raw telemetry
+  is being collected
+
+  dataset = xdr_data
+
+  | filter agent_hostname = $hostname
+
+  | fields * '
+is_enabled: true
+lookup_mapping: []
+mapping_strategy: CUSTOM
+mitre_defs: {}
+name: SOC CrowdStrike Falcon - Endpoint Alerts
+rule_id: 0
+search_window: null
+severity: User Defined
+simple_schedule: null
+suppression_duration: null
+suppression_enabled: false
+suppression_fields: null
+timezone: null
+user_defined_category: tactic
+user_defined_severity: severity_name
+xql_query: "/*\nTitle: SOC CrowdStrike Falcon - Endpoint Alerts\nDescription:  Single\
+  \ rule handler for any Detection Summary alert fetched from the CrowdStrike Falcon\
+  \ Integration\nDatasets: crowdstrike_falcon_event_raw (note, this may be different\
+  \ depending on how the initial integration is configured)\nDependencies:  CrowdStrike\
+  \ Falcon automation integration\nVersion: 1.0\n*/\nconfig case_sensitive = false\n\
+  | dataset = crowdstrike_falcon_event_raw \n\n// XSIAM MITRE Normalization\n| alter\n\
+  \        tactic                 = if(tactic = \"Malware\", \"Execution\", tactic),\n\
+  \        mitre_tactic           = tactic,\n                mitre_tactic_id     \
+  \   = tactic_id,\n        mitre_technique        = technique,\n                mitre_technique_id\
+  \     = technique_id\n\n| filter product = \"epp\"\n\n// Extract fields from nested\
+  \ objects\n| alter \n        hostname = device->hostname,\n                domain\
+  \ = device->machine_domain,\n        local_ip = device->local_ip,\n            \
+  \    external_ip = device->external_ip,\n        mac_address = device->mac_address,\n\
+  \                device_id = device->device_id,\n        device_ou = device->ou[],\n\
+  \                parent_process_name = parent_details->filename,\n        parent_process_cmd\
+  \ = parent_details->cmdline,\n                parent_process_path = parent_details->filepath,\n\
+  \        parent_process_sha256 = parent_details->sha256,\n                parent_local_process_id\
+  \ = parent_details->local_process_id,\n        grandparent_process_name = grandparent_details->filename,\n\
+  \                grandparent_process_cmd = grandparent_details->cmdline,\n     \
+  \   grandparent_process_path = grandparent_details->filepath,\n                grandparent_process_sha256\
+  \ = grandparent_details->sha256,\n        grandparent_local_process_id = grandparent_details->local_process_id\n\
+  \n// CGO Normalization\n| alter cgo_name = if(lowercase(grandparent_process_name)\
+  \ not in (\"wininit.exe\", \"userinit.exe\"), grandparent_process_name, coalesce(parent_process_name,\
+  \ filename)),\n cgo_path = if(lowercase(grandparent_process_name) not in (\"wininit.exe\"\
+  , \"userinit.exe\"), grandparent_process_path, coalesce(parent_process_path, filepath)),\n\
+  \ cgo_cmd = if(lowercase(grandparent_process_name) not in (\"wininit.exe\", \"userinit.exe\"\
+  ), grandparent_process_cmd, coalesce(parent_process_cmd, cmdline))\n\n// Keep optional\
+  \ enrichments disabled for performance\n| alter dns_queries = null\n| alter remote_ips\
+  \ = null\n\n| alter alert_name = _name\n| alter alert_description = description\n\
+  \n// Final field ordering\n| fields device_id,local_ip,user_name,cmdline,sha256,domain,hostname,agent_id,pattern_disposition_description,cgo_cmd,cgo_name,cgo_path,template_instance_id,external_ip,falcon_host_link,mac_address,tactic_id,tactic,technique_id,technique,objective,composite_id,parent_process_cmd,parent_process_name,parent_local_process_id,parent_process_path,parent_process_sha256,process_start_time,local_process_id,md5,scenario,severity_name,aggregate_id,indicator_id,user_name,user_id,alert_name,alert_description,*"
