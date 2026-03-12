@@ -26,6 +26,19 @@ configuration:
   additionalinfo: Returns only the CVEs where the word or phrase is found in the description.
   required: false
   section: Collect
+- name: cvssv3severity
+  display: CVSS 3 Severity Filter
+  additionalinfo: Select the severities you wish to get back from the feed.
+  options:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+  - LOW
+  defaultvalue:
+  required: false
+  type: 16
+  section: Connect
+  hidden: true
 - name: cvss_severity
   display: CVSS Severity Filter
   additionalinfo: Filter CVEs by severity. Queries each CVSS version selected in 'CVSS Versions'.
@@ -219,7 +232,7 @@ script:
     - contextPath: CVE.Severity
       description: The CVSS severity level (e.g. CRITICAL, HIGH, MEDIUM, LOW).
       type: String
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.13.7444307
   feed: true
   runonce: false
   script: ''
