@@ -347,7 +347,7 @@ def cves_to_war_room(raw_cves: list[dict], preferred_versions: list[str] | None 
 
     return CommandResults(
         outputs=output_list,
-        outputs_prefix="NistNVDv2.Indicators",
+        outputs_prefix="CVE",
         readable_output=tableToMarkdown(
             f"CVEs ({len(output_list):,} results)",
             [
