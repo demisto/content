@@ -1,0 +1,48 @@
+{
+  "exabeam_threat_center_raw": {
+    "alertId": {
+      "type": "string",
+      "is_array": false
+    },
+    "name": {
+      "type": "string",
+      "is_array": false
+    },
+    "priority": {
+      "type": "string",
+      "is_array": false
+    },
+    "useCases": {
+      "type": "string",
+      "is_array": true
+    },
+    "rules": {
+      "type": "string",
+      "is_array": true
+    },
+    "mitres": {
+      "type": "string",
+      "is_array": true
+    },
+    "srcIp": {
+      "type": "string",
+      "is_array": true
+    },
+    "srcHost": {
+      "type": "string",
+      "is_array": true
+    },
+    "user": {
+      "type": "string",
+      "is_array": true
+    },
+    "destIp": {
+      "type": "string",
+      "is_array": true
+    },
+    "destHost": {
+      "type": "string",
+      "is_array": true
+    }
+  }
+}
