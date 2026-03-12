@@ -4480,7 +4480,9 @@ There is no context output for this command.
 
 #### Command example
 
-```!confluence-cloud-oauth-start```
+```bash
+!confluence-cloud-oauth-start
+```
 
 ### confluence-cloud-oauth-complete
 
@@ -4503,7 +4505,9 @@ There is no context output for this command.
 
 #### Command example
 
-```!confluence-cloud-oauth-complete code=<authorization_code>```
+```bash
+!confluence-cloud-oauth-complete code=<authorization_code>
+```
 
 ### confluence-cloud-oauth-test
 
@@ -4524,4 +4528,6 @@ There is no context output for this command.
 
 #### Command example
 
-```!confluence-cloud-oauth-test```
+```bash
+!confluence-cloud-oauth-test
+```
