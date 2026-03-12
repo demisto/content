@@ -99,6 +99,10 @@
     "activityUuid": {
       "type": "string",
       "is_array": false
+    },
+    "description": {
+      "type": "string",
+      "is_array": false
     }
   }
 }
