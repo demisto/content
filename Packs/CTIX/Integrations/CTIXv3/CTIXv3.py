@@ -1257,17 +1257,19 @@ def map_report_to_incident(report: dict, relations: dict | None = None, source_r
     if report.get("custom_scores"):
         custom_fields["ctixcustomscores"] = json.dumps(report["custom_scores"])
     if report.get("custom_attributes"):
-        custom_attribute_data = report["custom_attributes"]
-        custom_attribute_data.update({"custom_scores": report.get("custom_scores", {})})
+        custom_attribute_data = {
+            "custom_attributes": report.get("custom_attributes", []),
+            "custom_scores": report.get("custom_scores", {}),
+        }
         custom_fields["ctixcustomattributes"] = json.dumps(custom_attribute_data)
     if relations:
         custom_fields["ctixrelations"] = json.dumps(relations)
 
     incident: dict[str, Any] = {
-        "name": f"CTIX Report: {title}",
+        "name": f"CTIX Intel: {title}",
         "occurred": occurred,
         "severity": map_report_severity(report),
-        "type": "CTIX Report",
+        "type": "CTIX Intel",
         "labels": labels,
         "dbotMirrorId": report_id,
         "rawJSON": json.dumps(report),
@@ -1471,8 +1473,10 @@ def parse_cyware_indicator(cyware_data: dict, source_reliability: str = "", feed
     fields: dict[str, Any] = assign_params(
         firstseenbysource=_normalize_timestamp_to_iso(cyware_data.get("ctix_created")),
         lastseenbysource=_normalize_timestamp_to_iso(cyware_data.get("ctix_modified")),
-        trafficlightprotocol=tlp_color or cyware_data.get(
-            "source_tlp") or cyware_data.get("ctix_tlp") or cyware_data.get("analyst_tlp"),
+        trafficlightprotocol=tlp_color
+        or cyware_data.get("source_tlp")
+        or cyware_data.get("ctix_tlp")
+        or cyware_data.get("analyst_tlp"),
         tags=tag_names if tag_names else None,
         confidence=confidence,
         threatassessscore=cyware_data.get("severity"),
@@ -1766,7 +1770,7 @@ def fetch_indicators(client: Client, params: dict, last_run: dict) -> tuple[dict
     version = params.get("saved_result_set_version")
     if_enrich: bool = argToBoolean(params.get("retrieve_enriched_data", False))
     feed_tags = argToList(params.get("feedTags"))
-    tlp_color = params.get("tlp_color")
+    tlp_color: str = params.get("tlp_color", "") or ""
 
     last_indicator_time = last_run.get("last_indicator_time")
 
@@ -1800,7 +1804,7 @@ def fetch_indicators(client: Client, params: dict, last_run: dict) -> tuple[dict
 
     # Step 4: Map to XSOAR indicator format
     xsoar_indicators: list[dict] = []
-    source_reliability = params.get("integrationReliability", "")
+    source_reliability = params.get("feedReliability", "")
     for ind in all_indicators_raw:
         xsoar_ind = parse_cyware_indicator(ind, source_reliability=source_reliability, feed_tags=feed_tags, tlp_color=tlp_color)
         if xsoar_ind.get("value"):
@@ -1836,7 +1840,7 @@ def enrich_indicators_bulk(client: Client, indicators: list[dict]) -> dict[str, 
     for object_type, values in type_groups.items():
         # Batch into chunks of ENRICHMENT_BATCH_SIZE (100)
         for i in range(0, len(values), ENRICHMENT_BATCH_SIZE):
-            batch_values = values[i: i + ENRICHMENT_BATCH_SIZE]
+            batch_values = values[i : i + ENRICHMENT_BATCH_SIZE]
             try:
                 response = client.bulk_ioc_lookup_advanced(
                     object_type=object_type,

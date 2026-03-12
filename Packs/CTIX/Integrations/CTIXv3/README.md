@@ -22,6 +22,10 @@ The Cyware Intel Exchange integration allows users to fetch threat intelligence 
 | Saved Result Set Label | The label name of the Saved Result Set to pull indicators from. | False |
 | Saved Result Set Version | The version of Saved Result Set to use. Possible values are: v2, v3. | False |
 | Retrieve Enriched Data | If enabled, indicators will be enriched via bulk IOC lookup (with relations and enrichment data) before ingestion. | False |
+| Feed Fetch Interval | How often the platform polls CTIX for new indicators (e.g. "30 minutes", "1 hour", "12 hours"). Controls the XSOAR feed scheduler cadence. Default is "12 hours". | False |
+| Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+| Tags | Tags to apply to fetched indicators. Supports CSV values. | False |
+| Traffic Light Protocol Color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. Possible values are: RED, AMBER, GREEN, WHITE. | False |
 
 ## Commands
 
@@ -1774,7 +1778,7 @@ Notice: Using this command to submit indicators may make the data publicly avail
 >
 >|confidence_score|confidence_type|created|ctix_created|ctix_modified|id|indicator_type|ioc_type|is_actioned|is_deprecated|is_false_positive|is_reviewed|is_revoked|is_watchlist|is_whitelisted|modified|name|risk_severity|source_collections|source_confidence|sources|sub_type|tlp|type|valid_from|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 31 | ctix | 1666709826 | 1666874647 | 1670548277 | 10104a10-74a9-45d7-a412-f11531d64a38 | domain-name | domain-name | false | false | false | false | false | false | false | 1667442806 | example.com | UNKNOWN | {'id': '2a5a9989-030d-466b-b676-223d2b1f4d1e', 'name': 'Indicators v4'},<br/>{'id': '5f4230a4-cc3a-4d32-b3ee-c53a373e2a8f', 'name': 'https:<span>//</span>www.example.com/index.xml'},<br/>{'id': '2dc18ee7-ee80-4fa7-953d-4df824f8e8ce', 'name': 'https:<span>//</span>www.example.com/index.xml'} | MEDIUM | {'id': '131392bb-ecdf-45ae-8f22-b1160cf03401', 'name': 'Mandiant Threat Intelligence', 'source_type': 'API_FEEDS'},<br/>{'id': '87e622e3-e8e5-4692-9b79-00efead3f874', 'name': 'https:<span>//</span>www.example.com/index.xml', 'source_type': 'RSS_FEED'},<br/>{'id': '0647eb19-c559-4d27-a441-b70117315e18', 'name': 'https:<span>//</span>www.example.com/index.xml', 'source_type': 'RSS_FEED'} | value | AMBER | indicator | 1530174464 |
+>| 31 | ctix | 1666709826 | 1666874647 | 1670548277 | 10104a10-74a9-45d7-a412-f11531d64a38 | domain-name | domain-name | false | false | false | false | false | false | false | 1667442806 | example.com | UNKNOWN | {'id': '2a5a9989-030d-466b-b676-223d2b1f4d1e', 'name': 'Indicators v4'},, {'id': '5f4230a4-cc3a-4d32-b3ee-c53a373e2a8f', 'name': 'https://www.example.com/index.xml'},, {'id': '2dc18ee7-ee80-4fa7-953d-4df824f8e8ce', 'name': 'https://www.example.com/index.xml'} | MEDIUM | {'id': '131392bb-ecdf-45ae-8f22-b1160cf03401', 'name': 'Mandiant Threat Intelligence', 'source_type': 'API_FEEDS'},, {'id': '87e622e3-e8e5-4692-9b79-00efead3f874', 'name': 'https://www.example.com/index.xml', 'source_type': 'RSS_FEED'},, {'id': '0647eb19-c559-4d27-a441-b70117315e18', 'name': 'https://www.example.com/index.xml', 'source_type': 'RSS_FEED'} | value | AMBER | indicator | 1530174464 |
 
 ### ip
 
@@ -1901,7 +1905,7 @@ Lookup IP threat data.
 >
 >|confidence_score|confidence_type|country|created|ctix_created|ctix_modified|id|indicator_type|ioc_type|is_actioned|is_deprecated|is_false_positive|is_reviewed|is_revoked|is_watchlist|is_whitelisted|modified|name|risk_severity|source_collections|source_confidence|sources|sub_type|tags|tlp|type|valid_from|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 100 | ctix | United States | 1666710084 | 1666874647 | 1671604244 | 5c2517a2-759f-4eb8-b9fa-346ff20cfaaf | ipv4-addr | ipv4-addr | false | false | false | false | false | false | false | 1669170873 | x.x.x.x | UNKNOWN | {'id': '2a5a9989-030d-466b-b676-223d2b1f4d1e', 'name': 'Indicators v4'},<br/>{'id': 'fe150b23-6354-4a9b-8c27-202abc758ba3', 'name': 'NCAS JG Test'} | HIGH | {'id': '131392bb-ecdf-45ae-8f22-b1160cf03401', 'name': 'Mandiant Threat Intelligence', 'source_type': 'API_FEEDS'},<br/>{'id': '50cbaaee-8083-494c-b42a-7c7fb73ca2dc', 'name': 'NCAS JG Test', 'source_type': 'RSS_FEED'} | value | {'colour_code': '#5236E2', 'id': 'f82fa004-75cc-4824-b129-914ec13728b5', 'name': 'Destruction'} | AMBER | indicator | 1409607591 |
+>| 100 | ctix | United States | 1666710084 | 1666874647 | 1671604244 | 5c2517a2-759f-4eb8-b9fa-346ff20cfaaf | ipv4-addr | ipv4-addr | false | false | false | false | false | false | false | 1669170873 | x.x.x.x | UNKNOWN | {'id': '2a5a9989-030d-466b-b676-223d2b1f4d1e', 'name': 'Indicators v4'},, {'id': 'fe150b23-6354-4a9b-8c27-202abc758ba3', 'name': 'NCAS JG Test'} | HIGH | {'id': '131392bb-ecdf-45ae-8f22-b1160cf03401', 'name': 'Mandiant Threat Intelligence', 'source_type': 'API_FEEDS'},, {'id': '50cbaaee-8083-494c-b42a-7c7fb73ca2dc', 'name': 'NCAS JG Test', 'source_type': 'RSS_FEED'} | value | {'colour_code': '#5236E2', 'id': 'f82fa004-75cc-4824-b129-914ec13728b5', 'name': 'Destruction'} | AMBER | indicator | 1409607591 |
 
 ### file
 
@@ -2135,7 +2139,7 @@ Notice: Using this command to submit indicators may make the data publicly avail
 >
 >|confidence_score|confidence_type|created|ctix_created|ctix_modified|id|indicator_type|ioc_type|is_actioned|is_deprecated|is_false_positive|is_reviewed|is_revoked|is_watchlist|is_whitelisted|modified|name|published_collections|risk_severity|source_collections|source_confidence|sources|sub_type|tlp|type|valid_from|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 100 | ctix | 1674166009 | 1674166009 | 1674166009 | dcada258-5fc2-4c42-b7d6-e8ffda6c5a9e | url | url | false | false | false | false | false | false | false | 1674166010 | http:<span>//</span>example.com/ | {'id': 'ad842594-8faa-49fb-841e-7ff99a685718', 'name': None} | UNKNOWN | {'id': '5432c580-e1f9-40c3-b40a-a47686dfcf22', 'name': 'Free Text'} | HIGH | {'id': '7eb93036-688e-4916-ab1f-fe9015c16b78', 'name': 'Import', 'source_type': 'CUSTOM_STIX_SOURCES'} | value | AMBER | indicator | 1674166009 |
+>| 100 | ctix | 1674166009 | 1674166009 | 1674166009 | dcada258-5fc2-4c42-b7d6-e8ffda6c5a9e | url | url | false | false | false | false | false | false | false | 1674166010 | <http://example.com/> | {'id': 'ad842594-8faa-49fb-841e-7ff99a685718', 'name': None} | UNKNOWN | {'id': '5432c580-e1f9-40c3-b40a-a47686dfcf22', 'name': 'Free Text'} | HIGH | {'id': '7eb93036-688e-4916-ab1f-fe9015c16b78', 'name': 'Import', 'source_type': 'CUSTOM_STIX_SOURCES'} | value | AMBER | indicator | 1674166009 |
 
 ### ctix-get-all-notes
 
@@ -2225,7 +2229,7 @@ Get paginated list of notes
 >
 >|created|created_by|id|is_json|meta_data|modified|modified_by|object_id|text|type|
 >|---|---|---|---|---|---|---|---|---|---|
->| 1674173772 | email: <some.user@example.com><br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | f8f67182-bf72-47df-9a90-31b2bd829a9d | false | component: threatdata<br/>object_id: ba82b524-15b3-4071-8008-e58754f8d134<br/>type: indicator | 1674173772 | email: <some.user@example.com><br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | ba82b524-15b3-4071-8008-e58754f8d134 | this is the old text | threatdata |
+>| 1674173772 | email: some.user@example.com, first_name: some, id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a, last_name: user | f8f67182-bf72-47df-9a90-31b2bd829a9d | false | component: threatdata, object_id: ba82b524-15b3-4071-8008-e58754f8d134, type: indicator | 1674173772 | email: some.user@example.com, first_name: some, id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a, last_name: user | ba82b524-15b3-4071-8008-e58754f8d134 | this is the old text | threatdata |
 
 ### ctix-get-note-details
 
@@ -2313,7 +2317,7 @@ Get details of a note by ID
 >
 >|created|created_by|id|is_json|meta_data|modified|modified_by|object_id|text|type|
 >|---|---|---|---|---|---|---|---|---|---|
->| 1671821868 | email: <some.user@example.com><br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | 7d739870-ce7d-415b-bbbf-25f4bbc6be66 | false | component: threatdata<br/>object_id: fake<br/>type: indicator | 1674173787 | email: <some.user@example.com><br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | fake | this is the new text | threatdata |
+>| 1671821868 | email: some.user@example.com, first_name: some, id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a, last_name: user | 7d739870-ce7d-415b-bbbf-25f4bbc6be66 | false | component: threatdata, object_id: fake, type: indicator | 1674173787 | email: some.user@example.com, first_name: some, id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a, last_name: user | fake | this is the new text | threatdata |
 
 ### ctix-create-note
 
@@ -2401,7 +2405,7 @@ Creates a new note from the parameter 'text'
 >
 >|created|created_by|id|is_json|meta_data|modified|modified_by|text|type|
 >|---|---|---|---|---|---|---|---|---|
->| 1674173831 | email: <some.user@example.com><br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | 35ee1841-8357-43e0-b372-aff9800cdc55 | false | component: notes | 1674173831 | email: <some.user@example.com><br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | hello world x100 | notes |
+>| 1674173831 | email: some.user@example.com, first_name: some, id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a, last_name: user | 35ee1841-8357-43e0-b372-aff9800cdc55 | false | component: notes | 1674173831 | email: some.user@example.com, first_name: some, id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a, last_name: user | hello world x100 | notes |
 
 #### Command example
 
@@ -2449,7 +2453,7 @@ Creates a new note from the parameter 'text'
 >
 >|created|created_by|id|is_json|meta_data|modified|modified_by|object_id|text|type|
 >|---|---|---|---|---|---|---|---|---|---|
->| 1674173838 | email: <some.user@example.com><br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | e5584583-6d45-4fe8-82b4-a802007c38f0 | false | component: threatdata<br/>object_id: da1a6268-e589-4231-a334-68fb0c2cc1e0<br/>type: indicator | 1674173838 | email: <some.user@example.com><br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | da1a6268-e589-4231-a334-68fb0c2cc1e0 | hello world x100 | threatdata |
+>| 1674173838 | email: some.user@example.com, first_name: some, id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a, last_name: user | e5584583-6d45-4fe8-82b4-a802007c38f0 | false | component: threatdata, object_id: da1a6268-e589-4231-a334-68fb0c2cc1e0, type: indicator | 1674173838 | email: some.user@example.com, first_name: some, id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a, last_name: user | da1a6268-e589-4231-a334-68fb0c2cc1e0 | hello world x100 | threatdata |
 
 ### ctix-update-note
 
@@ -2540,7 +2544,7 @@ Updates the note text from an existing note, as specified by its ID
 >
 >|created|created_by|id|is_json|meta_data|modified|modified_by|object_id|text|type|
 >|---|---|---|---|---|---|---|---|---|---|
->| 1671821868 | email: <some.user@example.com><br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | 7d739870-ce7d-415b-bbbf-25f4bbc6be66 | false | component: threatdata<br/>object_id: fake<br/>type: indicator | 1674173815 | email: <some.user@example.com><br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | fake | this is a test | threatdata |
+>| 1671821868 | email: some.user@example.com, first_name: some, id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a, last_name: user | 7d739870-ce7d-415b-bbbf-25f4bbc6be66 | false | component: threatdata, object_id: fake, type: indicator | 1674173815 | email: some.user@example.com, first_name: some, id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a, last_name: user | fake | this is a test | threatdata |
 
 #### Command example
 
@@ -2588,7 +2592,7 @@ Updates the note text from an existing note, as specified by its ID
 >
 >|created|created_by|id|is_json|meta_data|modified|modified_by|object_id|text|type|
 >|---|---|---|---|---|---|---|---|---|---|
->| 1671821868 | email: <some.user@example.com><br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | 7d739870-ce7d-415b-bbbf-25f4bbc6be66 | false | component: threatdata<br/>object_id: fake<br/>type: indicator | 1674173824 | email: <some.user@example.com><br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | da1a6268-e589-4231-a334-68fb0c2cc1e0 | this is a test | threatdata |
+>| 1671821868 | email: some.user@example.com, first_name: some, id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a, last_name: user | 7d739870-ce7d-415b-bbbf-25f4bbc6be66 | false | component: threatdata, object_id: fake, type: indicator | 1674173824 | email: some.user@example.com, first_name: some, id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a, last_name: user | da1a6268-e589-4231-a334-68fb0c2cc1e0 | this is a test | threatdata |
 
 ### ctix-delete-note
 
@@ -2707,7 +2711,7 @@ There is no context output for this command.
 >
 >|created|created_by|id|is_json|meta_data|modified|modified_by|object_id|text|type|
 >|---|---|---|---|---|---|---|---|---|---|
->| 1674173772 | email: <some.user@example.com><br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | f8f67182-bf72-47df-9a90-31b2bd829a9d | false | component: threatdata<br/>object_id: ba82b524-15b3-4071-8008-e58754f8d134<br/>type: indicator | 1674173772 | email: <some.user@example.com><br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | ba82b524-15b3-4071-8008-e58754f8d134 | this is the old text | threatdata |
+>| 1674173772 | email: some.user@example.com, first_name: some, id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a, last_name: user | f8f67182-bf72-47df-9a90-31b2bd829a9d | false | component: threatdata, object_id: ba82b524-15b3-4071-8008-e58754f8d134, type: indicator | 1674173772 | email: some.user@example.com, first_name: some, id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a, last_name: user | ba82b524-15b3-4071-8008-e58754f8d134 | this is the old text | threatdata |
 
 #### Command example
 
@@ -2759,7 +2763,7 @@ There is no context output for this command.
 >
 >|created|created_by|id|is_json|meta_data|modified|modified_by|object_id|text|type|
 >|---|---|---|---|---|---|---|---|---|---|
->| 1674173772 | email: <some.user@example.com><br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | f8f67182-bf72-47df-9a90-31b2bd829a9d | false | component: threatdata<br/>object_id: ba82b524-15b3-4071-8008-e58754f8d134<br/>type: indicator | 1674173772 | email: <some.user@example.com><br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | ba82b524-15b3-4071-8008-e58754f8d134 | this is the old text | threatdata |
+>| 1674173772 | email: some.user@example.com, first_name: some, id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a, last_name: user | f8f67182-bf72-47df-9a90-31b2bd829a9d | false | component: threatdata, object_id: ba82b524-15b3-4071-8008-e58754f8d134, type: indicator | 1674173772 | email: some.user@example.com, first_name: some, id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a, last_name: user | ba82b524-15b3-4071-8008-e58754f8d134 | this is the old text | threatdata |
 
 #### Command example
 
@@ -2811,7 +2815,7 @@ There is no context output for this command.
 >
 >|created|created_by|id|is_json|meta_data|modified|modified_by|object_id|text|type|
 >|---|---|---|---|---|---|---|---|---|---|
->| 1671821868 | email: <some.user@example.com><br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | 7d739870-ce7d-415b-bbbf-25f4bbc6be66 | false | component: threatdata<br/>object_id: fake<br/>type: indicator | 1674173787 | email: <some.user@example.com><br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | fake | this is the new text | threatdata |
+>| 1671821868 | email: some.user@example.com, first_name: some, id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a, last_name: user | 7d739870-ce7d-415b-bbbf-25f4bbc6be66 | false | component: threatdata, object_id: fake, type: indicator | 1674173787 | email: some.user@example.com, first_name: some, id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a, last_name: user | fake | this is the new text | threatdata |
 
 #### Command example
 
@@ -2882,7 +2886,7 @@ Lookup vulnerability data
 
 |cpes|cvss2|cvss3|dbot_reputation|description|extra_data|last_modified|last_published|name|uuid|
 |---|---|---|---|---|---|---|---|---|
-| cpe:2.3:a:vyper_project:vyper:*:*:*:*:*:*:*:* | None | None | 3 | Remote exploitation of a design error vulnerability in Vyper_project Vyper could could allow an attacker to cause a Denial of Service (DoS) condition on the targeted host. <br><br>A design error vulnerability has been identified in Vyper. Specifically, this issue occurs due to storage allocator overflow.<br><br>Further details are not available at the time of this writing. ACTI will update this report as more details become available. | {} | 2023-05-08 05:48:58 | 2023-05-08 05:48:58 | CVE-2023-30837 | 32316b0b-58a4-4f14-8d06-3e1678841eca |
+| cpe:2.3:a:vyper_project:vyper:*:*:*:*:*:*:*:* | None | None | 3 | Remote exploitation of a design error vulnerability in Vyper_project Vyper could could allow an attacker to cause a Denial of Service (DoS) condition on the targeted host.  A design error vulnerability has been identified in Vyper. Specifically, this issue occurs due to storage allocator overflow. Further details are not available at the time of this writing. ACTI will update this report as more details become available. | {} | 2023-05-08 05:48:58 | 2023-05-08 05:48:58 | CVE-2023-30837 | 32316b0b-58a4-4f14-8d06-3e1678841eca |
 
 ### cve
 
@@ -2929,7 +2933,7 @@ Lookup vulnerability info
 
 |cpes|cvss2|cvss3|dbot_reputation|description|extra_data|last_modified|last_published|name|uuid|
 |---|---|---|---|---|---|---|---|---|
-| cpe:2.3:a:vyper_project:vyper:*:*:*:*:*:*:*:* | None | None | 3 | Remote exploitation of a design error vulnerability in Vyper_project Vyper could could allow an attacker to cause a Denial of Service (DoS) condition on the targeted host. <br><br>A design error vulnerability has been identified in Vyper. Specifically, this issue occurs due to storage allocator overflow.<br><br>Further details are not available at the time of this writing. ACTI will update this report as more details become available. | {} | 2023-05-08 05:48:58 | 2023-05-08 05:48:58 | CVE-2023-30837 | 32316b0b-58a4-4f14-8d06-3e1678841eca |
+| cpe:2.3:a:vyper_project:vyper:*:*:*:*:*:*:*:* | None | None | 3 | Remote exploitation of a design error vulnerability in Vyper_project Vyper could could allow an attacker to cause a Denial of Service (DoS) condition on the targeted host.  A design error vulnerability has been identified in Vyper. Specifically, this issue occurs due to storage allocator overflow. Further details are not available at the time of this writing. ACTI will update this report as more details become available. | {} | 2023-05-08 05:48:58 | 2023-05-08 05:48:58 | CVE-2023-30837 | 32316b0b-58a4-4f14-8d06-3e1678841eca |
 
 ### ctix-bulk-ioc-lookup-advanced
 

@@ -1462,9 +1462,9 @@ class TestMapReportToIncident:
         }
         incident = map_report_to_incident(report)
 
-        assert incident["name"] == "CTIX Report: Test Report"
+        assert incident["name"] == "CTIX Intel: Test Report"
         assert incident["severity"] == 3
-        assert incident["type"] == "CTIX Report"
+        assert incident["type"] == "CTIX Intel"
         assert incident["dbotMirrorId"] == "report-001"
         assert incident["occurred"] == "2023-11-14T22:13:20Z"
         assert len(incident["labels"]) == 1
@@ -1719,11 +1719,11 @@ class TestFetchIncidents:
         next_run, incidents = fetch_incidents(client, params, last_run)
 
         assert len(incidents) == 3
-        assert incidents[0]["name"] == "CTIX Report: APT29 Campaign Analysis"
+        assert incidents[0]["name"] == "CTIX Intel: APT29 Campaign Analysis"
         assert incidents[0]["severity"] == 3  # HIGH
-        assert incidents[1]["name"] == "CTIX Report: Ransomware Trend Report Q4"
+        assert incidents[1]["name"] == "CTIX Intel: Ransomware Trend Report Q4"
         assert incidents[1]["severity"] == 2  # MEDIUM
-        assert incidents[2]["name"] == "CTIX Report: Low Confidence Observation"
+        assert incidents[2]["name"] == "CTIX Intel: Low Confidence Observation"
         assert next_run["last_fetch_time"] is not None
         assert next_run["last_fetch_time"] >= int(datetime.now(UTC).timestamp())
 
@@ -1890,7 +1890,7 @@ class TestFetchIncidents:
 
         # All three mock reports should be returned
         assert len(incidents) == 3
-        assert all(inc["type"] == "CTIX Report" for inc in incidents)
+        assert all(inc["type"] == "CTIX Intel" for inc in incidents)
         # State should advance to the highest modified timestamp seen
         assert next_run["last_fetch_time"] >= 1700000500
         # Indicator state preserved
