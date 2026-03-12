@@ -27,7 +27,18 @@ MAX_GET_EXCEPTION_RULES_LIMIT = 100
 MALWARE_TYPE = "Malware"
 EXPLOIT_TYPE = "Exploit"
 WINDOWS_PLATFORM = "Windows"
+# Include USER_AGENT_HEADER to identify the request as originating from Agentix,
+# allowing the backend to apply specialized handling.
+EMAIL_SECURITY_USER_AGENT_HEADER = {"userAgent": "Agentix"}
 
+
+EMAIL_SECURITY_SEVERITY_MAPPING = {
+    "info": "SEV_010_INFO",
+    "low": "SEV_020_LOW",
+    "medium": "SEV_030_MEDIUM",
+    "high": "SEV_040_HIGH",
+    "critical": "SEV_050_CRITICAL",
+}
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -76,6 +87,12 @@ WEBAPP_COMMANDS = [
     "core-update-windows-exploit-profile",
     "core-delete-profile",
     "core-list-findings",
+    "core-get-email-investigation-summary",
+    "core-decrypt-email-content",
+    "core-get-email-campaign-consolidated-forensic-enrichment",
+]
+EMAIL_SECURITY = [
+    "core-execute-email-security-remediation",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -767,6 +784,46 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
+    def get_email_investigation_summary(self, params: dict) -> dict:
+        """Retrieves phishing email investigation summary from the email security API.
+
+        Args:
+            params (dict): Query parameters for the API call including days_timeframe,
+                          detection_method, min_severity, min_severity_phishing,
+                          page_size, and page_number.
+
+        Returns:
+            dict: The API response containing email investigation campaign summaries.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/email-security/investigation/phishing-investigation/",
+            params=params,
+        )
+
+    def decrypt_email_content(self, internet_message_id: str, issue_severity: str | None) -> dict:
+        """Decrypts the encrypted subject and body of an email.
+
+        Args:
+            internet_message_id (str): The unique internet message ID of the email to decrypt.
+            issue_severity (str): The severity of the issue.
+
+        Returns:
+            dict: The API response containing the decrypted body and subject.
+        """
+        json_data = {"internet_message_id": internet_message_id, "enforce_severity_check": True}
+        if issue_severity:
+            json_data["issue_severity"] = issue_severity
+        return self._http_request(
+            method="POST",
+            url_suffix="/email-security/investigation/decrypt_email/",
+            headers={
+                **self._headers,
+                **EMAIL_SECURITY_USER_AGENT_HEADER,
+            },
+            json_data=json_data,
+        )
+
     def enable_scanners(self, payload: dict, repository_id: str) -> dict:
         return self._http_request(
             method="PUT",
@@ -1084,6 +1141,57 @@ class Client(CoreClient):
             method="POST",
             url_suffix="/profiles/delete_profiles",
             json_data={"profile_ids": profile_ids},
+        )
+
+    def get_email_campaign_consolidated_forensic_enrichment(self, internet_message_id: str, days_timeframe: int) -> dict:
+        """
+        Get consolidated forensic enrichment for an email campaign.
+
+        Aggregates, deduplicates, and presents a unified forensic view of an entire
+        email campaign by merging telemetry from all associated issues.
+
+        Args:
+            internet_message_id: The Internet Message ID of the email
+            days_timeframe: Number of days to look back for related issues
+
+        Returns:
+            dict: Consolidated forensic enrichment data
+        """
+        body = {
+            "internet_message_id": internet_message_id,
+            "days_timeframe": days_timeframe,
+        }
+        return self._http_request(
+            method="POST",
+            url_suffix="/email-security/investigation/consolidated-forensic-enrichment",
+            json_data=body,
+        )
+
+    def execute_email_security_remediation(self, internet_message_id: str, issue_id: str, action: str) -> dict:
+        """
+        Execute automated email security remediation action.
+
+        Triggers remediation actions such as deleting, undeleting, moving, or tagging emails
+        based on the security verdict.
+
+        Args:
+            internet_message_id: The Internet Message ID of the email campaign
+            issue_id: The unique identifier for the alert across all email security services
+            action: The remediation action to execute (DeleteEmail, UndeleteEmail,
+                   SendAlertEmail, MoveEmailToFolder, TagEmailAsPhishing)
+
+        Returns:
+            dict: Action execution status with success, message, or error fields
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/email-security/actions/on-demand",
+            headers={**self._headers, **EMAIL_SECURITY_USER_AGENT_HEADER},
+            json_data={
+                "internet_message_ids": [internet_message_id],
+                "alert_id": issue_id,
+                "action": {"id": action, "attributes": {}},
+            },
         )
 
 
@@ -4686,6 +4794,8 @@ def init_client(api_type: str) -> Client:
         "appsec": f"{webapp_root}/public_api/appsec",
         "xsoar": "/xsoar",
         "agents": f"{webapp_root}/agents",
+        "email_security": "/api/v1",
+        "email_security_webapp": f"{webapp_root}/public_api/v1",
     }
 
     # Fallback to public API if the type isn't recognized
@@ -4857,6 +4967,218 @@ def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandR
     )
 
     return command_results
+
+
+def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Get consolidated forensic enrichment for an email campaign.
+
+    Aggregates, deduplicates, and presents a unified forensic view of an entire
+    email campaign by merging telemetry from all associated issues sharing the
+    same internet_message_id.
+
+    Args:
+        client: The API client instance
+        args: Command arguments from XSOAR
+
+    Returns:
+        CommandResults object with consolidated forensic enrichment data
+    """
+    internet_message_id = args.get("internet_message_id", "")
+    days_timeframe = timeframe_to_days(args.get("from_time", "last 30 days"))
+    demisto.debug(f"Timeframe set to {days_timeframe} days.")
+    response = client.get_email_campaign_consolidated_forensic_enrichment(internet_message_id, days_timeframe)
+
+    demisto.debug(f"get_email_campaign_consolidated_forensic_enrichment response: {response}")
+
+    reply = response.get("reply", {})
+
+    identification = reply.get("identification", {})
+    outputs = {
+        "internet_message_id": identification.pop("internet_message_id", internet_message_id),
+        "identification": alert_to_issue(identification),
+        "detection_context": alert_to_issue(reply.get("detection_context", {})),
+        "sender_forensics": reply.get("sender_forensics", {}),
+        "targeting_scope": reply.get("targeting_scope", {}),
+        "infrastructure": reply.get("infrastructure", {}),
+        "artifacts": reply.get("artifacts", {}),
+        "authentication": reply.get("authentication", {}),
+        "mail_context": reply.get("mail_context", {}),
+        "directionality": reply.get("directionality", {}),
+        "m365_signals": reply.get("m365_signals", {}),
+        "fingerprints": reply.get("fingerprints", {}),
+    }
+
+    return CommandResults(
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EmailCampaignForensics",
+        outputs_key_field="internet_message_id",
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def execute_email_security_remediation_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Execute automated email security remediation action.
+
+    Triggers remediation actions such as deleting, undeleting, moving, or tagging emails
+    based on the security verdict.
+
+    Args:
+        client: The API client instance
+        args: Command arguments from XSOAR
+
+    Returns:
+        CommandResults object with action execution status
+    """
+    action = args.get("action", "")
+    internet_message_id = args.get("internet_message_id", "")
+    issue_id = args.get("issue_id", "")
+
+    valid_actions = [
+        "DeleteEmail",
+        "UndeleteEmail",
+        "SendAlertEmail",
+        "MoveEmailToFolder",
+        "TagEmailAsPhishing",
+    ]
+
+    if action not in valid_actions:
+        raise DemistoException(f'Invalid action "{action}". Must be one of: {", ".join(valid_actions)}')
+
+    response = client.execute_email_security_remediation(internet_message_id, issue_id, action)
+
+    resultMessage = (
+        f"Action triggered for the following message ID: {internet_message_id}. Visit the Action Center to check the status."
+    )
+    outputs = {
+        "internet_message_id": internet_message_id,
+        "issue_id": issue_id,
+        "action": action,
+        "result_message": resultMessage,
+    }
+
+    return CommandResults(
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EmailSecurityRemediation",
+        outputs_key_field="issue_id",
+        outputs=outputs,
+        readable_output=resultMessage,
+        raw_response=response,
+    )
+
+
+def timeframe_to_days(timeframe: str) -> int:
+    """Convert a relative timeframe string to an integer number of days.
+
+    Uses arg_to_datetime to parse relative date expressions (e.g. "1 day",
+    "3 weeks ago", "30 days") and computes the number of whole days between
+    the parsed date and now.
+
+    Args:
+        timeframe (str): A relative date string such as "1 day", "3 weeks ago", "30 days".
+
+    Returns:
+        int: The number of days represented by the timeframe (minimum 1).
+
+    Raises:
+        DemistoException: If the timeframe string cannot be parsed.
+    """
+    parsed_date = arg_to_datetime(timeframe)
+    if not parsed_date:
+        raise DemistoException(
+            f'Failed to parse timeframe "{timeframe}". '
+            'Please use a valid relative date format (e.g. "1 day", "3 weeks ago", "30 days").'
+        )
+    now = datetime.now(parsed_date.tzinfo)
+    delta = now - parsed_date
+    return max(int(delta.total_seconds() / 86400), 1)
+
+
+def get_email_investigation_summary_command(client: Client, args: dict) -> CommandResults:
+    """Retrieves phishing email investigation summary campaigns from Cortex.
+
+    Groups individual alerts into campaigns by email message ID, allowing
+    prioritization of investigations based on impact and scale.
+
+    Args:
+        client (Client): The Cortex platform client instance.
+        args (dict): Command arguments including timeframe, detection_method,
+                    min_severity, min_severity_phishing, page_size, page_number.
+
+    Returns:
+        CommandResults: The command results containing email investigation summaries.
+    """
+    min_severity = args.get("min_severity")
+    min_severity_phishing = args.get("min_severity_phishing")
+
+    timeframe = args.get("timeframe")
+    days_timeframe = timeframe_to_days(timeframe) if timeframe else 30
+    detection_method = args.get("detection_method", "").replace(" ", "_").upper()
+    params = assign_params(
+        days_timeframe=days_timeframe,
+        detection_method=detection_method,
+        min_severity=EMAIL_SECURITY_SEVERITY_MAPPING.get(min_severity.lower(), min_severity) if min_severity else None,
+        min_severity_phishing=EMAIL_SECURITY_SEVERITY_MAPPING.get(min_severity_phishing.lower(), min_severity_phishing)
+        if min_severity_phishing
+        else None,
+        page_size=arg_to_number(args.get("page_size")),
+        page_number=arg_to_number(args.get("page_number")),
+    )
+
+    response = client.get_email_investigation_summary(params)
+    data = response if isinstance(response, list) else response.get("reply", response)
+
+    if isinstance(data, dict):
+        data = data.get("data", data.get("DATA", [data]))
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Email Investigation Summary",
+            data,
+            headerTransform=string_to_table_header,
+        ),
+        outputs_prefix="Core.EmailInvestigationSummary",
+        outputs_key_field="internet_message_id",
+        outputs=data,
+        raw_response=response,
+    )
+
+
+def decrypt_email_content_command(client: Client, args: dict) -> CommandResults:
+    """Decrypts the encrypted subject and body of one or more emails.
+
+    Args:
+        client (Client): The Cortex platform client instance.
+        args (dict): Command arguments including internet_message_id (comma-separated list).
+
+    Returns:
+        CommandResults: The command results containing the decrypted email content.
+    """
+    internet_message_ids = argToList(args.get("internet_message_id"))
+    issue_severity = EMAIL_SECURITY_SEVERITY_MAPPING.get(args.get("issue_severity", ""))
+
+    if not internet_message_ids:
+        raise DemistoException("internet_message_id is required.")
+
+    all_results = []
+    for message_id in internet_message_ids:
+        response = client.decrypt_email_content(message_id, issue_severity)
+        result = response.get("reply", response)
+        if isinstance(result, dict):
+            result["internet_message_id"] = message_id
+        all_results.append(result)
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Decrypted Email Content",
+            all_results,
+            headerTransform=string_to_table_header,
+        ),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.DecryptedEmail",
+        outputs_key_field="internet_message_id",
+        outputs=all_results,
+        raw_response=all_results,
+    )
 
 
 def verify_platform_version(version: str = "8.13.0"):
@@ -5136,6 +5458,8 @@ def main():  # pragma: no cover
         api_type = "agents"
     elif command in XSOAR_COMMANDS:
         api_type = "xsoar"
+    elif command in EMAIL_SECURITY:
+        api_type = "email_security"
     else:
         api_type = "public"
 
@@ -5271,6 +5595,18 @@ def main():  # pragma: no cover
 
         elif command == "core-list-findings":
             return_results(list_findings_command(client, args))
+
+        elif command == "core-get-email-campaign-consolidated-forensic-enrichment":
+            return_results(get_email_campaign_consolidated_forensic_enrichment_command(client, args))
+
+        elif command == "core-execute-email-security-remediation":
+            return_results(execute_email_security_remediation_command(client, args))
+
+        elif command == "core-get-email-investigation-summary":
+            return_results(get_email_investigation_summary_command(client, args))
+
+        elif command == "core-decrypt-email-content":
+            return_results(decrypt_email_content_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
