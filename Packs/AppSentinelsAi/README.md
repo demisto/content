@@ -11,7 +11,7 @@ This pack enables ingestion and normalization of AppSentinel Audit logs into Cor
 Data normalization capabilities:
 
 * Modeling Rule for AppSentinels Audit logs that are ingested via API into Cortex XSIAM.
-* The ingested AppSentinels Audit logs can be queried in XQL Search using the *`appsentinels_audit_raw`* dataset.
+* The ingested AppSentinels Audit logs can be queried in XQL Search using the *`appsentinels_appsentinels_raw`* dataset.
 
 ## Supported log categories
 
