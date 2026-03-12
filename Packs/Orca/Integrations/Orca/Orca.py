@@ -127,7 +127,7 @@ class OrcaClient:
                 alerts = response.get("data")
                 if not isinstance(alerts, list):
                     demisto.info(f"Unexpected data type for alerts: {type(alerts)}")
-                    return [], True, True  # Error occurred
+                    return [], True, False  # Error occurred
 
             total_items = response.get("total_items", 0)
             demisto.info(f"Total items to fetch: {total_items}")
@@ -300,8 +300,6 @@ def fetch_incidents(
             demisto.info("pull_existing_alerts flag is not set, not pulling alerts")
             # Pull only new alerts from now
             time_from = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
-
-        next_run["step"] = STEP_FETCH
     else:
         # Not first run, continue exporting alerts from last run time
         demisto.info("not first run, exporting reminder of alerts")
@@ -333,6 +331,9 @@ def fetch_incidents(
         # Keep the lastRun datetime as is
         next_run["fetch_page"] = fetch_page + 1
         next_run["lastRun"] = time_from
+
+    if had_error is False and step == STEP_INIT:
+        next_run["step"] = STEP_FETCH
 
     # Prepare incidents
     incidents = get_incidents_from_alerts(alerts)

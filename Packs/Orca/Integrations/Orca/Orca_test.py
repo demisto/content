@@ -453,6 +453,7 @@ def test_pagination_with_remainder(requests_mock, orca_client: OrcaClient) -> No
     alerts, is_last_page, has_error = orca_client.get_alerts(time_from=None, page=1, limit=3)
     assert len(alerts) == 3
     assert is_last_page is False  # Should not be last page (4 pages total)
+    assert has_error is False
 
     # Page 2: items 4-6
     mock_response_page2 = {"status": "success", "total_items": 10, "data": mock_alerts[3:6]}
@@ -460,6 +461,7 @@ def test_pagination_with_remainder(requests_mock, orca_client: OrcaClient) -> No
     alerts, is_last_page, has_error = orca_client.get_alerts(time_from=None, page=2, limit=3)
     assert len(alerts) == 3
     assert is_last_page is False
+    assert has_error is False
 
     # Page 3: items 7-9
     mock_response_page3 = {"status": "success", "total_items": 10, "data": mock_alerts[6:9]}
@@ -467,13 +469,16 @@ def test_pagination_with_remainder(requests_mock, orca_client: OrcaClient) -> No
     alerts, is_last_page, has_error = orca_client.get_alerts(time_from=None, page=3, limit=3)
     assert len(alerts) == 3
     assert is_last_page is False
+    assert has_error is False
 
     # Page 4: item 10 (last page)
     mock_response_page4 = {"status": "success", "total_items": 10, "data": mock_alerts[9:10]}
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response_page4)
     alerts, is_last_page, has_error = orca_client.get_alerts(time_from=None, page=4, limit=3)
+
     assert len(alerts) == 1
     assert is_last_page is True  # Should be last page
+    assert has_error is False
 
 
 def test_missing_alert_id() -> None:
@@ -533,6 +538,7 @@ def test_empty_data_response(requests_mock, orca_client: OrcaClient) -> None:
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response_null_data)
     alerts, is_last_page, has_error = orca_client.get_alerts(time_from=None, page=1, limit=10)
 
+    assert has_error is True
     # Should return empty list and mark as last page
     assert alerts == []
     assert is_last_page is True
@@ -552,6 +558,7 @@ def test_page_beyond_total(requests_mock, orca_client: OrcaClient) -> None:
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
     alerts, is_last_page, had_error = orca_client.get_alerts(time_from=None, page=3, limit=3)
 
+    assert had_error is False
     # Should return empty list
     assert alerts == []
     # total_pages = (5 + 3 - 1) // 3 = 2, so page 3 >= 2 = True (is_last_page)
@@ -567,18 +574,21 @@ def test_get_alerts_with_invalid_page(requests_mock, orca_client: OrcaClient) ->
     # Test with None page
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
     alerts, is_last_page, had_error = orca_client.get_alerts(time_from=None, page=None, limit=10)
+    assert had_error is False
     assert len(alerts) == 2
     # Page should default to 1
 
     # Test with 0 page
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
     alerts, is_last_page, had_error = orca_client.get_alerts(time_from=None, page=0, limit=10)
+    assert had_error is False
     assert len(alerts) == 2
     # Page should default to 1
 
     # Test with negative page
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
     alerts, is_last_page, had_error = orca_client.get_alerts(time_from=None, page=-1, limit=10)
+    assert had_error is False
     assert len(alerts) == 2
     # Page should default to 1
 
@@ -677,6 +687,7 @@ def test_get_alerts_with_total_items_zero(requests_mock, orca_client: OrcaClient
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
     alerts, is_last_page, had_error = orca_client.get_alerts(time_from=None, page=1, limit=10)
 
+    assert had_error is False
     # Should return empty list and mark as last page
     assert alerts == []
     assert is_last_page is True
@@ -848,6 +859,7 @@ def test_get_alerts_with_empty_string_risk_level(requests_mock, orca_client: Orc
     requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
     alerts, is_last_page, had_error = orca_client.get_alerts(time_from=None, page=1, limit=10)
 
+    assert had_error is False
     assert len(alerts) == 1
 
     # Test incident creation with empty string RiskLevel
