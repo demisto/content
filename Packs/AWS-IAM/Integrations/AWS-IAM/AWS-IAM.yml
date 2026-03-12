@@ -1290,6 +1290,7 @@ script:
       - name: account_id
         description: The AWS account ID.
         prettyname: Account ID
+        defaultValue: Account ID
         required: true
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
