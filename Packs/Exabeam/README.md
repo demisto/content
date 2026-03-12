@@ -2,8 +2,8 @@
 
 ## Overview
 
-Exabeam Threat Center is part of the Exabeam Security Management Platform, which provides detection, User Event Behavioral Analytics (UEBA), and SOAR capabilities.
-This pack supports normalization of Exabeam Threat Center data ingested into Cortex XSIAM through API-based collection.
+Exabeam Threat Center is part of the Exabeam Security Management Platform, providing detection, User Event Behavioral Analytics (UEBA), and SOAR capabilities.
+This pack enables the normalization of Exabeam Threat Center data ingested into Cortex XSIAM via API-based collection.
 The normalized data can then be queried and used for investigation and analysis in Cortex XSIAM.
 
 ## This pack includes
@@ -11,9 +11,7 @@ The normalized data can then be queried and used for investigation and analysis 
 Data normalization capabilities:  
 
 * Rules for modeling Exabeam Threat Center logs that are ingested via the API into Cortex XSIAM.  
-  * The ingested Exabeam Threat Center logs can be queried in XQL Search using the *`<dataset_name>`* dataset.
-
-***
+* The ingested Exabeam Threat Center logs can be queried in XQL Search using the *`<dataset_name>`* dataset.
 
 ## Data Collection
 
@@ -24,13 +22,13 @@ There are 2 supported authentication methods:
 * **API Token** - API token should be entered in the **API Token** parameter. In order to use the fetch incident functionality in this integration, the username must also be provided in the **Username** parameter.
 * **Basic Authentication** - Providing username and password in the corresponding parameters in the configuration. This method also allows fetching incidents.
 
-***Deprecated***:  
-API Key entered in the **Password** parameter and `__token` in the username parameter. This method does not allow fetching incidents.
+**NOTE**:  
+Using an API Key in the **Password** parameter and `__token` in the Username parameter is deprecated. This method does not support incident fetching.
 
 #### Generate a Cluster Authentication Token
 
 1. Navigate to **Settings** > **Admin Operations** > **Cluster Authentication Token**.
-2. At the Cluster Authentication Token menu, click the blue **`+`** button.
+2. In the **Cluster Authentication Token** menu, click the blue **`+`**.
 3. In the **Setup Token** menu, fill in the **Token Name**, **Expiry Date**, and select the **Permission Level**(s).
 4. Click **ADD TOKEN** to apply the configuration.
 
@@ -52,7 +50,7 @@ Configure the integration in Cortex XSIAM using the following parameters.
 | Fetch incidents |  | False |
 | Max incidents per fetch |  | False |
 | First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days) |  | False |
-| Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. Default is 1. | False |
+| Advanced: Minutes to look back when fetching | The number of minutes to look back for incidents created before the last run that did not match the initial query. Default is 1. | False |
 | Incident type |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |

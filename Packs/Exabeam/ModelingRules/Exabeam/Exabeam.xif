@@ -20,10 +20,10 @@ alter
     tmp_rule_ids = arraydistinct(arraymap(rules -> [], json_extract_scalar("@element", "$.ruleId")))
 | alter
     // Filter the extracted IP arrays using is_ipv4() and is_ipv6() natively
-    tmp_src_ipv4_list = arrayfilter(tmp_src_ip_array, is_ipv4("@element") = true),
-    tmp_src_ipv6_list = arrayfilter(tmp_src_ip_array, is_ipv6("@element") = true),
-    tmp_dest_ipv4_list = arrayfilter(tmp_dest_ip_array, is_ipv4("@element") = true),
-    tmp_dest_ipv6_list = arrayfilter(tmp_dest_ip_array, is_ipv6("@element") = true)
+    tmp_src_ipv4_list = arrayfilter(tmp_src_ip_array, is_ipv4("@element")),
+    tmp_src_ipv6_list = arrayfilter(tmp_src_ip_array, is_ipv6("@element")),
+    tmp_dest_ipv4_list = arrayfilter(tmp_dest_ip_array, is_ipv4("@element")),
+    tmp_dest_ipv6_list = arrayfilter(tmp_dest_ip_array, is_ipv6("@element"))
 | alter
     // =====================================================================
     // PART 2: EXPLICIT MITRE MAPPING
