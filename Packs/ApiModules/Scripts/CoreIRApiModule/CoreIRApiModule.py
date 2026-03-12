@@ -4347,8 +4347,10 @@ def get_issues_by_filter_command(client: CoreClient, args: Dict):
             "Issue ID": alert.get("internal_id"),
             "Detection Timestamp": timestamp_to_datestring(alert.get("source_insert_ts")),
             "Name": alert.get("alert_name"),
-            "Severity": SEVERITY_STATUSES_REVERSE.get(alert.get("severity")),
-            "Status": STATUS_PROGRESS_REVERSE.get(alert.get("status.progress")),
+            "Severity": SEVERITY_STATUSES_REVERSE.get(alert.get("severity")) if is_platform() else alert.get("severity"),
+            "Status": STATUS_PROGRESS_REVERSE.get(alert.get("status.progress"))
+            if is_platform()
+            else alert.get("status.progress"),
             "Category": alert.get("alert_category"),
             "Action": alert.get("alert_action_status_readable"),
             "Description": alert.get("alert_description"),
