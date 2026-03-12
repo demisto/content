@@ -1259,7 +1259,7 @@ def main():  # pragma: no cover
             list_groups_for_user(args, client)
         elif command == "aws-iam-create-access-key":
             create_access_key(args, client)
-        elif command == "aws-iam-update-access-key":
+        elif command == "aws-iam-update-access-key" or command == "aws-iam-access-key-update-quick-action":
             update_access_key(args, client)
         elif command == "aws-iam-list-access-keys-for-user":
             list_access_key_for_user(args, client)
@@ -1271,7 +1271,7 @@ def main():  # pragma: no cover
             attach_policy(args, client)
         elif command == "aws-iam-detach-policy":
             detach_policy(args, client)
-        elif command == "aws-iam-delete-login-profile":
+        elif command == "aws-iam-delete-login-profile" or command == "aws-iam-login-profile-delete-quick-action":
             delete_login_profile(args, client)
         elif command == "aws-iam-add-user-to-group":
             add_user_to_group(args, client)
@@ -1295,7 +1295,10 @@ def main():  # pragma: no cover
             list_instance_profiles(args, client)
         elif command == "aws-iam-add-role-to-instance-profile":
             add_role_to_instance_profile(args, client)
-        elif command == "aws-iam-remove-role-from-instance-profile":
+        elif (
+            command == "aws-iam-remove-role-from-instance-profile"
+            or command == "aws-iam-role-from-instance-profile-remove-quick-action"
+        ):
             remove_role_from_instance_profile(args, client)
         elif command == "aws-iam-list-instance-profiles-for-role":
             list_instance_profiles_for_role(args, client)
@@ -1348,7 +1351,7 @@ def main():  # pragma: no cover
             get_user_login_profile(args, client)
         elif command == "aws-iam-put-role-policy":
             return_results(put_role_policy_command(args, client))
-        elif command == "aws-iam-put-user-policy":
+        elif command == "aws-iam-put-user-policy" or command == "aws-iam-user-policy-put-quick-action":
             return_results(put_user_policy_command(args, client))
         elif command == "aws-iam-put-group-policy":
             return_results(put_group_policy_command(args, client))
