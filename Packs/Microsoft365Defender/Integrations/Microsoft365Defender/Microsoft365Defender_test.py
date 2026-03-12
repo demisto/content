@@ -1335,6 +1335,14 @@ class TestAlertsListCommand:
     }
 
     def test_alerts_list(self, mocker):
+        """
+        Given:
+            A valid client with two alerts in the response.
+        When:
+            Calling microsoft_365_defender_alerts_list_command with a limit of 10.
+        Then:
+            Two alerts are returned with correct IDs and readable output contains 'Alerts:'.
+        """
         from Microsoft365Defender import microsoft_365_defender_alerts_list_command
         client = mock_client(mocker, "alerts_list", self.MOCK_ALERTS_RESPONSE)
         results = microsoft_365_defender_alerts_list_command(client, {"limit": "10"})
@@ -1343,6 +1351,14 @@ class TestAlertsListCommand:
         assert "Alerts:" in results.readable_output
 
     def test_alerts_list_empty(self, mocker):
+        """
+        Given:
+            A valid client with no alerts in the response.
+        When:
+            Calling microsoft_365_defender_alerts_list_command with a limit of 10.
+        Then:
+            Readable output indicates no alerts were found.
+        """
         from Microsoft365Defender import microsoft_365_defender_alerts_list_command
         client = mock_client(mocker, "alerts_list", {"value": []})
         results = microsoft_365_defender_alerts_list_command(client, {"limit": "10"})
@@ -1353,6 +1369,14 @@ class TestAlertGetCommand:
     MOCK_ALERT = {"id": "alert-1", "title": "Suspicious activity", "severity": "High", "status": "New"}
 
     def test_alert_get(self, mocker):
+        """
+        Given:
+            A valid client and an existing alert ID.
+        When:
+            Calling microsoft_365_defender_alert_get_command with alert_id 'alert-1'.
+        Then:
+            The returned alert has the correct ID.
+        """
         from Microsoft365Defender import microsoft_365_defender_alert_get_command
         client = mock_client(mocker, "get_alert", self.MOCK_ALERT)
         results = microsoft_365_defender_alert_get_command(client, {"alert_id": "alert-1"})
@@ -1363,6 +1387,14 @@ class TestAlertUpdateCommand:
     MOCK_UPDATED_ALERT = {"id": "alert-1", "status": "Resolved", "classification": "TruePositive"}
 
     def test_alert_update(self, mocker):
+        """
+        Given:
+            A valid client and an existing alert to update.
+        When:
+            Calling microsoft_365_defender_alert_update_command with status 'Resolved'.
+        Then:
+            The returned alert reflects the updated status.
+        """
         from Microsoft365Defender import microsoft_365_defender_alert_update_command
         client = mock_client(mocker, "update_alert", self.MOCK_UPDATED_ALERT)
         results = microsoft_365_defender_alert_update_command(
@@ -1375,6 +1407,14 @@ class TestAlertCreateCommentCommand:
     MOCK_COMMENT_RESPONSE = {"id": "comment-1", "comment": "Test comment", "createdBy": "user@contoso.com"}
 
     def test_alert_create_comment(self, mocker):
+        """
+        Given:
+            A valid client and an existing alert ID.
+        When:
+            Calling microsoft_365_defender_alert_create_comment_command with a comment.
+        Then:
+            The readable output confirms the comment was added.
+        """
         from Microsoft365Defender import microsoft_365_defender_alert_create_comment_command
         client = mock_client(mocker, "create_alert_comment", self.MOCK_COMMENT_RESPONSE)
         results = microsoft_365_defender_alert_create_comment_command(
@@ -1391,6 +1431,14 @@ class TestIncidentAlertsListCommand:
     }
 
     def test_incident_alerts_list(self, mocker):
+        """
+        Given:
+            A valid client and an incident with one associated alert.
+        When:
+            Calling microsoft_365_defender_incident_alerts_list_command for incident 264.
+        Then:
+            One alert is returned with the correct ID.
+        """
         from Microsoft365Defender import microsoft_365_defender_incident_alerts_list_command
         client = mock_client(mocker, "get_incident_alerts", self.MOCK_INCIDENT_ALERTS)
         results = microsoft_365_defender_incident_alerts_list_command(client, {"incident_id": "264"})
@@ -1402,6 +1450,14 @@ class TestMachineIsolateCommand:
     MOCK_ACTION = {"id": "action-1", "type": "Isolate", "status": "Pending", "machineId": "machine-1"}
 
     def test_machine_isolate(self, mocker):
+        """
+        Given:
+            A valid client and a machine ID.
+        When:
+            Calling microsoft_365_defender_machine_isolate_command with Full isolation.
+        Then:
+            The action response has type 'Isolate' and status 'Pending'.
+        """
         from Microsoft365Defender import microsoft_365_defender_machine_isolate_command
         client = mock_client(mocker, "isolate_machine", self.MOCK_ACTION)
         results = microsoft_365_defender_machine_isolate_command(
@@ -1415,6 +1471,14 @@ class TestMachineUnisolateCommand:
     MOCK_ACTION = {"id": "action-2", "type": "Unisolate", "status": "Pending", "machineId": "machine-1"}
 
     def test_machine_unisolate(self, mocker):
+        """
+        Given:
+            A valid client and an isolated machine ID.
+        When:
+            Calling microsoft_365_defender_machine_unisolate_command.
+        Then:
+            The action response has type 'Unisolate'.
+        """
         from Microsoft365Defender import microsoft_365_defender_machine_unisolate_command
         client = mock_client(mocker, "unisolate_machine", self.MOCK_ACTION)
         results = microsoft_365_defender_machine_unisolate_command(
@@ -1427,6 +1491,14 @@ class TestMachineScanCommand:
     MOCK_ACTION = {"id": "action-3", "type": "RunAntiVirusScan", "status": "Pending", "machineId": "machine-1"}
 
     def test_machine_scan(self, mocker):
+        """
+        Given:
+            A valid client and a machine ID.
+        When:
+            Calling microsoft_365_defender_machine_scan_command with Quick scan type.
+        Then:
+            The action response has type 'RunAntiVirusScan'.
+        """
         from Microsoft365Defender import microsoft_365_defender_machine_scan_command
         client = mock_client(mocker, "run_antivirus_scan", self.MOCK_ACTION)
         results = microsoft_365_defender_machine_scan_command(
@@ -1439,6 +1511,14 @@ class TestMachineCollectInvestigationPackageCommand:
     MOCK_ACTION = {"id": "action-4", "type": "CollectInvestigationPackage", "status": "Pending"}
 
     def test_collect_package(self, mocker):
+        """
+        Given:
+            A valid client and a machine ID.
+        When:
+            Calling microsoft_365_defender_machine_collect_investigation_package_command.
+        Then:
+            The action response has type 'CollectInvestigationPackage'.
+        """
         from Microsoft365Defender import microsoft_365_defender_machine_collect_investigation_package_command
         client = mock_client(mocker, "collect_investigation_package", self.MOCK_ACTION)
         results = microsoft_365_defender_machine_collect_investigation_package_command(
@@ -1451,6 +1531,14 @@ class TestMachineRestrictExecutionCommand:
     MOCK_ACTION = {"id": "action-5", "type": "RestrictCodeExecution", "status": "Pending"}
 
     def test_restrict_execution(self, mocker):
+        """
+        Given:
+            A valid client and a machine ID.
+        When:
+            Calling microsoft_365_defender_machine_restrict_execution_command.
+        Then:
+            The action response has type 'RestrictCodeExecution'.
+        """
         from Microsoft365Defender import microsoft_365_defender_machine_restrict_execution_command
         client = mock_client(mocker, "restrict_code_execution", self.MOCK_ACTION)
         results = microsoft_365_defender_machine_restrict_execution_command(
@@ -1463,6 +1551,14 @@ class TestMachineUnrestrictExecutionCommand:
     MOCK_ACTION = {"id": "action-6", "type": "UnrestrictCodeExecution", "status": "Pending"}
 
     def test_unrestrict_execution(self, mocker):
+        """
+        Given:
+            A valid client and a machine with restricted code execution.
+        When:
+            Calling microsoft_365_defender_machine_unrestrict_execution_command.
+        Then:
+            The action response has type 'UnrestrictCodeExecution'.
+        """
         from Microsoft365Defender import microsoft_365_defender_machine_unrestrict_execution_command
         client = mock_client(mocker, "unrestrict_code_execution", self.MOCK_ACTION)
         results = microsoft_365_defender_machine_unrestrict_execution_command(
@@ -1478,6 +1574,14 @@ class TestIndicatorCreateCommand:
     }
 
     def test_indicator_create(self, mocker):
+        """
+        Given:
+            A valid client and indicator parameters for a malicious IP.
+        When:
+            Calling microsoft_365_defender_indicator_create_command.
+        Then:
+            The indicator is created with the correct value and readable output confirms creation.
+        """
         from Microsoft365Defender import microsoft_365_defender_indicator_create_command
         client = mock_client(mocker, "create_indicator", self.MOCK_INDICATOR)
         results = microsoft_365_defender_indicator_create_command(
@@ -1499,6 +1603,14 @@ class TestIndicatorListCommand:
     }
 
     def test_indicator_list(self, mocker):
+        """
+        Given:
+            A valid client with one indicator in the response.
+        When:
+            Calling microsoft_365_defender_indicator_list_command with a limit of 10.
+        Then:
+            One indicator is returned with the correct value.
+        """
         from Microsoft365Defender import microsoft_365_defender_indicator_list_command
         client = mock_client(mocker, "list_indicators", self.MOCK_INDICATORS)
         results = microsoft_365_defender_indicator_list_command(client, {"limit": "10"})
@@ -1506,6 +1618,14 @@ class TestIndicatorListCommand:
         assert results.outputs[0]["indicatorValue"] == "220.10.10.1"
 
     def test_indicator_list_empty(self, mocker):
+        """
+        Given:
+            A valid client with no indicators in the response.
+        When:
+            Calling microsoft_365_defender_indicator_list_command with a limit of 10.
+        Then:
+            Readable output indicates no indicators were found.
+        """
         from Microsoft365Defender import microsoft_365_defender_indicator_list_command
         client = mock_client(mocker, "list_indicators", {"value": []})
         results = microsoft_365_defender_indicator_list_command(client, {"limit": "10"})
@@ -1514,7 +1634,72 @@ class TestIndicatorListCommand:
 
 class TestIndicatorDeleteCommand:
     def test_indicator_delete(self, mocker):
+        """
+        Given:
+            A valid client and an existing indicator ID.
+        When:
+            Calling microsoft_365_defender_indicator_delete_command with indicator_id 'ind-1'.
+        Then:
+            Readable output confirms the indicator was deleted.
+        """
         from Microsoft365Defender import microsoft_365_defender_indicator_delete_command
         client = mock_client(mocker, "delete_indicator", None)
         results = microsoft_365_defender_indicator_delete_command(client, {"indicator_id": "ind-1"})
         assert "deleted successfully" in results.readable_output
+
+
+# ========== NOT-FOUND ERROR HANDLING TESTS ==========
+
+
+class TestAlertGetNotFound:
+    def test_alert_get_not_found(self, mocker):
+        """
+        Given:
+            A valid client and a non-existent alert ID.
+        When:
+            Calling microsoft_365_defender_alert_get_command with an invalid alert_id.
+        Then:
+            A readable message is returned indicating the alert was not found.
+        """
+        from CommonServerPython import DemistoException
+        from Microsoft365Defender import microsoft_365_defender_alert_get_command
+        client = mock_client(mocker)
+        mocker.patch.object(client, "get_alert", side_effect=DemistoException("404"))
+        results = microsoft_365_defender_alert_get_command(client, {"alert_id": "nonexistent"})
+        assert "was not found" in results.readable_output
+
+
+class TestAlertUpdateNotFound:
+    def test_alert_update_not_found(self, mocker):
+        """
+        Given:
+            A valid client and a non-existent alert ID.
+        When:
+            Calling microsoft_365_defender_alert_update_command with an invalid alert_id.
+        Then:
+            A readable message is returned indicating the alert was not found.
+        """
+        from CommonServerPython import DemistoException
+        from Microsoft365Defender import microsoft_365_defender_alert_update_command
+        client = mock_client(mocker)
+        mocker.patch.object(client, "update_alert", side_effect=DemistoException("404"))
+        results = microsoft_365_defender_alert_update_command(client, {"alert_id": "nonexistent", "status": "Resolved"})
+        assert "was not found" in results.readable_output
+
+
+class TestIndicatorDeleteNotFound:
+    def test_indicator_delete_not_found(self, mocker):
+        """
+        Given:
+            A valid client and a non-existent indicator ID.
+        When:
+            Calling microsoft_365_defender_indicator_delete_command with an invalid indicator_id.
+        Then:
+            A readable message is returned indicating the indicator was not found.
+        """
+        from CommonServerPython import DemistoException
+        from Microsoft365Defender import microsoft_365_defender_indicator_delete_command
+        client = mock_client(mocker)
+        mocker.patch.object(client, "delete_indicator", side_effect=DemistoException("404"))
+        results = microsoft_365_defender_indicator_delete_command(client, {"indicator_id": "nonexistent"})
+        assert "was not found" in results.readable_output

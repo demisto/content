@@ -603,6 +603,15 @@ script:
     - contextPath: Microsoft365Defender.Alert.status
       description: The alert status.
       type: String
+    - contextPath: Microsoft365Defender.Alert.category
+      description: The alert category.
+      type: String
+    - contextPath: Microsoft365Defender.Alert.assignedTo
+      description: The user the alert is assigned to.
+      type: String
+    - contextPath: Microsoft365Defender.Alert.createdDateTime
+      description: The date and time the alert was created.
+      type: Date
   - arguments:
     - description: The alert ID to update.
       name: alert_id
@@ -637,6 +646,15 @@ script:
       type: String
     - contextPath: Microsoft365Defender.Alert.status
       description: The updated alert status.
+      type: String
+    - contextPath: Microsoft365Defender.Alert.classification
+      description: The alert classification.
+      type: String
+    - contextPath: Microsoft365Defender.Alert.determination
+      description: The alert determination.
+      type: String
+    - contextPath: Microsoft365Defender.Alert.assignedTo
+      description: The user the alert is assigned to.
       type: String
   - arguments:
     - description: The alert ID to add a comment to.
@@ -673,6 +691,12 @@ script:
     - contextPath: Microsoft365Defender.IncidentAlert.severity
       description: The alert severity.
       type: String
+    - contextPath: Microsoft365Defender.IncidentAlert.status
+      description: The alert status.
+      type: String
+    - contextPath: Microsoft365Defender.IncidentAlert.category
+      description: The alert category.
+      type: String
   # ---- Device Response Action Commands ----
   - arguments:
     - description: The machine ID to isolate.
@@ -704,6 +728,15 @@ script:
     - contextPath: Microsoft365Defender.MachineAction.type
       description: The action type.
       type: String
+    - contextPath: Microsoft365Defender.MachineAction.machineId
+      description: The ID of the machine the action was performed on.
+      type: String
+    - contextPath: Microsoft365Defender.MachineAction.requestor
+      description: The identity of the user that executed the action.
+      type: String
+    - contextPath: Microsoft365Defender.MachineAction.creationDateTimeUtc
+      description: The date and time the action was created.
+      type: Date
   - arguments:
     - description: The machine ID to release from isolation.
       name: machine_id
@@ -724,6 +757,15 @@ script:
     - contextPath: Microsoft365Defender.MachineAction.status
       description: The action status.
       type: String
+    - contextPath: Microsoft365Defender.MachineAction.type
+      description: The action type.
+      type: String
+    - contextPath: Microsoft365Defender.MachineAction.machineId
+      description: The ID of the machine the action was performed on.
+      type: String
+    - contextPath: Microsoft365Defender.MachineAction.creationDateTimeUtc
+      description: The date and time the action was created.
+      type: Date
   - arguments:
     - description: The machine ID to run antivirus scan on.
       name: machine_id
@@ -750,6 +792,15 @@ script:
     - contextPath: Microsoft365Defender.MachineAction.status
       description: The action status.
       type: String
+    - contextPath: Microsoft365Defender.MachineAction.type
+      description: The action type.
+      type: String
+    - contextPath: Microsoft365Defender.MachineAction.machineId
+      description: The ID of the machine the action was performed on.
+      type: String
+    - contextPath: Microsoft365Defender.MachineAction.creationDateTimeUtc
+      description: The date and time the action was created.
+      type: Date
   - arguments:
     - description: The machine ID to collect investigation package from.
       name: machine_id
@@ -769,6 +820,15 @@ script:
     - contextPath: Microsoft365Defender.MachineAction.status
       description: The action status.
       type: String
+    - contextPath: Microsoft365Defender.MachineAction.type
+      description: The action type.
+      type: String
+    - contextPath: Microsoft365Defender.MachineAction.machineId
+      description: The ID of the machine the action was performed on.
+      type: String
+    - contextPath: Microsoft365Defender.MachineAction.creationDateTimeUtc
+      description: The date and time the action was created.
+      type: Date
   - arguments:
     - description: The machine ID to restrict code execution on.
       name: machine_id
@@ -789,6 +849,15 @@ script:
     - contextPath: Microsoft365Defender.MachineAction.status
       description: The action status.
       type: String
+    - contextPath: Microsoft365Defender.MachineAction.type
+      description: The action type.
+      type: String
+    - contextPath: Microsoft365Defender.MachineAction.machineId
+      description: The ID of the machine the action was performed on.
+      type: String
+    - contextPath: Microsoft365Defender.MachineAction.creationDateTimeUtc
+      description: The date and time the action was created.
+      type: Date
   - arguments:
     - description: The machine ID to unrestrict code execution on.
       name: machine_id
@@ -809,6 +878,15 @@ script:
     - contextPath: Microsoft365Defender.MachineAction.status
       description: The action status.
       type: String
+    - contextPath: Microsoft365Defender.MachineAction.type
+      description: The action type.
+      type: String
+    - contextPath: Microsoft365Defender.MachineAction.machineId
+      description: The ID of the machine the action was performed on.
+      type: String
+    - contextPath: Microsoft365Defender.MachineAction.creationDateTimeUtc
+      description: The date and time the action was created.
+      type: Date
   # ---- Threat Indicator Commands ----
   - arguments:
     - description: The indicator value (IP, URL, domain, or file hash).
@@ -873,6 +951,15 @@ script:
     - contextPath: Microsoft365Defender.Indicator.action
       description: The indicator action.
       type: String
+    - contextPath: Microsoft365Defender.Indicator.severity
+      description: The indicator severity.
+      type: String
+    - contextPath: Microsoft365Defender.Indicator.title
+      description: The indicator title.
+      type: String
+    - contextPath: Microsoft365Defender.Indicator.expirationTime
+      description: The expiration time of the indicator.
+      type: Date
   - arguments:
     - defaultValue: '100'
       description: Maximum number of indicators to return. Maximum is 100.
@@ -897,6 +984,15 @@ script:
     - contextPath: Microsoft365Defender.Indicator.action
       description: The indicator action.
       type: String
+    - contextPath: Microsoft365Defender.Indicator.severity
+      description: The indicator severity.
+      type: String
+    - contextPath: Microsoft365Defender.Indicator.title
+      description: The indicator title.
+      type: String
+    - contextPath: Microsoft365Defender.Indicator.expirationTime
+      description: The expiration time of the indicator.
+      type: Date
   - arguments:
     - description: The ID of the indicator to delete.
       name: indicator_id
