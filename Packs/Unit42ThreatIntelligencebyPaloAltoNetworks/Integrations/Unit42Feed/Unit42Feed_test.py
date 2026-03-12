@@ -718,6 +718,11 @@ def test_indicator_type_mapping():
     assert INDICATOR_TYPE_MAPPING["malware_family"] == ThreatIntel.ObjectsNames.MALWARE
     assert INDICATOR_TYPE_MAPPING["actor"] == ThreatIntel.ObjectsNames.THREAT_ACTOR
     assert INDICATOR_TYPE_MAPPING["campaign"] == ThreatIntel.ObjectsNames.CAMPAIGN
+    assert INDICATOR_TYPE_MAPPING["malicious_tool"] == ThreatIntel.ObjectsNames.TOOL
+    assert INDICATOR_TYPE_MAPPING["attack_pattern"] == ThreatIntel.ObjectsNames.ATTACK_PATTERN
+    assert INDICATOR_TYPE_MAPPING["vulnerability"] == FeedIndicatorType.CVE
+    assert INDICATOR_TYPE_MAPPING["grayware"] == ThreatIntel.ObjectsNames.MALWARE
+    assert "generic" not in INDICATOR_TYPE_MAPPING
 
 
 def test_valid_regions_mapping():
@@ -1697,3 +1702,119 @@ def test_calculate_limit_per_type_small_limit():
     """
     result = calculate_limit_per_type(5000, 4)
     assert result == 5000
+
+
+def test_create_vulnerabilities_relationships_unknown_threat_class(mocker):
+    """
+    Given:
+        - A threat object with an unknown threat_object_class (e.g. 'generic')
+    When:
+        - create_vulnerabilities_relationships is called
+    Then:
+        - Returns empty list without raising a KeyError
+    """
+    from Unit42Feed import create_vulnerabilities_relationships
+
+    result = create_vulnerabilities_relationships({}, "SomeName", "generic")
+    assert result == []
+
+
+def test_create_actor_relationships_unknown_threat_class(mocker):
+    """
+    Given:
+        - A threat object with an unknown threat_object_class (e.g. 'generic')
+    When:
+        - create_actor_relationships is called
+    Then:
+        - Returns empty list without raising a KeyError
+    """
+    from Unit42Feed import create_actor_relationships
+
+    result = create_actor_relationships({}, "SomeName", "generic")
+    assert result == []
+
+
+def test_create_tools_relationships_unknown_threat_class(mocker):
+    """
+    Given:
+        - A threat object with an unknown threat_object_class (e.g. 'generic')
+    When:
+        - create_tools_relationships is called
+    Then:
+        - Returns empty list without raising a KeyError
+    """
+    from Unit42Feed import create_tools_relationships
+
+    result = create_tools_relationships({}, "SomeName", "generic")
+    assert result == []
+
+
+def test_create_malware_relationships_unknown_threat_class(mocker):
+    """
+    Given:
+        - A threat object with an unknown threat_object_class (e.g. 'generic')
+    When:
+        - create_malware_relationships is called
+    Then:
+        - Returns empty list without raising a KeyError
+    """
+    from Unit42Feed import create_malware_relationships
+
+    result = create_malware_relationships({}, "SomeName", "generic")
+    assert result == []
+
+
+def test_create_attack_patterns_relationships_unknown_threat_class(mocker):
+    """
+    Given:
+        - A threat object with an unknown threat_object_class (e.g. 'generic')
+    When:
+        - create_attack_patterns_relationships is called
+    Then:
+        - Returns empty list without raising a KeyError
+    """
+    from Unit42Feed import create_attack_patterns_relationships
+
+    result = create_attack_patterns_relationships({}, "SomeName", "generic")
+    assert result == []
+
+
+def test_create_campaigns_relationships_unknown_threat_class(mocker):
+    """
+    Given:
+        - A threat object with an unknown threat_object_class (e.g. 'generic')
+    When:
+        - create_campaigns_relationships is called
+    Then:
+        - Returns empty list without raising a KeyError
+    """
+    from Unit42Feed import create_campaigns_relationships
+
+    result = create_campaigns_relationships({}, "SomeName", "generic")
+    assert result == []
+
+
+def test_parse_threat_objects_unknown_threat_class(mocker):
+    """
+    Given:
+        - A threat object with an unknown threat_object_class (e.g. 'malicious_tool')
+          that was previously causing a KeyError crash
+    When:
+        - parse_threat_objects is called
+    Then:
+        - Does not raise a KeyError
+        - Returns the threat object mapped to the correct XSOAR type (Tool)
+    """
+    from Unit42Feed import parse_threat_objects
+
+    mock_demisto_params(mocker)
+
+    threat_objects_data = [
+        {"name": "ScreenConnect", "threat_object_class": "malicious_tool", "publications": []},
+    ]
+
+    result = parse_threat_objects(threat_objects_data)
+
+    main_objects = [obj for obj in result if obj["type"] == ThreatIntel.ObjectsNames.TOOL]
+    assert len(main_objects) == 1
+    assert main_objects[0]["value"] == "ScreenConnect"
