@@ -54,7 +54,7 @@ COLLECTION_NAMES = [
     "apt/threat_actor",
     "malware/malware",
     "osi/public_leak",
-    "compromised/breached",
+    "compromised/breacheddb",
 ]
 
 
@@ -520,8 +520,8 @@ def test_fetch_incidents_with_combolist_and_unique_parameters(mocker, session_fi
     }
     # Add the appropriate date field for this collection
     mock_incident_data[date_field] = "2023-01-01T00:00:00+00:00"
-    # For compromised/breached collection, add emails field required for portal link generation
-    if collection_name == "compromised/breached":
+    # For compromised/breacheddb collection, add emails field required for portal link generation
+    if collection_name == "compromised/breacheddb":
         mock_incident_data["emails"] = ["test@example.com"]
     mock_portion.bulk_parse_portion.return_value = [mock_incident_data]
     mock_portions.append(mock_portion)
@@ -575,10 +575,6 @@ def test_fetch_incidents_sequpdate_resolution(mocker, session_fixture):
       - Ensures the resolved sequpdate is used instead of date_from.
     """
     collection_name, client = session_fixture
-    if collection_name == "compromised/breached":
-        # Skip this test for compromised/breached as it uses different logic
-        return
-
     mock_portions = []
     mock_portion = MagicMock()
     mock_portion.sequpdate = 12345
@@ -649,10 +645,6 @@ def test_fetch_incidents_effective_last_fetch_calculation(mocker, session_fixtur
       - Ensures effective_last_fetch is correctly calculated.
     """
     collection_name, client = session_fixture
-    if collection_name == "compromised/breached":
-        # Skip this test for compromised/breached as it uses different logic
-        return
-
     last_fetch_value = 10000
     sequpdate_value = 15000  # Higher than last_fetch
 
@@ -722,10 +714,6 @@ def test_fetch_incidents_incident_processing_loop(mocker, session_fixture):
       - Checks that requests_count limits the number of processed portions.
     """
     collection_name, client = session_fixture
-    if collection_name == "compromised/breached":
-        # Skip this test for compromised/breached as it uses different logic
-        return
-
     # Create multiple mock portions
     mock_portions = []
     date_field = _get_date_field_for_collection(collection_name)

@@ -859,7 +859,7 @@ COMMON_MAPPING = {
 COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES = [
     "osi/git_repository",
     "osi/public_leak",
-    "compromised/breached",
+    "compromised/breacheddb",
 ]
 
 

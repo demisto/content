@@ -77,7 +77,7 @@ configuration:
   options:
   - compromised/account_group
   - compromised/bank_card_group
-  - compromised/breached
+  - compromised/breacheddb
   - compromised/mule
   - compromised/spd
   - osi/git_repository
@@ -341,7 +341,7 @@ script:
         e.g.: 6fd344f340f4bdc08548cb36ded62bdf.
       name: id
       required: true
-    description: Command performs Group IB event lookup in compromised/breached collection with provided ID.
+    description: Command performs Group IB event lookup in compromised/breacheddb collection with provided ID.
     name: gibtia-get-compromised-breached-info
     outputs:
     - contextPath: GIBTIA.DataBreach.email
@@ -963,7 +963,7 @@ script:
       predefined:
       - compromised/account_group
       - compromised/bank_card_group
-      - compromised/breached
+      - compromised/breacheddb
       - compromised/mule
       - compromised/spd
       - osi/git_repository
@@ -1351,7 +1351,7 @@ script:
         e.g.: 6fd344f340f4bdc08548cb36ded62bdf.
       name: id
       required: true
-    description: Command performs Group IB event lookup in compromised/breached collection with provided ID.
+    description: Command performs Group IB event lookup in compromised/breacheddb collection with provided ID.
     name: gibti-get-compromised-breached-info
     outputs:
     - contextPath: GIBTIA.DataBreach.email
@@ -1973,7 +1973,7 @@ script:
       predefined:
       - compromised/account_group
       - compromised/bank_card_group
-      - compromised/breached
+      - compromised/breacheddb
       - compromised/mule
       - compromised/spd
       - osi/git_repository

@@ -1058,8 +1058,7 @@
         },
         "seqUpdate": 1454699133295
     },
-    "compromised/breached":{
-        "resultId": "3b87b3624d57ef2591f2a926ce25036832c347a3",
+    "compromised/breacheddb":{
         "count": 1746463257,
         "items": [
             {
@@ -1155,7 +1154,8 @@
                 "updateTime": "2024-10-01T01:45:14",
                 "uploadTime": "2024-10-01T01:45:14"
             }
-        ]
+        ],
+        "seqUpdate": 1579280319000000
     },
     "attacks/ddos":{
         "count": 44739317,

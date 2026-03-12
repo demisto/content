@@ -3,7 +3,7 @@
     "feed": false,
     "id": "Group-IB Threat Intelligence (classifier)",
     "keyTypeMap": {
-        "compromised/breached": "GIB Data Breach",
+        "compromised/breacheddb": "GIB Data Breach",
         "osi/git_repository": "GIB OSI Git Leak",
         "osi/public_leak": "GIB OSI Public Leak",
         "compromised/account_group": "GIB Compromised Account Group",

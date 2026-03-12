@@ -288,7 +288,7 @@ INDICATORS_TYPES = {
 PREFIXES = {
     "compromised/account_group": "Compromised Account Group",
     "compromised/bank_card_group": "Compromised Card Group",
-    "compromised/breached": "Data Breach",
+    "compromised/breacheddb": "Data Breach",
     "compromised/mule": "Compromised Mule",
     "compromised/spd": "Compromised SPD",
     "osi/git_repository": "Git Leak",
@@ -313,7 +313,7 @@ PREFIXES = {
 
 INCIDENT_CREATED_DATES_MAPPING = {
     "compromised/account_group": "dateFirstSeen",
-    "compromised/breached": "uploadTime",
+    "compromised/breacheddb": "uploadTime",
     "compromised/mule": ["dateAdd", "dateIncident"],
     "compromised/bank_card_group": ["dateFirstCompromised", "dateFirstSeen"],
     "compromised/spd": ["firstSeenAt", "lastSeenAt", "createdAt"],
@@ -399,7 +399,7 @@ HTML_FIELDS = {
 
 PORTAL_LINKS = {
     "compromised/account_group": "https://tap.group-ib.com/cd/accounts?id=",
-    "compromised/breached": "https://tap.group-ib.com/cd/breached?id=",
+    "compromised/breacheddb": "https://tap.group-ib.com/cd/breached?id=",
     "compromised/bank_card_group": "https://tap.group-ib.com/cd/cards?id=",
     "compromised/mule": "https://tap.group-ib.com/cd/mules?id=",
     "compromised/spd": "https://tap.group-ib.com/cd/suspicious-payment-details?id=",
@@ -425,10 +425,10 @@ PORTAL_LINKS = {
 COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES = [
     "osi/git_repository",
     "osi/public_leak",
-    "compromised/breached",
+    "compromised/breacheddb",
 ]
 
-COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED = ["compromised/breached"]
+COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED = ["compromised/breacheddb"]
 
 COLLECTIONS_REQUIRING_SEARCH_VIA_QUERY_PARAMETER = [
     "osi/public_leak",
@@ -596,7 +596,7 @@ MAPPING = {
             "cnc_ipv4_region": "events.cnc.ipv4.region",
         },
     },
-    "compromised/breached": {  # GIB Source:sourceType, severity:systemSeverity
+    "compromised/breacheddb": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "id",
         # Information from Group-IB
         "id": "id",  # GIB ID
@@ -1578,84 +1578,52 @@ class Client(BaseClient):
 
         last_fetch, date_from = Client.handle_first_time_fetch(kwargs)
 
-        if collection_name == "compromised/breached":
+        if collection_name in COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES:
             hunting_rules = 1
+        sequpdate_for_generator = last_fetch
+        date_from_for_generator = date_from
+        if not last_fetch and date_from:
+            try:
+                demisto.debug(
+                    "[create_poll_generator] Resolving initial seqUpdate via sequence_list: "
+                    f"collection={collection_name}, date_from={date_from}, hunting_rules={hunting_rules}"
+                )
+                seq_map = self.poller.get_seq_update_dict(
+                    date=date_from,
+                    collection_name=collection_name,
+                    apply_hunting_rules=hunting_rules,
+                )
+                resolved_seq = seq_map.get(collection_name)
+                if resolved_seq:
+                    sequpdate_for_generator = resolved_seq
+                    date_from_for_generator = None
+                    demisto.debug(f"[create_poll_generator] Using resolved seqUpdate={resolved_seq}; dropping date_from")
+                else:
+                    demisto.debug(
+                        "[create_poll_generator] sequence_list returned empty for collection; fallback to date_from"
+                    )
+            except Exception as e:
+                demisto.debug(f"[create_poll_generator] sequence_list resolution failed: {e}; fallback to date_from")
 
-            # we need the isinstance check for BC because it used to be a string
+        demisto.debug(
+            "[create_poll_generator] Using update generator: "
+            f"collection={collection_name}, sequpdate={sequpdate_for_generator}, date_from={date_from_for_generator}, "
+            f"limit={self.limit}, hunting_rules={hunting_rules}"
+        )
 
-            if last_fetch and isinstance(last_fetch, dict):
-                starting_date_from = last_fetch.get("starting_date_from")
-                starting_date_to = last_fetch.get("starting_date_to")
-                date_to = last_fetch.get("current_date_to")
-            else:
-                starting_date_from = date_from
-                starting_date_to = datetime.now().strftime(DATE_FORMAT)
-                date_to = starting_date_to
-            demisto.debug(
-                "[create_poll_generator] Using search generator for compromised/breached: "
-                f"last_fetch={last_fetch}, date_from={date_from}, date_to={date_to}, "
-                f"starting_date_from={starting_date_from}, starting_date_to={starting_date_to}"
-            )
-
-            return self.poller.create_search_generator(
+        return (
+            self.poller.create_update_generator(
                 collection_name=collection_name,
-                date_from=date_from,
-                date_to=date_to,
+                date_from=date_from_for_generator,
+                sequpdate=sequpdate_for_generator,
                 limit=self.limit,
                 apply_hunting_rules=hunting_rules,
-            ), {
-                "starting_date_from": starting_date_from,
-                "starting_date_to": starting_date_to,
-                "current_date_to": date_to,
-            }
-
-        else:
-            if collection_name in COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES:
-                hunting_rules = 1
-            sequpdate_for_generator = last_fetch
-            date_from_for_generator = date_from
-            if not last_fetch and date_from:
-                try:
-                    demisto.debug(
-                        "[create_poll_generator] Resolving initial seqUpdate via sequence_list: "
-                        f"collection={collection_name}, date_from={date_from}, hunting_rules={hunting_rules}"
-                    )
-                    seq_map = self.poller.get_seq_update_dict(
-                        date=date_from,
-                        collection_name=collection_name,
-                        apply_hunting_rules=hunting_rules,
-                    )
-                    resolved_seq = seq_map.get(collection_name)
-                    if resolved_seq:
-                        sequpdate_for_generator = resolved_seq
-                        date_from_for_generator = None
-                        demisto.debug(f"[create_poll_generator] Using resolved seqUpdate={resolved_seq}; dropping date_from")
-                    else:
-                        demisto.debug(
-                            "[create_poll_generator] sequence_list returned empty for collection; fallback to date_from"
-                        )
-                except Exception as e:
-                    demisto.debug(f"[create_poll_generator] sequence_list resolution failed: {e}; fallback to date_from")
-
-            demisto.debug(
-                "[create_poll_generator] Using update generator: "
-                f"collection={collection_name}, sequpdate={sequpdate_for_generator}, date_from={date_from_for_generator}, "
-                f"limit={self.limit}, hunting_rules={hunting_rules}"
-            )
-
-            return (
-                self.poller.create_update_generator(
-                    collection_name=collection_name,
-                    date_from=date_from_for_generator,
-                    sequpdate=sequpdate_for_generator,
-                    limit=self.limit,
-                    apply_hunting_rules=hunting_rules,
-                    probable_corporate_access=int(enable_probable_corporate_access),
-                    unique=int(unique),
-                    combolist=int(combolist),
-                ),
-                sequpdate_for_generator,
-            )
+                probable_corporate_access=int(enable_probable_corporate_access),
+                unique=int(unique),
+                combolist=int(combolist),
+            ),
+            sequpdate_for_generator,
+        )
 
     def search_proxy_function(self, query: str) -> list[dict[str, Any]]:
         return self.poller.global_search(query=query)
@@ -1782,8 +1750,8 @@ class CommonHelpers:
     @staticmethod
     def custom_generate_portal_link(collection_name: str, incident: dict):
         if collection_name in COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED:
-            # generating just for compromised/breached
-            incident["portalLink"] = PORTAL_LINKS.get("compromised/breached", "") + str(incident["emails"][0])
+            # generating just for compromised/breacheddb
+            incident["portalLink"] = PORTAL_LINKS.get("compromised/breacheddb", "") + str(incident["emails"][0])
 
         return incident
 
@@ -2050,7 +2018,7 @@ class IncidentBuilder:
     def get_incident_name(self) -> str:
         name = ""
         prefix = PREFIXES.get(self.collection_name, "")
-        if self.collection_name == "compromised/breached":
+        if self.collection_name == "compromised/breacheddb":
             names = self.incident["name"]
             if not isinstance(names, list):
                 names = [names]
@@ -2164,7 +2132,7 @@ class IncidentBuilder:
 
 
 class BuilderCommandResponses:
-    dont_need_transformations = ["compromised/breached"]
+    dont_need_transformations = ["compromised/breacheddb"]
 
     def __init__(self, client: Client, collection_name: str, args: dict) -> None:
         self.client = client
@@ -2209,7 +2177,7 @@ class BuilderCommandResponses:
             mapping = MAPPING.get(self.collection_name, {})
             # This was done because the response when receiving a single record can
             # differentiate your json from getting the whole list
-            if self.collection_name == "compromised/breached":
+            if self.collection_name == "compromised/breacheddb":
                 mapping["emailDomains"] = "emails"
 
             parsed_portion = result.parse_portion(keys=mapping)
@@ -2344,14 +2312,10 @@ def fetch_incidents_command(
         requests_count = 0
         sequpdate = 0
 
-        last_fetch_for_generator: Any
-        if collection_name == "compromised/breached":
-            last_fetch_for_generator = last_fetch_raw
-        else:
-            last_fetch_int = _parse_seq_update(last_fetch_raw)
-            last_fetch_for_generator = (
-                _serialize_seq_update(last_fetch_int) if isinstance(last_fetch_int, int) and last_fetch_int > 0 else None
-            )
+        last_fetch_int = _parse_seq_update(last_fetch_raw)
+        last_fetch_for_generator = (
+            _serialize_seq_update(last_fetch_int) if isinstance(last_fetch_int, int) and last_fetch_int > 0 else None
+        )
 
         portions, generator_cursor_raw = client.create_poll_generator(
             collection_name=collection_name,
@@ -2425,25 +2389,22 @@ def fetch_incidents_command(
             if requests_count >= max_requests:
                 break
 
-        if collection_name == "compromised/breached":
-            next_run["last_fetch"][collection_name] = generator_cursor_raw
-        else:
-            demisto.debug(f"[fetch-incidents] Final seqUpdate for collection={collection_name}: {sequpdate}")
-            effective_last_fetch_int: int | None = None
-            if isinstance(max_seen_seq_update, int) and max_seen_seq_update > 0:
-                effective_last_fetch_int = max_seen_seq_update
-            elif isinstance(generator_cursor_int, int) and generator_cursor_int > 0:
-                effective_last_fetch_int = generator_cursor_int
+        demisto.debug(f"[fetch-incidents] Final seqUpdate for collection={collection_name}: {sequpdate}")
+        effective_last_fetch_int: int | None = None
+        if isinstance(max_seen_seq_update, int) and max_seen_seq_update > 0:
+            effective_last_fetch_int = max_seen_seq_update
+        elif isinstance(generator_cursor_int, int) and generator_cursor_int > 0:
+            effective_last_fetch_int = generator_cursor_int
 
-            next_run["last_fetch"][collection_name] = (
-                _serialize_seq_update(effective_last_fetch_int)
-                if isinstance(effective_last_fetch_int, int) and effective_last_fetch_int > 0
-                else None
-            )
-            demisto.debug(
-                f"[fetch-incidents] Updated next_run for collection={collection_name}: "
-                f"{next_run['last_fetch'][collection_name]}"
-            )
+        next_run["last_fetch"][collection_name] = (
+            _serialize_seq_update(effective_last_fetch_int)
+            if isinstance(effective_last_fetch_int, int) and effective_last_fetch_int > 0
+            else None
+        )
+        demisto.debug(
+            f"[fetch-incidents] Updated next_run for collection={collection_name}: "
+            f"{next_run['last_fetch'][collection_name]}"
+        )
 
     return next_run, incidents
 
@@ -2584,7 +2545,7 @@ def local_search_command(client: Client, args: dict) -> CommandResults:
     date_from_parsed = CommonHelpers.date_parse(date=str(date_from), arg_name="date_from") if date_from is not None else None
     date_to_parsed = CommonHelpers.date_parse(date=str(date_to), arg_name="date_to") if date_to is not None else None
 
-    if collection_name == "compromised/breached":
+    if collection_name == "compromised/breacheddb":
         portions = client.poller.create_search_generator(
             collection_name=collection_name,
             query=query,
@@ -3220,7 +3181,7 @@ def main():
             "gibti-get-compromised-card-group-info": "compromised/bank_card_group",
             "gibti-get-compromised-mule-info": "compromised/mule",
             "gibti-get-compromised-spd-info": "compromised/spd",
-            "gibti-get-compromised-breached-info": "compromised/breached",
+            "gibti-get-compromised-breached-info": "compromised/breacheddb",
             "gibti-get-phishing-kit-info": "attacks/phishing_kit",
             "gibti-get-phishing-group-info": "attacks/phishing_group",
             "gibti-get-osi-git-leak-info": "osi/git_repository",
