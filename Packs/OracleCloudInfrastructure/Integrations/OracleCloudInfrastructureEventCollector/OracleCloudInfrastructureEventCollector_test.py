@@ -16,6 +16,7 @@ def dummy_client(mocker):
     """
     mocker.patch.object(Client, "build_singer_object", return_value="dummy_singer_object")
     mocker.patch.object(Client, "build_audit_base_url", return_value="dummy_audit_base_url")
+    mocker.patch.object(Client, "build_searchlog_url", return_value="dummy_searchlog_url")
     return Client(
         verify_certificate=False,
         proxy=False,
@@ -639,3 +640,639 @@ class TestFetchEventsFlows:
         mocked_handle_fetched_events = mocker.patch("OracleCloudInfrastructureEventCollector.handle_fetched_events")
         main()
         mocked_handle_fetched_events.assert_called_once_with(expected_list, expected_time)
+
+
+class TestBuildSearchlogUrl:
+    """Tests for the build_searchlog_url method."""
+
+    def test_build_searchlog_url_success(self, mocker):
+        """
+        Given:
+            - A valid region parameter.
+        When:
+            - Building the search log URL during Client initialization.
+        Then:
+            - Make sure the search log URL is built successfully with the correct format.
+        """
+        mocker.patch.object(Client, "build_singer_object", return_value="dummy_singer_object")
+        mocker.patch("OracleCloudInfrastructureEventCollector.is_region", return_value=True)
+        client = Client(
+            verify_certificate=False,
+            proxy=False,
+            region="us-ashburn-1",
+            tenancy_ocid="dummy_tenancy_ocid",
+            private_key="dummy_private_key",
+            user_ocid="dummy_use_ocid",
+            key_fingerprint="dummy_key_fingerprint",
+            compartment_id="",
+            private_key_type="PKCS#8",
+        )
+
+        assert client.build_searchlog_url("us-ashburn-1") == "https://logging.us-ashburn-1.oci.oraclecloud.com/20190909/search"
+
+    def test_build_searchlog_url_fail(self, mocker):
+        """
+        Given:
+            - An invalid region parameter.
+        When:
+            - Building the search log URL.
+        Then:
+            - Make sure a DemistoException is raised with a relevant message.
+        """
+        mocker.patch.object(Client, "build_singer_object", return_value="dummy_singer_object")
+        mocker.patch("OracleCloudInfrastructureEventCollector.is_region", return_value=False)
+        with pytest.raises(DemistoException, match="Could not create a valid OCI configuration"):
+            Client(
+                verify_certificate=False,
+                proxy=False,
+                region="invalid_region",
+                tenancy_ocid="dummy_tenancy_ocid",
+                private_key="dummy_private_key",
+                user_ocid="dummy_use_ocid",
+                key_fingerprint="dummy_key_fingerprint",
+                compartment_id="",
+                private_key_type="PKCS#8",
+            )
+
+
+class TestSearchlogsApiRequest:
+    """Tests for the searchlogs_api_request function."""
+
+    def test_searchlogs_api_request_without_pagination(self, mocker, dummy_client):
+        """
+        Given:
+            - Valid request parameters without pagination.
+        When:
+            - Making a search logs API request.
+        Then:
+            - Make sure the request is sent with the correct parameters and body.
+        """
+        from OracleCloudInfrastructureEventCollector import searchlogs_api_request
+
+        mocked_http_request = mocker.patch.object(dummy_client, "_http_request", return_value={"data": "dummy_data"})
+        searchlogs_api_request(
+            client=dummy_client,
+            time_start="2023-01-01T10:10:10.000Z",
+            time_end="2023-01-15T10:10:10.000Z",
+            search_query="search query",
+        )
+
+        call_kwargs = mocked_http_request.call_args[1]
+        assert call_kwargs["method"] == "POST"
+        assert call_kwargs["full_url"] == "dummy_searchlog_url"
+        assert call_kwargs["json_data"] == {
+            "timeStart": "2023-01-01T10:10:10.000Z",
+            "timeEnd": "2023-01-15T10:10:10.000Z",
+            "searchQuery": "search query",
+            "isReturnFieldInfo": False,
+        }
+        assert call_kwargs["params"] == {"limit": 1000}
+        assert "page" not in call_kwargs["params"]
+
+    def test_searchlogs_api_request_with_pagination(self, mocker, dummy_client):
+        """
+        Given:
+            - Valid request parameters with a next_page token.
+        When:
+            - Making a search logs API request with pagination.
+        Then:
+            - Make sure the request includes the page parameter.
+        """
+        from OracleCloudInfrastructureEventCollector import searchlogs_api_request
+
+        mocked_http_request = mocker.patch.object(dummy_client, "_http_request", return_value={"data": "dummy_data"})
+        searchlogs_api_request(
+            client=dummy_client,
+            time_start="2023-01-01T10:10:10.000Z",
+            time_end="2023-01-15T10:10:10.000Z",
+            search_query="search query",
+            next_page="page_token_123",
+        )
+
+        call_kwargs = mocked_http_request.call_args[1]
+        assert call_kwargs["params"] == {"limit": 1000, "page": "page_token_123"}
+
+    def test_searchlogs_api_request_with_custom_limit(self, mocker, dummy_client):
+        """
+        Given:
+            - Valid request parameters with a custom limit.
+        When:
+            - Making a search logs API request with a custom limit.
+        Then:
+            - Make sure the request uses the custom limit.
+        """
+        from OracleCloudInfrastructureEventCollector import searchlogs_api_request
+
+        mocked_http_request = mocker.patch.object(dummy_client, "_http_request", return_value={"data": "dummy_data"})
+        searchlogs_api_request(
+            client=dummy_client,
+            time_start="2023-01-01T10:10:10.000Z",
+            time_end="2023-01-15T10:10:10.000Z",
+            search_query="search query",
+            limit=500,
+        )
+
+        call_kwargs = mocked_http_request.call_args[1]
+        assert call_kwargs["params"] == {"limit": 500}
+
+
+class TestDeduplicateEvents:
+    """Tests for the deduplicate_events function."""
+
+    def test_deduplicate_events_no_previous_ids(self):
+        """
+        Given:
+            - A list of events and an empty list of previously fetched IDs (first run).
+        When:
+            - Deduplicating events.
+        Then:
+            - All events should be returned since there are no previous IDs to deduplicate against.
+        """
+        from OracleCloudInfrastructureEventCollector import deduplicate_events
+
+        events = [{"id": "1", "data": "a"}, {"id": "2", "data": "b"}]
+        result = deduplicate_events(events, [])
+        assert result == events
+
+    def test_deduplicate_events_with_duplicates(self):
+        """
+        Given:
+            - A list of events where some IDs match previously fetched IDs.
+        When:
+            - Deduplicating events.
+        Then:
+            - Only events with new IDs should be returned.
+        """
+        from OracleCloudInfrastructureEventCollector import deduplicate_events
+
+        events = [
+            {"id": "1", "data": "a"},
+            {"id": "2", "data": "b"},
+            {"id": "3", "data": "c"},
+        ]
+        last_fetched_ids = ["1", "2"]
+        result = deduplicate_events(events, last_fetched_ids)
+        assert result == [{"id": "3", "data": "c"}]
+
+    def test_deduplicate_events_all_duplicates(self):
+        """
+        Given:
+            - A list of events where all IDs match previously fetched IDs.
+        When:
+            - Deduplicating events.
+        Then:
+            - An empty list should be returned.
+        """
+        from OracleCloudInfrastructureEventCollector import deduplicate_events
+
+        events = [{"id": "1", "data": "a"}, {"id": "2", "data": "b"}]
+        last_fetched_ids = ["1", "2"]
+        result = deduplicate_events(events, last_fetched_ids)
+        assert result == []
+
+    def test_deduplicate_events_no_duplicates(self):
+        """
+        Given:
+            - A list of events where no IDs match previously fetched IDs.
+        When:
+            - Deduplicating events.
+        Then:
+            - All events should be returned.
+        """
+        from OracleCloudInfrastructureEventCollector import deduplicate_events
+
+        events = [{"id": "3", "data": "c"}, {"id": "4", "data": "d"}]
+        last_fetched_ids = ["1", "2"]
+        result = deduplicate_events(events, last_fetched_ids)
+        assert result == events
+
+    def test_deduplicate_events_missing_id_field(self):
+        """
+        Given:
+            - A list of events where some events lack the 'id' field.
+        When:
+            - Deduplicating events.
+        Then:
+            - Events without 'id' field should be kept (their id is None, not in the set).
+        """
+        from OracleCloudInfrastructureEventCollector import deduplicate_events
+
+        events = [
+            {"id": "1", "data": "a"},
+            {"data": "b"},  # no id field
+            {"id": "3", "data": "c"},
+        ]
+        last_fetched_ids = ["1"]
+        result = deduplicate_events(events, last_fetched_ids)
+        assert result == [{"data": "b"}, {"id": "3", "data": "c"}]
+
+
+class TestHandleSearchlogFetchedEvents:
+    """Tests for the handle_searchlog_fetched_events function."""
+
+    def test_handle_searchlog_fetched_events_with_events(self, mocker):
+        """
+        Given:
+            - A non-empty list of searchlog events and a searchlog last run dict.
+        When:
+            - Handling searchlog fetched events.
+        Then:
+            - Events are sent to XSIAM.
+            - The last run is updated with the SearchLog key.
+        """
+        from OracleCloudInfrastructureEventCollector import handle_searchlog_fetched_events
+
+        mocked_send_events = mocker.patch("OracleCloudInfrastructureEventCollector.send_events_to_xsiam")
+        mocked_set_last_run = mocker.patch("OracleCloudInfrastructureEventCollector.demisto.setLastRun")
+        mocker.patch("OracleCloudInfrastructureEventCollector.demisto.getLastRun", return_value={})
+
+        searchlog_events = [{"id": "1", "_time": "2023-01-01T10:10:10.000Z"}]
+        searchlog_last_run = {"lastRun": "2023-01-01T10:10:10.000Z", "LastFetchedIds": ["1"]}
+
+        handle_searchlog_fetched_events(searchlog_events, searchlog_last_run)
+
+        assert mocked_send_events.called
+        assert mocked_send_events.call_args.args[0] == searchlog_events
+        assert mocked_send_events.call_args[1] == {"vendor": "oracle", "product": "cloud_infrastructure"}
+        assert mocked_set_last_run.called
+        assert mocked_set_last_run.call_args.args[0] == {"SearchLog": searchlog_last_run}
+
+    def test_handle_searchlog_fetched_events_empty_events(self, mocker):
+        """
+        Given:
+            - An empty list of searchlog events.
+        When:
+            - Handling searchlog fetched events.
+        Then:
+            - Events are sent to XSIAM (empty list).
+            - The last run is NOT updated.
+        """
+        from OracleCloudInfrastructureEventCollector import handle_searchlog_fetched_events
+
+        mocked_send_events = mocker.patch("OracleCloudInfrastructureEventCollector.send_events_to_xsiam")
+        mocked_set_last_run = mocker.patch("OracleCloudInfrastructureEventCollector.demisto.setLastRun")
+        mocker.patch("OracleCloudInfrastructureEventCollector.demisto.getLastRun", return_value={})
+
+        handle_searchlog_fetched_events([], {"lastRun": "", "LastFetchedIds": []})
+
+        assert mocked_send_events.called
+        assert not mocked_set_last_run.called
+
+    def test_handle_searchlog_fetched_events_preserves_existing_last_run(self, mocker):
+        """
+        Given:
+            - A non-empty list of searchlog events and an existing last run with other keys.
+        When:
+            - Handling searchlog fetched events.
+        Then:
+            - The existing last run keys are preserved and SearchLog key is added.
+        """
+        from OracleCloudInfrastructureEventCollector import handle_searchlog_fetched_events
+
+        mocker.patch("OracleCloudInfrastructureEventCollector.send_events_to_xsiam")
+        mocked_set_last_run = mocker.patch("OracleCloudInfrastructureEventCollector.demisto.setLastRun")
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.demisto.getLastRun",
+            return_value={"lastRun": "2023-01-01T08:00:00.000Z"},
+        )
+
+        searchlog_events = [{"id": "1", "_time": "2023-01-01T10:10:10.000Z"}]
+        searchlog_last_run = {"lastRun": "2023-01-01T10:10:10.000Z", "LastFetchedIds": ["1"]}
+
+        handle_searchlog_fetched_events(searchlog_events, searchlog_last_run)
+
+        assert mocked_set_last_run.call_args.args[0] == {
+            "lastRun": "2023-01-01T08:00:00.000Z",
+            "SearchLog": searchlog_last_run,
+        }
+
+
+class TestGetSearchlogsEvents:
+    """Tests for the get_searchlogs_events function."""
+
+    @freeze_time("2023-01-01T10:10:10.000Z")
+    def test_get_searchlogs_events_first_run(self, mocker, dummy_client):
+        """
+        Given:
+            - First run with no previous last run state.
+        When:
+            - Fetching search log events.
+        Then:
+            - Events are returned with _time key populated.
+            - The last run is updated with the time of the last event.
+        """
+        from OracleCloudInfrastructureEventCollector import get_searchlogs_events
+
+        api_response_content = {
+            "results": [
+                {
+                    "data": {
+                        "logContent": {
+                            "id": "event-1",
+                            "time": "2023-01-01T09:00:00.000Z",
+                            "message": "test event 1",
+                        }
+                    }
+                },
+                {
+                    "data": {
+                        "logContent": {
+                            "id": "event-2",
+                            "time": "2023-01-01T09:30:00.000Z",
+                            "message": "test event 2",
+                        }
+                    }
+                },
+            ]
+        }
+        mocked_response = MockResponse(content=api_response_content)
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.searchlogs_api_request",
+            return_value=mocked_response,
+        )
+
+        events, last_run = get_searchlogs_events(
+            client=dummy_client,
+            search_log_query="search query",
+            max_fetch=10,
+            searchlog_last_run={},
+        )
+
+        assert len(events) == 2
+        assert events[0]["_time"] == "2023-01-01T09:00:00.000Z"
+        assert events[1]["_time"] == "2023-01-01T09:30:00.000Z"
+        assert events[0]["id"] == "event-1"
+        assert last_run["lastRun"] == "2023-01-01T09:30:00.000Z"
+        assert last_run["LastFetchedIds"] == ["event-2"]
+
+    @freeze_time("2023-01-01T10:10:10.000Z")
+    def test_get_searchlogs_events_with_last_run(self, mocker, dummy_client):
+        """
+        Given:
+            - A previous last run state exists.
+        When:
+            - Fetching search log events.
+        Then:
+            - Events are fetched starting from the last run time.
+            - The last run is updated correctly.
+        """
+        from OracleCloudInfrastructureEventCollector import get_searchlogs_events
+
+        api_response_content = {
+            "results": [
+                {
+                    "data": {
+                        "logContent": {
+                            "id": "event-3",
+                            "time": "2023-01-01T11:00:00.000Z",
+                            "message": "test event 3",
+                        }
+                    }
+                },
+            ]
+        }
+        mocked_response = MockResponse(content=api_response_content)
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.searchlogs_api_request",
+            return_value=mocked_response,
+        )
+
+        searchlog_last_run = {
+            "lastRun": "2023-01-01T09:30:00.000000Z",
+            "LastFetchedIds": ["event-2"],
+        }
+
+        events, last_run = get_searchlogs_events(
+            client=dummy_client,
+            search_log_query="search query",
+            max_fetch=10,
+            searchlog_last_run=searchlog_last_run,
+        )
+
+        assert len(events) == 1
+        assert events[0]["id"] == "event-3"
+        assert last_run["lastRun"] == "2023-01-01T11:00:00.000Z"
+        assert last_run["LastFetchedIds"] == ["event-3"]
+
+    @freeze_time("2023-01-01T10:10:10.000Z")
+    def test_get_searchlogs_events_with_deduplication(self, mocker, dummy_client):
+        """
+        Given:
+            - Events are returned that include previously fetched IDs.
+        When:
+            - Fetching search log events.
+        Then:
+            - Duplicate events are removed.
+        """
+        from OracleCloudInfrastructureEventCollector import get_searchlogs_events
+
+        api_response_content = {
+            "results": [
+                {
+                    "data": {
+                        "logContent": {
+                            "id": "event-2",
+                            "time": "2023-01-01T09:30:00.000Z",
+                            "message": "duplicate event",
+                        }
+                    }
+                },
+                {
+                    "data": {
+                        "logContent": {
+                            "id": "event-3",
+                            "time": "2023-01-01T10:00:00.000Z",
+                            "message": "new event",
+                        }
+                    }
+                },
+            ]
+        }
+        mocked_response = MockResponse(content=api_response_content)
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.searchlogs_api_request",
+            return_value=mocked_response,
+        )
+
+        searchlog_last_run = {
+            "lastRun": "2023-01-01T09:30:00.000000Z",
+            "LastFetchedIds": ["event-2"],
+        }
+
+        events, last_run = get_searchlogs_events(
+            client=dummy_client,
+            search_log_query="search query",
+            max_fetch=10,
+            searchlog_last_run=searchlog_last_run,
+        )
+
+        assert len(events) == 1
+        assert events[0]["id"] == "event-3"
+        assert last_run["lastRun"] == "2023-01-01T10:00:00.000Z"
+
+    @freeze_time("2023-01-01T10:10:10.000Z")
+    def test_get_searchlogs_events_empty_results(self, mocker, dummy_client):
+        """
+        Given:
+            - The API returns no results.
+        When:
+            - Fetching search log events.
+        Then:
+            - An empty list is returned and the last run is unchanged.
+        """
+        from OracleCloudInfrastructureEventCollector import get_searchlogs_events
+
+        api_response_content = {"results": []}
+        mocked_response = MockResponse(content=api_response_content)
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.searchlogs_api_request",
+            return_value=mocked_response,
+        )
+
+        searchlog_last_run = {
+            "lastRun": "2023-01-01T09:30:00.000000Z",
+            "LastFetchedIds": ["event-2"],
+        }
+
+        events, last_run = get_searchlogs_events(
+            client=dummy_client,
+            search_log_query="search query",
+            max_fetch=10,
+            searchlog_last_run=searchlog_last_run,
+        )
+
+        assert events == []
+        assert last_run["lastRun"] == "2023-01-01T09:30:00.000000Z"
+
+    @freeze_time("2023-01-01T10:10:10.000Z")
+    def test_get_searchlogs_events_respects_max_fetch(self, mocker, dummy_client):
+        """
+        Given:
+            - More events are available than max_fetch allows.
+        When:
+            - Fetching search log events with a small max_fetch.
+        Then:
+            - Only max_fetch events are returned.
+        """
+        from OracleCloudInfrastructureEventCollector import get_searchlogs_events
+
+        api_response_content = {
+            "results": [
+                {
+                    "data": {
+                        "logContent": {
+                            "id": f"event-{i}",
+                            "time": f"2023-01-01T09:{i:02d}:00.000Z",
+                            "message": f"test event {i}",
+                        }
+                    }
+                }
+                for i in range(5)
+            ]
+        }
+        mocked_response = MockResponse(content=api_response_content)
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.searchlogs_api_request",
+            return_value=mocked_response,
+        )
+
+        events, last_run = get_searchlogs_events(
+            client=dummy_client,
+            search_log_query="search query",
+            max_fetch=2,
+            searchlog_last_run={},
+        )
+
+        assert len(events) == 2
+
+    @freeze_time("2023-01-01T10:10:10.000Z")
+    def test_get_searchlogs_events_api_error(self, mocker, dummy_client):
+        """
+        Given:
+            - The API request raises an exception.
+        When:
+            - Fetching search log events.
+        Then:
+            - An empty list is returned and the original last run is preserved.
+        """
+        from OracleCloudInfrastructureEventCollector import get_searchlogs_events
+
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.searchlogs_api_request",
+            side_effect=Exception("API Error"),
+        )
+
+        searchlog_last_run = {
+            "lastRun": "2023-01-01T09:30:00.000000Z",
+            "LastFetchedIds": ["event-2"],
+        }
+
+        events, last_run = get_searchlogs_events(
+            client=dummy_client,
+            search_log_query="search query",
+            max_fetch=10,
+            searchlog_last_run=searchlog_last_run,
+        )
+
+        assert events == []
+        assert last_run == searchlog_last_run
+
+    @freeze_time("2023-01-01T10:10:10.000Z")
+    def test_get_searchlogs_events_last_fetched_ids_same_time(self, mocker, dummy_client):
+        """
+        Given:
+            - Multiple events share the same timestamp as the last event.
+        When:
+            - Fetching search log events.
+        Then:
+            - LastFetchedIds contains only the IDs of events with the same time as the last event.
+        """
+        from OracleCloudInfrastructureEventCollector import get_searchlogs_events
+
+        api_response_content = {
+            "results": [
+                {
+                    "data": {
+                        "logContent": {
+                            "id": "event-1",
+                            "time": "2023-01-01T09:00:00.000Z",
+                            "message": "test event 1",
+                        }
+                    }
+                },
+                {
+                    "data": {
+                        "logContent": {
+                            "id": "event-2",
+                            "time": "2023-01-01T09:30:00.000Z",
+                            "message": "test event 2",
+                        }
+                    }
+                },
+                {
+                    "data": {
+                        "logContent": {
+                            "id": "event-3",
+                            "time": "2023-01-01T09:30:00.000Z",
+                            "message": "test event 3",
+                        }
+                    }
+                },
+            ]
+        }
+        mocked_response = MockResponse(content=api_response_content)
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.searchlogs_api_request",
+            return_value=mocked_response,
+        )
+
+        events, last_run = get_searchlogs_events(
+            client=dummy_client,
+            search_log_query="search query",
+            max_fetch=10,
+            searchlog_last_run={},
+        )
+
+        assert len(events) == 3
+        assert last_run["lastRun"] == "2023-01-01T09:30:00.000Z"
+        assert sorted(last_run["LastFetchedIds"]) == ["event-2", "event-3"]

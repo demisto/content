@@ -298,6 +298,8 @@ def searchlogs_api_request(
     params: dict[str, str | int] = {"limit": limit}
     if next_page:
         params["page"] = next_page
+
+    demisto.info(f"Sending http request to get search log events with {body=} {params=}")
     return client._http_request(
         method="POST", full_url=url, params=params, json_data=body, resp_type="response"
     )
