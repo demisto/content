@@ -853,16 +853,19 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
 
     try:
         modified_incident_ids = client.get_modified_incidents(from_timestamp=from_timestamp)
-    except Exception as e:
-        demisto.error(f"get-modified-remote-data: error fetching modified incidents: {e}")
-        demisto.results(
-            {
-                "Type": EntryType.ERROR,
-                "ContentsFormat": EntryFormat.TEXT,
-                "Contents": f"Error fetching modified incidents: {e}",
-            }
-        )
-        sys.exit(0)
+    except DemistoException as e:
+        demisto.error(f"get-modified-remote-data: encountered an error while fetching modified incidents: {e}")
+        if e.res is not None and e.res.status_code == 404:
+            demisto.error(f"get-modified-remote-data: error fetching modified incidents: {e}")
+            demisto.results(
+                {
+                    "Type": EntryType.ERROR,
+                    "ContentsFormat": EntryFormat.TEXT,
+                    "Contents": f"Error fetching modified incidents: {e}",
+                }
+            )
+            sys.exit(0)
+        raise
 
     demisto.debug(f"get-modified-remote-data: found {len(modified_incident_ids)} modified incident(s): {modified_incident_ids}")
     return GetModifiedRemoteDataResponse(modified_incident_ids)

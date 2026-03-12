@@ -695,3 +695,76 @@ def test_get_modified_incidents_client_method_empty_response(mocker):
     result = client.get_modified_incidents(from_timestamp=1740830400)
 
     assert result == []
+
+
+def test_get_modified_remote_data_404_handled_gracefully(mocker):
+    """
+    Given:
+        - client.get_modified_incidents raises a DemistoException with a 404 response.
+
+    When:
+        - Running get_modified_remote_data_command.
+
+    Then:
+        - demisto.error is called with the error message.
+        - demisto.results is called with an ERROR entry.
+        - sys.exit(0) is called to terminate gracefully.
+    """
+    import sys
+    from unittest.mock import MagicMock
+
+    last_update = datetime(2026, 3, 1, 12, 0, 0, tzinfo=UTC)
+    args = {"lastUpdate": last_update.isoformat()}
+
+    mock_res = MagicMock()
+    mock_res.status_code = 404
+    exc = DemistoException("Not Found", res=mock_res)
+
+    mocker.patch.object(Client, "get_modified_incidents", side_effect=exc)
+    mock_error = mocker.patch("demistomock.error")
+    mock_results = mocker.patch("demistomock.results")
+    mock_exit = mocker.patch.object(sys, "exit", side_effect=SystemExit)
+
+    client = Client(base_url="https://test.com")
+
+    with pytest.raises(SystemExit):
+        get_modified_remote_data_command(client, args)
+
+    mock_error.assert_called_once()
+    assert "error fetching modified incidents" in mock_error.call_args[0][0]
+    mock_results.assert_called_once()
+    result_entry = mock_results.call_args[0][0]
+    assert result_entry["Type"] == 2  # EntryType.ERROR
+    mock_exit.assert_called_once_with(0)
+
+
+def test_get_modified_remote_data_non_404_exception_is_reraised(mocker):
+    """
+    Given:
+        - client.get_modified_incidents raises a DemistoException with a 500 response.
+
+    When:
+        - Running get_modified_remote_data_command.
+
+    Then:
+        - The exception is re-raised and not swallowed.
+        - demisto.results is NOT called with an error entry.
+    """
+    from unittest.mock import MagicMock
+
+    last_update = datetime(2026, 3, 1, 12, 0, 0, tzinfo=UTC)
+    args = {"lastUpdate": last_update.isoformat()}
+
+    mock_res = MagicMock()
+    mock_res.status_code = 500
+    exc = DemistoException("Internal Server Error", res=mock_res)
+
+    mocker.patch.object(Client, "get_modified_incidents", side_effect=exc)
+    mock_results = mocker.patch("demistomock.results")
+
+    client = Client(base_url="https://test.com")
+
+    with pytest.raises(DemistoException, match="Internal Server Error"):
+        get_modified_remote_data_command(client, args)
+
+    mock_results.assert_not_called()
