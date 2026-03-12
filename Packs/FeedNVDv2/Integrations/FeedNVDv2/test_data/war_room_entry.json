@@ -8,10 +8,11 @@
             "published": "2024-04-12T08:15:06.230",
             "id": "CVE-2024-3400",
             "score": 6.9,
-            "cvssversion": "4.0"
+            "cvssversion": "4.0",
+            "severity": "MEDIUM"
         }
     ],
-    "HumanReadable": "### CVEs\n|ID|Score|Description|\n|---|---|---|\n| CVE-2024-3400 | 6.9 | A command injection vulnerability in the GlobalProtect feature of Palo Alto Networks PAN-OS software for specific PAN-OS versions and distinct feature configurations may enable an unauthenticated attacker to execute arbitrary code with root privileges on the firewall.<br><br>Cloud NGFW, Panorama appliances, and Prisma Access are not impacted by this vulnerability. |\n",
+    "HumanReadable": "### CVEs (1 results)\n|ID|CVSS Version|Severity|Score|Published|Last Modified|Description|\n|---|---|---|---|---|---|---|\n| CVE\u20112024\u20113400 | 4.0 | MEDIUM | 6.9 | 2024-04-12 | 2024-04-18 | A command injection vulnerability in the GlobalProtect feature of Palo Alto Networks PAN-OS software for specific PAN-OS versions and distinct feature configurations may enable an unauthenticated attacker to execute arbitrary code with root privileges on the firewall.<br><br>Cloud NGFW, Panorama appliances, and Prisma Access are not impacted by this vulnerability. |\n",
     "EntryContext": {
         "NistNVDv2.Indicators(val.Name && val.Name == obj.Name)": [
             {
@@ -20,7 +21,8 @@
                 "published": "2024-04-12T08:15:06.230",
                 "id": "CVE-2024-3400",
                 "score": 6.9,
-                "cvssversion": "4.0"
+                "cvssversion": "4.0",
+                "severity": "MEDIUM"
             }
         ]
     },
