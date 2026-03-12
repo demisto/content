@@ -293,25 +293,25 @@ def test_fetch_incidents_command(requests_mock, authenticated_client: Client) ->
             {"last_fetch": 1613205600},  # 10 digits - seconds format
             None,
             "createdBy.date: ['1613205600000'..'1613469600000']",
-            id="Seconds timestamp, empty filter"
+            id="Seconds timestamp, empty filter",
         ),
         pytest.param(
             {"last_fetch": 1613205600},  # 10 digits - seconds format
             "status: OPEN",
             "createdBy.date: ['1613205600000'..'1613469600000'] and status: OPEN",
-            id="Seconds timestamp, with filter"
+            id="Seconds timestamp, with filter",
         ),
         pytest.param(
             {"last_fetch": 1613205600000},  # 13 digits - milliseconds format
             None,
             "createdBy.date: ['1613205600000'..'1613469600000']",
-            id="Milliseconds timestamp, empty filter"
+            id="Milliseconds timestamp, empty filter",
         ),
         pytest.param(
             {"last_fetch": 1613205600000},  # 13 digits - milliseconds format
             "status: OPEN",
             "createdBy.date: ['1613205600000'..'1613469600000'] and status: OPEN",
-            id="Milliseconds timestamp, with filter"
+            id="Milliseconds timestamp, with filter",
         ),
     ],
 )
