@@ -28,6 +28,7 @@ BASE_URL: str = "https://services.nvd.nist.gov"  # disable-secrets-detection
 # Recommended max indicators per fetch based on NVD rate limits. (see https://nvd.nist.gov/developers/start-here#rateLimits)
 MAX_INDICATORS_WITHOUT_API_KEY = 40000
 MAX_INDICATORS_WITH_API_KEY = 200000
+DEFAULT_MANUAL_LIMIT = 50
 
 
 class Client(BaseClient):
@@ -115,6 +116,22 @@ class Client(BaseClient):
         return param_string
 
 
+def _select_primary_cvss_entry(cvss_entries: list[dict]) -> dict:
+    """Return the Primary (NIST/NVD) CVSS entry when available, otherwise the first.
+
+    The NVD API marks NIST's own assessment as ``type: "Primary"`` and
+    CNA/vendor assessments as ``type: "Secondary"``.  The API's severity
+    filters operate on the Primary score, so we must prefer it to keep
+    displayed scores consistent with the filter.
+    """
+    if not cvss_entries:
+        return {}
+    return next(
+        (entry for entry in cvss_entries if entry.get("type") == "Primary"),
+        cvss_entries[0],
+    )
+
+
 def build_indicators(client: Client, raw_cves: List[dict]):
     """
     Iteratively processes the retrieved CVEs from retrieve_cves function
@@ -173,7 +190,7 @@ def build_indicators(client: Client, raw_cves: List[dict]):
             fields["cvssversion"] = "2"
 
         if cvss_metric:
-            cvss_entry = raw_cve.get("metrics").get(cvss_metric)[0]
+            cvss_entry = _select_primary_cvss_entry(raw_cve.get("metrics").get(cvss_metric, []))
             cvss_data = cvss_entry.get("cvssData", {})
             score = cvss_data.get("baseScore")
 
@@ -305,6 +322,8 @@ def cves_to_war_room(raw_cves: list[dict], preferred_versions: list[str] | None 
             continue
 
         cve = raw_cve.get("cve")
+        if not cve:
+            continue
         fields: dict[str, Any] = {"description": cve.get("descriptions", [])[0].get("value")}
         fields["modified"] = cve.get("lastModified")
         fields["published"] = cve.get("published")
@@ -312,7 +331,8 @@ def cves_to_war_room(raw_cves: list[dict], preferred_versions: list[str] | None 
         fields["score"] = 0
         try:
             fields["cvssversion"], fields["score"], fields["severity"] = get_cvss_version_and_score(
-                cve.get("metrics"), preferred_versions=preferred_versions,
+                cve.get("metrics"),
+                preferred_versions=preferred_versions,
             )
         except Exception:
             demisto.debug(f"Cant find CVSS score for {raw_cve}")
@@ -376,10 +396,12 @@ def get_cvss_version_and_score(
 
     for key in ordered_keys:
         cvss_metrics = metrics.get(key)
-        if cvss_metrics and cvss_metrics[0]:
-            cvss_data = cvss_metrics[0]["cvssData"]
-            severity = cvss_data.get("baseSeverity", "")
-            return cvss_data["version"], cvss_data["baseScore"], severity
+        cvss_entry = _select_primary_cvss_entry(cvss_metrics) if cvss_metrics else {}
+        if cvss_entry:
+            cvss_data = cvss_entry.get("cvssData", {})
+            if cvss_data:
+                severity = cvss_data.get("baseSeverity", "")
+                return cvss_data["version"], cvss_data["baseScore"], severity
 
     return "", "", ""
 
@@ -519,7 +541,7 @@ def retrieve_cves(client: Client, start_date: Any, end_date: Any, use_pub_date: 
     seen_ids: set[str] = set()
     deduplicated: list[dict] = []
 
-    for version_label in client.cvss_versions:
+    for version_label in client.cvss_versions or []:
         severity_param = CVSS_VERSION_TO_PARAM.get(version_label, "")
         if not severity_param:
             demisto.debug(f"Unknown CVSS version label '{version_label}', skipping.")
@@ -529,7 +551,9 @@ def retrieve_cves(client: Client, start_date: Any, end_date: Any, use_pub_date: 
             demisto.debug(f"Querying NVD: {severity_param}={sev_value} (version={version_label})")
 
             cves = _retrieve_cves_single_query(
-                client, start_date, end_date,
+                client,
+                start_date,
+                end_date,
                 use_pub_date=use_pub_date,
                 severity_param=severity_param,
                 severity_value=sev_value,
@@ -543,7 +567,7 @@ def retrieve_cves(client: Client, start_date: Any, end_date: Any, use_pub_date: 
 
     demisto.debug(
         f"Total deduplicated CVEs after querying "
-        f"{len(client.cvss_versions)} CVSS versions x {len(client.cvss_severity)} severity levels: "
+        f"{len(client.cvss_versions or [])} CVSS versions x {len(client.cvss_severity)} severity levels: "
         f"{len(deduplicated)}"
     )
     return deduplicated
@@ -597,19 +621,14 @@ def _ingest_batch(
 
     remaining = max_indicators - total_so_far
     if remaining <= 0:
-        demisto.debug(
-            f"Fetch limit reached ({max_indicators} max indicators per fetch)."
-        )
+        demisto.debug(f"Fetch limit reached ({max_indicators} max indicators per fetch).")
         return 0, True
 
     indicators = build_indicators(client, raw_cves)
 
     fetch_limit_reached = False
     if len(indicators) > remaining:
-        demisto.debug(
-            f"Trimming batch from {len(indicators)} to {remaining} "
-            f"to stay within max_indicators={max_indicators}."
-        )
+        demisto.debug(f"Trimming batch from {len(indicators)} to {remaining} " f"to stay within max_indicators={max_indicators}.")
         indicators = indicators[:remaining]
         fetch_limit_reached = True
 
@@ -705,9 +724,7 @@ def fetch_indicators_command(client: Client) -> None:
         demisto.debug(f"Fetching CVEs from {window_start:%Y-%m-%d} to {window_end:%Y-%m-%d}")
         raw_cves = retrieve_cves(client, window_start, window_end, use_pub_date=use_pub_date)
 
-        created, fetch_limit_reached = _ingest_batch(
-            client, raw_cves, total_created, client.max_indicators
-        )
+        created, fetch_limit_reached = _ingest_batch(client, raw_cves, total_created, client.max_indicators)
         total_created += created
         last_completed_end = window_end
 
@@ -719,11 +736,13 @@ def fetch_indicators_command(client: Client) -> None:
     # Persist progress
     if fetch_limit_reached:
         last_run_data = demisto.getLastRun()
-        set_feed_last_run({
-            "lastRun": last_run_data.get("lastRun", last_completed_end.strftime(DATE_FORMAT)),
-            "resumeFrom": last_completed_end.strftime(DATE_FORMAT),
-            "usePubDate": use_pub_date,
-        })
+        set_feed_last_run(
+            {
+                "lastRun": last_run_data.get("lastRun", last_completed_end.strftime(DATE_FORMAT)),
+                "resumeFrom": last_completed_end.strftime(DATE_FORMAT),
+                "usePubDate": use_pub_date,
+            }
+        )
         demisto.debug(
             f"Fetch limit reached after {total_created} indicators. "
             f"Will resume from {last_completed_end.strftime(DATE_FORMAT)} on next interval."
@@ -732,11 +751,11 @@ def fetch_indicators_command(client: Client) -> None:
         set_feed_last_run({"lastRun": end_date.strftime(DATE_FORMAT)})
 
     demisto.debug(
-        f"({start_date.strftime(DATE_FORMAT)})-({end_date.strftime(DATE_FORMAT)}), "
-        f"Fetched {total_created} indicators."
+        f"({start_date.strftime(DATE_FORMAT)})-({end_date.strftime(DATE_FORMAT)}), " f"Fetched {total_created} indicators."
     )
 
-def manual_get_indicators_command(client: Client) -> list[dict]:
+
+def manual_get_indicators_command(client: Client) -> CommandResults:
     """Manual ``nvd-get-indicators`` handler.
 
     Reads command arguments, optionally overrides the client's CVSS
@@ -770,7 +789,11 @@ def manual_get_indicators_command(client: Client) -> list[dict]:
     )
 
     all_raw_cves, _, _ = _fetch_cves_in_windows(
-        client, start_date, end_date, use_pub_date=True, max_results=limit,
+        client,
+        start_date,
+        end_date,
+        use_pub_date=True,
+        max_results=limit,
     )
 
     demisto.debug(f"Manual fetch complete: {len(all_raw_cves)} CVEs returned")
@@ -805,7 +828,7 @@ def main():  # pragma: no cover
             cvss_severity=argToList(params.get("cvss_severity", [])),
             keyword_search=params.get("keyword_search", ""),
             cvss_versions=cvss_versions_raw or None,
-            max_indicators=max_indicators,
+            max_indicators=max_indicators or DEFAULT_MANUAL_LIMIT,
         )
 
         if command == "test-module":
@@ -821,4 +844,3 @@ def main():  # pragma: no cover
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-

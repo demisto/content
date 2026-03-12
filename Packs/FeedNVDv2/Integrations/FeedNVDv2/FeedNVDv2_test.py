@@ -10,10 +10,10 @@ from FeedNVDv2 import (
     _fetch_cves_in_windows,
     _ingest_batch,
     _resolve_auto_fetch_window,
+    _select_primary_cvss_entry,
     build_indicators,
     calculate_dbotscore,
     cves_to_war_room,
-    fetch_indicators_command,
     get_cvss_version_and_score,
     manual_get_indicators_command,
     parse_cpe_command,
@@ -90,6 +90,26 @@ def test_calculate_dbotscore(cvss_score, expected_result):
         ({"cvssMetricV31": [{}]}, "", "", ""),
         ({"cvssMetricV30": [{}]}, "", "", ""),
         ({"cvssMetricV20": [{}]}, "", "", ""),
+        # Multi-source: CNA first, Primary second — should pick Primary
+        (
+            {
+                "cvssMetricV31": [
+                    {
+                        "source": "cna@vendor.com",
+                        "type": "Secondary",
+                        "cvssData": {"version": "3.1", "baseScore": 6.3, "baseSeverity": "MEDIUM"},
+                    },
+                    {
+                        "source": "nvd@nist.gov",
+                        "type": "Primary",
+                        "cvssData": {"version": "3.1", "baseScore": 9.8, "baseSeverity": "CRITICAL"},
+                    },
+                ]
+            },
+            "3.1",
+            9.8,
+            "CRITICAL",
+        ),
     ],
 )
 def test_get_cvss_version_and_score(input_metrics, expected_version, expected_score, expected_severity):
@@ -359,3 +379,107 @@ def test_fetch_cves_in_windows_caps_results(client):
         )
         assert len(result) == 1
         assert limit_reached is True
+
+
+@pytest.mark.parametrize(
+    "entries, expected",
+    [
+        # Primary first — returns Primary
+        (
+            [
+                {"source": "nvd@nist.gov", "type": "Primary", "cvssData": {"baseScore": 9.8}},
+                {"source": "cna@vendor.com", "type": "Secondary", "cvssData": {"baseScore": 6.3}},
+            ],
+            {"source": "nvd@nist.gov", "type": "Primary", "cvssData": {"baseScore": 9.8}},
+        ),
+        # CNA first, Primary second — still returns Primary (the actual bug scenario)
+        (
+            [
+                {"source": "cna@vendor.com", "type": "Secondary", "cvssData": {"baseScore": 6.3}},
+                {"source": "nvd@nist.gov", "type": "Primary", "cvssData": {"baseScore": 9.8}},
+            ],
+            {"source": "nvd@nist.gov", "type": "Primary", "cvssData": {"baseScore": 9.8}},
+        ),
+        # No Primary — falls back to first entry
+        (
+            [
+                {"source": "cna@vendor.com", "type": "Secondary", "cvssData": {"baseScore": 6.3}},
+            ],
+            {"source": "cna@vendor.com", "type": "Secondary", "cvssData": {"baseScore": 6.3}},
+        ),
+        # Empty list — returns empty dict
+        ([], {}),
+    ],
+)
+def test_select_primary_cvss_entry(entries, expected):
+    """
+    Given:
+        A list of CVSS metric entries from the NVD API.
+
+    When:
+        _select_primary_cvss_entry is called.
+
+    Then:
+        The Primary (NIST/NVD) entry is returned when available,
+        otherwise the first entry, or an empty dict for empty input.
+    """
+    assert _select_primary_cvss_entry(entries) == expected
+
+
+def test_build_indicators_prefers_primary_score(client):
+    """
+    Given:
+        A CVE with two cvssMetricV31 entries where the CNA entry (MEDIUM, 6.3)
+        appears before the NIST Primary entry (CRITICAL, 9.8).
+
+    When:
+        build_indicators is called.
+
+    Then:
+        The indicator uses the Primary (NIST) score of 9.8, not the CNA score of 6.3.
+    """
+    raw_cves = [
+        {
+            "cve": {
+                "id": "CVE-2024-99999",
+                "descriptions": [{"lang": "en", "value": "Test CVE"}],
+                "lastModified": "2024-01-01T00:00:00Z",
+                "published": "2024-01-01T00:00:00Z",
+                "weaknesses": [],
+                "references": [],
+                "configurations": [],
+                "metrics": {
+                    "cvssMetricV31": [
+                        {
+                            "source": "cna@vendor.com",
+                            "type": "Secondary",
+                            "cvssData": {
+                                "version": "3.1",
+                                "vectorString": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+                                "baseScore": 6.3,
+                                "baseSeverity": "MEDIUM",
+                            },
+                            "exploitabilityScore": 2.8,
+                            "impactScore": 3.4,
+                        },
+                        {
+                            "source": "nvd@nist.gov",
+                            "type": "Primary",
+                            "cvssData": {
+                                "version": "3.1",
+                                "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                                "baseScore": 9.8,
+                                "baseSeverity": "CRITICAL",
+                            },
+                            "exploitabilityScore": 3.9,
+                            "impactScore": 5.9,
+                        },
+                    ]
+                },
+            }
+        }
+    ]
+    indicators = build_indicators(client, raw_cves)
+    assert len(indicators) == 1
+    assert indicators[0]["fields"]["cvssscore"] == 9.8
+    assert indicators[0]["fields"]["cvssversion"] == "3.1"
