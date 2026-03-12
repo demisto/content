@@ -1428,7 +1428,12 @@ def microsoft_365_defender_alert_get_command(client: Client, args: dict) -> Comm
     alert_id = args.get("alert_id", "")
     timeout = arg_to_number(args.get("timeout", TIMEOUT))
 
-    alert = client.get_alert(alert_id=alert_id, timeout=timeout)
+    try:
+        alert = client.get_alert(alert_id=alert_id, timeout=timeout)
+    except DemistoException as e:
+        if "404" in str(e):
+            return CommandResults(readable_output=f"Alert {alert_id} was not found.")
+        raise
     human_readable = tableToMarkdown(name=f"Alert {alert_id}:", t=alert)
 
     return CommandResults(
@@ -1448,10 +1453,15 @@ def microsoft_365_defender_alert_update_command(client: Client, args: dict) -> C
     determination = args.get("determination")
     assigned_to = args.get("assigned_to")
 
-    alert = client.update_alert(
-        alert_id=alert_id, timeout=timeout, status=status,
-        classification=classification, determination=determination, assigned_to=assigned_to,
-    )
+    try:
+        alert = client.update_alert(
+            alert_id=alert_id, timeout=timeout, status=status,
+            classification=classification, determination=determination, assigned_to=assigned_to,
+        )
+    except DemistoException as e:
+        if "404" in str(e):
+            return CommandResults(readable_output=f"Alert {alert_id} was not found.")
+        raise
     human_readable = tableToMarkdown(name=f"Updated Alert {alert_id}:", t=alert)
 
     return CommandResults(
@@ -1468,7 +1478,12 @@ def microsoft_365_defender_alert_create_comment_command(client: Client, args: di
     comment = args.get("comment", "")
     timeout = arg_to_number(args.get("timeout", TIMEOUT))
 
-    response = client.create_alert_comment(alert_id=alert_id, comment=comment, timeout=timeout)
+    try:
+        response = client.create_alert_comment(alert_id=alert_id, comment=comment, timeout=timeout)
+    except DemistoException as e:
+        if "404" in str(e):
+            return CommandResults(readable_output=f"Alert {alert_id} was not found.")
+        raise
     human_readable = f"Comment added to alert {alert_id} successfully."
 
     return CommandResults(
@@ -1510,9 +1525,14 @@ def microsoft_365_defender_machine_isolate_command(client: Client, args: dict) -
     isolation_type = args.get("isolation_type", "Full")
     timeout = arg_to_number(args.get("timeout", TIMEOUT))
 
-    response = client.isolate_machine(
-        machine_id=machine_id, comment=comment, isolation_type=isolation_type, timeout=timeout
-    )
+    try:
+        response = client.isolate_machine(
+            machine_id=machine_id, comment=comment, isolation_type=isolation_type, timeout=timeout
+        )
+    except DemistoException as e:
+        if "404" in str(e):
+            return CommandResults(readable_output=f"Machine {machine_id} was not found.")
+        raise
     human_readable = tableToMarkdown(name=f"Machine {machine_id} isolation initiated:", t=response)
 
     return CommandResults(
@@ -1529,7 +1549,12 @@ def microsoft_365_defender_machine_unisolate_command(client: Client, args: dict)
     comment = args.get("comment", "Released from isolation via Cortex XSOAR")
     timeout = arg_to_number(args.get("timeout", TIMEOUT))
 
-    response = client.unisolate_machine(machine_id=machine_id, comment=comment, timeout=timeout)
+    try:
+        response = client.unisolate_machine(machine_id=machine_id, comment=comment, timeout=timeout)
+    except DemistoException as e:
+        if "404" in str(e):
+            return CommandResults(readable_output=f"Machine {machine_id} was not found.")
+        raise
     human_readable = tableToMarkdown(name=f"Machine {machine_id} unisolation initiated:", t=response)
 
     return CommandResults(
@@ -1547,9 +1572,14 @@ def microsoft_365_defender_machine_scan_command(client: Client, args: dict) -> C
     scan_type = args.get("scan_type", "Quick")
     timeout = arg_to_number(args.get("timeout", TIMEOUT))
 
-    response = client.run_antivirus_scan(
-        machine_id=machine_id, comment=comment, scan_type=scan_type, timeout=timeout
-    )
+    try:
+        response = client.run_antivirus_scan(
+            machine_id=machine_id, comment=comment, scan_type=scan_type, timeout=timeout
+        )
+    except DemistoException as e:
+        if "404" in str(e):
+            return CommandResults(readable_output=f"Machine {machine_id} was not found.")
+        raise
     human_readable = tableToMarkdown(name=f"AV scan on machine {machine_id} initiated:", t=response)
 
     return CommandResults(
@@ -1566,7 +1596,12 @@ def microsoft_365_defender_machine_collect_investigation_package_command(client:
     comment = args.get("comment", "Investigation package collection via Cortex XSOAR")
     timeout = arg_to_number(args.get("timeout", TIMEOUT))
 
-    response = client.collect_investigation_package(machine_id=machine_id, comment=comment, timeout=timeout)
+    try:
+        response = client.collect_investigation_package(machine_id=machine_id, comment=comment, timeout=timeout)
+    except DemistoException as e:
+        if "404" in str(e):
+            return CommandResults(readable_output=f"Machine {machine_id} was not found.")
+        raise
     human_readable = tableToMarkdown(name=f"Investigation package collection on {machine_id} initiated:", t=response)
 
     return CommandResults(
@@ -1583,7 +1618,12 @@ def microsoft_365_defender_machine_restrict_execution_command(client: Client, ar
     comment = args.get("comment", "Code execution restricted via Cortex XSOAR")
     timeout = arg_to_number(args.get("timeout", TIMEOUT))
 
-    response = client.restrict_code_execution(machine_id=machine_id, comment=comment, timeout=timeout)
+    try:
+        response = client.restrict_code_execution(machine_id=machine_id, comment=comment, timeout=timeout)
+    except DemistoException as e:
+        if "404" in str(e):
+            return CommandResults(readable_output=f"Machine {machine_id} was not found.")
+        raise
     human_readable = tableToMarkdown(name=f"Code execution restriction on {machine_id} initiated:", t=response)
 
     return CommandResults(
@@ -1600,7 +1640,12 @@ def microsoft_365_defender_machine_unrestrict_execution_command(client: Client, 
     comment = args.get("comment", "Code execution restriction removed via Cortex XSOAR")
     timeout = arg_to_number(args.get("timeout", TIMEOUT))
 
-    response = client.unrestrict_code_execution(machine_id=machine_id, comment=comment, timeout=timeout)
+    try:
+        response = client.unrestrict_code_execution(machine_id=machine_id, comment=comment, timeout=timeout)
+    except DemistoException as e:
+        if "404" in str(e):
+            return CommandResults(readable_output=f"Machine {machine_id} was not found.")
+        raise
     human_readable = tableToMarkdown(name=f"Code execution unrestriction on {machine_id} initiated:", t=response)
 
     return CommandResults(
@@ -1666,7 +1711,12 @@ def microsoft_365_defender_indicator_delete_command(client: Client, args: dict) 
     indicator_id = args.get("indicator_id", "")
     timeout = arg_to_number(args.get("timeout", TIMEOUT))
 
-    client.delete_indicator(indicator_id=indicator_id, timeout=timeout)
+    try:
+        client.delete_indicator(indicator_id=indicator_id, timeout=timeout)
+    except DemistoException as e:
+        if "404" in str(e):
+            return CommandResults(readable_output=f"Indicator {indicator_id} was not found.")
+        raise
 
     return CommandResults(
         readable_output=f"Indicator {indicator_id} deleted successfully.",
