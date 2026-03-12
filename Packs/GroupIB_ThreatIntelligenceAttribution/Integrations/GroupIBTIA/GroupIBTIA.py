@@ -428,8 +428,6 @@ COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES = [
     "compromised/breacheddb",
 ]
 
-COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED = ["compromised/breacheddb"]
-
 COLLECTIONS_REQUIRING_SEARCH_VIA_QUERY_PARAMETER = [
     "osi/public_leak",
     "attacks/phishing_group",
@@ -605,7 +603,12 @@ MAPPING = {
         "description": "description",  # Description
         "emails": "email",  # GIB Emails
         "emailDomains": "addInfo.emailDomain",  # GIB Email Domains
-        "portalLink": "set_generated_portal_link",  # GIB Portal Link
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("compromised/breacheddb"),
+                "dynamic": "id",
+            }
+        },
         # END Information from Group-IB
         # Group-IB Evaluation
         "evaluation": {
@@ -1746,14 +1749,6 @@ class CommonHelpers:
         return data
 
     @staticmethod
-    def custom_generate_portal_link(collection_name: str, incident: dict):
-        if collection_name in COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED:
-            # generating just for compromised/breacheddb
-            incident["portalLink"] = PORTAL_LINKS.get("compromised/breacheddb", "") + str(incident["emails"][0])
-
-        return incident
-
-    @staticmethod
     def validate_collections(collection_name):
         if collection_name in DEPRECATED_COLLECTIONS:
             raise Exception(f"Collection {collection_name} is obsolete. Please use {DEPRECATED_COLLECTIONS.get(collection_name)}")
@@ -2105,7 +2100,6 @@ class IncidentBuilder:
                         self.incident[field] = None
 
     def build_incident(self) -> dict:
-        self.incident = CommonHelpers.custom_generate_portal_link(collection_name=self.collection_name, incident=self.incident)
         incident_name = self.get_incident_name()
         system_severity = self.get_system_severity()
         self.incident.update(
@@ -2212,7 +2206,6 @@ class BuilderCommandResponses:
 
     def build_feed(self):
         feed = self.get_feed()
-        feed = CommonHelpers.custom_generate_portal_link(collection_name=self.collection_name, incident=feed)
         indicators, feed = self.get_indicators(feed=feed)
         main_table_data, additional_tables = self.get_table_data(feed=feed)
         feed_id = feed.get("id")
