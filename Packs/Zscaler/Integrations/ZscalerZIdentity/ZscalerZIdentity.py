@@ -10,7 +10,7 @@ BASE_API_URL = "https://api.zsapi.net/zia/api/v1"
 TOKEN_URL_TEMPLATE = "https://{server_url}/oauth2/v1/token"
 AUDIENCE = "https://api.zscaler.com"
 SUSPICIOUS_CATEGORIES = ["SUSPICIOUS_DESTINATION", "SPYWARE_OR_ADWARE"]
-TOKEN_EXPIRY_BUFFER_SECONDS = 30 # Refresh the cached token this many seconds before it actually expires
+TOKEN_EXPIRY_BUFFER_SECONDS = 30  # Refresh the cached token this many seconds before it actually expires
 
 ERROR_CODES_DICT = {
     400: "Invalid or bad request",
@@ -272,8 +272,8 @@ class Client(BaseClient):
         """
         return self.api_request("GET", "/security")
 
-    def update_allowlist(self, urls: list[str], action: str) -> None:
-        """Updates the ZIA allowlist with the given URLs.
+    def update_allowlist(self, urls: list[str], ips: list[str], action: str) -> None:
+        """Updates the ZIA allowlist with the given URLs and IPs.
 
         Since the ZIA API only supports PUT (full replacement), this method
         fetches the current allowlist and merges the changes before sending.
@@ -281,18 +281,20 @@ class Client(BaseClient):
 
         Args:
             urls: List of URL strings to add/remove/overwrite.
+            ips: List of IP address strings to add/remove/overwrite.
             action: One of "ADD_TO_LIST", "REMOVE_FROM_LIST", or "OVERWRITE".
         """
+        items = urls + ips
         current = self.get_allowlist()
         existing = current.get("whitelistUrls", [])
         if action == "ADD_TO_LIST":
-            # Only add URLs not already present
-            new_urls = [u for u in urls if u not in existing]
-            current["whitelistUrls"] = existing + new_urls
+            # Only add items not already present
+            new_items = [u for u in items if u not in existing]
+            current["whitelistUrls"] = existing + new_items
         elif action == "REMOVE_FROM_LIST":
-            current["whitelistUrls"] = [u for u in existing if u not in urls]
+            current["whitelistUrls"] = [u for u in existing if u not in items]
         else:  # OVERWRITE
-            current["whitelistUrls"] = urls
+            current["whitelistUrls"] = items
         self.api_request("PUT", "/security", data=current, resp_type="response")
 
     # ---- URL Categories ----
@@ -825,24 +827,26 @@ def zia_allowlist_update_command(client: Client, args: dict) -> CommandResults:
     Args:
         client: The authenticated ZIA Client instance.
         args: Command arguments dict with keys:
-            - url: Comma-separated list of URLs or IPs to update (required).
+            - url: Comma-separated list of URLs to update.
+            - ip: Comma-separated list of IPs to update.
             - action: One of "ADD_TO_LIST", "REMOVE_FROM_LIST", "OVERWRITE" (required).
 
     Returns:
         A CommandResults object with a success message.
 
     Raises:
-        DemistoException: If url or action is missing.
+        DemistoException: If neither url nor ip is provided, or action is missing.
     """
     urls = argToList(args.get("url", ""))
+    ips = argToList(args.get("ip", ""))
     action = args.get("action", "")
 
-    if not urls:
-        raise DemistoException("The 'url' argument is required.")
+    if not urls and not ips:
+        raise DemistoException("At least one of 'url' or 'ip' arguments must be provided.")
     if not action:
         raise DemistoException("The 'action' argument is required.")
 
-    client.update_allowlist(urls, action)
+    client.update_allowlist(urls, ips, action)
     return CommandResults(readable_output="The allowlist has been successfully updated.")
 
 
@@ -859,7 +863,7 @@ def zia_category_list_command(client: Client, args: dict) -> CommandResults:
                 Cannot be combined with other parameters.
             - limit: Maximum number of results (default 50).
             - all_results: If "True", returns all results ignoring limit.
-            - display_URL: If "true", includes URLs in the human-readable output.
+            - display_url: If "true", includes URLs in the human-readable output.
 
     Returns:
         A CommandResults object with the URL category data.
@@ -873,7 +877,7 @@ def zia_category_list_command(client: Client, args: dict) -> CommandResults:
     lite = argToBoolean(args.get("lite", False))
     limit = arg_to_number(args.get("limit", 50)) or 50
     all_results = argToBoolean(args.get("all_results", False))
-    display_url = argToBoolean(args.get("display_URL", False))
+    display_url = argToBoolean(args.get("display_url", False))
 
     if lite and (category_id or custom_only or include_only_url_keyword_counts):
         raise DemistoException("The 'lite' option cannot be used in combination with other parameters.")
@@ -1452,7 +1456,7 @@ def zia_departments_list_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def zia_sandbox_report_get_command(client: Client, args: dict) -> CommandResults:
+def zia_sandbox_report_get_command(client: Client, args: dict) -> list[CommandResults]:
     """Retrieves a Sandbox analysis report for a file identified by MD5 hash.
 
     Calculates a DBotScore based on the classification type:
@@ -1765,7 +1769,7 @@ def main() -> None:  # pragma: no cover
 
     suspicious_categories_param = params.get("suspicious_categories", "")
     if suspicious_categories_param:
-        suspicious_categories = [c.strip() for c in suspicious_categories_param.split(",") if c.strip()]
+        suspicious_categories = argToList(suspicious_categories_param)
     else:
         suspicious_categories = SUSPICIOUS_CATEGORIES
 
@@ -1847,4 +1851,3 @@ def main() -> None:  # pragma: no cover
 
 if __name__ in ("__builtin__", "builtins", "__main__"):  # pragma: no cover
     main()
-

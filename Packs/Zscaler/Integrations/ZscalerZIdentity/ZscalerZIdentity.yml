@@ -65,8 +65,9 @@ configuration:
   advanced: true
   required: false
 description: Zscaler Internet Access via ZIdentity OAuth 2.0. Provides URL/IP/domain classification, denylist and allowlist management, URL category management, sandbox reporting, user and group management, and IP destination group management using OAuth 2.0 client credentials authentication through ZIdentity.
-display: Zscaler Internet Access via ZIdentity
+display: Zscaler Internet Access via ZIdentity (Beta)
 name: ZscalerZIdentity
+beta: true
 script:
   commands:
   - name: zia-denylist-list
@@ -191,7 +192,7 @@ script:
       - 'True'
       - 'False'
       defaultValue: 'False'
-    - name: display_URL
+    - name: display_url
       description: Whether to display the URLs of each category in the War Room. URLs will always be returned to the Context Data.
       auto: PREDEFINED
       predefined:
@@ -670,9 +671,6 @@ script:
       type: String
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason the vendor tagged the file as malicious.
-      type: String
-    - contextPath: File.DetectedMalware
-      description: The malware detected in the file.
       type: String
     - contextPath: File.FileType
       description: The file type.

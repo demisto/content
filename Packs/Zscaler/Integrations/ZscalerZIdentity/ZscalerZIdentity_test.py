@@ -249,6 +249,7 @@ class TestTokenCaching:
         When: _get_access_token is called.
         Then: A new token is fetched from ZIdentity and returned.
         """
+        token_response = load_json("/test_data/responses/token.json")
         mocker.patch(
             "ZscalerZIdentity.get_integration_context",
             return_value={
@@ -259,10 +260,10 @@ class TestTokenCaching:
         mocker.patch.object(
             mock_client,
             "_http_request",
-            return_value={"access_token": "new_token", "expires_in": 3600},
+            return_value=token_response,
         )
         token = mock_client._get_access_token()
-        assert token == "new_token"
+        assert token == token_response["access_token"]
 
     def test_raises_on_missing_token(self, mock_client, mocker):
         """
@@ -304,7 +305,7 @@ class TestDenylistCommands:
         When: zia_denylist_list_command is called with no filters.
         Then: The result has the correct outputs_prefix and all entries appear in the output.
         """
-        data = load_json("Packs/Zscaler/Integrations/ZscalerZIdentity/test_data/responses/denylist.json")
+        data = load_json("/test_data/responses/denylist.json")
         _patch_api(mocker, mock_client, data)
         result = zia_denylist_list_command(mock_client, {})
         assert result.outputs_prefix == "ZIA.DenyList"
@@ -316,7 +317,7 @@ class TestDenylistCommands:
         When: zia_denylist_list_command is called with filter='ip'.
         Then: Only IP addresses appear in the output; URL entries are excluded.
         """
-        data = load_json("Packs/Zscaler/Integrations/ZscalerZIdentity/test_data/responses/denylist.json")
+        data = load_json("/test_data/responses/denylist.json")
         _patch_api(mocker, mock_client, data)
         result = zia_denylist_list_command(mock_client, {"filter": "ip"})
         assert "1.2.3.4" in result.readable_output
@@ -328,7 +329,7 @@ class TestDenylistCommands:
         When: zia_denylist_list_command is called with a query matching only one entry.
         Then: Only the matching entry appears in the output.
         """
-        data = load_json("Packs/Zscaler/Integrations/ZscalerZIdentity/test_data/responses/denylist.json")
+        data = load_json("/test_data/responses/denylist.json")
         _patch_api(mocker, mock_client, data)
         result = zia_denylist_list_command(mock_client, {"query": "malicious"})
         assert "malicious.com" in result.readable_output
@@ -374,7 +375,7 @@ class TestAllowlistCommands:
         When: zia_allowlist_list_command is called with no filters.
         Then: The result has the correct outputs_prefix and all entries appear in the output.
         """
-        data = load_json("Packs/Zscaler/Integrations/ZscalerZIdentity/test_data/responses/allowlist.json")
+        data = load_json("/test_data/responses/allowlist.json")
         _patch_api(mocker, mock_client, data)
         result = zia_allowlist_list_command(mock_client, {})
         assert result.outputs_prefix == "ZIA.AllowList"
@@ -391,14 +392,27 @@ class TestAllowlistCommands:
         result = zia_allowlist_update_command(mock_client, {"url": "new.com", "action": "ADD_TO_LIST"})
         assert "successfully updated" in result.readable_output
 
-    def test_update_requires_url(self, mock_client):
+    def test_update_requires_url_or_ip(self, mock_client):
         """
-        Given: The url argument is missing.
+        Given: Neither url nor ip argument is provided.
         When: zia_allowlist_update_command is called.
-        Then: A DemistoException is raised indicating url is required.
+        Then: A DemistoException is raised indicating at least one is required.
         """
-        with pytest.raises(DemistoException, match="'url' argument is required"):
+        with pytest.raises(DemistoException, match="At least one of 'url' or 'ip'"):
             zia_allowlist_update_command(mock_client, {"action": "ADD_TO_LIST"})
+
+    def test_update_add_ip(self, mock_client, mocker):
+        """
+        Given: A new IP and action=ADD_TO_LIST are provided.
+        When: zia_allowlist_update_command is called with only the ip argument.
+        Then: The allowlist is updated and a success message is returned.
+        """
+        mocker.patch.object(mock_client, "get_allowlist", return_value={"whitelistUrls": ["existing.com"]})
+        api_mock = mocker.patch.object(mock_client, "api_request", return_value=None)
+        result = zia_allowlist_update_command(mock_client, {"ip": "1.2.3.4", "action": "ADD_TO_LIST"})
+        assert "successfully updated" in result.readable_output
+        sent_data = api_mock.call_args[1].get("data") or api_mock.call_args[0][2]
+        assert "1.2.3.4" in sent_data["whitelistUrls"]
 
     def test_update_add_deduplicates(self, mock_client, mocker):
         """
@@ -425,7 +439,7 @@ class TestCategoryCommands:
         When: zia_category_list_command is called with no arguments.
         Then: The result has the correct outputs_prefix and two categories in the raw response.
         """
-        data = load_json("Packs/Zscaler/Integrations/ZscalerZIdentity/test_data/responses/url_categories.json")
+        data = load_json("/test_data/responses/url_categories.json")
         _patch_api(mocker, mock_client, data)
         result = zia_category_list_command(mock_client, {})
         assert result.outputs_prefix == "ZIA.Category"
@@ -489,7 +503,7 @@ class TestUrlQuotaCommand:
         Then: The result has the correct outputs_prefix, raw_response matches the API data,
             and the human-readable output contains the provisioned URL count.
         """
-        data = load_json("Packs/Zscaler/Integrations/ZscalerZIdentity/test_data/responses/url_quota.json")
+        data = load_json("/test_data/responses/url_quota.json")
         _patch_api(mocker, mock_client, data)
         result = zia_url_quota_get_command(mock_client, {})
         assert result.outputs_prefix == "ZIA.UrlQuota"
@@ -508,7 +522,7 @@ class TestIPDestinationGroupCommands:
         When: zia_ip_destination_group_list_command is called with no arguments.
         Then: The result has the correct outputs_prefix and two groups in the raw response.
         """
-        data = load_json("Packs/Zscaler/Integrations/ZscalerZIdentity/test_data/responses/ip_destination_groups.json")
+        data = load_json("/test_data/responses/ip_destination_groups.json")
         _patch_api(mocker, mock_client, data)
         result = zia_ip_destination_group_list_command(mock_client, {})
         assert result.outputs_prefix == "ZIA.IPDestinationGroup"
@@ -703,7 +717,7 @@ class TestUserCommands:
         Then: The result has the correct outputs_prefix, two users in the raw response,
             and the first user's name appears in the human-readable output.
         """
-        data = load_json("Packs/Zscaler/Integrations/ZscalerZIdentity/test_data/responses/users.json")
+        data = load_json("/test_data/responses/users.json")
         _patch_api(mocker, mock_client, data)
         result = zia_user_list_command(mock_client, {})
         assert result.outputs_prefix == "ZIA.User"
@@ -772,7 +786,7 @@ class TestGroupsCommand:
         Then: The result has the correct outputs_prefix, two groups in the raw response,
             and the first group's name appears in the human-readable output.
         """
-        data = load_json("Packs/Zscaler/Integrations/ZscalerZIdentity/test_data/responses/groups.json")
+        data = load_json("/test_data/responses/groups.json")
         _patch_api(mocker, mock_client, data)
         result = zia_groups_list_command(mock_client, {})
         assert result.outputs_prefix == "ZIA.Groups"
@@ -792,7 +806,7 @@ class TestDepartmentsCommand:
         Then: The result has the correct outputs_prefix, two departments in the raw response,
             and the first department's name appears in the human-readable output.
         """
-        data = load_json("Packs/Zscaler/Integrations/ZscalerZIdentity/test_data/responses/departments.json")
+        data = load_json("/test_data/responses/departments.json")
         _patch_api(mocker, mock_client, data)
         result = zia_departments_list_command(mock_client, {})
         assert result.outputs_prefix == "ZIA.Department"
@@ -812,7 +826,7 @@ class TestSandboxReportCommand:
         Then: The result has the correct outputs_prefix, a non-None indicator,
             a BAD DBotScore, and "Malicious" appears in the human-readable output.
         """
-        data = load_json("Packs/Zscaler/Integrations/ZscalerZIdentity/test_data/responses/sandbox_report.json")
+        data = load_json("/test_data/responses/sandbox_report.json")
         _patch_api(mocker, mock_client, data)
         result = zia_sandbox_report_get_command(
             mock_client, {"md5": "abc123def456abc123def456abc123de", "report_type": "summary"}
@@ -864,7 +878,7 @@ class TestLookupCommands:
         When: url_command is called with two URLs.
         Then: Two results are returned and the malicious URL has a BAD DBotScore.
         """
-        data = load_json("Packs/Zscaler/Integrations/ZscalerZIdentity/test_data/responses/url_lookup.json")
+        data = load_json("/test_data/responses/url_lookup.json")
         mocker.patch.object(mock_client, "url_lookup", return_value=data)
         results = url_command(mock_client, {"url": "malicious-site.com,safe-site.com"})
         assert len(results) == 2
@@ -883,7 +897,7 @@ class TestLookupCommands:
         When: url_command is called with two URLs.
         Then: The benign URL has a GOOD DBotScore.
         """
-        data = load_json("Packs/Zscaler/Integrations/ZscalerZIdentity/test_data/responses/url_lookup.json")
+        data = load_json("/test_data/responses/url_lookup.json")
         mocker.patch.object(mock_client, "url_lookup", return_value=data)
         results = url_command(mock_client, {"url": "malicious-site.com,safe-site.com"})
         good_result = next(r for r in results if "safe-site.com" in r.readable_output)
