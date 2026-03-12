@@ -84,10 +84,10 @@ def extract_values(data: dict | list, path: str, values_to_exclude: list) -> lis
         if isinstance(obj, dict):
             if keys[0] in obj:
                 return recurse(obj[keys[0]], keys[1:])
-            
+
         elif isinstance(obj, list):
             return [result for item in obj for result in recurse(item, keys)]
-        
+
         return []
 
     return recurse(data, path.split("."))
@@ -141,7 +141,7 @@ def recursive_filter(item: list[dict] | dict, regex_patterns: list, *fieldsToRem
                 result[key] = value
 
         return result
-    
+
     return item
 
 
@@ -154,10 +154,10 @@ def match_one_regex(string: str, patterns) -> bool:  # type: ignore
     """
     if not isinstance(string, str):
         return False
-    
+
     if len(patterns) == 0:
         return False
-    
+
     if len(patterns) == 1:
         return bool(patterns[0].match(string))
     else:
@@ -172,19 +172,19 @@ def normalize_json(obj) -> str:  # type: ignore
     """
     if isinstance(obj, float) or not obj:
         return " "
-    
+
     if isinstance(obj, str):
         try:
             obj = json.loads(obj)
         except ValueError:
             return " "
-        
+
     if check_list_of_dict(obj):
         obj = dict(enumerate(obj))
-        
+
     if not isinstance(obj, dict):
         return " "
-    
+
     my_dict = recursive_filter(obj, REGEX_DATE_PATTERN, "None", "N/A", None, "")
     my_string = json.dumps(my_dict)
     pattern = re.compile(r"([^\s\w]|_)+")
@@ -202,7 +202,7 @@ def normalize_command_line(command: str) -> str:
 
     if command and isinstance(command, list):
         command = " ".join(set(command))
-        
+
     if command and isinstance(command, str):
         my_string = command.lower()
         my_string = "".join([REPLACE_COMMAND_LINE.get(c, c) for c in my_string])
@@ -262,7 +262,7 @@ class Tfidf(BaseEstimator, TransformerMixin):
         self.normalize_function = normalize_function
         if self.normalize_function:
             current_incident = current_incident[self.incident_field].apply(self.normalize_function)
-        
+
         self.vocabulary = TfidfVectorizer(**self.params, use_idf=False).fit(current_incident).vocabulary_
         self.vec = TfidfVectorizer(**self.params, vocabulary=self.vocabulary)
 
@@ -274,7 +274,7 @@ class Tfidf(BaseEstimator, TransformerMixin):
         """
         if self.normalize_function:
             x = x[self.incident_field].apply(self.normalize_function)
-        
+
         self.vec.fit(x)
         return self
 
@@ -288,7 +288,7 @@ class Tfidf(BaseEstimator, TransformerMixin):
             x = x[self.incident_field].apply(self.normalize_function)
         else:
             x = x[self.incident_field]
-        
+
         return self.vec.transform(x).toarray()
 
 
@@ -448,7 +448,7 @@ class Model:
                 demisto.debug(f"Skipping - {skip_reason}")
             else:
                 demisto.debug(f"Including {field=} in similarity calculation (value in incident is: {val})")
-            
+
             return skip_reason
 
         def filter_fields(
@@ -634,7 +634,7 @@ def find_incorrect_fields(
         global_msg += (
             "%s \n" % f"- {', '.join(incorrect_fields)} field(s) don't/doesn't exist within the fetched {incident_alias}s."
         )  # noqa: UP031
-        
+
     return global_msg, incorrect_fields
 
 
@@ -789,7 +789,7 @@ class BaseSimilarObjectFinder:
             context = {"similarIncidentList": {}, "isSimilarIncidentFound": False}
         else:
             context = {"similarIncident": (similar_incidents.to_dict(orient="records")), "isSimilarIncidentFound": True}
-        
+
         return context
 
     def return_outputs_similar_incidents(self, show_actual_incident, current_incident, similar_incidents, context):
@@ -833,7 +833,7 @@ class BaseSimilarObjectFinder:
                     )
                 )
             )
-            
+
         readable_output = tableToMarkdown(
             f"Similar {self.incident_alias.capitalize()}s", similar_incidents_json, colums_to_display
         )
@@ -846,7 +846,7 @@ class BaseSimilarObjectFinder:
         }
         if self.tag_incident is not None:
             return_entry["Tags"] = [f"SimilarIncidents_{self.tag_incident}"]
-            
+
         demisto.results(return_entry)
 
     def run(self):
@@ -867,7 +867,7 @@ class BaseSimilarObjectFinder:
         limit = int(self.args.get("limit") or 1500)
         if self.incident_alias == "issue":
             limit += 1
-            
+
         show_actual_incident = self.args.get("showCurrentIncident")
         incident_id = self.args.get("incidentId")
         include_indicators_similarity = self.args.get("includeIndicatorsSimilarity") or "False"
@@ -1110,7 +1110,7 @@ class SimilarIncidentFinder(BaseSimilarObjectFinder):
                 f"enlarge the time period or increase the limit argument to more than {limit}. \n"
             )
             return incidents, msg
-        
+
         return incidents, msg
 
     def enrich_with_indicators(self, similar_incidents, include_indicators_similarity):
@@ -1133,13 +1133,13 @@ class SimilarIncidentFinder(BaseSimilarObjectFinder):
             indicators_similarity_df = pd.DataFrame(indicators_similarity_json)
             if indicators_similarity_df.empty:
                 indicators_similarity_df = pd.DataFrame(columns=["similarity indicators", "Identical indicators", "id"])
-            
+
             keep_columns = [x for x in ["Identical indicators", "similarity indicators"] if x not in similar_incidents]
             indicators_similarity_df.index = indicators_similarity_df.id
             similar_incidents.loc[:, keep_columns] = indicators_similarity_df[keep_columns]
             values = {"similarity indicators": 0, "Identical indicators": ""}
             similar_incidents = similar_incidents.fillna(value=values)
-        
+
         return similar_incidents
 
 
@@ -1384,7 +1384,7 @@ class SimilarIssueFinder(BaseSimilarObjectFinder):
                 "similar_issue": df.to_dict(orient="records"),
                 "is_similar_issue_found": True,
             }
-            
+
         return context
 
     def return_outputs_similar_incidents(self, show_actual_incident, current_incident, similar_incidents, context):
@@ -1448,5 +1448,5 @@ class SimilarIssueFinder(BaseSimilarObjectFinder):
         }
         if self.tag_incident is not None:
             return_entry["Tags"] = [f"SimilarIssues_{self.tag_incident}"]
-            
+
         demisto.results(return_entry)
