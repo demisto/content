@@ -11,11 +11,11 @@ class TestSetIndicator:
         result = set_indicator_if_exist(args)
 
         assert isinstance(result, CommandResults)
+        assert isinstance(result.outputs, dict)
         assert result.outputs_prefix == "SetIndicator"
         assert result.outputs_key_field == "Value"
-        outputs = dict(result.outputs)  # type: ignore[arg-type]
-        assert outputs["Value"] == "1.1.1.1"
-        assert "Please provide at least one argument" in outputs["Result"]
+        assert result.outputs["Value"] == "1.1.1.1"
+        assert "Please provide at least one argument" in result.outputs["Result"]
 
     def test_empty_arguments(self):
         """Test that function returns CommandResults with error message when completely empty arguments"""
@@ -24,10 +24,10 @@ class TestSetIndicator:
         result = set_indicator_if_exist(args)
 
         assert isinstance(result, CommandResults)
+        assert isinstance(result.outputs, dict)
         assert result.outputs_prefix == "SetIndicator"
         assert result.outputs_key_field == "Value"
-        outputs = dict(result.outputs)  # type: ignore[arg-type]
-        assert "Please provide at least one argument" in outputs["Result"]
+        assert "Please provide at least one argument" in result.outputs["Result"]
 
     @patch("SetIndicatorAgentix.execute_command")
     def test_indicator_does_not_exist(self, mock_execute):
