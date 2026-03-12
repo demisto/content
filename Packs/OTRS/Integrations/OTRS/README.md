@@ -219,6 +219,7 @@ Create a new ticket in OTRS
 | customer_user | Customer user related to the new ticket | Required |
 | article_subject | Article subject to apply to the new ticket | Required |
 | article_body | Text to add to the article body of the new ticket | Required |
+| article_content_type | Content Type of the article body. Can be either 'text/plain; charset=utf8' or 'text/html; charset=utf8'. Defaults to 'text/plain; charset=utf8'. | Optional |
 | type | Ticket type to assign to the new ticket | Optional |
 | dynamic_fields | Dynamic fields to apply to the new ticket in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2 | Optional |
 | attachment | File entry ID of the file to add as an attachment to the new ticket in CSV format. For example: 123@20,124@21  | Optional |
@@ -229,6 +230,7 @@ Create a new ticket in OTRS
 | --- | --- | --- |
 | OTRS.Ticket.Article.Subject | string | Ticket article subject |
 | OTRS.Ticket.Article.Body | string | Ticket article body |
+| OTRS.Ticket.Article.ContentType | string | Content Type of the article body. |
 | OTRS.Ticket.ID | string | Ticket ID |
 | OTRS.Ticket.Number | string | Ticket number |
 | OTRS.Ticket.Created | date | Ticket creation date |
@@ -291,6 +293,7 @@ Update an OTRS ticket
 | priority | Priority of the ticket to update. For the use of a custom priority, you can specify a custom value outside the predefined set. | Optional |
 | article_subject | Article subject of the ticket to update | Optional |
 | article_body | Article body of the ticket to update | Optional |
+| article_content_type | Content Type of the article body. Can be either 'text/plain; charset=utf8' or 'text/html; charset=utf8'. Defaults to 'text/plain; charset=utf8'. | Optional |
 | queue | Queue that the ticket to update is in | Optional |
 | type | Ticket type of the ticket to update | Optional |
 | dynamic_fields | Dynamic fields to apply to the updated ticket, in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2 | Optional |
@@ -303,6 +306,7 @@ Update an OTRS ticket
 | --- | --- | --- |
 | OTRS.Ticket.Article.Subject | string | Ticket article subject |
 | OTRS.Ticket.Article.Body | string | Ticket article body |
+| OTRS.Ticket.Article.ContentType | string | Content Type of the article body. |
 | OTRS.Ticket.ID | string | Ticket ID |
 | OTRS.Ticket.Created | date | Ticket creation date |
 | OTRS.Ticket.Priority | string | Ticket priority |
@@ -351,6 +355,7 @@ Close an OTRS ticket
 | ticket_id | Ticket ID of the ticket to close | Required |
 | article_subject | Article subject of the ticket to close | Required |
 | article_body | Article body of the ticket to close | Required |
+| article_content_type | Content Type of the article body. Can be either 'text/plain; charset=utf8' or 'text/html; charset=utf8'. Defaults to 'text/plain; charset=utf8'. | Optional |
 
 ##### Context Output
 
@@ -360,6 +365,7 @@ Close an OTRS ticket
 | OTRS.Ticket.State | string | Ticket state |
 | OTRS.Ticket.Article.Subject | string | Ticket article subject |
 | OTRS.Ticket.Article.Body | string | Ticket article body |
+| OTRS.Ticket.Article.ContentType | string | Content Type of the article body. |
 
 ##### Command Example
 
