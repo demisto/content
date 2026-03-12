@@ -178,7 +178,7 @@ script:
     - name: keyword
       description: Keywords to query CVEs by.
     - name: limit
-      description: Maximum number of CVEs to return. Use a lower value to avoid timeouts with large lookback windows.
+      description: The maximum number of CVEs to return. Use a lower value to avoid timeouts due to large lookback windows.
       defaultValue: '50'
     - auto: PREDEFINED
       name: cvss_severity
