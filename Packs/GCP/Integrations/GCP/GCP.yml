@@ -1200,7 +1200,7 @@ script:
         prettyname: GCP Project ID
         defaultValue: GCP project ID
         prettypredefined:
-          GCP project ID: ${asset.xdm.asset.realm}
+          GCP Project ID: ${asset.xdm.asset.realm}
       - name: region
         required: true
         description: GCP region.
@@ -1403,7 +1403,7 @@ script:
         prettyname: GCP Project ID
         defaultValue: GCP Project ID
         prettypredefined:
-          GCP project ID: ${asset.xdm.asset.realm}
+          GCP Project ID: ${asset.xdm.asset.realm}
       - name: resource_name
         required: true
         description: Name of the bucket.
@@ -4063,7 +4063,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/googleapi-python3:1.0.0.5476125
+  dockerimage: demisto/googleapi-python3:1.0.0.6911241
 fromversion: 8.11.0
 supportsquickactions: true
 isCloudProviderIntegration: true

@@ -3305,9 +3305,9 @@ script:
     - name: name
       type: string
       required: true
-      defaultValue: AZ Webapp
+      defaultValue: AZ Web App
       description: Name of the Web App.
-      prettyname: AZ Webapp
+      prettyname: AZ Web App
       prettypredefined:
         AZ Web App: ${asset.xdm.asset.name}
     - auto: PREDEFINED
@@ -3431,9 +3431,9 @@ script:
     - name: name
       type: string
       required: true
-      defaultValue: AZ Webapp
+      defaultValue: AZ Web App
       description: Name of the Web App.
-      prettyname: AZ Webapp
+      prettyname: AZ Web App
       prettypredefined:
         AZ Web App: ${asset.xdm.asset.name}
     - auto: PREDEFINED
@@ -3899,11 +3899,11 @@ script:
     - name: name
       type: string
       required: true
-      defaultValue: AZ Webapp
+      defaultValue: AZ Web App
       description: Name of the Web App.
-      prettyname: AZ Webapp
+      prettyname: AZ Web App
       prettypredefined:
-        AZ Webapp: ${asset.xdm.asset.name}
+        AZ Web App: ${asset.xdm.asset.name}
     - auto: PREDEFINED
       name: remote_debugging_enabled
       type: bool
@@ -4394,10 +4394,10 @@ script:
       type: string
       required: true
       description: Name of the Web App.
-      prettyname: AZ Webapp
-      defaultValue: AZ Webapp
+      prettyname: AZ Web App
+      defaultValue: AZ Web App
       prettypredefined:
-        AZ Webapp: ${asset.xdm.asset.name}
+        AZ Web App: ${asset.xdm.asset.name}
     - name: min_tls_version
       type: str
       auto: PREDEFINED
