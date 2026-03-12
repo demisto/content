@@ -31,13 +31,13 @@ A WAF (web application firewall) is a filter that protects against HTTP applicat
 2. Search for Akamai WAF SIEM.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** | |
+    | **Parameter** | **Required** | **Description** |
     | --- | --- | --- |
     | Server URL (e.g., <https://example.net>) | True | |
     | Client token | False | |
     | Access token | False | |
     | Client secret | False | |
-    | Config ids to fetch | True | |
+    | Config ids to fetch | True | Your Akamai security configuration ID(s). Multiple IDs can be separated by semicolons (e.g., 12345;2345;3456). Config IDs are unique to your account. |
     | Incident type | False | |
     | First fetch timestamp | False | |
     | Fetch limit | False | Limit on the number of incidents retrieved in a single fetch. The maximum is 80k.|
