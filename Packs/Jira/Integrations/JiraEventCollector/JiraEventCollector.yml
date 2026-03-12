@@ -147,5 +147,8 @@ triggers:
   - name: callback_url
     action:
       required: true
+  - name: cloud_id  
+    action:  
+      required: true 
 tests:
 - No tests (auto formatted)

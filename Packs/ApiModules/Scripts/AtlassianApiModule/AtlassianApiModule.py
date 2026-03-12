@@ -119,7 +119,13 @@ class AtlassianOAuthClient(ABC):
         token_url = urljoin(ATLASSIAN_AUTH_URL, "oauth/token")
         demisto.debug(f"Requesting OAuth token from {token_url} with grant_type={grant_type}")
         try:
-            response = requests.post(token_url, data=data, verify=self.verify, proxies=handle_proxy() if self.proxy else None)
+            response = requests.post(
+                token_url,
+                data=data,
+                verify=self.verify,
+                proxies=handle_proxy() if self.proxy else None,
+                timeout=60,
+            )
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
             demisto.debug(f"OAuth token request failed with status {e.response.status_code}: {e.response.text}")
@@ -330,6 +336,7 @@ class JiraOnPremOAuthClient(AtlassianOAuthClient):
                 verify=self.verify,
                 proxies=handle_proxy() if self.proxy else None,
                 allow_redirects=False,
+                timeout=60,
             )
             demisto.debug(f"On-Prem OAuth authorization response status: {response.status_code}")
 
@@ -376,7 +383,13 @@ class JiraOnPremOAuthClient(AtlassianOAuthClient):
         token_url = f"{self.server_url}/rest/oauth2/latest/token"
         demisto.debug(f"Requesting On-Prem OAuth token from {token_url} with grant_type={grant_type}")
         try:
-            response = requests.post(token_url, data=data, verify=self.verify, proxies=handle_proxy() if self.proxy else None)
+            response = requests.post(
+                token_url,
+                data=data,
+                verify=self.verify,
+                proxies=handle_proxy() if self.proxy else None,
+                timeout=60,
+            )
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
             demisto.debug(f"On-Prem OAuth token request failed with status {e.response.status_code}: {e.response.text}")

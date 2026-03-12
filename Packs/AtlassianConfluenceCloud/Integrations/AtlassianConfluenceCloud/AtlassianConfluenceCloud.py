@@ -1439,7 +1439,10 @@ def oauth_test_command(oauth_client) -> CommandResults:
             "https://api.atlassian.com/oauth/token/accessible-resources",
             headers={"Authorization": f"Bearer {access_token}", "Accept": "application/json"},
             verify=oauth_client.verify,
+            proxies=handle_proxy() if oauth_client.proxy else None,
+            timeout=60,
         )
+        response.raise_for_status()
         resources = response.json()
         demisto.debug(f"{LOGGING_INTEGRATION_NAME} Accessible resources: {resources}")
 
