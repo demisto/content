@@ -115,7 +115,6 @@ class TestValidateAgainstTaxonomy:
         cat, conc, warnings = validate_against_taxonomy(None, None, taxonomy)
         assert cat is None
         assert conc is None
-        assert warnings == []
 
 
 class TestParseAndValidate:

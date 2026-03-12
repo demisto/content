@@ -7,7 +7,7 @@ from CommonServerPython import *  # noqa: F401
 DELIMITER = "|||"
 
 
-def parse_taxonomy(taxonomy_raw: str) -> dict[str, list[str]]:
+def parse_taxonomy(taxonomy_raw: str | list) -> dict[str, list[str]]:
     """Parse the taxonomy argument into a dict mapping category -> list of concentrations.
 
     Args:
@@ -18,12 +18,16 @@ def parse_taxonomy(taxonomy_raw: str) -> dict[str, list[str]]:
         A dict where keys are issue categories and values are lists of valid
         problem concentrations.
     """
-    # Try JSON first (double-quoted), fall back to Python literal (single-quoted)
-    try:
-        taxonomy_raw = json.loads(taxonomy_raw)
-    except json.JSONDecodeError:
-        demisto.debug("taxonomy is not valid JSON, trying ast.literal_eval")
-        taxonomy_raw = ast.literal_eval(taxonomy_raw)
+    if isinstance(taxonomy_raw, str):
+        # Try JSON first (double-quoted), fall back to Python literal (single-quoted)
+        try:
+            taxonomy_raw = json.loads(taxonomy_raw)
+        except json.JSONDecodeError:
+            demisto.debug("taxonomy is not valid JSON, trying ast.literal_eval")
+            taxonomy_raw = ast.literal_eval(taxonomy_raw)  # type: ignore[arg-type]
+
+    if not isinstance(taxonomy_raw, list):
+        raise ValueError("taxonomy must be a list of single-key dictionaries.")
 
     taxonomy: dict[str, list[str]] = {}
     for entry in taxonomy_raw:
