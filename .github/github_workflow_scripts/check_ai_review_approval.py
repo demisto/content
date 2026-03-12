@@ -257,7 +257,7 @@ def main():
         for review in reviews
         if (
             review.user
-            and review.user.login == MARKETPLACE_AI_REVIEWER_BOT
+            and (review.user.login == MARKETPLACE_AI_REVIEWER_BOT or review.user.login == BOT_USERNAME)
             and REQUIRED_TEXT in review.body
             and not is_minimized_via_graphql(review.raw_data["node_id"], github_token)
         )
