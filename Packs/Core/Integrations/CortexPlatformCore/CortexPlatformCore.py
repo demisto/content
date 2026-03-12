@@ -4684,8 +4684,6 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-
-
 def get_support_ticket_taxonomy_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the complete support ticket taxonomy: all issue categories, their problem concentrations,

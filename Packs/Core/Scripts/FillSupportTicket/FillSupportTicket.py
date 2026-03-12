@@ -1,8 +1,6 @@
-import ast
-import json
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 
 def core_fill_support_ticket(args: dict[str, Any]) -> CommandResults:
     """
@@ -32,6 +30,7 @@ def core_fill_support_ticket(args: dict[str, Any]) -> CommandResults:
         outputs=data,
         raw_response=data,
     )
+
 
 def main():  # pragma: no cover
     try:

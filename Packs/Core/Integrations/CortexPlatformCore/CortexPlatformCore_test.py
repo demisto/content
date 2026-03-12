@@ -10209,8 +10209,6 @@ def test_send_endpoint_heartbeat_command_missing_id(mocker):
         send_endpoint_heartbeat_command(mock_client, args)
 
 
-
-
 def test_get_support_ticket_taxonomy_command_success(mocker: MockerFixture):
     """
     GIVEN:

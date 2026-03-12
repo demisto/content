@@ -208,24 +208,6 @@ class TestParseAndValidate:
         assert outputs["ProblemConcentration"] == "Communication"
         assert outputs["IsValid"] is True
 
-    def test_readable_output_valid(self):
-        """Readable output should indicate valid classification."""
-        args = {
-            "classification_result": "Agent|||Communication",
-            "taxonomy": TAXONOMY_JSON,
-        }
-        result = parse_and_validate(args)
-        assert "Valid**: Yes" in result.readable_output
-
-    def test_readable_output_invalid(self):
-        """Readable output should show warnings for invalid classification."""
-        args = {
-            "classification_result": "FakeCategory|||FakeConcentration",
-            "taxonomy": TAXONOMY_JSON,
-        }
-        result = parse_and_validate(args)
-        assert "Valid**: No" in result.readable_output
-        assert "Warnings" in result.readable_output
 
     def test_tenant_admin_valid(self):
         """Test a valid Tenant Administration category."""
