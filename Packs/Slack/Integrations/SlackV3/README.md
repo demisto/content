@@ -706,10 +706,68 @@ Fetches a conversation's history of messages and events
 | conversation_id   | The ID of the conversation. Either this or *conversation_name* is required. If both are provided, *conversation_id* takes precedence.                                        | Optional     |
 | limit             | Set this argument to specify how many results to return.                                                                                                                     | Optional     |
 | from_time         | Lower bound for conversation history (sent to Slack 'oldest' query parameter). Returns messages with time stamp ≥ this value. Accepts Unix timestamp or ISO strings (e.g., "1727448000.000200", "2025-10-12T09:00:00+03:00"). Results are returned in descending order. | Optional     |
+| page_token        | Token to retrieve the next page of results.                                                                                                                                  | Optional     |
 
 #### Context Output
 
-There is no context output for this command.
+| **Path**                          | **Type** | **Description**                                      |
+|-----------------------------------|----------|------------------------------------------------------|
+| Slack.Messages.Type               | string   | The type of the message (e.g., message, file_share, etc.). |
+| Slack.Messages.Text               | string   | The text content of the message.                     |
+| Slack.Messages.UserId             | string   | The user ID of the message sender.                   |
+| Slack.Messages.Name               | string   | The username of the message sender.                  |
+| Slack.Messages.FullName           | string   | The full name of the message sender.                 |
+| Slack.Messages.TimeStamp          | string   | The timestamp of the message.                        |
+| Slack.Messages.HasReplies         | string   | Whether the message has replies.                     |
+| Slack.Messages.ThreadTimeStamp    | string   | The thread timestamp of the message.                 |
+| SlackConversationHistory.NextPageToken   | string   | Token to retrieve the next page of results.          |
+
+#### Command Example
+
+```!slack-get-conversation-history conversation_name="general" limit="2"```
+
+#### Context Example
+
+```json
+{
+    "Slack": {
+        "Messages": [
+            {
+                "Type": "message",
+                "Text": "Hello team, please review the latest security report.",
+                "UserId": "U0XXXXXXXX",
+                "Name": "exampleUser1",
+                "FullName": "exampleUser2",
+                "TimeStamp": "1727448123.000100",
+                "HasReplies": "false",
+                "ThreadTimeStamp": "1727448123.000100"
+            },
+            {
+                "Type": "message",
+                "Text": "Incident #1234 has been resolved.",
+                "UserId": "U0YYYYYYYY",
+                "Name": "exampleUser2",
+                "FullName": "exampleUser2",
+                "TimeStamp": "1727448000.000200",
+                "HasReplies": "true",
+                "ThreadTimeStamp": "1727448000.000200"
+            }
+        ]
+    },
+    "SlackConversationHistory": {
+        "NextPageToken": "exampleToken"
+    }
+}
+```
+
+#### Human Readable Output
+
+> ### Conversation History for general
+>
+>|Type|Text|UserId|Name|FullName|TimeStamp|HasReplies|ThreadTimeStamp|
+>|---|---|---|---|---|---|---|---|
+>| message | Hello team, please review the latest security report. | U0XXXXXXXX | exampleUser1 | exampleUser1 | 1727448123.000100 | false | 1727448123.000100 |
+>| message | Incident #1234 has been resolved. | U0YYYYYYYY | exampleUser2 | exampleUser2 | 1727448000.000200 | true | 1727448000.000200 |
 
 ### slack-get-conversation-replies
 
