@@ -182,7 +182,7 @@ script:
       defaultValue: '50'
     - auto: PREDEFINED
       name: cvss_severity
-      description: Override the instance-level CVSS Severity Filter for this command. Comma-separated list.
+      description: A comma-separated list of CVSS severities to use for this command. This overrides the instance-level CVSS Severity Filter. If left blank, the instance-level filter is used.
       isArray: true
       predefined:
       - CRITICAL
