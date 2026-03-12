@@ -8,7 +8,6 @@ This integration supports the latest CVSS - Common Vulnerability Scoring System 
 
 ## Configure National Vulnerability Database in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Fetch indicators |  | False |
@@ -29,7 +28,6 @@ This integration supports the latest CVSS - Common Vulnerability Scoring System 
 | Use system proxy settings |  | False |
 | Tags | Supports CSV values. | False |
 | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
-
 
 ### NOTE ONE - Sample Debug Output - /var/log/demisto/integration_instance.log
 
@@ -66,20 +64,20 @@ Manually retrieve CVEs from NVD using the history parameter for the duration bac
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| history | Time back to retrieve CVEs, e.g. `7 days`. Possible values are: 7 days. | Required | 
-| keyword | Keywords to query CVEs by. | Optional | 
-| limit | The maximum number of CVEs to return. Use a lower value to avoid timeouts due to large lookback windows. Default is 50. | Optional | 
-| cvss_severity | A comma-separated list of CVSS severities to use for this command. This overrides the instance-level CVSS Severity Filter. If left blank, the instance-level filter is used. Possible values are: CRITICAL, HIGH, MEDIUM, LOW. | Optional | 
-| cvss_versions | Override the instance-level CVSS Versions for this command. Comma-separated list. Possible values are: CVSS v4, CVSS v3, CVSS v2. | Optional | 
+| history | Time back to retrieve CVEs, e.g. `7 days`. Possible values are: 7 days. | Required |
+| keyword | Keywords to query CVEs by. | Optional |
+| limit | The maximum number of CVEs to return. Use a lower value to avoid timeouts due to large lookback windows. Default is 50. | Optional |
+| cvss_severity | A comma-separated list of CVSS severities to use for this command. This overrides the instance-level CVSS Severity Filter. If left blank, the instance-level filter is used. Possible values are: CRITICAL, HIGH, MEDIUM, LOW. | Optional |
+| cvss_versions | Override the instance-level CVSS Versions for this command. Comma-separated list. Possible values are: CVSS v4, CVSS v3, CVSS v2. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CVE.ID | String | The ID of the CVE. | 
-| CVE.CVSS | number | The CVSS score of the CVE. | 
-| CVE.Published | Date | The date the CVE was published. | 
-| CVE.Modified | Date | The date that the CVE was last modified. | 
-| CVE.Description | String | The description of the CVE. | 
-| CVE.CVSSVersion | String | The CVSS version used for scoring \(e.g. 4.0, 3.1, 2.0\). | 
-| CVE.Severity | String | The CVSS severity level \(e.g. CRITICAL, HIGH, MEDIUM, LOW\). | 
+| CVE.ID | String | The ID of the CVE. |
+| CVE.CVSS | number | The CVSS score of the CVE. |
+| CVE.Published | Date | The date the CVE was published. |
+| CVE.Modified | Date | The date that the CVE was last modified. |
+| CVE.Description | String | The description of the CVE. |
+| CVE.CVSSVersion | String | The CVSS version used for scoring \(e.g. 4.0, 3.1, 2.0\). |
+| CVE.Severity | String | The CVSS severity level \(e.g. CRITICAL, HIGH, MEDIUM, LOW\). |
