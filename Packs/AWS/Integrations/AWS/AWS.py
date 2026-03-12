@@ -323,6 +323,36 @@ def parse_key_values_2_dict(parameters_str: str) -> dict:
     return parameters
 
 
+def parse_key_1_value_to_dict(key_value_str: str) -> dict:
+    """
+    Parses a list representation of key and value 'key=<key1>,value=<value>;key=<key2>,value=<value>.
+
+    Args:
+        key_value_str (str): The key and values list
+    Returns:
+        A dictionary containing the parameters
+        {"key1" : "value", "key2" : "value"}
+    """
+    if not key_value_str:
+        return {}
+
+    results = {}
+    list_variables = argToList(key_value_str, separator=";")
+    regex = re.compile(
+        r"^key=([a-zA-Z]([a-zA-Z0-9_])+),value=([ \w@,.*-\/:]+)",
+        flags=re.I,
+    )
+    for var in list_variables:
+        match_var = regex.match(var)
+        if match_var is None:
+            raise ValueError(
+                f"Could not parse the parameter: {var}. Please make sure you provided "
+                "like so: key=<key>,value=<value>;key=<key>,value=<value2>..."
+            )
+        results[match_var.group(1)] = match_var.group(2)
+    return results
+
+
 def parse_name_value_type_format_filter(filter_string: str | None):
     """
     Parses a list representation of name and values and type with the form of 'name=<name>,values=<values>,type=<type>'.
@@ -366,7 +396,7 @@ def parse_name_value_type_format_filter(filter_string: str | None):
     return filters
 
 
-def parse_tag_field(tags_string: str | None):
+def parse_tag_field(tags_string: str | None) -> list:
     """
     Parses a list representation of key and value with the form of 'key=<name>,value=<value>.
     You can specify up to 50 tags per resource.
@@ -614,6 +644,76 @@ def build_kwargs_network_interface_attribute(args: dict, network_interface_id: s
     return kwargs
 
 
+def build_kwargs_lambda_function_config_update(args: dict) -> dict:
+    """Build kwargs for aws-lambda-update-function-configuration command.
+
+    Args:
+        args: A dict of arguments for the command.
+
+    Returns:
+        A dict of kwargs.
+    """
+    function_name = args.get("function_name")
+    execution_env_memory_per_cpu = args.get("execution_env_memory_per_cpu")
+    kwargs = {
+        "FunctionName": function_name,
+        "Role": args.get("role"),
+        "Handler": args.get("handler"),
+        "Description": args.get("description"),
+        "Timeout": arg_to_number(args.get("timeout")),
+        "MemorySize": arg_to_number(args.get("memory_size")),
+        "VpcConfig": {
+            "SubnetIds": argToList(args.get("subnet_ids")),
+            "SecurityGroupIds": argToList(args.get("security_group_ids")),
+            "Ipv6AllowedForDualStack": arg_to_bool_or_none(args.get("ipv6_allowed_for_dualstack")),
+        },
+        "Environment": {"Variables": parse_key_1_value_to_dict(args.get("environment", ""))},
+        "Runtime": args.get("runtime"),
+        "DeadLetterConfig": {"TargetArn": args.get("target_arn")},
+        "KMSKeyArn": args.get("kms_key_arn"),
+        "TracingConfig": {
+            "Mode": args.get("tracing_config_mode"),
+        },
+        "RevisionId": args.get("revision_id"),
+        "Layers": argToList(args.get("layers")),
+        "ImageConfig": {
+            "EntryPoint": argToList(args.get("image_config_entry_point")),
+            "Command": argToList(args.get("image_config_command")),
+            "WorkingDirectory": args.get("image_config_working_directory"),
+        },
+        "EphemeralStorage": {"Size": arg_to_number(args.get("ephemeral_storage_size"))},
+        "SnapStart": {"ApplyOn": args.get("snap_start_apply_on")},
+        "LoggingConfig": {
+            "LogFormat": args.get("log_format"),
+            "ApplicationLogLevel": args.get("application_log_level"),
+            "SystemLogLevel": args.get("system_log_level"),
+            "LogGroup": args.get("log_group"),
+        },
+        "CapacityProviderConfig": {
+            "LambdaManagedInstancesCapacityProviderConfig": {
+                "CapacityProviderArn": args.get("capacity_provider_arn"),
+                "PerExecutionEnvironmentMaxConcurrency": arg_to_number(args.get("per_execution_env_max_concurrency")),
+                "ExecutionEnvironmentMemoryGiBPerVCpu": float(execution_env_memory_per_cpu)
+                if execution_env_memory_per_cpu
+                else None,
+            }
+        },
+        "DurableConfig": {
+            "RetentionPeriodInDays": arg_to_number(args.get("durable_retention_period")),
+            "ExecutionTimeout": arg_to_number(args.get("durable_execution_timeout")),
+        },
+    }
+
+    if "file_system_configs" in args:
+        key_value_list = parse_tag_field(args.get("file_system_configs"))
+        arn_local_mount_path_list = []
+        for key_value in key_value_list:
+            arn_local_mount_path_list.append({"Arn": key_value["Key"], "LocalMountPath": key_value["Value"]})
+        kwargs["FileSystemConfigs"] = arn_local_mount_path_list
+
+    return kwargs
+
+
 def aws_ec2_fleet_command_launch_templates_config_args_builder(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     Builds the LaunchTemplateConfigs list for EC2 Fleet create/modify commands.
@@ -740,7 +840,7 @@ class AWSErrorHandler:
         """
         # Create informative error message
         detailed_error = (
-            f"AWS API Error occurred while executing: {demisto.command()} with arguments: {demisto.args()}\n"
+            f"AWS API Error occurred while executing: {demisto.command()} with arguments: {list(demisto.args().keys())}\n"
             f"Request Id: {response.get('ResponseMetadata',{}).get('RequestId', 'N/A')}\n"
             f"HTTP Status Code: {response.get('ResponseMetadata',{}).get('HTTPStatusCode', 'N/A')}"
         )
@@ -832,7 +932,7 @@ class AWSErrorHandler:
 
         # Create informative error message
         detailed_error = (
-            f"AWS API Error occurred while executing: {demisto.command()} with arguments: {demisto.args()}\n"
+            f"AWS API Error occurred while executing: {demisto.command()} with arguments: {list(demisto.args().keys())}\n"
             f"Error Code: {error_code}\n"
             f"Error Message: {error_message}\n"
             f"HTTP Status Code: {http_status}\n"
@@ -881,6 +981,7 @@ class AWSServices(str, Enum):
     CostExplorer = "ce"
     BUDGETS = "budgets"
     SSM = "ssm"
+    Redshift = "redshift"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -5995,6 +6096,144 @@ class RDS:
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
 
+    @staticmethod
+    def describe_db_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes provisioned RDS instances.
+
+        Args:
+            client (BotoClient): The boto3 client for RDS service
+            args (Dict[str, Any]): Command arguments including DB instance identifier, filters, and pagination
+
+        Returns:
+            CommandResults: Results of the operation with DB instance information
+        """
+        kwargs = {
+            "DBInstanceIdentifier": args.get("db_instance_identifier"),
+            "Filters": parse_filter_field(args.get("filters")),
+        }
+
+        if not args.get("db_instance_identifier"):
+            pagination_kwargs = build_pagination_kwargs(
+                args, minimum_limit=20, max_limit=100, limit_name="MaxRecords", next_token_name="Marker"
+            )
+            kwargs.update(pagination_kwargs)
+
+        remove_nulls_from_dictionary(kwargs)
+        demisto.debug(f"calling describe_db_instances_command with {kwargs=}")
+        response = client.describe_db_instances(**kwargs)
+        response = serialize_response_with_datetime_encoding(response)
+        demisto.debug(f"The response of describe_db_instances {response}")
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        db_instances = response.get("DBInstances", [])
+        if not db_instances:
+            return CommandResults(readable_output="No DB instances found.")
+
+        outputs = {
+            "AWS.RDS.DBInstances(val.DBInstanceIdentifier && val.DBInstanceIdentifier == obj.DBInstanceIdentifier)": db_instances,
+            "AWS.RDS(true)": {"DBInstancesNextToken": response.get("Marker")},
+        }
+
+        readable_output = tableToMarkdown(
+            "AWS RDS DB Instances",
+            db_instances,
+            headers=[
+                "DBInstanceIdentifier",
+                "DBInstanceClass",
+                "Engine",
+                "DBInstanceStatus",
+            ],
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+        demisto.debug(f"The {readable_output=}")
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
+
+class Redshift:
+    service = AWSServices.Redshift
+
+    @staticmethod
+    def modify_cluster_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies the settings of a cluster.
+
+        Args:
+            client (BotoClient): The boto3 client for Redshift service
+            args (Dict[str, Any]): Command arguments including cluster identifier and modification parameters
+
+        Returns:
+            CommandResults: Results of the operation with cluster modification details
+        """
+        kwargs = {
+            "ClusterIdentifier": args.get("cluster_identifier"),
+            "ClusterType": args.get("cluster_type"),
+            "NodeType": args.get("node_type"),
+            "NumberOfNodes": arg_to_number(args.get("number_of_nodes")),
+            "ClusterSecurityGroups": argToList(args.get("cluster_security_groups")),
+            "VpcSecurityGroupIds": argToList(args.get("vpc_security_group_ids")),
+            "MasterUserPassword": args.get("master_user_password"),
+            "ClusterParameterGroupName": args.get("cluster_parameter_group_name"),
+            "AutomatedSnapshotRetentionPeriod": arg_to_number(args.get("automated_snapshot_retention_period")),
+            "ManualSnapshotRetentionPeriod": arg_to_number(args.get("manual_snapshot_retention_period")),
+            "PreferredMaintenanceWindow": args.get("preferred_maintenance_window"),
+            "ClusterVersion": args.get("cluster_version"),
+            "AllowVersionUpgrade": arg_to_bool_or_none(args.get("allow_version_upgrade")),
+            "HsmClientCertificateIdentifier": args.get("hsm_client_certificate_identifier"),
+            "HsmConfigurationIdentifier": args.get("hsm_configuration_identifier"),
+            "NewClusterIdentifier": args.get("new_cluster_identifier"),
+            "PubliclyAccessible": arg_to_bool_or_none(args.get("publicly_accessible")),
+            "ElasticIp": args.get("elastic_ip"),
+            "EnhancedVpcRouting": arg_to_bool_or_none(args.get("enhanced_vpc_routing")),
+            "MaintenanceTrackName": args.get("maintenance_track_name"),
+            "Encrypted": arg_to_bool_or_none(args.get("encrypted")),
+            "KmsKeyId": args.get("kms_key_id"),
+            "AvailabilityZoneRelocation": arg_to_bool_or_none(args.get("availability_zone_relocation")),
+            "AvailabilityZone": args.get("availability_zone"),
+            "Port": arg_to_number(args.get("port")),
+            "ManageMasterPassword": arg_to_bool_or_none(args.get("manage_master_password")),
+            "MasterPasswordSecretKmsKeyId": args.get("master_password_secret_kms_key_id"),
+            "IpAddressType": args.get("ip_address_type"),
+            "MultiAZ": arg_to_bool_or_none(args.get("multi_az")),
+            "ExtraComputeForAutomaticOptimization": arg_to_bool_or_none(args.get("extra_compute_for_automatic_optimization")),
+        }
+        remove_nulls_from_dictionary(kwargs)
+
+        response = client.modify_cluster(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response = serialize_response_with_datetime_encoding(response)
+        cluster_data = response.get("Cluster", {})
+
+        if cluster_data.get("PendingModifiedValues", {}).get("MasterUserPassword"):
+            del cluster_data["PendingModifiedValues"]["MasterUserPassword"]
+
+        readable_output = tableToMarkdown(
+            f"Successfully modified Redshift cluster: {cluster_data.get('ClusterIdentifier')}",
+            cluster_data,
+            headers=["ClusterIdentifier", "NodeType", "ClusterStatus", "PubliclyAccessible", "Encrypted", "NumberOfNodes"],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.Redshift.Clusters",
+            outputs_key_field="ClusterIdentifier",
+            outputs=cluster_data,
+            readable_output=readable_output,
+            raw_response=response,
+        )
+
 
 class CostExplorer:
     service = AWSServices.CostExplorer
@@ -7589,6 +7828,48 @@ class Lambda:
             readable_output=readable_output,
         )
 
+    @staticmethod
+    def update_function_configuration_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Updates the configuration of a Lambda function.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service.
+            args (Dict[str, Any]): Command arguments including function name and configuration settings.
+
+        Returns:
+            CommandResults: Results of the operation with updated function configuration details.
+        """
+        function_name = args.get("function_name")
+
+        kwargs = remove_empty_elements(build_kwargs_lambda_function_config_update(args))
+        print_debug_logs(client, f"Calling update_function_configuration with {kwargs=}")
+
+        response = client.update_function_configuration(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        outputs = copy.deepcopy(response)
+        if outputs.get("ResponseMetadata", {}):
+            del outputs["ResponseMetadata"]
+
+        human_readable = tableToMarkdown(
+            f"Lambda Function Configuration Updated: {function_name}",
+            outputs,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+            headers=["FunctionName", "FunctionArn", "Description", "LastModified"],
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.Lambda.FunctionConfig",
+            outputs_key_field="FunctionArn",
+            outputs=outputs,
+            readable_output=human_readable,
+            raw_response=response,
+        )
+
 
 class ACM:
     service = AWSServices.ACM
@@ -7868,6 +8149,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
     "aws-rds-event-subscription-modify": RDS.modify_event_subscription_command,
     "aws-rds-db-snapshot-attribute-set-snapshot-to-private-quick-action": RDS.modify_db_snapshot_attribute_command,
+    "aws-rds-db-instances-describe": RDS.describe_db_instances_command,
     "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
     "aws-cloudtrail-logging-start-enable-logging-quick-action": CloudTrail.start_logging_command,
     "aws-cloudtrail-trail-update": CloudTrail.update_trail_command,
@@ -7892,6 +8174,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-lambda-policy-get": Lambda.get_policy_command,
     "aws-lambda-invoke": Lambda.invoke_command,
     "aws-lambda-function-url-config-update": Lambda.update_function_url_configuration_command,
+    "aws-lambda-function-configuration-update": Lambda.update_function_configuration_command,
     "aws-lambda-function-get": Lambda.get_function_command,
     "aws-lambda-functions-list": Lambda.list_functions_command,
     "aws-lambda-aliases-list": Lambda.list_aliases_command,
@@ -7926,6 +8209,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-ec2-fleet-modify": EC2.modify_fleet_command,
     "aws-ssm-inventory-entries-list": SSM.inventory_entries_list_command,
     "aws-ssm-command-run": SSM.command_run_command,
+    "aws-redshift-cluster-modify": Redshift.modify_cluster_command,
     "aws-ec2-vpc-delete": EC2.delete_vpc_command,
     "aws-ec2-vpc-endpoint-create": EC2.create_vpc_endpoint_command,
     "aws-ec2-internet-gateway-describe": EC2.describe_internet_gateways_command,
@@ -7951,6 +8235,8 @@ REQUIRED_ACTIONS: list[str] = [
     "rds:AddTagsToResource",
     "rds:CreateTenantDatabase",
     "rds:ModifyDBCluster",
+    "rds:DescribeDBInstances",
+    "redshift:ModifyCluster",
     "rds:ModifyDBClusterSnapshotAttribute",
     "rds:ModifyDBInstance",
     "rds:ModifyDBSnapshotAttribute",
@@ -8041,6 +8327,7 @@ REQUIRED_ACTIONS: list[str] = [
     "lambda:GetPolicy",
     "lambda:InvokeFunction",
     "lambda:UpdateFunctionUrlConfig",
+    "lambda:UpdateFunctionConfiguration",
     "lambda:GetFunction",
     "lambda:ListFunctions",
     "lambda:ListAliases",
