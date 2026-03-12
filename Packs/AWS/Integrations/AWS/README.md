@@ -205,6 +205,115 @@ Updates an Amazon EKS cluster configuration. Only a single type of update can (l
 
 There is no context output for this command.
 
+### aws-eks-access-entry-update
+
+***
+Updates an existing Access Entry for an Amazon EKS cluster.
+
+#### Base Command
+
+`aws-eks-access-entry-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| cluster_name | The name of the cluster for which to update the AccessEntry. | Required |
+| principal_arn | ARN of the IAM principal for the AccessEntry. | Required |
+| kubernetes_groups | A comma-separated list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings. | Optional |
+| client_request_token | Unique identifier for idempotency. | Optional |
+| user_name | Username for Kubernetes authentication. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EKS.AccessEntry.clusterName | String | The name of the cluster. |
+| AWS.EKS.AccessEntry.principalArn | String | The ARN of the IAM principal for the access entry. |
+| AWS.EKS.AccessEntry.username | String | The Kubernetes user name for the access entry. |
+| AWS.EKS.AccessEntry.type | String | The type of the access entry. |
+| AWS.EKS.AccessEntry.createdAt | String | The date and time the access entry was created. |
+| AWS.EKS.AccessEntry.modifiedAt | String | The date and time the access entry was last modified. |
+| AWS.EKS.AccessEntry.kubernetesGroups | Array | The Kubernetes groups that the access entry is associated with. |
+| AWS.EKS.AccessEntry.tags | Object | Metadata tags associated with the access entry. |
+| AWS.EKS.AccessEntry.accessEntryArn | String | The ARN of the access entry. |
+
+#### Command Example
+
+```!aws-eks-access-entry-update account_id=account-id region=region cluster_name=cluster_name principal_arn=arn:aws:iam::123456789012:role/test-role user_name=my-k8s-user```
+
+### aws-eks-access-entry-create
+
+***
+Creates a new Access Entry for an Amazon EKS cluster.
+
+#### Base Command
+
+`aws-eks-access-entry-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| cluster_name | The name of the cluster for which to create an access entry. | Required |
+| principal_arn | ARN of the IAM principal for the AccessEntry. | Required |
+| kubernetes_groups | A comma-separated list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings. | Optional |
+| tags | A JSON string containing metadata tags for categorization and organization. Each tag consists of a key and an optional value. For example, '{"Environment": "prod", "Team": "platform"}'. | Optional |
+| client_request_token | Unique identifier for idempotency. | Optional |
+| type | The type of access entry to create. Default is Standard. Possible values are: Standard, FARGATE_LINUX, EC2_LINUX, EC2_WINDOWS. | Optional |
+| user_name | Username for Kubernetes authentication. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EKS.AccessEntry.clusterName | String | The name of the cluster. |
+| AWS.EKS.AccessEntry.principalArn | String | The ARN of the IAM principal for the access entry. |
+| AWS.EKS.AccessEntry.username | String | The Kubernetes user name for the access entry. |
+| AWS.EKS.AccessEntry.type | String | The type of the access entry. |
+| AWS.EKS.AccessEntry.createdAt | String | The date and time the access entry was created. |
+| AWS.EKS.AccessEntry.modifiedAt | String | The date and time the access entry was last modified. |
+| AWS.EKS.AccessEntry.kubernetesGroups | Array | The Kubernetes groups that the access entry is associated with. |
+| AWS.EKS.AccessEntry.tags | Object | Metadata tags associated with the access entry. |
+| AWS.EKS.AccessEntry.accessEntryArn | String | The ARN of the access entry. |
+
+#### Command Example
+
+```!aws-eks-access-entry-create account_id=account-id region=region cluster_name=cluster_name principal_arn=arn:aws:iam::123456789012:role/test-role```
+
+### aws-eks-clusters-list
+
+***
+Returns a list of EKS clusters.
+
+#### Base Command
+
+`aws-eks-clusters-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| limit | The maximum number of clusters returned in response. The possible values are between 1 and 100. Default is 50. | Optional |
+| next_token | The nextToken value returned from a previous paginated ListClusters request. Use the value from AWS.EKS.ClustersNextToken. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EKS.Cluster | String | A list of all of the clusters for your account in the specified Region. |
+| AWS.EKS.ClustersNextToken | String | The nextToken value to include in a future ListClusters request. When the results of a ListClusters request exceed maxResults, you can use this value to retrieve the next page of results. |
+
+#### Command Example
+
+```!aws-eks-clusters-list account_id=account_id region=region```
+
 ### aws-rds-db-instance-modify
 
 ***
