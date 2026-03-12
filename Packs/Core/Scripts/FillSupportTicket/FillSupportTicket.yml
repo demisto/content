@@ -2,6 +2,7 @@ commonfields:
   id: FillSupportTicket
   version: -1
 name: FillSupportTicket
+isInternal: true
 script: ''
 type: python
 tags:
@@ -65,9 +66,9 @@ outputs:
 - contextPath: Core.SupportTicket.subGroupName
   description: The specific problem concentration.
   type: String
-
 scripttarget: 0
 subtype: python3
+fromversion: 8.14.0
 dockerimage: demisto/python3:3.12.12.6391686
 tests:
 - No tests (auto formatted)
