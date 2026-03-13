@@ -1,0 +1,25 @@
+{
+  "name": "SOC Proofpoint TAP Integration Enhancement for Cortex XSIAM",
+  "id": "soc-proofpoint-tap",
+  "description": "This content adds the proper content to make the soc-phishing-investigation-response work with proofpoint.",
+  "support": "community",
+  "currentVersion": "1.0.10",
+  "author": "Palo Alto Networks",
+  "url": "https://github.com/Palo-Cortex/soc-optimization-unified",
+  "email": "",
+  "categories": [
+    "Forensics & Malware Analysis"
+  ],
+  "tags": [
+    "SOC",
+    "SOC_Framework",
+    "Utility",
+    "Palo Alto Networks Products",
+    "Phishing"
+  ],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "marketplacev2"
+  ]
+}

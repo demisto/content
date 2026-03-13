@@ -1,0 +1,6 @@
+/* -----------------Proofpoint TAP v2-------------------- */
+//Created 6/18/2025 Palo Alto Networks
+
+[INGEST:vendor="Proofpoint TAP v2", product="generic_alert", target_dataset="proofpoint_tap_v2_generic_alert_raw", no_hit=keep]
+filter clickTime != null or messageTime != null
+| alter _time = coalesce(messageTime, clickTime);

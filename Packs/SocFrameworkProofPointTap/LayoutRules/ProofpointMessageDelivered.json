@@ -1,0 +1,16 @@
+{
+    "rule_id": "SOC_Proofpoint_TAP_Message_Delivered",
+    "layout_id": "Proofpoint - Message Delivered",
+    "rule_name": "SOC Proofpoint - Message Delivered Layout Rule",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "SEARCH_FIELD": "alert_type",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "Proofpoint TAP - Message Delivered"
+                }
+            ]
+        }
+    }
+}
