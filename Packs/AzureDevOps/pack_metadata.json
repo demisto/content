@@ -13,14 +13,16 @@
         "Cloud Services"
     ],
     "tags": [
-        "IT"
+        "IT",
+        "Security"
     ],
     "useCases": [],
     "keywords": [
         "Microsoft",
         "azure",
         "devops",
-        "devops services"
+        "devops services",
+        "Azure Dev Ops"
     ],
     "githubUser": [],
     "certification": "certified",

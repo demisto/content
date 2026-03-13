@@ -11,14 +11,16 @@
         "Identity and Access Management"
     ],
     "tags": [
-        "IT"
+        "IT",
+        "IAM"
     ],
     "useCases": [],
     "keywords": [
         "BeyondTrust",
         "Password",
         "Safe",
-        "Password Safe"
+        "Password Safe",
+        "Beyond Trust Password Safe"
     ],
     "marketplaces": [
         "xsoar",

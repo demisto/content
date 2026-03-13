@@ -10,12 +10,15 @@
         "Network Security"
     ],
     "tags": [
-        "Network"
+        "Network",
+        "Security"
     ],
     "useCases": [
         "Network Security"
     ],
-    "keywords": [],
+    "keywords": [
+        "Amazon"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
