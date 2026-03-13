@@ -3,7 +3,11 @@ from CommonServerPython import *  # noqa: F401
 import json
 import urllib.parse
 from collections import defaultdict
-
+import asyncio
+from dataclasses import dataclass
+from base64 import b64encode
+from enum import Enum
+import traceback
 
 """ IMPORTS """
 import ipaddress
@@ -12,6 +16,7 @@ import urllib
 
 import dateparser
 import urllib3
+import aiohttp
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -45,6 +50,11 @@ HEADERS_BY_NAME = {
 }
 MAX_API_LIMIT = 50
 INTEGRATION_NAME = "PaloAltoNetworks_PrismaCloudCompute"
+# 12 hours converted to seconds
+TWELVE_HOURS_AS_SECONDS = 12 * 60 * 60
+VENDOR = "Prisma_Cloud_Compute"
+ASSETS_PRODUCT: str = "Assets"
+VULNERABILITIES_PRODUCT: str = "Vulnerabilities"
 
 """ COMMANDS + REQUESTS FUNCTIONS """
 
@@ -295,7 +305,7 @@ class PrismaCloudComputeClient(BaseClient):
         params.update({"limit": MAX_API_LIMIT, "offset": 0})
         response = self._http_request(method="GET", url_suffix=url_suffix, params=params, resp_type="response")
 
-        total_count = int(response.headers.get("Total-Count", -1))
+        total_count = int(response.headers.get("Total-Count", 1))
         response = response.json()
         current_count = len(response) if response else 0
         while current_count < total_count:
@@ -578,6 +588,552 @@ class PrismaCloudComputeClient(BaseClient):
 
     def get_runtime_container_policy(self) -> dict:
         return self._http_request(method="GET", url_suffix="policies/runtime/container")
+
+
+###################################################################################################################################
+# beginning of CSP part
+###################################################################################################################################
+class AsyncClient:  # pragma: no cover
+    """
+    Base asynchronous client for interacting with APIs.
+    Handles session and authentication management.
+    """
+
+    def __init__(
+        self,
+        base_url: str,
+        headers: dict = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        },
+        verify: bool = True,
+        connection_error_interval: int = 1,
+        proxy: bool = False,
+        auth=None,
+    ):
+        """
+        Initialize the AsyncClient.
+
+        Args:
+            base_url (str): Base URL for the API.
+            auth_headers (dict, optional): Authentication headers to use for requests.
+            verify (bool, optional): Whether to verify SSL certificates. Defaults to True.
+            connection_error_retries (int, optional): Number of retries for connection errors. Defaults to 5.
+            connection_error_interval (int, optional): Interval between retries in seconds. Defaults to 1.
+        """
+        self._base_url = base_url.rstrip("/")
+        self.headers = headers or {}
+        self._verify = verify
+        self.connection_error_interval = connection_error_interval
+        self._session = None
+        self._proxy = proxy
+        self._auth = auth
+
+    async def __aenter__(self):
+        """Asynchronous context manager entry: creates the aiohttp session."""
+        # Create a single session that persists for the client's lifespan
+        self._session = aiohttp.ClientSession()  # type: ignore
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Asynchronous context manager exit: closes the aiohttp session."""
+        if self._session:
+            await self._session.close()
+
+    def _handle_error(self, error_handler, res):
+        """Handles error response by calling error handler or default handler.
+
+        :type res: ``requests.Response``
+        :param res: Response from API after the request for which to check error type
+
+        :type error_handler ``callable``
+        :param error_handler: Given an error entry, the error handler outputs the
+            new formatted error message.
+        """
+        if error_handler:
+            error_handler(res)
+        else:
+            self.client_error_handler(res)
+
+    def client_error_handler(self, res):
+        """Generic handler for API call error
+        Constructs and throws a proper error for the API call response.
+
+        :type response: ``requests.Response``
+        :param response: Response from API after the request for which to check the status.
+        """
+        err_msg = f"Error in API call [{res.status}] - {res.reason}"
+        try:
+            # Try to parse json error response
+            error_entry = res.json()
+            err_msg += f"\n{json.dumps(error_entry)}"
+            raise DemistoException(err_msg, res=res)
+        except ValueError:
+            err_msg += f"\n{res.text}"
+            raise DemistoException(err_msg, res=res)
+
+    async def _http_request(
+        self,
+        method: str,
+        endpoint: str,
+        payload: dict = None,
+        headers: dict = None,
+        retryable_statuses: set = {500, 502, 503, 504, 429},
+        params: dict = {},
+        timeout: int = 60,
+        auth=None,
+        error_handler=None,
+        num_of_retries=1,
+        ok_codes=(200,),
+        data="",
+    ):
+        """
+        Executes an asynchronous HTTP request and returns the raw response object.
+        Includes retry logic for server errors.
+
+        Args:
+            method (str): HTTP method (GET, POST, etc.)
+            endpoint (str): API endpoint to call
+            payload (dict, optional): Request payload
+            headers (dict, optional): Additional headers to include
+
+        Returns:
+            Any: Response from the API
+
+        Raises:
+            DemistoException: If the request fails after all retries
+        """
+
+        url = self._base_url + endpoint
+        request_headers = self.headers.copy()
+        if headers:
+            request_headers.update(headers)
+
+        # Select the method function (get, post, etc.)
+        request_func = getattr(self._session, method.lower())
+        auth = auth if auth else self._auth
+        if auth:
+            auth = aiohttp.BasicAuth(auth)
+
+        for attempt in range(1, num_of_retries + 1):
+            if attempt > 1:
+                delay = self.connection_error_interval * attempt
+                demisto.debug(f"Retrying {method} {endpoint}... Attempt {attempt}/{num_of_retries}. Waiting {delay}s...")
+                await asyncio.sleep(delay)
+            try:
+                response = await request_func(
+                    url,
+                    headers=request_headers,
+                    json=payload,
+                    ssl=self._verify,
+                    params=params,
+                    timeout=timeout,
+                    auth=auth,
+                    data=data,
+                )
+                if response.status in ok_codes:
+                    # Return the RAW response object so the caller can read headers/json as needed.
+                    return response
+                # Handle Retryable Errors
+                if response.status in retryable_statuses:
+                    try:
+                        message = response.message
+                    except AttributeError:
+                        message = "No message from server"
+                    demisto.debug(f"API returned retryable status {response.status}: {message}")
+                    response.close()  # Close connection before retrying
+                    continue
+
+                # Handle Fatal Client Errors (4xx)
+                if 400 <= response.status < 500:
+                    response.close()
+                    self._handle_error(error_handler, response)
+            except Exception as e:
+                if attempt == num_of_retries:
+                    traceback_str = "".join(traceback.format_tb(e.__traceback__))
+                    raise DemistoException(f"errored after {num_of_retries} attempts: {e}\n{traceback_str=}")
+
+        raise DemistoException(f"API request failed after {num_of_retries} attempts.")
+
+
+def async_send_data_to_xsiam(
+    data,
+    vendor,
+    product,
+    data_format=None,
+    url_key="url",
+    num_of_attempts=3,
+    chunk_size=XSIAM_EVENT_CHUNK_SIZE,
+    data_type=EVENTS,
+    add_proxy_to_request=False,
+    snapshot_id="",
+    items_count=None,
+    data_size_expected_to_split_evenly=False,
+):  # pragma: no cover
+    """
+    Send the supported fetched data types into the XDR data-collector private api.
+
+    :type data: ``Union[str, list]``
+    :param data: The data to send to XSIAM server. Should be of the following:
+        1. List of strings or dicts where each string or dict represents an event or asset.
+        2. String containing raw events separated by a new line.
+
+    :type vendor: ``str``
+    :param vendor: The vendor corresponding to the integration that originated the data.
+
+    :type product: ``str``
+    :param product: The product corresponding to the integration that originated the data.
+
+    :type data_format: ``str``
+    :param data_format: Should only be filled in case the 'events' parameter contains a string of raw
+        events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
+
+    :type url_key: ``str``
+    :param url_key: The param dict key where the integration url is located at. the default is 'url'.
+
+    :type num_of_attempts: ``int``
+    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
+
+    :type chunk_size: ``int``
+    :param chunk_size: Advanced - The maximal size of each chunk size we send to API. Limit of 9 MB will be inforced.
+
+    :type data_type: ``str``
+    :param data_type: Type of data to send to Xsiam, events or assets.
+
+    :type add_proxy_to_request: ``bool``
+    :param add_proxy_to_request: whether to add proxy to the send evnets request.
+
+    :type snapshot_id: ``str``
+    :param snapshot_id: the snapshot id.
+
+    :type items_count: ``str``
+    :param items_count: the asset snapshot items count.
+
+    :type data_size_expected_to_split_evenly: ``bool``
+    :param data_size_expected_to_split_evenly: whether the events should be about the same size or not.
+    Use this to split data to chunks faster.
+
+    :return: Either None if running regularly or a list of asyncio task objects if running asynchronously:.
+    In case of running asynchronously:, the list of tasks will hold the number of events sent and can be accessed by:
+    await asyncio.gather(*tasks)
+    :rtype: ``List[Task]`` or ``None``
+    """
+    params = demisto.params()
+    url = params.get(url_key)
+    calling_context = demisto.callingContext.get("context", {})
+    instance_name = calling_context.get("IntegrationInstance", "")
+    collector_name = calling_context.get("IntegrationBrand", "")
+    if not items_count:
+        items_count = len(data) if isinstance(data, list) else 1
+    if data_type not in DATA_TYPES:
+        demisto.debug(f"data type must be one of these values: {DATA_TYPES}")
+        return None
+
+    # only in case we have data to send to XSIAM we continue with this flow.
+    # Correspond to case 1: List of strings or dicts where each string or dict represents an one event or asset or snapshot.
+    if isinstance(data, list):
+        # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
+        if data and isinstance(data[0], dict):
+            data = [json.dumps(item) for item in data]
+        data_format = "json"
+        # Separating each event with a new line
+        data = "\n".join(data)
+    elif not isinstance(data, str):
+        raise DemistoException(f"Unsupported type: {type(data)} for the {data_type} parameter. Should be a string or list.")
+    if not data_format:
+        data_format = "text"
+
+    xsiam_api_token = demisto.getLicenseCustomField("Http_Connector.token")
+    xsiam_domain = demisto.getLicenseCustomField("Http_Connector.url")
+    xsiam_url = f"https://api-{xsiam_domain}"
+    headers = remove_empty_elements(
+        {
+            "authorization": xsiam_api_token,
+            "format": data_format,
+            "product": product,
+            "vendor": vendor,
+            "content-encoding": "gzip",
+            "collector-name": collector_name,
+            "instance-name": instance_name,
+            "final-reporting-device": url,
+            "collector-type": ASSETS if data_type == ASSETS else EVENTS,
+        }
+    )
+    if data_type == ASSETS:
+        # We are setting a time stamp ahead of the instance name since snapshot-ids must be configured in ascending
+        # alphabetical order such that first_snapshot < second_snapshot etc.
+        headers["snapshot-id"] = snapshot_id + instance_name
+        headers["total-items-count"] = str(items_count)
+
+    header_msg = f"Error sending new {data_type} into XSIAM.\n"
+
+    def data_error_handler(res):
+        """
+        Internal function to parse the XSIAM API errors
+        """
+        try:
+            response = res.json()
+            error = res.reason
+            if response.get("error").lower() == "false":
+                xsiam_server_err_msg = response.get("error")
+                error += ": " + xsiam_server_err_msg
+
+        except ValueError:
+            if res.text:
+                error = f"\n{res.text}"
+            else:
+                error = "Received empty response from the server"
+
+        api_call_info = (
+            "Parameters used:\n"
+            f"\tURL: {xsiam_url}\n"
+            f"\tHeaders: {json.dumps(headers, indent=8)}\n\n"
+            f"Response status code: {res.status}\n"
+            f"Error received:\n\t{error}"
+        )
+
+        demisto.error(header_msg + api_call_info)
+        raise DemistoException(header_msg + error, DemistoException)
+
+    client = AsyncClient(base_url=xsiam_url, proxy=add_proxy_to_request)
+    if data_size_expected_to_split_evenly:
+        data_chunks = split_data_by_slices(data, chunk_size)
+    else:
+        data_chunks = split_data_to_chunks(data, chunk_size)
+
+    async def send_events_async(data_chunk, shared_client):
+        data_chunk = "\n".join(data_chunk)
+        zipped_data = gzip.compress(data_chunk.encode("utf-8"))  # type: ignore[AttributeError,attr-defined]
+        _ = await xsiam_api_call_async_with_retries(
+            client=shared_client,
+            zipped_data=zipped_data,
+            headers=headers,
+            num_of_attempts=num_of_attempts,
+            data_type=data_type,
+            error_handler=data_error_handler,
+            error_msg=header_msg,
+            is_json_response=True,
+        )
+
+    async def run_all_tasks():
+        async with client:
+            all_chunks = list(data_chunks)
+            tasks = [asyncio.create_task(send_events_async(chunk, client)) for chunk in all_chunks]
+            return await asyncio.gather(*tasks)
+
+    return run_all_tasks()
+
+
+def split_data_by_slices(data, target_chunk_size):  # pragma: no cover
+    """
+    Splits a string/list of data into chunks of an approximately specified size.
+    The actual size can be lower. the slicing is based on the assumption that all entries have the same size.
+
+    :type data: ``list`` or a ``string``
+    :param data: A list of data or a string delimited with \n  to split to chunks.
+    :type target_chunk_size: ``int``
+    :param target_chunk_size: The maximum size of each chunk. The maximal size allowed is 9MB.
+
+    :return: An iterable of lists where each list contains events with approx size of chunk size.
+    :rtype: ``collections.Iterable[list]``
+    """
+    target_chunk_size = min(target_chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
+    if isinstance(data, str):
+        data = data.split("\n")
+
+    entry_size = sys.getsizeof(data[0])
+    num_of_entries_per_chunk = target_chunk_size // entry_size
+    for i in range(0, len(data), num_of_entries_per_chunk):
+        chunk = data[i : i + num_of_entries_per_chunk]
+        yield chunk
+
+
+async def xsiam_api_call_async_with_retries(
+    client: AsyncClient,
+    zipped_data,
+    headers,
+    num_of_attempts,
+    error_handler=None,
+    error_msg="",
+    is_json_response=False,
+    data_type=EVENTS,
+):  # pragma: no cover
+    """
+    Send the fetched events or assests into the XDR data-collector private api.
+
+    :type client: ``AsyncClient``
+    :param client: base client containing the XSIAM url.
+
+    :type xsiam_url: ``str``
+    :param xsiam_url: The URL of XSIAM to send the api request.
+
+    :type zipped_data: ``bytes``
+    :param zipped_data: encoded events
+
+    :type headers: ``dict``
+    :param headers: headers for the request
+
+    :type error_msg: ``str``
+    :param error_msg: The error message prefix in case of an error.
+
+    :type num_of_attempts: ``int``
+    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes).
+
+    :type error_handler: ``callable``
+    :param error_handler: error handler function
+
+    :type data_type: ``str``
+    :param data_type: events or assets
+
+    :return: Response object or DemistoException
+    :rtype: ``requests.Response`` or ``DemistoException``
+    """
+    # retry mechanism in case there is a rate limit (429) from xsiam.
+    status_code = None
+    attempt_num = 1
+    response = None
+
+    while status_code != 200 and attempt_num < num_of_attempts + 1:
+        demisto.debug(
+            f"Sending {data_type} into xsiam, attempt number {attempt_num}".format(data_type=data_type, attempt_num=attempt_num)
+        )
+        # in the last try we should raise an exception if any error occurred, including 429
+        ok_codes = (200, 429) if attempt_num < num_of_attempts else None
+        response = await client._http_request(
+            method="POST",
+            endpoint="/logs/v1/xsiam",
+            data=zipped_data,
+            headers=headers,
+            error_handler=error_handler,
+            ok_codes=ok_codes,
+        )
+        status_code = response.status
+        if status_code == 429:
+            await asyncio.sleep(1)
+        attempt_num += 1
+    if is_json_response and response:
+        response = await response.json()
+        if response.get("error", "").lower() != "false":
+            raise DemistoException(error_msg + response.get("error"))
+    return response
+
+
+###################################################################################################################################
+# end of CSP part
+###################################################################################################################################
+
+
+class PrismaCloudComputeAsyncClient(AsyncClient):
+    def __init__(self, base_url, verify, project, proxy=False, headers=None, username="", password=""):
+        """
+        Extends the init method of BaseClient by adding the arguments below,
+
+        verify: A 'True' or 'False' string, in which case it controls whether we verify
+            the server's TLS certificate, or a string that represents a path to a CA bundle to use.
+        project: A projectID string, set in the integration parameters.
+            the projectID is saved under self._project
+        """
+
+        self._project = project
+        auth = (username + ":" + password).encode("utf-8")
+        self.auth_header = {"Authorization": "Basic " + b64encode(auth).decode()}
+
+        if verify in ["True", "False"]:
+            demisto.debug("Initializing an async client without a certificate.")
+            super().__init__(
+                base_url=base_url,
+                verify=verify,
+                proxy=proxy,
+                headers=headers,
+            )
+        else:
+            demisto.debug("Initializing an async client with a certificate.")
+            # verify points a path to certificate
+            super().__init__(
+                base_url=base_url,
+                verify=True,
+                proxy=proxy,
+                headers=headers,
+            )
+            self._verify = verify
+
+    def _http_request(  # type: ignore[override]
+        self, method, url_suffix, headers={}, json_data=None, params=None, timeout=30
+    ):
+        """
+        Extends the _http_request method of BaseClient.
+        If self._project is available, a 'project=projectID' query param is automatically added to all requests.
+        """
+        # if project is given add it to params and call super method
+        if self._project:
+            params = params or {}
+            params.update({"project": self._project})
+        headers.update(self.auth_header)
+        return super()._http_request(
+            method=method, endpoint=url_suffix, headers=headers, payload=json_data, params=params, timeout=timeout
+        )
+
+
+class AssetType(Enum):
+    TAS_DROPLET = "Tas Droplet"
+    RUNTIME_IMAGE = "Runtime Image"
+    HOST = "Host"
+
+
+@dataclass
+class AssetTypeRelatedData:
+    ctx_lock: asyncio.Lock
+    endpoint: str
+    asset_type: AssetType
+    assets_snapshot_id: str
+    vulnerabilities_snapshot_id: str
+    offset: int = 0
+    limit: int = MAX_API_LIMIT
+    assets_total_count: int = 0
+    vulnerabilities_total_count: int = 0
+    added_one_asset = False
+    added_one_vulnerability = False
+
+    def next_page(self):
+        self.offset += self.limit
+
+    def write_debug_log(self, msg: str):
+        demisto.debug(f"[{self.asset_type.value}] {msg}")
+
+    async def safe_update_integration_context(self):
+        async with self.ctx_lock:
+            ctx = get_integration_context()
+            ctx["vulnerabilities_snapshot_id"] = self.vulnerabilities_snapshot_id
+            ctx["assets_snapshot_id"] = self.assets_snapshot_id
+            ctx[self.asset_type.value] = {
+                "offset": self.offset,
+                "assets_total_count": self.assets_total_count,
+                "vulnerabilities_total_count": self.vulnerabilities_total_count,
+            }
+            set_integration_context(ctx)
+
+    async def safe_update_last_assets(self, assets):
+        async with self.ctx_lock:
+            ctx = get_integration_context()
+            assets_collection = ctx.get("last_assets_request", [])
+            assets_collection.append(assets[-1])
+            ctx["last_assets_request"] = assets_collection
+            set_integration_context(ctx)
+
+    async def safe_update_last_vulnerabilities(self, vulnerabilities):
+        async with self.ctx_lock:
+            ctx = get_integration_context()
+            vulnerabilities_collection = ctx.get("last_vulnerabilities_request", [])
+            vulnerabilities_collection.append(vulnerabilities[-1])
+            ctx["last_vulnerabilities_request"] = vulnerabilities_collection
+            set_integration_context(ctx)
+
+
+async def remove_related_data_from_ctx(asset_type_related_data):
+    async with asset_type_related_data.ctx_lock:
+        ctx = demisto.getIntegrationContext()
+        ctx.pop(asset_type_related_data.asset_type.value, None)
+        demisto.setIntegrationContext(ctx)
 
 
 def format_context(context):
@@ -2798,39 +3354,389 @@ def get_container_policy_list_command(client: PrismaCloudComputeClient, args: di
     )
 
 
+async def fetch_assets_long_running_command(client: PrismaCloudComputeAsyncClient):
+    """
+    Performs the long running execution loop to fetch assets.
+    Args:
+        client (PrismaCloudComputeAsyncClient): The client.
+    """
+    demisto.info("Starting long-running execution.")
+    while True:
+        try:
+            start_time = time.time()
+            demisto.debug("Starting new fetch-assets interval.")
+            async with client:
+                await preform_fetch_assets_main_loop_logic(client)
+            demisto.debug("Finished fetch-assets interval.")
+            end_time = time.time()
+            duration_seconds = end_time - start_time
+            demisto.debug(f"The whole run took {duration_seconds} seconds.")
+            remaining_time_seconds = max(TWELVE_HOURS_AS_SECONDS - duration_seconds, 0)
+            demisto.debug(f"Will sleep for {remaining_time_seconds} seconds.")
+            await asyncio.sleep(remaining_time_seconds)
+
+        except Exception as e:
+            demisto.debug(f"Got the following error while trying to stream events: {str(e)}")
+
+
+def init_asset_types_related_data() -> List[AssetTypeRelatedData]:
+    ctx = get_integration_context() or {}
+    ctx_lock = asyncio.Lock()
+    assets_snapshot_id = ctx.get("assets_snapshot_id", str(round(time.time() * 1000)))
+    # sleeping 1 second to ensure the same snapshot won't be created twice
+    time.sleep(1)
+    vulnerabilities_snapshot_id = ctx.get("vulnerabilities_snapshot_id", str(round(time.time() * 1000)))
+
+    related_data_objects_list = [
+        init_asset_type_related_data(
+            endpoint="/tas-droplets",
+            asset_type=AssetType.TAS_DROPLET,
+            ctx_lock=ctx_lock,
+            ctx=ctx,
+            assets_snapshot_id=assets_snapshot_id,
+            vulnerabilities_snapshot_id=vulnerabilities_snapshot_id,
+        ),
+        init_asset_type_related_data(
+            endpoint="/hosts",
+            asset_type=AssetType.HOST,
+            ctx_lock=ctx_lock,
+            ctx=ctx,
+            assets_snapshot_id=assets_snapshot_id,
+            vulnerabilities_snapshot_id=vulnerabilities_snapshot_id,
+        ),
+        init_asset_type_related_data(
+            endpoint="/images",
+            asset_type=AssetType.RUNTIME_IMAGE,
+            ctx_lock=ctx_lock,
+            ctx=ctx,
+            assets_snapshot_id=assets_snapshot_id,
+            vulnerabilities_snapshot_id=vulnerabilities_snapshot_id,
+        ),
+    ]
+    return related_data_objects_list
+
+
+def init_asset_type_related_data(
+    endpoint: str,
+    asset_type: AssetType,
+    ctx_lock: asyncio.Lock,
+    ctx: dict,
+    assets_snapshot_id: str,
+    vulnerabilities_snapshot_id: str,
+) -> AssetTypeRelatedData:
+    """Attempts to check if there's exiting information related to the asset type in the context.
+    If there is such data, will create a new AssetTypeRelatedData from that data.
+    Otherwise, will create from scratch. In that case, AssetTypeRelatedData will assign default values to some of the fields.
+
+    Args:
+        endpoint (str): The endpoint to request the asset from.
+        asset_type (AssetType): The type of the asset.
+        ctx_lock (Lock): The lock for editing the context.
+
+    Returns:
+        AssetTypeRelatedData: The initialized AssetTypeRelatedData object.
+    """
+    asset_type_ctx = ctx.get(asset_type.value, {})
+    offset = int(asset_type_ctx.get("offset", 0))
+    assets_total_count = int(asset_type_ctx.get("assets_total_count", 0))
+    vulnerabilities_total_count = int(asset_type_ctx.get("vulnerabilities_total_count", 0))
+    return AssetTypeRelatedData(
+        endpoint=endpoint,
+        asset_type=asset_type,
+        offset=offset,
+        assets_total_count=assets_total_count,
+        assets_snapshot_id=assets_snapshot_id,
+        vulnerabilities_snapshot_id=vulnerabilities_snapshot_id,
+        ctx_lock=ctx_lock,
+        vulnerabilities_total_count=vulnerabilities_total_count,
+    )
+
+
+async def preform_fetch_assets_main_loop_logic(client: PrismaCloudComputeAsyncClient):
+    related_data_objects_list = init_asset_types_related_data()
+
+    tasks = [collect_assets_and_send_to_xsiam(client, related_data_obj) for related_data_obj in related_data_objects_list]
+
+    demisto.debug("Initiated all asset collection tasks.")
+    await asyncio.gather(*tasks)
+    assets_total = sum([related_data_obj.assets_total_count for related_data_obj in related_data_objects_list])
+    vulnerabilities_total = sum([related_data_obj.vulnerabilities_total_count for related_data_obj in related_data_objects_list])
+    ctx = get_integration_context()
+    vulnerabilities_snapshot_id = ctx.get("vulnerabilities_snapshot_id", "")
+    assets_snapshot_id = ctx.get("assets_snapshot_id", "")
+    last_assets_request = ctx.get("last_assets_request", [])
+    last_vulnerabilities_request = ctx.get("last_vulnerabilities_request", [])
+    demisto.debug(f"Preparing to update assets snapshot id {assets_snapshot_id} with a total of {assets_total} assets.")
+    demisto.debug(
+        f"Preparing to update vulnerabilities snapshot id {vulnerabilities_snapshot_id} with a"
+        f"total of {vulnerabilities_total} vulnerabilities."
+    )
+    if assets_snapshot_id and last_assets_request:
+        assets_coroutine = async_send_data_to_xsiam(
+            data=last_assets_request,
+            vendor=VENDOR,
+            product=ASSETS_PRODUCT,
+            num_of_attempts=3,
+            chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT,
+            data_type=ASSETS,
+            add_proxy_to_request=False,
+            snapshot_id=assets_snapshot_id,
+            data_size_expected_to_split_evenly=False,
+            url_key="address",
+            items_count=assets_total,
+        )
+        if assets_coroutine:
+            await assets_coroutine
+
+    if vulnerabilities_snapshot_id and last_vulnerabilities_request:
+        vulnerabilities_coroutine = async_send_data_to_xsiam(
+            data=last_vulnerabilities_request,
+            vendor=VENDOR,
+            product=VULNERABILITIES_PRODUCT,
+            num_of_attempts=3,
+            chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT,
+            data_type=ASSETS,
+            add_proxy_to_request=False,
+            snapshot_id=vulnerabilities_snapshot_id,
+            data_size_expected_to_split_evenly=False,
+            url_key="address",
+            items_count=vulnerabilities_total,
+        )
+        if vulnerabilities_coroutine:
+            await vulnerabilities_coroutine
+
+    demisto.debug(
+        f"Finished sending all data to XSIAM. Sent a total of {assets_total} assets, and {vulnerabilities_total} vulnerabilities."
+    )
+    set_integration_context({})
+    demisto.updateModuleHealth({"assetsPulled": assets_total + vulnerabilities_total})
+
+
+async def collect_assets_and_send_to_xsiam(client: PrismaCloudComputeAsyncClient, asset_type_related_data: AssetTypeRelatedData):
+    """Implement the main loop, sending requests to Prisma to fetch assets, process the assets and then send them to xsiam.
+    Saving the current advancement between intervals.
+
+    Args:
+        client (PrismaCloudComputeAsyncClient): The Prisma cloud compute client.
+        asset_type_related_data (AssetTypeRelatedData): The object that contains that data related to the specific asset type.
+    """
+    asset_type_related_data.write_debug_log(
+        f"starting execution with assets snapshot = {asset_type_related_data.assets_snapshot_id} and"
+        f"vulnerabilities snapshot = {asset_type_related_data.vulnerabilities_snapshot_id}."
+    )
+    while True:
+        try:
+            data = await obtain_asset_data_from_prisma(asset_type_related_data=asset_type_related_data, client=client)
+            if not data:
+                asset_type_related_data.write_debug_log("No more data to fetch, breaking.")
+                break
+            await process_asset_data_and_send_to_xsiam(data=data, asset_type_related_data=asset_type_related_data)
+            asset_type_related_data.next_page()
+            asset_type_related_data.write_debug_log(
+                "Finished sending assets batch to xsiam, sent "
+                f"{min(asset_type_related_data.offset, asset_type_related_data.assets_total_count)} assets so far."
+            )
+            await asset_type_related_data.safe_update_integration_context()
+        except Exception as e:
+            traceback_str = "".join(traceback.format_tb(e.__traceback__))
+            demisto.debug(f"Got error {e}\n{traceback_str=}")
+    asset_type_related_data.write_debug_log(
+        f"Finished obtaining and sending a total of {asset_type_related_data.assets_total_count} assets to xsiam."
+    )
+    await remove_related_data_from_ctx(asset_type_related_data)
+
+
+async def obtain_asset_data_from_prisma(
+    client: PrismaCloudComputeAsyncClient, asset_type_related_data: AssetTypeRelatedData
+) -> List:
+    """Handling the send request to Prisma to obtain more data logic.
+
+    Args:
+        client (PrismaCloudComputeAsyncClient): The Prisma cloud compute client.
+        asset_type_related_data (AssetTypeRelatedData): The object that contains that data related to the specific asset type.
+
+    Returns:
+        List: The jsonified response from Prisma
+    """
+    params = assign_params(limit=asset_type_related_data.limit, offset=asset_type_related_data.offset, sort="scanTime")
+    response = await client._http_request("GET", url_suffix=asset_type_related_data.endpoint, params=params, timeout=300)
+    asset_type_related_data.assets_total_count = int(response.headers.get("Total-Count", 1))
+    data = await response.json()
+    return data
+
+
+async def process_asset_data_and_send_to_xsiam(data: List, asset_type_related_data: AssetTypeRelatedData):
+    """Handle the main logic for processing the data obtained from Prisma and sending to xsiam.
+
+    Args:
+        data (List): The data obtained from prisma.
+        asset_type_related_data (AssetTypeRelatedData): The object that contains that data related to the specific asset type.
+
+    Returns:
+        _type_: The send_data_to_xsiam tasks.
+    """
+    processed_assets, processed_vulnerabilities = process_results(data)
+    asset_type_related_data.vulnerabilities_total_count += len(processed_vulnerabilities)
+    if (not asset_type_related_data.added_one_asset) and processed_assets:
+        asset_type_related_data.write_debug_log("Updating last assets.")
+        await asset_type_related_data.safe_update_last_assets(processed_assets)
+        asset_type_related_data.added_one_asset = True
+        processed_assets.pop()
+    if (not asset_type_related_data.added_one_vulnerability) and processed_vulnerabilities:
+        asset_type_related_data.write_debug_log("Updating last vulnerabilities.")
+        await asset_type_related_data.safe_update_last_vulnerabilities(processed_vulnerabilities)
+        asset_type_related_data.added_one_vulnerability = True
+        processed_vulnerabilities.pop()
+
+    assets_coroutine = async_send_data_to_xsiam(
+        data=processed_assets,
+        vendor=VENDOR,
+        product=ASSETS_PRODUCT,
+        num_of_attempts=3,
+        chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT,
+        data_type=ASSETS,
+        add_proxy_to_request=False,
+        snapshot_id=asset_type_related_data.assets_snapshot_id,
+        data_size_expected_to_split_evenly=False,
+        url_key="address",
+        items_count=1,
+    )
+    asset_type_related_data.write_debug_log(f"sending {len(processed_vulnerabilities)} vulns.")
+    vulnerabilities_coroutine = async_send_data_to_xsiam(
+        data=processed_vulnerabilities,
+        vendor=VENDOR,
+        product=VULNERABILITIES_PRODUCT,
+        num_of_attempts=3,
+        chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT,
+        data_type=ASSETS,
+        add_proxy_to_request=False,
+        snapshot_id=asset_type_related_data.vulnerabilities_snapshot_id,
+        data_size_expected_to_split_evenly=False,
+        url_key="address",
+        items_count=1,
+    )
+    if assets_coroutine:
+        await assets_coroutine
+    if vulnerabilities_coroutine:
+        await vulnerabilities_coroutine
+
+
+def process_results(data_list):
+    processed_results_list = []
+    processed_vulnerabilities_list = []
+    for data in data_list:
+        processed_results_list.append(
+            {
+                "asset__id": data.get("_id", ""),
+                "name": data.get("name", ""),
+                "type": data.get("type", ""),
+                "hostname": data.get("hostname", ""),
+                "scanTime": data.get("scanTime", ""),
+                "osDistro": data.get("osDistro", ""),
+                "osDistroVersion": data.get("osDistroVersion", ""),
+                "osDistroRelease": data.get("osDistroRelease", ""),
+                "distro": data.get("distro", ""),
+                "packages": data.get("packages", []),
+                "files": data.get("files", []),
+                "id": data.get("id", ""),
+                "repoTag": data.get("repoTag", {}),
+                "tags": data.get("tags", []),
+                "repoDigests": data.get("repoDigests", []),
+                "creationTime": data.get("creationTime", ""),
+                "pushTime": data.get("pushTime", ""),
+                "vulnerabilitiesCount": data.get("vulnerabilitiesCount", 0),
+                "vulnerabilityRiskScore": data.get("vulnerabilityRiskScore", 0),
+                "riskFactors": data.get("riskFactors", {}),
+                "complianceRiskScore": data.get("complianceRiskScore", 0),
+                "layers": data.get("layers", []),
+                "labels": data.get("labels", []),
+                "scanVersion": data.get("scanVersion", ""),
+                "firstScanTime": data.get("firstScanTime", ""),
+                "cloudMetadata": data.get("cloudMetadata", {}),
+                "namespaces": data.get("namespaces", []),
+                "clusters": data.get("clusters", []),
+                "instances": data.get("instances", []),
+                "hosts": data.get("hosts", {}),
+                "scanID": data.get("scanID", 0),
+                "hostDevices": data.get("hostDevices", []),
+            }
+        )
+        processed_vulnerabilities_list.extend(process_all_findings(data.get("vulnerabilities", []) or [], data))
+    return processed_results_list, processed_vulnerabilities_list
+
+
+def process_all_findings(vulnerabilities=[], related_asset={}):
+    processed_vulnerabilities = []
+    for vulnerability in vulnerabilities:
+        processed_vulnerabilities.append(
+            {
+                "asset_id": related_asset.get("id", ""),
+                "asset__id": related_asset.get("_id", ""),
+                "scanTime": related_asset.get("scanTime", ""),
+                "scanID": related_asset.get("scanID", ""),
+                "scanVersion": related_asset.get("scanVersion", ""),
+                "cloudMetadata": related_asset.get("cloudMetadata", {}),
+                "applicableRules": vulnerability.get("applicableRules", []),
+                "binaryPkgs": vulnerability.get("binaryPkgs", []),
+                "cause": vulnerability.get("cause", ""),
+                "cve": vulnerability.get("cve", ""),
+                "cvss": vulnerability.get("cvss", 0),
+                "description": vulnerability.get("description", ""),
+                "discovered": vulnerability.get("discovered", ""),
+                "exploit": vulnerability.get("exploit", ""),
+                "fixDate": vulnerability.get("fixDate", 0),
+                "id": vulnerability.get("id", 0),
+                "link": vulnerability.get("link", ""),
+                "packageName": vulnerability.get("packageName", ""),
+                "packageType": vulnerability.get("packageType", ""),
+                "packageVersion": vulnerability.get("packageVersion", ""),
+                "published": vulnerability.get("published", 0),
+                "riskFactors": vulnerability.get("riskFactors", {}),
+                "severity": vulnerability.get("severity", ""),
+                "status": vulnerability.get("status", ""),
+                "text": vulnerability.get("text", ""),
+                "title": vulnerability.get("title", ""),
+                "type": vulnerability.get("type", ""),
+                "vecStr": vulnerability.get("vecStr", ""),
+                "vulnTagInfos": vulnerability.get("vulnTagInfos", []),
+            }
+        )
+    return processed_vulnerabilities
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
-    username = params.get("credentials").get("identifier")
-    password = params.get("credentials").get("password")
+    username = params.get("credentials", {}).get("identifier")
+    password = params.get("credentials", {}).get("password")
     base_url = params.get("address")
     project = params.get("project", "")
     verify_certificate = not params.get("insecure", False)
+    demisto.debug(f"{verify_certificate=}")
     cert = params.get("certificate")
     proxy = params.get("proxy", False)
     reliability = params.get("integration_reliability", "")
-
-    # If checked to verify and given a certificate, save the certificate as a temp file
-    # and set the path to the requests client
-    if verify_certificate and cert:
-        tmp = tempfile.NamedTemporaryFile(delete=False, mode="w")
-        tmp.write(cert)
-        tmp.close()
-        verify = tmp.name
-    else:
-        # Save boolean as a string
-        verify = str(verify_certificate)
 
     try:
         requested_command = demisto.command()
         demisto.info(f"Command being called is {requested_command}")
 
-        # Init the client
+        # If checked to verify and given a certificate, save the certificate as a temp file
+        # and set the path to the requests client
+        if verify_certificate and cert:
+            tmp = tempfile.NamedTemporaryFile(delete=False, mode="w")
+            tmp.write(cert)
+            tmp.close()
+            verify = tmp.name
+        else:
+            # Save boolean as a string for synchronized client only.
+            verify = verify_certificate if requested_command == "long-running-execution" else str(verify_certificate)  # type: ignore
+
         client = PrismaCloudComputeClient(
             base_url=urljoin(base_url, "api/v1/"), verify=verify, auth=(username, password), proxy=proxy, project=project
-        )
+        )  # type: ignore[reportAssignmentType]
 
         if requested_command == "test-module":
             # This is the call made when pressing the integration test button
@@ -2841,6 +3747,16 @@ def main():
             # this method is called periodically when 'fetch incidents' is checked
             incidents = fetch_incidents(client)
             demisto.incidents(incidents)
+        elif requested_command == "long-running-execution":
+            client = PrismaCloudComputeAsyncClient(
+                base_url=urljoin(base_url, "api/v1/"),
+                verify=verify,
+                username=username,
+                password=password,
+                proxy=proxy,
+                project=project,
+            )  # type: ignore
+            asyncio.run(fetch_assets_long_running_command(client))  # type: ignore
         elif requested_command == "prisma-cloud-compute-profile-host-list":
             return_results(results=get_profile_host_list(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-profile-container-list":
