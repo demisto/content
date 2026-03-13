@@ -17,14 +17,46 @@ configuration:
   type: 0
   additionalinfo: "For Example: https://localhost:8008"
   section: Connect
+- name: rsso_url
+  display: OpenID Issuer URL
+  required: false
+  type: 0
+  additionalinfo: "The RSSO server URL. For example https://<rsso_server_name>:8443/rsso. Required when 'Use OAuth' is selected."
+  section: Connect  
+- name: use_oauth
+  display: Use OAuth
+  required: false
+  defaultvalue: false
+  type: 8
+  section: Connect
+  additionalinfo: "Select this option to use OAuth 2.0 Authorization Code flow for authentication instead of username/password."
 - name: credentials
   display: User Name
-  required: true
+  required: false
   defaultvalue:
   type: 9
   section: Connect
-  additionalinfo: ""
+  additionalinfo: "Required when 'Use OAuth' is not selected."
   displaypassword: Password
+- display: Client ID
+  name: credentials_oauth2
+  type: 9
+  displaypassword: Client Secret
+  section: Connect
+  required: false
+  additionalinfo: "Required when 'Use OAuth' is selected."
+- name: redirect_uri
+  display: Redirect URI
+  required: false
+  type: 0
+  section: Connect
+  additionalinfo: "Required when 'Use OAuth' is selected."
+- name: auth_code
+  display: Authorization Code
+  required: false
+  type: 4
+  section: Connect
+  additionalinfo: "Obtained by running the !bmc-itsm-generate-login-url command and following the URL. Required when 'Use OAuth' is selected."
 - name: max_fetch
   display: Maximum Number of Incidents per Fetch
   defaultvalue: "50"
@@ -2322,6 +2354,10 @@ script:
       description: The work order ticket scheduled future end date. For example, in 12 hours, in 7 days.
       type: String
       defaultValue: ""
+    outputs: []
+  - name: bmc-itsm-generate-login-url
+    description: Generate the login URL used for the OAuth 2.0 Authorization Code flow. Follow the URL to obtain an authorization code, then paste it into the instance configuration 'Authorization Code' field.
+    arguments: []
     outputs: []
   isfetch: true
   ismappable: true
