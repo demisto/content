@@ -1,0 +1,6 @@
+id: <Vendor>_<Product>_ParsingRule
+name: <Vendor> <Product> Parsing Rule
+fromversion: 8.13.0
+tags: []
+rules: ''
+samples: ''
