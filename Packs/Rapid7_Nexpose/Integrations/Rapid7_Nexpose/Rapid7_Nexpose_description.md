@@ -4,6 +4,11 @@ Two-factor authentication (2FA) must be enabled on the console and configured fo
 
 ## How to fetch assets and vulnerabilities
 
-The fetch process runs every 24 hours and may take up to 10 minutes for the updated data to be ingested into the tenant.
-NOTE: To fetch assets and vulnerabilities from Rapid7, make sure the *Long running integration* parameter box is checked.
+The integration uses the **fetch-assets** mechanism to periodically collect assets and vulnerabilities from Rapid7 InsightVM.
+
+To enable asset fetching:
+1. Check the *Fetches assets* checkbox in the integration configuration.
+2. Configure the *Assets Fetch Interval* parameter to set how often assets are fetched (default: 24 hours).
+
+The fetched data may take up to 10 minutes to be ingested into the tenant after each fetch cycle.
 </~PLATFORM>
