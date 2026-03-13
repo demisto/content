@@ -1,0 +1,21 @@
+commonfields:
+  id: displayTMV1IndicatorsFromAlertsDetails
+  version: -1
+dockerimage: demisto/python3:3.12.11.4819260
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: displayTMV1IndicatorsFromAlertsDetails
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+- SOC
+- SOC_Framework
+- Trend Micro Vision One
+type: python
+fromversion: 6.10.0

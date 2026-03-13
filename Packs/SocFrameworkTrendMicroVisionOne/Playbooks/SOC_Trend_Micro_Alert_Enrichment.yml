@@ -1,0 +1,460 @@
+fromversion: 5.0.0
+id: SOC Trend Micro Alert Enrichment
+version: 3
+contentitemexportablefields:
+  contentitemfields:
+    packID: soc-trendmicro-visionone
+    packName: SOC Trend Micro Enhancement for Cortex XSIAM
+    itemVersion: 1.0.23
+    fromServerVersion: 5.0.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+    isoverridable: false
+    supportedModules: []
+vcShouldKeepItemLegacyProdMachine: false
+name: SOC Trend Micro Alert Enrichment
+description: Read-only adapter to enrich an alert from Trend Micro Vision One (Workbench)
+  and normalize into Alert.Enrichment.*.
+tags:
+- SOC
+- SOC_Framework
+- Enrichment
+- Trend Micro Vision One
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 09ff7a99-ab25-4eea-8022-12c55d265799
+    type: start
+    task:
+      id: 09ff7a99-ab25-4eea-8022-12c55d265799
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f640a9af-d4ee-4c55-8af0-da08975e882d
+    type: condition
+    task:
+      id: f640a9af-d4ee-4c55-8af0-da08975e882d
+      version: -1
+      name: Does VisionOne Key exist?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: Builtin
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#error#':
+      - "103"
+      "no":
+      - "3"
+      "yes":
+      - "99"
+    scriptarguments:
+      value:
+        complex:
+          root: VisionOne.Alert_Details.alert
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: VisionOne.Alert_Details.alert
+                iscontext: true
+          accessor: id
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: b570cf07-5371-4cff-9f59-432456f61ddd
+    type: regular
+    task:
+      id: b570cf07-5371-4cff-9f59-432456f61ddd
+      version: -1
+      name: Set provider alertId
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#error#':
+      - "103"
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: Alert.Provider.alertId
+      value:
+        complex:
+          root: issue
+          accessor: externallink
+          transformers:
+          - operator: substringFrom
+            args:
+              from:
+                value:
+                  simple: /workbench/alerts/
+          - operator: substringTo
+            args:
+              to:
+                value:
+                  simple: '?'
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 22dbc7e1-ab76-41be-b04c-eacfc66e0ed4
+    type: condition
+    task:
+      id: 22dbc7e1-ab76-41be-b04c-eacfc66e0ed4
+      version: -1
+      name: Trend Micro Vision One available?
+      description: Check for an enabled Trend Micro Vision One instance.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#error#':
+      - "103"
+      "yes":
+      - "100"
+    scriptarguments:
+      brandname:
+        simple: Trend Micro Vision One V3
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: b5af4b24-f4cf-4fac-8398-8394ebbb51c9
+    type: condition
+    task:
+      id: b5af4b24-f4cf-4fac-8398-8394ebbb51c9
+      version: -1
+      name: Do we have a Trend alert/workbench ID?
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "99"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Alert.Provider.alertId
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 5660d7dd-e076-47e1-baf6-70e5a41c64b6
+    type: regular
+    task:
+      id: 5660d7dd-e076-47e1-baf6-70e5a41c64b6
+      version: -1
+      name: Get Trend alert details (read-only)
+      description: Fetches details for a specific alert.
+      script: '|||trendmicro-visionone-get-alert-details'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#error#':
+      - "103"
+      '#none#':
+      - "99"
+      - "102"
+    scriptarguments:
+      workbench_id:
+        simple: ${Alert.Provider.alertId}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: 91e48ade-1332-41f3-9283-a16723530564
+    type: title
+    task:
+      id: 91e48ade-1332-41f3-9283-a16723530564
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: c1542e43-2164-4107-8f6d-5c97e7be06b1
+    type: title
+    task:
+      id: c1542e43-2164-4107-8f6d-5c97e7be06b1
+      version: -1
+      name: Already Enriched
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "102":
+    id: "102"
+    taskid: f870a626-1087-423f-a4f7-cf38232371c6
+    type: regular
+    task:
+      id: f870a626-1087-423f-a4f7-cf38232371c6
+      version: -1
+      name: Normalize Vision One Data Context
+      description: |
+        Normalize alert context into a single Normalized key for vendor-agnostic layouts. Extends with MITRE, Impact Scope, Artifacts, Timeline, and Model from VisionOne.Alert_Details.alert and merges ExtractedIndicators. Read-only; does not execute any response actions.
+      script: SOC_Normalize_TrendMicro_VisionOne
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#error#':
+      - "103"
+      '#none#':
+      - "99"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: 53376539-613b-4428-86a4-ebeb3b41c5f9
+    type: playbook
+    task:
+      id: 53376539-613b-4428-86a4-ebeb3b41c5f9
+      version: -1
+      name: Foundation - Error Handling_V3
+      playbookName: Foundation - Error Handling_V3
+      type: playbook
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 181.25,
+          "y": 1467.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "102_103_#error#": 0.89,
+      "2_103_#error#": 0.9,
+      "3_103_#error#": 0.9,
+      "5_100_yes": 0.79,
+      "5_103_#error#": 0.9,
+      "6_99_#default#": 0.82,
+      "7_103_#error#": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1492.5,
+        "width": 1055,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs:
+- contextPath: Alert.Enrichment.Provider
+  description: Provider summary (name, workbenchUrl, alertId).
+  type: unknown
+- contextPath: Trend.V1.AlertDetailsRaw
+  description: Raw JSON returned by trendmicro-visionone-get-alert-details.
+  type: unknown
+- contextPath: Alert.Enrichment.Entities
+  description: Entities extracted from Trend alert details.
+  type: unknown
+- contextPath: Alert.Enrichment.Indicators
+  description: Indicators extracted from Trend alert details.
+  type: unknown
+- contextPath: Alert.Enrichment.Mitre.Techniques
+  description: MITRE techniques (IDs) from Trend alert details.
+  type: unknown
+- contextPath: Alert.Enrichment.Source.Trend
+  description: Adapter bookkeeping flags.
+  type: unknown
+sourceplaybookid: SOC Trend Micro Alert Enrichment
+dirtyInputs: true
+adopted: true
