@@ -1,4 +1,3 @@
-
 # Cyber Triage
 
 Cyber Triage is an agentless endpoint triage tool that pushes a collection agent to remote Windows endpoints, gathers volatile and file system data, and analyzes it for indicators of compromise — including data exfiltration, lateral movement, remote access, and malware.
