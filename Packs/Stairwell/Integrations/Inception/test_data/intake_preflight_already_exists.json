@@ -1,0 +1,8 @@
+{
+  "fileActions": [
+    {
+      "action": "NO_ACTION_ALREADY_EXISTS",
+      "filePath": "/path/to/test/file.exe"
+    }
+  ]
+} 

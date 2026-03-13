@@ -1,0 +1,15 @@
+{
+  "fileActions": [
+    {
+      "action": "UPLOAD",
+      "filePath": "/path/to/test/file.exe",
+      "uploadUrl": "https://storage.googleapis.com/upload-url",
+      "fields": {
+        "key": "value",
+        "policy": "policy-data",
+        "signature": "signature-data"
+      },
+      "fileField": "file"
+    }
+  ]
+} 

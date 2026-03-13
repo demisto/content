@@ -1,0 +1,8 @@
+{
+  "fileActions": [
+    {
+      "action": "UNKNOWN_ACTION",
+      "filePath": "/path/to/test/file.exe"
+    }
+  ]
+} 
