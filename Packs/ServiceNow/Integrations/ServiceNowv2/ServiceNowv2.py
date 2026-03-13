@@ -1893,6 +1893,7 @@ def get_ticket_notes_command(
 
 def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
     entries = []
+    comment_format = params.get("comment_format")
     for note in notes:
         if "Mirrored from Cortex XSOAR" not in note.get("value", ""):
             comments_context = {"comments_and_work_notes": note.get("value")}
@@ -1909,6 +1910,17 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
                 else:
                     tags = tagsstr + params.get("work_notes_tag_from_servicenow", "WorkNoteFromServiceNow")
                     tags = argToList(tags)
+            if comment_format and comment_format != "source":
+                if comment_format == "html":
+                    value = note.get('value')
+                    if isinstance(value, str):
+                        value = value.replace('[/code]','')
+                        value = value.replace('[code]','')
+                        note['value'] = value
+                entry_format = comment_format
+            else:
+                entry_format = note.get("format")
+
 
             entries.append(
                 {
@@ -1916,7 +1928,7 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
                     "Category": note.get("category"),
                     "Contents": f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
                     f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
-                    "ContentsFormat": note.get("format"),
+                    "ContentsFormat": entry_format,
                     "Tags": tags,
                     "Note": True,
                     "EntryContext": comments_context,
@@ -2957,6 +2969,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
     demisto.debug(f"Getting update for remote {ticket_id}")
     last_update = arg_to_timestamp(arg=args.get("lastUpdate"), arg_name="lastUpdate", required=True)
     demisto.debug(f"last_update is {last_update}")
+    mark_attachments_as_note = argToBoolean(params.get("mark_attachments_as_note"))
 
     ticket_type = client.ticket_type
     result = client.get(ticket_type, ticket_id, use_display_value=client.use_display_value)
@@ -3003,6 +3016,9 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
         for file in file_entries:
             if "_mirrored_from_xsoar" not in file.get("File"):
                 file["Tags"] = [params.get("file_tag_from_service_now")]
+                if mark_attachments_as_note:
+                    file["Note"] = True
+
                 entries.append(file)
 
     if client.use_display_value:
