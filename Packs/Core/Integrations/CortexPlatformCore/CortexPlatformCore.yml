@@ -4130,6 +4130,28 @@ script:
       name: core-delete-profile
       hidden: true
       outputs: []
+    - name: core-get-support-ticket-taxonomy
+      hidden: true
+      description: Retrieves the complete support ticket taxonomy including all issue categories and their associated problem concentrations.
+      arguments: []
+      outputs:
+        - contextPath: Core.SupportTicketTaxonomy
+          description: A mapping of support issue categories to their specific problem concentrations.Each key represents an 'issue_category', and its associated list represents the valid 'problem_concentrations' for that category.
+          type: String
+    - name: core-verify-support-ticket-permission
+      hidden: true
+      description: Verifies whether the current user has the required permissions to manage support tickets. Checks both user CSP permission and tenant entitlement.
+      arguments: []
+      outputs:
+        - contextPath: Core.SupportTicketPermission.user_csp_permission
+          description: Whether the user has CSP permission to manage support tickets.
+          type: Boolean
+        - contextPath: Core.SupportTicketPermission.tenant_entitlement_check
+          description: Whether the tenant has the entitlement for support ticket management.
+          type: Boolean
+        - contextPath: Core.SupportTicketPermission.has_permission
+          description: Whether the user has full permission (both user CSP permission and tenant entitlement).
+          type: Boolean
     - arguments:
         - description: Comma-separated list of broker VM names to filter by.
           name: broker_vm_names

@@ -1,5 +1,4 @@
 from typing import Any
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
@@ -77,6 +76,9 @@ WEBAPP_COMMANDS = [
     "core-update-windows-exploit-profile",
     "core-delete-profile",
     "core-list-findings",
+    "core-fill-support-ticket",
+    "core-get-support-ticket-taxonomy",
+    "core-verify-support-ticket-permission",
     "core-list-brokers",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
@@ -1014,6 +1016,30 @@ class Client(CoreClient):
             url_suffix=f"case/{case_id}/resolution-plan/tasks",
         )
         return reply
+
+    def check_support_permission(self) -> dict:
+        """
+        Check if the current user has permission to create/manage support tickets.
+
+        Returns:
+            dict: The response containing permission status.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/sfdc_support/check_permission",
+        )
+
+    def get_sme_areas_and_sub_groups(self) -> dict:
+        """
+        Retrieve SME areas and sub-groups for the tenant's product type.
+
+        Returns:
+            dict: The response containing SME areas and their associated sub-groups.
+        """
+        return self._http_request(
+            method="GET",
+            url_suffix="/sfdc_support/get_sme_areas_and_sub_groups",
+        )
 
     def get_custom_fields_metadata(self) -> dict[str, Any]:
         """
@@ -3482,7 +3508,7 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
     raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
 
 
-def list_scripts_command(client: Client, args: dict) -> List[CommandResults]:
+def list_scripts_command(client: Client, args: dict) -> list[CommandResults]:
     """
     Retrieves a list of scripts from the platform with optional filtering.
     """
@@ -3827,7 +3853,7 @@ def create_assessment_profile_payload(
     day: str | None,
     time: str | None,
     report_type: str = "ALL",
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Prepare assessment profile payload
 
@@ -3864,7 +3890,7 @@ def list_compliance_standards_payload(
     labels: list[str] | None = None,
     page=0,
     page_size=MAX_COMPLIANCE_STANDARDS,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Prepare assessment profile payload
 
@@ -4423,7 +4449,7 @@ def list_system_users_command(client, args):
     )
 
 
-def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
+def convert_timeframe_string_to_json(time_to_convert: str) -> dict[str, int]:
     """Convert a timeframe string to a json required for XQL queries.
 
     Args:
@@ -4607,7 +4633,7 @@ def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str
     Returns:
         str: The query execution ID.
     """
-    data: Dict[str, Any] = {
+    data: dict[str, Any] = {
         "query": query,
         "timeframe": timeframe,
     }
@@ -4657,6 +4683,45 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
 
     return CommandResults(
         outputs_prefix="GenericXQLQuery", outputs_key_field="execution_id", outputs=outputs, raw_response=outputs
+    )
+
+
+def get_support_ticket_taxonomy_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the complete support ticket taxonomy: all issue categories, their problem concentrations,
+    and the questionnaire items for every combination.
+
+    This is a single command that aggregates data from:
+      1. /sfdc_support/get_sme_areas_and_sub_groups/
+
+    Returns a nested structure grouped by issue_category → problem_concentration
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Command arguments (none required).
+
+    Returns:
+        CommandResults: Object containing the full nested taxonomy data.
+    """
+    areas_response = client.get_sme_areas_and_sub_groups()
+    areas = areas_response.get("reply", [])
+
+    taxonomy: list[dict] = []
+    for area in areas:
+        area_value = area.get("value", "")
+        suggested_values = area.get("suggestedValues", [])
+
+        # Extract only the 'value' string from each suggestedValue object
+        problem_concentrations = [sg.get("value") for sg in suggested_values if sg.get("value")]
+
+        category_entry = {area_value: problem_concentrations}
+
+        taxonomy.append(category_entry)
+
+    return CommandResults(
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.SupportTicketTaxonomy",
+        outputs=str(taxonomy),
+        raw_response=taxonomy,
     )
 
 
@@ -5117,6 +5182,54 @@ def delete_profile_command(client, args):
     return CommandResults(readable_output="Your request was sent successfully.")
 
 
+def verify_support_ticket_permission_command(client: Client) -> CommandResults:
+    """
+    Command wrapper for verify_support_ticket_permission.
+    Checks whether the current user has the required permissions to manage support tickets.
+
+    Args:
+        client (Client): The client instance used to send the request.
+
+    Returns:
+        CommandResults: Object containing the permission check results with
+            user_csp_permission and tenant_entitlement_check fields.
+    """
+
+    response = client.check_support_permission()
+    reply = response.get("reply", {})
+    demisto.debug(f"Support ticket permission check: {reply}")
+    user_csp_permission = reply.get("user_csp_permission", False)
+    tenant_entitlement_check = reply.get("tenant_entitlement_check", False)
+
+    has_permission = bool(user_csp_permission and tenant_entitlement_check)
+
+    output = {
+        "user_csp_permission": user_csp_permission,
+        "tenant_entitlement_check": tenant_entitlement_check,
+        "has_permission": has_permission,
+    }
+
+    if not has_permission:
+        readable_output = ""
+        if not tenant_entitlement_check:
+            readable_output += "Support for this tenant has expired."
+        elif not user_csp_permission:
+            readable_output += "You do not have the required CSP permissions to manage support tickets."
+
+        output["Error"] = readable_output
+
+    else:
+        readable_output = tableToMarkdown(
+            "Support Ticket Permission",
+            output,
+            headerTransform=string_to_table_header,
+        )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.SupportTicketPermission",
+        outputs=output,
+        raw_response=response,
 def list_brokers_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves broker information from the BROKER_CLUSTER_TABLE.
@@ -5315,6 +5428,13 @@ def main():  # pragma: no cover
         elif command == "core-list-findings":
             return_results(list_findings_command(client, args))
 
+        elif command == "core-get-support-ticket-taxonomy":
+            verify_platform_version("8.14.0")
+            return_results(get_support_ticket_taxonomy_command(client, args))
+
+        elif command == "core-verify-support-ticket-permission":
+            verify_platform_version("8.14.0")
+            return_results(verify_support_ticket_permission_command(client))
         elif command == "core-list-brokers":
             return_results(list_brokers_command(client, args))
 
