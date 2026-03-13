@@ -284,11 +284,11 @@ def execute_reply_mail(
     if mail_sender_instance:
         mail_content["using"] = mail_sender_instance
 
-        # If using Gmail Single User,
-        # add references header to mail_content to properly group replies into conversations in user's inbox.
-        instances = demisto.getModules()
-        if instances.get(mail_sender_instance, {}).get("brand") == "Gmail Single User":
-            mail_content["references"] = email_latest_message
+    # Add the References header to properly group replies into the same email thread/conversation
+    # in the recipient's email client. This is a standard RFC 2822 header used by all mail clients
+    # (Gmail, Outlook, Apple Mail, etc.) and is required for all mail sender integrations.
+    if email_latest_message:
+        mail_content["references"] = email_latest_message
     demisto.debug(f"Sending email with the following subject: {subject_with_id}, and content: {mail_content}")
     is_succeed, email_reply = execute_command("reply-mail", mail_content, extract_contents=False, fail_on_error=False)
     if is_succeed:

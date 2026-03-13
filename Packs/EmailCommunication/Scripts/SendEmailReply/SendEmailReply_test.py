@@ -179,6 +179,7 @@ def test_validate_email_sent_fails(mocker):
                 "replyTo": "soc_sender@company.com",
                 "using": "soc_sender@company.com",
                 "bodyType": "html",
+                "references": "5",
             },
         ),
         (
@@ -210,6 +211,7 @@ def test_validate_email_sent_fails(mocker):
                 "attachIDs": "10,12",
                 "replyTo": "soc_sender@company.com",
                 "bodyType": "html",
+                "references": "5",
             },
         ),
         (
@@ -243,6 +245,7 @@ def test_validate_email_sent_fails(mocker):
                 "replyTo": "soc_sender@company.com",
                 "using": "soc_sender@company.com",
                 "bodyType": "html",
+                "references": "5",
             },
         ),
         (
@@ -274,6 +277,41 @@ def test_validate_email_sent_fails(mocker):
                 "attachIDs": "10,12",
                 "replyTo": "soc_sender@company.com",
                 "bodyType": "html",
+                "references": "5",
+            },
+        ),
+        # No email_latest_message: references header should NOT be included
+        (
+            (
+                1,
+                "Email Subject",
+                False,
+                "end_user@company.com",
+                "Reply body.",
+                "html",
+                "soc_sender@company.com",
+                "cc_user@company.com",
+                "bcc_user@company.com",
+                "<html><body>Reply body.</body></html",
+                ["10", "12"],
+                "",
+                "12345678",
+                "soc_sender@company.com",
+                "from_mail",
+            ),
+            {
+                "to": "end_user@company.com",
+                "inReplyTo": "",
+                "subject": "<12345678> Email Subject",
+                "cc": "cc_user@company.com",
+                "from": "from_mail",
+                "bcc": "bcc_user@company.com",
+                "htmlBody": "<html><body>Reply body.</body></html",
+                "body": "Reply body.",
+                "attachIDs": "10,12",
+                "replyTo": "soc_sender@company.com",
+                "using": "soc_sender@company.com",
+                "bodyType": "html",
             },
         ),
     ],
@@ -286,6 +324,9 @@ def test_execute_reply_mail(test_args, expected_response, mocker):
     - All input arguments are correctly set
     Then
     - Validate that 'reply-mail' command is called and supplied with a correctly formatted set of mail content
+    - Validate that the 'references' header is always included when email_latest_message is set,
+      regardless of the mail sender integration brand (fixes threading for O365, EWS, etc.)
+    - Validate that the 'references' header is NOT included when email_latest_message is empty
     """
     import SendEmailReply
     from SendEmailReply import execute_reply_mail
