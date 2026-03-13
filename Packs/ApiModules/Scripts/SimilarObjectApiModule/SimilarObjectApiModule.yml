@@ -1,0 +1,18 @@
+commonfields:
+  id: SimilarObjectApiModule
+  version: -1
+name: SimilarObjectApiModule
+script: ''
+type: python
+subtype: python3
+tags:
+- infra
+- server
+comment: Common code that is appended into scripts which require finding similar objects.
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/sklearn:1.0.0.5898415
+fromversion: 5.0.0
+tests:
+- No tests

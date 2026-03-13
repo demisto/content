@@ -1,0 +1,115 @@
+args:
+- description: Issue ID to get the prediction of. If empty, predicts the current issue ID.
+  name: issue_id
+  required: true
+- auto: PREDEFINED
+  description: 'Comma-separated free-text fields compared using semantic similarity scoring. Suitable for longer descriptive fields where partial matches are meaningful. For example: name, description, remediation.'
+  name: text_similarity_fields
+- auto: PREDEFINED
+  description: 'Comma-separated fields representing discrete identifiers. Each field contributes 1 if values are equal, or 0 if not. The average of all selected fields affects the overall similarity score. For example: status, type, assignee, severity, starred, category, domain, source.'
+  name: discrete_match_fields
+- auto: PREDEFINED
+  description: 'Comma-separated fields containing structured data. Each is compared using element-level similarity.'
+  name: json_similarity_fields
+- auto: PREDEFINED
+  description: Comma-separated list of additional issue fields to display, but which will not be taken into account when computing similarity.
+  name: fields_to_display
+- auto: PREDEFINED
+  description: Comma-separated issue fields that must exactly match the current issue before any similarity scoring is applied. Acts as a strict pre-filter.
+  name: filter_equal_fields
+  predefined:
+  - severity
+  - starred
+  - status
+  - assignee
+  - category
+  - domain
+  - description
+  - name
+  - source
+- defaultValue: 1 months ago
+  description: The start date by which to filter issues. Date format will be the same as in the issues query page, for example, "3 days ago", "2019-01-01T00:00:00 +0200".
+  name: from_date
+- defaultValue: now
+  description: The end date by which to filter issues. Date format will be the same as in the issues query page, for example, "3 days ago", "2019-01-01T00:00:00 +0200".
+  name: to_date
+- defaultValue: '1500'
+  description: The maximum number of issues to query.
+  name: limit
+- auto: PREDEFINED
+  defaultValue: 'False'
+  description: Whether to aggregate duplicate issues within different dates.
+  name: aggregate_issues_different_date
+  predefined:
+  - 'True'
+  - 'False'
+- defaultValue: '0.2'
+  description: Minimum overall similarity score (0-1) required for an issue to be considered similar. Higher thresholds return fewer, more precise matches.
+  name: min_similarity
+- defaultValue: '100'
+  description: The maximum number of issues to display.
+  name: max_issues_to_display
+- auto: PREDEFINED
+  defaultValue: 'False'
+  description: Whether to display the current issue.
+  name: show_current_issue
+  predefined:
+  - 'True'
+  - 'False'
+- description: "A custom filter. When using this argument, other filter arguments are not relevant. example: `{\"OR\":[\"SEARCH_FIELD\":\"actor_process_command_line\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"path_to_file\"}]}`."
+  name: custom_filter
+- auto: PREDEFINED
+  defaultValue: 'False'
+  description: Whether to display the similarity score for each of the issue fields.
+  name: show_issue_fields_similarity
+  predefined:
+  - 'True'
+  - 'False'
+comment: |-
+  Searches past similar issues based on issue fields' similarity. Includes an option to also display indicators similarity.
+  Note: For the similarity calculation, at least one field must be provided in one of the "text_similarity_fields", "json_similarity_fields" or "discrete_match_fields" arguments.
+commonfields:
+  id: FindSimilarIssues
+  version: -1
+enabled: false
+name: FindSimilarIssues
+outputs:
+- contextPath: SimilarIssues.execution_summary
+  description: The summary of the execution.
+  type: string
+- contextPath: SimilarIssues.is_similar_issue_found
+  description: Indicates whether similar issues have been found.
+  type: boolean
+- contextPath: SimilarIssues.similar_issue.created
+  description: The creation date of the similar issue.
+  type: date
+- contextPath: SimilarIssues.similar_issue.id
+  description: The ID of the similar issue.
+  type: string
+- contextPath: SimilarIssues.similar_issue.name
+  description: The name of the similar issue.
+  type: string
+- contextPath: SimilarIssues.similar_issue.similarity_score
+  description: The similarity of the similar issue represented as a float in the range 0-1.
+  type: number
+- contextPath: SimilarIssues.similar_issue.details
+  description: The details of the similar issue.
+  type: string
+script: '-'
+system: false
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/sklearn:1.0.0.5898415
+fromversion: 6.1.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- platform
+supportedModules:
+- xsiam
+- agentix
+- cloud
+- cloud_posture
+- cloud_runtime_security
+- edr
