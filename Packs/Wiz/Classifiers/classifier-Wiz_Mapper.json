@@ -114,6 +114,22 @@
                     "complex": null,
                     "simple": "entitySnapshot.nativeType"
                 },
+                "dbotMirrorDirection": {
+                    "complex": null,
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "complex": null,
+                    "simple": "mirror_id"
+                },
+                "dbotMirrorInstance": {
+                    "complex": null,
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorTags": {
+                    "complex": null,
+                    "simple": "mirror_tags"
+                },
                 "severity": {
                     "complex": null,
                     "simple": "issue.severity"

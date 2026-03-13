@@ -5,7 +5,7 @@ from CommonServerPython import *
 import demistomock as demisto
 from urllib import parse
 
-WIZ_VERSION = "1.0.0"
+WIZ_VERSION = "1.1.0"
 WIZ_DEFEND = "wiz_defend"
 WIZ_DEFEND_INCIDENT_TYPE = "WizDefend Detection"
 USER_AGENT_NAME = "xsoar_defend"
@@ -22,6 +22,7 @@ FETCH_INTERVAL_MINIMUM_MIN = 10
 FETCH_INTERVAL_MAXIMUM_MIN = 600
 DEFAULT_FETCH_BACK = "12 hours"
 MAX_FETCH_BUFFER = 15  # Percentage buffer for fetch interval calculations
+MAX_NOTE_LENGTH = 1400  # Hard limit for issue note text length enforced by the Wiz API
 
 
 # Threats
@@ -3512,7 +3513,7 @@ def reject_or_resolve_issue(issue_id, reject_or_resolve_reason, reject_or_resolv
         WizApiVariables.ISSUE_ID: issue_id,
         WizApiVariables.PATCH: {
             WizApiVariables.STATUS: status,
-            WizApiVariables.NOTE: reject_or_resolve_comment,
+            WizApiVariables.NOTE: truncate_note(reject_or_resolve_comment),
             WizApiVariables.RESOLUTION_REASON: reject_or_resolve_reason,
         },
     }
@@ -3561,6 +3562,18 @@ def resolve_threat():
     return reject_or_resolve_issue(issue_id, resolution_reason, resolution_note, WizStatus.RESOLVED)
 
 
+def truncate_note(text):
+    """
+    Truncate a note to MAX_NOTE_LENGTH characters.
+    If truncated, appends '... [truncated]' within the limit.
+    """
+    if not text or len(text) <= MAX_NOTE_LENGTH:
+        return text
+
+    suffix = "... [truncated]"
+    return text[: MAX_NOTE_LENGTH - len(suffix)] + suffix
+
+
 def set_issue_note(issue_id, comment):
     """
     Set a note on Wiz Issue
@@ -3570,6 +3583,7 @@ def set_issue_note(issue_id, comment):
     if not is_valid_id:
         return message
 
+    comment = truncate_note(comment)
     variables = {"input": {"issueId": issue_id, "text": comment}}
     query = CREATE_COMMENT_QUERY
 
