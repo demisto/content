@@ -1,0 +1,19 @@
+commonfields:
+  id: displayCrowdStrikeEvidencexsiam
+  version: -1
+dockerimage: demisto/python3:3.12.8.1983910
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: displayCrowdStrikeEvidencexsiam
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python
+adopted: true
+fromversion: 6.10.0
