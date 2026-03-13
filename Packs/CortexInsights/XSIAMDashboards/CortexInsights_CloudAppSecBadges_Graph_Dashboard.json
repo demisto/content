@@ -1,0 +1,1050 @@
+{
+    "dashboards_data": [
+        {
+            "name": "Cortex Cloud AppSec Badges (Graph)",
+            "description": "Widgets",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-5413",
+                    "data": [
+                        {
+                            "key": "xql_1771868131431",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 488.5,
+                                "phrase": "config timeframe = 30d\n| dataset = cas_policies\n| filter is_custom = true | comp count(policy_id ) as custom_cas_policies \n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy for any Finding Type\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#e20606\",\"#01ff00\",\"1\") dataunit = \"custom CAS policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\">1 implies Bronze is Achieved\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Create AppSec Policy for any Finding Type\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "custom_cas_policies"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#e20606",
+                                                    "#01ff00",
+                                                    1
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"custom CAS policies\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "custom_cas_policies",
+                                                    ">1 implies Bronze is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1771872426686",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 488.5,
+                                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions = \"REPORT_CLI\"| comp count(policy_id ) as custom_cas_policies\n\n\n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy with CI Comment\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#f20909\",\"#00ff61\",\"1\") dataunit = \"policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\">1 implies Silver is Achieved\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Create AppSec Policy with CI Comment\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "custom_cas_policies"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#f20909",
+                                                    "#00ff61",
+                                                    1
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"policies\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "custom_cas_policies",
+                                                    ">1 implies Silver is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1771868507476",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 488.5,
+                                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions in (\"REPORT_PR_COMMENTS\", \"BLOCK_PR\") | comp count(policy_id ) as custom_cas_policies\n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy with PR Comment or Block\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#f20909\",\"#00ff61\",\"1\") dataunit = \"policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\">1 implies Gold is Achieved\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Create AppSec Policy with PR Comment or Block\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "custom_cas_policies"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#f20909",
+                                                    "#00ff61",
+                                                    1
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"policies\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "custom_cas_policies",
+                                                    ">1 implies Gold is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-8818",
+                    "data": [
+                        {
+                            "key": "xql_1771872253927",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 488.5,
+                                "phrase": "config timeframe = 7d\n| dataset = scans_management \n| filter type = \"cicd\"\n| comp count_distinct(scan_id ) as distinct_scans\n\n| view graph type = gauge subtype = radial header = \"At least one CI scan in past week\" yaxis = distinct_scans maxscalerange = 100 scale_threshold(\"#fa0649\",\"#00ff98\",\"1\") dataunit = \"scans\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"distinct_scans\",\">1 implies Silver is Achieved\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "7d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"At least one CI scan in past week\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "distinct_scans"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#fa0649",
+                                                    "#00ff98",
+                                                    1
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"scans\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "distinct_scans",
+                                                    ">1 implies Silver is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1771869058036",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 488.5,
+                                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions = \"BLOCK_CLI\"| comp count(policy_id ) as custom_cas_policies\n\n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy with CI Block\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#f20909\",\"#00ff61\",\"1\") dataunit = \"policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\">1 implies Gold is Achieved\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Create AppSec Policy with CI Block\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "custom_cas_policies"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#f20909",
+                                                    "#00ff61",
+                                                    1
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"policies\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "custom_cas_policies",
+                                                    ">1 implies Gold is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "2c1f7745d09149379179b97a4016b6c3",
+            "metadata": {
+                "params": []
+            }
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1771872426686",
+            "title": "Appsec Coverage - Silver",
+            "creation_time": 1771872426686,
+            "description": "AppSec widget",
+            "data": {
+                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions = \"REPORT_CLI\"| comp count(policy_id ) as custom_cas_policies\n\n\n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy with CI Comment\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#f20909\",\"#00ff61\",\"1\") dataunit = \"policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\">1 implies Silver is Achieved\") ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Create AppSec Policy with CI Comment\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "custom_cas_policies"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#f20909",
+                                    "#00ff61",
+                                    1
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"policies\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "14"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "custom_cas_policies",
+                                    ">1 implies Silver is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cas_policies"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1771868131431",
+            "title": "AppSec coverage - Bronze",
+            "creation_time": 1771868131431,
+            "description": "AppSec widget",
+            "data": {
+                "phrase": "config timeframe = 30d\n| dataset = cas_policies\n| filter is_custom = true | comp count(policy_id ) as custom_cas_policies \n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy for any Finding Type\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#e20606\",\"#01ff00\",\"1\") dataunit = \"custom CAS policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\">1 implies Bronze is Achieved\") ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Create AppSec Policy for any Finding Type\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "custom_cas_policies"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#e20606",
+                                    "#01ff00",
+                                    1
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"custom CAS policies\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "14"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "custom_cas_policies",
+                                    ">1 implies Bronze is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cas_policies"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1771868507476",
+            "title": "AppSec coverage - Gold",
+            "creation_time": 1771868507476,
+            "description": "AppSec widget",
+            "data": {
+                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions in (\"REPORT_PR_COMMENTS\", \"BLOCK_PR\") | comp count(policy_id ) as custom_cas_policies\n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy with PR Comment or Block\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#f20909\",\"#00ff61\",\"1\") dataunit = \"policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\">1 implies Gold is Achieved\") ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Create AppSec Policy with PR Comment or Block\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "custom_cas_policies"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#f20909",
+                                    "#00ff61",
+                                    1
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"policies\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "14"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "custom_cas_policies",
+                                    ">1 implies Gold is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cas_policies"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1771869058036",
+            "title": "Fixing issues earlier in the Application Lifecycle - Gold",
+            "creation_time": 1771869058036,
+            "description": "AppSec widget",
+            "data": {
+                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions = \"BLOCK_CLI\"| comp count(policy_id ) as custom_cas_policies\n\n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy with CI Block\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#f20909\",\"#00ff61\",\"1\") dataunit = \"policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\">1 implies Gold is Achieved\") ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Create AppSec Policy with CI Block\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "custom_cas_policies"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#f20909",
+                                    "#00ff61",
+                                    1
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"policies\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "14"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "custom_cas_policies",
+                                    ">1 implies Gold is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cas_policies"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        },
+        {
+            "widget_key": "xql_1771872253927",
+            "title": "Fixing issues earlier in the Application Lifecycle - Silver",
+            "creation_time": 1771872253927,
+            "description": "AppSec widget",
+            "data": {
+                "phrase": "config timeframe = 7d\n| dataset = scans_management \n| filter type = \"cicd\"\n| comp count_distinct(scan_id ) as distinct_scans\n\n| view graph type = gauge subtype = radial header = \"At least one CI scan in past week\" yaxis = distinct_scans maxscalerange = 100 scale_threshold(\"#fa0649\",\"#00ff98\",\"1\") dataunit = \"scans\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"distinct_scans\",\">1 implies Silver is Achieved\") ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "7d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"At least one CI scan in past week\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "distinct_scans"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#fa0649",
+                                    "#00ff98",
+                                    1
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"scans\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "14"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "distinct_scans",
+                                    ">1 implies Silver is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "scans_management"
+                ],
+                "query_uses_library": false
+            },
+            "creator_mail": "bpachauli@paloaltonetworks.com",
+            "is_public": false,
+            "is_predefined": false
+        }
+    ],
+    "id": "2c1f7745d09149379179b97a4016b6c3",
+    "name": "Cortex Cloud AppSec Badges (Graph)"
+}
