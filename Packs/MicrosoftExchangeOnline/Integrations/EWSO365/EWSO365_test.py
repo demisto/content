@@ -232,7 +232,9 @@ CASE_SECOND_RUN_FOUND_ONE_INCIDENT = (
 CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_FIRST_RUN = (
     {"lastRunTime": "2021-07-14T13:05:17Z", "folderName": "Inbox", "ids": ["message1"]},
     MESSAGES,
-    {"lastRunTime": "2021-07-14T13:09:00Z", "folderName": "Inbox", "ids": ["message2"], "errorCounter": 0},
+    # With the merge+prune eviction fix, message1 (legacy entry with no timestamp) is preserved
+    # alongside the newly fetched message2 to prevent re-ingestion.
+    {"lastRunTime": "2021-07-14T13:09:00Z", "folderName": "Inbox", "ids": ["message1", "message2"], "errorCounter": 0},
 )
 CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_NEXT_RUN = (
     {"lastRunTime": "2021-07-14T13:09:00Z", "folderName": "Inbox", "ids": ["message2"]},
@@ -1398,3 +1400,272 @@ def test_is_item_duplicate(message_id, item_time, exclude_ids, incident_filter, 
     )
     is_duplicate, _ = is_item_duplicate(msg, exclude_ids, incident_filter)
     assert is_duplicate is expected_result
+
+
+@pytest.mark.parametrize(
+    "error_class, error_counter_before, should_raise",
+    [
+        pytest.param(
+            "ErrorServerBusy",
+            0,
+            False,
+            id="ErrorServerBusy_first_occurrence_returns_empty",
+        ),
+        pytest.param(
+            "ErrorServerBusy",
+            2,
+            False,
+            id="ErrorServerBusy_second_occurrence_returns_empty",
+        ),
+        pytest.param(
+            "ErrorServerBusy",
+            3,
+            True,
+            id="ErrorServerBusy_third_occurrence_raises",
+        ),
+        pytest.param(
+            "RateLimitError",
+            0,
+            False,
+            id="RateLimitError_first_occurrence_returns_empty",
+        ),
+        pytest.param(
+            "RateLimitError",
+            3,
+            True,
+            id="RateLimitError_third_occurrence_raises",
+        ),
+    ],
+)
+def test_fetch_transient_error_handling(mocker, error_class, error_counter_before, should_raise):
+    """
+    Tests that transient errors (ErrorServerBusy, RateLimitError) are handled gracefully during fetch.
+
+    Given:
+        - A transient error occurs during fetch_last_emails.
+    When:
+        - Running fetch_emails_as_incidents.
+    Then:
+        - If error_counter <= 2: returns empty list, preserves last_run state.
+        - If error_counter > 2: raises the error.
+    """
+    import EWSO365
+    from exchangelib.errors import ErrorServerBusy, RateLimitError
+
+    error_map = {
+        "ErrorServerBusy": ErrorServerBusy("The server cannot service this request right now."),
+        "RateLimitError": RateLimitError("Rate limit exceeded."),
+    }
+
+    last_run = {
+        "lastRunTime": "2021-07-14T12:59:17Z",
+        "folderName": "Inbox",
+        "ids_dict": {"message1": "2021-07-14T12:59:17Z"},
+        "errorCounter": error_counter_before,
+    }
+
+    client = TestNormalCommands.MockClient()
+    client.folder_name = "Inbox"
+
+    mocker.patch.object(EWSO365, "fetch_last_emails", side_effect=error_map[error_class])
+    set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+
+    if should_raise:
+        with pytest.raises((ErrorServerBusy, RateLimitError)):
+            fetch_emails_as_incidents(client, last_run, "received-time", False)
+    else:
+        result = fetch_emails_as_incidents(client, last_run, "received-time", False)
+        assert result == []
+        # Verify last_run was preserved with incremented error counter
+        saved_last_run = set_last_run_mock.call_args[0][0]
+        assert saved_last_run["errorCounter"] == error_counter_before + 1
+        assert saved_last_run["lastRunTime"] == "2021-07-14T12:59:17Z"
+
+
+@pytest.mark.parametrize(
+    "excluded_ids, current_fetch_ids, last_incident_run_time, expected_ids",
+    [
+        pytest.param(
+            {"old_msg": "2021-07-14T12:00:00Z"},
+            {"new_msg": "2021-07-14T13:00:00Z"},
+            "2021-07-14T13:00:00Z",
+            {"old_msg": "2021-07-14T12:00:00Z", "new_msg": "2021-07-14T13:00:00Z"},
+            id="time_progresses_old_ids_within_window_are_kept",
+        ),
+        pytest.param(
+            {"old_msg": "2021-07-14T10:00:00Z"},
+            {"new_msg": "2021-07-14T13:00:00Z"},
+            "2021-07-14T13:00:00Z",
+            {"new_msg": "2021-07-14T13:00:00Z"},
+            id="time_progresses_old_ids_outside_window_are_pruned",
+        ),
+        pytest.param(
+            {"legacy_msg": ""},
+            {"new_msg": "2021-07-14T13:00:00Z"},
+            "2021-07-14T13:00:00Z",
+            {"legacy_msg": "", "new_msg": "2021-07-14T13:00:00Z"},
+            id="legacy_empty_timestamp_entries_are_preserved",
+        ),
+        pytest.param(
+            {"legacy_msg": None},
+            {"new_msg": "2021-07-14T13:00:00Z"},
+            "2021-07-14T13:00:00Z",
+            {"legacy_msg": None, "new_msg": "2021-07-14T13:00:00Z"},
+            id="legacy_none_timestamp_entries_are_preserved",
+        ),
+        pytest.param(
+            {"same_time_msg": "2021-07-14T13:00:00Z"},
+            {"new_msg": "2021-07-14T13:00:00Z"},
+            "2021-07-14T13:00:00Z",
+            {"same_time_msg": "2021-07-14T13:00:00Z", "new_msg": "2021-07-14T13:00:00Z"},
+            id="no_time_progress_all_ids_merged",
+        ),
+        pytest.param(
+            {},
+            {"first_msg": "2021-07-14T13:00:00Z"},
+            "2021-07-14T13:00:00Z",
+            {"first_msg": "2021-07-14T13:00:00Z"},
+            id="first_run_empty_excluded_ids",
+        ),
+        pytest.param(
+            None,
+            {"first_msg": "2021-07-14T13:00:00Z"},
+            "2021-07-14T13:00:00Z",
+            {"first_msg": "2021-07-14T13:00:00Z"},
+            id="first_run_none_excluded_ids",
+        ),
+    ],
+)
+def test_ids_dict_merge_and_prune(mocker, excluded_ids, current_fetch_ids, last_incident_run_time, expected_ids):
+    """
+    Tests the new merge+prune eviction logic for ids_dict.
+
+    Given:
+        - Various combinations of excluded_ids (from last_run) and current_fetch_ids.
+    When:
+        - The fetch completes and the new ids_dict is computed.
+    Then:
+        - IDs are always merged (never completely replaced).
+        - IDs older than lastRunTime are pruned.
+        - Legacy entries (empty/None timestamps) are preserved.
+    """
+
+    # Create messages matching current_fetch_ids
+    messages = [
+        Message(
+            subject=f"subject_{msg_id}",
+            message_id=msg_id,
+            text_body="Hello",
+            body="body",
+            datetime_received=EWSDateTime(2021, 7, 14, 13, 0, 0, tzinfo=EWSTimeZone(key="UTC")),
+            datetime_sent=EWSDateTime(2021, 7, 14, 13, 0, 0, tzinfo=EWSTimeZone(key="UTC")),
+            datetime_created=EWSDateTime(2021, 7, 14, 13, 0, 0, tzinfo=EWSTimeZone(key="UTC")),
+            last_modified_time=EWSDateTime(2021, 7, 14, 13, 0, 0, tzinfo=EWSTimeZone(key="UTC")),
+        )
+        for msg_id in current_fetch_ids
+    ]
+
+    last_run = {
+        "lastRunTime": "2021-07-14T12:00:00Z",
+        "folderName": "Inbox",
+        "ids_dict": excluded_ids if excluded_ids is not None else {},
+    }
+
+    class MockObject:
+        def filter(self, **kwargs):
+            return MockObject2()
+
+    class MockObject2:
+        def filter(self, **kwargs):
+            return MockObject2()
+
+        def only(self, *args):
+            return self
+
+        def order_by(self, *args):
+            class MockQuerySet:
+                def __iter__(self):
+                    return iter(messages)
+
+            return MockQuerySet()
+
+    def mock_get_folder_by_path(path, account=None, is_public=False):
+        return MockObject()
+
+    client = TestNormalCommands.MockClient()
+    client.max_fetch = 50
+    client.get_folder_by_path = mock_get_folder_by_path
+    client.folder_name = "Inbox"
+
+    set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+    fetch_emails_as_incidents(client, last_run, "received-time", False)
+
+    saved_last_run = set_last_run_mock.call_args[0][0]
+    assert saved_last_run["ids_dict"] == expected_ids
+
+
+def test_ids_dict_hard_cap(mocker):
+    """
+    Tests that the ids_dict is capped at MAX_IDS_CACHE_SIZE.
+
+    Given:
+        - An excluded_ids dict that, when merged with current_fetch_ids, exceeds MAX_IDS_CACHE_SIZE.
+    When:
+        - The fetch completes.
+    Then:
+        - The ids_dict is pruned to MAX_IDS_CACHE_SIZE, keeping the most recent entries.
+    """
+    import EWSO365
+
+    # Create a large excluded_ids dict
+    large_excluded_ids = {f"old_msg_{i}": "2021-07-14T13:00:00Z" for i in range(5001)}
+    current_msg = Message(
+        subject="new_subject",
+        message_id="new_msg",
+        text_body="Hello",
+        body="body",
+        datetime_received=EWSDateTime(2021, 7, 14, 13, 0, 0, tzinfo=EWSTimeZone(key="UTC")),
+        datetime_sent=EWSDateTime(2021, 7, 14, 13, 0, 0, tzinfo=EWSTimeZone(key="UTC")),
+        datetime_created=EWSDateTime(2021, 7, 14, 13, 0, 0, tzinfo=EWSTimeZone(key="UTC")),
+        last_modified_time=EWSDateTime(2021, 7, 14, 13, 0, 0, tzinfo=EWSTimeZone(key="UTC")),
+    )
+
+    last_run = {
+        "lastRunTime": "2021-07-14T13:00:00Z",
+        "folderName": "Inbox",
+        "ids_dict": large_excluded_ids,
+    }
+
+    class MockObject:
+        def filter(self, **kwargs):
+            return MockObject2()
+
+    class MockObject2:
+        def filter(self, **kwargs):
+            return MockObject2()
+
+        def only(self, *args):
+            return self
+
+        def order_by(self, *args):
+            class MockQuerySet:
+                def __iter__(self):
+                    return iter([current_msg])
+
+            return MockQuerySet()
+
+    def mock_get_folder_by_path(path, account=None, is_public=False):
+        return MockObject()
+
+    client = TestNormalCommands.MockClient()
+    client.max_fetch = 50
+    client.get_folder_by_path = mock_get_folder_by_path
+    client.folder_name = "Inbox"
+
+    set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(EWSO365, "MAX_IDS_CACHE_SIZE", 5000)
+
+    fetch_emails_as_incidents(client, last_run, "received-time", False)
+
+    saved_last_run = set_last_run_mock.call_args[0][0]
+    assert len(saved_last_run["ids_dict"]) <= 5000
