@@ -234,9 +234,7 @@ def test_varonis_authenticate_content_type_header(requests_mock: MockerFixture):
     client.varonis_authenticate("mock_api_key")
 
     last_request = requests_mock.last_request
-    assert "content-type" in {
-        k.lower() for k in last_request.headers
-    }, "authenticate request must include a Content-Type header"
+    assert "content-type" in {k.lower() for k in last_request.headers}, "authenticate request must include a Content-Type header"
 
 
 def test_all_client_requests_have_content_type_header():
