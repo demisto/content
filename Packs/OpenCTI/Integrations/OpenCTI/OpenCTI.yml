@@ -956,7 +956,7 @@ script:
       required: true
     description: Add object to container (report, grouping, case-rft, case-rfi, case-incident).
     name: opencti-add-object-to-container
-  dockerimage: demisto/vendors-sdk:1.0.0.110574
+  dockerimage: demisto/opencti:1.0.0.7499058
   runonce: false
   script: '-'
   subtype: python3
