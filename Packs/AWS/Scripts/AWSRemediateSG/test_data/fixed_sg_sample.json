@@ -1,0 +1,70 @@
+[
+    {
+        "FromPort": 0,
+        "IpProtocol": "tcp",
+        "IpRanges": [
+            {
+                "CidrIp": "0.0.0.0/0"
+            }
+        ],
+        "Ipv6Ranges": [],
+        "PrefixListIds": [],
+        "ToPort": 21,
+        "UserIdGroupPairs": []
+    },
+    {
+        "FromPort": 23,
+        "IpProtocol": "tcp",
+        "IpRanges": [
+            {
+                "CidrIp": "0.0.0.0/0"
+            }
+        ],
+        "Ipv6Ranges": [],
+        "PrefixListIds": [],
+        "ToPort": 65535,
+        "UserIdGroupPairs": []
+    },
+    {
+        "IpProtocol": "tcp",
+        "IpRanges": [
+            {
+                "CidrIp": "10.0.0.0/8",
+                "Description": "Internal access rule automatically created by Cortex remediation."
+            }
+        ],
+        "Ipv6Ranges": [],
+        "PrefixListIds": [],
+        "UserIdGroupPairs": [],
+        "FromPort": 22,
+        "ToPort": 22
+    },
+    {
+        "IpProtocol": "tcp",
+        "IpRanges": [
+            {
+                "CidrIp": "172.16.0.0/12",
+                "Description": "Internal access rule automatically created by Cortex remediation."
+            }
+        ],
+        "Ipv6Ranges": [],
+        "PrefixListIds": [],
+        "UserIdGroupPairs": [],
+        "FromPort": 22,
+        "ToPort": 22
+    },
+    {
+        "IpProtocol": "tcp",
+        "IpRanges": [
+            {
+                "CidrIp": "192.168.0.0/16",
+                "Description": "Internal access rule automatically created by Cortex remediation."
+            }
+        ],
+        "Ipv6Ranges": [],
+        "PrefixListIds": [],
+        "UserIdGroupPairs": [],
+        "FromPort": 22,
+        "ToPort": 22
+    }
+]
