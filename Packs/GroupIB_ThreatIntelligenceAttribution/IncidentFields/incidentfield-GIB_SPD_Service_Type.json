@@ -1,35 +1,32 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GIB Nation-State Cybercriminals Threat Actor"
+        "GIB SPD"
     ],
     "caseInsensitive": true,
-    "cliName": "gibnationstatecybercriminalsthreatactoraliases",
-    "closeForm": true,
+    "cliName": "gibspdservicetype",
+    "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_gibnationstatecybercriminalsthreatactoraliases",
+    "id": "incident_gibspdservicetype",
     "isReadOnly": false,
-    "itemVersion": "1.4.2",
     "locked": false,
-    "name": "GIB Nation-State Cybercriminals Threat Actor Aliases",
+    "name": "GIB SPD Service Type",
     "neverSetAsRequired": false,
-    "openEnded": true,
     "ownerOnly": false,
     "required": false,
     "sla": 0,
     "system": false,
     "systemAssociatedTypes": [
-        "GIB Nation-State Cybercriminals Threat Actor"
+        "GIB SPD"
     ],
     "threshold": 72,
-    "type": "multiSelect",
+    "type": "shortText",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.0.0",
-    "toVersion": "99.99.99"
+    "fromVersion": "6.0.0"
 }

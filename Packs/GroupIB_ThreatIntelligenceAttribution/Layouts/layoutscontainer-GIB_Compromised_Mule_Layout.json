@@ -3,7 +3,6 @@
     "group": "incident",
     "id": "GIB Compromised Mule Layout",
     "name": "GIB Compromised Mule Layout",
-    "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {
@@ -470,6 +469,15 @@
                                 "height": 22,
                                 "id": "7a3b8bc0-71a5-11ef-8c49-f9d8b5e80cf6",
                                 "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "gibtlp",
+                                "height": 22,
+                                "id": "1bd0d890-ed25-11f0-9509-45873decf476",
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
