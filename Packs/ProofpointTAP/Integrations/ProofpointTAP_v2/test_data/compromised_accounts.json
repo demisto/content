@@ -1,0 +1,24 @@
+{
+    "queryEndTime": "2024-06-10T12:00:00Z",
+    "compromisedAccounts": [
+        {
+            "dashboardLink" : "https://threatinsight.proofpoint.com/auth/new",
+            "timeRanges" : [
+                {"falsePositive" : true,"start" : "2023-01-01T05:00:00.000Z","end" : "2023-01-12T07:30:00.000Z"},
+                {"falsePositive" : true,"start" : "2023-01-01T05:00:00.000Z","end" : "2023-01-12T07:30:00.000Z"}
+            ],
+            "titles" : [ "Accounts Payable Coordinator" ],
+            "threatCategories" : [ "MALWARE" ],
+            "trafficType" : "CUSTOMER_TRAFFIC",
+            "maliciousMessages" : 101,
+            "address" : "test@example.com",
+            "lastMaliciousMessage" : "2023-01-12T07:30:00.000Z",
+            "identity" : "SUPPLIER",
+            "observations" : [ "RECIPIENT_ORG_IMPERSONATION" ],
+            "deliveredMessages" : 0,
+            "context" : ["FREQUENT_COMMUNICATION_WITH_THIRD_PARTY_DOMAIN"],
+            "departments" : ["Accounts Payable"],
+            "highRisk" : true
+        }
+    ]
+}

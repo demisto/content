@@ -238,6 +238,17 @@ class Client:
         )
         return self.http_request("GET", "/siem/issues", params=params)
 
+    def list_compromised_accounts(self, start, end, page, limit, high_risk):
+        params = {
+            "start": start,
+            "end": end,
+            "page": page,
+            "size": limit,
+        }
+        if high_risk:
+            params["highRisk"] = high_risk
+        return self.http_request("GET", "/stp/compromised-accounts", params=params)
+
 
 def test_module(client: Client) -> str:
     """
@@ -1289,6 +1300,58 @@ def list_issues_command(
     return command_results_list
 
 
+def list_compromised_accounts(
+    client: Client, start: str = "1 week", end: str = "now", high_risk: bool = False, page: int = 0, limit: int = 50
+) -> CommandResults:
+    """
+    Retrieves a list of compromided accounts.
+    Args:
+        client (Client): ProofpointTAP API client.
+        start (str): ISO8601-formatted start date.
+        end (str): Time range, for example: 1 week, 2 days, 3 hours etc.
+        limit (str): The maximum number of campaign IDs to produce in the response.
+        page (str): The page of results to return, in multiples of the specified size.
+        high_risk (int): weather its a high risk or not
+    Returns:
+        CommandResults: raw response, outputs, and readable outputs.
+    """
+
+    start_date = dateparser.parse(start).strftime(DATE_FORMAT)  # type: ignore
+    end_date = dateparser.parse(end).strftime(DATE_FORMAT)  # type: ignore
+
+    raw_response = client.list_compromised_accounts(start_date, end_date, page, limit, argToBoolean(high_risk))
+
+    outputs = dict_safe_get(raw_response, ["compromisedAccounts"])
+
+    readable_output = tableToMarkdown(
+        "Compromised accounts:",
+        outputs,
+        headers=[
+            "titles",
+            "threatCategories",
+            "trafficType",
+            "maliciousMessages",
+            "address",
+            "identity",
+            "observations",
+            "deliveredMessages",
+            "context",
+            "departments",
+            "highRisk",
+        ],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Proofpoint.CompromisedAccount",
+        outputs_key_field="address",
+        outputs=outputs,
+        raw_response=raw_response,
+    )
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1379,6 +1442,8 @@ def main():
 
         elif command == "proofpoint-list-issues":
             return_results(list_issues_command(client, **args))
+        elif command == "proofpoint-list-compromised-accounts":
+            return_results(list_compromised_accounts(client, **args))
 
     except Exception as exception:
         if command == "test-module":
