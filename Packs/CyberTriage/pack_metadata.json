@@ -1,29 +1,45 @@
 {
     "name": "Cyber Triage",
-    "description": "Allows you to conduct a mini-forensic investigation on an endpoint. It pushes a collection tool to the remote endpoint, collects volatile and file system data, and analyzes the data. ",
-    "support": "xsoar",
-    "currentVersion": "1.0.23",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-04-14T00:00:00Z",
+    "description": "Endpoint triage investigation via agentless collector for detecting data exfiltration, remote access, lateral movement, and compromise indicators.",
+    "support": "partner",
+    "currentVersion": "3.16.0",
+    "author": "Sleuth Kit Labs",
+    "url": "https://www.cybertriage.com/",
+    "email": "support@sleuthkitlabs.com",
     "categories": [
-        "Endpoint"
+        "Forensics & Malware Analysis"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "Alerts",
+        "Breach",
+        "Forensics",
+        "Incident Response",
+        "Malware",
+        "Security",
+        "Security Analytics",
+        "Threat Intelligence",
+        "MITRE ATT&CK"
+    ],
+    "useCases": [
+        "Breach Notification",
+        "Incident Response",
+        "Malware",
+        "Phishing",
+        "Ransomware",
+        "Hunting"
+    ],
+    "keywords": [
+        "Digital Forensics",
+        "Malware Analysis",
+        "SIEM",
+        "DFIR",
+        "Incident Response"
+    ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
-        "platform"
+        "marketplacev2"
     ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
-        "agentix",
-        "xsiam"
+    "devEmail": [
+        "jayaram@sleuthkitlabs.com"
     ]
 }

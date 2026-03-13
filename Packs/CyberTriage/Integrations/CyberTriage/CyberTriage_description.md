@@ -1,18 +1,28 @@
-This integration allows you to collect and analyze endpoint data using Cyber Triage.  It will send an agentless collection tool to the remote endpoint, retrieve volatile and file system data, and analyze it for evidence of an intrusion. 
+## Cyber Triage Integration Setup
 
-### SETUP
-To use this integration, you need the Team version of Cyber Triage (and not the Standalone desktop version). 
+This integration requires the **Team** version of Cyber Triage (version 3.16.0 or later). The Standalone desktop version is not supported.
 
-To configure the integration, you will need to enter: 
-* **hostname** where the Cyber Triage server has been setup.
-* **REST Port** of your Cyber Triage server. This currently cannot be changed in Cyber Triage. The port should be left as 9443. 
-* **API Key** for the Cyber Triage REST API. You can find this in the "Deployment Mode"  tab of the server's option panel.
-* **Username/Password** an administrative Windows account that can be used to run the collection tool on endpoints that need to be investigated. 
+To configure the integration, provide the following:
 
-### STARTING A COLLECTION
-After setting up an instance, you can start a collection by using the “ct-triage-endpoint" command. The hostname or IP of the target endpoint must be provided. 
+- **Cyber Triage Server Hostname** — IP address or hostname of the machine running the Cyber Triage server (e.g. `192.168.1.2`).
+- **REST Port** — The Cyber Triage REST API port. Leave this as `9443` (the default; it cannot be changed in Cyber Triage).
+- **API Key** — REST API token for the Cyber Triage API. Retrieve it from the Cyber Triage server: Options → User Accounts.  Click the three dots next to *api-user* and select *View Details*. Under *API Authentication Token*, copy or create a new authentication token.
+- **Windows Admin Credentials** — Username and password of a Windows administrative account used to push the collection tool to target endpoints.  See the [documentation](https://docs.cybertriage.com/en/latest/chapters/importing/psexec.html) for more information.
+- **Trust any certificate (not secure)** — Enable to skip SSL certificate verification (useful for self-signed certificates).
+- **Use system proxy settings** — Enable if your environment routes traffic through a proxy.
 
-After the collection has started, open a Cyber Triage client to review the data.  
+---
 
-### SUPPORT
-If you have any problems or need an evaluation copy of Cyber Triage, then please email support@cybertriage.com.
+## Starting a Collection
+
+After configuring an instance, use the `ct-triage-endpoint` command to initiate a collection. Provide the hostname or IP address of the target Windows endpoint.
+
+Once started, open a Cyber Triage client to review the collected data.
+
+---
+
+## Support
+
+Documentation can be found at [https://docs.cybertriage.com/](https://docs.cybertriage.com/).
+
+For questions or to request an evaluation copy, email: **support@sleuthkitlabs.com**

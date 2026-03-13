@@ -12,52 +12,54 @@ def client():
     client = CyberTriageClient(
         server=SERVER_URL,
         rest_port="test",
-        api_key="test",
+        api_auth_token="test",
         user="test",
         password="test",
         verify_server_cert=True,
-        ok_codes=(200,),
     )
     return client
 
 
 def test_test_connection_command(client: CyberTriageClient):
     """
-    Args:
-        client (pytest.fixture): CyberTriageClient instance whose methods will be mocked
-
     Given:
-        - a CyberTriage client
+        - a CyberTriage client with test_connection mocked
     Then:
-        - ensure triage_endpoint is called once
+        - ensure test_connection is called once
     """
     from CyberTriage import test_connection_command
 
-    mock1 = MagicMock()
-    client.test_connection = mock1
+    mock_response = MagicMock()
+    mock_response.raise_for_status.return_value = None
+    client.test_connection = MagicMock(return_value=mock_response)
     test_connection_command(client)
     client.test_connection.assert_called_once()
 
 
 def test_triage_endpoint_command(client: CyberTriageClient):
     """
-    Args:
-        client (pytest.fixture): CyberTriageClient instance whose methods will be mocked
-
     Given:
-        - a CyberTriage client
+        - a CyberTriage client with triage_endpoint mocked
     When:
-        - the command arguments are as in the fake data below
+        - the command arguments are as specified below
     Then:
         - ensure triage_endpoint is called once with the expected arguments
     """
     from CyberTriage import triage_endpoint_command
 
-    args = {"malware_hash_upload": "yes", "malware_file_upload": "no", "endpoint": "made-up-endpoint", "incident_name": "MADEUP"}
-    mock2 = MagicMock()
-    client.triage_endpoint = mock2
+    args = {
+        "malware_scan_requested": "yes",
+        "send_content": "no",
+        "host_name": "made-up-endpoint",
+        "incident_name": "MADEUP",
+    }
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {}
+    mock_response.raise_for_status.return_value = None
+    client.triage_endpoint = MagicMock(return_value=mock_response)
     triage_endpoint_command(client, args)
-    client.triage_endpoint.assert_called_once_with(True, False, "made-up-endpoint", "", "MADEUP")
+    client.triage_endpoint.assert_called_once_with(True, False, "made-up-endpoint", "", "MADEUP", "")
 
 
 is_2xx_test_data = [

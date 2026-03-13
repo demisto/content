@@ -1,0 +1,7 @@
+!ct-triage-endpoint host_name="192.168.1.50"
+
+!ct-triage-endpoint host_name="ct-win10-01" scan_options="pr,nw,nc,st,sc,ru,co,lo,ns,wb,fs" malware_scan_requested="yes" send_content="no" incident_name="Incident-2024-001"
+
+!ct-triage-endpoint host_name="ct-win10-01" scan_options="pr,nw,st" malware_scan_requested="yes" send_content="yes" incident_name="MalwareInvestigation"
+
+!ct-triage-endpoint host_name="192.168.1.50" scan_options="pr,nw" malware_scan_requested="no" send_content="no" incident_name="QuickTriage"

@@ -3,32 +3,39 @@ commonfields:
   version: -1
 name: Cyber Triage
 display: Cyber Triage
-category: Endpoint
-description: 'Allows you to conduct a mini-forensic investigation on an endpoint. It pushes a collection tool to the remote endpoint, collects volatile and file system data, and analyzes the data. '
+category: Forensics & Malware Analysis
+provider: Sleuth Kit Labs
+description: This integration allows you to collect and analyze endpoint data using Cyber Triage so that you can investigate what happened on the endpoint. The integration will send an agentless collection tool to the remote endpoint, retrieve volatile and file system data, and analyze it for evidence of an intrusion.
 configuration:
-- display: Hostname of Cyber Triage server (e.g. 192.168.1.2)
+- display: Cyber Triage Server Hostname (e.g. 192.168.1.2)
   name: server
-  defaultvalue: ""
   type: 0
   required: true
+  additionalinfo: IP address or hostname of the Cyber Triage server.
 - display: REST Port
   name: rest_port
   defaultvalue: "9443"
   type: 0
   required: true
+  additionalinfo: REST API port of the Cyber Triage server. Default is 9443.
 - displaypassword: API Key
-  name: api_key
+  name: api_auth_token
   type: 9
   hiddenusername: true
-  required: false
-- display: Username
+  required: true
+  additionalinfo: "REST API token for the Cyber Triage API. Retrieve it from the Cyber Triage server: Options → User Accounts.  Click the three dots next to api-user and select View Details. Under API Authentication Token, copy or create a new authentication token."
+- display: Windows Admin Credentials
   name: credentials
-  defaultvalue: ""
   type: 9
   required: true
-- display: Use proxy
-  name: use_proxy
+  additionalinfo: Username and password of a Windows administrative account used to push the collection tool to endpoints.
+- display: Trust any certificate (not secure)
+  name: insecure
   defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
   type: 8
   required: false
 script:
@@ -38,42 +45,47 @@ script:
   commands:
   - name: ct-triage-endpoint
     arguments:
-    - name: endpoint
+    - name: host_name
       required: true
       default: true
-      description: IP or hostname of a windows endpoint.
+      description: IP address or hostname of the Windows endpoint to triage.
     - name: scan_options
-      description: Comma separated list of data types that Cyber Triage will collect. Processes (pr), Network (nw),  Network Caches (nc), Startup Items (st), Scheduled Tasks (sc), Program Run (ru),  System Config (co), User Logins (lo), Network Shares (ns), Web Artifacts (wb), Full File System Scan (fs).
+      description: >
+        Comma-separated list of data types for Cyber Triage to collect.
+        Valid options: Processes (pr), Network (nw), Network Caches (nc),
+        Startup Items (st), Scheduled Tasks (sc), Program Run (ru),
+        System Config (co), User Logins (lo), Network Shares (ns),
+        Web Artifacts (wb), Full File System Scan (fs).
       defaultValue: pr,nw,nc,st,sc,ru,co,lo,ns,wb,fs
-    - name: malware_hash_upload
+    - name: malware_scan_requested
       auto: PREDEFINED
       predefined:
       - "yes"
       - "no"
-      description: Send MD5 hashes to external malware analysis service.
+      description: Send MD5 hashes to an external malware analysis service.
       defaultValue: "yes"
-    - name: malware_file_upload
+    - name: send_content
       auto: PREDEFINED
       predefined:
       - "yes"
       - "no"
-      description: Send unknown files to external malware analysis service. Hash upload must be enabled for file uploads to occur.
+      description: Send unknown files to an external malware analysis service. Hash upload must be enabled for file uploads to occur.
       defaultValue: "no"
     - name: incident_name
-      description: Cyber Triage incident name that the collection will belong to.
+      description: Cyber Triage incident name that the collection will be grouped under.
       defaultValue: Default
     outputs:
     - contextPath: CyberTriage.SessionId
-      description: The session ID for the newly created session.
-      type: string
+      description: The session ID for the newly created triage session.
+      type: String
     - contextPath: Endpoint.IPAddress
-      description: The endpoint IP address that Cyber Triage investigated.
-      type: string
+      description: The IP address of the endpoint that was triaged.
+      type: String
     - contextPath: Endpoint.Hostname
-      description: The endpoint hostname that Cyber Triage investigated.
-      type: string
-    description: initiates a cyber triage collection on an endpoint.
+      description: The hostname of the endpoint that was triaged.
+      type: String
+    description: Initiates a Cyber Triage collection on a Windows endpoint.
   dockerimage: demisto/python3:3.12.8.3296088
+fromversion: 6.5.0
 tests:
-- No test - no instance
-fromversion: 5.0.0
+- No tests (auto formatted)
