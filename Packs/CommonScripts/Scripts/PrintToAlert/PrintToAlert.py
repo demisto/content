@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def print_to_alert_command(current_alert_id: str, value: str, alert_id: str) -> None:
+def print_to_alert_command(current_alert_id: str, value: str, alert_id: str, mark_as_note: bool = False) -> None:
     """Prints a value to the specified alert ID.
 
     Args:
@@ -11,7 +11,14 @@ def print_to_alert_command(current_alert_id: str, value: str, alert_id: str) -> 
         alert_id (str): The alert ID to print to.
     """
     entry_note = json.dumps(
-        [{"Type": 1, "ContentsFormat": EntryFormat.MARKDOWN, "Contents": f"Entry from alert #{current_alert_id}:\n{value}"}]
+        [
+            {
+                "Type": 1,
+                "ContentsFormat": EntryFormat.MARKDOWN,
+                "Contents": f"Entry from alert #{current_alert_id}:\n{value}",
+                "Note": mark_as_note,
+            }
+        ]
     )
     entry_tags_res: list[dict[str, Any]] = demisto.executeCommand(
         "addEntries", {"entries": entry_note, "id": alert_id, "reputationCalcAsync": True}
@@ -29,11 +36,8 @@ def main():  # pragma: no cover
         args = demisto.args()
         value: str = args["value"]
         alert_id = args["alert_id"]
-        print_to_alert_command(
-            current_alert_id=current_alert_id,
-            value=value,
-            alert_id=alert_id,
-        )
+        mark_as_note = argToBoolean(args["mark_as_note"])
+        print_to_alert_command(current_alert_id=current_alert_id, value=value, alert_id=alert_id, mark_as_note=mark_as_note)
     except Exception as ex:
         return_error(f"Failed to execute PrintToAlert. Error: {ex!s}")
 
