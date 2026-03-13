@@ -1,0 +1,92 @@
+fromversion: 6.10.0
+action: ALERTS
+alert_category: User Defined
+alert_description: $alert_description
+alert_domain: DOMAIN_SECURITY
+alert_fields:
+  action_file_md5: proofpointmd5
+  action_file_name: proofpointfilename
+  action_file_sha256: proofpointsha256
+  action_remote_ip: senderIP
+  actor_effective_username: recipient
+  agent_device_domain: domain
+  dns_query_name: dns_name
+  emailmessageid: messageID
+  emailsenderip: senderIP
+  emailsource: sender
+  filehash: proofpointsha256
+  fw_email_recipient: recipient
+  fw_email_sender: sender
+  fw_email_subject: subject
+  fw_url_domain: url
+  proofpointtapcampaignid: campaignId
+  proofpointtapclassification: classification
+  proofpointtapclickip: clickIP
+  proofpointtapclicktime: clickTime
+  proofpointtapguid: GUID
+  proofpointtapheadersfrom: headerFrom
+  proofpointtapheadersreplyto: headerReplyTo
+  proofpointtapid: id
+  proofpointtapimposterscore: impostorScore
+  proofpointtapmalwarescore: malwareScore
+  proofpointtapmessageid: messageID
+  proofpointtapmessageparts: messageParts
+  proofpointtapmessagesize: messageSize
+  proofpointtapphishingscore: phishScore
+  proofpointtapreplytoaddress: replyToAddress
+  proofpointtapsenderip: senderIP
+  proofpointtapsmtpsender: sender
+  proofpointtapspamscore: spamScore
+  proofpointtapsubject: subject
+  proofpointtapsuspiciousurl: threatURL
+  proofpointtapthreatid: threatID
+  proofpointtapthreatinfomap: threatsInfoMap
+  proofpointtapthreatstatus: threatStatus
+  proofpointtapthreattime: threatTime
+  proofpointtapthreaturl: threatURL
+  proofpointtaptype: type
+  proofpointtapxmailer: xmailer
+alert_name: $alert_name
+alert_type: null
+crontab: null
+dataset: alerts
+description: Clicks Permitted
+drilldown_query_timeframe: ALERT
+execution_mode: REAL_TIME
+global_rule_id: Production Proofpoint TAP - Clicks Permitted
+investigation_query_link: ''
+is_enabled: true
+lookup_mapping: []
+mapping_strategy: CUSTOM
+mitre_defs:
+  TA0001 - Initial Access:
+  - T1566 - Phishing
+name: Production Proofpoint TAP - Clicks Permitted
+rule_id: 0
+search_window: null
+severity: User Defined
+simple_schedule: null
+suppression_duration: 1 hours
+suppression_enabled: true
+suppression_fields:
+- fromAddress
+- headerFrom
+- toAddresses
+- sender
+- ccAddresses
+timezone: null
+user_defined_category: alert_category
+user_defined_severity: alert_severity
+xql_query: "dataset = proofpoint_tap_v2_generic_alert_raw\n| filter type = \"clicks\
+  \ permitted\"\n| alter source_alert_type = type\n| alter alert_severity = _alert_data\
+  \ -> severity,\n         alert_category = _alert_data -> alert_category,\n     \
+  \   alert_name = _alert_data -> alert_name,\n        alert_description =  _alert_data\
+  \ -> alert_description,\n        threatID = threatsInfoMap -> [0].threatID,\n  \
+  \      classification = threatsInfoMap -> [0].classification,\n        proofpointsha256\
+  \ = messageParts -> [0].sha256,\n        proofpointmd5 = messageParts -> [0].md5,\n\
+  \        proofpointfilename = messageParts -> [0].filename,\n        threatType\
+  \ = threatsInfoMap -> [0].threatType,\n        threat = threatsInfoMap -> [0].threat,\n\
+  \        threatURL = threatsInfoMap -> [0].threatUrl\n| alter domain = if(lowercase(threatType)\
+  \ in (\"url\"), coalesce(extract_url_registered_domain(threat), extract_url_registered_domain(sender)),\
+  \ \"\")\n| alter dns_name = if(lowercase(threatType) in (\"url\"), extract_url_registered_domain(threat),\
+  \ \"\")"
