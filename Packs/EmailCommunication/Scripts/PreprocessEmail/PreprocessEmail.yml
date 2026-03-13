@@ -15,6 +15,9 @@ args:
   - 'false'
   description: Specify whether to calculate the reputation in an asynchronous way.
   defaultValue: 'false'
+- name: timezone
+  defaultValue: UTC
+  description: Timezone used for email thread timestamps (must be a valid IANA timezone such as UTC, Europe/London, or America/New_York; defaults to UTC if not specified or invalid).
 comment: |-
   Preprocessing script for email communication layout.
   This script checks if the incoming email contains an Incident ID to link the mail to an existing incident, and tags the email as "email-thread".

@@ -1,4 +1,6 @@
 from datetime import datetime as dt
+from zoneinfo import ZoneInfo
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from markdown import Extension, markdown
@@ -30,13 +32,18 @@ class DemistoExtension(Extension):
         md.inlinePatterns.register(DemistoStrikethroughProcessor(r"~"), "strikethrough", 50)
 
 
-def get_utc_now():
-    """A wrapper function for datetime.utcnow
-    Helps handle tests
-    Returns:
-        datetime: current UTC time
+def get_current_time_in_timezone(tz_name: str = "UTC") -> str:
     """
-    return dt.utcnow()
+    Returns current time formatted in the requested timezone.
+    Falls back to UTC if timezone is invalid.
+    """
+    try:
+        tz = ZoneInfo(tz_name)
+    except Exception:
+        demisto.debug(f"Invalid timezone '{tz_name}' provided. Falling back to UTC.")
+        tz = ZoneInfo("UTC")
+
+    return dt.now(tz).isoformat()
 
 
 def apply_direction(line: str) -> str:
@@ -328,6 +335,7 @@ def create_thread_context(
     email_to,
     incident_id,
     new_attachment_names,
+    time_zone,
 ):
     """Creates a new context entry to store the email in the incident context.  Checks current threads
     stored on the incident to get the thread number associated with this new message, if present.
@@ -345,6 +353,7 @@ def create_thread_context(
         email_to: The address the email was delivered to
         incident_id: ID of the related incident
         new_attachment_names: File attachments sent with the email
+        time_zone: timezone used in emails thread
     """
     thread_number = ""
     thread_found = False
@@ -393,7 +402,7 @@ def create_thread_context(
             "EmailTo": email_to,
             "EmailAttachments": new_attachment_names,
             "MessageDirection": "outbound",
-            "MessageTime": get_utc_now().strftime("%Y-%m-%dT%H:%M:%SUTC"),
+            "MessageTime": get_current_time_in_timezone(time_zone),
         }
         # Add email message to context key
         try:
@@ -421,6 +430,7 @@ def send_new_email(
     new_attachment_names,
     context_html_body,
     from_mail,
+    time_zone,
 ):
     """Send new email.-
     Args:
@@ -438,6 +448,7 @@ def send_new_email(
         email_code: The random code that was generated when the incident was created.
         mail_sender_instance: The name of the mail sender integration instance
         new_attachment_names: List of attachment file names
+        time_zone: timezone used in emails thread
     """
     # Get the custom email signature, if set, and append it to the message to be sent
     email_html_body = append_email_signature(email_html_body)
@@ -460,6 +471,7 @@ def send_new_email(
         mail_sender_instance,
         context_html_body,
         from_mail,
+        time_zone,
     )
 
     msg = f"Mail sent successfully. To: {email_to}"
@@ -488,6 +500,7 @@ def send_new_mail_request(
     mail_sender_instance,
     context_html_body,
     from_mail,
+    time_zone,
 ):
     """
         Use message details from the selected thread to construct a new mail message, since
@@ -507,6 +520,7 @@ def send_new_mail_request(
         email_code: The random code that was generated when the incident was created
         mail_sender_instance: The service email (sender address)
         service_mail: Address the email is sent from
+        time_zone: timezone used in emails thread
     Returns: Results from the 'send-mail' command
     """
     if subject_include_incident_id and f"[{incident_id}]" not in email_subject:
@@ -556,6 +570,7 @@ def send_new_mail_request(
         email_to,
         incident_id,
         new_attachment_names,
+        time_zone,
     )
 
     return email_result
@@ -898,6 +913,7 @@ def resend_first_contact(
     new_attachment_names,
     subject_include_incident_id,
     from_mail,
+    time_zone,
 ):
     """
         Use message details from the selected thread to construct a new mail message, since resending a first-contact
@@ -917,6 +933,7 @@ def resend_first_contact(
         new_attachment_names: List of attachment file names
         subject_include_incident_id: Should we include the incident id in the email subject.
         from_mail: mail address to send the mail from
+        time_zone: timezone used in emails thread
     Returns: Results from send_new_email function
     """
     # Verify the selected thread ID matches this dict
@@ -949,6 +966,7 @@ def resend_first_contact(
             new_attachment_names,
             context_html_body,
             from_mail,
+            time_zone,
         )
 
         return result
@@ -1152,6 +1170,7 @@ def multi_thread_new(
     mail_sender_instance,
     new_attachment_names,
     from_mail,
+    time_zone,
 ):
     """Validates that all necessary fields are set to send a new email, gets a unique code to associate replies
     to the current incident, prepares the final HTML email message body, then sends the email.
@@ -1232,6 +1251,7 @@ def multi_thread_new(
             new_attachment_names,
             context_html_body,
             from_mail,
+            time_zone,
         )
         return_results(result)
 
@@ -1342,6 +1362,7 @@ def multi_thread_reply(
     new_attachment_names,
     subject_include_incident_id,
     from_mail,
+    time_zone,
 ):
     """Validates that all necessary fields are set to send a reply email, retrieves details about the thread from
     incident context (subject, list of recipients, etc.).  In the event this reply is for an email thread that has no
@@ -1360,6 +1381,7 @@ def multi_thread_reply(
         mail_sender_instance: The name of the mail sender integration instance
         new_attachment_names: File names of attachments being sent on the email
         subject_include_incident_id: Should we include the incident id in the email subject.
+        time_zone: timezone used in emails thread
     Returns:
         String containing result message from resend_first_contact function or the send_reply function, whichever
         is required by the applicable case
@@ -1403,6 +1425,7 @@ def multi_thread_reply(
                 new_attachment_names,
                 subject_include_incident_id,
                 from_mail,
+                time_zone,
             )
 
             # Clear fields for re-use
@@ -1452,6 +1475,7 @@ def multi_thread_reply(
                     new_attachment_names,
                     subject_include_incident_id,
                     from_mail,
+                    time_zone,
                 )
 
                 # Clear fields for re-use
@@ -1529,6 +1553,7 @@ def multi_thread_reply(
                 final_reply_recipients,
                 incident_id,
                 new_attachment_names,
+                time_zone,
             )
 
             # Clear fields for re-use
@@ -1574,6 +1599,7 @@ def main():  # pragma: no cover
         body_type = args.get("bodyType") or args.get("body_type") or "html"
         reputation_calc_async = argToBoolean(args.get("reputation_calc_async", False))
         from_mail = args.get("from")
+        time_zone = demisto.args().get("timezone", "UTC")
         demisto.debug("Getting notes")
         is_succeed, notes = execute_command(
             "getEntries", {"filter": {"categories": ["notes"]}}, extract_contents=False, fail_on_error=False
@@ -1625,6 +1651,7 @@ def main():  # pragma: no cover
                 mail_sender_instance,
                 new_attachment_names,
                 from_mail,
+                time_zone,
             )
 
         elif new_thread == "false":
@@ -1643,6 +1670,7 @@ def main():  # pragma: no cover
                 new_attachment_names,
                 subject_include_incident_id,
                 from_mail,
+                time_zone,
             )
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
