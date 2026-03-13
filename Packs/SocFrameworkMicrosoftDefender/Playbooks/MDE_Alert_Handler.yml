@@ -1,0 +1,281 @@
+adopted: true
+dirtyInputs: true
+id: 'MDE Alert Handler'
+inputs: []
+name: MDE Alert Handler
+outputs: []
+quiet: true
+sourceplaybookid: 'CrowdStrike Basic Alert Handler'
+starttaskid: "0"
+tags:
+- SOC
+- PoV
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e5ec83e7-f48f-46b8-80eb-9736af1e84e5
+      iscommand: false
+      name: ""
+      playbooktaskmissingcomponent:
+      version: -1
+    taskid: e5ec83e7-f48f-46b8-80eb-9736af1e84e5
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 531,
+          "y": 50
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+        simple: Please provide your early assessment of this detection
+      cc:
+      format: ""
+      methods: []
+      replyOptions:
+      - 'Resolve: False Positive (No Action - Close)'
+      - 'Resolve: Benign True Positive (No Action - Close)'
+      - Continue Investigation
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      Continue Investigation:
+      - "5"
+      Resolve as Benign True Positive (Close):
+      - "4"
+      Resolve as False Positive (No Action):
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f8eb479e-8194-41b1-8aaf-56a3ccadc9dc
+      iscommand: false
+      name: Initial Analyst Assessment
+      playbooktaskmissingcomponent:
+      type: condition
+      version: -1
+    taskid: f8eb479e-8194-41b1-8aaf-56a3ccadc9dc
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 531,
+          "y": 380
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: 'Analyst has determined this to be a false positive detection. '
+      closeReason:
+        simple: Resolved - False Positive
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 0c2429f0-db02-438a-8719-d7724cccc974
+      iscommand: true
+      name: Resolve  - False Positive
+      playbooktaskmissingcomponent:
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 0c2429f0-db02-438a-8719-d7724cccc974
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 550
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: Analyst has determined this detection to be legitimate, but no further
+          actions are required.
+      closeReason:
+        simple: Resolved - True Positive
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: abc6a591-5298-4b4a-8a9a-b779f537dd12
+      iscommand: true
+      name: Resolve as Benign True Positive
+      playbooktaskmissingcomponent:
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: abc6a591-5298-4b4a-8a9a-b779f537dd12
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 531,
+          "y": 550
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 369d5810-aa06-4c23-868b-6da0a67fd7f4
+      iscommand: false
+      name: Continue Investigation (Placeholder)
+      playbooktaskmissingcomponent:
+      type: title
+      version: -1
+    taskid: 369d5810-aa06-4c23-868b-6da0a67fd7f4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1012,
+          "y": 555
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 79a3a4ce-9de5-4296-8dc4-b0d808398373
+      iscommand: false
+      name: Done
+      playbooktaskmissingcomponent:
+      type: title
+      version: -1
+    taskid: 79a3a4ce-9de5-4296-8dc4-b0d808398373
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 290.5,
+          "y": 720
+        }
+      }
+  "7":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      text:
+        simple: ${alert}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.extract.indicators
+      id: bd07000d-5661-41ce-83cb-10b51f88e196
+      iscommand: true
+      name: Extract and Enrich Indicators
+      playbooktaskmissingcomponent:
+      script: Builtin|||extractIndicators
+      type: regular
+      version: -1
+    taskid: bd07000d-5661-41ce-83cb-10b51f88e196
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 531,
+          "y": 210
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 730,
+        "width": 1343,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 5.0.0
