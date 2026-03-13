@@ -1,0 +1,21 @@
+{
+    "id": "Brandefense - Classifier",
+    "version": -1,
+    "modified": "2026-02-21T00:00:00Z",
+    "name": "Brandefense - Classifier",
+    "description": "Classifies Brandefense fetched events into the appropriate incident type.",
+    "brandName": "BrandefenseDRPS",
+    "type": "classification",
+    "defaultIncidentType": "Brandefense Incident",
+    "keyTypeMap": {
+        "Incident": "Brandefense Incident",
+        "Intelligence": "Brandefense Intelligence"
+    },
+    "transformer": {
+        "simple": "brandefense_type",
+        "complex": null
+    },
+    "feed": false,
+    "fromVersion": "6.5.0",
+    "mapping": null
+}

@@ -1,0 +1,17 @@
+{
+    "id": "incident_brandefensereferenceurl",
+    "version": -1,
+    "name": "Brandefense Reference URL",
+    "cliName": "brandefensereferenceurl",
+    "type": "url",
+    "description": "URL to view the item in the Brandefense portal.",
+    "group": 0,
+    "system": false,
+    "content": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Brandefense Incident",
+        "Brandefense Intelligence"
+    ],
+    "fromVersion": "6.5.0"
+}

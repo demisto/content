@@ -1,0 +1,17 @@
+{
+    "id": "incident_brandefenseindicators",
+    "version": -1,
+    "name": "Brandefense Indicators",
+    "cliName": "brandefenseindicators",
+    "type": "grid",
+    "description": "Indicators associated with the Brandefense item.",
+    "group": 0,
+    "system": false,
+    "content": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Brandefense Incident",
+        "Brandefense Intelligence"
+    ],
+    "fromVersion": "6.5.0"
+}
