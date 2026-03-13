@@ -3048,7 +3048,7 @@ def main() -> None:
             next_run, indicators = fetch_indicators(client, params, last_run)
             # Submit indicators in batches (XSOAR best practice)
             for iter_ in batch(indicators, batch_size=2000):
-                demisto.createIndicators(list(iter_))
+                demisto.createIndicators(iter_)
             demisto.setLastRun(next_run)
 
         else:
