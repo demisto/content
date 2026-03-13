@@ -1,470 +1,366 @@
-from abc import ABC
-from collections.abc import Callable
-from enum import Enum
-from typing import Any, NamedTuple
+"""Microsoft Defender for Cloud Apps Event Collector Integration.
 
+This integration fetches events from Microsoft Defender for Cloud Apps API
+using async HTTP requests for improved throughput. It supports fetching
+alerts, admin activities, and login activities concurrently.
+"""
+
+import asyncio
+import ssl
+from datetime import datetime, UTC
+from typing import NamedTuple
+
+import aiohttp
 import dateparser
 import demistomock as demisto  # noqa: F401
-import requests
 from CommonServerPython import *  # noqa: F401
 from MicrosoftApiModule import *
-from pydantic import AnyUrl, BaseConfig, BaseModel, Field, HttpUrl, parse_obj_as, validator  # type: ignore[E0611, E0611, E0611]
-from requests.auth import HTTPBasicAuth
 
 # pylint: disable=no-name-in-module
 # pylint: disable=no-self-argument
 from CommonServerUserPython import *  # noqa
 
-MAX_FETCH = 100
+# Configuration
+MAX_FETCH_PER_TYPE = 1000  # Max events per type per fetch cycle
 DEFAULT_FROM_FETCH_PARAMETER = "3 days"
+CONCURRENT_REQUESTS = 3  # One per event type (alerts, admin, login)
+MAX_PAGES_PER_TYPE = 10  # Safety limit to prevent infinite loops
+
+# Debug version identifier
+DEBUG_VERSION = "2026-01-14-async-v15"
 
 
 class EventFilter(NamedTuple):
+    """Event filter configuration."""
+
     ui_name: str
     name: str
-    attributes: dict
+    endpoint: str
+    filters: dict
 
 
-ALERTS_FILTER = EventFilter("Alerts", "alerts", {"type": "alerts", "filters": {}})
-ADMIN_ACTIVITIES_FILTER = EventFilter(
-    "Admin activities", "activities_admin", {"type": "activities", "filters": {"activity.type": {"eq": True}}}
-)
+# Event type configurations
+ALERTS_FILTER = EventFilter("Alerts", "alerts", "alerts", {})
+ADMIN_ACTIVITIES_FILTER = EventFilter("Admin activities", "activities_admin", "activities", {"activity.type": {"eq": True}})
 LOGIN_ACTIVITIES_FILTER = EventFilter(
     "Login activities",
     "activities_login",
-    {"type": "activities", "filters": {"activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}}},
+    "activities",
+    {"activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}},
 )
 
-ALL_EVENT_FILTERS: list[EventFilter] = [ALERTS_FILTER, ADMIN_ACTIVITIES_FILTER, LOGIN_ACTIVITIES_FILTER]
+ALL_EVENT_FILTERS = [ALERTS_FILTER, ADMIN_ACTIVITIES_FILTER, LOGIN_ACTIVITIES_FILTER]
+UI_NAME_TO_EVENT_FILTERS = {ef.ui_name: ef for ef in ALL_EVENT_FILTERS}
 
-UI_NAME_TO_EVENT_FILTERS = {event_filter.ui_name: event_filter for event_filter in ALL_EVENT_FILTERS}
-
-""" CONSTANTS """
+# Constants
 AUTH_ERROR_MSG = "Authorization Error: make sure tenant id, client id and client secret is correctly set"
 VENDOR = "Microsoft"
 PRODUCT = "defender_cloud_apps"
 
-""" HELPER CLASSES """
+
+def _get_token(params: dict) -> str:
+    """Get OAuth token from Microsoft API."""
+    endpoint_type_name = params.get("endpoint_type") or "Worldwide"
+    endpoint_type = MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE[endpoint_type_name]
+    azure_cloud = AZURE_CLOUDS[endpoint_type]
+
+    ms_client = MicrosoftClient(
+        base_url=params["url"],
+        tenant_id=params["tenant_id"],
+        auth_id=params["client_id"],
+        enc_key=params["client_secret"],
+        scope=params["scope"],
+        verify=params.get("verify", True),
+        self_deployed=True,
+        azure_cloud=azure_cloud,
+        command_prefix="microsoft-defender-cloud-apps",
+    )
+    return ms_client.get_access_token()
 
 
-# COPY OF SiemApiModule
+async def _fetch_events_for_type(
+    session: aiohttp.ClientSession,
+    base_url: str,
+    headers: dict,
+    event_filter: EventFilter,
+    after_timestamp: int | None,
+    max_events: int = MAX_FETCH_PER_TYPE,
+) -> list[dict]:
+    """Fetch all events for a single event type with pagination.
 
+    Args:
+        session: aiohttp session
+        base_url: API base URL
+        headers: Request headers with auth token
+        event_filter: Event filter configuration
+        after_timestamp: Fetch events after this timestamp (ms)
+        max_events: Maximum number of events to fetch for this type
 
-class Method(str, Enum):
-    GET = "GET"
-    POST = "POST"
-    PUT = "PUT"
-    HEAD = "HEAD"
-    PATCH = "PATCH"
-    DELETE = "DELETE"
-
-
-def load_json(v: Any) -> dict:
-    if not isinstance(v, dict | str):
-        raise ValueError("headers are not dict or a valid json")
-    if isinstance(v, str):
-        try:
-            v = json.loads(v)
-            if not isinstance(v, dict):
-                raise ValueError("headers are not from dict type")
-        except json.decoder.JSONDecodeError as exc:
-            raise ValueError("headers are not valid Json object") from exc
-    return v if isinstance(v, dict) else None
-
-
-class IntegrationHTTPRequest(BaseModel):
-    method: Method
-    url: AnyUrl
-    verify: bool = True
-    headers: dict = {}  # type: ignore[type-arg]
-    auth: HTTPBasicAuth | None = None
-    data: Any = None
-
-    class Config(BaseConfig):
-        arbitrary_types_allowed = True
-
-    _normalize_headers = validator("headers", pre=True, allow_reuse=True)(load_json)  # type: ignore[type-var]
-
-
-class Credentials(BaseModel):
-    identifier: str | None
-    password: str
-
-
-def set_authorization(request: IntegrationHTTPRequest, auth_credentials):
-    """Automatic authorization.
-    Supports {Authorization: Bearer __token__}
-    or Basic Auth.
+    Returns:
+        List of events for this event type
     """
-    creds = Credentials.parse_obj(auth_credentials)
-    if creds.password and creds.identifier:
-        request.auth = HTTPBasicAuth(creds.identifier, creds.password)
-    auth = {"Authorization": f"Bearer {creds.password}"}
-    if request.headers:
-        request.headers |= auth  # type: ignore[assignment, operator]
-    else:
-        request.headers = auth  # type: ignore[assignment]
+    url = f"{base_url}{event_filter.endpoint}"
+    filters = dict(event_filter.filters)
 
+    if after_timestamp:
+        filters["date"] = {"gte": after_timestamp}
 
-class IntegrationOptions(BaseModel):
-    """Add here any option you need to add to the logic"""
+    params = {"sortDirection": "asc", "filters": json.dumps(filters), "sortField": "date"}
 
-    proxy: bool | None = False
-    limit: int | None = Field(None, ge=1, le=MAX_FETCH)
+    all_events: list[dict] = []
+    page = 1
 
+    demisto.debug(
+        f"MD-DEBUG [{DEBUG_VERSION}]: Fetching {event_filter.name} from {url}, "
+        f"after_timestamp={after_timestamp}, max_events={max_events}"
+    )
 
-class IntegrationEventsClient(ABC):
-    def __init__(
-        self,
-        request: IntegrationHTTPRequest,
-        options: IntegrationOptions,
-        session=requests.Session(),
-    ):
-        self.request = request
-        self.options = options
-        self.session = session
-        self._set_proxy()
-        self._skip_cert_verification()
-
-    @abstractmethod
-    def set_request_filter(self, after: Any):
-        """TODO: set the next request's filter.
-        Example:
-        """
-        self.request.headers["after"] = after
-
-    def __del__(self):
+    while page <= MAX_PAGES_PER_TYPE:
         try:
-            self.session.close()
-        except AttributeError as err:
-            demisto.debug(f"ignore exceptions raised due to session not used by the client. {err=}")
+            async with session.get(url, params=params, headers=headers) as response:
+                if response.status == 429:
+                    retry_after = int(response.headers.get("Retry-After", 60))
+                    demisto.debug(f"MD-DEBUG: Rate limited, waiting {retry_after}s")
+                    await asyncio.sleep(retry_after)
+                    continue
 
-    def call(self, request: IntegrationHTTPRequest) -> requests.Response:
-        try:
-            response = self.session.request(**request.dict())
-            response.raise_for_status()
-            return response
-        except Exception as exc:
-            msg = f"something went wrong with the http call {exc}"
-            demisto.debug(msg)
-            raise DemistoException(msg) from exc
+                response.raise_for_status()
+                data = await response.json()
 
-    def _skip_cert_verification(self, skip_cert_verification_callable: Callable = skip_cert_verification):
-        if not self.request.verify:
-            skip_cert_verification_callable()
+        except aiohttp.ClientError as e:
+            demisto.error(f"MD-DEBUG: Error fetching {event_filter.name}: {e}")
+            raise DemistoException(f"Failed to fetch {event_filter.name}: {e}") from e
 
-    def _set_proxy(self):
-        if self.options.proxy:
-            ensure_proxy_has_http_prefix()
+        events = data.get("data", [])
+        has_next = data.get("hasNext", False)
+
+        demisto.debug(
+            f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} page {page}: "
+            f"{len(events)} events, hasNext={has_next}, total_so_far={len(all_events) + len(events)}"
+        )
+
+        # Tag events with their type
+        for event in events:
+            event["event_type_name"] = event_filter.name
+
+        all_events.extend(events)
+
+        # Check if we've reached our limit
+        if len(all_events) >= max_events:
+            demisto.debug(
+                f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} reached max_events limit ({max_events}), "
+                f"stopping with {len(all_events)} events"
+            )
+            all_events = all_events[:max_events]
+            break
+
+        # Check if there are no more events
+        if not has_next or not events:
+            demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} no more events (hasNext={has_next})")
+            break
+
+        # Update filter for next page - use last event's timestamp
+        last_timestamp = events[-1].get("timestamp")
+        if last_timestamp:
+            filters["date"] = {"gte": last_timestamp + 1}
+            params["filters"] = json.dumps(filters)
         else:
-            skip_proxy()
+            demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} no timestamp in last event, stopping")
+            break
+
+        page += 1
+
+    if page > MAX_PAGES_PER_TYPE:
+        demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} reached max pages limit ({MAX_PAGES_PER_TYPE})")
+
+    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {event_filter.name} complete: " f"{len(all_events)} total events in {page} pages")
+    return all_events
 
 
-class IntegrationGetEvents(ABC):
-    def __init__(
-        self, client: IntegrationEventsClient, options: IntegrationOptions, event_filters: list[EventFilter], base_url: AnyUrl
-    ) -> None:
-        self.client = client
-        self.options = options
-        self.filter_name_to_attributes = {event_filter.name: event_filter.attributes for event_filter in event_filters}
-        self.base_url = base_url
+async def fetch_all_events(
+    params: dict, event_filters: list[EventFilter], max_events_per_type: int = MAX_FETCH_PER_TYPE
+) -> tuple[list[dict], dict[str, int | None]]:
+    """Fetch events from all event types concurrently.
 
-    def run(self):
-        final_stored_all_types = []
-        # In this integration we need to do 3 API calls:
-        # - activities with filter to get the admin events
-        # - activities with different filter to get the login events
-        # - alerts with no filter
-        for event_type_name, endpoint_details in self.filter_name_to_attributes.items():
-            stored_per_type = []
-            for logs in self._iter_events(event_type_name, endpoint_details):
-                stored_per_type.extend(logs)
-                if self.options.limit:
-                    demisto.debug(
-                        f"MD: {self.options.limit=} reached. slicing from {len(logs)=}."
-                        " limit must be presented ONLY in commands and not in fetch-events."
-                    )
-                    if len(stored_per_type) >= self.options.limit:
-                        final_stored_all_types.extend(stored_per_type[: self.options.limit])
-                        break
-        demisto.debug(f"MD: Sliced events, keeping {len(final_stored_all_types)} events from all event types")
-        return final_stored_all_types
+    Args:
+        params: Integration parameters
+        event_filters: List of event filters to fetch
+        max_events_per_type: Maximum events to fetch per event type
 
-    def call(self) -> requests.Response:
-        return self.client.call(self.client.request)
-
-    @staticmethod
-    @abstractmethod
-    def get_last_run(events: list) -> dict:
-        """Logic to get the last run from the events
-        Example:
-        """
-        return {"after": events[-1]["created"]}
-
-    @abstractmethod
-    def _iter_events(self, event_type_name: str, endpoint_details: dict):
-        """Create iterators with Yield"""
-        raise NotImplementedError
-
-
-# END COPY OF SiemApiModule
-
-
-class DefenderAuthenticator(BaseModel):
-    verify: bool
-    url: str
-    tenant_id: str
-    client_id: str
-    client_secret: str
-    scope: str
-    ms_client: Any = None
-    endpoint_type: str
-
-    def set_authorization(self, request: IntegrationHTTPRequest):
-        try:
-            endpoint_type_name = self.endpoint_type or "Worldwide"
-            endpoint_type = MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE[endpoint_type_name]
-            azure_cloud = AZURE_CLOUDS[endpoint_type]  # The MDA endpoint type is a subset of the azure clouds.
-
-            if not self.ms_client:
-                demisto.debug("try init the ms client for the first time")
-                self.ms_client = MicrosoftClient(
-                    base_url=self.url,
-                    tenant_id=self.tenant_id,
-                    auth_id=self.client_id,
-                    enc_key=self.client_secret,
-                    scope=self.scope,
-                    verify=self.verify,
-                    self_deployed=True,
-                    azure_cloud=azure_cloud,
-                    command_prefix="microsoft-defender-cloud-apps",
-                )
-
-            token = self.ms_client.get_access_token()
-            auth = {"Authorization": f"Bearer {token}"}
-            if request.headers:
-                request.headers |= auth  # type: ignore[assignment, operator]
-            else:
-                request.headers = auth  # type: ignore[assignment]
-
-            demisto.debug("MD: getting access token for Defender Authenticator - succeeded")
-
-        except BaseException as e:
-            # catch BaseException to catch also sys.exit via return_error
-            demisto.error(f"Fail to authenticate with Microsoft services: {e!s}")
-
-            err_msg = "Fail to authenticate with Microsoft services, see the error details in the log"
-            raise DemistoException(err_msg) from e
-
-
-class DefenderHTTPRequest(IntegrationHTTPRequest):
-    params: dict = {"sortDirection": "asc"}
-    method: Method = Method.GET
-
-    _normalize_url = validator("url", pre=True, allow_reuse=True)(lambda base_url: f"{base_url}/api/v1/")  # type: ignore[type-var]
-
-
-class DefenderClient(IntegrationEventsClient):
-    authenticator: DefenderAuthenticator
-    request: DefenderHTTPRequest
-    options: IntegrationOptions
-
-    def __init__(
-        self, request: DefenderHTTPRequest, options: IntegrationOptions, authenticator: DefenderAuthenticator, after: int
-    ):
-        self.after = after
-        self.authenticator = authenticator
-        super().__init__(request, options)
-
-    def set_request_filter(self, after: Any):
-        curr_filters = json.loads(self.request.params["filters"])
-        curr_filters["date"] = {"gte": after + 1}
-        self.request.params["filters"] = json.dumps(curr_filters)
-
-    def authenticate(self):
-        self.authenticator.set_authorization(self.request)
-
-
-class DefenderGetEvents(IntegrationGetEvents):
-    client: DefenderClient
-
-    def _iter_events(self, event_type_name, endpoint_details):
-        self.last_timestamp = {}
-        base_url = self.base_url
-        self.client.authenticate()
-
-        self.client.request.params.pop("filters", None)
-        self.client.request.url = parse_obj_as(HttpUrl, f'{base_url}{endpoint_details["type"]}')
-
-        # get the filter for this type
-        filters = endpoint_details["filters"]
-
-        after = demisto.getLastRun().get(event_type_name) or self.client.after
-        # add the time filter
-        if after:
-            filters["date"] = {"gte": after}  # type: ignore
-
-        demisto.debug(f"MD: Sending request with filters {filters}")
-        self.client.request.params["filters"] = json.dumps(filters)
-        response = self.client.call(self.client.request).json()
-        events = response.get("data", [])
-        demisto.debug(f"MD: Got {len(events)} events for {event_type_name=}")
-
-        # add new field with the event type
-        for event in events:
-            event["event_type_name"] = event_type_name
-
-        has_next = response.get("hasNext")
-
-        yield events
-
-        while has_next:
-            demisto.debug("MD: Got more events to fetch")
-            last = events.pop()
-            self.client.set_request_filter(last["timestamp"])
-            response = self.client.call(self.client.request).json()
-            events = response.get("data", [])
-            demisto.debug(f"MD: Got {len(events)} events for {event_type_name=}")
-            # add new field with the event type
-            for event in events:
-                event["event_type_name"] = event_type_name
-
-            has_next = response.get("hasNext")
-
-            yield events
-
-    @staticmethod
-    def get_last_run(events: list) -> dict:
-        last_run = demisto.getLastRun()
-        demisto.debug(f"MD: Got the last run: {last_run}")
-        alerts_last_run = 0
-        activities_admin_last_run = 0
-        activities_login_last_run = 0
-
-        for event in events:
-            event_type = event["event_type_name"]
-            timestamp = event["timestamp"]
-            demisto.debug(f"MD: Got event from type {event_type}, with timestamp {timestamp}")
-            if event_type == "alerts":
-                alerts_last_run = timestamp
-            elif event_type == "activities_login":
-                activities_login_last_run = timestamp
-            elif event_type == "activities_admin":
-                activities_admin_last_run = timestamp
-
-        if alerts_last_run:
-            last_run["alerts"] = alerts_last_run + 1
-        if activities_login_last_run:
-            last_run["activities_login"] = activities_login_last_run + 1
-        if activities_admin_last_run:
-            last_run["activities_admin"] = activities_admin_last_run + 1
-
-        return last_run
-
-
-""" HELPER FUNCTIONS """
-
-""" COMMAND FUNCTIONS """
-
-
-def module_test(get_events: DefenderGetEvents) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type get_events: ``DefenderGetEvents``
-    :param get_events: the get_events instance
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+    Returns:
+        Tuple of (all_events, requested_start_times)
     """
+    base_url = f"{params['url']}/api/v1/"
+    # Use asyncio.to_thread to avoid blocking the event loop during token acquisition
+    # MicrosoftClient.get_access_token() uses synchronous requests library internally
+    token = await asyncio.to_thread(_get_token, params)
+    headers = {"Authorization": f"Bearer {token}"}
 
+    # Get last run timestamps
+    last_run = demisto.getLastRun()
+    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Current last_run state: {last_run}")
+
+    after_param = params.get("after") or DEFAULT_FROM_FETCH_PARAMETER
+
+    default_after: int | None = None
+    if after_param and not isinstance(after_param, int):
+        parsed = dateparser.parse(after_param)
+        default_after = int(parsed.timestamp() * 1000) if parsed else None
+    elif isinstance(after_param, int):
+        default_after = after_param
+
+    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: default_after={default_after}")
+
+    # Configure SSL
+    ssl_context: ssl.SSLContext | bool = True
+    if not params.get("verify", True):
+        ssl_context = False
+    connector = aiohttp.TCPConnector(ssl=ssl_context, limit=CONCURRENT_REQUESTS)
+    timeout = aiohttp.ClientTimeout(total=300)
+
+    requested_start_times: dict[str, int | None] = {}
+
+    async with aiohttp.ClientSession(connector=connector, timeout=timeout) as session:
+        # Create tasks for all event types
+        tasks = []
+        for ef in event_filters:
+            after_ts: int | None = last_run.get(ef.name) or default_after
+            requested_start_times[ef.name] = after_ts
+            demisto.debug(
+                f"MD-DEBUG [{DEBUG_VERSION}]: {ef.name} starting from timestamp {after_ts} "
+                f"(from last_run: {last_run.get(ef.name)}, default: {default_after})"
+            )
+
+            task = _fetch_events_for_type(session, base_url, headers, ef, after_ts, max_events_per_type)
+            tasks.append(task)
+
+        # Run all fetches concurrently
+        demisto.debug(
+            f"MD-DEBUG [{DEBUG_VERSION}]: Starting concurrent fetch for {len(tasks)} event types, "
+            f"max_events_per_type={max_events_per_type}"
+        )
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    # Collect results
+    all_events: list[dict] = []
+    for i, result in enumerate(results):
+        ef = event_filters[i]
+        if isinstance(result, BaseException):
+            demisto.error(f"MD-DEBUG: Failed to fetch {ef.name}: {result}")
+        elif isinstance(result, list):
+            demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: {ef.name} returned {len(result)} events")
+            all_events.extend(result)
+
+    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Total events fetched across all types: {len(all_events)}")
+    return all_events, requested_start_times
+
+
+def calculate_last_run(events: list[dict], requested_start_times: dict[str, int | None]) -> dict[str, int]:
+    """Calculate next last_run based on fetched events.
+
+    Args:
+        events: List of fetched events
+        requested_start_times: Start times that were requested
+
+    Returns:
+        Updated last_run dictionary
+    """
+    last_run = demisto.getLastRun()
+
+    # Find max timestamp per event type
+    max_timestamps: dict[str, int] = {}
+    for event in events:
+        event_type = event.get("event_type_name")
+        timestamp = event.get("timestamp")
+        if event_type and timestamp and (event_type not in max_timestamps or timestamp > max_timestamps[event_type]):
+            max_timestamps[event_type] = timestamp
+
+    # Update last_run
+    for event_type, timestamp in max_timestamps.items():
+        last_run[event_type] = timestamp + 1  # +1 to avoid re-fetching
+
+    # Ensure all requested types have entries
+    for event_type, start_time in requested_start_times.items():
+        if event_type not in last_run and start_time:
+            last_run[event_type] = start_time
+
+    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Updated last_run: {last_run}")
+    return last_run
+
+
+async def test_module_async(params: dict) -> str:
+    """Test API connectivity."""
     try:
-        get_events.client.request.params = {"limit": 1}
-        get_events.options.limit = 1
-        get_events.run()
-        message = "ok"
+        events, _ = await fetch_all_events(params, [ALERTS_FILTER], max_events_per_type=1)
+        return "ok"
     except DemistoException as e:
         if "Forbidden" in str(e) or "authenticate" in str(e):
-            message = AUTH_ERROR_MSG
-        else:
-            raise
-    return message
+            return AUTH_ERROR_MSG
+        raise
 
 
-def main(command: str, demisto_params: dict):
-    demisto.debug(f"MD: Command being called is {command}")
+def main():
+    """Main entry point."""
+    command = demisto.command()
+    params = demisto.params() | demisto.args() | demisto.getLastRun()
+    params["client_secret"] = params.get("credentials", {}).get("password", "")
+
+    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Command: {command}")
+    demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Time: " f"{datetime.now(tz=UTC).strftime('%Y-%m-%d %H:%M:%S UTC')}")
 
     try:
-        demisto_params["client_secret"] = demisto_params["credentials"]["password"]
-        push_to_xsiam = argToBoolean(demisto_params.get("should_push_events", "false"))
-
-        if user_requested_event_types := argToList(demisto_params.get("event_types_to_fetch", [])):
-            event_filters: list[EventFilter] = [
-                event_filter
-                for ui_name, event_filter in UI_NAME_TO_EVENT_FILTERS.items()
-                if ui_name in user_requested_event_types
-            ]
+        # Determine which event types to fetch
+        requested_types = argToList(params.get("event_types_to_fetch", []))
+        if requested_types:
+            event_filters = [ef for ef in ALL_EVENT_FILTERS if ef.ui_name in requested_types]
         else:
             event_filters = ALL_EVENT_FILTERS
 
-        after = demisto_params.get("after") or DEFAULT_FROM_FETCH_PARAMETER
-
-        if after and not isinstance(after, int):
-            demisto.debug(f"MD: Got after argument: {after}")
-            timestamp = dateparser.parse(after)  # type: ignore
-            after = int(timestamp.timestamp() * 1000)  # type: ignore
-            demisto.debug(f"MD: Parsed the after arg: {after}")
-
-        options = IntegrationOptions.parse_obj(demisto_params)
-        request = DefenderHTTPRequest.parse_obj(demisto_params)
-        authenticator = DefenderAuthenticator.parse_obj(demisto_params)
-
-        # Based on the flow of the code, after is always an int so ignore it
-        client = DefenderClient(request=request, options=options, authenticator=authenticator, after=after)  # type:ignore[arg-type]
-        get_events = DefenderGetEvents(client=client, base_url=request.url, options=options, event_filters=event_filters)
-
         if command == "test-module":
-            return_results(module_test(get_events=get_events))
+            result = asyncio.run(test_module_async(params))
+            return_results(result)
 
         elif command == "microsoft-defender-cloud-apps-auth-reset":
             return_results(reset_auth())
 
         elif command in ("fetch-events", "microsoft-defender-cloud-apps-get-events"):
-            events = get_events.run()
+            # Get limit - use MAX_FETCH_PER_TYPE for fetch-events, or user-specified for manual command
+            if command == "fetch-events":
+                max_events = MAX_FETCH_PER_TYPE
+            else:
+                max_events = arg_to_number(params.get("limit")) or MAX_FETCH_PER_TYPE
+
+            demisto.debug(f"MD-DEBUG [{DEBUG_VERSION}]: Using max_events_per_type={max_events}")
+
+            # Fetch events asynchronously
+            events, requested_start_times = asyncio.run(fetch_all_events(params, event_filters, max_events))
 
             if command == "fetch-events":
-                # publishing events to XSIAM
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)  # type: ignore
-                next_run = DefenderGetEvents.get_last_run(events)
-                demisto.debug(f"MD: setting the next run: {next_run}")
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                next_run = calculate_last_run(events, requested_start_times)
                 demisto.setLastRun(next_run)
-
-            elif command == "microsoft-defender-cloud-apps-get-events":
-                command_results = CommandResults(
-                    readable_output=tableToMarkdown(
-                        "microsoft defender cloud apps events", events, headerTransform=pascalToSpace
-                    ),
-                    outputs_prefix="Microsoft.Events",
-                    outputs_key_field="_id",
-                    outputs=events,
-                    raw_response=events,
+            else:
+                return_results(
+                    CommandResults(
+                        readable_output=tableToMarkdown(
+                            "Microsoft Defender Cloud Apps Events", events, headerTransform=pascalToSpace
+                        ),
+                        outputs_prefix="Microsoft.Events",
+                        outputs_key_field="_id",
+                        outputs=events,
+                        raw_response=events,
+                    )
                 )
-                return_results(command_results)
-                if push_to_xsiam:
-                    # publishing events to XSIAM
-                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)  # type: ignore
+                if argToBoolean(params.get("should_push_events", False)):
+                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
-    # Log exceptions and return errors
+        else:
+            raise DemistoException(f"Unknown command: {command}")
+
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
+        demisto.error(traceback.format_exc())
+        return_error(f"Failed to execute {command}: {e}")
 
 
-""" ENTRY POINT """
-if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
-    # Args is always stronger. Get getIntegrationContext even stronger
-    compound_demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
-    main(demisto.command(), compound_demisto_params)
+if __name__ in ("__main__", "__builtin__", "builtins"):
+    main()

@@ -20,7 +20,7 @@ configuration:
   - US GCC
   - US GCC-High
 - display: Server URL (e.g., https://yourdomain.eu2.portal.cloudappsecurity.com)
-  additionalinfo: In the Security Center, go to Settings > Clod Apps > About tab, where the API URL is displayed.
+  additionalinfo: In the Security Center, go to Settings > Cloud Apps > About tab, where the API URL is displayed.
   name: url
   required: true
   type: 0
@@ -120,7 +120,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/auth-utils:1.0.0.3562326
+  dockerimage: demisto/auth-utils:1.0.0.6111183
 fromversion: 6.8.0
 marketplaces:
 - marketplacev2
