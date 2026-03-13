@@ -1,0 +1,19 @@
+[MODEL:dataset="crowdstrike_falcon_event_raw"]
+filter product = "epp"
+| alter
+    xdm.alert.severity  = concat(to_string(severity), " - ", severity_name),
+    xdm.event.original_event_type = incident_type,
+    xdm.event.description = description,
+    xdm.source.process.pid = to_integer(local_process_id),
+    xdm.source.host.fqdn = device -> machine_domain,
+    xdm.source.host.os_family = device -> os_version,
+    xdm.event.type = incident_type,
+    xdm.source.ipv4 = device -> local_ip,
+    xdm.source.user.username = user_name ,
+    xdm.source.user.domain = device->machine_domain,
+    xdm.source.process.command_line = parent_details -> cmdline,
+    xdm.source.user.groups = device -> groups[],
+    xdm.source.host.hostname = device->hostname,
+    xdm.source.process.name = parent_details -> filename,
+    xdm.source.process.executable.path = parent_details -> filepath,
+    xdm.source.process.executable.sha256 = parent_details -> sha256;
