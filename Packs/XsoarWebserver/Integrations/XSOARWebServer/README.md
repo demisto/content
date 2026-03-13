@@ -72,11 +72,11 @@ Show the details of all the setup actions from the backend.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| userstring | Returns partial matches - optional filter returns cache items that match this string. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-
 ### xsoar-ws-remove-action
 
 ***

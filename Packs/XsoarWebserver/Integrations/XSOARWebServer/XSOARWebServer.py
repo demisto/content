@@ -169,8 +169,31 @@ def run_clear_integration_cache():
 
 
 def run_show_integration_cache():
+    """
+    Shows the integration context cache.
+    Can be filtered by providing a 'user_string' argument to only return entries
+    where the user_string contains the provided filter text.
+    """
+    user_string_filter = demisto.args().get("userstring")
     ic = get_integration_context()
-    return_results(json.dumps(ic))
+
+    # If a filter is not provided, return the entire cache
+    if not user_string_filter:
+        return_results(json.dumps(ic))
+        return
+
+    # If a filter is provided, build a new dictionary with only the matching items
+    filtered_ic = {}
+    for uuid, data in ic.items():
+        # Safely check if the item is a dictionary
+        if isinstance(data, dict):
+            # Get the user_string from the cache entry
+            cache_user_string = data.get("user_string")
+            # Check if the entry's user_string is a string and contains the filter string
+            if isinstance(cache_user_string, str) and user_string_filter in cache_user_string:
+                filtered_ic[uuid] = data
+
+    return_results(json.dumps(filtered_ic))
 
 
 def remove_action_internal(uuid):
