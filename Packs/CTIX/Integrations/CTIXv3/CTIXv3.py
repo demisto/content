@@ -6,10 +6,11 @@ import time
 import urllib.parse
 import uuid
 from collections.abc import Callable
-from datetime import datetime
+from datetime import datetime, timedelta, UTC
 from http import HTTPStatus
 from typing import Any, cast
 
+import dateparser
 import demistomock as demisto
 import requests
 import urllib3
@@ -95,6 +96,144 @@ REGEX_MAP = {
     "hash": re.compile(hashRegex, regexFlags),
 }
 
+"""
+Canonical map for indicator type -> XSOAR type
+"""
+INDICATOR_TYPE_MAP: dict[str, str] = {
+    "ipv4-addr": FeedIndicatorType.IP,
+    "ipv6-addr": FeedIndicatorType.IPv6,
+    "domain-name": FeedIndicatorType.Domain,
+    "domain": FeedIndicatorType.Domain,
+    "url": FeedIndicatorType.URL,
+    "email-addr": FeedIndicatorType.Email,
+    "email-message": FeedIndicatorType.Email,
+    "MD5": FeedIndicatorType.File,
+    "SHA-1": FeedIndicatorType.File,
+    "SHA-224": FeedIndicatorType.File,
+    "SHA-256": FeedIndicatorType.File,
+    "SHA-384": FeedIndicatorType.File,
+    "SHA-512": FeedIndicatorType.File,
+    "SSDEEP": FeedIndicatorType.SSDeep,
+    "autonomous-system": FeedIndicatorType.AS,
+    "cidr": FeedIndicatorType.CIDR,
+    "certificate": FeedIndicatorType.X509,
+    "user-agent": "User Agent",
+    "windows-registry-key": FeedIndicatorType.Registry,
+    "mutex": FeedIndicatorType.MUTEX,
+    "mac-addr": "MAC Address",
+    "network-traffic": "Network Traffic",
+    "artifact": "Artifact",
+    "directory": "Directory",
+    "process": "Process",
+    "software": FeedIndicatorType.Software,
+    "user-account": FeedIndicatorType.Account,
+}
+CYWARE_TYPE_NORMALIZATION: dict[str, str] = {
+    "ip": INDICATOR_TYPE_MAP.get("ipv4-addr", FeedIndicatorType.IP),
+    "ipv4": INDICATOR_TYPE_MAP.get("ipv4-addr", FeedIndicatorType.IP),
+    "ipv4-addr": INDICATOR_TYPE_MAP.get("ipv4-addr", FeedIndicatorType.IP),
+    "ipv6": INDICATOR_TYPE_MAP.get("ipv6-addr", FeedIndicatorType.IPv6),
+    "ipv6-addr": INDICATOR_TYPE_MAP.get("ipv6-addr", FeedIndicatorType.IPv6),
+    "domain": INDICATOR_TYPE_MAP.get("domain", FeedIndicatorType.Domain),
+    "domain-name": INDICATOR_TYPE_MAP.get("domain", FeedIndicatorType.Domain),
+    "url": INDICATOR_TYPE_MAP.get("url", FeedIndicatorType.URL),
+    "email": INDICATOR_TYPE_MAP.get("email-addr", FeedIndicatorType.Email),
+    "email-addr": INDICATOR_TYPE_MAP.get("email-addr", FeedIndicatorType.Email),
+    "hash_md5": INDICATOR_TYPE_MAP.get("MD5", FeedIndicatorType.File),
+    "hash_sha1": INDICATOR_TYPE_MAP.get("SHA-1", FeedIndicatorType.File),
+    "hash_sha256": INDICATOR_TYPE_MAP.get("SHA-256", FeedIndicatorType.File),
+    "md5": INDICATOR_TYPE_MAP.get("MD5", FeedIndicatorType.File),
+    "sha-1": INDICATOR_TYPE_MAP.get("SHA-1", FeedIndicatorType.File),
+    "sha-256": INDICATOR_TYPE_MAP.get("SHA-256", FeedIndicatorType.File),
+    "sha1": INDICATOR_TYPE_MAP.get("SHA-1", FeedIndicatorType.File),
+    "sha256": INDICATOR_TYPE_MAP.get("SHA-256", FeedIndicatorType.File),
+    "ssdeep": INDICATOR_TYPE_MAP.get("SSDEEP", FeedIndicatorType.SSDeep),
+    "file": FeedIndicatorType.File,
+}
+
+# Maps raw Cyware/CTIX IOC type strings → the XSOAR hash field name to populate
+_HASH_TYPE_TO_FIELD: dict[str, str] = {
+    # MD5
+    "hash_md5": "md5",
+    "md5": "md5",
+    "MD5": "md5",
+    # SHA-1
+    "hash_sha1": "sha1",
+    "sha1": "sha1",
+    "sha-1": "sha1",
+    "SHA-1": "sha1",
+    # SHA-256
+    "hash_sha256": "sha256",
+    "sha256": "sha256",
+    "sha-256": "sha256",
+    "SHA-256": "sha256",
+    # SHA-224 / SHA-384 / SHA-512
+    "SHA-224": "sha224",
+    "sha-224": "sha224",
+    "SHA-384": "sha384",
+    "sha-384": "sha384",
+    "SHA-512": "sha512",
+    "sha-512": "sha512",
+    # SSDEEP
+    "SSDEEP": "ssdeep",
+    "ssdeep": "ssdeep",
+}
+
+_STIX_SDO_TO_XSOAR_ENTITY_TYPE: dict[str, str] = {
+    # ── Standard indicator / observable types ──────────────────────────────────
+    "ipv4-addr": FeedIndicatorType.IP,
+    "ipv6-addr": FeedIndicatorType.IPv6,
+    "domain-name": FeedIndicatorType.Domain,
+    "domain": FeedIndicatorType.Domain,
+    "url": FeedIndicatorType.URL,
+    "email-addr": FeedIndicatorType.Email,
+    "email-message": FeedIndicatorType.Email,
+    "file": FeedIndicatorType.File,
+    "MD5": FeedIndicatorType.File,
+    "SHA-1": FeedIndicatorType.File,
+    "SHA-224": FeedIndicatorType.File,
+    "SHA-256": FeedIndicatorType.File,
+    "SHA-384": FeedIndicatorType.File,
+    "SHA-512": FeedIndicatorType.File,
+    "SSDEEP": FeedIndicatorType.SSDeep,
+    "autonomous-system": FeedIndicatorType.AS,
+    "cidr": FeedIndicatorType.CIDR,
+    "windows-registry-key": FeedIndicatorType.Registry,
+    "mutex": FeedIndicatorType.MUTEX,
+    "certificate": FeedIndicatorType.X509,
+    "x509-certificate": FeedIndicatorType.X509,
+    "software": FeedIndicatorType.Software,
+    "user-account": FeedIndicatorType.Account,
+    "user-agent": "User Agent",
+    "mac-addr": "MAC Address",
+    "network-traffic": "Network Traffic",
+    "malware": ThreatIntel.ObjectsNames.MALWARE,
+    "threat-actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
+    "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
+    "course-of-action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
+    "intrusion-set": ThreatIntel.ObjectsNames.INTRUSION_SET,
+    "tool": ThreatIntel.ObjectsNames.TOOL,
+    "report": ThreatIntel.ObjectsNames.REPORT,
+    "infrastructure": ThreatIntel.ObjectsNames.INFRASTRUCTURE,
+    "vulnerability": FeedIndicatorType.CVE,
+    "indicator": "Indicator",
+    "observable": "Indicator",
+    "identity": "Identity",
+    "location": "Location",
+}
+
+DEFAULT_INCIDENTS_MAX_RESULTS = 10
+DEFAULT_INDICATORS_MAX_RESULTS = 100
+DEFAULT_FIRST_FETCH = "4320"  # 3 days
+ENRICHMENT_BATCH_SIZE = 100
+FETCH_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+
+# API page-size limits (per CTIX API documentation)
+PAGE_SIZE_SAVED_RESULT_SET = 100
+PAGE_SIZE_THREAT_DATA = 2000
+PAGE_SIZE_BULK_LOOKUP = 100
+
 """ CLIENT CLASS """
 
 
@@ -156,7 +295,8 @@ class Client(BaseClient):
         """
         kwargs = self.add_common_params(kwargs)
         params and kwargs.update(params)
-        full_url = full_url + "?" + urllib.parse.urlencode(kwargs)
+        separator = "&" if "?" in full_url else "?"
+        full_url = full_url + separator + urllib.parse.urlencode(kwargs)
 
         headers = {"content-type": "application/json"}
         resp = requests.get(
@@ -194,7 +334,8 @@ class Client(BaseClient):
         """
         headers = {"content-type": "application/json"}
         params = self.add_common_params(params)
-        full_url = full_url + "?" + urllib.parse.urlencode(params)
+        separator = "&" if "?" in full_url else "?"
+        full_url = full_url + separator + urllib.parse.urlencode(params)
         resp = requests.post(
             full_url,
             verify=self.verify,
@@ -229,7 +370,8 @@ class Client(BaseClient):
         """
         headers = {"content-type": "application/json"}
         params = self.add_common_params(params)
-        full_url = full_url + "?" + urllib.parse.urlencode(params)
+        separator = "&" if "?" in full_url else "?"
+        full_url = full_url + separator + urllib.parse.urlencode(params)
         resp = requests.put(
             full_url,
             verify=self.verify,
@@ -260,7 +402,8 @@ class Client(BaseClient):
         """
         kwargs = self.add_common_params(kwargs)
         params and kwargs.update(params)
-        full_url = full_url + "?" + urllib.parse.urlencode(kwargs)
+        separator = "&" if "?" in full_url else "?"
+        full_url = full_url + separator + urllib.parse.urlencode(kwargs)
         headers = {"content-type": "application/json"}
         resp = requests.delete(
             full_url,
@@ -281,6 +424,31 @@ class Client(BaseClient):
                 return response
 
             return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
+
+    def follow_next_page(
+        self,
+        next_url: str,
+        payload: dict | None = None,
+        method: str = "GET",
+    ) -> dict | None:
+        """Follow a pagination ``next`` URL returned by the CTIX API.
+
+        The ``next`` value is a relative path with embedded query params,
+        e.g. ``ingestion/rules/save_result_set/?page=2&page_size=100&...``.
+        Auth params (AccessID, Expires, Signature) are appended automatically
+        by the underlying HTTP helpers.
+
+        :param str next_url: Relative URL path (must not be empty)
+        :param dict payload: Request body – required for POST-based endpoints
+        :param str method: ``"GET"`` (default) or ``"POST"``
+        :return: Standard ``{"data": ..., "status": ...}`` response dict
+        """
+        if not next_url:
+            return None
+        full_url = self.base_url + next_url
+        if method.upper() == "POST":
+            return self.post_http_request(full_url, payload or {}, {})
+        return self.get_http_request(full_url, payload)
 
     def test_auth(self):
         """
@@ -505,24 +673,37 @@ class Client(BaseClient):
 
         return self.post_http_request(client_url, payload, {})
 
-    def saved_result_set(self, page: str, page_size: str, label_name: str = None, version: str = None):
+    def saved_result_set(
+        self,
+        page: int,
+        page_size: int,
+        label_name: str = None,
+        version: str = None,
+        from_timestamp: int | None = None,
+        to_timestamp: int | None = None,
+    ):
         """
         Saved Result Set
 
-        :param str page: Paginated number from where data will be polled
-        :param str page_size: Size of the result
+        :param int page: Paginated number from where data will be polled
+        :param int page_size: Size of the result
         :param str label_name: Label name used to get the data from the rule
-        :param str query: CQL query to get specific data
         :param str version: Saved Result Set version
+        :param int from_timestamp: Filter results from this epoch timestamp
+        :param int to_timestamp: Filter results until this epoch timestamp
         :return dict: Returns response for query
         """
         url_suffix = "ingestion/rules/save_result_set/"
         client_url = self.base_url + url_suffix
-        params = {}
-        version and params.update({"version": version})
-        params.update({"page": page})
-        params.update({"page_size": page_size})
-        label_name and params.update({"label_name": label_name})
+        params: dict[str, Any] = {"page": page, "page_size": page_size}
+        if version:
+            params["version"] = version
+        if label_name:
+            params["label_name"] = label_name
+        if from_timestamp:
+            params["from_timestamp"] = from_timestamp
+        if to_timestamp:
+            params["to_timestamp"] = to_timestamp
         return self.get_http_request(client_url, {}, params=params)
 
     def tag_indicator_updation(
@@ -681,6 +862,47 @@ class Client(BaseClient):
 
         return self.post_http_request(client_url, payload, params)
 
+    def bulk_ioc_lookup_advanced(
+        self,
+        object_type: str,
+        values: list,
+        object_ids: list,
+        enrichment_data: bool,
+        relation_data: bool,
+        enrichment_tools: str | None = None,
+        fields: str | None = None,
+    ):
+        """
+        Bulk IOC Lookup (Advanced)
+
+        :param str object_type: SDO object type to lookup (path param)
+        :param list values: list of indicator values to lookup
+        :param list object_ids: list of object ids to lookup
+        :param bool enrichment_data: pass True to include the latest enrichment data objects
+        :param bool relation_data: pass True to include the latest relation details
+        :param str enrichment_tools: optional comma-separated enrichment tool names
+        :param str fields: optional comma-separated field names to retrieve
+        :return: response dict
+        """
+        url_suffix = f"ingestion/openapi/bulk-lookup/{object_type}/"
+        client_url = self.base_url + url_suffix
+        params: dict[str, Any] = {
+            "enrichment_data": enrichment_data,
+            "relation_data": relation_data,
+        }
+        if enrichment_tools:
+            params["enrichment_tools"] = enrichment_tools
+        if fields:
+            params["fields"] = fields
+        if values:
+            payload: dict[str, Any] = {"value": values}
+        elif object_ids:
+            payload = {"object_id": object_ids}
+        else:
+            return_error("Either values or object_ids must be provided for bulk IOC lookup.")
+            return None
+        return self.post_http_request(client_url, payload, params)
+
     def get_vulnerability_product_details(self, obj_id: str, page: int, page_size: int):
         """
         Get Vulnerability Product Details
@@ -733,7 +955,10 @@ def to_dbot_score(ctix_score: int) -> int:
     Maps CTIX Score to DBotScore
     """
     if isinstance(ctix_score, str):
-        ctix_score = 10
+        try:
+            ctix_score = float(ctix_score)
+        except (ValueError, TypeError):
+            ctix_score = 0
     if ctix_score == 0:
         dbot_score = Common.DBotScore.NONE  # unknown
     elif ctix_score <= 30:
@@ -902,6 +1127,752 @@ def iter_dbot_score(
                 )
             )
     return final_data
+
+
+def _epoch_to_iso(epoch_ts: Any) -> str | None:
+    """Convert epoch timestamp to ISO format string."""
+    if epoch_ts and isinstance(epoch_ts, int | float) and epoch_ts > 0:
+        return datetime.fromtimestamp(epoch_ts, tz=UTC).strftime(FETCH_DATE_FORMAT)
+    return None
+
+
+def _normalize_timestamp_to_iso(ts: Any) -> str | None:
+    """Convert a timestamp value to ISO8601 format.
+
+    Handles epoch int/float, ISO strings, and other common date string formats.
+    Returns None if the value cannot be parsed.
+    """
+    if ts is None:
+        return None
+    # Epoch int/float
+    if isinstance(ts, int | float) and ts > 0:
+        return datetime.fromtimestamp(ts, tz=UTC).strftime(FETCH_DATE_FORMAT)
+    # Already a string – try to parse
+    if isinstance(ts, str) and ts.strip():
+        parsed = dateparser.parse(ts)
+        if parsed:
+            return parsed.strftime(FETCH_DATE_FORMAT)
+    return None
+
+
+def _normalize_cyware_indicator_type(raw_type: str | None) -> str:
+    """Normalize a Cyware indicator type string to Cortex XSOAR type."""
+    DEFAULT_INDICATOR = "Indicator"
+    if not raw_type:
+        return DEFAULT_INDICATOR
+    lookup = raw_type.strip().lower().replace(" ", "_")
+    return CYWARE_TYPE_NORMALIZATION.get(
+        lookup, INDICATOR_TYPE_MAP.get(raw_type, _STIX_SDO_TO_XSOAR_ENTITY_TYPE.get(raw_type, DEFAULT_INDICATOR))
+    )
+
+
+def confidence_to_dbot_score(confidence: Any) -> int:
+    """Map CTIX confidence score to DBotScore.
+
+    confidence >= 80 -> Malicious (3)
+    confidence 50-79 -> Suspicious (2)
+    confidence < 50  -> Unknown (1)
+    None / non-numeric -> None (0)
+    """
+    if confidence is None:
+        return Common.DBotScore.NONE
+    if isinstance(confidence, str):
+        try:
+            confidence = float(confidence)
+        except (ValueError, TypeError):
+            return Common.DBotScore.NONE
+    if confidence >= 80:
+        return Common.DBotScore.BAD
+    if confidence >= 50:
+        return Common.DBotScore.SUSPICIOUS
+    return Common.DBotScore.NONE
+
+
+def normalize_indicator_type(ctix_ioc_type: str | None) -> str:
+    """Normalize CTIX IOC type to XSOAR FeedIndicatorType."""
+    if not ctix_ioc_type:
+        return "Custom Indicator"
+    return INDICATOR_TYPE_MAP.get(ctix_ioc_type, "Custom Indicator")
+
+
+def map_report_severity(report: dict) -> int:
+    """Convert CTIX report severity/confidence to XSOAR severity (1-4)."""
+    severity_str = (report.get("risk_severity") or "").upper()
+    severity_map = {
+        "LOW": IncidentSeverity.LOW,
+        "MEDIUM": IncidentSeverity.MEDIUM,
+        "HIGH": IncidentSeverity.HIGH,
+        "CRITICAL": IncidentSeverity.CRITICAL,
+    }
+    if severity_str in severity_map:
+        return severity_map[severity_str]
+
+    confidence = report.get("confidence_score")
+    if isinstance(confidence, str):
+        try:
+            confidence = float(confidence)
+        except (ValueError, TypeError):
+            confidence = None
+    if isinstance(confidence, int | float):
+        if confidence >= 80:
+            return IncidentSeverity.HIGH
+        if confidence >= 50:
+            return IncidentSeverity.MEDIUM
+        if confidence >= 20:
+            return IncidentSeverity.LOW
+
+    return IncidentSeverity.UNKNOWN
+
+
+def map_report_to_incident(report: dict, relations: dict | None = None, source_reliability: str = "") -> dict:
+    """Map a CTIX report object to an XSOAR incident dict."""
+    report_id = report.get("id", "")
+    title = report.get("name")
+    created_ts = report.get("created")
+    occurred = ""
+    if isinstance(created_ts, int | float) and created_ts > 0:
+        occurred = datetime.fromtimestamp(created_ts, tz=UTC).strftime(FETCH_DATE_FORMAT)
+
+    tags = report.get("tags", [])
+    labels = []
+    if isinstance(tags, list):
+        for tag in tags:
+            if isinstance(tag, dict):
+                labels.append({"type": "Tag", "value": tag.get("name", "")})
+            elif isinstance(tag, str):
+                labels.append({"type": "Tag", "value": tag})
+
+    # Build XSOAR relationships from the fetched relations dict
+    relationships: list[dict] = []
+    if relations and isinstance(relations, dict):
+        relationships = _build_relationships(
+            indicator_value=title or report_id,
+            xsoar_type=ThreatIntel.ObjectsNames.REPORT,
+            relations=relations,
+            source_reliability=source_reliability,
+        )
+
+    # Build per-field CustomFields mapping
+    custom_fields: dict[str, Any] = {}
+    if report.get("custom_scores"):
+        custom_fields["ctixcustomscores"] = json.dumps(report["custom_scores"])
+    if report.get("custom_attributes"):
+        custom_attribute_data = {
+            "custom_attributes": report.get("custom_attributes", []),
+            "custom_scores": report.get("custom_scores", {}),
+        }
+        custom_fields["ctixcustomattributes"] = json.dumps(custom_attribute_data)
+    if relations:
+        custom_fields["ctixrelations"] = json.dumps(relations)
+
+    incident: dict[str, Any] = {
+        "name": f"CTIX Intel: {title}",
+        "occurred": occurred,
+        "severity": map_report_severity(report),
+        "type": "CTIX Intel",
+        "labels": labels,
+        "dbotMirrorId": report_id,
+        "rawJSON": json.dumps(report),
+        "CustomFields": custom_fields,
+    }
+    if relationships:
+        incident["relationships"] = relationships
+    return incident
+
+
+def _severity_to_dbot_score(severity: str | None) -> int:
+    """Translate Cyware severity string to XSOAR DBot score.
+
+    Mapping:
+        HIGH / CRITICAL -> 3 (Bad)
+        MEDIUM          -> 2 (Suspicious)
+        LOW / UNKNOWN   -> 1 (Good)
+        None / other    -> 0 (None)
+    """
+    if not severity:
+        return Common.DBotScore.NONE
+    severity_upper = severity.strip().upper()
+    if severity_upper in ("HIGH", "CRITICAL"):
+        return Common.DBotScore.BAD
+    if severity_upper == "MEDIUM":
+        return Common.DBotScore.SUSPICIOUS
+    if severity_upper in ("LOW", "UNKNOWN"):
+        return Common.DBotScore.GOOD
+    return Common.DBotScore.NONE
+
+
+def _extract_tag_names(tags: Any) -> list[str]:
+    """Extract a flat list of tag name strings from various tag formats."""
+    tag_names: list[str] = []
+    if not isinstance(tags, list):
+        return tag_names
+    for tag in tags:
+        if isinstance(tag, dict):
+            name = tag.get("name", "")
+            if name:
+                tag_names.append(name)
+        elif isinstance(tag, str) and tag:
+            tag_names.append(tag)
+    return tag_names
+
+
+def _extract_source_names(sources: Any) -> list[str]:
+    """Extract a flat list of source name strings."""
+    source_names: list[str] = []
+    if not isinstance(sources, list):
+        return source_names
+    for src in sources:
+        if isinstance(src, dict):
+            name = src.get("name", "")
+            if name:
+                source_names.append(name)
+        elif isinstance(src, str) and src:
+            source_names.append(src)
+    return source_names
+
+
+def _build_relationships(
+    indicator_value: str,
+    xsoar_type: str,
+    relations: Any,
+    source_reliability: str = "",
+) -> list[dict]:
+    """Build XSOAR relationship dicts from Cyware relations payload.
+
+    CTIX returns two relation formats depending on the source:
+
+    1. **Enrichment / dict format** — key is the relationship verb, value items are dicts:
+       ``{"related-to": [{"name": "evil.com", "type": "domain-name"}]}``
+
+    2. **Base / string format** — key is the STIX target object type, value items are names:
+       ``{"malware": ["Adaptix"], "report": ["Feed 6"], "threat-actor": ["APT29"]}``
+
+    In format (2) the key is NOT a valid XSOAR relationship name, so we always use
+    ``"related-to"`` as the relationship verb and derive entity_b_type from the key.
+
+    Args:
+        indicator_value: The indicator value (entity_a).
+        xsoar_type: The XSOAR type of entity_a.
+        relations: Relations dict as described above.
+        source_reliability: Source reliability string from integration params.
+
+    Returns:
+        List of relationship dicts produced by EntityRelationship.to_indicator().
+    """
+    relationships: list[dict] = []
+    if not isinstance(relations, dict):
+        return relationships
+    for rel_type, rel_list in relations.items():
+        if not isinstance(rel_list, list):
+            continue
+        for rel in rel_list:
+            if isinstance(rel, dict):
+                # Enrichment format: the dict key IS the relationship verb.
+                # Validate it; fall back to "related-to" for any unknown verbs.
+                rel_name = rel.get("name", "")
+                raw_target_type = rel.get("type", "")
+                rel_target_type = _STIX_SDO_TO_XSOAR_ENTITY_TYPE.get(
+                    raw_target_type,
+                    _normalize_cyware_indicator_type(raw_target_type),
+                )
+                relationship_verb = (
+                    rel_type
+                    if EntityRelationship.Relationships.is_valid(rel_type)
+                    else EntityRelationship.Relationships.RELATED_TO
+                )
+            else:
+                # Base format: the dict key is the STIX object TYPE of the target
+                # (e.g. "malware", "report"), NOT a relationship verb.
+                # Always use "related-to" and derive entity_b_type from the key.
+                rel_name = str(rel)
+                rel_target_type = _STIX_SDO_TO_XSOAR_ENTITY_TYPE.get(rel_type, "Indicator")
+                relationship_verb = EntityRelationship.Relationships.RELATED_TO
+            if not rel_name:
+                continue
+            relationships.append(
+                EntityRelationship(
+                    name=relationship_verb,
+                    entity_a=indicator_value,
+                    entity_a_type=xsoar_type,
+                    entity_b=rel_name,
+                    entity_b_type=rel_target_type,
+                    source_reliability=source_reliability,
+                    brand="Cyware Intel Exchange",
+                ).to_indicator()
+            )
+    return relationships
+
+
+def _hash_field_name(raw_type: str, attribute_field: str = "") -> str | None:
+    """Return the XSOAR hash field name ('md5', 'sha1', 'sha256', …) for a raw type string.
+
+    Checks ``_HASH_TYPE_TO_FIELD`` by exact key first, then by a normalised lowercase
+    key, then falls back to ``attribute_field`` (used by the saved-result-set schema
+    where ``indicator_type`` is a dict carrying the real attribute name).
+    Returns ``None`` when the type is not a file hash.
+    """
+    if raw_type in _HASH_TYPE_TO_FIELD:
+        return _HASH_TYPE_TO_FIELD[raw_type]
+    normalised = (raw_type or "").strip().lower().replace(" ", "_")
+    if normalised in _HASH_TYPE_TO_FIELD:
+        return _HASH_TYPE_TO_FIELD[normalised]
+    if attribute_field:
+        attr_norm = attribute_field.strip().lower().replace("-", "").replace("_", "")
+        return _HASH_TYPE_TO_FIELD.get(attr_norm)
+    return None
+
+
+def parse_cyware_indicator(cyware_data: dict, source_reliability: str = "", feed_tags: list = [], tlp_color: str = "") -> dict:
+    """Map a single Cyware/CTIX indicator dict to an XSOAR feed indicator object.
+
+    Strict mapping (per requirements):
+        first_seen / first seen  -> fields.firstseenbysource
+        last_seen / last seen    -> fields.lastseenbysource
+        tags / Tags              -> fields.tags  (list[str])
+        tlp / TLP / source_tlp   -> fields.trafficlightprotocol
+        confidence_score / ctix_score / Confidence Score -> fields.confidence (int)
+        severity                 -> fields.threatassessscore AND top-level score
+        custom_attributes        -> fields.cywarecustomattribute<name>
+        relations                -> relationships (via EntityRelationship.to_indicator())
+        rawJSON                  -> combined raw dict (base + enrichment)
+    """
+    indicator_value: str = cyware_data.get("name") or cyware_data.get("sdo_name", "")
+    raw_type = cyware_data.get("ioc_type") or cyware_data.get("indicator_type", "")
+    if isinstance(raw_type, dict):
+        raw_type = raw_type.get("type", "")
+    xsoar_type = _normalize_cyware_indicator_type(raw_type)
+    severity = cyware_data.get("severity")
+    dbot_score = (
+        _severity_to_dbot_score(severity)
+        if severity
+        else confidence_to_dbot_score(cyware_data.get("confidence_score") or cyware_data.get("ctix_score"))
+    )
+    confidence = cyware_data.get("confidence_score") or cyware_data.get("ctix_score")
+    if isinstance(confidence, str):
+        try:
+            confidence = float(confidence)
+        except (ValueError, TypeError):
+            confidence = None
+    tag_names = _extract_tag_names(cyware_data.get("tags"))
+    if feed_tags:
+        tag_names.extend(feed_tags)
+    custom_fields = {}
+    source_names = _extract_source_names(cyware_data.get("sources", []))
+    relationships = _build_relationships(indicator_value, xsoar_type, cyware_data.get("relations", {}), source_reliability)
+    custom_attributes = {
+        "custom_attributes": cyware_data.get("custom_attributes", {}),
+        "custom_scores": cyware_data.get("custom_scores", {}),
+    }
+    if custom_attributes["custom_attributes"] or custom_attributes["custom_scores"]:
+        custom_fields = {"ctixcustomattributes": json.dumps(custom_attributes)}
+    # _normalize_cyware_indicator_type already set xsoar_type to File for hash types;
+    # _hash_field_name just tells us which specific field (md5/sha1/sha256) to populate.
+    hash_field = _hash_field_name(raw_type)
+    hash_fields: dict[str, str] = {hash_field: indicator_value} if hash_field else {}
+
+    fields: dict[str, Any] = assign_params(
+        firstseenbysource=_normalize_timestamp_to_iso(cyware_data.get("ctix_created")),
+        lastseenbysource=_normalize_timestamp_to_iso(cyware_data.get("ctix_modified")),
+        trafficlightprotocol=tlp_color
+        or cyware_data.get("source_tlp")
+        or cyware_data.get("ctix_tlp")
+        or cyware_data.get("analyst_tlp"),
+        tags=tag_names if tag_names else None,
+        confidence=confidence,
+        threatassessscore=cyware_data.get("severity"),
+        description=cyware_data.get("description") or None,
+        reportedby=", ".join(source_names) if source_names else None,
+        ctixid=cyware_data.get("id") or None,
+        isfalsepositive=cyware_data.get("is_false_positive"),
+        isdeprecated=cyware_data.get("is_deprecated"),
+        isreviewed=cyware_data.get("is_reviewed"),
+        iswhitelisted=cyware_data.get("is_whitelisted"),
+    )
+    if hash_fields:
+        fields.update(hash_fields)
+    if cyware_data.get("custom_scores"):
+        custom_fields["ctixcustomscores"] = json.dumps(cyware_data["custom_scores"])
+
+    # --- enrichment extra data ---
+    enrich_objects = cyware_data.get("enrichment_data", [])
+    if isinstance(enrich_objects, list) and enrich_objects:
+        custom_fields["ctixenrichment"] = json.dumps(enrich_objects)
+    if custom_fields:
+        fields.update(custom_fields)
+    # --- build indicator object ---
+    # rawJSON must always be a plain dict. XSOAR's Go runtime expects
+    # map[string]interface{} and will raise a ValueError if it receives a
+    # JSON-encoded string instead (e.g. if cyware_data were somehow a str).
+    raw_json: dict = cyware_data if isinstance(cyware_data, dict) else {}
+    xsoar_indicator: dict[str, Any] = assign_params(
+        value=indicator_value,
+        type=xsoar_type,
+        score=dbot_score,
+        rawJSON=raw_json,
+        fields=fields,
+        relationships=relationships if relationships else None,
+    )
+    return xsoar_indicator
+
+
+def map_ctix_indicator_to_xsoar(indicator: dict, reliability: str, enrichment_data: dict | None = None) -> dict:
+    """Backward-compatible wrapper around parse_cyware_indicator.
+
+    Merges enrichment data into the indicator dict before parsing and threads
+    the source reliability through to EntityRelationship construction.
+    """
+    if enrichment_data:
+        merged = dict(indicator)
+        # Merge enrichment fields that are missing in base data
+        for key in (
+            "description",
+            "relations",
+            "enrichment_data",
+            "custom_attributes",
+            "confidence_score",
+            "tlp",
+            "first_seen",
+            "last_seen",
+        ):
+            if enrichment_data.get(key) and not merged.get(key):
+                merged[key] = enrichment_data[key]
+        return parse_cyware_indicator(merged, source_reliability=reliability)
+    return parse_cyware_indicator(indicator, source_reliability=reliability)
+
+
+""" FETCH FUNCTIONS """
+
+
+def fetch_incidents(client: Client, params: dict, last_run: dict) -> tuple[dict, list]:
+    """Fetch CTIX reports as XSOAR incidents.
+
+    :param Client client: CTIX API client
+    :param dict params: Integration instance parameters
+    :param dict last_run: Previous run state from demisto.getLastRun()
+    :return tuple: (next_run dict, list of incident dicts)
+    """
+    max_results = arg_to_number(params.get("max_fetch")) or DEFAULT_INCIDENTS_MAX_RESULTS
+    first_fetch_raw = (arg_to_number(params.get("first_fetch", "")) or 0) * 60
+    source_reliability = params.get("integrationReliability", "")
+
+    last_fetch_time = last_run.get("last_fetch_time")
+    last_fetch_ids: list = last_run.get("last_fetch_ids", [])
+
+    if not last_fetch_time:
+        if first_fetch_raw:
+            last_fetch_time = int(datetime.now(UTC).timestamp()) - first_fetch_raw
+        if not last_fetch_time:
+            last_fetch_time = int((datetime.now(UTC) - timedelta(days=3)).timestamp())
+
+    demisto.debug(f"CTIX fetch_incidents: last_fetch_time={last_fetch_time}, last_fetch_ids count={len(last_fetch_ids)}")
+
+    incidents: list[dict] = []
+    total_fetched = 0
+    latest_modified = last_fetch_time
+    new_last_ids: list[str] = []
+    custom_query = (params.get("incident_fetch_query") or "").strip() or 'type = "report"'
+    final_query = f'{custom_query} AND modified >= "{last_fetch_time}"'
+    report_query = final_query
+    demisto.debug(f"CTIX fetch_incidents: using CQL query: {report_query}")
+
+    page_size = min(max_results, PAGE_SIZE_THREAT_DATA)
+    report_payload = {"query": report_query}
+
+    # Initial request
+    try:
+        response = client.get_threat_data(page=1, page_size=page_size, query=report_query)
+    except Exception as e:
+        demisto.error(f"CTIX fetch_incidents: Error fetching reports: {e}")
+        response = None
+
+    while response and total_fetched < max_results:
+        data = response.get("data", {}) if response else {}
+        results = data.get("results", [])
+
+        if not results:
+            demisto.debug("CTIX fetch_incidents: No more results")
+            break
+
+        for report in results:
+            report_id = report.get("id", "")
+
+            # Deduplication: skip reports already seen at the boundary timestamp
+            if report_id in last_fetch_ids:
+                demisto.debug(f"CTIX fetch_incidents: Skipping duplicate report {report_id}")
+                continue
+
+            # Fetch relations for this report via the get-relations-of-threat-data endpoint
+            relations_data: dict = {}
+            if report_id:
+                sdo_type = report.get("type")
+                try:
+                    relations_resp = client.get_indicator_relations(sdo_type, report_id, {"page": 1, "page_size": 100})
+                    if relations_resp:
+                        relations_data = relations_resp.get("data", {}).get("results", {}) or {}
+                except Exception as e:
+                    demisto.debug(f"CTIX fetch_incidents: Could not fetch relations for report {report_id}: {e}")
+
+            incident = map_report_to_incident(report, relations=relations_data, source_reliability=source_reliability)
+            incidents.append(incident)
+            total_fetched += 1
+
+            # Only record IDs for reports that were actually processed/added
+            if report_id:
+                new_last_ids.append(report_id)
+
+            if total_fetched >= max_results:
+                break
+
+        # Follow the next URL for pagination
+        next_url = f"ingestion/{data.get('next')}"
+        if not data.get("next") or total_fetched >= max_results:
+            break
+
+        try:
+            response = client.follow_next_page(next_url, payload=report_payload, method="POST")
+        except Exception as e:
+            demisto.error(f"CTIX fetch_incidents: Error following next page: {e}")
+            break
+
+    demisto.debug(f"CTIX fetch_incidents: Fetched {len(incidents)} incidents, latest_modified={latest_modified}")
+
+    # Use the fetch start time as the pagination high-water-mark so pagination
+    # is based on when the fetch ran rather than relying solely on object modified timestamps.
+    fetch_start_time = int(datetime.now(UTC).timestamp())
+
+    next_run = {
+        "last_fetch_time": fetch_start_time,
+        "last_fetch_ids": new_last_ids,
+        # Preserve indicator state if running in same instance
+        "last_indicator_time": last_run.get("last_indicator_time"),
+    }
+    return next_run, incidents
+
+
+def _collect_saved_result_set_indicators(
+    client: Client,
+    max_results: int,
+    label_name: str | None,
+    version: str | None,
+    from_timestamp: int | None,
+    to_timestamp: int | None,
+) -> list[dict]:
+    """Paginate through the saved result set endpoint and collect raw indicator dicts.
+
+    Uses the existing ``client.saved_result_set()`` method.
+    All object types returned by the API are collected; type normalisation into the
+    correct XSOAR indicator type is handled downstream by ``parse_cyware_indicator``.
+    Deduplication is intentionally delegated to ``demisto.createIndicators`` at submission time.
+    """
+    all_indicators: list[dict] = []
+    page_size = min(max_results, PAGE_SIZE_SAVED_RESULT_SET)
+
+    # Initial request
+    try:
+        response = client.saved_result_set(
+            page=1,
+            page_size=page_size,
+            label_name=label_name,
+            version=version,
+            from_timestamp=from_timestamp,
+            to_timestamp=to_timestamp,
+        )
+    except Exception as e:
+        demisto.error(f"CTIX fetch_indicators: Error at initial request: {e}")
+        return all_indicators
+
+    while response and len(all_indicators) < max_results:
+        data = response.get("data", {}) if response else {}
+        result_sets = data.get("results", [])
+
+        if not result_sets:
+            demisto.debug("CTIX fetch_indicators: No more results")
+            break
+
+        for result_set in result_sets:
+            indicators_data = result_set.get("data", [])
+            if not indicators_data:
+                continue
+            for ind in indicators_data:
+                all_indicators.append(ind)
+                if len(all_indicators) >= max_results:
+                    break
+            if len(all_indicators) >= max_results:
+                break
+
+        # Follow the next URL for pagination
+        next_url = data.get("next")
+        if not next_url or len(all_indicators) >= max_results:
+            break
+
+        try:
+            response = client.follow_next_page(next_url, method="GET")
+        except Exception as e:
+            demisto.error(f"CTIX fetch_indicators: Error following next page: {e}")
+            break
+
+    return all_indicators
+
+
+def _merge_enrichment_into_indicators(
+    base_indicators: list[dict],
+    enrichment_map: dict[str, dict],
+) -> list[dict]:
+    """Merge enrichment data (custom_attributes, relations, etc.) into base indicator dicts.
+
+    Returns a new list of merged dicts; original dicts are not mutated.
+    """
+    merged: list[dict] = []
+    for ind in base_indicators:
+        ind_value = ind.get("name") or ind.get("sdo_name", "")
+        enrich = enrichment_map.get(ind_value)
+        if enrich:
+            combined = dict(ind)
+            # Merge keys from enrichment that add new information
+            # Fill missing fields from enrichment; relations/custom_attributes handled below
+            for key in (
+                "description",
+                "enrichment_data",
+                "confidence_score",
+                "tlp",
+                "first_seen",
+                "last_seen",
+                "country",
+            ):
+                if enrich.get(key) and not combined.get(key):
+                    combined[key] = enrich[key]
+            # Always prefer enrichment relations/custom_attributes when present
+            if enrich.get("relations"):
+                combined["relations"] = enrich["relations"]
+            if enrich.get("custom_attributes"):
+                combined["custom_attributes"] = enrich["custom_attributes"]
+            merged.append(combined)
+        else:
+            merged.append(ind)
+    return merged
+
+
+def fetch_indicators(client: Client, params: dict, last_run: dict) -> tuple[dict, list]:
+    """Fetch indicators from CTIX saved result sets.
+
+    Flow:
+        1. Collect base IOC data via the existing ``client.saved_result_set()`` method.
+        2. If ``retrieve_enriched_data`` (if_enrich) is True, enrich via bulk IOC lookup.
+        3. Merge enrichment data back into the base IOC dicts.
+        4. Map each merged dict to an XSOAR indicator via ``parse_cyware_indicator``.
+        5. Return (next_run, indicators). Caller is responsible for ``demisto.createIndicators``.
+
+    :param Client client: CTIX API client
+    :param dict params: Integration instance parameters
+    :param dict last_run: Previous run state from demisto.getLastRun()
+    :return tuple: (next_run dict, list of XSOAR indicator dicts)
+    """
+    max_results = arg_to_number(params.get("max_indicator_fetch")) or DEFAULT_INDICATORS_MAX_RESULTS
+    first_fetch_raw = (arg_to_number(params.get("first_fetch", "")) or 0) * 60
+    label_name = params.get("saved_result_set_label")
+    version = params.get("saved_result_set_version")
+    if_enrich: bool = argToBoolean(params.get("retrieve_enriched_data", False))
+    feed_tags = argToList(params.get("feedTags"))
+    tlp_color: str = params.get("tlp_color", "") or ""
+
+    last_indicator_time = last_run.get("last_indicator_time")
+
+    if not last_indicator_time:
+        if first_fetch_raw:
+            last_indicator_time = int(datetime.now(UTC).timestamp()) - first_fetch_raw
+        if not last_indicator_time:
+            last_indicator_time = int((datetime.now(UTC) - timedelta(days=3)).timestamp())
+
+    demisto.debug(f"CTIX fetch_indicators: last_indicator_time={last_indicator_time}")
+
+    current_time = int(datetime.now(UTC).timestamp())
+
+    # Step 1: Collect base IOC data using existing saved_result_set action
+    all_indicators_raw = _collect_saved_result_set_indicators(
+        client=client,
+        max_results=max_results,
+        label_name=label_name,
+        version=version,
+        from_timestamp=last_indicator_time,
+        to_timestamp=current_time,
+    )
+    demisto.debug(f"CTIX fetch_indicators: Collected {len(all_indicators_raw)} raw indicators")
+
+    # Step 2 & 3: Optionally enrich and merge
+    if if_enrich and all_indicators_raw:
+        enrichment_map = enrich_indicators_bulk(client, all_indicators_raw)
+        if enrichment_map:
+            all_indicators_raw = _merge_enrichment_into_indicators(all_indicators_raw, enrichment_map)
+            demisto.debug(f"CTIX fetch_indicators: Enriched {len(enrichment_map)} indicators")
+
+    # Step 4: Map to XSOAR indicator format
+    xsoar_indicators: list[dict] = []
+    source_reliability = params.get("feedReliability", "")
+    for ind in all_indicators_raw:
+        xsoar_ind = parse_cyware_indicator(ind, source_reliability=source_reliability, feed_tags=feed_tags, tlp_color=tlp_color)
+        if xsoar_ind.get("value"):
+            xsoar_indicators.append(xsoar_ind)
+
+    demisto.debug(f"CTIX fetch_indicators: Mapped {len(xsoar_indicators)} indicators")
+
+    next_run = dict(last_run)
+    next_run["last_indicator_time"] = current_time
+    return next_run, xsoar_indicators
+
+
+def enrich_indicators_bulk(client: Client, indicators: list[dict]) -> dict[str, dict]:
+    """Enrich indicators via bulk IOC lookup advanced.
+
+    Groups indicators by SDO type, batches up to ENRICHMENT_BATCH_SIZE per request,
+    and returns a mapping of indicator_value -> enrichment_data.
+
+    :param Client client: CTIX API client
+    :param list indicators: List of raw indicator dicts
+    :return dict: Mapping of indicator value to enrichment response
+    """
+    enrichment_map: dict[str, dict] = {}
+
+    # Group by SDO object type
+    type_groups: dict[str, list[str]] = {}
+    for ind in indicators:
+        ind_value = ind.get("name") or ind.get("sdo_name", "")
+        sdo_type = ind.get("sdo_type") or ind.get("type", "indicator")
+        if ind_value:
+            type_groups.setdefault(sdo_type, []).append(ind_value)
+
+    for object_type, values in type_groups.items():
+        # Batch into chunks of ENRICHMENT_BATCH_SIZE (100)
+        for i in range(0, len(values), ENRICHMENT_BATCH_SIZE):
+            batch_values = values[i : i + ENRICHMENT_BATCH_SIZE]
+            try:
+                response = client.bulk_ioc_lookup_advanced(
+                    object_type=object_type,
+                    values=batch_values,
+                    object_ids=[],
+                    enrichment_data=True,
+                    relation_data=True,
+                )
+                if not response:
+                    continue
+
+                data = response.get("data")
+                if not data:
+                    continue
+                if isinstance(data, dict):
+                    enriched_list = data.get("results", [])
+                else:
+                    continue
+
+                for enriched in enriched_list:
+                    name = enriched.get("name", "")
+                    if name:
+                        enrichment_map[name] = enriched
+            except Exception as e:
+                demisto.debug(f"CTIX enrich_indicators_bulk: Partial failure for batch of {object_type}: {e}")
+                continue
+
+    demisto.debug(f"CTIX enrich_indicators_bulk: Enriched {len(enrichment_map)} indicators")
+    return enrichment_map
 
 
 """ COMMAND FUNCTIONS """
@@ -1110,7 +2081,8 @@ def get_saved_searches_command(client: Client, args=dict[str, Any]) -> CommandRe
     page_size = args["page_size"]
     page_size = check_for_empty_variable(page_size, 10)
     response = client.get_saved_searches(page, page_size)
-    data_list = response.get("data", {}).get("results", [])
+    response_data = response.get("data", {})
+    data_list = response_data.get("results", [])
     results = list(data_list)
     results = no_result_found(results)
     if isinstance(results, CommandResults):
@@ -1120,8 +2092,8 @@ def get_saved_searches_command(client: Client, args=dict[str, Any]) -> CommandRe
             readable_output=tableToMarkdown("Saved Search", results, removeNull=True),
             outputs_prefix="CTIX.SavedSearch",
             outputs_key_field="id",
-            outputs=results,
-            raw_response=results,
+            outputs=response_data,
+            raw_response=response_data,
         )
         return result
 
@@ -1135,7 +2107,8 @@ def get_server_collections_command(client: Client, args=dict[str, Any]) -> Comma
     page_size = args["page_size"]
     page_size = check_for_empty_variable(page_size, 10)
     response = client.get_server_collections(page, page_size)
-    data_list = response.get("data", {}).get("results", [])
+    response_data = response.get("data", {})
+    data_list = response_data.get("results", [])
     results = list(data_list)
     results = no_result_found(results)
     if isinstance(results, CommandResults):
@@ -1145,8 +2118,8 @@ def get_server_collections_command(client: Client, args=dict[str, Any]) -> Comma
             readable_output=tableToMarkdown("Server Collection", results, removeNull=True),
             outputs_prefix="CTIX.ServerCollection",
             outputs_key_field="id",
-            outputs=results,
-            raw_response=results,
+            outputs=response_data,
+            raw_response=response_data,
         )
         return result
 
@@ -1167,7 +2140,8 @@ def get_actions_command(client: Client, args=dict[str, Any]) -> CommandResults:
     if object_type:
         params["object_type"] = object_type
     response = client.get_actions(page, page_size, params)
-    data_list = response.get("data", {}).get("results", [])
+    response_data = response.get("data", {})
+    data_list = response_data.get("results", [])
     results = list(data_list)
     results = no_result_found(results)
     if isinstance(results, CommandResults):
@@ -1177,8 +2151,8 @@ def get_actions_command(client: Client, args=dict[str, Any]) -> CommandResults:
             readable_output=tableToMarkdown("Actions", results, removeNull=True),
             outputs_prefix="CTIX.Action",
             outputs_key_field="id",
-            outputs=results,
-            raw_response=results,
+            outputs=response_data,
+            raw_response=response_data,
         )
         return result
 
@@ -1331,11 +2305,9 @@ def saved_result_set_command(client: Client, args: dict[str, Any]) -> CommandRes
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
     """
-    page = args["page"]
-    page = check_for_empty_variable(page, 1)
-    page_size = args["page_size"]
+    page = int(check_for_empty_variable(args["page"], 1))
+    page_size = int(check_for_empty_variable(args["page_size"], 10))
     version = args.get("version")
-    page_size = check_for_empty_variable(page_size, 10)
     label_name = args.get("label_name")
     response = client.saved_result_set(page, page_size, label_name, version)
     data = response.get("data", {})
@@ -1349,7 +2321,7 @@ def saved_result_set_command(client: Client, args: dict[str, Any]) -> CommandRes
             readable_output=tableToMarkdown("Saved Result Set", data_list, removeNull=True),
             outputs_prefix="CTIX.SavedResultSet",
             outputs_key_field="id",
-            outputs=data_list,
+            outputs=data,
             raw_response=data,
         )
         return results
@@ -1400,7 +2372,8 @@ def search_for_tag_command(client: Client, args: dict[str, Any]) -> CommandResul
     params = {"page": page, "page_size": page_size, "q": q}
 
     response = client.search_for_tag(params)
-    data = response.get("data", {}).get("results", [])
+    response_data = response.get("data", {})
+    data = response_data.get("results", [])
     data = no_result_found(data)
     if isinstance(data, CommandResults):
         return data
@@ -1408,8 +2381,8 @@ def search_for_tag_command(client: Client, args: dict[str, Any]) -> CommandResul
         results = CommandResults(
             readable_output=tableToMarkdown("Search for Tag", data, removeNull=True),
             outputs_prefix="CTIX.SearchTag",
-            outputs=data,
-            raw_response=data,
+            outputs=response_data,
+            raw_response=response_data,
         )
 
         return results
@@ -1488,7 +2461,8 @@ def get_indicator_relations_command(client: Client, args: dict[str, Any]) -> Com
     object_type = args["object_type"]
     params = {"page": page, "page_size": page_size}
     response = client.get_indicator_relations(object_type, object_id, params)
-    data = response.get("data", {}).get("results", {})
+    response_data = response.get("data", {})
+    data = response_data.get("results", {})
     data = no_result_found(data)
     if isinstance(data, CommandResults):
         return data
@@ -1496,8 +2470,8 @@ def get_indicator_relations_command(client: Client, args: dict[str, Any]) -> Com
         results = CommandResults(
             readable_output=tableToMarkdown("Get Object Relations", data, removeNull=True),
             outputs_prefix="CTIX.IndicatorRelations",
-            outputs=data,
-            raw_response=data,
+            outputs=response_data,
+            raw_response=response_data,
         )
 
         return results
@@ -1523,7 +2497,8 @@ def get_indicator_observations_command(client: Client, args: dict[str, Any]) -> 
     }
 
     response = client.get_indicator_observations(params)
-    data = response.get("data", {}).get("results", {})
+    response_data = response.get("data", {})
+    data = response_data.get("results", {})
     data = no_result_found(data)
     if isinstance(data, CommandResults):
         return data
@@ -1531,8 +2506,8 @@ def get_indicator_observations_command(client: Client, args: dict[str, Any]) -> 
         results = CommandResults(
             readable_output=tableToMarkdown("Get Indicator Observations", data, removeNull=True),
             outputs_prefix="CTIX.IndicatorObservations",
-            outputs=data,
-            raw_response=data,
+            outputs=response_data,
+            raw_response=response_data,
         )
 
         return results
@@ -1561,7 +2536,8 @@ def get_conversion_feed_source_command(client: Client, args: dict[str, Any]) -> 
         params.update({"q": q})
 
     response = client.get_conversion_feed_source(params)
-    data = response.get("data", []).get("results", {})
+    response_data = response.get("data", {})
+    data = response_data.get("results", {})
     data = no_result_found(data)
     if isinstance(data, CommandResults):
         return data
@@ -1569,8 +2545,8 @@ def get_conversion_feed_source_command(client: Client, args: dict[str, Any]) -> 
         results = CommandResults(
             readable_output=tableToMarkdown("Conversion Feed Source", data, removeNull=True),
             outputs_prefix="CTIX.ConversionFeedSource",
-            outputs=data,
-            raw_response=data,
+            outputs=response_data,
+            raw_response=response_data,
         )
 
         return results
@@ -1665,6 +2641,46 @@ def domain(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     return get_lookup_threat_data_command(client, args)
 
 
+def bulk_ioc_lookup_advanced_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Bulk IOC Lookup Advanced command
+    """
+    object_type: str = args.get("object_type") or ""
+    if not object_type:
+        return_error("Error: 'object_type' argument is required.")
+        return CommandResults(readable_output="No results were found")
+    values = argToList(args.get("values"))
+    object_ids = argToList(args.get("object_ids"))
+    enrichment_data: bool = args.get("enrichment_data", "").lower() == "true"
+    relation_data: bool = args.get("relation_data", "").lower() == "true"
+    enrichment_tools: str | None = args.get("enrichment_tools") or None
+    fields: str | None = args.get("fields") or None
+
+    response = client.bulk_ioc_lookup_advanced(
+        object_type=object_type,
+        values=values,
+        object_ids=object_ids,
+        enrichment_data=enrichment_data,
+        relation_data=relation_data,
+        enrichment_tools=enrichment_tools,
+        fields=fields,
+    )
+
+    response_data = response.get("data")
+    result = response_data.get("results", []) if isinstance(response_data, dict) else []
+    checked = no_result_found(result)
+
+    if isinstance(checked, CommandResults):
+        return checked
+    else:
+        return CommandResults(
+            readable_output=tableToMarkdown("Bulk IOC Lookup (Advanced)", result, removeNull=True),
+            outputs_prefix="CTIX.BulkIOCLookupAdvanced",
+            outputs=response_data,
+            raw_response=response,
+        )
+
+
 def url(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     args["object_names"] = args["url"]
     args["ioc_type"] = ["url"]
@@ -1711,7 +2727,8 @@ def get_all_notes(client: Client, args: dict[str, Any]) -> CommandResults:
 
     client_url = client.base_url + "ingestion/notes/"
     response = client.get_http_request(client_url, **params)
-    notes_list = response.get("data", {}).get("results", [])
+    response_data = response.get("data", {})
+    notes_list = response_data.get("results", [])
     notes_list = no_result_found(notes_list)
 
     if isinstance(notes_list, CommandResults):
@@ -1721,7 +2738,8 @@ def get_all_notes(client: Client, args: dict[str, Any]) -> CommandResults:
             readable_output=tableToMarkdown("Note Data", notes_list, removeNull=True),
             outputs_prefix="CTIX.Note",
             outputs_key_field="id",
-            outputs=notes_list,
+            outputs=response_data,
+            raw_response=response_data,
         )
 
 
@@ -1997,7 +3015,7 @@ def main() -> None:
     access_id = params.get("access_id")
     secret_key = params.get("secret_key")
     verify = not params.get("insecure", False)
-    timeout = arg_to_number(params.get("timeout")) or 15
+    timeout = arg_to_number(params.get("timeout")) or 180
     reliability = params.get("integrationReliability", DBotScoreReliability.C)
 
     if DBotScoreReliability.is_valid_type(reliability):
@@ -2014,50 +3032,70 @@ def main() -> None:
             base_url=base_url, access_id=access_id, secret_key=secret_key, verify=verify, proxies=proxies, timeout=timeout
         )
 
-        CMD_TO_FUNC = {
-            "test-module": (test_module, (client,)),
-            "ctix-create-tag": (create_tag_command, (client, args)),
-            "ctix-get-tags": (get_tags_command, (client, args)),
-            "ctix-disable-or-enable-tags": (disable_or_enable_tags_command, (client, args)),
-            "ctix-allowed-iocs": (whitelist_iocs_command, (client, args)),
-            "ctix-get-allowed-iocs": (get_whitelist_iocs_command, (client, args)),
-            "ctix-remove-allowed-ioc": (remove_whitelisted_ioc_command, (client, args)),
-            "ctix-get-threat-data": (get_threat_data_command, (client, args)),
-            "ctix-get-saved-searches": (get_saved_searches_command, (client, args)),
-            "ctix-get-server-collections": (get_server_collections_command, (client, args)),
-            "ctix-get-actions": (get_actions_command, (client, args)),
-            "ctix-ioc-manual-review": (add_ioc_manual_review_command, (client, args)),
-            "ctix-deprecate-ioc": (deprecate_ioc_command, (client, args)),
-            "ctix-add-analyst-tlp": (add_analyst_tlp_command, (client, args)),
-            "ctix-add-analyst-score": (add_analyst_score_command, (client, args)),
-            "ctix-saved-result-set": (saved_result_set_command, (client, args)),
-            "ctix-add-tag-indicator": (tag_indicator_updation_command, (client, args, "add_tag_indicator")),
-            "ctix-remove-tag-from-indicator": (tag_indicator_updation_command, (client, args, "remove_tag_from_indicator")),
-            "ctix-search-for-tag": (search_for_tag_command, (client, args)),
-            "ctix-get-indicator-details": (get_indicator_details_command, (client, args)),
-            "ctix-get-indicator-tags": (get_indicator_tags_command, (client, args)),
-            "ctix-get-object-relations": (get_indicator_relations_command, (client, args)),
-            "ctix-get-indicator-observations": (get_indicator_observations_command, (client, args)),
-            "ctix-get-conversion-feed-source": (get_conversion_feed_source_command, (client, args)),
-            "ctix-get-lookup-threat-data": (get_lookup_threat_data_command, (client, args)),
-            "ctix-get-create-threat-data": (get_create_threat_data_command, (client, args)),
-            "ctix-add-indicator-as-false-positive": (add_indicator_as_false_positive_command, (client, args)),
-            "domain": (domain, (client, args)),
-            "url": (url, (client, args)),
-            "ip": (ip, (client, args)),
-            "file": (file, (client, args)),
-            "cve": (cve_command, (client, args)),
-            "ctix-get-all-notes": (get_all_notes, (client, args)),
-            "ctix-get-note-details": (get_note_details, (client, args)),
-            "ctix-create-note": (create_note, (client, args)),
-            "ctix-update-note": (update_note, (client, args)),
-            "ctix-delete-note": (delete_note, (client, args)),
-            "ctix-make-request": (make_request, (client, args)),
-            "ctix-get-vulnerability-data": (cve_command, (client, args)),
-        }
+        command = demisto.command()
 
-        func, params = CMD_TO_FUNC[demisto.command()]
-        return_results(cast(Callable, func)(*params))
+        if command == "test-module":
+            test_module(client)
+
+        elif command == "fetch-incidents":
+            last_run = demisto.getLastRun()
+            next_run, incidents = fetch_incidents(client, params, last_run)
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
+
+        elif command == "fetch-indicators":
+            last_run = demisto.getLastRun()
+            next_run, indicators = fetch_indicators(client, params, last_run)
+            # Submit indicators in batches (XSOAR best practice)
+            for iter_ in batch(indicators, batch_size=2000):
+                demisto.createIndicators(iter_)
+            demisto.setLastRun(next_run)
+
+        else:
+            CMD_TO_FUNC = {
+                "ctix-create-tag": (create_tag_command, (client, args)),
+                "ctix-get-tags": (get_tags_command, (client, args)),
+                "ctix-disable-or-enable-tags": (disable_or_enable_tags_command, (client, args)),
+                "ctix-allowed-iocs": (whitelist_iocs_command, (client, args)),
+                "ctix-get-allowed-iocs": (get_whitelist_iocs_command, (client, args)),
+                "ctix-remove-allowed-ioc": (remove_whitelisted_ioc_command, (client, args)),
+                "ctix-get-threat-data": (get_threat_data_command, (client, args)),
+                "ctix-get-saved-searches": (get_saved_searches_command, (client, args)),
+                "ctix-get-server-collections": (get_server_collections_command, (client, args)),
+                "ctix-get-actions": (get_actions_command, (client, args)),
+                "ctix-ioc-manual-review": (add_ioc_manual_review_command, (client, args)),
+                "ctix-deprecate-ioc": (deprecate_ioc_command, (client, args)),
+                "ctix-add-analyst-tlp": (add_analyst_tlp_command, (client, args)),
+                "ctix-add-analyst-score": (add_analyst_score_command, (client, args)),
+                "ctix-saved-result-set": (saved_result_set_command, (client, args)),
+                "ctix-add-tag-indicator": (tag_indicator_updation_command, (client, args, "add_tag_indicator")),
+                "ctix-remove-tag-from-indicator": (tag_indicator_updation_command, (client, args, "remove_tag_from_indicator")),
+                "ctix-search-for-tag": (search_for_tag_command, (client, args)),
+                "ctix-get-indicator-details": (get_indicator_details_command, (client, args)),
+                "ctix-get-indicator-tags": (get_indicator_tags_command, (client, args)),
+                "ctix-get-object-relations": (get_indicator_relations_command, (client, args)),
+                "ctix-get-indicator-observations": (get_indicator_observations_command, (client, args)),
+                "ctix-get-conversion-feed-source": (get_conversion_feed_source_command, (client, args)),
+                "ctix-get-lookup-threat-data": (get_lookup_threat_data_command, (client, args)),
+                "ctix-bulk-ioc-lookup-advanced": (bulk_ioc_lookup_advanced_command, (client, args)),
+                "ctix-get-create-threat-data": (get_create_threat_data_command, (client, args)),
+                "ctix-add-indicator-as-false-positive": (add_indicator_as_false_positive_command, (client, args)),
+                "domain": (domain, (client, args)),
+                "url": (url, (client, args)),
+                "ip": (ip, (client, args)),
+                "file": (file, (client, args)),
+                "cve": (cve_command, (client, args)),
+                "ctix-get-all-notes": (get_all_notes, (client, args)),
+                "ctix-get-note-details": (get_note_details, (client, args)),
+                "ctix-create-note": (create_note, (client, args)),
+                "ctix-update-note": (update_note, (client, args)),
+                "ctix-delete-note": (delete_note, (client, args)),
+                "ctix-make-request": (make_request, (client, args)),
+                "ctix-get-vulnerability-data": (cve_command, (client, args)),
+            }
+
+            func, cmd_args = CMD_TO_FUNC[command]
+            return_results(cast(Callable, func)(*cmd_args))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
