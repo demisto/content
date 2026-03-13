@@ -1,0 +1,146 @@
+category: Vulnerability Management
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: NodeZero
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  defaultvalue: https://api.horizon3ai.com
+  type: 0
+  required: true
+  additionalinfo: The NodeZero API server URL.
+  section: Connect
+- display: API Key
+  displaypassword: API Key
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+  additionalinfo: The API Key required to authenticate to the NodeZero service.
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  defaultvalue: 'false'
+  required: false
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  defaultvalue: 'false'
+  required: false
+  section: Connect
+  advanced: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  defaultvalue: 'false'
+  required: false
+  section: Collect
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+  section: Collect
+- display: Maximum number of weaknesses to fetch
+  name: max_fetch
+  type: 0
+  defaultvalue: '200'
+  required: false
+  additionalinfo: Maximum number of incidents to fetch per run.
+  section: Collect
+- display: First fetch time
+  name: first_fetch
+  type: 0
+  defaultvalue: 7 days
+  required: false
+  additionalinfo: How far back to fetch on first run (e.g., "7 days", "3 days").
+  section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  defaultvalue: '10080'
+  required: false
+  section: Collect
+description: Integrates with the NodeZero autonomous penetration testing platform to fetch weaknesses discovered during pentest operations. Automatically ingests HIGH and CRITICAL severity weaknesses as incidents for tracking and remediation.
+display: NodeZero
+name: NodeZero
+script:
+  commands:
+  - name: nodezero-get-weaknesses
+    description: Retrieves HIGH and CRITICAL weaknesses discovered by NodeZero pentests.
+    arguments:
+    - name: since_date
+      description: 'Fetch weaknesses created on or after this date (ISO 8601, e.g. 2024-01-01T00:00:00). Defaults to 7 days ago.'
+      required: false
+    - name: limit
+      description: Maximum number of weaknesses to return (1–1000).
+      required: false
+      defaultValue: '50'
+    outputs:
+    - contextPath: NodeZero.Weakness.uuid
+      description: Unique identifier of the weakness.
+      type: String
+    - contextPath: NodeZero.Weakness.created_at
+      description: Timestamp when the weakness was first discovered.
+      type: Date
+    - contextPath: NodeZero.Weakness.vuln_id
+      description: Vulnerability identifier (e.g. CVE ID).
+      type: String
+    - contextPath: NodeZero.Weakness.vuln_name
+      description: Full vulnerability name.
+      type: String
+    - contextPath: NodeZero.Weakness.vuln_short_name
+      description: Short vulnerability name.
+      type: String
+    - contextPath: NodeZero.Weakness.vuln_category
+      description: Vulnerability category.
+      type: String
+    - contextPath: NodeZero.Weakness.vuln_cisa_kev
+      description: Whether the vulnerability is in the CISA Known Exploited Vulnerabilities catalog.
+      type: Boolean
+    - contextPath: NodeZero.Weakness.vuln_known_ransomware_campaign_use
+      description: Whether the vulnerability is known to be used in ransomware campaigns.
+      type: Boolean
+    - contextPath: NodeZero.Weakness.ip
+      description: IP address of the affected asset.
+      type: String
+    - contextPath: NodeZero.Weakness.has_proof
+      description: Whether NodeZero has proof of exploitability.
+      type: Boolean
+    - contextPath: NodeZero.Weakness.score
+      description: Weakness severity score.
+      type: Number
+    - contextPath: NodeZero.Weakness.severity
+      description: Weakness severity level (HIGH or CRITICAL).
+      type: String
+    - contextPath: NodeZero.Weakness.affected_asset_uuid
+      description: UUID of the affected asset.
+      type: String
+    - contextPath: NodeZero.Weakness.affected_asset_display_name
+      description: Display name of the affected asset.
+      type: String
+    - contextPath: NodeZero.Weakness.attack_paths_count
+      description: Number of attack paths through this weakness.
+      type: Number
+    - contextPath: NodeZero.Weakness.op_id
+      description: ID of the pentest operation that discovered this weakness.
+      type: String
+  dockerimage: demisto/py3-tools:1.0.0.6210924
+  isfetch: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+defaultclassifier: NodeZero - Classifier
+defaultmapperin: NodeZero - Incoming Mapper
+fromversion: 6.1.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests (auto formatted)

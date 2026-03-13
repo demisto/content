@@ -1,0 +1,33 @@
+{
+    "id": "incident_nodezeroransomwareuse",
+    "version": -1,
+    "name": "NodeZero Ransomware Use",
+    "ownerOnly": false,
+    "description": "Whether this vulnerability is known to be used in ransomware campaigns.",
+    "cliName": "nodezeroransomwareuse",
+    "type": "boolean",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "NodeZero Weakness"
+    ],
+    "systemAssociatedTypes": [
+        "NodeZero Weakness"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.1.0"
+}
