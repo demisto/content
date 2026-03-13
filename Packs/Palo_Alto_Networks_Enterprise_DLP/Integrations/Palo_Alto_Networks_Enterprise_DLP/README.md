@@ -11,11 +11,14 @@ Make sure the toggle at the bottom is switched on.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
+| Server URL | Default value is https://api.dlp.paloaltonetworks.com/v1/ | False |
+| Authentication URL | Default value is https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token | False |
 | Access Token | Access token generated in the Enterprise DLP UI | True |
 | Refresh Token | Refresh token generated in the Enterprise DLP UI | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Long running instance |  | False |
+| First fetch timestamp | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default value is 60 minutes. | False |
 | DLP Regions | Possible values: `US` (United States), `EU` (European Union), `AP` (Asia-Pacific), `UK` (United Kingdom), `CA` (Canada), `AU` (Australia), `IN` (India), `JP` (Japan), `BR` (Brazil), `PAR` (Paris), `SUI` (Switzerland). | False |
 | Data profiles to allow exemption | A comma-separated list of data profile names to request an exemption. Use "\*" to allow everything. | False |
 | Bot Message | The message to send to the user to ask for feedback. | False |
