@@ -506,6 +506,9 @@
 				"SentinelOne UAM Alert Name": {
 					"simple": "node.name"
 				},
+				"SentinelOne UAM Alert Status": {
+					"simple": "node.status"
+				},
 				"SentinelOne UAM Alert Detection Product": {
 					"simple": "node.detectionSource.product"
 				},
