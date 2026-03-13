@@ -1595,7 +1595,6 @@ def fetch_incidents(client: Client, params: dict, last_run: dict) -> tuple[dict,
 
         for report in results:
             report_id = report.get("id", "")
-            new_last_ids.append(report_id)
 
             # Deduplication: skip reports already seen at the boundary timestamp
             if report_id in last_fetch_ids:
@@ -1616,6 +1615,10 @@ def fetch_incidents(client: Client, params: dict, last_run: dict) -> tuple[dict,
             incident = map_report_to_incident(report, relations=relations_data, source_reliability=source_reliability)
             incidents.append(incident)
             total_fetched += 1
+
+            # Only record IDs for reports that were actually processed/added
+            if report_id:
+                new_last_ids.append(report_id)
 
             if total_fetched >= max_results:
                 break
