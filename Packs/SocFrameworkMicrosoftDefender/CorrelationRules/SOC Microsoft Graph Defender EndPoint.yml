@@ -1,0 +1,153 @@
+fromversion: 6.10.0
+action: ALERTS
+alert_category: User Defined
+alert_description: $description
+alert_domain: DOMAIN_SECURITY
+alert_fields:
+  action_file_name: evidence_file_name
+  action_file_sha256: evidence_file_sha256
+  action_local_ip: evidence_local_ipv4
+  action_remote_ip: evidence_remote_ipv4
+  action_remote_ip_v6: evidence_remote_ipv6
+  actor_effective_username: source_user
+  actor_process_command_line: evidence_process_command_line
+  actor_process_image_name: evidence_process_name
+  actor_process_image_path: evidence_process_path
+  actor_process_image_sha256: evidence_process_sha256
+  actor_process_os_pid: evidence_process_pid
+  actor_process_signature_vendor: evidence_process_signer
+  agent_device_domain: evidence_device_ntdomain
+  agent_hostname: evidence_device_hostname
+  agent_id: evidence_device_agentid
+  alertaction: evidence_process_action
+  causality_actor_process_image_name: evidence_parent_process_name
+  causality_actor_process_image_path: evidence_parent_process_path
+  causality_actor_process_image_sha256: evidence_parent_process_sha256
+  causality_actor_process_signature_vendor: evidence_parent_process_signer
+  detectionid: detectorId
+  deviceexternalips: evidence_device_externalip
+  deviceosname: evidence_device_os
+  externallink: alertWebUrl
+  mitretacticid: mitre_tactic_id
+  mitretacticname: mitre_tactic
+  mitretechniqueid: mitreTechniques
+  mitretechniquename: mitreTechniques
+  originalalertid: providerAlertId
+  originalalertname: title
+  originalalertsource: productName
+  parentprocessid: evidence_parent_process_pid
+  parentprocessname: evidence_parent_process_name
+  parentprocesspath: evidence_parent_process_path
+  parentprocesssha256: evidence_parent_process_sha256
+  processcreationtime: evidence_process_starttime
+  processid: evidence_process_pid
+  samaccountname: evidence_user_upn
+  usersid: evidence_user_userSid
+alert_name: M365 Graph Alert - $alert_name
+alert_type: null
+crontab: null
+dataset: alerts
+description: Creates an XSIAM alert for each Microsoft Graph Endpoint Detection Event
+drilldown_query_timeframe: ALERT
+execution_mode: REAL_TIME
+global_rule_id: SOC Microsoft Graph Defender EndPoint
+investigation_query_link: '// All (stitched) activity from host - assuming raw telemetry
+  is being collected
+
+  dataset = xdr_data
+
+  | filter agent_hostname = $evidence_device_hostname
+
+  | fields *
+
+  '
+is_enabled: true
+lookup_mapping: []
+mapping_strategy: CUSTOM
+mitre_defs: {}
+name: SOC Microsoft Graph Defender EndPoint
+rule_id: 0
+search_window: null
+severity: User Defined
+simple_schedule: null
+suppression_duration: null
+suppression_enabled: false
+suppression_fields: null
+timezone: null
+user_defined_category: category
+user_defined_severity: severity
+xql_query: "/*\nTitle: Microsoft Graph Security Alerts - Focus on Defender for Endpoint\
+  \ (Lean)\nDescription: Creates a Cortex alert for each new event collected from\
+  \ Microsoft Graph,\n             optimized for SOC Framework grouping + MITRE technique\
+  \ handling.\nDatasets: msft_graph_security_alerts_raw\n*/\n\nconfig case_sensitive\
+  \ = false\n| dataset = msft_graph_security_alerts_raw\n\n// Focus on Defender endpoint\
+  \ / XDR alerts\n| filter productName in (\"Microsoft Defender for Endpoint\", \"\
+  Microsoft Defender XDR\")\n\n// Exclude resolved alerts\n| filter status != \"resolved\"\
+  \n\n// --- MITRE helpers ---\n| alter\n    cat_norm  = replace(replace(replace(replace(lowercase(category),\"\
+  \ \",\"\"),\"-\",\"\"),\"_\",\"\"),\".\",\"\"),\n    mitre_str = lowercase(coalesce(mitreTechniques,\
+  \ \"\"))\n\n// XSIAM MITRE Normalization (contract for split_mitre_rules.py)\n|\
+  \ alter\n    mitre_tactic       = category,\n    mitre_tactic_id    = \"\",\n  \
+  \  mitre_technique    = mitreTechniques,\n    mitre_technique_id = mitreTechniques\n\
+  \n// -------------------------------------------------------------------\n// Lightweight\
+  \ evidence extraction: FIRST element of each evidence type\n// -------------------------------------------------------------------\n\
+  | alter\n    processEvidence = arrayindex(arrayfilter(evidence -> [], \"@element\"\
+  \ -> [\"@odata.type\"] contains \"processEvidence\"), 0),\n    fileEvidence    =\
+  \ arrayindex(arrayfilter(evidence -> [], \"@element\" -> [\"@odata.type\"] contains\
+  \ \"fileEvidence\"), 0),\n    deviceEvidence  = arrayindex(arrayfilter(evidence\
+  \ -> [], \"@element\" -> [\"@odata.type\"] contains \"deviceEvidence\"), 0),\n \
+  \   userEvidence    = arrayindex(arrayfilter(evidence -> [], \"@element\" -> [\"\
+  @odata.type\"] contains \"userEvidence\"), 0),\n    ipEvidence      = arrayindex(arrayfilter(evidence\
+  \ -> [], \"@element\" -> [\"@odata.type\"] contains \"ipEvidence\"), 0)\n\n// ---\
+  \ Process evidence (initiator / target process) ---\n| alter\n    evidence_process_name\
+  \          = processEvidence -> imageFile.fileName,\n    evidence_process_path \
+  \         = processEvidence -> imageFile.filePath,\n    evidence_process_command_line\
+  \  = processEvidence -> processCommandLine,\n    evidence_process_signer       \
+  \ = processEvidence -> imageFile.filePublisher,\n    evidence_process_sha256   \
+  \     = processEvidence -> imageFile.sha256,\n    evidence_process_pid         \
+  \  = processEvidence -> processId,\n    evidence_process_starttime     = processEvidence\
+  \ -> processCreationDateTime,\n    evidence_process_action        = processEvidence\
+  \ -> detectionStatus,\n    evidence_parent_process_signer = processEvidence -> parentProcessImageFile.filePublisher,\n\
+  \    evidence_parent_process_name   = coalesce(processEvidence -> parentProcessImageFile.fileName,\
+  \ null),\n    evidence_parent_process_path   = coalesce(processEvidence -> parentProcessImageFile.filePath,\
+  \ null),\n    evidence_parent_process_sha256 = coalesce(processEvidence -> parentProcessImageFile.sha256,\
+  \ null),\n    evidence_parent_process_pid    = processEvidence -> parentProcessId\n\
+  \n// --- File evidence (target file) ---\n| alter\n    evidence_file_name   = fileEvidence\
+  \ -> fileDetails.fileName,\n    evidence_file_sha256 = fileEvidence -> fileDetails.sha256\n\
+  \n// --- Device evidence ---\n| alter\n    evidence_device_hostname   = deviceEvidence\
+  \ -> hostName,\n    evidence_device_ntdomain   = deviceEvidence -> ntDomain,\n \
+  \   evidence_device_os         = deviceEvidence -> osPlatform,\n    evidence_device_agentid\
+  \    = deviceEvidence -> mdeDeviceId,\n    evidence_device_externalip = deviceEvidence\
+  \ -> lastExternalIpAddress,\n    evidence_local_ipv4        = deviceEvidence ->\
+  \ lastIpAddress,\n    evidence_device_dnsdomain  = deviceEvidence -> deviceDnsName\n\
+  \n// --- User evidence ---\n| alter\n    evidence_user_upn      = userEvidence ->\
+  \ userAccount.userPrincipalName,\n    evidence_user_domain   = userEvidence -> userAccount.domainName,\n\
+  \    evidence_user_userSid  = userEvidence -> userAccount.userSid,\n    evidence_loggedon_user\
+  \ = userEvidence -> userAccount.accountName\n\n// --- IP evidence ---\n| alter\n\
+  \    evidence_remote_ipv4 = if(ipEvidence -> ipAddress ~= \"(?:\\\\d{1,3}\\\\.){3}\\\
+  \\d{1,3}\",\n                              ipEvidence -> ipAddress,\n          \
+  \                    null),\n    evidence_remote_ipv6 = if(ipEvidence -> ipAddress\
+  \ ~= \"^[0-9a-f:]+$\",\n                              ipEvidence -> ipAddress,\n\
+  \                              null)\n\n// -------------------------------------------------------------------\n\
+  // Unified source_user + SOC Framework grouping keys\n// -------------------------------------------------------------------\n\
+  | alter\n    source_user           = coalesce(evidence_loggedon_user, evidence_user_upn),\n\
+  \    cid                   = incidentId,\n    initiator_sha256      = evidence_process_sha256,\n\
+  \    cgo_sha256            = evidence_parent_process_sha256,\n    target_process_sha256\
+  \ = evidence_process_sha256,\n    file_sha256           = evidence_file_sha256,\n\
+  \    remote_ip             = evidence_remote_ipv4\n\n// -------------------------------------------------------------------\n\
+  // Final description & output fields\n// -------------------------------------------------------------------\n\
+  | alter\n    description = coalesce(description,\n                           concat(\"\
+  Microsoft Defender for Endpoint alert: \", title))\n\n| fields\n    _time,\n   \
+  \ incidentId,\n    productName,\n    title,\n    description,\n    severity,\n \
+  \   category,\n    alertWebUrl,\n    providerAlertId,\n    detectorId,\n    // MITRE-related\n\
+  \    mitreTechniques,\n    mitre_str,\n    cat_norm,\n    mitre_tactic,\n    mitre_tactic_id,\n\
+  \    mitre_technique,\n    mitre_technique_id,\n    // Grouping keys\n    cid,\n\
+  \    initiator_sha256,\n    cgo_sha256,\n    target_process_sha256,\n    file_sha256,\n\
+  \    remote_ip,\n    // Evidence used by mapping\n    source_user,\n    evidence_user_upn,\n\
+  \    evidence_user_userSid,\n    evidence_process_name,\n    evidence_process_path,\n\
+  \    evidence_process_command_line,\n    evidence_process_signer,\n    evidence_process_sha256,\n\
+  \    evidence_process_pid,\n    evidence_parent_process_name,\n    evidence_parent_process_path,\n\
+  \    evidence_parent_process_sha256,\n    evidence_parent_process_pid,\n    evidence_file_name,\n\
+  \    evidence_file_sha256,\n    evidence_device_hostname,\n    evidence_device_ntdomain,\n\
+  \    evidence_device_os,\n    evidence_device_agentid,\n    evidence_local_ipv4,\n\
+  \    evidence_remote_ipv4,\n    evidence_remote_ipv6,\n    evidence_device_externalip,\n\
+  \    evidence_parent_process_signer,\n    evidence_process_starttime,\n    evidence_process_action"

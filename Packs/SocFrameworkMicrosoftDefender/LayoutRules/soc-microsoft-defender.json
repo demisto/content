@@ -1,0 +1,16 @@
+{
+    "rule_id": "SOC_MS_Graph_Layout",
+    "layout_id": "MSGraph Endpoint Alert Layout",
+    "rule_name": "SOC MS Graph Layout Rule",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "SEARCH_FIELD": "tags",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "DS:msft/Graph Security Alerts"
+                }
+            ]
+        }
+    }
+}
