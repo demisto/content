@@ -63,10 +63,31 @@ SEVERITY_MAPPING = {
 
 def compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident_in_context, incident_id,
                                                fields_mapping):
-    modified_in_demisto = parser.parse(incident_in_demisto.get("modified")).timestamp() * 1000
-    modified_in_xdr_in_context = int(xdr_incident_in_context.get("modification_time"))
+    modified_str = incident_in_demisto.get("modified")
+    if not modified_str:
+        demisto.debug(f"Incident {incident_id} has no 'modified' field, skipping comparison.")
+        return False, {}
+
+    try:
+        modified_in_demisto = parser.parse(modified_str).timestamp() * 1000
+    except (ValueError, TypeError) as e:
+        demisto.debug(f"Failed to parse 'modified' timestamp '{modified_str}' for incident {incident_id}: {e}")
+        return False, {}
+
+    modification_time_raw = xdr_incident_in_context.get("modification_time")
+    if modification_time_raw is None:
+        demisto.debug(f"XDR incident context for {incident_id} has no 'modification_time', skipping comparison.")
+        return False, {}
+
+    try:
+        modified_in_xdr_in_context = int(modification_time_raw)
+    except (ValueError, TypeError) as e:
+        demisto.debug(f"Failed to parse XDR 'modification_time' '{modification_time_raw}' "
+                      f"for incident {incident_id}: {e}")
+        return False, {}
 
     incident_in_demisto_was_modified = False
+    custom_fields = incident_in_demisto.get("CustomFields") or {}
 
     xdr_update_args: Dict[str, Optional[str]] = {}
     if modified_in_demisto > modified_in_xdr_in_context:
@@ -77,7 +98,7 @@ def compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident
                 # if the ASSIGNED USER MAIL mapped to Demisto base field owner
                 assigned_user_mail_current = incident_in_demisto.get("owner")
             else:
-                assigned_user_mail_current = incident_in_demisto.get("CustomFields").get(field_name_in_demisto)
+                assigned_user_mail_current = custom_fields.get(field_name_in_demisto)
 
             assigned_user_mail_previous = xdr_incident_in_context[ASSIGNED_USER_MAIL_XDR_FIELD]
 
@@ -95,26 +116,30 @@ def compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident
 
         if ASSIGNED_USER_PRETTY_NAME_XDR_FIELD in fields_mapping:
             field_name_in_demisto = fields_mapping[ASSIGNED_USER_PRETTY_NAME_XDR_FIELD]
-            assigned_user_pretty_name_current = incident_in_demisto.get("CustomFields").get(field_name_in_demisto)
-            assigned_user_pretty_name_previous = xdr_incident_in_context[ASSIGNED_USER_PRETTY_NAME_XDR_FIELD]
+            assigned_user_pretty_name_current = custom_fields.get(field_name_in_demisto)
+            assigned_user_pretty_name_previous = xdr_incident_in_context.get(ASSIGNED_USER_PRETTY_NAME_XDR_FIELD)
 
             if assigned_user_pretty_name_current != assigned_user_pretty_name_previous:
+                demisto.debug(f"Incident {incident_id}: assigned_user_pretty_name changed from "
+                              f"'{assigned_user_pretty_name_previous}' to '{assigned_user_pretty_name_current}'.")
                 incident_in_demisto_was_modified = True
                 xdr_update_args[ASSIGNED_USER_PRETTY_NAME_XDR_FIELD] = assigned_user_pretty_name_current
 
         if STATUS_XDR_FIELD in fields_mapping:
             field_name_in_demisto = fields_mapping[STATUS_XDR_FIELD]
-            status_current = incident_in_demisto.get("CustomFields").get(field_name_in_demisto)
-            status_previous = xdr_incident_in_context[STATUS_XDR_FIELD]
+            status_current = custom_fields.get(field_name_in_demisto)
+            status_previous = xdr_incident_in_context.get(STATUS_XDR_FIELD)
 
             if status_current != status_previous:
+                demisto.debug(f"Incident {incident_id}: status changed from "
+                              f"'{status_previous}' to '{status_current}'.")
                 incident_in_demisto_was_modified = True
                 xdr_update_args[STATUS_XDR_FIELD] = status_current
 
         if SEVERITY_XDR_FIELD in fields_mapping:
             field_name_in_demisto = fields_mapping[SEVERITY_XDR_FIELD]
 
-            severity_previous = xdr_incident_in_context[SEVERITY_XDR_FIELD]
+            severity_previous = xdr_incident_in_context.get(SEVERITY_XDR_FIELD)
 
             if field_name_in_demisto == "severity":
                 # if field mapped to original demisto severity field then we should get it directly from incident
@@ -129,10 +154,17 @@ def compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident
 
                 if severity_current != 0 and severity_current != severity_previous:
                     incident_in_demisto_was_modified = True
-                    xdr_update_args[MANUAL_SEVERITY_XDR_FIELD] = severity_mapping[severity_current]
+                    mapped_severity = severity_mapping.get(severity_current)
+                    if mapped_severity is None:
+                        demisto.debug(f"Incident {incident_id}: unknown severity value '{severity_current}', "
+                                      f"skipping severity update.")
+                    else:
+                        demisto.debug(f"Incident {incident_id}: severity changed from "
+                                      f"'{severity_previous}' to '{mapped_severity}'.")
+                        xdr_update_args[MANUAL_SEVERITY_XDR_FIELD] = mapped_severity
 
             else:
-                severity_current = incident_in_demisto.get("CustomFields").get(field_name_in_demisto)
+                severity_current = custom_fields.get(field_name_in_demisto)
 
                 if severity_current != severity_previous:
                     incident_in_demisto_was_modified = True
@@ -144,10 +176,11 @@ def compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident
 
         if RESOLVE_COMMENT_XDR_FIELD in fields_mapping:
             field_name_in_demisto = fields_mapping[RESOLVE_COMMENT_XDR_FIELD]
-            resolve_comment_current = incident_in_demisto.get("CustomFields").get(field_name_in_demisto)
-            resolve_comment_previous = xdr_incident_in_context[RESOLVE_COMMENT_XDR_FIELD]
+            resolve_comment_current = custom_fields.get(field_name_in_demisto)
+            resolve_comment_previous = xdr_incident_in_context.get(RESOLVE_COMMENT_XDR_FIELD)
 
             if resolve_comment_current != resolve_comment_previous:
+                demisto.debug(f"Incident {incident_id}: resolve_comment changed.")
                 incident_in_demisto_was_modified = True
                 xdr_update_args[RESOLVE_COMMENT_XDR_FIELD] = resolve_comment_current
 
