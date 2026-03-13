@@ -1,0 +1,1261 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ''
+    fromServerVersion: ''
+    isoverridable: false
+    itemVersion: ''
+    packID: f3356ed0-eb19-46f6-84c4-f5b128b7193e
+    packName: Sentria App
+    prevname: ''
+    propagationLabels:
+    - all
+    toServerVersion: ''
+id: SENTRIA - M - Sentria App Quick Actions
+inputs: []
+name: SENTRIA - M - Sentria App Quick Actions
+outputs: []
+starttaskid: '0'
+syncHash: '16016868081073258637'
+tags:
+- SENTRIA
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 4f99e836-86af-4134-88e5-9d6de9dcc04b
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 4f99e836-86af-4134-88e5-9d6de9dcc04b
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 50\n  }\n}"
+  '1':
+    continueonerrortype: ''
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 477534e1-9a5d-4344-8872-3dd83c8f0e1e
+      iscommand: true
+      name: Close investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 477534e1-9a5d-4344-8872-3dd83c8f0e1e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 3780,\n    \"y\": 510\n  }\n}"
+  '2':
+    continueonerrortype: ''
+    id: '2'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 74fa632f-e008-45c5-8832-614e26d11cc1
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 74fa632f-e008-45c5-8832-614e26d11cc1
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 3780,\n    \"y\": 670\n  }\n}"
+  '3':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.sentriaappaction
+          operator: isEqualString
+          right:
+            value:
+              simple: scan_hostname
+      label: SCAN HOSTNAME
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.sentriaappaction
+          operator: isEqualString
+          right:
+            value:
+              simple: block_ioc
+      label: BLOCK IOC
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.sentriaappaction
+          operator: isEqualString
+          right:
+            value:
+              simple: contact_analyst
+      label: CONTACT ANALYST
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.sentriaappaction
+          operator: isEqualString
+          right:
+            value:
+              simple: client_onboarding
+      label: CLIENT ONBOARDING
+    continueonerrortype: ''
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '7'
+      BLOCK IOC:
+      - '5'
+      CLIENT ONBOARDING:
+      - '33'
+      CONTACT ANALYST:
+      - '6'
+      SCAN HOSTNAME:
+      - '4'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 488c1a3d-6110-49b6-8764-11839935df38
+      iscommand: false
+      name: Action to be executed
+      type: condition
+      version: -1
+    taskid: 488c1a3d-6110-49b6-8764-11839935df38
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 210\n  }\n}"
+  '4':
+    continueonerrortype: ''
+    id: '4'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '29'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: SCAN HOSTNAME
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Prints text to war room (Markdown supported)
+      id: cf465623-1172-4dca-860d-9ae7319658d1
+      iscommand: false
+      name: Scan Hostname
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: cf465623-1172-4dca-860d-9ae7319658d1
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -790,\n    \"y\": 385\n  }\n}"
+  '5':
+    continueonerrortype: ''
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: BLOCK IOC
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Prints text to war room (Markdown supported)
+      id: 3520dd86-d419-4735-8625-ba77bb740f6c
+      iscommand: false
+      name: Block IOC
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 3520dd86-d419-4735-8625-ba77bb740f6c
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 315,\n    \"y\": 385\n  }\n}"
+  '6':
+    continueonerrortype: ''
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '22'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Prints text to war room (Markdown supported)
+      id: 25f83a8b-568c-4771-8b05-e49398769c84
+      iscommand: false
+      name: Contact Analyst
+      type: title
+      version: -1
+    taskid: 25f83a8b-568c-4771-8b05-e49398769c84
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 380\n  }\n}"
+  '7':
+    continueonerrortype: ''
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: ef7a52c1-c403-44dc-8ed4-98c9cd74f441
+      iscommand: false
+      name: Do Nothing
+      type: title
+      version: -1
+    taskid: ef7a52c1-c403-44dc-8ed4-98c9cd74f441
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 3780,\n    \"y\": 370\n  }\n}"
+  '8':
+    continueonerrortype: ''
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      text:
+        simple: ${incident.sentriaappactionblockioc}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.extract.indicators
+      id: f0edfe3c-6cfb-45aa-81ca-21b6facab7b6
+      iscommand: true
+      name: Extract Indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      version: -1
+    taskid: f0edfe3c-6cfb-45aa-81ca-21b6facab7b6
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 315,\n    \"y\": 830\n  }\n}"
+  '9':
+    continueonerrortype: ''
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: cce219b1-cc2e-4376-8a2c-f378de6e9b45
+      iscommand: false
+      name: Block Indicators
+      type: title
+      version: -1
+    taskid: cce219b1-cc2e-4376-8a2c-f378de6e9b45
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 315,\n    \"y\": 970\n  }\n}"
+  '10':
+    continueonerrortype: ''
+    id: '10'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Domain:
+        simple: ${ExtractedIndicators.Domain}
+      File:
+        simple: ${ExtractedIndicators.File}
+      IP:
+        simple: ${ExtractedIndicators.IP}
+      URL:
+        simple: ${ExtractedIndicators.URL}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 7cc5f6e5-d8d1-4739-80db-6666c9d9ccbe
+      iscommand: false
+      name: SENTRIA - S - Containment Indicators General
+      playbookId: SENTRIA - S - Containment Indicators General
+      type: playbook
+      version: -1
+    taskid: 7cc5f6e5-d8d1-4739-80db-6666c9d9ccbe
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 315,\n    \"y\": 1110\n  }\n}"
+  '11':
+    continueonerrortype: ''
+    id: '11'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      selectcustomer:
+        simple: ${incident.sentriaappactionclient}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 029a3aca-a1b0-498b-8354-be3d1170ea69
+      iscommand: true
+      name: Set Select Customer Field
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 029a3aca-a1b0-498b-8354-be3d1170ea69
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 315,\n    \"y\": 690\n  }\n}"
+  '12':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: sentriaappactionclient
+                root: incident
+                transformers:
+                - operator: MapCustomerEDL
+          operator: isNotEqualString
+          right:
+            value:
+              simple: None
+      label: yes
+    continueonerrortype: ''
+    id: '12'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '15'
+      yes:
+      - '11'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 0d862d25-a83e-470a-8912-8826f58e6981
+      iscommand: false
+      name: Have EDL?
+      type: condition
+      version: -1
+    taskid: 0d862d25-a83e-470a-8912-8826f58e6981
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 315,\n    \"y\": 530\n  }\n}"
+  '14':
+    continueonerrortype: ''
+    id: '14'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sentriaappactionclient:
+        simple: ${incident.sentriaappactionclient}
+      sentriaappactionmsg:
+        simple: Se bloqueo el indicador correctamente.
+      sentriaappincidentid:
+        simple: ${incident.sentriaappincidentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 6aca5039-aaf5-4c5c-8809-b25045057c22
+      iscommand: true
+      name: Send Message To App
+      script: '|||app-sentria-send-message'
+      type: regular
+      version: -1
+    taskid: 6aca5039-aaf5-4c5c-8809-b25045057c22
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 315,\n    \"y\": 1260\n  }\n}"
+  '15':
+    continueonerrortype: ''
+    id: '15'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sentriaappactionclient:
+        simple: ${incident.sentriaappactionclient}
+      sentriaappactionmsg:
+        simple: Este cliente no cuenta con EDL.
+      sentriaappactionmsgresponse:
+        simple: El cliente no cuenta con EDL.
+      sentriaappincidentid:
+        simple: ${incident.sentriaappincidentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: c6036d61-7af3-4b4e-85a8-e2cfc3101593
+      iscommand: true
+      name: Send Message To App
+      script: '|||app-sentria-send-message'
+      type: regular
+      version: -1
+    taskid: c6036d61-7af3-4b4e-85a8-e2cfc3101593
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -125,\n    \"y\": 690\n  }\n}"
+  '16':
+    continueonerrortype: ''
+    id: '16'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '17'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 201138ea-6c7d-473b-8b67-8e82c3936dac
+      iscommand: true
+      name: Close investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 201138ea-6c7d-473b-8b67-8e82c3936dac
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 315,\n    \"y\": 1401.875\n  }\n}"
+  '17':
+    continueonerrortype: ''
+    id: '17'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 808799d5-bfdf-4366-8385-02248e03d3d9
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 808799d5-bfdf-4366-8385-02248e03d3d9
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 315,\n    \"y\": 1541.875\n  }\n}"
+  '18':
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: '18'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#error#':
+      - '20'
+      '#none#':
+      - '24'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hostname:
+        simple: ${incident.sentriaappactionscanhostname}
+      timeout_in_seconds:
+        simple: '7200'
+      using:
+        simple: ${incident.sentriaappactionclient}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Note: Scanning all the endpoints may cause performance issues and latency.'
+      id: 81359ae0-7367-4ead-8c3e-5a3328ba546b
+      iscommand: true
+      name: Scan Endpoint
+      script: '|||xdr-endpoint-scan-execute'
+      type: regular
+      version: -1
+    taskid: 81359ae0-7367-4ead-8c3e-5a3328ba546b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -560,\n    \"y\": 710\n  }\n}"
+  '19':
+    continueonerrortype: ''
+    id: '19'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '27'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sentriaappactionclient:
+        simple: ${incident.sentriaappactionclient}
+      sentriaappactionmsg:
+        simple: Se realizo el scaneo del host,
+      sentriaappactionmsgresponse:
+        simple: Resultado del escaneo.
+      sentriaappincidentid:
+        simple: ${incident.sentriaappincidentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 4670b98d-0612-452a-8454-dccaa53f7b27
+      iscommand: true
+      name: Send Message To App
+      script: '|||app-sentria-send-message'
+      type: regular
+      version: -1
+    taskid: 4670b98d-0612-452a-8454-dccaa53f7b27
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -680,\n    \"y\": 1130\n  }\n}"
+  '20':
+    continueonerrortype: ''
+    id: '20'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '28'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sentriaappactionclient:
+        simple: ${incident.sentriaappactionclient}
+      sentriaappactionmsg:
+        simple: Hubo un error al scanear el host.
+      sentriaappincidentid:
+        simple: ${incident.sentriaappincidentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 9f706126-73d2-4224-824f-105032e3c73f
+      iscommand: true
+      name: Send Message To App
+      script: '|||app-sentria-send-message'
+      type: regular
+      version: -1
+    taskid: 9f706126-73d2-4224-824f-105032e3c73f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -1130,\n    \"y\": 980\n  }\n}"
+  '21':
+    continueonerrortype: ''
+    id: '21'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '23'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: ${incident.sentriaappactionmsganalyst}
+      to:
+        simple: ${foundIncidents.freshdeskticketagente}
+      using:
+        simple: Slack - SENTRIA
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: SlackV3
+      description: Sends a message to a user, group, or channel.
+      id: 4bf8d1c0-2d0e-4cad-8861-1742ea799b74
+      iscommand: true
+      name: send-notification
+      script: SlackV3|||send-notification
+      type: regular
+      version: -1
+    taskid: 4bf8d1c0-2d0e-4cad-8861-1742ea799b74
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 850\n  }\n}"
+  '22':
+    continueonerrortype: ''
+    id: '22'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '31'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      add_fields_to_summarize_context:
+        simple: freshdeskticketagente
+      fromdate:
+        simple: 6 months ago
+      query:
+        simple: id:${incident.sentriaappincidentid}
+      summarizedversion:
+        simple: 'true'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "Searches Demisto incidents. A summarized version of this scrips is available with the summarizedversion argument.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script\nhttps://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations"
+      id: 6781bd26-080b-4967-89b9-3c140772700a
+      iscommand: false
+      name: Get Incident
+      scriptName: SearchIncidentsV2
+      type: regular
+      version: -1
+    taskid: 6781bd26-080b-4967-89b9-3c140772700a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 530\n  }\n}"
+  '23':
+    continueonerrortype: ''
+    id: '23'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '25'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sentriaappactionclient:
+        simple: ${incident.sentriaappactionclient}
+      sentriaappactionmsg:
+        simple: Se ha contacto exitosamente a ${foundIncidents.freshdeskticketagente}
+      sentriaappincidentid:
+        simple: ${incident.sentriaappincidentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: bbd3dc18-0b13-4295-8c20-9ea68ee3da20
+      iscommand: true
+      name: Send Notification to App
+      script: '|||app-sentria-send-message'
+      type: regular
+      version: -1
+    taskid: bbd3dc18-0b13-4295-8c20-9ea68ee3da20
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1020\n  }\n}"
+  '24':
+    continueonerrortype: ''
+    id: '24'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '19'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action_id:
+        simple: '955'
+      using:
+        simple: ${incident.sentriaappactionclient}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Retrieves the status of the requested actions according to the action ID.
+      id: c9debb43-9cdd-4d09-8ab9-fa66337f40c4
+      iscommand: true
+      name: Get Action Status
+      script: '|||xdr-action-status-get'
+      type: regular
+      version: -1
+    taskid: c9debb43-9cdd-4d09-8ab9-fa66337f40c4
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -680,\n    \"y\": 980\n  }\n}"
+  '25':
+    continueonerrortype: ''
+    id: '25'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '26'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: f1babe13-6964-42d9-8675-4754248d6e88
+      iscommand: true
+      name: Close investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: f1babe13-6964-42d9-8675-4754248d6e88
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1163.125\n  }\n}"
+  '26':
+    continueonerrortype: ''
+    id: '26'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: f246b334-d11f-4467-8566-15f57dc8b13b
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: f246b334-d11f-4467-8566-15f57dc8b13b
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 1323.125\n  }\n}"
+  '27':
+    continueonerrortype: ''
+    id: '27'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '28'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 5b6b56dc-7920-4b4a-8b37-7c2bc404f714
+      iscommand: true
+      name: Close investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 5b6b56dc-7920-4b4a-8b37-7c2bc404f714
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -680,\n    \"y\": 1279.375\n  }\n}"
+  '28':
+    continueonerrortype: ''
+    id: '28'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 918dd62d-e223-465d-87a8-1a95659735a3
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 918dd62d-e223-465d-87a8-1a95659735a3
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": -680,\n    \"y\": 1439.375\n  }\n}"
+  '29':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.sentriaappactionscanall
+          operator: isTrue
+      label: yes
+    continueonerrortype: ''
+    id: '29'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '18'
+      yes:
+      - '30'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 3f15d6aa-ec24-49f6-81ab-d221ae09fbe9
+      iscommand: false
+      name: Scan All Hosts?
+      type: condition
+      version: -1
+    taskid: 3f15d6aa-ec24-49f6-81ab-d221ae09fbe9
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -790,\n    \"y\": 550\n  }\n}"
+  '30':
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: '30'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#error#':
+      - '20'
+      '#none#':
+      - '24'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: 'true'
+      timeout_in_seconds:
+        simple: '7200'
+      using:
+        simple: ${incident.sentriaappactionclient}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Note: Scanning all the endpoints may cause performance issues and latency.'
+      id: 139d9361-53b0-4144-851b-ab97add1f3ca
+      iscommand: true
+      name: Scan All Endpoint
+      script: '|||xdr-endpoint-scan-execute'
+      type: regular
+      version: -1
+    taskid: 139d9361-53b0-4144-851b-ab97add1f3ca
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -990,\n    \"y\": 700\n  }\n}"
+  '31':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: foundIncidents
+          operator: isNotEmpty
+      label: yes
+    continueonerrortype: ''
+    id: '31'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '32'
+      yes:
+      - '21'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: ac4874cb-90b4-4898-819d-289209619ceb
+      iscommand: false
+      name: Any Incident?
+      type: condition
+      version: -1
+    taskid: ac4874cb-90b4-4898-819d-289209619ceb
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 675\n  }\n}"
+  '32':
+    continueonerrortype: ''
+    id: '32'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '25'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sentriaappactionclient:
+        simple: ${incident.sentriaappactionclient}
+      sentriaappactionmsg:
+        simple: No se encontró el incidente o el incidente no tiene asignado agente.
+      sentriaappincidentid:
+        simple: ${incident.sentriaappincidentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 7f9d3082-9613-4ea0-8c4f-924ab4a8ec3e
+      iscommand: true
+      name: Send Notification to App
+      script: '|||app-sentria-send-message'
+      type: regular
+      version: -1
+    taskid: 7f9d3082-9613-4ea0-8c4f-924ab4a8ec3e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 850\n  }\n}"
+  '33':
+    continueonerrortype: ''
+    id: '33'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '34'
+      - '35'
+      - '36'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 4c324ac6-b93b-422e-84d7-d5fba3ef4bca
+      iscommand: false
+      name: Client Onboarding
+      type: title
+      version: -1
+    taskid: 4c324ac6-b93b-422e-84d7-d5fba3ef4bca
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 2310,\n    \"y\": 370\n  }\n}"
+  '34':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.sentriaappcriticalhosts
+          operator: isNotEmpty
+      label: yes
+    continueonerrortype: ''
+    id: '34'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '40'
+      yes:
+      - '37'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 751e2001-9509-419c-8c06-423bc2a76bdd
+      iscommand: false
+      name: Critical Host Is Not Empty?
+      type: condition
+      version: -1
+    taskid: 751e2001-9509-419c-8c06-423bc2a76bdd
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1880,\n    \"y\": 510\n  }\n}"
+  '35':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.sentriaappcriticalips
+          operator: isNotEmpty
+      label: yes
+    continueonerrortype: ''
+    id: '35'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '40'
+      yes:
+      - '38'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: acf72779-ea44-4dbd-8b98-f56236547c8f
+      iscommand: false
+      name: Critical IP Addresses Is Not Empty?
+      type: condition
+      version: -1
+    taskid: acf72779-ea44-4dbd-8b98-f56236547c8f
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 2310,\n    \"y\": 510\n  }\n}"
+  '36':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.sentriaappcriticalusers
+          operator: isNotEmpty
+      label: yes
+    continueonerrortype: ''
+    id: '36'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '40'
+      yes:
+      - '39'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: a09f1bf5-ea46-40ea-8bea-aca03c464a41
+      iscommand: false
+      name: Critical Host Is Not Empty?
+      type: condition
+      version: -1
+    taskid: a09f1bf5-ea46-40ea-8bea-aca03c464a41
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 2760,\n    \"y\": 510\n  }\n}"
+  '37':
+    continueonerrortype: ''
+    id: '37'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '40'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      field_type:
+        simple: hosts
+      using:
+        simple: ${incident.sentriaappactionclient}
+      values:
+        simple: ${incident.sentriaappcriticalhosts}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Replace the featured hosts\users\IP addresses\active directory groups listed in your environment.
+      id: 227e7340-cdc0-43d9-977b-22433a0ac9b0
+      iscommand: true
+      name: Replace Features Hosts
+      script: '|||xdr-replace-featured-field'
+      type: regular
+      version: -1
+    taskid: 227e7340-cdc0-43d9-977b-22433a0ac9b0
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1880,\n    \"y\": 665\n  }\n}"
+  '38':
+    continueonerrortype: ''
+    id: '38'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '40'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      field_type:
+        simple: ip_addresses
+      using:
+        simple: ${incident.sentriaappactionclient}
+      values:
+        simple: ${incident.sentriaappcriticalips}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Replace the featured hosts\users\IP addresses\active directory groups listed in your environment.
+      id: f729f8b3-a66e-4fb8-b0a9-e854dd5f55b6
+      iscommand: true
+      name: Replace Features IP Addresses
+      script: '|||xdr-replace-featured-field'
+      type: regular
+      version: -1
+    taskid: f729f8b3-a66e-4fb8-b0a9-e854dd5f55b6
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 2310,\n    \"y\": 665\n  }\n}"
+  '39':
+    continueonerrortype: ''
+    id: '39'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '40'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      field_type:
+        simple: users
+      using:
+        simple: ${incident.sentriaappactionclient}
+      values:
+        simple: ${incident.sentriaappcriticalusers}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Replace the featured hosts\users\IP addresses\active directory groups listed in your environment.
+      id: ea51aad8-cd94-4a52-8d3b-1d87b1677d11
+      iscommand: true
+      name: Replace Features Users
+      script: '|||xdr-replace-featured-field'
+      type: regular
+      version: -1
+    taskid: ea51aad8-cd94-4a52-8d3b-1d87b1677d11
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 2760,\n    \"y\": 662.5\n  }\n}"
+  '40':
+    continueonerrortype: ''
+    id: '40'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 4e32ce91-75ca-4c4f-8ca8-b5e15f8780a8
+      iscommand: true
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 4e32ce91-75ca-4c4f-8ca8-b5e15f8780a8
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 2310,\n    \"y\": 890\n  }\n}"
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1551.875,\n      \"width\": 5290,\n      \"x\": -1130,\n      \"y\": 50\n    }\n  }\n}"

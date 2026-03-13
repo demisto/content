@@ -1,0 +1,21 @@
+{
+    "name": "Sentria App",
+    "description": "This Cortex XSOAR Pack enables secure integration with an internal application, allowing XSOAR to communicate directly with organizational systems through supported interfaces such as REST APIs.\n\nThe Pack provides the required components to authenticate, retrieve, and send data between XSOAR and the internal application, supporting automation and orchestration use cases within incident response workflows. By leveraging this integration, security and operations teams can streamline processes, reduce manual effort, and improve operational efficiency.\n\nThis Pack is designed to be used within custom playbooks and automations, ensuring scalability, reusability, and alignment with organizational security controls.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Netdata Networks",
+    "url": "",
+    "email": "",
+    "created": "2026-02-11T19:42:44Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "CristianZapataNetdata"
+    ]
+}

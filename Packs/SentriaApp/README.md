@@ -1,0 +1,3 @@
+This Cortex XSOAR Pack provides an integration with an internal application, enabling secure and automated communication between XSOAR and organizational systems.
+
+The integration allows Cortex XSOAR to retrieve and/or send data to the internal application through supported interfaces (such as REST APIs), facilitating automation, orchestration, and incident response workflows. This Pack is intended to support custom playbooks and automations, helping reduce manual tasks and improve operational efficiency.

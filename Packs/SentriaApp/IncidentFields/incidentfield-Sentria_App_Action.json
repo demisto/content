@@ -1,0 +1,40 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SENTRIA - Sentria App Quick Actions"
+    ],
+    "caseInsensitive": true,
+    "cliName": "sentriaappaction",
+    "closeForm": false,
+    "content": true,
+    "description": "Sentria App Action",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_sentriaappaction",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Sentria App Action",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "selectValues": [
+        "",
+        "scan_hostname",
+        "block_ioc",
+        "contact_analyst"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
