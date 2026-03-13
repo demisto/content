@@ -230,6 +230,11 @@ class Client(BaseClient):
         custom_proxy_username=None,
         custom_proxy_password=None,
     ):
+        super().__init__(
+            base_url=bhe_domain,
+            verify=False,
+            proxy=False,
+        )
         self.bhe_domain = bhe_domain
         self.__token_id = bhe_token_id
         self.__token_key = bhe_token_key
@@ -352,15 +357,16 @@ class Client(BaseClient):
             JSON response or raw response object
         """
         headers = self._get_headers(method, uri_path)
-        response = requests.request(
-            method,
-            url,
+        response = self._http_request(
+            method=method,
+            full_url=url,
             headers=headers,
             params=params,
             data=data,
             proxies=proxies,
-            verify=False,
             timeout=30,
+            resp_type="response",
+            raise_on_status=False,
         )
         return response
 
@@ -1547,15 +1553,15 @@ def _update_primary_response(
 
 
 def fetch_asset_info(bhe_client: Client, object_ids: list[str]) -> dict:
-    response_payload_asset: dict[str, dict] = {}
-    for object_id in object_ids:
-        try:
+    try:
+        response_payload_asset: dict[str, dict] = {}
+        for object_id in object_ids:
             clean_object_id = object_id.strip()
             asset_info = _handle_fetch_asset_information(bhe_client, clean_object_id)
             response_payload_asset[object_id] = asset_info
-        except Exception as e:
-            response_payload_asset[object_id] = {"status": "error", "message": f"Error processing object {object_id}: {str(e)}"}
-    return response_payload_asset
+        return response_payload_asset
+    except Exception as e:
+        return {"status": "error", "message": f"Error: {str(e)}"}
 
 
 def check_path_exists_between_nodes(client: Client, start_node: str, end_node: str) -> dict:
@@ -1649,6 +1655,9 @@ def bhe_asset_info_get_command(bhe_client: Client, args: dict) -> None:
 
     readable_data = []
     for obj_id, result_data in fetch_result.items():
+        if not isinstance(result_data, dict):
+            result_data = {"status": "error", "message": "Invalid response format", "data": None}
+
         asset_data = result_data.get("data", {})
         raw_data_str = json.dumps(asset_data, indent=2) if asset_data else "No data available"
 

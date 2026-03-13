@@ -252,17 +252,17 @@ class TestClient:
             client._build_proxy_dict()
         mock_error.assert_called()
 
-    @patch("SpecterOpsBHE.requests.request")
-    def test_api_request_success(self, mock_request, mock_client, mock_response):
+    @patch.object(Client, "_execute_single_request")
+    def test_api_request_success(self, mock_execute, mock_client, mock_response):
         """Test _api_request with successful response"""
         mock_response.json.return_value = {"data": [{"id": "123"}]}
-        mock_request.return_value = mock_response
+        mock_execute.return_value = mock_response
         result = mock_client._api_request("available_domain")
         assert result == {"data": [{"id": "123"}]}
-        mock_request.assert_called_once()
+        mock_execute.assert_called_once()
 
-    @patch("SpecterOpsBHE.requests.request")
-    def test_api_request_retry_on_rate_limit(self, mock_request, mock_client, mock_response):
+    @patch.object(Client, "_execute_single_request")
+    def test_api_request_retry_on_rate_limit(self, mock_execute, mock_client, mock_response):
         """Test _api_request retries on rate limit"""
         # First call raises rate limit, second succeeds
         rate_limit_response = Mock(spec=requests.Response)
@@ -272,15 +272,15 @@ class TestClient:
         rate_limit_response.content = b""
 
         mock_response.json.return_value = {"data": []}
-        mock_request.side_effect = [rate_limit_response, mock_response]
+        mock_execute.side_effect = [rate_limit_response, mock_response]
 
         # Should retry and succeed
         result = mock_client._api_request("available_domain")
         assert result == {"data": []}
-        assert mock_request.call_count == 2
+        assert mock_execute.call_count == 2
 
-    @patch("SpecterOpsBHE.requests.request")
-    def test_api_request_retry_on_server_error(self, mock_request, mock_client, mock_response):
+    @patch.object(Client, "_execute_single_request")
+    def test_api_request_retry_on_server_error(self, mock_execute, mock_client, mock_response):
         """Test _api_request retries on server error"""
         server_error_response = Mock(spec=requests.Response)
         server_error_response.status_code = SERVER_ERROR
@@ -289,39 +289,39 @@ class TestClient:
         server_error_response.content = b""
 
         mock_response.json.return_value = {"data": []}
-        mock_request.side_effect = [server_error_response, mock_response]
+        mock_execute.side_effect = [server_error_response, mock_response]
 
         result = mock_client._api_request("available_domain")
         assert result == {"data": []}
-        assert mock_request.call_count == 2
+        assert mock_execute.call_count == 2
 
     @patch("SpecterOpsBHE.demisto.error")
-    @patch("SpecterOpsBHE.requests.request")
-    def test_api_request_proxy_error(self, mock_request, mock_error, mock_client):
+    @patch.object(Client, "_execute_single_request")
+    def test_api_request_proxy_error(self, mock_execute, mock_error, mock_client):
         """Test _api_request handles proxy errors"""
-        mock_request.side_effect = requests.exceptions.ProxyError("Proxy error")
+        mock_execute.side_effect = requests.exceptions.ProxyError("Proxy error")
         with pytest.raises(BloodHoundException) as exc_info:
             mock_client._api_request("available_domain")
         assert "Proxy error" in str(exc_info.value)
         mock_error.assert_called()
 
     @patch("SpecterOpsBHE.demisto.error")
-    @patch("SpecterOpsBHE.requests.request")
-    def test_api_request_connection_error(self, mock_request, mock_error, mock_client):
+    @patch.object(Client, "_execute_single_request")
+    def test_api_request_connection_error(self, mock_execute, mock_error, mock_client):
         """Test _api_request handles connection errors"""
-        mock_request.side_effect = requests.exceptions.ConnectionError("Connection error")
+        mock_execute.side_effect = requests.exceptions.ConnectionError("Connection error")
         with pytest.raises(BloodHoundException) as exc_info:
             mock_client._api_request("available_domain")
         assert "Connection error" in str(exc_info.value)
         mock_error.assert_called()
 
-    @patch("SpecterOpsBHE.requests.request")
-    def test_test_connection(self, mock_request, mock_client, mock_response):
+    @patch.object(Client, "_execute_single_request")
+    def test_test_connection(self, mock_execute, mock_client, mock_response):
         """Test test_connection method"""
-        mock_request.return_value = mock_response
+        mock_execute.return_value = mock_response
         result = mock_client.test_connection()
         assert result == mock_response
-        mock_request.assert_called_once()
+        mock_execute.assert_called_once()
 
 
 class TestHelperFunctions:

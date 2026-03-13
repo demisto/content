@@ -1,6 +1,5 @@
-id: 0dc47116-a483-4843-8c13-2a32ca06a93d
-version: 32
-vcShouldKeepItemLegacyProdMachine: false
+id: SpecterOpsBHE
+version: -1
 name: SpecterOpsBHE
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -192,3 +192,7 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
+description: Automated playbook that enriches BloodHound Enterprise attack path incidents with object information and validates attack path existence between security principals.

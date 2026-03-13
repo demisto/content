@@ -1,17 +1,15 @@
 commonfields:
   id: SpecterOpsBHE
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: SpecterOpsBHE
 display: SpecterOpsBHE
 category: Network Security
-description: Use the SpecterOpsBHE integration to retrieve attack path findings 
-  from BloodHound Enterprise to streamline incident creation and investigation.
+description: Use the SpecterOpsBHE integration to retrieve attack path findings from BloodHound Enterprise to streamline incident creation and investigation.
 detaileddescription: BloodHound Enterprise reduces risk in Active Directory and Microsoft Azure environments by continuously identifying and quantifying attack paths that attackers use to escalate privileges. The SpecterOpsBHE integration automatically ingests attack path findings from BloodHound Enterprise into Cortex XSOAR, streamlining incident creation and investigation. Configure the integration by providing your BloodHound Enterprise domain, API token ID and key, and optionally configure proxy settings and finding filters. Enable incident fetching to automatically retrieve attack paths at your specified interval.
 configuration:
 - display: BloodHound Enterprise Domain
   name: url
-  type: 0 
+  type: 0
   required: true
   additionalinfo: BloodHound Enterprise Domain URL
 - section: Connect
@@ -103,8 +101,7 @@ script:
       description: The object ID for which asset information was fetched.
       type: string
     - contextPath: SpecterOpsBHE.Asset.Data
-      description: The raw asset data containing all asset information fields (name,
-        type, objectid, domain, enabled, email, and other properties).
+      description: The raw asset data containing all asset information fields (name, type, objectid, domain, enabled, email, and other properties).
       type: unknown
     description: Fetches asset information using the object ID.
   - name: bhe-path-exist
@@ -136,4 +133,6 @@ script:
   isfetch: true
   runonce: false
   isFetchSamples: true
-fromversion: 6.0.0
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

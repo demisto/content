@@ -163,3 +163,31 @@ Once configured with "Fetch incidents" enabled, the integration will:
 ### Manual Investigation Commands
 
 #### Get Object ID by Name
+
+Use the `bhe-object-id-get` command to retrieve the unique object ID for a security principal (user, computer, group, etc.) by providing its name. This is useful when you need to look up an object ID before performing other operations.
+
+**Command:**
+
+!bhe-object-id-get object_names="USERNAME@example.com"
+
+The command returns the object ID, status, and message for each object name provided. You can query multiple objects by providing a comma-separated list.
+
+#### Get Asset Information
+
+Use the `bhe-asset-info-get` command to retrieve comprehensive information about a security principal using its object ID. This includes details such as name, type, domain, enabled status, group memberships, and other properties.
+
+**Command:**
+
+!bhe-asset-info-get object_ids="12345678-1234-1234-1234-123456789abc,87654321-4321-4321-4321-cba987654321"
+
+The command returns the asset information, status, and message for each object IDs provided. You can query multiple objects by providing a comma-separated list.
+
+#### Check Path Existence
+
+Use the `bhe-path-exist` command to verify if an attack path exists between two security principals. This helps validate relationships and understand potential privilege escalation routes.
+
+**Command:**
+
+!bhe-path-exist from_principal="12345678-1234-1234-1234-123456789abc" to_principal="87654321-4321-4321-4321-cba987654321"
+
+The command returns a boolean value indicating whether a path exists between the specified nodes, along with status and message information.

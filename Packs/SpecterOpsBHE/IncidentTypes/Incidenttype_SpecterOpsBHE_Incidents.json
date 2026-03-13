@@ -23,7 +23,7 @@
 			"name": "SpecterOpsBHE Attack Path",
 			"prevName": "SpecterOpsBHE Attack Path",
 			"color": "#bed474",
-			"playbookId": "0dc47116-a483-4843-8c13-2a32ca06a93d",
+			"playbookId": "SpecterOpsBHE",
 			"hours": 0,
 			"days": 0,
 			"weeks": 0,
@@ -39,12 +39,18 @@
 			"disabled": false,
 			"reputationCalc": 0,
 			"onChangeRepAlg": 0,
-			"layout": "e6aa0b9d-db0a-420e-8dca-7a474e79d752",
+			"layout": "SpecterOps-Layout",
 			"detached": false,
 			"extractSettings": {
 				"mode": "Specific",
 				"fieldCliNameToExtractSettings": {}
-			}
+			},
+			"fromVersion": "6.10.0",
+			"marketplaces": [
+				"xsoar",
+				"marketplacev2",
+				"platform"
+			]
 		}
 	]
 }
