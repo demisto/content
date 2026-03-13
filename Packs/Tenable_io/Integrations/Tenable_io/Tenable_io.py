@@ -1351,7 +1351,7 @@ def request_uuid_export_vulnerabilities(args: Dict[str, Any]) -> PollResult:
 
 @polling_function(
     name=demisto.command(),
-    timeout=arg_to_number(demisto.args().get("timeout", 720)),  # pylint: disable=W9017
+    timeout=arg_to_number(demisto.args().get("timeOut", 720)),  # pylint: disable=W9017
     interval=arg_to_number(demisto.args().get("intervalInSeconds", 15)),  # pylint: disable=W9017
     requires_polling_arg=False,
 )
