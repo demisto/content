@@ -1,0 +1,177 @@
+fromversion: 6.10.0
+action: ALERTS
+alert_category: OTHER
+alert_description: $alert_description
+alert_domain: DOMAIN_SECURITY
+alert_fields:
+  action_file_path: filepath
+  action_file_sha256: sha256
+  action_local_ip: local_ip
+  action_remote_ip: remote_ip_str
+  actor_effective_username: user_name
+  actor_process_command_line: cmdline
+  actor_process_image_name: filename
+  actor_process_image_path: filepath
+  actor_process_image_sha256: sha256
+  additionalindicators: ioc_value
+  agent_device_domain: domain
+  agent_hostname: v1_host_name
+  agent_id: v1_host_guid
+  alert_description: alert_description
+  external_pivot_url: workbench_link
+  externallink: workbench_link
+  externalstatus: status
+  filehash: sha256
+  mac: mac_address
+  mitretechniqueid: mitre_ids_str
+  originalalertid: id
+  originalalertname: alert_name
+  originalalertsource: alert_source
+  parentprocessname: parent_process_name
+  parentprocesspath: parent_process_path
+  prenatsourceip: local_ip
+  processcmd: cmdline
+  severity: severity
+  source_insert_ts: alert_time
+  tim_main_indicator: ioc_value
+  trendmicrovisiononexdrinvestigationstatus: investigation_status
+  trendmicrovisiononexdrpriorityscore: score
+  userid: user_id
+alert_name: Trend Micro - $alert_name
+alert_type: null
+crontab: null
+dataset: alerts
+description: null
+drilldown_query_timeframe: ALERT
+execution_mode: REAL_TIME
+global_rule_id: SOC Trend Micro Vision One V3
+investigation_query_link: ''
+is_enabled: true
+lookup_mapping: []
+mapping_strategy: CUSTOM
+mitre_defs: {}
+name: SOC Trend Micro Vision One V3
+rule_id: 0
+search_window: null
+severity: User Defined
+simple_schedule: null
+suppression_duration: null
+suppression_enabled: false
+suppression_fields: null
+timezone: null
+user_defined_category: null
+user_defined_severity: severity
+xql_query: "dataset = trend_micro_vision_one_v3_generic_alert_raw\n| filter alert_provider\
+  \ = \"SAE\"\n\n| alter j = _alert_data -> raw_json\n\n/* --- MITRE technique (cheap)\
+  \ --- */\n| alter j_str = to_string(j)\n| alter mitre_technique_id_raw =\n    json_extract_scalar(j_str,\
+  \ \"$.matched_rules[0].matched_filters[0].mitre_technique_ids[0]\")\n| alter j_str\
+  \ = null\n\n| alter mitre_ids_str =\n    if(\n      mitre_technique_id_raw != null\
+  \ and mitre_technique_id_raw != \"\",\n      replace(replace(mitre_technique_id_raw,\
+  \ \"\\\"\",\"\"), \"\\\\.[0-9]+$\",\"\"),\n      \"\u2014\"\n    )\n| alter mitre_ids_str\
+  \ =\n    if(mitre_ids_str contains \".\", arrayindex(regextract(mitre_ids_str, \"\
+  (.*)\\.\"), 0), mitre_ids_str)\n\n/* --- MITRE Tactics Arrays ---- */\n| alter ta0043_reconnaissance\
+  \       = arraycreate(\"T1590\",\"T1591\",\"T1592\",\"T1593\",\"T1594\",\"T1595\"\
+  ,\"T1596\",\"T1597\",\"T1598\",\"T1599\")\n| alter ta0042_resource_development =\
+  \ arraycreate(\"T1583\",\"T1584\",\"T1585\",\"T1586\",\"T1587\",\"T1650\")\n| alter\
+  \ ta0001_initial_access       = arraycreate(\"T1078\",\"T1189\",\"T1190\",\"T1195\"\
+  ,\"T1133\",\"T1200\",\"T1566\",\"T1091\")\n| alter ta0002_execution            =\
+  \ arraycreate(\"T1059\",\"T1106\",\"T1047\",\"T1203\",\"T1129\",\"T1559\")\n| alter\
+  \ ta0003_persistence          = arraycreate(\"T1547\",\"T1543\",\"T1136\",\"T1505\"\
+  ,\"T1053\",\"T1078\")\n| alter ta0004_privilege_escalation = arraycreate(\"T1548\"\
+  ,\"T1068\",\"T1078\",\"T1055\",\"T1134\")\n| alter ta0005_defense_evasion      =\
+  \ arraycreate(\"T1027\",\"T1070\",\"T1218\",\"T1140\",\"T1562\",\"T1036\",\"T1055\"\
+  )\n| alter ta0006_credential_access    = arraycreate(\"T1003\",\"T1555\",\"T1552\"\
+  ,\"T1110\",\"T1621\")\n| alter ta0007_discovery            = arraycreate(\"T1082\"\
+  ,\"T1083\",\"T1046\",\"T1057\",\"T1016\",\"T1049\",\"T1033\")\n| alter ta0008_lateral_movement\
+  \     = arraycreate(\"T1021\",\"T1210\",\"T1091\",\"T1072\")\n| alter ta0009_collection\
+  \           = arraycreate(\"T1005\",\"T1039\",\"T1113\",\"T1114\",\"T1115\")\n|\
+  \ alter ta0011_command_and_control  = arraycreate(\"T1071\",\"T1095\",\"T1105\"\
+  ,\"T1571\",\"T1572\",\"T1041\")\n| alter ta0010_exfiltration         = arraycreate(\"\
+  T1041\",\"T1567\",\"T1020\")\n| alter ta0040_impact               = arraycreate(\"\
+  T1485\",\"T1486\",\"T1490\",\"T1499\",\"T1561\")\n\n/* --- Match Tactic Name + ID\
+  \ --- */\n| alter mitre_tactic = if (ta0040_impact contains mitre_ids_str, \"Impact\"\
+  )\n| alter mitre_tactic = if (ta0010_exfiltration contains mitre_ids_str, \"Exfiltration\"\
+  , mitre_tactic)\n| alter mitre_tactic = if (ta0011_command_and_control contains\
+  \ mitre_ids_str, \"Command and Control\", mitre_tactic)\n| alter mitre_tactic =\
+  \ if (ta0009_collection contains mitre_ids_str, \"Collection\", mitre_tactic)\n\
+  | alter mitre_tactic = if (ta0008_lateral_movement contains mitre_ids_str, \"Lateral\
+  \ Movement\", mitre_tactic)\n| alter mitre_tactic = if (ta0007_discovery contains\
+  \ mitre_ids_str, \"Discovery\", mitre_tactic)\n| alter mitre_tactic = if (ta0006_credential_access\
+  \ contains mitre_ids_str, \"Credential Access\", mitre_tactic)\n| alter mitre_tactic\
+  \ = if (ta0005_defense_evasion contains mitre_ids_str, \"Defense Evasion\", mitre_tactic)\n\
+  | alter mitre_tactic = if (ta0004_privilege_escalation contains mitre_ids_str, \"\
+  Privilege Escalation\", mitre_tactic)\n| alter mitre_tactic = if (ta0003_persistence\
+  \ contains mitre_ids_str, \"Persistence\", mitre_tactic)\n| alter mitre_tactic =\
+  \ if (ta0002_execution contains mitre_ids_str, \"Execution\", mitre_tactic)\n| alter\
+  \ mitre_tactic = if (ta0001_initial_access contains mitre_ids_str, \"Initial Access\"\
+  , mitre_tactic)\n| alter mitre_tactic = if (ta0042_resource_development contains\
+  \ mitre_ids_str, \"Resource Development\", mitre_tactic)\n| alter mitre_tactic =\
+  \ if (ta0043_reconnaissance contains mitre_ids_str, \"Reconnaissance\", mitre_tactic)\n\
+  \n| alter mitre_tactic_id = if (ta0040_impact contains mitre_ids_str, \"TA0040\"\
+  )\n| alter mitre_tactic_id = if (ta0010_exfiltration contains mitre_ids_str, \"\
+  TA0010\", mitre_tactic_id)\n| alter mitre_tactic_id = if (ta0011_command_and_control\
+  \ contains mitre_ids_str, \"TA0011\", mitre_tactic_id)\n| alter mitre_tactic_id\
+  \ = if (ta0009_collection contains mitre_ids_str, \"TA0009\", mitre_tactic_id)\n\
+  | alter mitre_tactic_id = if (ta0008_lateral_movement contains mitre_ids_str, \"\
+  TA0008\", mitre_tactic_id)\n| alter mitre_tactic_id = if (ta0007_discovery contains\
+  \ mitre_ids_str, \"TA0007\", mitre_tactic_id)\n| alter mitre_tactic_id = if (ta0006_credential_access\
+  \ contains mitre_ids_str, \"TA0006\", mitre_tactic_id)\n| alter mitre_tactic_id\
+  \ = if (ta0005_defense_evasion contains mitre_ids_str, \"TA0005\", mitre_tactic_id)\n\
+  | alter mitre_tactic_id = if (ta0004_privilege_escalation contains mitre_ids_str,\
+  \ \"TA0004\", mitre_tactic_id)\n| alter mitre_tactic_id = if (ta0003_persistence\
+  \ contains mitre_ids_str, \"TA0003\", mitre_tactic_id)\n| alter mitre_tactic_id\
+  \ = if (ta0002_execution contains mitre_ids_str, \"TA0002\", mitre_tactic_id)\n\
+  | alter mitre_tactic_id = if (ta0001_initial_access contains mitre_ids_str, \"TA0001\"\
+  , mitre_tactic_id)\n| alter mitre_tactic_id = if (ta0042_resource_development contains\
+  \ mitre_ids_str, \"TA0042\", mitre_tactic_id)\n| alter mitre_tactic_id = if (ta0043_reconnaissance\
+  \ contains mitre_ids_str, \"TA0043\", mitre_tactic_id)\n\n/* ---- Split Anchor (required)\
+  \ ---- */\n| alter\n    mitre_technique_id = mitre_ids_str,\n    mitre_technique\
+  \    = null,\n    mitre_tactic_id    = mitre_tactic_id,\n    mitre_tactic      \
+  \ = mitre_tactic\n\n/* ---- Core metadata (keep legacy field names you mapped) ----\
+  \ */\n| alter\n    id                   = j -> id,\n    status               = j\
+  \ -> status,\n    investigation_status = j -> investigation_status,\n    investigation_result\
+  \ = j -> investigation_result,\n    workbench_link       = j -> workbench_link,\n\
+  \    alert_provider       = j -> alert_provider,\n    alert_name           = j ->\
+  \ model,\n    score                = to_integer(j -> score),\n    severity     \
+  \        = j -> severity,\n    alert_time           = j -> created_date_time,\n\
+  \    alert_description    = j -> description,\n    alert_source         = coalesce(j\
+  \ -> alert_provider, \"Trend Micro Vision One\"),\n    indicators           = j\
+  \ -> indicators[]\n\n/* ---- FAST indicator extraction (no arraymap/indexof) ----\
+  \ */\n/* host */\n| alter i_host = arrayindex(arrayfilter(indicators, json_extract_scalar(\"\
+  @element\",\"$.type\") = \"host\"), 0)\n| alter\n    v1_host_guid = json_extract_scalar(i_host,\
+  \ \"$.value.guid\"),\n    v1_host_name = json_extract_scalar(i_host, \"$.value.name\"\
+  ),\n    local_ip     = replace(json_extract_scalar(i_host, \"$.value.ips[0]\"),\
+  \ \"\\\"\", \"\")\n\n/* mac (host indicator value has multiple possibilities in\
+  \ some feeds; keep best-effort) */\n| alter mac_address =\n    coalesce(\n     \
+  \ json_extract_scalar(i_host, \"$.value.mac\"),\n      json_extract_scalar(i_host,\
+  \ \"$.value.mac_address\"),\n      json_extract_scalar(i_host, \"$.value.macs[0]\"\
+  ),\n      json_extract_scalar(i_host, \"$.value.macAddresses[0]\")\n    )\n\n/*\
+  \ user */\n| alter i_user = arrayindex(arrayfilter(indicators, json_extract_scalar(\"\
+  @element\",\"$.type\") = \"user_account\"), 0)\n| alter\n    user_name = json_extract_scalar(i_user,\
+  \ \"$.value\"),\n    user_id   = null\n\n/* cmdline */\n| alter i_cmd1 = arrayindex(arrayfilter(indicators,\
+  \ json_extract_scalar(\"@element\",\"$.type\") = \"command_line\"), 0)\n| alter\
+  \ i_cmd2 = arrayindex(arrayfilter(indicators, json_extract_scalar(\"@element\",\"\
+  $.field\") = \"processCmd\"), 0)\n| alter cmdline = coalesce(json_extract_scalar(i_cmd1,\
+  \ \"$.value\"), json_extract_scalar(i_cmd2, \"$.value\"))\n\n/* sha256 (main) */\n\
+  | alter i_sha = arrayindex(arrayfilter(indicators, json_extract_scalar(\"@element\"\
+  ,\"$.type\") = \"file_sha256\"), 0)\n| alter sha256 = json_extract_scalar(i_sha,\
+  \ \"$.value\")\n\n/* remote ip + domain */\n| alter i_peer = arrayindex(arrayfilter(indicators,\
+  \ json_extract_scalar(\"@element\",\"$.field\") = \"peerIp\"), 0)\n| alter remote_ip_str\
+  \ = json_extract_scalar(i_peer, \"$.value\")\n\n| alter i_dom = arrayindex(arrayfilter(indicators,\
+  \ json_extract_scalar(\"@element\",\"$.field\") = \"domain\"), 0)\n| alter domain\
+  \ = json_extract_scalar(i_dom, \"$.value\")\n\n/* parent process path */\n| alter\
+  \ i_pfp = arrayindex(arrayfilter(indicators, json_extract_scalar(\"@element\",\"\
+  $.field\") = \"parentFilePath\"), 0)\n| alter parent_process_path = json_extract_scalar(i_pfp,\
+  \ \"$.value\")\n| alter parent_process_name = replace(parent_process_path, \"^.*[\\\
+  \\\\\\/]\", \"\")\n\n/* filepath / filename (from registry object or cmdline fallback)\
+  \ */\n| alter i_reg = arrayindex(arrayfilter(indicators, json_extract_scalar(\"\
+  @element\",\"$.field\") = \"objectRegistryData\"), 0)\n| alter reg_path = json_extract_scalar(i_reg,\
+  \ \"$.value\")\n\n| alter filepath =\n    coalesce(\n      reg_path,\n      arrayindex(regextract(cmdline,\
+  \ \"^\\\\s*([^\\\\s]+)\"), 0)\n    )\n| alter filename = replace(filepath, \"^.*[\\\
+  \\\\\\/]\", \"\")\n\n/* convenience */\n| alter ioc_value = coalesce(sha256, null)\n\
+  \n| fields\n    id, workbench_link, alert_name, alert_source, status,\n    investigation_status,\
+  \ investigation_result,\n    score, severity, alert_time, alert_description,\n \
+  \   v1_host_guid, v1_host_name, local_ip, mac_address,\n    user_name, user_id,\n\
+  \    filename, filepath, parent_process_path, parent_process_name, cmdline,\n  \
+  \  sha256, ioc_value, domain, remote_ip_str,\n    mitre_technique, mitre_technique_id,\
+  \ mitre_tactic, mitre_tactic_id, mitre_ids_str\n"

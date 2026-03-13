@@ -1,0 +1,289 @@
+{
+  "custom_packs": [
+    {
+      "id": "soc-trendmicro-visionone.zip",
+      "url": "https://github.com/Palo-Cortex/secops-framework/releases/download/soc-trendmicro-visionone-v1.0.25/soc-trendmicro-visionone-v1.0.25.zip",
+      "system": "yes"
+    }
+  ],
+  "post_config_docs": [
+    {
+      "name": "SOC Trend Micro Vision One Enhancement - Manual Steps",
+      "url": "https://github.com/Palo-Cortex/soc-trendmicro-visionone/blob/main/POST_CONFIG_README.md"
+    }
+  ],
+  "marketplace_packs": [
+    {
+      "id": "TrendMicroVisionOne",
+      "version": "latest"
+    }
+  ],
+  "integration_instances": [
+    {
+      "version": 22,
+      "propagationLabels": [
+        "all"
+      ],
+      "isOverridable": false,
+      "enabled": "true",
+      "name": "Trend Micro Vision One V3_instance_1",
+      "brand": "Trend Micro Vision One V3",
+      "category": "Data Enrichment & Threat Intelligence",
+      "engine": "",
+      "engineGroup": "",
+      "isIntegrationScript": true,
+      "mappingId": "",
+      "outgoingMapperId": "",
+      "incomingMapperId": "",
+      "canSample": true,
+      "defaultIgnore": false,
+      "integrationLogLevel": "",
+      "skipItemsBefore": "0001-01-01T00:00:00Z",
+      "cloudIntegrationInfo": {},
+      "configuration": {
+        "id": "",
+        "version": 0,
+        "cacheVersn": 0,
+        "modified": "0001-01-01T00:00:00Z",
+        "sizeInBytes": 0,
+        "packID": "",
+        "packName": "",
+        "itemVersion": "",
+        "fromServerVersion": "",
+        "toServerVersion": "",
+        "definitionId": "",
+        "isOverridable": false,
+        "vcShouldIgnore": false,
+        "vcShouldKeepItemLegacyProdMachine": false,
+        "commitMessage": "",
+        "shouldCommit": false,
+        "name": "",
+        "prevName": "",
+        "display": "",
+        "brand": "",
+        "category": "",
+        "icon": "",
+        "description": "",
+        "configuration": null,
+        "integrationScript": null,
+        "hidden": false,
+        "canGetSamples": false
+      },
+      "data": [
+        {
+          "section": "Connect",
+          "display": "API URL (e.g. https://api.xdr.trendmicro.com)",
+          "displayPassword": "",
+          "name": "url",
+          "defaultValue": "https://api.xdr.trendmicro.com",
+          "type": 0,
+          "required": true,
+          "hidden": false,
+          "hiddenUsername": false,
+          "hiddenPassword": false,
+          "options": null,
+          "info": "The base url for the Trend Micro Vision One API",
+          "hasvalue": true,
+          "value": "https://api.xdr.trendmicro.com"
+        },
+        {
+          "section": "Collect",
+          "display": "Incidents Fetch Interval",
+          "displayPassword": "",
+          "name": "incidentFetchInterval",
+          "defaultValue": "5",
+          "type": 19,
+          "required": false,
+          "hidden": false,
+          "hiddenUsername": false,
+          "hiddenPassword": false,
+          "options": null,
+          "info": "",
+          "hasvalue": true,
+          "value": "5"
+        },
+        {
+          "section": "Collect",
+          "display": "Severity",
+          "displayPassword": "",
+          "name": "incident_severity",
+          "defaultValue": "any",
+          "type": 15,
+          "required": false,
+          "hidden": false,
+          "hiddenUsername": false,
+          "hiddenPassword": false,
+          "options": [
+            "critical",
+            "high",
+            "medium",
+            "low",
+            "any"
+          ],
+          "info": "Severity of the incident being fetched.",
+          "hasvalue": true,
+          "value": "any"
+        },
+        {
+          "section": "Collect",
+          "display": "Incident type",
+          "displayPassword": "",
+          "name": "incidentType",
+          "defaultValue": "Trend Micro Vision One XDR Incident",
+          "type": 13,
+          "required": false,
+          "hidden": false,
+          "hiddenUsername": false,
+          "hiddenPassword": false,
+          "options": null,
+          "info": "",
+          "hasvalue": false,
+          "value": ""
+        },
+        {
+          "section": "Collect",
+          "display": "Fetch incidents",
+          "displayPassword": "",
+          "name": "isFetch",
+          "defaultValue": "",
+          "type": 8,
+          "required": false,
+          "hidden": false,
+          "hiddenUsername": false,
+          "hiddenPassword": false,
+          "options": null,
+          "info": "",
+          "hasvalue": true,
+          "value": true
+        },
+        {
+          "section": "Collect",
+          "display": "Max Incidents",
+          "displayPassword": "",
+          "name": "max_fetch",
+          "defaultValue": "50",
+          "type": 0,
+          "required": false,
+          "hidden": false,
+          "hiddenUsername": false,
+          "hiddenPassword": false,
+          "options": null,
+          "info": "",
+          "hasvalue": true,
+          "value": "50"
+        },
+        {
+          "section": "Connect",
+          "display": "Use system proxy settings",
+          "displayPassword": "",
+          "name": "proxy",
+          "defaultValue": "false",
+          "type": 8,
+          "required": false,
+          "hidden": false,
+          "hiddenUsername": false,
+          "hiddenPassword": false,
+          "options": null,
+          "info": "",
+          "hasvalue": true,
+          "value": false
+        },
+        {
+          "section": "Connect",
+          "display": "",
+          "displayPassword": "API Key",
+          "name": "apikey",
+          "defaultValue": "",
+          "type": 9,
+          "required": true,
+          "hidden": false,
+          "hiddenUsername": true,
+          "hiddenPassword": false,
+          "options": null,
+          "info": "The API token to access data",
+          "hasvalue": true,
+          "value": {
+            "credential": "",
+            "credentials": {
+              "cacheVersn": 0,
+              "id": "",
+              "locked": false,
+              "modified": "0001-01-01T00:00:00Z",
+              "name": "",
+              "sizeInBytes": 0,
+              "user": "",
+              "vaultInstanceId": "",
+              "version": 0,
+              "workgroup": ""
+            },
+            "identifier": "",
+            "passwordChanged": false
+          }
+        },
+        {
+          "section": "Collect",
+          "display": "Sync On First Run (days)",
+          "displayPassword": "",
+          "name": "first_fetch",
+          "defaultValue": "30",
+          "type": 0,
+          "required": false,
+          "hidden": false,
+          "hiddenUsername": false,
+          "hiddenPassword": false,
+          "options": null,
+          "info": "",
+          "hasvalue": true,
+          "value": "30"
+        },
+        {
+          "section": "Connect",
+          "display": "Trust any certificate (not secure)",
+          "displayPassword": "",
+          "name": "insecure",
+          "defaultValue": "false",
+          "type": 8,
+          "required": false,
+          "hidden": false,
+          "hiddenUsername": false,
+          "hiddenPassword": false,
+          "options": null,
+          "info": "",
+          "hasvalue": true,
+          "value": false
+        },
+        {
+          "section": "Collect",
+          "display": "Source Reliability",
+          "displayPassword": "",
+          "name": "integrationReliability",
+          "defaultValue": "B - Usually reliable",
+          "type": 15,
+          "required": false,
+          "hidden": false,
+          "hiddenUsername": false,
+          "hiddenPassword": false,
+          "options": [
+            "A+ - 3rd party enrichment",
+            "A - Completely reliable",
+            "B - Usually reliable",
+            "C - Fairly reliable",
+            "D - Not usually reliable",
+            "E - Unreliable",
+            "F - Reliability cannot be judged"
+          ],
+          "info": "Reliability of the source providing the intelligence data.",
+          "hasvalue": true,
+          "value": "B - Usually reliable"
+        }
+      ],
+      "passwordProtected": false
+    }
+  ],
+  "pre_config_docs": [
+    {
+      "name": "SOC Trend Micro Enhancement for Cortex XSIAM - Pre-Automation Steps",
+      "url": "https://github.com/Palo-Cortex/soc-trendmicro-visionone/blob/main/PRE_CONFIG_README.md"
+    }
+  ]
+}

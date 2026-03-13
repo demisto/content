@@ -1,0 +1,33 @@
+{
+  "name": "SOC Trend Micro Enhancement for Cortex XSIAM",
+  "id": "soc-trendmicro-visionone",
+  "description": "This contains enhancement content for Trend Micro Vision One including correlation rules, modeling rules, and layout for XSIAM.",
+  "support": "community",
+  "currentVersion": "1.0.25",
+  "author": "Palo Alto Networks",
+  "url": "https://github.com/Palo-Cortex/soc-optimization-unified",
+  "email": "",
+  "categories": [
+    "Endpoint"
+  ],
+  "tags": [
+    "SOC",
+    "SOC_Framework",
+    "Palo Alto Networks Products",
+    "EndPoint"
+  ],
+  "dependencies": {
+    "TrendMicroVisionOneV3": {
+      "mandatory": true,
+      "display_name": "Trend Micro Vision One"
+    },
+    "": {
+      "mandatory": true
+    }
+  },
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "marketplacev2"
+  ]
+}

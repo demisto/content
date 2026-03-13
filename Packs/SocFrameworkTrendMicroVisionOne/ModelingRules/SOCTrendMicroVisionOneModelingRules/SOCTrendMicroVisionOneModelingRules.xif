@@ -1,0 +1,369 @@
+[MODEL: dataset="trend_micro_vision_one_v3_generic_alert_raw"]
+
+/* =========================
+   PART 1 — Workbench alerts
+   ========================= */
+filter alert_provider = "SAE"
+| alter
+  /* arrays from flattened JSON columns */
+  Entities   = json_extract_array(impact_scope,   "$.entities"),
+  Indicators = json_extract_array(indicators,     "$"),
+  Rules      = json_extract_array(matched_rules,  "$")
+| alter
+  /* handy strings built from arrays */
+  matchedRulesIds   = arraystring(arraymap(Rules, json_extract_scalar("@element", "$.id")), ", "),
+  matchedRulesNames = arraystring(arraymap(Rules, json_extract_scalar("@element", "$.name")), ", "),
+
+  identityType = arraystring(
+                  arraydistinct(
+                    arraymap(Entities,
+                      if(json_extract_scalar("@element","$.entity_type") = "host",           "machine",
+                         json_extract_scalar("@element","$.entity_type") = "account",        "user",
+                         json_extract_scalar("@element","$.entity_type") = "emailAddress",   "unknown",
+                                                                                             "unknown")
+                    )
+                  ), ", "),
+
+  entityValueGuidsUserName = arraystring(arraymap(Entities, if(json_extract_scalar("@element","$.entity_type") = "account", json_extract_scalar("@element","$.entity_value.guid"), null)), ", "),
+  entityValuesUserName     = arraystring(arraymap(Entities, if(json_extract_scalar("@element","$.entity_type") = "account", json_extract_scalar("@element","$.entity_value"),       null)), ", "),
+  entityValueNamesUserName = arraystring(arraymap(Entities, if(json_extract_scalar("@element","$.entity_type") = "account", json_extract_scalar("@element","$.entity_value.name"), null)), ", "),
+
+  entityIdsDeviceId          = arraystring(arraymap(Entities, if(json_extract_scalar("@element","$.entity_type") = "host",   json_extract_scalar("@element","$.entity_id"), null)), ", "),
+  entityIdsAccountIdentifier = arraystring(arraymap(Entities, if(json_extract_scalar("@element","$.entity_type") = "account", json_extract_scalar("@element","$.entity_id"), null)), ", "),
+  entityIdsEmailIdentifier   = arraystring(arraymap(Entities, if(json_extract_scalar("@element","$.entity_type") = "emailAddress", json_extract_scalar("@element","$.entity_id"), null)), ", "),
+
+  entityValueGuidsHostname = arraystring(arraymap(Entities, if(json_extract_scalar("@element","$.entity_type") = "host", json_extract_scalar("@element","$.entity_value.guid"), null)), ", "),
+  entityValueNamesHostName = arraystring(arraymap(Entities, if(json_extract_scalar("@element","$.entity_type") = "host", json_extract_scalar("@element","$.entity_value.name"), null)), ", "),
+
+  indicatorsValuesHostname  = arraystring(arraymap(Indicators, if(json_extract_scalar("@element","$.field") = "endpointHostName", json_extract_scalar("@element","$.value"), null)), ", "),
+
+  entityValueGuidsUpn = arraystring(arraymap(Entities, if(json_extract_scalar("@element","$.entity_type") = "emailAddress", json_extract_scalar("@element","$.entity_value.guid"), null)), ", "),
+  entityValueNamesUpn = arraystring(arraymap(Entities, if(json_extract_scalar("@element","$.entity_type") = "emailAddress", json_extract_scalar("@element","$.entity_value.name"), null)), ", "),
+
+  relatedEntities = arraystring(arraymap(Entities, json_extract_scalar("@element","$.relatedEntities")), ", "),
+  provenances     = arraystring(arraydistinct(arraymap(Entities, json_extract_scalar("@element","$.provenance"))), ", "),
+
+  entityValueIps  = arraystring(arraymap(Entities, json_extract_scalar("@element","$.entity_value.ips")), ", "),
+
+  indicatorsValuesProcessName = arraystring(arraymap(Indicators, if(json_extract_scalar("@element","$.field") = "processCmd",  json_extract_scalar("@element","$.value"), null)), ", "),
+  indicatorsValuesProcessId   = arraystring(arraymap(Indicators, if(json_extract_scalar("@element","$.field") = "parentCmd",   json_extract_scalar("@element","$.value"), null)), ", "),
+  indicatorsValuesRegistryKey = arraystring(arraymap(Indicators, if(json_extract_scalar("@element","$.field") = "objectRegistryKeyHandle", json_extract_scalar("@element","$.value"), null)), ", "),
+  indicatorsValuesRegistryVal = arraystring(arraymap(Indicators, if(json_extract_scalar("@element","$.field") = "objectRegistryValue",     json_extract_scalar("@element","$.value"), null)), ", "),
+  indicatorsValuesCommandLine = arraystring(arraymap(Indicators, if(json_extract_scalar("@element","$.field") = "objectCmd",        json_extract_scalar("@element","$.value"), null)), ", "),
+  indicatorsValuesExecPath    = arraystring(arraymap(Indicators, if(json_extract_scalar("@element","$.field") = "processFilePath", json_extract_scalar("@element","$.value"), null)), ", "),
+
+  originalThreatName = arraystring(arraymap(Rules, json_extract_scalar(arrayindex(json_extract_array("@element","$.matched_filters"), 0), "$.name")), ", "),
+  mitreTechniquesRaw = arraymap(Rules, replace(arraystring(json_extract_array(arrayindex(json_extract_array("@element","$.matched_filters"), 0), "$.mitre_technique_ids"), ", "), "\"",""))
+| alter
+  /* Alert core (XDM-compliant) */
+  xdm.alert.name        = coalesce(matchedRulesNames, to_string(model)),
+  xdm.alert.severity    = lowercase(to_string(severity)),  /* standardized value: low/medium/high/critical */
+  xdm.alert.description = concat(
+                            "Triggered by: ", coalesce(matchedRulesNames, to_string(model)),
+                            " | Provider: ", to_string(alert_provider),
+                            " | Score: ", to_string(score),
+                            " | Description: ", to_string(description)
+                          ),
+  xdm.alert.original_threat_name = originalThreatName,
+  xdm.alert.original_alert_id    = matchedRulesIds,
+  xdm.alert.subcategory          = provenances,
+
+  /* Entities → source.* */
+  xdm.source.user.identity_type  = identityType,
+  xdm.source.user.username       = coalesce(entityValuesUserName, entityValueGuidsUserName, entityValueNamesUserName),
+  xdm.source.host.device_id      = entityIdsDeviceId,
+  xdm.source.user.identifier     = coalesce(entityIdsAccountIdentifier, entityIdsEmailIdentifier),
+  xdm.source.host.hostname       = coalesce(entityValueGuidsHostname, entityValueNamesHostName, indicatorsValuesHostname),
+  xdm.source.user.upn            = coalesce(entityValueGuidsUpn, entityValueNamesUpn),
+
+  /* Process / registry / path */
+  xdm.source.process.command_line    = indicatorsValuesCommandLine,
+  xdm.source.process.executable.path = indicatorsValuesExecPath,
+  xdm.source.process.name            = indicatorsValuesProcessName,
+  xdm.source.process.parent_id       = indicatorsValuesProcessId,
+
+  /* App / observer (safe fallback for unique id/type) */
+  xdm.source.application.name    = to_string(alert_provider),
+  xdm.observer.unique_identifier = to_string(
+                                     coalesce(
+                                       json_extract_scalar(matched_rules, "$[0].id"),
+                                       json_extract_scalar(_raw_json, "$.modelId"),
+                                       id
+                                     )
+                                   ),
+  xdm.observer.type              = to_string(coalesce(model_type, json_extract_scalar(_raw_json, "$.model_type"))),
+
+  /* IPs (extract v4/v6 from mixed string) */
+  xdm.source.ipv4 = arrayindex(regextract(entityValueIps, "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"),0),
+  xdm.source.ipv6 = arrayindex(regextract(entityValueIps, "((?:[a-fA-F\\d]{0,4}\\:){2,7}[a-fA-F\\d]{0,4})"),0),
+
+  /* Target/registry/network/event */
+  xdm.target.resource.id        = relatedEntities,
+  xdm.target.registry.key       = indicatorsValuesRegistryKey,
+  xdm.target.registry.value     = indicatorsValuesRegistryVal,
+  xdm.network.http.url          = to_string(workbench_link),
+  xdm.event.id                  = to_string(id),
+  xdm.event.outcome_reason      = coalesce(to_string(investigation_status),
+                                           concat(to_string(status), ", ", to_string(investigation_result))),
+  xdm.event.type                = to_string(model),
+  xdm.event.description         = coalesce(originalThreatName, matchedRulesNames, to_string(description)),
+  xdm.event.original_event_type = "workbench",
+
+  /* MITRE technique names (sample map) */
+  xdm.alert.mitre_techniques =
+    arraymap(mitreTechniquesRaw,
+      if("@element" ~= "T1059",       "COMMAND_AND_SCRIPTING_INTERPRETER",
+      "@element" ~= "T1059.001",      "COMMAND_AND_SCRIPTING_INTERPRETER_POWERSHELL",
+      "@element" ~= "T1059.003",      "COMMAND_AND_SCRIPTING_INTERPRETER_WINDOWS_COMMAND_SHELL",
+      "@element" ~= "T1548",          "ABUSE_ELEVATION_CONTROL_MECHANISM",
+                                       "@element"))
+;
+
+/* =================================
+   PART 2 — Search detection alerts
+   ================================= */
+filter alert_provider = "SAE"
+| alter
+  /* pull everything that wasn’t flattened directly from _raw_json */
+  mitre_tactics_raw = arraymap(json_extract_array(_raw_json, "$.mitreMapping"), replace("@element","\"","")),
+
+  extract_target_ip = replace(
+    arraystring(
+      arraymap(json_extract_array(_raw_json, "$.dst"),
+        if("@element" not contains ":", "@element", null)
+      ),
+      ", "
+    ),
+    "\"",""
+  ),
+
+  extract_source_ipv4 = coalesce(
+    replace(
+      arraystring(
+        arraymap(json_extract_array(_raw_json, "$.mDevice"),
+          if("@element" not contains ":", "@element", null)
+        ),
+        ", "
+      ),
+      "\"",""
+    ),
+    replace(
+      arraystring(
+        arraymap(json_extract_array(_raw_json, "$.src"),
+          if("@element" not contains ":", "@element", null)
+        ),
+        ","
+      ),
+      "\"",""
+    )
+  ),
+
+  extract_source_ipv6 = replace(
+    arraystring(
+      arraymap(json_extract_array(_raw_json, "$.mDevice"),
+        if("@element" contains ":", "@element", null)
+      ),
+      ", "
+    ),
+    "\"",""
+  )
+| alter
+  xdm.alert.severity                 = lowercase(coalesce(to_string(json_extract_scalar(_raw_json,"$.cat")),
+                                                      to_string(json_extract_scalar(_raw_json,"$.severity")))),
+  xdm.alert.original_threat_name     = coalesce(to_string(json_extract_scalar(_raw_json,"$.behaviorCat")),
+                                                to_string(json_extract_scalar(_raw_json,"$.malName"))),
+  xdm.alert.subcategory              = to_string(json_extract_scalar(_raw_json,"$.malType")),
+  xdm.alert.name                     = to_string(json_extract_scalar(_raw_json,"$.threatName")),
+  xdm.alert.description              = concat(
+                                         "Provider: SAE | Score: ",
+                                         to_string(json_extract_scalar(_raw_json,"$.score")),
+                                         " | Description: ",
+                                         to_string(json_extract_scalar(_raw_json,"$.eventName"))
+                                       ),
+  xdm.alert.original_alert_id        = to_string(json_extract_scalar(_raw_json,"$.uuid")),
+
+  xdm.source.process.executable.signer = to_string(json_extract_scalar(_raw_json,"$.processSigner")),
+  xdm.source.user_agent               = to_string(json_extract_scalar(_raw_json,"$.requestClientApplication")),
+  xdm.source.process.executable.md5   = to_string(json_extract_scalar(_raw_json,"$.objectFileHashMd5")),
+  xdm.source.process.executable.sha256= to_string(json_extract_scalar(_raw_json,"$.objectFileHashSha256")),
+  xdm.source.host.device_id           = to_string(json_extract_scalar(_raw_json,"$.endpointGUID")),
+
+  xdm.source.ipv6 = arrayindex(regextract(extract_source_ipv6, "((?:[a-fA-F\\d]{0,4}\\:){2,7}[a-fA-F\\d]{0,4})"),0),
+  xdm.source.ipv4 = arrayindex(regextract(extract_source_ipv4, "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"),0),
+
+  xdm.source.process.pid             = to_integer(json_extract_scalar(_raw_json,"$.processPid")),
+  xdm.source.port                    = to_integer(json_extract_scalar(_raw_json,"$.spt")),
+  xdm.source.agent.version           = replace(arraystring(json_extract_array(_raw_json,"$.component"), ", "), "\"",""),
+  xdm.source.process.name            = coalesce(to_string(json_extract_scalar(_raw_json,"$.deviceProcessName")),
+                                                to_string(json_extract_scalar(_raw_json,"$.processName"))),
+  xdm.source.host.mac_addresses      = coalesce(split(to_string(json_extract_scalar(_raw_json,"$.smac"))),
+                                                split(to_string(json_extract_scalar(_raw_json,"$.deviceMacAddress"))),
+                                                split(to_string(json_extract_scalar(_raw_json,"$.endpointMacAddress"))),
+                                                split(to_string(json_extract_scalar(_raw_json,"$.interestedMacAddress")))),
+
+  xdm.source.user.domain             = to_string(json_extract_scalar(_raw_json,"$.domainName")),
+  xdm.source.user.identifier         = to_string(json_extract_scalar(_raw_json,"$.senderGUID")),
+  xdm.source.host.hostname           = coalesce(to_string(json_extract_scalar(_raw_json,"$.endpointHostName")),
+                                                to_string(json_extract_scalar(_raw_json,"$.hostName")),
+                                                to_string(json_extract_scalar(_raw_json,"$.shost"))),
+  xdm.source.host.ipv4_addresses     = arraymap(json_extract_array(_raw_json,"$.endpointIp"), replace("@element","\"","")),
+  xdm.source.host.os                 = to_string(json_extract_scalar(_raw_json,"$.sOSName")),
+
+  xdm.source.process.executable.filename = replace(arraystring(json_extract_array(_raw_json,"$.fileName"), ", "), "\"",""),
+  xdm.source.process.executable.path     = to_string(json_extract_scalar(_raw_json,"$.filePath")),
+  xdm.source.process.command_line        = coalesce(replace(arraystring(json_extract_array(_raw_json,"$.objectCmd"), ", "), "\"",""),
+                                                    to_string(json_extract_scalar(_raw_json,"$.processCmd"))),
+
+  xdm.source.vlan                   = to_integer(json_extract_scalar(_raw_json,"$.vLANId")),
+  xdm.intermediate.process.executable.path = to_string(json_extract_scalar(_raw_json,"$.processFilePath")),
+
+  xdm.target.port                   = to_integer(json_extract_scalar(_raw_json,"$.dpt")),
+  xdm.target.ipv4                   = arrayindex(regextract(extract_target_ip, "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"),0),
+  xdm.target.ipv6                   = arrayindex(regextract(extract_target_ip, "((?:[a-fA-F\\d]{0,4}\\:){2,7}[a-fA-F\\d]{0,4})"),0),
+  xdm.target.host.hostname          = to_string(json_extract_scalar(_raw_json,"$.dhost")),
+  xdm.target.host.mac_addresses     = arraycreate(to_string(json_extract_scalar(_raw_json,"$.dmac"))),
+
+  xdm.target.host.os                = to_string(json_extract_scalar(_raw_json,"$.dOSName")),
+  xdm.target.file_before.size       = to_integer(json_extract_scalar(_raw_json,"$.fileSize")),
+  xdm.target.file.size              = to_integer(json_extract_scalar(_raw_json,"$.compressedFileSize")),
+  xdm.target.file.path              = to_string(json_extract_scalar(_raw_json,"$.filePathName")),
+  xdm.target.module.filename        = coalesce(to_string(json_extract_scalar(_raw_json,"$.objectFileName")),
+                                               to_string(json_extract_scalar(_raw_json,"$.objectName"))),
+  xdm.target.module.path            = to_string(json_extract_scalar(_raw_json,"$.objectFilePath")),
+  xdm.target.module.signer          = replace(arraystring(json_extract_array(_raw_json,"$.objectSigner"), ", "), "\"",""),
+
+  xdm.network.application_protocol          = to_string(json_extract_scalar(_raw_json,"$.app")),
+  xdm.network.application_protocol_category = to_string(json_extract_scalar(_raw_json,"$.appGroup")),
+  xdm.network.http.url                      = to_string(json_extract_scalar(_raw_json,"$.request")),
+  xdm.network.http.referrer                 = to_string(json_extract_scalar(_raw_json,"$.httpReferer")),
+  xdm.network.tls.protocol_version          = to_string(json_extract_scalar(_raw_json,"$.overSsl")),
+  xdm.network.rule                          = to_string(json_extract_scalar(_raw_json,"$.ruleName")),
+
+  xdm.observer.unique_identifier            = to_string(json_extract_scalar(_raw_json,"$.deviceGUID")),
+  xdm.observer.content_version              = to_string(json_extract_scalar(_raw_json,"$.pname")),
+  xdm.observer.type                         = to_string(json_extract_scalar(_raw_json,"$.mpname")),
+  xdm.observer.version                      = to_string(json_extract_scalar(_raw_json,"$.mpver")),
+  xdm.observer.action                       = to_string(json_extract_scalar(_raw_json,"$.actResult")),
+
+  xdm.event.id                   = to_string(json_extract_scalar(_raw_json,"$.eventId")),
+  xdm.event.description          = to_string(json_extract_scalar(_raw_json,"$.eventName")),
+  xdm.event.operation_sub_type   = to_string(json_extract_scalar(_raw_json,"$.eventSubName")),
+  xdm.event.type                 = to_string(json_extract_scalar(_raw_json,"$.blocking")),
+  xdm.event.outcome_reason       = replace(arraystring(json_extract_array(_raw_json,"$.act"), ", "), "\"",""),
+  xdm.event.original_event_type  = "search_detection",
+
+  xdm.alert.mitre_tactics = arraymap(mitre_tactics_raw,
+      if("@element" ~= "TA0009","COLLECTION",
+      "@element" ~= "TA0011","COMMAND_AND_CONTROL",
+      "@element" ~= "TA0006","CREDENTIAL_ACCESS",
+      "@element"))
+;
+
+/* ===========================================
+   PART 3 — Observed attack technique alerts
+   =========================================== */
+filter alert_provider = "SAE"
+| alter
+  mitreTechniquesRaw =
+    arraymap(
+      json_extract_array(_raw_json, "$.filters"),
+      replace(arraystring(json_extract_array("@element","$.mitreTechniqueIds"), ", "), "\"","")
+    ),
+  mitreTacticsRaw =
+    arraymap(
+      json_extract_array(_raw_json, "$.filters"),
+      replace(arraystring(json_extract_array("@element","$.mitreTacticIds"), ", "), "\"","")
+    ),
+
+  extract_source_ipv4 = coalesce(
+                          replace(arraystring(arraymap(json_extract_array(_raw_json,"$.endpoint.ips"), if("@element" not contains ":", "@element", null)), ", "), "\"",""),
+                          replace(arraystring(arraymap(json_extract_array(_raw_json,"$.endpoint.endpointIp"), if("@element" not contains ":", "@element", null)), ", "), "\"",""),
+                          to_string(json_extract_scalar(_raw_json,"$.detail.src")),
+                          to_string(arrayindex(json_extract_array(_raw_json,"$.senderIp"),0))
+                        ),
+  extract_source_ipv6 =
+    replace(arraystring(arraymap(json_extract_array(_raw_json,"$.endpoint.ips"), if("@element" contains ":", "@element", null)), ", "), "\"","")
+
+| alter
+  xdm.alert.name            = arraystring(arraymap(json_extract_array(_raw_json,"$.filters"), json_extract_scalar("@element","$.name")), ", "),
+  xdm.alert.description     = concat(
+                                 "Triggered by: ",
+                                 arraystring(arraymap(json_extract_array(_raw_json,"$.filters"), json_extract_scalar("@element","$.name")), ", "),
+                                 " | Provider: SAE | Score: ",
+                                 to_string(json_extract_scalar(_raw_json,"$.score")),
+                                 " | Details: ",
+                                 arraystring(arraymap(json_extract_array(_raw_json,"$.filters"), json_extract_scalar("@element","$.description")), ", ")
+                               ),
+  xdm.alert.severity        = lowercase(arraystring(arraymap(json_extract_array(_raw_json,"$.filters"), json_extract_scalar("@element","$.riskLevel")), ", ")),
+  xdm.alert.subcategory     = to_string(json_extract_scalar(_raw_json,"$.detail.malType")),
+
+  xdm.source.port                 = to_integer(json_extract_scalar(_raw_json,"$.detail.spt")),
+  xdm.source.agent.identifier     = to_string(json_extract_scalar(_raw_json,"$.endpoint.agentGuid")),
+  xdm.source.host.os              = to_string(json_extract_scalar(_raw_json,"$.detail.osName")),
+  xdm.source.host.hostname        = to_string(json_extract_scalar(_raw_json,"$.detail.shost")),
+  xdm.source.process.name         = to_string(json_extract_scalar(_raw_json,"$.detail.processName")),
+  xdm.source.process.pid          = to_integer(json_extract_scalar(_raw_json,"$.detail.processPid")),
+  xdm.source.user.username        = coalesce(to_string(json_extract_scalar(_raw_json,"$.detail.processUser")),
+                                             to_string(json_extract_scalar(_raw_json,"$.detail.objectUser"))),
+  xdm.source.user.domain          = coalesce(to_string(json_extract_scalar(_raw_json,"$.detail.processUserDomain")),
+                                             to_string(json_extract_scalar(_raw_json,"$.detail.objectUserDomain"))),
+  xdm.source.user.identifier      = to_string(json_extract_scalar(_raw_json,"$.detail.senderGUID")),
+  xdm.source.process.command_line = to_string(json_extract_scalar(_raw_json,"$.detail.processCmd")),
+  xdm.source.process.executable.path   = to_string(json_extract_scalar(_raw_json,"$.detail.processFilePath")),
+  xdm.source.process.executable.sha256 = to_string(json_extract_scalar(_raw_json,"$.detail.processFileHashSha256")),
+  xdm.source.process.executable.md5    = to_string(json_extract_scalar(_raw_json,"$.detail.processFileHashMd5")),
+  xdm.source.process.executable.size   = to_integer(json_extract_scalar(_raw_json,"$.detail.processFileSize")),
+  xdm.source.process.executable.file_type = to_string(json_extract_scalar(_raw_json,"$.detail.processTrueType")),
+
+  xdm.source.ipv6 = arrayindex(regextract(extract_source_ipv6, "((?:[a-fA-F\\d]{0,4}\\:){2,7}[a-fA-F\\d]{0,4})"),0),
+  xdm.source.ipv4 = arrayindex(regextract(extract_source_ipv4, "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"),0),
+
+  xdm.source.host.mac_addresses = coalesce(
+                                    arraycreate(to_string(json_extract_scalar(_raw_json,"$.detail.smac"))),
+                                    arraymap(json_extract_array(_raw_json,"$.detail.endpointMacAddress"), replace("@element","\"","")),
+                                    arraycreate(to_string(json_extract_scalar(_raw_json,"$.detail.deviceMacAddress")))
+                                  ),
+
+  xdm.source.process.executable.signer = replace(arraystring(json_extract_array(_raw_json,"$.detail.processSigner"), ","), "\"",""),
+  xdm.source.process.executable.signature_status =
+      arraystring(arraymap(json_extract_array(_raw_json,"$.detail.processSignerValid"),
+        if("@element" = "true",  "signed_verified",
+           "@element" = "false", "signed_invalid",
+                                  "status_unknown")), ", "),
+
+  xdm.source.vlan                  = to_integer(json_extract_scalar(_raw_json,"$.detail.vLANId")),
+
+  xdm.target.file.path            = to_string(json_extract_scalar(_raw_json,"$.detail.objectFilePath")),
+  xdm.target.host.mac_addresses   = arraycreate(to_string(json_extract_scalar(_raw_json,"$.detail.dmac"))),
+  xdm.target.module.sha256        = to_string(json_extract_scalar(_raw_json,"$.detail.objectFileHashSha256")),
+  xdm.target.module.md5           = to_string(json_extract_scalar(_raw_json,"$.detail.objectFileHashMd5")),
+  xdm.target.module.filename      = to_string(json_extract_scalar(_raw_json,"$.detail.objectName")),
+  xdm.target.module.path          = to_string(json_extract_scalar(_raw_json,"$.detail.srcFilePath")),
+  xdm.target.module.signer        = replace(arraystring(json_extract_array(_raw_json,"$.detail.objectSigner"), ", "), "\"",""),
+  xdm.target.file_before.size     = to_integer(json_extract_scalar(_raw_json,"$.detail.fileSize")),
+  xdm.target.file.size            = to_integer(json_extract_scalar(_raw_json,"$.detail.compressedFileSize")),
+
+  xdm.network.session_id                 = to_string(json_extract_scalar(_raw_json,"$.detail.sessionId")),
+  xdm.network.application_protocol       = to_string(json_extract_scalar(_raw_json,"$.detail.app")),
+  xdm.network.application_protocol_category = to_string(json_extract_scalar(_raw_json,"$.detail.appGroup")),
+  xdm.network.rule                       = to_string(json_extract_scalar(_raw_json,"$.detail.ruleName")),
+  xdm.network.tls.protocol_version       = to_string(json_extract_scalar(_raw_json,"$.detail.overSsl")),
+
+  xdm.session_context_id           = to_string(json_extract_scalar(_raw_json,"$.uuid")),
+  xdm.event.id                     = to_string(json_extract_scalar(_raw_json,"$.uuid")),
+  xdm.event.description            = to_string(json_extract_scalar(_raw_json,"$.detail.eventName")),
+  xdm.event.outcome_reason         = to_string(json_extract_scalar(_raw_json,"$.detail.act[0]")),
+  xdm.event.type                   = to_string(json_extract_scalar(_raw_json,"$.source")),
+  xdm.event.original_event_type    = "observed_attack_technique",
+
+  xdm.alert.mitre_tactics =
+    arraymap(mitreTacticsRaw,
+      if("@element" ~= "TA0002","EXECUTION",
+      "@element" ~= "TA0005","DEFENSE_EVASION",
+                               "@element")),
+  xdm.alert.mitre_techniques =
+    arraymap(mitreTechniquesRaw,
+      if("@element" ~= "T1055","PROCESS_INJECTION",
+      "@element" ~= "T1047","WINDOWS_MANAGEMENT_INSTRUMENTATION",
+                               "@element"))
+;

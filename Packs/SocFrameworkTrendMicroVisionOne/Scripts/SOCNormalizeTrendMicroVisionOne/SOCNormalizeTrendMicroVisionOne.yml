@@ -1,0 +1,24 @@
+comment: |
+  Normalize alert context into a single Normalized key for vendor-agnostic layouts. Extends with MITRE, Impact Scope, Artifacts, Timeline, and Model from VisionOne.Alert_Details.alert and merges ExtractedIndicators. Read-only; does not execute any response actions.
+commonfields:
+  id: SOCNormalizeTrendMicroVisionOne
+  version: -1
+dockerimage: demisto/python3
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: SOCNormalizeTrendMicroVisionOne
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- normalization
+- context
+- SOC
+- SOC_Framework
+- Trend Micro Vision One
+type: python
+fromversion: 6.10.0

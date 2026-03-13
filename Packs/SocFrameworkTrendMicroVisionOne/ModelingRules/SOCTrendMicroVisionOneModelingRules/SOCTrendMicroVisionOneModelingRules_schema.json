@@ -1,0 +1,484 @@
+{
+  "trend_micro_vision_one_v3_generic_alert_raw": {
+    "alert_provider": {
+      "type": "string",
+      "is_array": false
+    },
+    "impact_scope": {
+      "type": "json",
+      "is_array": false
+    },
+    "indicators": {
+      "type": "json",
+      "is_array": false
+    },
+    "matched_rules": {
+      "type": "json",
+      "is_array": false
+    },
+    "_raw_json": {
+      "type": "json",
+      "is_array": false
+    },
+    "id": {
+      "type": "string",
+      "is_array": false
+    },
+    "model": {
+      "type": "string",
+      "is_array": false
+    },
+    "model_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "severity": {
+      "type": "string",
+      "is_array": false
+    },
+    "status": {
+      "type": "string",
+      "is_array": false
+    },
+    "investigation_status": {
+      "type": "string",
+      "is_array": false
+    },
+    "investigation_result": {
+      "type": "string",
+      "is_array": false
+    },
+    "description": {
+      "type": "string",
+      "is_array": false
+    },
+    "workbench_link": {
+      "type": "string",
+      "is_array": false
+    },
+    "score": {
+      "type": "string",
+      "is_array": false
+    },
+    "Entities": {
+      "type": "string",
+      "is_array": false
+    },
+    "Indicators": {
+      "type": "string",
+      "is_array": false
+    },
+    "Rules": {
+      "type": "string",
+      "is_array": false
+    },
+    "action": {
+      "type": "string",
+      "is_array": false
+    },
+    "agent": {
+      "type": "string",
+      "is_array": false
+    },
+    "alert": {
+      "type": "string",
+      "is_array": false
+    },
+    "application": {
+      "type": "string",
+      "is_array": false
+    },
+    "application_protocol": {
+      "type": "string",
+      "is_array": false
+    },
+    "application_protocol_category": {
+      "type": "string",
+      "is_array": false
+    },
+    "command_line": {
+      "type": "string",
+      "is_array": false
+    },
+    "contains": {
+      "type": "string",
+      "is_array": false
+    },
+    "content_version": {
+      "type": "string",
+      "is_array": false
+    },
+    "dataset": {
+      "type": "string",
+      "is_array": false
+    },
+    "device_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "domain": {
+      "type": "string",
+      "is_array": false
+    },
+    "entityIdsAccountIdentifier": {
+      "type": "string",
+      "is_array": false
+    },
+    "entityIdsDeviceId": {
+      "type": "string",
+      "is_array": false
+    },
+    "entityIdsEmailIdentifier": {
+      "type": "string",
+      "is_array": false
+    },
+    "entityValueGuidsHostname": {
+      "type": "string",
+      "is_array": false
+    },
+    "entityValueGuidsUpn": {
+      "type": "string",
+      "is_array": false
+    },
+    "entityValueGuidsUserName": {
+      "type": "string",
+      "is_array": false
+    },
+    "entityValueIps": {
+      "type": "string",
+      "is_array": false
+    },
+    "entityValueNamesHostName": {
+      "type": "string",
+      "is_array": false
+    },
+    "entityValueNamesUpn": {
+      "type": "string",
+      "is_array": false
+    },
+    "entityValueNamesUserName": {
+      "type": "string",
+      "is_array": false
+    },
+    "entityValuesUserName": {
+      "type": "string",
+      "is_array": false
+    },
+    "event": {
+      "type": "string",
+      "is_array": false
+    },
+    "executable": {
+      "type": "string",
+      "is_array": false
+    },
+    "extract_source_ipv4": {
+      "type": "string",
+      "is_array": false
+    },
+    "extract_source_ipv6": {
+      "type": "string",
+      "is_array": false
+    },
+    "extract_target_ip": {
+      "type": "string",
+      "is_array": false
+    },
+    "file": {
+      "type": "string",
+      "is_array": false
+    },
+    "file_before": {
+      "type": "string",
+      "is_array": false
+    },
+    "file_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "filename": {
+      "type": "string",
+      "is_array": false
+    },
+    "host": {
+      "type": "string",
+      "is_array": false
+    },
+    "hostname": {
+      "type": "string",
+      "is_array": false
+    },
+    "http": {
+      "type": "string",
+      "is_array": false
+    },
+    "identifier": {
+      "type": "string",
+      "is_array": false
+    },
+    "identityType": {
+      "type": "string",
+      "is_array": false
+    },
+    "identity_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "indicatorsValuesCommandLine": {
+      "type": "string",
+      "is_array": false
+    },
+    "indicatorsValuesExecPath": {
+      "type": "string",
+      "is_array": false
+    },
+    "indicatorsValuesHostname": {
+      "type": "string",
+      "is_array": false
+    },
+    "indicatorsValuesProcessId": {
+      "type": "string",
+      "is_array": false
+    },
+    "indicatorsValuesProcessName": {
+      "type": "string",
+      "is_array": false
+    },
+    "indicatorsValuesRegistryKey": {
+      "type": "string",
+      "is_array": false
+    },
+    "indicatorsValuesRegistryVal": {
+      "type": "string",
+      "is_array": false
+    },
+    "intermediate": {
+      "type": "string",
+      "is_array": false
+    },
+    "ipv4": {
+      "type": "string",
+      "is_array": false
+    },
+    "ipv4_addresses": {
+      "type": "string",
+      "is_array": false
+    },
+    "ipv6": {
+      "type": "string",
+      "is_array": false
+    },
+    "key": {
+      "type": "string",
+      "is_array": false
+    },
+    "mac_addresses": {
+      "type": "string",
+      "is_array": false
+    },
+    "matchedRulesIds": {
+      "type": "string",
+      "is_array": false
+    },
+    "matchedRulesNames": {
+      "type": "string",
+      "is_array": false
+    },
+    "md5": {
+      "type": "string",
+      "is_array": false
+    },
+    "mitreTacticsRaw": {
+      "type": "string",
+      "is_array": false
+    },
+    "mitreTechniquesRaw": {
+      "type": "string",
+      "is_array": false
+    },
+    "mitre_tactics": {
+      "type": "string",
+      "is_array": false
+    },
+    "mitre_tactics_raw": {
+      "type": "string",
+      "is_array": false
+    },
+    "mitre_techniques": {
+      "type": "string",
+      "is_array": false
+    },
+    "module": {
+      "type": "string",
+      "is_array": false
+    },
+    "name": {
+      "type": "string",
+      "is_array": false
+    },
+    "network": {
+      "type": "string",
+      "is_array": false
+    },
+    "observer": {
+      "type": "string",
+      "is_array": false
+    },
+    "operation_sub_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "originalThreatName": {
+      "type": "string",
+      "is_array": false
+    },
+    "original_alert_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "original_event_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "original_threat_name": {
+      "type": "string",
+      "is_array": false
+    },
+    "os": {
+      "type": "string",
+      "is_array": false
+    },
+    "outcome_reason": {
+      "type": "string",
+      "is_array": false
+    },
+    "parent_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "path": {
+      "type": "string",
+      "is_array": false
+    },
+    "pid": {
+      "type": "string",
+      "is_array": false
+    },
+    "port": {
+      "type": "string",
+      "is_array": false
+    },
+    "process": {
+      "type": "string",
+      "is_array": false
+    },
+    "protocol_version": {
+      "type": "string",
+      "is_array": false
+    },
+    "provenances": {
+      "type": "string",
+      "is_array": false
+    },
+    "referrer": {
+      "type": "string",
+      "is_array": false
+    },
+    "registry": {
+      "type": "string",
+      "is_array": false
+    },
+    "relatedEntities": {
+      "type": "string",
+      "is_array": false
+    },
+    "resource": {
+      "type": "string",
+      "is_array": false
+    },
+    "rule": {
+      "type": "string",
+      "is_array": false
+    },
+    "session_context_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "session_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "sha256": {
+      "type": "string",
+      "is_array": false
+    },
+    "signature_status": {
+      "type": "string",
+      "is_array": false
+    },
+    "signer": {
+      "type": "string",
+      "is_array": false
+    },
+    "size": {
+      "type": "string",
+      "is_array": false
+    },
+    "source": {
+      "type": "string",
+      "is_array": false
+    },
+    "subcategory": {
+      "type": "string",
+      "is_array": false
+    },
+    "target": {
+      "type": "string",
+      "is_array": false
+    },
+    "tls": {
+      "type": "string",
+      "is_array": false
+    },
+    "type": {
+      "type": "string",
+      "is_array": false
+    },
+    "unique_identifier": {
+      "type": "string",
+      "is_array": false
+    },
+    "upn": {
+      "type": "string",
+      "is_array": false
+    },
+    "url": {
+      "type": "string",
+      "is_array": false
+    },
+    "user": {
+      "type": "string",
+      "is_array": false
+    },
+    "user_agent": {
+      "type": "string",
+      "is_array": false
+    },
+    "username": {
+      "type": "string",
+      "is_array": false
+    },
+    "value": {
+      "type": "string",
+      "is_array": false
+    },
+    "version": {
+      "type": "string",
+      "is_array": false
+    },
+    "vlan": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}
