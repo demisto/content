@@ -1,0 +1,136 @@
+{
+    "nvidia_doca_argus_raw": {
+      "vendor_name": {
+        "type": "string",
+        "is_array": false
+      },
+      "product_name": {
+        "type": "string",
+        "is_array": false
+      },
+      "product_version": {
+        "type": "string",
+        "is_array": false
+      },
+      "message_type": {
+        "type": "string",
+        "is_array": false
+      },
+      "severity": {
+        "type": "string",
+        "is_array": false
+      },
+      "message_id": {
+        "type": "string",
+        "is_array": false
+      },
+      "occurred_message_time_iso_8601_ns": {
+        "type": "string",
+        "is_array": false
+      },
+      "bluefield_network_interface_name": {
+        "type": "string",
+        "is_array": false
+      },
+      "bluefield_network_interface_mac_address": {
+        "type": "string",
+        "is_array": false
+      },
+      "bluefield_network_interface_ipv4_address": {
+        "type": "string",
+        "is_array": false
+      },
+      "bluefield_network_interface_ipv6_address": {
+        "type": "string",
+        "is_array": false
+      },
+      "unique_identifier": {
+        "type": "string",
+        "is_array": false
+      },
+      "os_version": {
+        "type": "string",
+        "is_array": false
+      },
+      "workload_network_interface_name": {
+        "type": "string",
+        "is_array": false
+      },
+      "workload_network_interface_mac_address": {
+        "type": "string",
+        "is_array": false
+      },
+      "workload_network_interface_ipv4_address": {
+        "type": "string",
+        "is_array": false
+      },
+      "name": {
+        "type": "string",
+        "is_array": false
+      },
+      "activity_data": {
+        "type": "string",
+        "is_array": false
+      },
+      "process_details": {
+        "type": "string",
+        "is_array": false
+      },
+      "process_name": {
+        "type": "string",
+        "is_array": false
+      },
+      "process_command_line_arguments": {
+        "type": "string",
+        "is_array": false
+      },
+      "process_hash_sha256": {
+        "type": "string",
+        "is_array": false
+      },
+      "process_hash_md5": {
+        "type": "string",
+        "is_array": false
+      },
+      "process_execution_path": {
+        "type": "string",
+        "is_array": false
+      },
+      "network_connection_details": {
+        "type": "string",
+        "is_array": false
+      },
+      "protocol": {
+        "type": "string",
+        "is_array": false
+      },
+      "source_ip_address": {
+        "type": "string",
+        "is_array": false
+      },
+      "source_port": {
+        "type": "string",
+        "is_array": false
+      },
+      "destination_ip_address": {
+        "type": "string",
+        "is_array": false
+      },
+      "workload_network_interface_ipv6_address": {
+        "type": "string",
+        "is_array": false
+      },
+      "destination_port": {
+        "type": "string",
+        "is_array": false
+      },
+      "workload_information": {
+        "type": "string",
+        "is_array": false
+      },
+      "bluefield_system_information": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

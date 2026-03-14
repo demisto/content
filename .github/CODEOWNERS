@@ -1,3 +1,7 @@
+
+# Development
+**/AGENTS.md @yuvalbenshalom @ShahafBenYakir
+
 # Marketplace Related - Marketplace PMs only
 /Config/approved_tags.json @israelpoli @demisto/content-leaders
 /Config/approved_usecases.json @israelpoli @demisto/content-leaders
@@ -55,8 +59,8 @@
 /Packs/CommonScripts/Scripts/UnEscapeIPs/* @Ni-Knight
 
 # SDK Related
-.pre-commit-config_template.yaml @YuvHayun @yedidyacohenpalo
-validation_config.toml @YuvHayun @yedidyacohenpalo
+.pre-commit-config_template.yaml @yedidyacohenpalo
+validation_config.toml @yedidyacohenpalo
 
 # XDR Related
 /Packs/CortexXDR/Integrations/ @jlevypaloalto
@@ -188,3 +192,4 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavo
 /Packs/MicrosoftGraphDeviceManagement @Moish-Gilboa
 /Packs/MicrosoftIntune @Moish-Gilboa
 /Packs/AzureSecurityCenter @Moish-Gilboa
+

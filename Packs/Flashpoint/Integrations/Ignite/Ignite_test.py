@@ -1212,7 +1212,8 @@ def test_filename_empty_response(mock_return, requests_mock, mocker):
 
 
 @patch("demistomock.results")
-def test_domain_lookup_command_success(mock_return, requests_mock, mocker):
+@pytest.mark.parametrize("exact_match", [True, False])
+def test_domain_lookup_command_success(mock_return, requests_mock, mocker, exact_match):
     """
     Test case for successful execution of domain look up command through main function
     when it returns reputation about given domain indicator.
@@ -1234,12 +1235,17 @@ def test_domain_lookup_command_success(mock_return, requests_mock, mocker):
 
     requests_mock.get(url, json=domain_lookup_reputation, status_code=200)
     params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
-    args = {"domain": "dummy_domain.com"}
+    domain_value = "dummy_domain.com"
+    args = {"domain": domain_value, "exact_match": exact_match}
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "command", return_value="domain")
     mocker.patch.object(demisto, "args", return_value=args)
 
     main()
+
+    last_request = requests_mock.last_request
+    domain_value = f'"{domain_value}"' if exact_match else domain_value
+    assert last_request.qs["ioc_value"] == [domain_value]
 
     assert hr_output_for_domain_lookup_reputation == mock_return.call_args.args[0].get("HumanReadable")
     assert domain_lookup_reputation_context == mock_return.call_args.args[0].get("EntryContext")
@@ -1306,7 +1312,8 @@ def test_domain_lookup_command_when_invalid_value_is_provided(mocker):
 
 
 @patch("demistomock.results")
-def test_ip_lookup_command_success(mock_return, requests_mock, mocker):
+@pytest.mark.parametrize("exact_match", [True, False])
+def test_ip_lookup_command_success(mock_return, requests_mock, mocker, exact_match):
     """
     Test case for successful execution of ip look up command through main function
     when it returns reputation about given ip indicator.
@@ -1327,12 +1334,17 @@ def test_ip_lookup_command_success(mock_return, requests_mock, mocker):
     url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
     requests_mock.get(url, json=ip_lookup_reputation, status_code=200)
     params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
-    args = {"ip": "0.0.0.1"}
+    ip_value = "0.0.0.1"
+    args = {"ip": ip_value, "exact_match": exact_match}
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "command", return_value="ip")
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch("Ignite.is_ip_address_internal", return_value=False)
     main()
+
+    last_request = requests_mock.last_request
+    ip_value = f'"{ip_value}"' if exact_match else ip_value
+    assert last_request.qs["ioc_value"] == [ip_value]
 
     assert hr_output_for_ip_lookup_reputation == mock_return.call_args.args[0].get("HumanReadable")
     assert ip_lookup_reputation_context == mock_return.call_args.args[0].get("EntryContext")
@@ -1761,7 +1773,8 @@ def test_indicator_get_command_when_invalid_value_is_provided(mocker):
 
 
 @patch("demistomock.results")
-def test_url_lookup_command_success(mock_return, requests_mock, mocker):
+@pytest.mark.parametrize("exact_match", [True, False])
+def test_url_lookup_command_success(mock_return, requests_mock, mocker, exact_match):
     """
     Test case for successful execution of url lookup command through main function
     when it returns reputation about given url.
@@ -1781,12 +1794,18 @@ def test_url_lookup_command_success(mock_return, requests_mock, mocker):
 
     requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}', json=url_reputation, status_code=200)
     params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
-    args = {"url": "http://dummy.com"}
+    url_value = "http://dummy.com"
+    args = {"url": url_value, "exact_match": exact_match}
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "command", return_value="url")
     mocker.patch.object(demisto, "args", return_value=args)
 
     main()
+
+    last_request = requests_mock.last_request
+    url_value = f'"{url_value}"' if exact_match else url_value
+    assert last_request.qs["ioc_value"] == [url_value]
+
     assert url_reputation_hr == mock_return.call_args.args[0].get("HumanReadable")
     assert url_reputation_context == mock_return.call_args.args[0].get("EntryContext")
     assert url_reputation == mock_return.call_args.args[0].get("Contents")
@@ -1850,7 +1869,8 @@ def test_url_lookup_command_when_invalid_value_is_provided(mocker):
 
 
 @patch("demistomock.results")
-def test_file_lookup_command_success(mock_return, requests_mock, mocker):
+@pytest.mark.parametrize("exact_match", [True, False])
+def test_file_lookup_command_success(mock_return, requests_mock, mocker, exact_match):
     """
     Test case for successful execution of file command through main function
     when it returns reputation about given file.
@@ -1871,12 +1891,18 @@ def test_file_lookup_command_success(mock_return, requests_mock, mocker):
     url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
     requests_mock.get(url, json=file_reputation, status_code=200)
     params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
-    args = {"file": "00000000000000000000000000000001"}
+    file_value = "00000000000000000000000000000001"
+    args = {"file": file_value, "exact_match": exact_match}
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "command", return_value="file")
     mocker.patch.object(demisto, "args", return_value=args)
 
     main()
+
+    last_request = requests_mock.last_request
+    file_value = f'"{file_value}"' if exact_match else file_value
+    assert last_request.qs["ioc_value"] == [file_value]
+
     assert file_reputation_hr == mock_return.call_args.args[0].get("HumanReadable")
     assert file_reputation_context == mock_return.call_args.args[0].get("EntryContext")
     assert file_reputation == mock_return.call_args.args[0].get("Contents")
