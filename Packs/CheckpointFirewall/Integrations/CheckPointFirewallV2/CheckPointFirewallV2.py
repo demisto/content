@@ -622,6 +622,110 @@ class Client(BaseClient):
             method="POST", url_suffix=f"delete-service-{service_type}", headers=self.headers, json_data=body
         )
 
+    def show_nat_rule(self, identifier: int, package: str):
+        return self._http_request(
+            method="POST",
+            url_suffix="show-nat-rule",
+            headers=self.headers,
+            json_data={"rule-number": identifier, "package": package},
+        )
+
+    def list_nat_rulebase(self, package: str, limit: int, offset: int, filter_str: Optional[str] = None):
+        body: dict = {"package": package, "limit": limit, "offset": offset}
+        if filter_str:
+            body["filter"] = filter_str
+        return self._http_request(
+            method="POST", url_suffix="show-nat-rulebase", headers=self.headers, json_data=body
+        )
+
+    def add_nat_rule(
+        self,
+        package: str,
+        position,
+        name: Optional[str] = None,
+        original_source: Optional[str] = None,
+        original_destination: Optional[str] = None,
+        original_service: Optional[str] = None,
+        translated_source: Optional[str] = None,
+        translated_destination: Optional[str] = None,
+        translated_service: Optional[str] = None,
+        install_on: Optional[list] = None,
+        comments: Optional[str] = None,
+        enabled: Optional[bool] = None,
+        method: Optional[str] = None,
+        tags: Optional[list] = None,
+    ):
+        body: dict = {"package": package, "position": position}
+        if name:
+            body["name"] = name
+        if original_source:
+            body["original-source"] = original_source
+        if original_destination:
+            body["original-destination"] = original_destination
+        if original_service:
+            body["original-service"] = original_service
+        if translated_source:
+            body["translated-source"] = translated_source
+        if translated_destination:
+            body["translated-destination"] = translated_destination
+        if translated_service:
+            body["translated-service"] = translated_service
+        if install_on:
+            body["install-on"] = install_on
+        if comments:
+            body["comments"] = comments
+        if enabled is not None:
+            body["enabled"] = enabled
+        if method:
+            body["method"] = method
+        if tags:
+            body["tags"] = tags
+        return self._http_request(method="POST", url_suffix="add-nat-rule", headers=self.headers, json_data=body)
+
+    def update_nat_rule(
+        self,
+        identifier: int,
+        package: str,
+        original_source: Optional[str] = None,
+        original_destination: Optional[str] = None,
+        translated_source: Optional[str] = None,
+        translated_destination: Optional[str] = None,
+        original_service: Optional[str] = None,
+        translated_service: Optional[str] = None,
+        comments: Optional[str] = None,
+        enabled: Optional[bool] = None,
+        method: Optional[str] = None,
+        tags: Optional[list] = None,
+    ):
+        body: dict = {"rule-number": identifier, "package": package}
+        if original_source:
+            body["original-source"] = original_source
+        if original_destination:
+            body["original-destination"] = original_destination
+        if translated_source:
+            body["translated-source"] = translated_source
+        if translated_destination:
+            body["translated-destination"] = translated_destination
+        if original_service:
+            body["original-service"] = original_service
+        if translated_service:
+            body["translated-service"] = translated_service
+        if comments:
+            body["comments"] = comments
+        if enabled is not None:
+            body["enabled"] = enabled
+        if method:
+            body["method"] = method
+        if tags:
+            body["tags"] = tags
+        return self._http_request(method="POST", url_suffix="set-nat-rule", headers=self.headers, json_data=body)
+
+    def delete_nat_rule(self, identifier: int, package: str, ignore_warnings: Optional[bool] = None):
+        body: dict = {"rule-number": identifier, "package": package}
+        if ignore_warnings is not None:
+            body["ignore-warnings"] = ignore_warnings
+        return self._http_request(method="POST", url_suffix="delete-nat-rule", headers=self.headers, json_data=body)
+
     def show_task(self, task_id):
         return self._http_request(method="POST", url_suffix="show-task", headers=self.headers, json_data={"task-id": task_id})
 
@@ -3178,6 +3282,245 @@ def checkpoint_service_delete_command(
     )
 
 
+def checkpoint_nat_rule_get_command(client: Client, identifier: str, package: str) -> CommandResults:
+    """
+    Show existing NAT rule using rule number.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier (str): Rule number.
+        package (str): Name of the package.
+    """
+    rule_number = arg_to_number(identifier)
+    result = client.show_nat_rule(rule_number, package)
+
+    readable_output = tableToMarkdown(
+        f"CheckPoint data for NAT rule {identifier}:", result, removeNull=True
+    )
+
+    return CommandResults(
+        outputs_prefix="CheckPoint.NatRule",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=result,
+        raw_response=result,
+    )
+
+
+def checkpoint_nat_rule_list_command(
+    client: Client, package: str, limit: str = "50", offset: str = "0", filter: str = None  # noqa: A002
+) -> CommandResults:
+    """
+    Retrieve all NAT rules from the rulebase.
+
+    Args:
+        client (Client): CheckPoint client.
+        package (str): Name of the package.
+        limit (str): The maximal number of returned results. default is 50.
+        offset (str): Number of the results to initially skip. default is 0.
+        filter (str): Search expression to filter the rulebase.
+    """
+    limit_int = arg_to_number(limit) or 50
+    offset_int = arg_to_number(offset) or 0
+
+    result = client.list_nat_rulebase(package, limit_int, offset_int, filter)
+
+    rules: list = []
+    readable_output = ""
+
+    if result:
+        if result.get("total") == 0:
+            readable_output = "No NAT rules were found."
+        else:
+            rulebase = result.get("rulebase", [])
+            for entry in rulebase:
+                if entry.get("type") == "nat-rule":
+                    rules.append(entry)
+                elif entry.get("rulebase"):
+                    for sub_entry in entry.get("rulebase", []):
+                        if sub_entry.get("type") == "nat-rule":
+                            rules.append(sub_entry)
+
+            readable_output = tableToMarkdown(
+                "CheckPoint NAT rules:", rules, removeNull=True
+            )
+
+    return CommandResults(
+        outputs_prefix="CheckPoint.NatRule",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=rules,
+        raw_response=result,
+    )
+
+
+def checkpoint_nat_rule_add_command(
+    client: Client,
+    package: str,
+    position: str,
+    name: str = None,
+    original_source: str = None,
+    original_destination: str = None,
+    original_service: str = None,
+    translated_source: str = None,
+    translated_destination: str = None,
+    translated_service: str = None,
+    install_on=None,
+    comments: str = None,
+    enabled: str = None,
+    nat_method: str = None,
+    tags=None,
+) -> CommandResults:
+    """
+    Add a new NAT rule.
+
+    Args:
+        client (Client): CheckPoint client.
+        package (str): Name of the package.
+        position (str): Position in the rulebase. Can be a number or 'top'/'bottom'.
+        name (str): Rule name.
+        original_source (str): Original source.
+        original_destination (str): Original destination.
+        original_service (str): Original service.
+        translated_source (str): Translated source.
+        translated_destination (str): Translated destination.
+        translated_service (str): Translated service.
+        install_on: Which Gateways to install the policy on.
+        comments (str): Comments string.
+        enabled (str): Enable/Disable the rule.
+        nat_method (str): NAT translation method.
+        tags: Collection of tag identifiers.
+    """
+    install_on = argToList(install_on)
+    tags = argToList(tags)
+
+    # Convert position to int if it's numeric, otherwise keep as string (top/bottom)
+    position_value: Union[int, str]
+    numeric_position = arg_to_number(position, required=False)
+    if numeric_position is not None:
+        position_value = numeric_position
+    else:
+        position_value = position
+
+    result = client.add_nat_rule(
+        package=package,
+        position=position_value,
+        name=name,
+        original_source=original_source,
+        original_destination=original_destination,
+        original_service=original_service,
+        translated_source=translated_source,
+        translated_destination=translated_destination,
+        translated_service=translated_service,
+        install_on=install_on or None,
+        comments=comments,
+        enabled=argToBoolean(enabled) if enabled else None,
+        method=nat_method,
+        tags=tags or None,
+    )
+
+    readable_output = tableToMarkdown(
+        "CheckPoint data for adding a NAT rule:", result, removeNull=True
+    )
+
+    return CommandResults(
+        outputs_prefix="CheckPoint.NatRule",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=result,
+        raw_response=result,
+    )
+
+
+def checkpoint_nat_rule_update_command(
+    client: Client,
+    identifier: str,
+    package: str,
+    original_source: str = None,
+    original_destination: str = None,
+    translated_source: str = None,
+    translated_destination: str = None,
+    original_service: str = None,
+    translated_service: str = None,
+    comments: str = None,
+    enabled: str = None,
+    nat_method: str = None,
+    tags=None,
+) -> CommandResults:
+    """
+    Update an existing NAT rule.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier (str): Rule number.
+        package (str): Name of the package.
+        original_source (str): Original source.
+        original_destination (str): Original destination.
+        translated_source (str): Translated source.
+        translated_destination (str): Translated destination.
+        original_service (str): Original service.
+        translated_service (str): Translated service.
+        comments (str): Comments string.
+        enabled (str): Enable/Disable the rule.
+        nat_method (str): NAT translation method.
+        tags: Collection of tag identifiers.
+    """
+    tags = argToList(tags)
+    rule_number = arg_to_number(identifier)
+
+    result = client.update_nat_rule(
+        identifier=rule_number,
+        package=package,
+        original_source=original_source,
+        original_destination=original_destination,
+        translated_source=translated_source,
+        translated_destination=translated_destination,
+        original_service=original_service,
+        translated_service=translated_service,
+        comments=comments,
+        enabled=argToBoolean(enabled) if enabled else None,
+        method=nat_method,
+        tags=tags or None,
+    )
+
+    readable_output = tableToMarkdown(
+        "CheckPoint data for updating a NAT rule:", result, removeNull=True
+    )
+
+    return CommandResults(
+        outputs_prefix="CheckPoint.NatRule",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=result,
+        raw_response=result,
+    )
+
+
+def checkpoint_nat_rule_delete_command(
+    client: Client, identifier: str, package: str, ignore_warnings: Union[bool, str] = None
+) -> CommandResults:
+    """
+    Delete a NAT rule.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier (str): Rule number.
+        package (str): Name of the package.
+        ignore_warnings (bool): Whether to ignore warnings when deleting the NAT rule.
+    """
+    rule_number = arg_to_number(identifier)
+
+    client.delete_nat_rule(
+        identifier=rule_number,
+        package=package,
+        ignore_warnings=argToBoolean(ignore_warnings) if ignore_warnings else None,
+    )
+
+    return CommandResults(
+        readable_output="Nat Rule deleted successfully.",
+    )
+
+
 def build_member_data(result: dict, readable_output: str, printable_result: dict):
     """helper function. Builds the member data for group endpoints."""
     members = result.get("members")
@@ -3523,6 +3866,21 @@ def main():  # pragma: no cover
 
         elif command == "checkpoint-service-delete":
             return_results(checkpoint_service_delete_command(client, **args))
+
+        elif command == "checkpoint-nat-rule-get":
+            return_results(checkpoint_nat_rule_get_command(client, **args))
+
+        elif command == "checkpoint-nat-rule-list":
+            return_results(checkpoint_nat_rule_list_command(client, **args))
+
+        elif command == "checkpoint-nat-rule-add":
+            return_results(checkpoint_nat_rule_add_command(client, **args))
+
+        elif command == "checkpoint-nat-rule-update":
+            return_results(checkpoint_nat_rule_update_command(client, **args))
+
+        elif command == "checkpoint-nat-rule-delete":
+            return_results(checkpoint_nat_rule_delete_command(client, **args))
         else:
             raise NotImplementedError(f"Unknown command {command}.")
 

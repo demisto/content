@@ -2909,6 +2909,305 @@ script:
     description: Delete a service object.
     name: checkpoint-service-delete
     outputs: []
+  - arguments:
+    - description: Rule number of the NAT rule to retrieve.
+      name: identifier
+    - description: Name of the package.
+      name: package
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Gets full data for the specified NAT rule.
+    name: checkpoint-nat-rule-get
+    outputs:
+    - contextPath: CheckPoint.NatRule.uid
+      description: Object unique identifier.
+      type: String
+    - contextPath: CheckPoint.NatRule.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.NatRule.enabled
+      description: Whether the rule is enabled.
+      type: Boolean
+    - contextPath: CheckPoint.NatRule.method
+      description: NAT translation method.
+      type: String
+    - contextPath: CheckPoint.NatRule.original-source
+      description: Original source object.
+      type: String
+    - contextPath: CheckPoint.NatRule.original-destination
+      description: Original destination object.
+      type: String
+    - contextPath: CheckPoint.NatRule.original-service
+      description: Original service object.
+      type: String
+    - contextPath: CheckPoint.NatRule.translated-source
+      description: Translated source object.
+      type: String
+    - contextPath: CheckPoint.NatRule.translated-destination
+      description: Translated destination object.
+      type: String
+    - contextPath: CheckPoint.NatRule.translated-service
+      description: Translated service object.
+      type: String
+    - contextPath: CheckPoint.NatRule.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.NatRule.rule-number
+      description: Rule number.
+      type: Number
+  - arguments:
+    - description: Name of the package.
+      name: package
+      required: true
+    - defaultValue: '50'
+      description: The maximum number of results to return. Default is 50. Max is 500.
+      name: limit
+    - defaultValue: '0'
+      description: Number of results to initially skip. Default is 0.
+      name: offset
+    - description: Search expression to filter the rulebase. The provided text should be exactly the same as it would be given in Smart Console. The logical operators in the expression (AND, OR) should be provided in capital letters. Default operator is OR.
+      name: filter
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Retrieve a list of NAT rules from the rulebase.
+    name: checkpoint-nat-rule-list
+    outputs:
+    - contextPath: CheckPoint.NatRule.uid
+      description: Object unique identifier.
+      type: String
+    - contextPath: CheckPoint.NatRule.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.NatRule.enabled
+      description: Whether the rule is enabled.
+      type: Boolean
+    - contextPath: CheckPoint.NatRule.method
+      description: NAT translation method.
+      type: String
+    - contextPath: CheckPoint.NatRule.original-source
+      description: Original source object.
+      type: String
+    - contextPath: CheckPoint.NatRule.original-destination
+      description: Original destination object.
+      type: String
+    - contextPath: CheckPoint.NatRule.original-service
+      description: Original service object.
+      type: String
+    - contextPath: CheckPoint.NatRule.translated-source
+      description: Translated source object.
+      type: String
+    - contextPath: CheckPoint.NatRule.translated-destination
+      description: Translated destination object.
+      type: String
+    - contextPath: CheckPoint.NatRule.translated-service
+      description: Translated service object.
+      type: String
+    - contextPath: CheckPoint.NatRule.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.NatRule.rule-number
+      description: Rule number.
+      type: Number
+  - arguments:
+    - description: Name of the package.
+      name: package
+      required: true
+    - description: 'Position in the rulebase. Can be a number or one of: top, bottom.'
+      name: position
+      required: true
+    - description: Rule name.
+      name: name
+    - description: Original source object.
+      name: original_source
+    - description: Original destination object.
+      name: original_destination
+    - description: Original service object.
+      name: original_service
+    - description: Translated source object.
+      name: translated_source
+    - description: Translated destination object.
+      name: translated_destination
+    - description: Translated service object.
+      name: translated_service
+    - description: Which Gateways identified by the name or UID to install the policy on.
+      isArray: true
+      name: install_on
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      description: Enable/Disable the rule.
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: NAT translation method.
+      name: nat_method
+      predefined:
+      - static
+      - hide
+      - nat64
+      - nat46
+      - cgnat
+    - description: Collection of tag identifiers.
+      isArray: true
+      name: tags
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Add a new NAT rule.
+    name: checkpoint-nat-rule-add
+    outputs:
+    - contextPath: CheckPoint.NatRule.uid
+      description: Object unique identifier.
+      type: String
+    - contextPath: CheckPoint.NatRule.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.NatRule.enabled
+      description: Whether the rule is enabled.
+      type: Boolean
+    - contextPath: CheckPoint.NatRule.method
+      description: NAT translation method.
+      type: String
+    - contextPath: CheckPoint.NatRule.original-source
+      description: Original source object.
+      type: String
+    - contextPath: CheckPoint.NatRule.original-destination
+      description: Original destination object.
+      type: String
+    - contextPath: CheckPoint.NatRule.original-service
+      description: Original service object.
+      type: String
+    - contextPath: CheckPoint.NatRule.translated-source
+      description: Translated source object.
+      type: String
+    - contextPath: CheckPoint.NatRule.translated-destination
+      description: Translated destination object.
+      type: String
+    - contextPath: CheckPoint.NatRule.translated-service
+      description: Translated service object.
+      type: String
+    - contextPath: CheckPoint.NatRule.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.NatRule.rule-number
+      description: Rule number.
+      type: Number
+  - arguments:
+    - description: Rule number of the NAT rule to update.
+      name: identifier
+    - description: Name of the package.
+      name: package
+      required: true
+    - description: Original source object.
+      name: original_source
+    - description: Original destination object.
+      name: original_destination
+    - description: Translated source object.
+      name: translated_source
+    - description: Translated destination object.
+      name: translated_destination
+    - description: Original service object.
+      name: original_service
+    - description: Translated service object.
+      name: translated_service
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      description: Enable/Disable the rule.
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: NAT translation method.
+      name: nat_method
+      predefined:
+      - static
+      - hide
+      - nat64
+      - nat46
+      - cgnat
+    - description: Collection of tag identifiers.
+      isArray: true
+      name: tags
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Update an existing NAT rule.
+    name: checkpoint-nat-rule-update
+    outputs:
+    - contextPath: CheckPoint.NatRule.uid
+      description: Object unique identifier.
+      type: String
+    - contextPath: CheckPoint.NatRule.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.NatRule.enabled
+      description: Whether the rule is enabled.
+      type: Boolean
+    - contextPath: CheckPoint.NatRule.method
+      description: NAT translation method.
+      type: String
+    - contextPath: CheckPoint.NatRule.original-source
+      description: Original source object.
+      type: String
+    - contextPath: CheckPoint.NatRule.original-destination
+      description: Original destination object.
+      type: String
+    - contextPath: CheckPoint.NatRule.original-service
+      description: Original service object.
+      type: String
+    - contextPath: CheckPoint.NatRule.translated-source
+      description: Translated source object.
+      type: String
+    - contextPath: CheckPoint.NatRule.translated-destination
+      description: Translated destination object.
+      type: String
+    - contextPath: CheckPoint.NatRule.translated-service
+      description: Translated service object.
+      type: String
+    - contextPath: CheckPoint.NatRule.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.NatRule.rule-number
+      description: Rule number.
+      type: Number
+  - arguments:
+    - description: Rule number of the NAT rule to delete.
+      name: identifier
+      required: true
+    - description: Name of the package.
+      name: package
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    - auto: PREDEFINED
+      description: Whether to ignore warnings when deleting the NAT rule.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    description: Delete a NAT rule.
+    name: checkpoint-nat-rule-delete
+    outputs: []
   dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: ''
