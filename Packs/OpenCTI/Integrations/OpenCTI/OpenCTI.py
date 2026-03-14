@@ -1862,58 +1862,59 @@ def add_object_to_container_create_command(client: OpenCTIApiClient, args: Dict[
     container_type = args.get("container_type")
     container_id = args.get("container_id")
     object_id = args.get("object_id")
-    
-    if container_type == "report":
+
+    container_actions = {
+        "report": (
+            lambda c, cid, oid: c.report.add_stix_object_or_stix_relationship(
+                id=cid,
+                stixObjectOrStixRelationshipId=oid,
+            ),
+            "Object added into report",
+            "Can't add object into report",
+        ),
+        "grouping": (
+            lambda c, cid, oid: c.grouping.add_stix_object_or_stix_relationship(
+                id=cid,
+                stixObjectOrStixRelationshipId=oid,
+            ),
+            "Object added into grouping",
+            "Can't add object into grouping",
+        ),
+        "case-incident": (
+            lambda c, cid, oid: c.case_incident.add_stix_object_or_stix_relationship(
+                id=cid,
+                stixObjectOrStixRelationshipId=oid,
+            ),
+            "Object added into case-incident",
+            "Can't add object into case-incident",
+        ),
+        "case-rft": (
+            lambda c, cid, oid: c.case_rft.add_stix_object_or_stix_relationship(
+                id=cid,
+                stixObjectOrStixRelationshipId=oid,
+            ),
+            "Object added into case-rft",
+            "Can't add object into case-rft",
+        ),
+        "case-rfi": (
+            lambda c, cid, oid: c.case_rfi.add_stix_object_or_stix_relationship(
+                id=cid,
+                stixObjectOrStixRelationshipId=oid,
+            ),
+            "Object added into case-rfi",
+            "Can't add object into case-rfi",
+        ),
+    }
+
+    action = container_actions.get(container_type)
+    if action:
+        action_callable, success_message, error_prefix = action
         try:
-            client.report.add_stix_object_or_stix_relationship(
-                id=container_id,
-                stixObjectOrStixRelationshipId=object_id
-            )
-            return CommandResults(readable_output="Object added into report")
+            action_callable(client, container_id, object_id)
+            return CommandResults(readable_output=success_message)
         except Exception as e:
             demisto.error(str(e))
-            raise DemistoException(f"Can't add object into report. {e}")
-    elif container_type == "grouping":
-        try:
-            client.grouping.add_stix_object_or_stix_relationship(
-                id=container_id,
-                stixObjectOrStixRelationshipId=object_id
-            )
-            return CommandResults(readable_output="Object added into grouping")
-        except Exception as e:
-            demisto.error(str(e))
-            raise DemistoException(f"Can't add object into grouping. {e}")
-    elif container_type == "case-incident":
-        try:
-            client.case_incident.add_stix_object_or_stix_relationship(
-                id=container_id,
-                stixObjectOrStixRelationshipId=object_id
-            )
-            return CommandResults(readable_output="Object added into case-incident")
-        except Exception as e:
-            demisto.error(str(e))
-            raise DemistoException(f"Can't add object into case-incident. {e}")
-    elif container_type == "case-rft":
-        try:
-            client.case_rft.add_stix_object_or_stix_relationship(
-                id=container_id,
-                stixObjectOrStixRelationshipId=object_id
-            )
-            return CommandResults(readable_output="Object added into case-rft")
-        except Exception as e:
-            demisto.error(str(e))
-            raise DemistoException(f"Can't add object into case-rft. {e}")
-        
-    elif container_type == "case-rfi":
-        try:
-            client.case_rfi.add_stix_object_or_stix_relationship(
-                id=container_id,
-                stixObjectOrStixRelationshipId=object_id
-            )
-            return CommandResults(readable_output="Object added into case-rfi")
-        except Exception as e:
-            demisto.error(str(e))
-            raise DemistoException(f"Can't add object into case-rfi. {e}")
+            raise DemistoException(f"{error_prefix}. {e}")
     else:
         error = f"Can't add object into container. Invalid container_type: {container_type}"
         demisto.error(str(error))
