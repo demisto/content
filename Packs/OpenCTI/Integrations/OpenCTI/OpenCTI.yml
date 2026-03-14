@@ -901,7 +901,7 @@ script:
     description: Create a new campaign.
     name: opencti-campaign-create
     outputs:
-    - contextPath: OpenCTI.campaign.id
+    - contextPath: OpenCTI.Campaign.id
       description: New campaign ID.
       type: String
   - arguments:
@@ -917,7 +917,7 @@ script:
     description: Create a new grouping.
     name: opencti-grouping-create
     outputs:
-    - contextPath: OpenCTI.grouping.id
+    - contextPath: OpenCTI.Grouping.id
       description: New grouping ID.
       type: String
   - arguments:
@@ -933,7 +933,7 @@ script:
     description: Create a new report.
     name: opencti-report-create
     outputs:
-    - contextPath: OpenCTI.report.id
+    - contextPath: OpenCTI.Report.id
       description: New report ID.
       type: String
   - arguments:

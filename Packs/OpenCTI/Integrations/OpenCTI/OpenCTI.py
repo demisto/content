@@ -1608,12 +1608,17 @@ def malware_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> Co
     name = args.get("name")
     description = args.get("description", None)
     is_family = argToBoolean(args.get("is_family", False))
-
+    malware_types_arg = args.get("malware_types")
+    malware_types = None
+    if malware_types_arg:
+        malware_types = [t.strip() for t in str(malware_types_arg).split(",") if t.strip()]
+         
     try:
         result = client.malware.create(
             name=name,
             description=description,
-            is_family=is_family
+            is_family=is_family,
+            malware_types=malware_types
         )
     except Exception as e:
         demisto.error(str(e))
@@ -1833,7 +1838,7 @@ def report_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> Com
         raise DemistoException(f"Can't create report. {e}")
 
     if report_id := result.get("id"):
-        readable_output = f"Report created successfully. New Report id: {grouping_id}."
+        readable_output = f"Report created successfully. New Report id: {report_id}."
         return CommandResults(
             outputs_prefix="OpenCTI.Report",
             outputs_key_field="id",
@@ -1884,11 +1889,10 @@ def add_object_to_container_create_command(client: OpenCTIApiClient, args: Dict[
                 id=container_id,
                 stixObjectOrStixRelationshipId=object_id
             )
-            demisto.debug(result)
             return CommandResults(readable_output="Object added into case-incident")
         except Exception as e:
             demisto.error(str(e))
-            raise DemistoException(f"Can't add object into case incident. {e}")
+            raise DemistoException(f"Can't add object into case-incident. {e}")
     elif container_type == "case-rft":
         try:
             client.case_rft.add_stix_object_or_stix_relationship(
