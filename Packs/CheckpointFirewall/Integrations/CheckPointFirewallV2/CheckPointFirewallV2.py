@@ -463,6 +463,165 @@ class Client(BaseClient):
             json_data={"name": identifier, "ignore-warnings": ignore_warnings},
         )
 
+    def show_service(self, identifier: str, service_type: str):
+        return self._http_request(
+            method="POST", url_suffix=f"show-service-{service_type}", headers=self.headers, json_data={"name": identifier}
+        )
+
+    def list_services(self, limit: int, offset: int, service_type: str):
+        return self._http_request(
+            method="POST",
+            url_suffix=f"show-services-{service_type}",
+            headers=self.headers,
+            json_data={"limit": limit, "offset": offset},
+        )
+
+    def add_service_tcp(
+        self,
+        identifier: str,
+        port: str,
+        comments: Optional[str] = None,
+        color: Optional[str] = None,
+        session_timeout: Optional[int] = None,
+        tags: Optional[list] = None,
+    ):
+        body: dict = {"name": identifier, "port": port}
+        if comments:
+            body["comments"] = comments
+        if color:
+            body["color"] = color
+        if session_timeout is not None:
+            body["session-timeout"] = session_timeout
+        if tags:
+            body["tags"] = tags
+        return self._http_request(method="POST", url_suffix="add-service-tcp", headers=self.headers, json_data=body)
+
+    def add_service_udp(
+        self,
+        identifier: str,
+        port: str,
+        comments: Optional[str] = None,
+        color: Optional[str] = None,
+        session_timeout: Optional[int] = None,
+        tags: Optional[list] = None,
+    ):
+        body: dict = {"name": identifier, "port": port}
+        if comments:
+            body["comments"] = comments
+        if color:
+            body["color"] = color
+        if session_timeout is not None:
+            body["session-timeout"] = session_timeout
+        if tags:
+            body["tags"] = tags
+        return self._http_request(method="POST", url_suffix="add-service-udp", headers=self.headers, json_data=body)
+
+    def add_service_icmp(
+        self,
+        identifier: str,
+        icmp_type: int,
+        port: Optional[str] = None,
+        icmp_code: Optional[int] = None,
+        comments: Optional[str] = None,
+        color: Optional[str] = None,
+        session_timeout: Optional[int] = None,
+        tags: Optional[list] = None,
+    ):
+        body: dict = {"name": identifier, "icmp-type": icmp_type}
+        if port:
+            body["port"] = port
+        if icmp_code is not None:
+            body["icmp-code"] = icmp_code
+        if comments:
+            body["comments"] = comments
+        if color:
+            body["color"] = color
+        if session_timeout is not None:
+            body["session-timeout"] = session_timeout
+        if tags:
+            body["tags"] = tags
+        return self._http_request(method="POST", url_suffix="add-service-icmp", headers=self.headers, json_data=body)
+
+    def update_service_tcp(
+        self,
+        identifier: str,
+        new_identifier: Optional[str] = None,
+        port: Optional[str] = None,
+        comments: Optional[str] = None,
+        color: Optional[str] = None,
+        tags: Optional[list] = None,
+    ):
+        body: dict = {"name": identifier}
+        if new_identifier:
+            body["new-name"] = new_identifier
+        if port:
+            body["port"] = port
+        if comments:
+            body["comments"] = comments
+        if color:
+            body["color"] = color
+        if tags:
+            body["tags"] = tags
+        return self._http_request(method="POST", url_suffix="set-service-tcp", headers=self.headers, json_data=body)
+
+    def update_service_udp(
+        self,
+        identifier: str,
+        new_identifier: Optional[str] = None,
+        port: Optional[str] = None,
+        comments: Optional[str] = None,
+        color: Optional[str] = None,
+        tags: Optional[list] = None,
+    ):
+        body: dict = {"name": identifier}
+        if new_identifier:
+            body["new-name"] = new_identifier
+        if port:
+            body["port"] = port
+        if comments:
+            body["comments"] = comments
+        if color:
+            body["color"] = color
+        if tags:
+            body["tags"] = tags
+        return self._http_request(method="POST", url_suffix="set-service-udp", headers=self.headers, json_data=body)
+
+    def update_service_icmp(
+        self,
+        identifier: str,
+        new_identifier: Optional[str] = None,
+        port: Optional[str] = None,
+        icmp_type: Optional[int] = None,
+        icmp_code: Optional[int] = None,
+        comments: Optional[str] = None,
+        color: Optional[str] = None,
+        tags: Optional[list] = None,
+    ):
+        body: dict = {"name": identifier}
+        if new_identifier:
+            body["new-name"] = new_identifier
+        if port:
+            body["port"] = port
+        if icmp_type is not None:
+            body["icmp-type"] = icmp_type
+        if icmp_code is not None:
+            body["icmp-code"] = icmp_code
+        if comments:
+            body["comments"] = comments
+        if color:
+            body["color"] = color
+        if tags:
+            body["tags"] = tags
+        return self._http_request(method="POST", url_suffix="set-service-icmp", headers=self.headers, json_data=body)
+
+    def delete_service(self, identifier: str, service_type: str, ignore_warnings: bool = False):
+        body: dict = {"name": identifier}
+        if ignore_warnings:
+            body["ignore-warnings"] = ignore_warnings
+        return self._http_request(
+            method="POST", url_suffix=f"delete-service-{service_type}", headers=self.headers, json_data=body
+        )
+
     def show_task(self, task_id):
         return self._http_request(method="POST", url_suffix="show-task", headers=self.headers, json_data={"task-id": task_id})
 
@@ -2536,6 +2695,489 @@ def checkpoint_network_delete_command(
     )
 
 
+SERVICE_TYPE_CONTEXT_MAP = {
+    "tcp": "CheckPoint.TCPService",
+    "udp": "CheckPoint.UDPService",
+    "icmp": "CheckPoint.ICMPService",
+}
+
+
+def checkpoint_service_get_command(client: Client, identifier: str, service_type: str) -> CommandResults:
+    """
+    Show existing service object using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier (str): uid or name.
+        service_type (str): The service type (tcp, udp, or icmp).
+    """
+    result = client.show_service(identifier, service_type)
+    printable_result = build_printable_result(DEFAULT_LIST_FIELD, result)
+    readable_output = tableToMarkdown(
+        f"CheckPoint data for {service_type} service object {identifier}:",
+        printable_result,
+        headers=DEFAULT_LIST_FIELD,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=SERVICE_TYPE_CONTEXT_MAP[service_type],
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result,
+    )
+
+
+def checkpoint_service_list_command(
+    client: Client, service_type: str, identifier: str = None, limit: int = 50, offset: int = 0
+) -> CommandResults:
+    """
+    Retrieve service objects. When identifier is provided, calls the single-object endpoint.
+
+    Args:
+        client (Client): CheckPoint client.
+        service_type (str): The service type (tcp, udp, or icmp).
+        identifier (str): uid or name. When provided, calls show-service-* instead of show-services-*.
+        limit (int): The maximal number of returned results. default is 50.
+        offset (int): Number of the results to initially skip. default is 0.
+    """
+    if identifier:
+        result = client.show_service(identifier, service_type)
+        printable_result = build_printable_result(DEFAULT_LIST_FIELD, result)
+        readable_output = tableToMarkdown(
+            f"CheckPoint data for {service_type} service object {identifier}:",
+            printable_result,
+            headers=DEFAULT_LIST_FIELD,
+            removeNull=True,
+        )
+        return CommandResults(
+            outputs_prefix=SERVICE_TYPE_CONTEXT_MAP[service_type],
+            outputs_key_field="uid",
+            readable_output=readable_output,
+            outputs=printable_result,
+            raw_response=result,
+        )
+
+    limit = arg_to_number(limit) or 50
+    offset = arg_to_number(offset) or 0
+
+    result = client.list_services(limit, offset, service_type)
+
+    printable_result: list = []
+    readable_output = ""
+
+    if result:
+        if result.get("total") == 0:
+            readable_output = f"No {service_type} service objects were found."
+        else:
+            objects = result.get("objects", [])
+            for element in objects:
+                current_printable_result = {}
+                for endpoint in DEFAULT_LIST_FIELD:
+                    current_printable_result[endpoint] = element.get(endpoint)
+                printable_result.append(current_printable_result)
+
+            readable_output = tableToMarkdown(
+                f"CheckPoint data for all {service_type} services:", printable_result, DEFAULT_LIST_FIELD, removeNull=True
+            )
+
+    return CommandResults(
+        outputs_prefix=SERVICE_TYPE_CONTEXT_MAP[service_type],
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result,
+    )
+
+
+def checkpoint_tcp_service_add_command(
+    client: Client,
+    identifier: str,
+    port: str,
+    comments: str = None,
+    color: str = None,
+    session_timeout: str = None,
+    tags=None,
+) -> CommandResults:
+    """
+    Create a new TCP service object.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier (str): Object name. Must be unique in the domain.
+        port (str): The number of the port used to provide this service.
+        comments (str): Comments string.
+        color (str): Color of the object.
+        session_timeout (str): Time (in seconds) before the session times out.
+        tags: Collection of tag identifiers.
+    """
+    tags = argToList(tags)
+
+    result = client.add_service_tcp(
+        identifier=identifier,
+        port=port,
+        comments=comments,
+        color=color,
+        session_timeout=arg_to_number(session_timeout),
+        tags=tags or None,
+    )
+
+    headers = [
+        "name",
+        "uid",
+        "type",
+        "domain-name",
+        "domain-type",
+        "domain-uid",
+        "creator",
+        "last-modifier",
+        "read-only",
+        "groups",
+    ]
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown(
+        "CheckPoint data for adding a TCP service:", printable_result, headers=headers, removeNull=True
+    )
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+
+    return CommandResults(
+        outputs_prefix="CheckPoint.TCPService",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result,
+    )
+
+
+def checkpoint_udp_service_add_command(
+    client: Client,
+    identifier: str,
+    port: str,
+    comments: str = None,
+    color: str = None,
+    session_timeout: str = None,
+    tags=None,
+) -> CommandResults:
+    """
+    Create a new UDP service object.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier (str): Object name. Must be unique in the domain.
+        port (str): The number of the port used to provide this service.
+        comments (str): Comments string.
+        color (str): Color of the object.
+        session_timeout (str): Time (in seconds) before the session times out.
+        tags: Collection of tag identifiers.
+    """
+    tags = argToList(tags)
+
+    result = client.add_service_udp(
+        identifier=identifier,
+        port=port,
+        comments=comments,
+        color=color,
+        session_timeout=arg_to_number(session_timeout),
+        tags=tags or None,
+    )
+
+    headers = [
+        "name",
+        "uid",
+        "type",
+        "domain-name",
+        "domain-type",
+        "domain-uid",
+        "creator",
+        "last-modifier",
+        "read-only",
+        "groups",
+    ]
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown(
+        "CheckPoint data for adding a UDP service:", printable_result, headers=headers, removeNull=True
+    )
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+
+    return CommandResults(
+        outputs_prefix="CheckPoint.UDPService",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result,
+    )
+
+
+def checkpoint_icmp_service_add_command(
+    client: Client,
+    identifier: str,
+    icmp_type: str,
+    port: str = None,
+    icmp_code: str = None,
+    comments: str = None,
+    color: str = None,
+    session_timeout: str = None,
+    tags=None,
+) -> CommandResults:
+    """
+    Create a new ICMP service object.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier (str): Object name. Must be unique in the domain.
+        icmp_type (str): ICMP type as listed in RFC 792.
+        port (str): The number of the port used to provide this service.
+        icmp_code (str): ICMP code as listed in RFC 792.
+        comments (str): Comments string.
+        color (str): Color of the object.
+        session_timeout (str): Time (in seconds) before the session times out.
+        tags: Collection of tag identifiers.
+    """
+    tags = argToList(tags)
+
+    result = client.add_service_icmp(
+        identifier=identifier,
+        icmp_type=arg_to_number(icmp_type, required=True),  # type: ignore[arg-type]
+        port=port,
+        icmp_code=arg_to_number(icmp_code),
+        comments=comments,
+        color=color,
+        session_timeout=arg_to_number(session_timeout),
+        tags=tags or None,
+    )
+
+    headers = [
+        "name",
+        "uid",
+        "type",
+        "domain-name",
+        "domain-type",
+        "domain-uid",
+        "creator",
+        "last-modifier",
+        "read-only",
+        "groups",
+    ]
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown(
+        "CheckPoint data for adding an ICMP service:", printable_result, headers=headers, removeNull=True
+    )
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+
+    return CommandResults(
+        outputs_prefix="CheckPoint.ICMPService",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result,
+    )
+
+
+def checkpoint_tcp_service_update_command(
+    client: Client,
+    identifier: str,
+    new_identifier: str = None,
+    port: str = None,
+    comments: str = None,
+    color: str = None,
+    tags=None,
+) -> CommandResults:
+    """
+    Update an existing TCP service object.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier (str): uid or name.
+        new_identifier (str): New name of the object.
+        port (str): The number of the port used to provide this service.
+        comments (str): Comments string.
+        color (str): Color of the object.
+        tags: Collection of tag identifiers.
+    """
+    tags = argToList(tags)
+
+    result = client.update_service_tcp(
+        identifier=identifier,
+        new_identifier=new_identifier,
+        port=port,
+        comments=comments,
+        color=color,
+        tags=tags or None,
+    )
+
+    headers = [
+        "name",
+        "uid",
+        "type",
+        "domain-name",
+        "domain-type",
+        "domain-uid",
+        "creator",
+        "comments",
+        "last-modifier",
+        "read-only",
+    ]
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown(
+        "CheckPoint data for updating a TCP service:", printable_result, headers=headers, removeNull=True
+    )
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+
+    return CommandResults(
+        outputs_prefix="CheckPoint.TCPService",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result,
+    )
+
+
+def checkpoint_udp_service_update_command(
+    client: Client,
+    identifier: str,
+    new_identifier: str = None,
+    port: str = None,
+    comments: str = None,
+    color: str = None,
+    tags=None,
+) -> CommandResults:
+    """
+    Update an existing UDP service object.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier (str): uid or name.
+        new_identifier (str): New name of the object.
+        port (str): The number of the port used to provide this service.
+        comments (str): Comments string.
+        color (str): Color of the object.
+        tags: Collection of tag identifiers.
+    """
+    tags = argToList(tags)
+
+    result = client.update_service_udp(
+        identifier=identifier,
+        new_identifier=new_identifier,
+        port=port,
+        comments=comments,
+        color=color,
+        tags=tags or None,
+    )
+
+    headers = [
+        "name",
+        "uid",
+        "type",
+        "domain-name",
+        "domain-type",
+        "domain-uid",
+        "creator",
+        "comments",
+        "last-modifier",
+        "read-only",
+    ]
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown(
+        "CheckPoint data for updating a UDP service:", printable_result, headers=headers, removeNull=True
+    )
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+
+    return CommandResults(
+        outputs_prefix="CheckPoint.UDPService",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result,
+    )
+
+
+def checkpoint_icmp_service_update_command(
+    client: Client,
+    identifier: str,
+    new_identifier: str = None,
+    port: str = None,
+    icmp_type: str = None,
+    icmp_code: str = None,
+    comments: str = None,
+    color: str = None,
+    tags=None,
+) -> CommandResults:
+    """
+    Update an existing ICMP service object.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier (str): uid or name.
+        new_identifier (str): New name of the object.
+        port (str): The number of the port used to provide this service.
+        icmp_type (str): ICMP type as listed in RFC 792.
+        icmp_code (str): ICMP code as listed in RFC 792.
+        comments (str): Comments string.
+        color (str): Color of the object.
+        tags: Collection of tag identifiers.
+    """
+    tags = argToList(tags)
+
+    result = client.update_service_icmp(
+        identifier=identifier,
+        new_identifier=new_identifier,
+        port=port,
+        icmp_type=arg_to_number(icmp_type),
+        icmp_code=arg_to_number(icmp_code),
+        comments=comments,
+        color=color,
+        tags=tags or None,
+    )
+
+    headers = [
+        "name",
+        "uid",
+        "type",
+        "domain-name",
+        "domain-type",
+        "domain-uid",
+        "creator",
+        "comments",
+        "last-modifier",
+        "read-only",
+    ]
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown(
+        "CheckPoint data for updating an ICMP service:", printable_result, headers=headers, removeNull=True
+    )
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+
+    return CommandResults(
+        outputs_prefix="CheckPoint.ICMPService",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result,
+    )
+
+
+def checkpoint_service_delete_command(
+    client: Client, identifier: str, service_type: str, ignore_warnings: Union[bool, str] = False
+) -> CommandResults:
+    """
+    Delete a service object.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier (str): uid or name.
+        service_type (str): The service type (tcp, udp, or icmp).
+        ignore_warnings (bool): Whether to ignore warnings when deleting the service object.
+    """
+    ignore_warnings = argToBoolean(ignore_warnings)
+
+    client.delete_service(identifier, service_type, ignore_warnings)
+
+    return CommandResults(
+        readable_output="Service deleted successfully.",
+    )
+
+
 def build_member_data(result: dict, readable_output: str, printable_result: dict):
     """helper function. Builds the member data for group endpoints."""
     members = result.get("members")
@@ -2854,6 +3496,33 @@ def main():  # pragma: no cover
 
         elif command == "checkpoint-network-delete":
             return_results(checkpoint_network_delete_command(client, **args))
+
+        elif command == "checkpoint-service-get":
+            return_results(checkpoint_service_get_command(client, **args))
+
+        elif command == "checkpoint-service-list":
+            return_results(checkpoint_service_list_command(client, **args))
+
+        elif command == "checkpoint-tcp-service-add":
+            return_results(checkpoint_tcp_service_add_command(client, **args))
+
+        elif command == "checkpoint-udp-service-add":
+            return_results(checkpoint_udp_service_add_command(client, **args))
+
+        elif command == "checkpoint-icmp-service-add":
+            return_results(checkpoint_icmp_service_add_command(client, **args))
+
+        elif command == "checkpoint-tcp-service-update":
+            return_results(checkpoint_tcp_service_update_command(client, **args))
+
+        elif command == "checkpoint-udp-service-update":
+            return_results(checkpoint_udp_service_update_command(client, **args))
+
+        elif command == "checkpoint-icmp-service-update":
+            return_results(checkpoint_icmp_service_update_command(client, **args))
+
+        elif command == "checkpoint-service-delete":
+            return_results(checkpoint_service_delete_command(client, **args))
         else:
             raise NotImplementedError(f"Unknown command {command}.")
 
