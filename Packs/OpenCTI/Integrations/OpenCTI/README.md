@@ -207,6 +207,7 @@ Create a new organization.
 ```!opencti-organization-create name=ExampleOrganization description="create organization" reliability="C"```
 
 #### Context Example
+
 ```json
 {
     "OpenCTI": {
