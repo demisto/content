@@ -1,5 +1,5 @@
 variables:
-  CURRENT_BRANCH_NAME: ai-triage   # FIXME do not merge this! $INFRA_BRANCH test3
+  CURRENT_BRANCH_NAME: ai-triage   # FIXME do not merge this! $INFRA_BRANCH test4
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
