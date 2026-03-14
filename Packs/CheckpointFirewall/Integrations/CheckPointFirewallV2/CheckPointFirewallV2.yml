@@ -2184,6 +2184,731 @@ script:
     description: Delete a network object.
     name: checkpoint-network-delete
     outputs: []
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    - auto: PREDEFINED
+      description: The type of service to retrieve.
+      name: service_type
+      predefined:
+      - tcp
+      - udp
+      - icmp
+      required: true
+    description: Gets full data for the specified service object.
+    name: checkpoint-service-get
+    outputs:
+    - contextPath: CheckPoint.TCPService.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.TCPService.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.TCPService.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.TCPService.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.TCPService.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.TCPService.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.UDPService.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.UDPService.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.UDPService.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.UDPService.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.UDPService.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.UDPService.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.ICMPService.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.ICMPService.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.ICMPService.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.ICMPService.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.ICMPService.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.ICMPService.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.ICMPService.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.ICMPService.last-modifier
+      description: The user that last modified the object.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID) or name. When provided, calls the single-object endpoint instead of the list endpoint.
+      name: identifier
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    - auto: PREDEFINED
+      description: The type of service to retrieve.
+      name: service_type
+      predefined:
+      - tcp
+      - udp
+      - icmp
+      required: true
+    - defaultValue: '50'
+      description: The maximum number of results to return. Default is 50. Max is 500.
+      name: limit
+    - defaultValue: '0'
+      description: Number of results to initially skip. Default is 0.
+      name: offset
+    description: Retrieve a list of service objects. When identifier is provided, returns a single service object.
+    name: checkpoint-service-list
+    outputs:
+    - contextPath: CheckPoint.TCPService.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.TCPService.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.TCPService.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.UDPService.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.UDPService.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.UDPService.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.ICMPService.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.ICMPService.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.ICMPService.type
+      description: Object type.
+      type: String
+  - arguments:
+    - description: Object name. Must be unique in the domain.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    - description: The number of the port used to provide this service. To specify a port range, place a hyphen between the lowest and highest port numbers (for example, 44-55).
+      name: port
+      required: true
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: black
+      description: Color of the object.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: Time (in seconds) before the session times out.
+      name: session_timeout
+    - description: Collection of tag identifiers.
+      isArray: true
+      name: tags
+    description: Create a new TCP service object.
+    name: checkpoint-tcp-service-add
+    outputs:
+    - contextPath: CheckPoint.TCPService.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.TCPService.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.TCPService.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.TCPService.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.TCPService.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.TCPService.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.TCPService.groups
+      description: Collection of group identifiers.
+      type: String
+  - arguments:
+    - description: Object name. Must be unique in the domain.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    - description: The number of the port used to provide this service. To specify a port range, place a hyphen between the lowest and highest port numbers (for example, 44-55).
+      name: port
+      required: true
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: black
+      description: Color of the object.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: Time (in seconds) before the session times out.
+      name: session_timeout
+    - description: Collection of tag identifiers.
+      isArray: true
+      name: tags
+    description: Create a new UDP service object.
+    name: checkpoint-udp-service-add
+    outputs:
+    - contextPath: CheckPoint.UDPService.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.UDPService.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.UDPService.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.UDPService.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.UDPService.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.UDPService.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.UDPService.groups
+      description: Collection of group identifiers.
+      type: String
+  - arguments:
+    - description: Object name. Must be unique in the domain.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    - description: The number of the port used to provide this service.
+      name: port
+    - description: ICMP type as listed in RFC 792.
+      name: icmp_type
+      required: true
+    - description: ICMP code as listed in RFC 792.
+      name: icmp_code
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: black
+      description: Color of the object.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: Time (in seconds) before the session times out.
+      name: session_timeout
+    - description: Collection of tag identifiers.
+      isArray: true
+      name: tags
+    description: Create a new ICMP service object.
+    name: checkpoint-icmp-service-add
+    outputs:
+    - contextPath: CheckPoint.ICMPService.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.ICMPService.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.ICMPService.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.ICMPService.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.ICMPService.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.ICMPService.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.ICMPService.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.ICMPService.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.ICMPService.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.ICMPService.groups
+      description: Collection of group identifiers.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    - description: New name of the object.
+      name: new_identifier
+    - description: The number of the port used to provide this service.
+      name: port
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: black
+      description: Color of the object.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: Collection of tag identifiers.
+      isArray: true
+      name: tags
+    description: Update an existing TCP service object.
+    name: checkpoint-tcp-service-update
+    outputs:
+    - contextPath: CheckPoint.TCPService.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.TCPService.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.TCPService.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.TCPService.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.TCPService.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.TCPService.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.TCPService.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.TCPService.groups
+      description: Collection of group identifiers.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    - description: New name of the object.
+      name: new_identifier
+    - description: The number of the port used to provide this service.
+      name: port
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: black
+      description: Color of the object.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: Collection of tag identifiers.
+      isArray: true
+      name: tags
+    description: Update an existing UDP service object.
+    name: checkpoint-udp-service-update
+    outputs:
+    - contextPath: CheckPoint.UDPService.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.UDPService.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.UDPService.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.UDPService.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.UDPService.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.UDPService.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.UDPService.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.UDPService.groups
+      description: Collection of group identifiers.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    - description: New name of the object.
+      name: new_identifier
+    - description: The number of the port used to provide this service.
+      name: port
+    - description: ICMP type as listed in RFC 792.
+      name: icmp_type
+    - description: ICMP code as listed in RFC 792.
+      name: icmp_code
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: black
+      description: Color of the object.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: Collection of tag identifiers.
+      isArray: true
+      name: tags
+    description: Update an existing ICMP service object.
+    name: checkpoint-icmp-service-update
+    outputs:
+    - contextPath: CheckPoint.ICMPService.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.ICMPService.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.ICMPService.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.ICMPService.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.ICMPService.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.ICMPService.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.ICMPService.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.ICMPService.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.ICMPService.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.ICMPService.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.ICMPService.groups
+      description: Collection of group identifiers.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    - auto: PREDEFINED
+      description: The type of service to delete.
+      name: service_type
+      predefined:
+      - tcp
+      - udp
+      - icmp
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to ignore warnings when deleting the service object.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    description: Delete a service object.
+    name: checkpoint-service-delete
+    outputs: []
   dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: ''
