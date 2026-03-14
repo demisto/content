@@ -1,5 +1,5 @@
 Manages indicators from OpenCTI.  
-This integration was tested with version 5.12.17 of OpenCTI.  
+This integration was tested with version 6.9.X of OpenCTI.
 
 ## Configure OpenCTI on Cortex XSOAR
 
@@ -7,12 +7,12 @@ This integration was tested with version 5.12.17 of OpenCTI.
 2. Search for OpenCTI.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Base URL | True |
-    | API Key (leave empty. Fill in the API key in the password field.) | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+   | **Parameter** | **Required** |
+   | --- | --- |
+   | Base URL | True |
+   | API Key (leave empty. Fill in the API key in the password field.) | False |
+   | Trust any certificate (not secure) | False |
+   | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -70,125 +70,6 @@ Get indicators in OpenCTI.
 | OpenCTI.Indicators.IndicatorList.updatedAt | string | Last update date of the indicator. |
 | OpenCTI.Indicators.LastRunID | string | The last ID of the previous fetch for pagination. |
 
-### opencti-indicator-delete
-
-***
-Delete indicator.
-
-#### Base Command
-
-`opencti-indicator-delete`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | Indicator ID. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-
-```!opencti-indicator-delete id=74faf2e8-bbab-4a1a-a548-58db202c5e57```
-
-#### Human Readable Output
-
->Indicator deleted.
-
-### opencti-indicator-field-update
-
-***
-Update the indicator field. The fields that can be updated are: score, description.
-
-#### Base Command
-
-`opencti-indicator-field-update`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | Indicator ID. | Required |
-| field | Indicator field to update. Possible values are: score, description. | Required |
-| value | Value of the field to update. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| OpenCTI.Indicator.id | String | Updated indicator ID. |
-
-#### Command Example
-
-```!opencti-indicator-field-update field=score id=81d63245-9ba3-495d-8e78-03b037d71e01 value=100```
-
-#### Context Example
-
-```json
-{
-    "OpenCTI": {
-        "Indicator": {
-            "id": "81d63245-9ba3-495d-8e78-03b037d71e01"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->Indicator 81d63245-9ba3-495d-8e78-03b037d71e01 updated successfully.
-
-### opencti-indicator-create
-
-***
-Create new indicator.
-
-#### Base Command
-
-`opencti-indicator-create`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| type | The indicator type to create. Out-of-the-box indicator types supported in XSOAR are: Account, Domain, Email, File-MD5, File-SHA1, File-SHA256, Host, IP, IPV6, Registry Key, and URL. Possible values are: Account, Domain, Email, File-MD5, File-SHA1, File-SHA256, Host, IP, IPv6, Registry Key, URL. | Required |
-| created_by | Organization ID. Use opencti-organization-list to find all organization IDs in OpenCTI, or use opencti-organization-create to create a new organization ID. | Optional |
-| marking_id | Indicator marking definition ID. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI. | Optional |
-| label_id | Indicator label ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label. | Optional |
-| external_references_id | External references URL. Use opencti-external-reference-create to create a new external reference. | Optional |
-| description | Indicator description. | Optional |
-| score | Indicator score. Values range is 0 - 100. Default value is 50. | Optional |
-| value | Indicator value. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| OpenCTI.Indicator.id | String | New indicator ID. |
-
-#### Command Example
-
-```!opencti-indicator-create type=Domain created_by=0c7cb378-64c3-4809-b423-986ac7cecf91 description=test value="TestDomainDocs.com" score=70 label_id=fa57f98e-f2f5-45fd-97f2-bf2c53119044 marking_id=9128e411-c759-4af0-aeb0-b65f12082648```
-
-#### Context Example
-
-```json
-{
-    "OpenCTI": {
-        "Indicator": {
-            "id": "7ed5946a-81a2-4490-8be8-06d3633a41fb",
-            "type": "Domain",
-            "value": "TestDomainDocs.com"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->Indicator created successfully. New Indicator id: 7ed5946a-81a2-4490-8be8-06d3633a41fb
 
 ### opencti-indicator-field-add
 
@@ -236,6 +117,10 @@ Remove indicator field value. Fields which values can be removed are marking def
 | field | Indicator field to update. Possible values are: marking, label. | Required |
 | value | Value of the field to remove. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI or opencti-marking-definition-list to find all marking definition IDs in OpenCTI. | Required |
 
+#### Context Output
+
+There is no context output for this command.
+
 ### opencti-indicator-create
 
 ***
@@ -270,30 +155,29 @@ Create a new indicator in OpenCTI.
 | --- | --- | --- |
 | OpenCTI.Indicator.id | string | New Indicator ID. |
 
-                    },
-                    {
-                        "id": "11ddff08-8933-46d7-ab22-31f49496499f",
-                        "name": "ExampleOrganization"
-                    }
-                ]
-            },
-            {
-                "organizationsLastRun": "YXJyYXljb25uZWN0aW9uOjI="
-            }
-        ]
-    }
-}
+### opencti-organization-list
 
-```
+***
+Get a list of all organizations in OpenCTI.
 
-#### Human Readable Output
+#### Base Command
 
->### Organizations
->|Name|Id|
->|---|---|
->| Test_Organization | 1e12fe87-db3e-4838-8391-6910547bf60d |
->| ExampleOrganization | 11ddff08-8933-46d7-ab22-31f49496499f |
+`opencti-organization-list`
 
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of organizations to return per fetch. Default is 50. Maximum value is 200. | Optional |
+| last_run_id | The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.Organizations.organizationsLastRun context path. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpenCTI.Organizations.OrganizationsList.id | String | Organization ID. |
+| OpenCTI.Organizations.OrganizationsList.name | String | Organization name. |
+| OpenCTI.Organizations.organizationsLastRun | String | The last ID of the previous fetch to use for pagination. |
 
 ### opencti-organization-create
 ***
@@ -323,6 +207,7 @@ Create a new organization.
 ```!opencti-organization-create name=ExampleOrganization description="create organization" reliability="C"```
 
 #### Context Example
+
 ```json
 {
     "OpenCTI": {
@@ -654,8 +539,8 @@ Update a indicator in OpenCTI.
 | name | Name of the indicator. | Optional |
 | indicator_types | The types of the indicator. Use opencti-indicator-types-list to find all indicator types in OpenCTI. | Optional |
 | description | The description of the indicator. | Optional |
-| confidence | Confidence level for the indicator, value between 0 and 100. Default is 50. Default is 50. | Optional |
-| score | The score of the indicator, value between 0 and 100. Default is 50. Default is 50. | Optional |
+| confidence | Confidence level for the indicator, value between 0 and 100. Default is 50. | Optional |
+| score | The score of the indicator, value between 0 and 100. Default is 50. | Optional |
 | valid_from | The valid-from date for the indicator in the format YYYY-MM-DDThh:mm:ss.sssZ. | Optional |
 | valid_until | The valid-until date for the indicator in the format YYYY-MM-DDThh:mm:ss.sssZ. | Optional |
 | label_id | The label ID for the indicator (use opencti-label-list to find or create). | Optional |
@@ -937,3 +822,214 @@ Get incidents in OpenCTI.
 | OpenCTI.Incidents.IncidentList.created | string | Creation date of the incident. |
 | OpenCTI.Incidents.IncidentList.updatedAt | string | Last update date of the incident. |
 | OpenCTI.Incidents.LastRunID | string | The last ID of the previous fetch for pagination. |
+
+### opencti-incident-response-create
+
+***
+Create new incident response.
+
+#### Base Command
+
+`opencti-incident-response-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Incident Response name. | Required |
+| incident_response_type | Incident Response type name. Use opencti-incident-types-list to find all incident types in OpenCTI. | Optional |
+| severity | Incident Response severity. Possible values are: low, medium, high, critical. | Optional |
+| priority | Incident Response priority. Possible values are: P1, P2, P3, P4. | Optional |
+| description | Incident Response description. | Optional |
+| created_by | Organization ID. Use opencti-organization-list to find all organization IDs in OpenCTI, or use opencti-organization-create to create a new organization ID. | Optional |
+| incident_response_date | Incident Response date. YYYY-MM-DDThh:mm:ss.sssZ. | Optional |
+| label_id | Incident Response label ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label. | Optional |
+| marking_id | Incident Response marking definition ID. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI. | Optional |
+| external_references_id | External references URL. Use opencti-external-reference-create to create a new external reference. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpenCTI.IncidentResponse.id | String | New incident response ID. |
+
+### opencti-malware-create
+
+***
+Create a new malware.
+
+#### Base Command
+
+`opencti-malware-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Name of the malware. | Required |
+| description | Description of the malware. | Optional |
+| malware_types | Comma-separated list of malware types. | Optional |
+| is_family | Whether this is a malware family. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpenCTI.Malware.id | String | New malware ID. |
+
+### opencti-vulnerability-create
+
+***
+Create a new vulnerability.
+
+#### Base Command
+
+`opencti-vulnerability-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Name of the vulnerability (e.g., CVE-2025-0001). | Required |
+| description | Description of the vulnerability. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpenCTI.Vulnerability.id | String | New vulnerability ID. |
+
+### opencti-intrusion-set-create
+
+***
+Create a new intrusion-set.
+
+#### Base Command
+
+`opencti-intrusion-set-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Name of the intrusion set. | Required |
+| description | Description of the intrusion set. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpenCTI.IntrusionSet.id | String | New intrusion-set ID. |
+
+### opencti-threat-actor-group-create
+
+***
+Create a new threat actor group.
+
+#### Base Command
+
+`opencti-threat-actor-group-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Name of the threat actor group. | Required |
+| description | Description of the threat actor group. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpenCTI.ThreatActorGroup.id | String | New threat actor group ID. |
+
+### opencti-campaign-create
+
+***
+Create a new campaign.
+
+#### Base Command
+
+`opencti-campaign-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Name of the campaign. | Required |
+| description | Description of the campaign. | Optional |
+| first_seen | First seen date (ISO 8601 format). | Optional |
+| last_seen | Last seen date (ISO 8601 format). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpenCTI.campaign.id | String | New campaign ID. |
+
+### opencti-grouping-create
+
+***
+Create a new grouping.
+
+#### Base Command
+
+`opencti-grouping-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Name of the grouping. | Required |
+| description | Description of the grouping. | Optional |
+| context | Context of the grouping. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpenCTI.grouping.id | String | New grouping ID. |
+
+### opencti-report-create
+
+***
+Create a new report.
+
+#### Base Command
+
+`opencti-report-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Name of the report. | Required |
+| description | Description of the report. | Optional |
+| published | Published date (ISO 8601 format). | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpenCTI.report.id | String | New report ID. |
+
+### opencti-add-object-to-container
+
+***
+Add object to container (report, grouping, case-rft, case-rfi, case-incident).
+
+#### Base Command
+
+`opencti-add-object-to-container`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| container_type | Container type. Possible values are: report, grouping, case-rft, case-rfi, case-incident. Default is grouping. | Required |
+| container_id | Container Id. | Required |
+| object_id | Id of the object to add in the container. | Required |
+
+#### Context Output
+
+There is no context output for this command.

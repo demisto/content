@@ -1544,6 +1544,383 @@ def marking_list_command(client: OpenCTIApiClient, args: Dict[str, str]) -> Comm
         return CommandResults(readable_output="No markings")
 
 
+def incident_response_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """Create incident response at opencti
+
+    Args:
+        client: OpenCTI Client object
+        args: demisto.args()
+
+    Returns:
+        readable_output, raw_response
+    """
+    name = args.get("name")
+    response_types = args.get("incident_response_type", None)
+    severity = args.get("severity", None)
+    priority = args.get("priority", None)
+    description = args.get("description", None)
+    created_by = args.get("created_by")
+    incident_response_date = args.get("incident_response_date", None)
+    label_id = args.get("label_id", None)
+    marking_id = args.get("marking_id", None)
+    external_references_id = args.get("external_references_id", None)
+
+    try:
+        result = client.case_incident.create(
+            name=name,
+            created=incident_response_date,
+            response_types=response_types,
+            severity=severity,
+            priority=priority,
+            description=description,
+            createdBy=created_by,
+            objectLabel=label_id,
+            objectMarking=marking_id,
+            externalReferences=external_references_id,
+        )
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(f"Can't create incident response. {e}")
+
+    if incident_response_id := result.get("id"):
+        readable_output = f"Incident response created successfully. New Incident Response id: {incident_response_id}."
+        return CommandResults(
+            outputs_prefix="OpenCTI.IncidentResponse",
+            outputs_key_field="id",
+            outputs={"id": result.get("id")},
+            readable_output=readable_output,
+            raw_response=result,
+        )
+    else:
+        raise DemistoException("Can't create incident response.")
+
+
+def malware_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """Create malware at opencti
+
+    Args:
+        client: OpenCTI Client object
+        args: demisto.args()
+
+    Returns:
+        readable_output, raw_response
+    """
+    name = args.get("name")
+    description = args.get("description", None)
+    is_family = argToBoolean(args.get("is_family", False))
+    malware_types_arg = args.get("malware_types")
+    malware_types = None
+    if malware_types_arg:
+        malware_types = [t.strip() for t in str(malware_types_arg).split(",") if t.strip()]
+         
+    try:
+        result = client.malware.create(
+            name=name,
+            description=description,
+            is_family=is_family,
+            malware_types=malware_types
+        )
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(f"Can't create malware. {e}")
+
+    if malware_id := result.get("id"):
+        readable_output = f"Malware created successfully. New Malware id: {malware_id}."
+        return CommandResults(
+            outputs_prefix="OpenCTI.Malware",
+            outputs_key_field="id",
+            outputs={"id": result.get("id")},
+            readable_output=readable_output,
+            raw_response=result,
+        )
+    else:
+        raise DemistoException("Can't create malware.")
+    
+
+def vulnerability_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """Create vulnerability at opencti
+
+    Args:
+        client: OpenCTI Client object
+        args: demisto.args()
+
+    Returns:
+        readable_output, raw_response
+    """
+    name = args.get("name")
+    description = args.get("description", None)
+
+    try:
+        result = client.vulnerability.create(
+            name=name,
+            description=description
+        )
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(f"Can't create vulnerability. {e}")
+
+    if vulnerability_id := result.get("id"):
+        readable_output = f"Vulnerability created successfully. New Vulnerability id: {vulnerability_id}."
+        return CommandResults(
+            outputs_prefix="OpenCTI.Vulnerability",
+            outputs_key_field="id",
+            outputs={"id": result.get("id")},
+            readable_output=readable_output,
+            raw_response=result,
+        )
+    else:
+        raise DemistoException("Can't create vulnerability.")
+
+
+def intrusion_set_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """Create intrusion-set at opencti
+
+    Args:
+        client: OpenCTI Client object
+        args: demisto.args()
+
+    Returns:
+        readable_output, raw_response
+    """
+    name = args.get("name")
+    description = args.get("description", None)
+    try:
+        result = client.intrusion_set.create(
+            name=name,
+            description=description
+        )
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(f"Can't create intrusion-set. {e}")
+
+    if intrusion_set_id := result.get("id"):
+        readable_output = f"IntrusionSet created successfully. New IntrusionSet id: {intrusion_set_id}."
+        return CommandResults(
+            outputs_prefix="OpenCTI.IntrusionSet",
+            outputs_key_field="id",
+            outputs={"id": result.get("id")},
+            readable_output=readable_output,
+            raw_response=result,
+        )
+    else:
+        raise DemistoException("Can't create intrusion-set.")
+    
+
+def threat_actor_group_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """Create threat-actor-group at opencti
+
+    Args:
+        client: OpenCTI Client object
+        args: demisto.args()
+
+    Returns:
+        readable_output, raw_response
+    """
+    name = args.get("name")
+    description = args.get("description", None)
+    try:
+        result = client.threat_actor_group.create(
+            name=name,
+            description=description
+        )
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(f"Can't create threat-actor-group. {e}")
+
+    if threat_actor_group_id := result.get("id"):
+        readable_output = f"Threat Actor Group created successfully. New Threat Actor Group id: {threat_actor_group_id}."
+        return CommandResults(
+            outputs_prefix="OpenCTI.ThreatActorGroup",
+            outputs_key_field="id",
+            outputs={"id": result.get("id")},
+            readable_output=readable_output,
+            raw_response=result,
+        )
+    else:
+        raise DemistoException("Can't create threat-actor-group.")
+
+def campaign_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """Create campaign at opencti
+
+    Args:
+        client: OpenCTI Client object
+        args: demisto.args()
+
+    Returns:
+        readable_output, raw_response
+    """
+    name = args.get("name")
+    description = args.get("description", None)
+    first_seen = args.get("first_seen", None)
+    last_seen = args.get("last_seen", None)
+
+    try:
+        result = client.campaign.create(
+            name=name,
+            description=description,
+            first_seen=first_seen,
+            last_seen=last_seen
+        )
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(f"Can't create campaign. {e}")
+
+    if campaign_id := result.get("id"):
+        readable_output = f"Campaign created successfully. New Campaign id: {campaign_id}."
+        return CommandResults(
+            outputs_prefix="OpenCTI.Campaign",
+            outputs_key_field="id",
+            outputs={"id": result.get("id")},
+            readable_output=readable_output,
+            raw_response=result,
+        )
+    else:
+        raise DemistoException("Can't create campaign.")
+
+def grouping_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """Create grouping at opencti
+
+    Args:
+        client: OpenCTI Client object
+        args: demisto.args()
+
+    Returns:
+        readable_output, raw_response
+    """
+    name = args.get("name")
+    description = args.get("description", None)
+    context = args.get("context")
+
+    try:
+        result = client.grouping.create(
+            name=name,
+            description=description,
+            context=context
+        )
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(f"Can't create grouping. {e}")
+
+    if grouping_id := result.get("id"):
+        readable_output = f"Grouping created successfully. New Grouping id: {grouping_id}."
+        return CommandResults(
+            outputs_prefix="OpenCTI.Grouping",
+            outputs_key_field="id",
+            outputs={"id": result.get("id")},
+            readable_output=readable_output,
+            raw_response=result,
+        )
+    else:
+        raise DemistoException("Can't create grouping.")
+
+def report_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """Create report at opencti
+
+    Args:
+        client: OpenCTI Client object
+        args: demisto.args()
+
+    Returns:
+        readable_output, raw_response
+    """
+    name = args.get("name")
+    description = args.get("description", None)
+    published = args.get("published")
+
+    try:
+        result = client.report.create(
+            name=name,
+            description=description,
+            published=published
+        )
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(f"Can't create report. {e}")
+
+    if report_id := result.get("id"):
+        readable_output = f"Report created successfully. New Report id: {report_id}."
+        return CommandResults(
+            outputs_prefix="OpenCTI.Report",
+            outputs_key_field="id",
+            outputs={"id": result.get("id")},
+            readable_output=readable_output,
+            raw_response=result,
+        )
+    else:
+        raise DemistoException("Can't create report.")
+
+def add_object_to_container_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """Add object Id into a container Id
+
+    Args:
+        client: OpenCTI Client object
+        args: demisto.args()
+
+    Returns:
+        readable_output, raw_response
+    """
+    container_type = args.get("container_type")
+    container_id = args.get("container_id")
+    object_id = args.get("object_id")
+
+    container_actions = {
+        "report": (
+            lambda c, cid, oid: c.report.add_stix_object_or_stix_relationship(
+                id=cid,
+                stixObjectOrStixRelationshipId=oid,
+            ),
+            "Object added into report",
+            "Can't add object into report",
+        ),
+        "grouping": (
+            lambda c, cid, oid: c.grouping.add_stix_object_or_stix_relationship(
+                id=cid,
+                stixObjectOrStixRelationshipId=oid,
+            ),
+            "Object added into grouping",
+            "Can't add object into grouping",
+        ),
+        "case-incident": (
+            lambda c, cid, oid: c.case_incident.add_stix_object_or_stix_relationship(
+                id=cid,
+                stixObjectOrStixRelationshipId=oid,
+            ),
+            "Object added into case-incident",
+            "Can't add object into case-incident",
+        ),
+        "case-rft": (
+            lambda c, cid, oid: c.case_rft.add_stix_object_or_stix_relationship(
+                id=cid,
+                stixObjectOrStixRelationshipId=oid,
+            ),
+            "Object added into case-rft",
+            "Can't add object into case-rft",
+        ),
+        "case-rfi": (
+            lambda c, cid, oid: c.case_rfi.add_stix_object_or_stix_relationship(
+                id=cid,
+                stixObjectOrStixRelationshipId=oid,
+            ),
+            "Object added into case-rfi",
+            "Can't add object into case-rfi",
+        ),
+    }
+
+    action = container_actions.get(container_type)
+    if action:
+        action_callable, success_message, error_prefix = action
+        try:
+            action_callable(client, container_id, object_id)
+            return CommandResults(readable_output=success_message)
+        except Exception as e:
+            demisto.error(str(e))
+            raise DemistoException(f"{error_prefix}. {e}")
+    else:
+        error = f"Can't add object into container. Invalid container_type: {container_type}"
+        demisto.error(str(error))
+        raise DemistoException(error)
+    
+    
 def main():
     params = demisto.params()
     args = demisto.args()
@@ -1639,7 +2016,34 @@ def main():
 
         elif command == "opencti-indicator-types-list":
             return_results(indicator_types_list_command(client, args))
+            
+        elif command == "opencti-incident-response-create":
+            return_results(incident_response_create_command(client, args))
 
+        elif command == "opencti-malware-create":
+            return_results(malware_create_command(client, args))
+        
+        elif command == "opencti-vulnerability-create":
+            return_results(vulnerability_create_command(client, args))
+
+        elif command == "opencti-intrusion-set-create":
+            return_results(intrusion_set_create_command(client, args))
+        
+        elif command == "opencti-threat-actor-group-create":
+            return_results(threat_actor_group_create_command(client, args))   
+            
+        elif command == "opencti-campaign-create":
+            return_results(campaign_create_command(client, args))   
+        
+        elif command == "opencti-grouping-create":
+            return_results(grouping_create_command(client, args))
+        
+        elif command == "opencti-report-create":
+            return_results(report_create_command(client, args))
+        
+        elif command == "opencti-add-object-to-container":
+            return_results(add_object_to_container_create_command(client, args)) 
+        
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Error:\n [{e}]")

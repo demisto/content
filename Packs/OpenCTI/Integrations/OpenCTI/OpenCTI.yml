@@ -785,7 +785,178 @@ script:
       description: Indicator type name.
     - contextPath: OpenCTI.IndicatorTypes.IndicatorTypesList.description
       description: Indicator type description.
-  dockerimage: demisto/vendors-sdk:1.0.0.110574
+  - arguments:
+    - description: Incident Response name.
+      name: name
+      required: true
+    - description: Incident Response type name. Use opencti-incident-types-list to find all incident types in OpenCTI.
+      name: incident_response_type
+    - auto: PREDEFINED
+      description: Incident Response severity.
+      name: severity
+      predefined:
+      - low
+      - medium
+      - high
+      - critical
+    - auto: PREDEFINED
+      description: Incident Response priority.
+      name: priority
+      predefined:
+      - P1
+      - P2
+      - P3
+      - P4
+    - description: Incident Response description.
+      name: description
+    - description: Organization ID. Use opencti-organization-list to find all organization IDs in OpenCTI, or use opencti-organization-create to create a new organization ID.
+      name: created_by
+    - description: Incident Response date. YYYY-MM-DDThh:mm:ss.sssZ
+      name: incident_response_date
+    - description: Incident Response label ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label.
+      name: label_id
+    - description: Incident Response marking definition ID. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI.
+      name: marking_id
+    - description: External references URL. Use opencti-external-reference-create to create a new external reference.
+      name: external_references_id
+    description: Create new incident response.
+    name: opencti-incident-response-create
+    outputs:
+    - contextPath: OpenCTI.IncidentResponse.id
+      description: New incident response ID.
+      type: String
+  - arguments:
+    - description: Name of the malware.
+      name: name
+      required: true
+    - description: Description of the malware.
+      name: description
+      required: false
+    - description: Comma-separated list of malware types.
+      name: malware_types
+      required: false
+    - description: Whether this is a malware family.
+      name: is_family
+      type: 8
+      defaultvalue: 'false'
+      required: false
+    description: Create a new malware.
+    name: opencti-malware-create
+    outputs:
+    - contextPath: OpenCTI.Malware.id
+      description: New malware ID.
+      type: String
+  - arguments:
+    - description: Name of the vulnerability (e.g., CVE-2025-0001).
+      name: name
+      required: true
+    - description: Description of the vulnerability.
+      name: description
+      required: false
+    description: Create a new vulnerability.
+    name: opencti-vulnerability-create
+    outputs:
+    - contextPath: OpenCTI.Vulnerability.id
+      description: New vulnerability ID.
+      type: String
+  - arguments:
+    - description: Name of the intrusion set.
+      name: name
+      required: true
+    - description: Description of the intrusion set.
+      name: description
+      required: false
+    description: Create a new intrusion-set.
+    name: opencti-intrusion-set-create
+    outputs:
+    - contextPath: OpenCTI.IntrusionSet.id
+      description: New intrusion-set ID.
+      type: String
+  - arguments:
+    - description: Name of the threat actor group.
+      name: name
+      required: true
+    - description: Description of the threat actor group.
+      name: description
+      required: false
+    description: Create a new threat actor group.
+    name: opencti-threat-actor-group-create
+    outputs:
+    - contextPath: OpenCTI.ThreatActorGroup.id
+      description: New threat actor group ID.
+      type: String
+  - arguments:
+    - description: Name of the campaign.
+      name: name
+      required: true
+    - description: Description of the campaign.
+      name: description
+      required: false
+    - description: First seen date (ISO 8601 format).
+      name: first_seen
+      required: false
+    - description: Last seen date (ISO 8601 format).
+      name: last_seen
+      required: false
+    description: Create a new campaign.
+    name: opencti-campaign-create
+    outputs:
+    - contextPath: OpenCTI.Campaign.id
+      description: New campaign ID.
+      type: String
+  - arguments:
+    - description: Name of the grouping.
+      name: name
+      required: true
+    - description: Description of the grouping.
+      name: description
+      required: false
+    - description: Context of the grouping.
+      name: context
+      required: true
+    description: Create a new grouping.
+    name: opencti-grouping-create
+    outputs:
+    - contextPath: OpenCTI.Grouping.id
+      description: New grouping ID.
+      type: String
+  - arguments:
+    - description: Name of the report.
+      name: name
+      required: true
+    - description: Description of the report.
+      name: description
+      required: false
+    - description: Published date (ISO 8601 format).
+      name: published
+      required: true
+    description: Create a new report.
+    name: opencti-report-create
+    outputs:
+    - contextPath: OpenCTI.Report.id
+      description: New report ID.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: grouping
+      description: Container type.
+      name: container_type
+      predefined:
+      - report
+      - grouping
+      - case-rft
+      - case-rfi
+      - case-incident
+      required: true
+    - description: Container Id.
+      name: container_id
+      required: true
+    - description: Id of the object to add in the container.
+      name: object_id
+      required: true
+    description: Add object to container (report, grouping, case-rft, case-rfi, case-incident).
+    name: opencti-add-object-to-container
+  dockerimage: demisto/opencti:1.0.0.7499058
   runonce: false
   script: '-'
   subtype: python3
