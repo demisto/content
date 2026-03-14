@@ -458,6 +458,72 @@ class Client(BaseClient):
         """
         self._http_request(method="DELETE", url_suffix=f"acqs/files/{acquisition_id}", return_empty_response=True)
 
+    def host_acquisition_information_request(self, agent_id: str):
+        """API Call to get information about a specific triage
+
+        Args:
+            agent_id (str): The unique agent ID
+
+        Returns:
+            _type_: _description_
+        """
+
+        return self._http_request(method="GET", url_suffix=f"hosts/{agent_id}/host_details_acquisitions").get("data")
+
+    def triage_acquisition_information_request(self, acquisition_id: str):
+        """API Call to get information about a specific triage
+
+        Args:
+            acquisition_id (str): The unique Triage ID
+
+        Returns:
+            _type_: _description_
+        """
+
+        return self._http_request(method="GET", url_suffix=f"acqs/triages/{acquisition_id}").get("data")
+
+    def triage_acquisition_request(self, agent_id: str):
+        """API Call to start a triage for a specific host
+
+        Args:
+            agent_id (str): The unique agent ID
+
+        Returns:
+            _type_: _description_
+        """
+
+        return self._http_request(method="POST", url_suffix=f"hosts/{agent_id}/triages").get("data")
+
+    def delete_triage_acquisition_request(self, acquisition_id: str):
+        """API Call to delete a specific triage
+
+        Args:
+            acquisition_id (str): The unique Triage ID
+        """
+        self._headers["Accept"] = "text/plain"
+        self._http_request(
+            method="DELETE", url_suffix=f"acqs/triages/{acquisition_id}", return_empty_response=True, resp_type="text"
+        )
+
+    def triage_acquisition_package_request(self, acquisition_id):
+        """API Call to return the triage collection file
+
+        Args:
+            acquisition_id (_type_): The unique Triage ID
+
+        Returns:
+            _type_: _description_
+        """
+
+        headers = {"Accept": "application/octet-stream"}
+        response = self._http_request(
+            method="GET",
+            url_suffix=f"acqs/triages/{acquisition_id}.mans",
+            headers=self._headers | headers,  # Update the headers with the new Accept octet-stream
+            resp_type="content",
+        )
+        return response
+
     """
     ALERTS REQUEST
     """
@@ -874,6 +940,29 @@ def get_data_acquisition(client: Client, args: Dict[str, Any]) -> Dict:
     body = {"name": script_name, "script": {"b64": base64.b64encode(bytes(script, "utf-8")).decode()}}
 
     return client.data_acquisition_request(agent_id, body)["data"]
+
+
+# Helper function triage acq
+def get_triage_acquisition(client: Client, args: Dict[str, Any]) -> Dict:
+    """Helper function to start a triage on a provided host
+
+    Args:
+        client (Client): _description_
+        args (Dict[str, Any]): Demisto Arguments
+
+    Raises:
+        ValueError: Missing Agent ID or Hostname
+
+    Returns:
+        Dict: _description_
+    """
+    host_name = args.get("hostName", "")
+    agent_id = args.get("agentId")
+    if not host_name and not agent_id:
+        raise ValueError("Please provide either agentId or hostName")
+    if not agent_id:
+        agent_id = get_agent_id_by_host_name(client, host_name)
+    return client.triage_acquisition_request(agent_id)
 
 
 def get_alert_entry(alert: Dict):
@@ -1841,6 +1930,206 @@ def delete_file_acquisition_command(client: Client, args: Dict[str, Any]) -> Com
     return CommandResults(readable_output=f"file acquisition {acquisition_id} deleted successfully")
 
 
+# Start of Triage demisto calls
+def initiate_triage_acquisition_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Demisto function to start a triage on the provided hosts via Demisto Args
+
+    Args:
+        client (Client): _description_
+        args (Dict[str, Any]): Demisto Arguments
+
+    Returns:
+        _type_: _description_
+    """
+    acquisition_info: Dict = get_triage_acquisition(client, args)
+
+    # Add hostname to the host info of acquisition_info
+    if args.get("hostName", False):
+        acquisition_info["host"]["hostname"] = args.get("hostName")
+
+    # Add Integration Instance to the acquisition_info
+    acquisition_info["instance"] = demisto.integrationInstance()
+    readable = f'Triage Acquisition ID: {acquisition_info.get("_id")} on Instance: {acquisition_info.get("instance")} created.'
+    return CommandResults(
+        outputs_prefix="FireEyeHX.Acquisitions.Triage",
+        outputs=acquisition_info,
+        outputs_key_field="_id",
+        readable_output=readable,
+    )
+
+
+def get_host_acqs(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Demisto call to get acq info for a host
+
+    Args:
+        client (Client): _description_
+        args (Dict[str, Any]): Demisto Arguments
+
+    Raises:
+        ValueError: _description_
+
+    Returns:
+        _type_: _description_
+    """
+    host_name = args.get("hostName", "")
+    agent_id = args.get("agentId")
+    if not host_name and not agent_id:
+        raise ValueError("Please provide either agentId or hostName")
+    if not agent_id:
+        agent_id = get_agent_id_by_host_name(client, host_name)
+
+    acquisition_info = client.host_acquisition_information_request(agent_id)
+    headers_for_table = ["_id", "acq_type", "request_time", "state"]
+    md_table = tableToMarkdown(
+        name="FireEye HX Acquisitions",
+        t=acquisition_info,
+        headers=headers_for_table,
+        removeNull=True,
+        date_fields=["request_time"],
+    )
+
+    return CommandResults(
+        outputs_prefix="FireEyeHX.Host.Acquisitions.All",
+        outputs=acquisition_info,
+        readable_output=md_table,
+        outputs_key_field="_id",
+    )
+
+
+def get_triage_acquisition_information(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Demisto call to get information (Status, requested by, etc) from an HX Triage
+
+    Args:
+        client (Client): _description_
+        args (Dict[str, Any]): Demisto Arguments
+
+    Raises:
+        ValueError: _description_
+
+    Returns:
+        _type_: _description_
+    """
+    if not args.get("acquisitionId"):
+        raise ValueError("Acquisition Id is required")
+    acquisition_id = str(args.get("acquisitionId"))
+
+    acquisition_info = client.triage_acquisition_information_request(acquisition_id)
+    agent_id = acquisition_info.get("host").get("_id")
+    host_info = client.get_hosts_by_agentId_request(agent_id)["data"]
+    hostname = host_info.get("hostname")
+
+    # Add hostname to the host info of acquisition_info
+    acquisition_info["host"]["hostname"] = hostname
+    # Add Integration Instance to the acquisition_info
+    acquisition_info["instance"] = demisto.integrationInstance()
+
+    headers_for_table = [
+        "host",
+        "_id",
+        "state",
+        "request_time",
+        "finish_time",
+        "instance",
+    ]
+    md_table = tableToMarkdown(
+        name="FireEye HX Triage",
+        t=acquisition_info,
+        headers=headers_for_table,
+        removeNull=True,
+        date_fields=["request_time", "finish_time"],
+    )
+    return CommandResults(
+        outputs_prefix="FireEyeHX.Acquisitions.Triage",
+        outputs=acquisition_info,
+        outputs_key_field="_id",
+        readable_output=md_table,
+    )
+
+
+def delete_triage_acquisition_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Demisto call to delete a triage acquistion
+
+    Args:
+        client (Client): _description_
+        args (Dict[str, Any]): Demisto Arguments
+
+    Returns:
+        CommandResults: _description_
+    """
+    if "acquisitionId" not in args:
+        raise ValueError("Acquisition Id is required")
+    acquisition_id = str(args.get("acquisitionId"))
+    client.delete_triage_acquisition_request(acquisition_id)
+    # successful request
+
+    return CommandResults(readable_output=f"Triage acquisition {acquisition_id} deleted successfully")
+
+
+def get_triage_acquisition_package(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
+    """Demisto call to return a file result from a triage acquisition
+
+    Args:
+        client (Client): _description_
+        args (Dict[str, Any]): Demisto Arguments
+
+    Raises:
+        ValueError: _description_
+
+    Returns:
+        list[CommandResults]: _description_
+    """
+
+    if not args.get("acquisitionId"):
+        raise ValueError("Acquisition Id is required")
+
+    acquisition_id = str(args.get("acquisitionId"))
+
+    acquisition_info = client.triage_acquisition_information_request(acquisition_id)
+
+    agent_id = acquisition_info.get("host").get("_id")
+    host_info = client.get_hosts_by_agentId_request(agent_id)["data"]
+    hostname = host_info.get("hostname")
+
+    # Add hostname to the host info of acquisition_info
+    acquisition_info["host"]["hostname"] = hostname
+    # Add Integration Instance to the acquisition_info
+    acquisition_info["instance"] = demisto.integrationInstance()
+
+    # if `state` equals to 'COMPLETE'
+    if acquisition_info.get("state") == "COMPLETE":
+        message = "Triage acquisition completed successfully."
+        if acquisition_info.get("error_message"):
+            message = acquisition_info.get("error_message")
+
+        # output file and acquisition information to the war room
+        data = client.triage_acquisition_package_request(acquisition_id)
+
+        return [
+            CommandResults(
+                outputs_prefix="FireEyeHX.Acquisitions.Triage",
+                outputs_key_field="_id",
+                outputs=acquisition_info,
+                readable_output=f"{message}\nTriage acquisition ID: {acquisition_id}",
+            ),
+            fileResult(f"triage_{acquisition_id}_agent_{agent_id}_data.mans", data),
+        ]
+    # else return message for states in [ NEW, ERROR, QUEUED, RUNNING, FAILED ]
+    state = acquisition_info.get("state")
+
+    message = "Triage acquisition process not yet completed."
+    if acquisition_info.get("error_message"):
+        message = acquisition_info.get("error_message")
+
+    return [
+        CommandResults(
+            outputs_prefix="FireEyeHX.Acquisitions.Triage",
+            outputs_key_field="_id",
+            outputs=acquisition_info,
+            readable_output=f"{message}\nacquisition ID: {acquisition_id}\nstate: {state}",
+        )
+    ]
+
+
 """
 ALERTS
 """
@@ -2528,6 +2817,11 @@ def main() -> None:
         "fireeye-hx-update-host-set-static": update_static_host_set_command,
         "fireeye-hx-create-host-set-dynamic": create_dynamic_host_set_command,
         "fireeye-hx-update-host-set-dynamic": update_dynamic_host_set_command,
+        "fireeye-hx-delete-triage-acquistion": delete_triage_acquisition_command,
+        "fireeye-hx-get-triage-acquistition-package": get_triage_acquisition_package,
+        "fireeye-hx-get-triage-acquistition": get_triage_acquisition_information,
+        "fireeye-hx-triage-acquistition": initiate_triage_acquisition_command,
+        "fireeye-hx-host-get-acquisitions": get_host_acqs,
     }
 
     params = demisto.params()
