@@ -383,6 +383,86 @@ class Client(BaseClient):
             method="POST", url_suffix="delete-application-site", headers=self.headers, json_data={"name": identifier}
         )
 
+    def show_network(self, identifier: str, details_level: Optional[str] = None):
+        body: dict = {"name": identifier}
+        if details_level:
+            body["details-level"] = details_level
+        return self._http_request(method="POST", url_suffix="show-network", headers=self.headers, json_data=body)
+
+    def list_networks(self, limit: int, offset: int, details_level: Optional[str] = None):
+        body: dict = {"limit": limit, "offset": offset}
+        if details_level:
+            body["details-level"] = details_level
+        return self._http_request(method="POST", url_suffix="show-networks", headers=self.headers, json_data=body)
+
+    def add_network(
+        self,
+        identifier: str,
+        subnet: str,
+        mask_length: Optional[int] = None,
+        subnet_mask: Optional[str] = None,
+        comments: Optional[str] = None,
+        color: Optional[str] = None,
+        tags: Optional[list] = None,
+        broadcast: Optional[str] = None,
+        nat_settings: Optional[dict] = None,
+    ):
+        body: dict = {"name": identifier, "subnet4": subnet}
+        if mask_length is not None:
+            body["mask-length4"] = mask_length
+        if subnet_mask:
+            body["subnet-mask"] = subnet_mask
+        if comments:
+            body["comments"] = comments
+        if color:
+            body["color"] = color
+        if tags:
+            body["tags"] = tags
+        if broadcast:
+            body["broadcast"] = broadcast
+        if nat_settings:
+            body["nat-settings"] = nat_settings
+        return self._http_request(method="POST", url_suffix="add-network", headers=self.headers, json_data=body)
+
+    def update_network(
+        self,
+        identifier: str,
+        new_identifier: Optional[str] = None,
+        subnet: Optional[str] = None,
+        subnet_mask: Optional[str] = None,
+        comments: Optional[str] = None,
+        color: Optional[str] = None,
+        tags: Optional[list] = None,
+        broadcast: Optional[str] = None,
+        nat_settings: Optional[dict] = None,
+    ):
+        body: dict = {"name": identifier}
+        if new_identifier:
+            body["new-name"] = new_identifier
+        if subnet:
+            body["subnet4"] = subnet
+        if subnet_mask:
+            body["subnet-mask"] = subnet_mask
+        if comments:
+            body["comments"] = comments
+        if color:
+            body["color"] = color
+        if tags:
+            body["tags"] = tags
+        if broadcast:
+            body["broadcast"] = broadcast
+        if nat_settings:
+            body["nat-settings"] = nat_settings
+        return self._http_request(method="POST", url_suffix="set-network", headers=self.headers, json_data=body)
+
+    def delete_network(self, identifier: str, ignore_warnings: bool = True):
+        return self._http_request(
+            method="POST",
+            url_suffix="delete-network",
+            headers=self.headers,
+            json_data={"name": identifier, "ignore-warnings": ignore_warnings},
+        )
+
     def show_task(self, task_id):
         return self._http_request(method="POST", url_suffix="show-task", headers=self.headers, json_data={"task-id": task_id})
 
@@ -2171,6 +2251,291 @@ def checkpoint_verify_policy_command(client: Client, policy_package: str) -> Com
     return command_results
 
 
+def build_nat_settings(
+    nat_settings_auto_rule: Optional[bool],
+    nat_method: Optional[str],
+    nat_hide_behind: Optional[str],
+    nat_install_on: Optional[str],
+    nat_settings_ip: Optional[str],
+) -> Optional[dict]:
+    """Helper function. Builds the nat-settings dict from individual arguments."""
+    if not any([nat_settings_auto_rule, nat_method, nat_hide_behind, nat_install_on, nat_settings_ip]):
+        return None
+
+    if nat_hide_behind and nat_method == "static":
+        raise DemistoException('The "nat_hide_behind" parameter is forbidden when "nat_method" is "static".')
+
+    nat_settings: dict = {}
+    if nat_settings_auto_rule is not None:
+        nat_settings["auto-rule"] = nat_settings_auto_rule
+    if nat_method:
+        nat_settings["method"] = nat_method
+    if nat_hide_behind:
+        nat_settings["hide-behind"] = nat_hide_behind
+    if nat_install_on:
+        nat_settings["install-on"] = nat_install_on
+    if nat_settings_ip:
+        nat_settings["ipv4-address"] = nat_settings_ip
+    return nat_settings
+
+
+def checkpoint_network_get_command(client: Client, identifier: str, details_level: str = None) -> CommandResults:
+    """
+    Show existing network object using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier (str): uid or name.
+        details_level (str): The level of detail for some of the fields in the response.
+    """
+    result = client.show_network(identifier, details_level)
+    printable_result = build_printable_result(DEFAULT_LIST_FIELD, result)
+    readable_output = tableToMarkdown(
+        f"CheckPoint data for network object {identifier}:", printable_result, headers=DEFAULT_LIST_FIELD, removeNull=True
+    )
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+
+    return CommandResults(
+        outputs_prefix="CheckPoint.Network",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result,
+    )
+
+
+def checkpoint_network_list_command(
+    client: Client, limit: int = 50, offset: int = 0, details_level: str = None
+) -> CommandResults:
+    """
+    Retrieve all network objects.
+
+    Args:
+        client (Client): CheckPoint client.
+        limit (int): The maximal number of returned results. default is 50.
+        offset (int): Number of the results to initially skip. default is 0.
+        details_level (str): The level of detail for some of the fields in the response.
+    """
+    limit = arg_to_number(limit) or 50
+    offset = arg_to_number(offset) or 0
+
+    result = client.list_networks(limit, offset, details_level)
+
+    printable_result: list = []
+    readable_output = ""
+
+    if result:
+        if result.get("total") == 0:
+            readable_output = "No network objects were found."
+        else:
+            objects = result.get("objects", [])
+            for element in objects:
+                current_printable_result = {}
+                for endpoint in DEFAULT_LIST_FIELD:
+                    current_printable_result[endpoint] = element.get(endpoint)
+                printable_result.append(current_printable_result)
+
+            readable_output = tableToMarkdown(
+                "CheckPoint data for all networks:", printable_result, DEFAULT_LIST_FIELD, removeNull=True
+            )
+
+    return CommandResults(
+        outputs_prefix="CheckPoint.Network",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result,
+    )
+
+
+def checkpoint_network_add_command(
+    client: Client,
+    identifier: str,
+    subnet: str,
+    mask_length: str = None,
+    subnet_mask: str = None,
+    comments: str = None,
+    color: str = None,
+    tags=None,
+    broadcast: str = None,
+    nat_install_on: str = None,
+    nat_hide_behind: str = None,
+    nat_settings_auto_rule: str = None,
+    nat_settings_ip: str = None,
+    nat_method: str = None,
+) -> CommandResults:
+    """
+    Create a new network object.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier (str): Object name. Must be unique in the domain.
+        subnet (str): IPv4 network address.
+        mask_length (str): IPv4 network mask length.
+        subnet_mask (str): IPv4 network mask.
+        comments (str): Comments string.
+        color (str): Color of the object.
+        tags: Collection of tag identifiers.
+        broadcast (str): Allow broadcast address inclusion.
+        nat_install_on (str): Gateway for NAT rule.
+        nat_hide_behind (str): Hide behind method.
+        nat_settings_auto_rule (str): Whether to add automatic address translation rules.
+        nat_settings_ip (str): IPv4 address for NAT.
+        nat_method (str): NAT translation method.
+    """
+    tags = argToList(tags)
+
+    nat_settings = build_nat_settings(
+        nat_settings_auto_rule=argToBoolean(nat_settings_auto_rule) if nat_settings_auto_rule else None,
+        nat_method=nat_method,
+        nat_hide_behind=nat_hide_behind,
+        nat_install_on=nat_install_on,
+        nat_settings_ip=nat_settings_ip,
+    )
+
+    result = client.add_network(
+        identifier=identifier,
+        subnet=subnet,
+        mask_length=arg_to_number(mask_length),
+        subnet_mask=subnet_mask,
+        comments=comments,
+        color=color,
+        tags=tags or None,
+        broadcast=broadcast,
+        nat_settings=nat_settings,
+    )
+
+    headers = [
+        "name",
+        "uid",
+        "type",
+        "domain-name",
+        "domain-type",
+        "domain-uid",
+        "creator",
+        "last-modifier",
+        "read-only",
+        "groups",
+    ]
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown(
+        "CheckPoint data for adding a network:", printable_result, headers=headers, removeNull=True
+    )
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+
+    return CommandResults(
+        outputs_prefix="CheckPoint.Network",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result,
+    )
+
+
+def checkpoint_network_update_command(
+    client: Client,
+    identifier: str,
+    new_identifier: str = None,
+    subnet: str = None,
+    subnet_mask: str = None,
+    comments: str = None,
+    color: str = None,
+    tags=None,
+    broadcast: str = None,
+    nat_install_on: str = None,
+    nat_hide_behind: str = None,
+    nat_settings_auto_rule: str = None,
+    nat_settings_ip: str = None,
+    nat_method: str = None,
+) -> CommandResults:
+    """
+    Update an existing network object.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier (str): uid or name.
+        new_identifier (str): New name of the object.
+        subnet (str): IPv4 network address.
+        subnet_mask (str): IPv4 network mask.
+        comments (str): Comments string.
+        color (str): Color of the object.
+        tags: Collection of tag identifiers.
+        broadcast (str): Allow broadcast address inclusion.
+        nat_install_on (str): Gateway for NAT rule.
+        nat_hide_behind (str): Hide behind method.
+        nat_settings_auto_rule (str): Whether to add automatic address translation rules.
+        nat_settings_ip (str): IPv4 address for NAT.
+        nat_method (str): NAT translation method.
+    """
+    tags = argToList(tags)
+
+    nat_settings = build_nat_settings(
+        nat_settings_auto_rule=argToBoolean(nat_settings_auto_rule) if nat_settings_auto_rule else None,
+        nat_method=nat_method,
+        nat_hide_behind=nat_hide_behind,
+        nat_install_on=nat_install_on,
+        nat_settings_ip=nat_settings_ip,
+    )
+
+    result = client.update_network(
+        identifier=identifier,
+        new_identifier=new_identifier,
+        subnet=subnet,
+        subnet_mask=subnet_mask,
+        comments=comments,
+        color=color,
+        tags=tags or None,
+        broadcast=broadcast,
+        nat_settings=nat_settings,
+    )
+
+    headers = [
+        "name",
+        "uid",
+        "type",
+        "domain-name",
+        "domain-type",
+        "domain-uid",
+        "creator",
+        "comments",
+        "last-modifier",
+        "read-only",
+    ]
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown(
+        "CheckPoint data for updating a network:", printable_result, headers=headers, removeNull=True
+    )
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+
+    return CommandResults(
+        outputs_prefix="CheckPoint.Network",
+        outputs_key_field="uid",
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result,
+    )
+
+
+def checkpoint_network_delete_command(
+    client: Client, identifier: str, ignore_warnings: Union[bool, str] = True
+) -> CommandResults:
+    """
+    Delete a network object.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier (str): uid or name.
+        ignore_warnings (bool): Whether to ignore warnings when deleting the network object.
+    """
+    ignore_warnings = argToBoolean(ignore_warnings)
+
+    client.delete_network(identifier, ignore_warnings)
+
+    return CommandResults(
+        readable_output="Object deleted successfully.",
+    )
+
+
 def build_member_data(result: dict, readable_output: str, printable_result: dict):
     """helper function. Builds the member data for group endpoints."""
     members = result.get("members")
@@ -2474,6 +2839,21 @@ def main():  # pragma: no cover
 
         elif command == "checkpoint-set-threat-protection":
             return_results(checkpoint_set_threat_protections_command(client, args))
+
+        elif command == "checkpoint-network-get":
+            return_results(checkpoint_network_get_command(client, **args))
+
+        elif command == "checkpoint-network-list":
+            return_results(checkpoint_network_list_command(client, **args))
+
+        elif command == "checkpoint-network-add":
+            return_results(checkpoint_network_add_command(client, **args))
+
+        elif command == "checkpoint-network-update":
+            return_results(checkpoint_network_update_command(client, **args))
+
+        elif command == "checkpoint-network-delete":
+            return_results(checkpoint_network_delete_command(client, **args))
         else:
             raise NotImplementedError(f"Unknown command {command}.")
 

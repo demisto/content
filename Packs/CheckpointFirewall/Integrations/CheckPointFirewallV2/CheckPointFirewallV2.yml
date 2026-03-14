@@ -1833,6 +1833,357 @@ script:
     outputs:
     - contextPath: CheckPoint.DeletedThreatProtections
       description: ''
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    - auto: PREDEFINED
+      description: 'The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object.'
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
+    description: Gets full data for the specified network object.
+    name: checkpoint-network-get
+    outputs:
+    - contextPath: CheckPoint.Network.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.Network.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.Network.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.Network.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.Network.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.Network.ipv4-address
+      description: Network IPv4 address.
+      type: String
+    - contextPath: CheckPoint.Network.ipv6-address
+      description: Network IPv6 address.
+      type: String
+    - contextPath: CheckPoint.Network.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.Network.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.Network.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.Network.groups-name
+      description: The name of the group object linked to the current network object.
+      type: String
+    - contextPath: CheckPoint.Network.groups-uid
+      description: The UID of the group object linked to the current network object.
+      type: String
+  - arguments:
+    - defaultValue: '50'
+      description: The maximum number of results to return. Default is 50. Max is 500.
+      name: limit
+    - defaultValue: '0'
+      description: Number of results to initially skip. Default is 0.
+      name: offset
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    - auto: PREDEFINED
+      description: 'The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object.'
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
+    description: Retrieve a list of network objects.
+    name: checkpoint-network-list
+    outputs:
+    - contextPath: CheckPoint.Network.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.Network.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.Network.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.Network.ipv4-address
+      description: Network IPv4 address.
+      type: String
+    - contextPath: CheckPoint.Network.ipv6-address
+      description: Network IPv6 address.
+      type: String
+  - arguments:
+    - description: Object name. Must be unique in the domain.
+      name: identifier
+      required: true
+    - description: IPv4 network address.
+      name: subnet
+      required: true
+    - description: IPv4 network mask length (e.g. 24).
+      name: mask_length
+    - description: IPv4 network mask (e.g. 255.255.255.0).
+      name: subnet_mask
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: black
+      description: Color of the object.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: Collection of tag identifiers.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      description: Allow broadcast address inclusion.
+      name: broadcast
+      predefined:
+      - disallow
+      - allow
+    - description: Gateway for NAT rule.
+      name: nat_install_on
+    - auto: PREDEFINED
+      description: 'Hide behind method. This parameter is forbidden when nat_method is "static".'
+      name: nat_hide_behind
+      predefined:
+      - gateway
+      - ip_address
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to add automatic address translation rules.
+      name: nat_settings_auto_rule
+      predefined:
+      - 'true'
+      - 'false'
+    - description: 'IPv4 address. This parameter is not required when nat_method is "hide" and nat_hide_behind is "gateway".'
+      name: nat_settings_ip
+    - auto: PREDEFINED
+      description: NAT translation method.
+      name: nat_method
+      predefined:
+      - hide
+      - static
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Create a new network object.
+    name: checkpoint-network-add
+    outputs:
+    - contextPath: CheckPoint.Network.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.Network.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.Network.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.Network.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.Network.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.Network.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.Network.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.Network.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.Network.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.Network.groups
+      description: Collection of group identifiers.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - description: New name of the object.
+      name: new_identifier
+    - description: IPv4 network address.
+      name: subnet
+    - description: IPv4 network mask (e.g. 255.255.255.0).
+      name: subnet_mask
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: black
+      description: Color of the object.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: Collection of tag identifiers.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      description: Allow broadcast address inclusion.
+      name: broadcast
+      predefined:
+      - disallow
+      - allow
+    - description: Gateway for NAT rule.
+      name: nat_install_on
+    - auto: PREDEFINED
+      description: 'Hide behind method. This parameter is forbidden when nat_method is "static".'
+      name: nat_hide_behind
+      predefined:
+      - gateway
+      - ip_address
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to add automatic address translation rules.
+      name: nat_settings_auto_rule
+      predefined:
+      - 'true'
+      - 'false'
+    - description: 'IPv4 address. This parameter is not required when nat_method is "hide" and nat_hide_behind is "gateway".'
+      name: nat_settings_ip
+    - auto: PREDEFINED
+      description: NAT translation method.
+      name: nat_method
+      predefined:
+      - hide
+      - static
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Update an existing network object.
+    name: checkpoint-network-update
+    outputs:
+    - contextPath: CheckPoint.Network.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.Network.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.Network.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.Network.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.Network.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.Network.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.Network.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.Network.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.Network.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.Network.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.Network.groups
+      description: Collection of group identifiers.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether to ignore warnings when deleting the network object.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    description: Delete a network object.
+    name: checkpoint-network-delete
+    outputs: []
   dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: ''
