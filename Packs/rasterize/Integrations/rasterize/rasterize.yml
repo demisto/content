@@ -372,7 +372,7 @@ script:
     - contextPath: Rasterize.Content
       description: The extracted markdown-formatted text content.
       type: string
-  dockerimage: demisto/chromium:144.0.7559.6932580
+  dockerimage: devdemisto/chromium:146.0.7680.7673610
   runonce: false
   script: "-"
   subtype: python3
