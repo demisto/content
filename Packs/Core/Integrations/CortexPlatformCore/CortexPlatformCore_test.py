@@ -9073,16 +9073,45 @@ dataset = xdr_data
     assert result == expected_query
 
 
-def test_get_xql_query_results_platform_success(mocker):
+def test_get_xql_query_results_platform_success_with_rows(mocker):
     """
     Given:
-    - A query_id for a completed query.
-
+        A query_id for a completed query where force_stream=False returns results directly in rows.
     When:
-    - Calling get_xql_query_results_platform function.
-
+        Calling get_xql_query_results_platform function.
     Then:
-    - Ensure results are retrieved correctly.
+        Ensure results are extracted from the rows field.
+    """
+    from CortexPlatformCore import get_xql_query_results_platform, Client
+
+    client = Client(base_url="", headers={})
+    execution_id = "test_query_id"
+    mock_info_response = {
+        "status": "SUCCESS",
+        "stream_id": None,
+        "number_of_results": 1,
+        "rows": [{"Total": 1115, "xdm.asset.type.class": "Compute"}],
+    }
+
+    mocker.patch.object(client, "platform_http_request", return_value=mock_info_response)
+
+    response = get_xql_query_results_platform(client, execution_id)
+
+    assert response["status"] == "SUCCESS"
+    assert response["execution_id"] == "test_query_id"
+    assert len(response["results"]) == 1
+    assert response["results"][0]["Total"] == 1115
+    assert response["results"][0]["xdm.asset.type.class"] == "Compute"
+
+
+def test_get_xql_query_results_platform_success_with_stream(mocker):
+    """
+    Given:
+        A query_id for a completed query where results are returned via stream_id.
+    When:
+        Calling get_xql_query_results_platform function.
+    Then:
+        Ensure results are fetched from the stream endpoint.
     """
     from CortexPlatformCore import get_xql_query_results_platform, Client
 

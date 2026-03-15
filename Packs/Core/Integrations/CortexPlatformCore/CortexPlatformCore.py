@@ -655,9 +655,8 @@ class Client(CoreClient):
         """
         data = json.dumps(json_data) if json_data is not None else data
 
-        demisto.debug(f"[Menachem test] {url_suffix=}, {data=}")
+        demisto.debug(f"platform_http_request: {url_suffix=}")
         response = demisto._platformAPICall(path=url_suffix, method=method, params=params, data=data, timeout=timeout)
-        demisto.debug(f"[Menachem test] {response=}")
         if ok_codes and response.get("status") not in ok_codes:
             self._handle_error(error_handler, response, with_metrics)
         try:
@@ -4464,6 +4463,9 @@ def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
 def get_xql_query_results_platform(client: Client, execution_id: str) -> dict:
     """Retrieve results of an executed XQL query using Platform API.
 
+    With force_stream=False, the API may return results directly in the 'rows' field
+    (with stream_id=null), avoiding the need for a separate stream fetch.
+
     Args:
         client (Client): The XDR Client.
         execution_id (str): The execution ID of the query to retrieve.
@@ -4473,32 +4475,37 @@ def get_xql_query_results_platform(client: Client, execution_id: str) -> dict:
     """
     data: dict[str, Any] = {
         "query_id": execution_id,
+        "force_stream": False,
     }
 
-    # Call the Client function and get the raw response
     demisto.debug(f"Calling get_query_results with {data=}")
     response = client.platform_http_request(
         method="POST", json_data=data, url_suffix="/xql_queries/results/info/", ok_codes=[200]
     )
-    # demisto.info(f"[Menachem test] call /xql_queries/results/info/ Body: {data}")
-    # demisto.info(f"[Menachem test] /xql_queries/results/info/ Response: {response}")
+    demisto.debug(f"get_query_results response: {response}")
     response["execution_id"] = execution_id
-    stream_id = response.get("stream_id")
-    if response.get("status") != "PENDING" and stream_id:
-        data = {
-            "stream_id": stream_id,
-        }
-        demisto.debug(f"Requesting query results using {data=}")
-        query_data = client.platform_http_request(
-            method="POST", json_data=data, url_suffix="/xql_queries/results/", ok_codes=[200]
-        )
-        # demisto.info(f"[Menachem test] call /xql_queries/results/ Body: {data}")
-        # demisto.info(f"[Menachem test] /xql_queries/results/ Response: {query_data}")
-        demisto.debug(f"[Menachem] Query results received: {query_data=}")
-        if isinstance(query_data, str):
-            response["results"] = [json.loads(line) for line in query_data.split("\n") if line.strip()]
-        else:
-            response["results"] = query_data
+
+    if response.get("status") != "PENDING" and response.get("status") != "FAIL":
+        # With force_stream=False, results may come directly in 'rows'
+        rows = response.get("rows")
+        response.pop("rows", None)
+        stream_id = response.get("stream_id")
+
+        if rows is not None:
+            demisto.debug(f"Results returned directly in rows ({len(rows)} rows)")
+            response["results"] = rows
+        elif stream_id:
+            # Fallback: fetch results via stream if stream_id is present
+            stream_data: dict[str, str] = {"stream_id": stream_id}
+            demisto.debug(f"Requesting query results using stream_id={stream_id}")
+            query_data = client.platform_http_request(
+                method="POST", json_data=stream_data, url_suffix="/xql_queries/results/", ok_codes=[200]
+            )
+            demisto.debug(f"Query results received via stream: type={type(query_data).__name__}")
+            if isinstance(query_data, str):
+                response["results"] = [json.loads(line) for line in query_data.split("\n") if line.strip()]
+            else:
+                response["results"] = query_data
 
     if response.get("status") == "FAIL":
         # Get full error details using PAPI
@@ -4527,7 +4534,7 @@ def get_xql_query_results_platform_polling(client: Client, execution_id: str, ti
     Returns:
         dict: The query results after polling completes or timeout is reached.
     """
-    interval_in_secs = 10
+    interval_in_secs = 4
 
     # Block execution until the execution status isn't pending or we time out
     polling_start_time = datetime.now()
