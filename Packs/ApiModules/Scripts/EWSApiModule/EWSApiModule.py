@@ -1062,7 +1062,7 @@ def move_item_between_mailboxes(
     destination_mailbox = args.get("destination_mailbox", "")
     destination_folder_path = args.get("destination_folder_path", "")
     source_mailbox = args.get("source_mailbox")
-    is_public = argToBoolean(args.get("is_public"))
+    is_public = argToBoolean(args.get("is_public", False))
     if dest_client is None:
         dest_client = src_client
 
@@ -1103,7 +1103,7 @@ def move_item(
     item_id = args.get("item_id", "")
     target_folder_path = args.get("target_folder_path", "")
     target_mailbox = args.get("target_mailbox")
-    is_public = argToBoolean(args.get("is_public"))
+    is_public = argToBoolean(args.get("is_public", False))
     account = client.get_account(target_mailbox)
     is_public = client.is_default_folder(target_folder_path, is_public)
     target_folder = client.get_folder_by_path(target_folder_path, is_public=is_public)
@@ -1210,7 +1210,7 @@ def recover_soft_delete_item(
     message_ids = args.get("message_ids", "")
     target_folder_path = args.get("target_folder_path", "Inbox")
     target_mailbox = args.get("target_mailbox")
-    is_public = argToBoolean(args.get("is_public"))
+    is_public = argToBoolean(args.get("is_public", False))
     account = client.get_account(target_mailbox)
     is_public = client.is_default_folder(target_folder_path, is_public)
     target_folder = client.get_folder_by_path(target_folder_path, account, is_public)
@@ -1333,7 +1333,7 @@ def get_folder(client: EWSClient, args: dict) -> CommandResults:
     """
     folder_path = args.get("folder_path", "")
     target_mailbox = args.get("target_mailbox")
-    is_public = argToBoolean(args.get("is_public"))
+    is_public = argToBoolean(args.get("is_public", False))
     account = client.get_account(target_mailbox)
     is_public = client.is_default_folder(folder_path, is_public)
     folder = folder_to_context_entry(client.get_folder_by_path(folder_path, account=account, is_public=is_public))
