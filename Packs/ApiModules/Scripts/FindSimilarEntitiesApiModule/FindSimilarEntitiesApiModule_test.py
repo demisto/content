@@ -598,12 +598,13 @@ def test_similar_issue_finder_create_context():
 def test_recursive_filter():
     from FindSimilarEntitiesApiModule import recursive_filter
     import re
+
     regex = [re.compile(r"drop_me")]
     item = {
         "keep": "value",
         "drop": "drop_me_now",
         "nested": [{"a": 1, "b": "drop_me_too"}, {"c": 2}],
-        "remove_field": "some_val"
+        "remove_field": "some_val",
     }
     result = recursive_filter(item, regex, "remove_field", "None")
     assert "keep" in result
@@ -614,6 +615,8 @@ def test_recursive_filter():
 
 def test_normalize_json():
     from FindSimilarEntitiesApiModule import normalize_json
+    import json
+
     obj = {"key": "Value!", "date": "2023-01-01T12:00:00Z"}
     normalized = normalize_json(json.dumps(obj))
     # normalize_json removes punctuation and dates, and lowercases
@@ -624,6 +627,7 @@ def test_normalize_json():
 
 def test_identity():
     from FindSimilarEntitiesApiModule import identity
+
     X = pd.Series(["a", "b", "c"])
     y = pd.Series(["a", "x", "c"])
     result = identity(X, y)
