@@ -40,7 +40,7 @@ configuration:
   additionalinfo: "The number of times to try and re-create connections with rapid7 instance when there are temporary connection errors"
   type: 0
   section: Connect
-- additionalinfo: The interval between each fetch of assets. Default is 24 hours.
+- additionalinfo: The interval between asset fetches. Default is 24 hours.
   defaultvalue: 1440
   display: Assets Fetch Interval
   name: assetsFetchInterval
