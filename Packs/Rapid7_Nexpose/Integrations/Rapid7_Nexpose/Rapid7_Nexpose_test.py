@@ -3013,7 +3013,7 @@ async def test_fetch_assets_command(mocker):
     params = {
         "server": "https://nexpose.example.com",
         "credentials": {"identifier": "user", "password": "pass"},
-        "insecure": False,
+        "unsecure": False,
     }
     token = "test-token"
 
@@ -3031,7 +3031,7 @@ def test_main_fetch_assets_dispatch(mocker):
         return_value={
             "server": "https://nexpose.example.com",
             "credentials": {"identifier": "user", "password": "pass"},
-            "insecure": False,
+            "unsecure": False,
         },
     )
     mocker.patch.object(demisto, "args", return_value={})
