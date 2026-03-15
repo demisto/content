@@ -80,21 +80,18 @@ outputs:
 - contextPath: SimilarIssues.is_similar_issue_found
   description: Indicates whether similar issues have been found.
   type: boolean
-- contextPath: SimilarIssues.similar_issue.created
-  description: The creation date of the similar issue.
-  type: date
-- contextPath: SimilarIssues.similar_issue.id
+- contextPath: SimilarIssues.similar_issue.issue_description
+  description: The description of the similar issue. 
+  type: string
+- contextPath: SimilarIssues.similar_issue.issue_id
   description: The ID of the similar issue.
   type: string
-- contextPath: SimilarIssues.similar_issue.name
+- contextPath: SimilarIssues.similar_issue.issue_name
   description: The name of the similar issue.
   type: string
 - contextPath: SimilarIssues.similar_issue.similarity_score
   description: The similarity of the similar issue, represented as a number between 0-1.
   type: number
-- contextPath: SimilarIssues.similar_issue.details
-  description: The details of the similar issue.
-  type: string
 script: '-'
 system: false
 timeout: '0'

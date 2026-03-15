@@ -1673,12 +1673,8 @@ class SimilarIssueFinder(BaseSimilarEntityFinder):
         df = similar_entities.copy()
 
         rename_map = {
+            "internal_id": "issue_id",
             f"similarity {self.entity_name}": "similarity_score",
-            "id": "id",
-            "name": "name",
-            "details": "details",
-            "Identical indicators": "identicalIndicators",
-            "similarity indicators": "similarityIndicators",
         }
 
         df = df.rename(columns=rename_map)
@@ -1706,23 +1702,19 @@ class SimilarIssueFinder(BaseSimilarEntityFinder):
         :return: None
         """
         first_columns = [
-            f"{self.entity_name} ID",
-            "created",
-            "name",
-            f"similarity {self.entity_name}",
-            "similarity indicators",
-            "Identical indicators",
+            "similarity issue",
+            "internal_id",
+            "issue_name",
         ]
-        remove_columns = ["id", "Id"]
 
         colums_to_display = similar_entities.columns.tolist()
         colums_to_display = [x for x in first_columns if x in similar_entities.columns] + [
-            x for x in colums_to_display if (x not in first_columns and x not in remove_columns)
+            x for x in colums_to_display if (x not in first_columns)
         ]
 
         first_col = [x for x in colums_to_display if x in current_entity.columns]
         col_current_entity_to_display = first_col + [
-            x for x in current_entity.columns if (x not in first_col and x not in remove_columns)
+            x for x in current_entity.columns if (x not in first_col)
         ]
 
         rename_map = {"internal_id": "issue_id"}
@@ -1754,14 +1746,12 @@ class SimilarIssueFinder(BaseSimilarEntityFinder):
             )
 
         readable_output = tableToMarkdown(f"Similar {self.entity_name.capitalize()}s", similar_entities_json, colums_to_display)
-        return_entry = {
-            "Type": entryTypes["note"],
-            "HumanReadable": readable_output,
-            "ContentsFormat": formats["json"],
-            "Contents": similar_entities_json,
-            "EntryContext": {self.get_context_key(): context},
-        }
-        if self.entity_tag is not None:
-            return_entry["Tags"] = [f"SimilarIssues_{self.entity_tag}"]
 
-        demisto.results(return_entry)
+        return_results(
+            CommandResults(
+                readable_output=readable_output,
+                outputs_prefix=self.get_context_key(),
+                outputs=context,
+                raw_response=similar_entities_json,
+            )
+        )
