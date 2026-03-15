@@ -5008,6 +5008,7 @@ def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, 
     """
     if not is_real_user_id():
         raise DemistoException("This command is restricted to manual execution by a user and cannot be run via automation.")
+    
     internet_message_id = args.get("internet_message_id", "")
     days_timeframe = timeframe_to_days(args.get("from_time", "last 30 days"))
     demisto.debug(f"Timeframe set to {days_timeframe} days.")
