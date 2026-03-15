@@ -1771,9 +1771,6 @@ script:
       description: A comma-separated list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings.
       required: false
       isArray: true
-    - name: tags
-      description: "A JSON string containing metadata tags for categorization and organization. Each tag consists of a key and an optional value. For example, '{\"Environment\": \"prod\", \"Team\": \"platform\"}'."
-      required: false
     - name: client_request_token
       description: Unique identifier for idempotency.
       required: false
@@ -1870,13 +1867,12 @@ script:
       description: The nextToken value returned from a previous paginated ListClusters request. Use the value from AWS.EKS.ClustersNextToken.
       required: false
     outputs:
-    - contextPath: AWS.EKS.Clusters
+    - contextPath: AWS.EKS.Cluster
       description: A list of all of the clusters for your account in the specified Region.
       type: String
     - contextPath: AWS.EKS.ClustersNextToken
       description: The nextToken value to include in a future ListClusters request. When the results of a ListClusters request exceed maxResults, you can use this value to retrieve the next page of results.
       type: String
-
   - name: aws-rds-db-cluster-modify
     description: "Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster settings such as port, master credentials, VPC security groups, deletion protection, and other configuration options."
     arguments:
