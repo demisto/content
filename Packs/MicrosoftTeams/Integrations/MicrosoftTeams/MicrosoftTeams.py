@@ -20,6 +20,7 @@ from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey
 from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
 from jwt.algorithms import RSAAlgorithm
+from jwt.types import Options as JWTOptions
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
@@ -1420,8 +1421,7 @@ def validate_auth_header(headers: dict) -> bool:
     public_key = RSAAlgorithm.from_jwk(json.dumps(key_object))
     public_key: RSAPublicKey = cast(RSAPublicKey, public_key)
 
-    # Enable comprehensive JWT validation (defense-in-depth)
-    options = {
+    options: JWTOptions = {
         "verify_aud": True,
         "verify_exp": True,
         "verify_iss": True,
