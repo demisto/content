@@ -66,7 +66,7 @@ args:
   - 'True'
   - 'False'
 comment: |-
-  Searches past similar issues based on issue fields' similarity.
+  Searches for issues similar to a given issue based on fields' similarity.
   Note: For the similarity calculation, at least one field must be provided in one of the "text_similarity_fields", "json_similarity_fields" or "discrete_match_fields" arguments.
 commonfields:
   id: FindSimilarIssues

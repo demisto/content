@@ -1,4 +1,4 @@
-Searches past similar issues based on issue fields' similarity.
+Searches for issues similar to a given issue based on fields' similarity.
 
 ## Script Data
 
