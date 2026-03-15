@@ -593,3 +593,63 @@ def test_similar_issue_finder_create_context():
     assert context["similar_issue"][0]["similarity_score"] == 0.9
     assert context["similar_issue"][0]["issue_id"] == "123"
     assert context["similar_issue"][0]["issue_name"] == "test"
+
+
+def test_recursive_filter():
+    from FindSimilarEntitiesApiModule import recursive_filter
+    import re
+    regex = [re.compile(r"drop_me")]
+    item = {
+        "keep": "value",
+        "drop": "drop_me_now",
+        "nested": [{"a": 1, "b": "drop_me_too"}, {"c": 2}],
+        "remove_field": "some_val"
+    }
+    result = recursive_filter(item, regex, "remove_field", "None")
+    assert "keep" in result
+    assert "drop" not in result
+    assert "remove_field" not in result
+    assert result["nested"] == [{"a": 1}, {"c": 2}]
+
+
+def test_normalize_json():
+    from FindSimilarEntitiesApiModule import normalize_json
+    obj = {"key": "Value!", "date": "2023-01-01T12:00:00Z"}
+    normalized = normalize_json(json.dumps(obj))
+    # normalize_json removes punctuation and dates, and lowercases
+    assert "key" in normalized
+    assert "value" in normalized
+    assert "2023" not in normalized
+
+
+def test_identity():
+    from FindSimilarEntitiesApiModule import identity
+    X = pd.Series(["a", "b", "c"])
+    y = pd.Series(["a", "x", "c"])
+    result = identity(X, y)
+    assert result[0] == 1.0
+    assert np.isnan(result[1])
+    assert result[2] == 1.0
+
+
+def test_extract_values():
+    data = {"A": [{"B": 1}, {"B": 2}, {"B": "N/A"}]}
+    res = BaseSimilarEntityFinder.extract_values(data, "A.B", ["N/A"])
+    assert res == [1, 2]
+
+
+def test_remove_duplicates():
+    seq = ["a", "b", "a", "c", "b"]
+    assert BaseSimilarEntityFinder.remove_duplicates(seq) == ["a", "b", "c"]
+
+
+def test_return_clean_date():
+    assert BaseSimilarEntityFinder.return_clean_date("2023-01-01T12:00:00Z") == "2023-01-01"
+    assert BaseSimilarEntityFinder.return_clean_date("short") == ""
+
+
+def test_get_context_key():
+    finder = SimilarIncidentFinder(EntityArgs({}))
+    assert finder.get_context_key() == "DBotFindSimilarIncidents"
+    issue_finder = SimilarIssueFinder(EntityArgs({}))
+    assert issue_finder.get_context_key() == "SimilarIssues"
