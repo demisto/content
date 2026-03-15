@@ -1295,10 +1295,7 @@ def main():  # pragma: no cover
             list_instance_profiles(args, client)
         elif command == "aws-iam-add-role-to-instance-profile":
             add_role_to_instance_profile(args, client)
-        elif (
-            command == "aws-iam-remove-role-from-instance-profile"
-            or command == "aws-iam-role-from-instance-profile-remove-quick-action"
-        ):
+        elif command == "aws-iam-remove-role-from-instance-profile":
             remove_role_from_instance_profile(args, client)
         elif command == "aws-iam-list-instance-profiles-for-role":
             list_instance_profiles_for_role(args, client)

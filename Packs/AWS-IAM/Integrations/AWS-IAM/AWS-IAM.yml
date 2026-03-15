@@ -1390,38 +1390,6 @@ script:
         defaultValue: '{"Version":"2012-10-17","Statement":[{"Effect":"Deny","Action":"*","Resource":"*"}]}'
         hidden: true
 
-  - name: aws-iam-role-from-instance-profile-remove-quick-action
-    description: Detaches the IAM role from the specified instance profile. This immediately prevents the EC2 instance from using any assigned AWS permissions, effectively "quarantining" its identity without stopping the server.
-    prettyname: Detach IAM Role from EC2 Instance
-    hidden: true
-    quickaction: true
-    arguments:
-      - name: account_id
-        description: The AWS account ID.
-        prettyname: Account ID
-        required: true
-        defaultValue: Account ID
-        prettypredefined:
-          Account ID: ${asset.xdm.asset.realm}
-      - name: region
-        description: The AWS region.
-        prettyname: Region
-        required: true
-        defaultValue: Region
-        prettypredefined:
-          Region: ${asset.xdm.asset.cloud.region}
-      - name: roleName
-        description: The AWS role name.
-        prettyname: Role Name
-        required: true
-      - name: instanceProfileName
-        description: The name of the instance profile to update.
-        prettyname: Instance Profile
-        required: true
-        defaultValue: Instance Profile
-        prettypredefined:
-          Instance Profile: ${asset.xdm.asset.name}
-
   - name: aws-iam-access-key-update-quick-action
     description: Instantly disables a specific IAM Access Key. This stops all CLI, SDK, and API-based communication for this key ID without deleting it, allowing for forensic recovery or reactive "re-enabling" if the key is found to be safe.
     prettyname: Deactivate User IAM Access Key
