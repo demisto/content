@@ -131,7 +131,7 @@ class TestNormalCommands:
         expected = COMMAND_OUTPUTS[command_name]
         client = self.MockClient()
         client.account.walk_res = raw_response
-        res = find_folders(client)
+        res = find_folders(client, {})
         actual_ec = res[1]
         assert expected == actual_ec
 
@@ -962,7 +962,7 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
 
     mock_file_result = mocker.patch("EWSO365.fileResult")
 
-    get_item_as_eml(MockEWSClient(), "item", "account@test.com")
+    get_item_as_eml(MockEWSClient(), {"item_id": "item", "target_mailbox": "account@test.com"})
 
     mock_file_result.assert_called_once_with(expected_file_name, expected_data)
 
