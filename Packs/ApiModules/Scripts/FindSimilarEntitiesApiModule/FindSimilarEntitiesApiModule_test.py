@@ -577,8 +577,16 @@ def test_similar_issue_finder_create_context():
     finder = SimilarIssueFinder(EntityArgs(args))
 
     df = pd.DataFrame(
-        [{"similarity issue": 0.9, "internal_id": "123", "issue_name": "test", "Identical indicators": "ind1", "similarity indicators": 0.8}]
-    )
+        [
+            {
+                "similarity issue": 0.9,
+                "internal_id": "123",
+                "issue_name": "test",
+                "Identical indicators": "ind1",
+                "similarity indicators": 0.8,
+            }
+        ]
+     )
     context = finder.create_context(df)
 
     assert context["is_similar_issue_found"] is True
