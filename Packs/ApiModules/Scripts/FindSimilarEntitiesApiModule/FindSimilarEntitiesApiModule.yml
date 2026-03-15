@@ -8,7 +8,7 @@ subtype: python3
 tags:
 - infra
 - server
-comment: Common code that is appended into scripts which require finding similar objects.
+comment: Logic module providing Machine Learning utilities (via Scikit-Learn) to calculate similarity scores between entities. Designed to be imported by scripts performing entity deduplication or related-item discovery.
 scripttarget: 0
 dependson: {}
 timeout: 0s
