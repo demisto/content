@@ -181,7 +181,8 @@ class TestNormalCommands:
         mocker.patch.object(ExpandGroup, "__init__", return_value=None)
         mocker.patch.object(ExpandGroup, "call", return_value=raw_response)
         client = self.MockClient()
-        res = get_expanded_group(client, email_address="testgroup-1@demistodev.onmicrosoft.com")
+        args = {"email_address": "testgroup-1@demistodev.onmicrosoft.com"}
+        res = get_expanded_group(client, args)
         actual_ec = res.outputs
         assert expected.get(res.outputs_prefix) == actual_ec
 

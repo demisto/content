@@ -1719,7 +1719,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
         demisto.setLastRun(new_last_run)
 
         if client.mark_as_read:
-            mark_item_as_read(client, emails_ids)
+            mark_item_as_read(client, {"item_ids": emails_ids})
 
         return incidents
 
