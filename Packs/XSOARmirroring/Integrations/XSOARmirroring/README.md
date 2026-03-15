@@ -463,6 +463,27 @@ Get remote data from a remote incident. Note that this method will not update th
 
 There is no context output for this command.
 
+### get-modified-remote-data
+
+***
+Returns a list of incident IDs that were modified since the last sync. Used to enable incremental mirroring and avoid full blind syncs.
+
+> **Note:** This command is supported only for Cortex XSOAR version 8.14 and later.
+
+#### Base Command
+
+`get-modified-remote-data`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| lastUpdate | ISO8601 timestamp of the last time the integration was synced. Only incidents modified after this time are returned. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
 ### get-mapping-fields
 
 ***
