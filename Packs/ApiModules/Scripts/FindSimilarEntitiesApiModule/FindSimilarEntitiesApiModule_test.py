@@ -586,7 +586,7 @@ def test_similar_issue_finder_create_context():
                 "similarity indicators": 0.8,
             }
         ]
-     )
+    )
     context = finder.create_context(df)
 
     assert context["is_similar_issue_found"] is True
