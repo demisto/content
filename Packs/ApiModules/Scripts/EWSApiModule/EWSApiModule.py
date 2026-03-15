@@ -983,9 +983,7 @@ def get_entry_for_object(
     )
 
 
-def delete_attachments_for_message(
-    client: EWSClient, args: dict
-) -> list[CommandResults]:
+def delete_attachments_for_message(client: EWSClient, args: dict) -> list[CommandResults]:
     """
     Deletes attachments for a given message
     :param client: EWS Client
@@ -1326,9 +1324,7 @@ def folder_to_context_entry(f) -> dict:
     return {}
 
 
-def get_folder(
-    client: EWSClient, args: dict
-) -> CommandResults:
+def get_folder(client: EWSClient, args: dict) -> CommandResults:
     """
     Retrieve a folder from the target mailbox or client mailbox
     :param client: EWS Client
@@ -1365,9 +1361,7 @@ def get_expanded_group(client: EWSClient, args: dict) -> CommandResults:
     return entry_for_object
 
 
-def mark_item_as_read(
-    client: EWSClient, args: dict
-) -> CommandResults:
+def mark_item_as_read(client: EWSClient, args: dict) -> CommandResults:
     """
     Marks item as read
     :param client: EWS Client

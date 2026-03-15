@@ -1127,9 +1127,7 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
     return get_entry_for_object(title, CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_ITEM_ATTACHMENT, dict_result)
 
 
-def fetch_attachments_for_message(
-    client: EWSClient, args: dict
-) -> list:  # pragma: no cover
+def fetch_attachments_for_message(client: EWSClient, args: dict) -> list:  # pragma: no cover
     item_id = args.get("item_id", "")
     target_mailbox = args.get("target_mailbox")
     attachment_ids = args.get("attachment_ids", [])
@@ -1188,9 +1186,7 @@ def get_limited_number_of_messages_from_qs(qs, limit):  # pragma: no cover
     return results
 
 
-def search_items_in_mailbox(
-    client: EWSClient, args: dict
-):  # pragma: no cover
+def search_items_in_mailbox(client: EWSClient, args: dict):  # pragma: no cover
     query = args.get("query")
     message_id = args.get("message_id")
     folder_path = args.get("folder_path", "")
@@ -1332,9 +1328,7 @@ def find_folders(client: EWSClient, args: dict):  # pragma: no cover
     }
 
 
-def get_items_from_folder(
-    client: EWSClient, args: dict
-):  # pragma: no cover
+def get_items_from_folder(client: EWSClient, args: dict):  # pragma: no cover
     folder_path = args.get("folder_path", "")
     limit = args.get("limit", 100)
     target_mailbox = args.get("target_mailbox")

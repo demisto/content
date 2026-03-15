@@ -447,7 +447,7 @@ def get_case_by_id_command(client: Client, args: dict) -> tuple[object, dict, li
     case_id = args.get("case_id", "")
     raw_response: dict = client.get_case_by_id(case_id=case_id)
     if raw_response:
-        title = f'{INTEGRATION_NAME} - case ID {case_id}'
+        title = f"{INTEGRATION_NAME} - case ID {case_id}"
         phishlabs_ec = raw_response_to_context(raw_response.get("data", []))
         context_entry: dict = {
             f"{INTEGRATION_CONTEXT_NAME}(val.DRP.CaseID && val.EIR.CaseID === obj.DRP.CaseID && "

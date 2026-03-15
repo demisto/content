@@ -600,9 +600,7 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
 """ Command Functions """
 
 
-def fetch_attachments_for_message(
-    client: EWSClient, args: dict
-):  # pragma: no cover
+def fetch_attachments_for_message(client: EWSClient, args: dict):  # pragma: no cover
     """
     Fetches attachments for a message
     :param client: EWS Client
@@ -644,9 +642,7 @@ def fetch_attachments_for_message(
     return entries
 
 
-def search_items_in_mailbox(
-    client: EWSClient, args: dict
-):  # pragma: no cover
+def search_items_in_mailbox(client: EWSClient, args: dict):  # pragma: no cover
     """
     Search items in mailbox
     :param client: EWS Client
@@ -797,9 +793,7 @@ def find_folders(client: EWSClient, args: dict):
     return readable_output, output, folders
 
 
-def get_items_from_folder(
-    client: EWSClient, args: dict
-):  # pragma: no cover
+def get_items_from_folder(client: EWSClient, args: dict):  # pragma: no cover
     """
     Retrieve items from folder path
     :param client: EWS Client
@@ -1122,9 +1116,7 @@ def add_additional_headers(additional_headers):
     return headers
 
 
-def send_email(
-    client: EWSClient, args: dict
-):  # pragma: no cover
+def send_email(client: EWSClient, args: dict):  # pragma: no cover
     to = argToList(args.get("to"))
     subject = args.get("subject", "")
     body = args.get("body", "")
@@ -1209,9 +1201,7 @@ def send_email(
     return results
 
 
-def reply_mail(
-    client: EWSClient, args: dict
-):  # pragma: no cover
+def reply_mail(client: EWSClient, args: dict):  # pragma: no cover
     to = argToList(args.get("to", ""))
     inReplyTo = args.get("inReplyTo", "")
     subject = args.get("subject", "")
