@@ -8022,3 +8022,4 @@ sectionorder:
 - Connect
 - Collect
 isCloudProviderIntegration: true
+internal: true
