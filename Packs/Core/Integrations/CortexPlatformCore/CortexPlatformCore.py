@@ -4477,7 +4477,6 @@ def get_xql_query_results_platform(client: Client, execution_id: str) -> dict:
     """
     data: dict[str, Any] = {
         "query_id": execution_id,
-        "force_stream": False,
     }
 
     demisto.debug(f"Calling get_query_results with {data=}")
@@ -4488,15 +4487,8 @@ def get_xql_query_results_platform(client: Client, execution_id: str) -> dict:
     response["execution_id"] = execution_id
 
     if response.get("status") != "PENDING" and response.get("status") != "FAIL":
-        # With force_stream=False, results may come directly in 'rows'
-        rows = response.get("rows")
-        response.pop("rows", None)
         stream_id = response.get("stream_id")
-
-        if rows is not None:
-            demisto.debug(f"Results returned directly in rows ({len(rows)} rows)")
-            response["results"] = rows
-        elif stream_id:
+        if stream_id:
             # Fallback: fetch results via stream if stream_id is present
             stream_data: dict[str, str] = {"stream_id": stream_id}
             demisto.debug(f"Requesting query results using stream_id={stream_id}")
@@ -4658,6 +4650,14 @@ def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str
     data: Dict[str, Any] = {
         "query": query,
         "timeframe": timeframe,
+        "consume_compute_units": False,
+        "read_only_mode": True,
+        "skip_limit_enforcement": False,
+        "xql_source_metadata": {
+            "source": "cortex_assistant",
+            "source_id": "",
+            "source_name": "",
+        }
     }
 
     demisto.debug(f"Calling xql_queries/submit with {data=}")
