@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 
 import demistomock as demisto
 import OTRS
@@ -77,6 +78,11 @@ OTRS_TICKET_MIRROR = {
     "UnlockTimeout": 1695720808,
     "UntilTime": 0,
 }
+
+
+def load_json(path):
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
 
 
 @pytest.mark.parametrize(
@@ -187,6 +193,32 @@ def test_get_remote_data(mocker):
 | 9999 | IncidentResponse | test | 2023-09-26 11:33:28 | demistobot | text/plain; charset=utf8 | test123 |
 """
     )
+
+
+def test_update_ticket_command(mocker):
+    """
+    Given:
+      - OTRS ticket
+      - arguments to change in the ticket
+    When:
+      - running update_ticket_command
+    Then:
+      - All arguments are part of the call to the actual API
+      - The CommandResults contains the expected data for the user
+    """
+    from OTRS import update_ticket_command
+
+    update_ticket_data = load_json("./test_data/test_update_ticket_command_data.json")
+    args = update_ticket_data.get("command_args")
+    update_ticket_response = update_ticket_data.get("response")
+    expected_command_results = update_ticket_data.get("expected_command_results")
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"SessionID": "1234"})
+    mocker.patch.object(OTRS.OTRSClient, "execute_otrs_method", return_value=update_ticket_response)
+    otrs_client = OTRS.OTRSClient("base_url", "username", "password", https_verify=False, use_legacy_sessions=False)
+
+    command_results = update_ticket_command(otrs_client, args)
+    assert command_results.to_context() == expected_command_results
 
 
 def test_calculate_age():
