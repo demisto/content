@@ -132,86 +132,93 @@ def _select_primary_cvss_entry(cvss_entries: list[dict]) -> dict:
     )
 
 
-def build_indicators(client: Client, raw_cves: List[dict]):
-    """
-    Iteratively processes the retrieved CVEs from retrieve_cves function
-    and parses the returned JSON into the required XSOAR data structure
+def _build_cvss_fields(metrics_data: dict, preferred_versions: list[str] | None) -> dict:
+    """Resolve CVSS fields from *metrics_data* honouring *preferred_versions*.
 
     Args:
-        cve_list: CVEs retrieved using the retrieve_cves function
+        metrics_data: The ``metrics`` dict from a raw NVD CVE object.
+        preferred_versions: Ordered list of CVSS version labels the user
+            prefers (e.g. ``["CVSS v3", "CVSS v4"]``).  ``None`` falls back
+            to the default highest-available priority.
 
     Returns:
-        None
+        A dict with keys ``cvssversion``, ``cvssscore``, ``cvssvector``,
+        ``sourceoriginalseverity``, and ``cvsstable`` populated from the
+        resolved CVSS entry, or an empty dict when no CVSS data is present.
     """
+    cvss_version, score, _severity = get_cvss_version_and_score(metrics_data, preferred_versions=preferred_versions)
+    if not cvss_version:
+        return {}
 
+    fields: dict = {
+        "cvssversion": cvss_version,
+        "cvssscore": score,
+        "sourceoriginalseverity": score,
+    }
+
+    cvss_metric = _VERSION_STRING_TO_METRIC_KEY.get(cvss_version, "")
+    table: list[dict] = []
+    if cvss_metric:
+        cvss_entry = _select_primary_cvss_entry(metrics_data.get(cvss_metric, []))
+        cvss_data = cvss_entry.get("cvssData", {})
+        fields["cvssvector"] = cvss_data.get("vectorString")
+        for key, value in cvss_entry.items():
+            if key == "cvssData":
+                table.extend({"metrics": str(k), "value": v} for k, v in cvss_data.items())
+            else:
+                table.append({"metrics": str(key), "value": value})
+
+    fields["cvsstable"] = table
+    return fields
+
+
+def build_indicators(client: Client, raw_cves: List[dict], preferred_versions: list[str] | None = None):
+    """Iteratively processes the retrieved CVEs and parses them into XSOAR indicator dicts.
+
+    Args:
+        client: Integration client instance.
+        raw_cves: CVEs retrieved using the retrieve_cves function.
+        preferred_versions: Optional ordered list of CVSS version labels
+            (e.g. ``["CVSS v3", "CVSS v4"]``) that controls which score is
+            displayed.  When provided, the first version with available data
+            wins.  Falls back to the default highest-available priority when
+            none of the preferred versions have data.
+
+    Returns:
+        list: Parsed indicator dicts ready for XSOAR ingestion.
+    """
     indicators = []
 
     for cve in raw_cves:
         raw_cve = cve.get("cve", {})
-        cvss_metric = ""
-        metrics: List = []
         cpes: list[dict] = []
         refs: list[dict] = []
 
-        indicator = {"value": raw_cve.get("id")}
-        fields = {"description": raw_cve.get("descriptions")[0].get("value")}
-        fields["cvemodified"] = raw_cve.get("lastModified")
-        fields["published"] = raw_cve.get("published")
-        fields["updateddate"] = raw_cve.get("lastModified")
-        fields["vulnerabilities"] = raw_cve.get("weaknesses")
-
-        # Process references
+        indicator: dict = {"value": raw_cve.get("id")}
+        fields: dict = {
+            "description": raw_cve.get("descriptions")[0].get("value"),
+            "cvemodified": raw_cve.get("lastModified"),
+            "published": raw_cve.get("published"),
+            "updateddate": raw_cve.get("lastModified"),
+            "vulnerabilities": raw_cve.get("weaknesses"),
+        }
 
         for ref in raw_cve.get("references"):
             refs.append({"title": indicator["value"], "source": ref.get("source"), "link": ref.get("url")})
-
         fields["publications"] = refs
 
-        # Process CPEs
         for conf in raw_cve.get("configurations", []):
             for node in conf["nodes"]:
                 if "cpeMatch" in node:
                     cpes.extend({"CPE": cpe["criteria"]} for cpe in node["cpeMatch"])
         fields["vulnerableproducts"] = cpes
 
-        # Check for which CVSS Metric scoring data is available in the CVE response
-        # Use the newest CVSS standard to set the CVSS Version, vector, severity, and score
-        if "cvssMetricV40" in raw_cve.get("metrics"):
-            cvss_metric = "cvssMetricV40"
-            fields["cvssversion"] = "4"
-        elif "cvssMetricV31" in raw_cve.get("metrics"):
-            cvss_metric = "cvssMetricV31"
-            fields["cvssversion"] = "3.1"
-        elif "cvssMetricV30" in raw_cve.get("metrics"):
-            cvss_metric = "cvssMetricV30"
-            fields["cvssversion"] = "3"
-        elif "cvssMetricV2" in raw_cve.get("metrics"):
-            cvss_metric = "cvssMetricV2"
-            fields["cvssversion"] = "2"
-
-        if cvss_metric:
-            cvss_entry = _select_primary_cvss_entry(raw_cve.get("metrics").get(cvss_metric, []))
-            cvss_data = cvss_entry.get("cvssData", {})
-            score = cvss_data.get("baseScore")
-
-            fields["cvssscore"] = score
-            fields["cvssvector"] = cvss_data.get("vectorString")
-            fields["sourceoriginalseverity"] = score
-
-            for key, value in cvss_entry.items():
-                if key == "cvssData":
-                    for new_item in cvss_data:
-                        metrics.append({"metrics": str(new_item), "value": cvss_data[new_item]})
-                else:
-                    metrics.append({"metrics": str(key), "value": value})
-
-            fields["cvsstable"] = metrics
+        fields.update(_build_cvss_fields(raw_cve.get("metrics", {}), preferred_versions))
 
         if cpes:
             tags, relationships = parse_cpe_command([d["CPE"] for d in cpes], raw_cve.get("id"))
             if client.feed_tags:
                 tags.append(str(client.feed_tags))
-
         else:
             tags = []
             relationships = []
@@ -223,7 +230,6 @@ def build_indicators(client: Client, raw_cves: List[dict]):
         indicator["rawJSON"] = raw_cve
         indicator["fields"] = fields
         indicator["score"] = calculate_dbotscore(fields.get("cvssscore", -1))
-
         indicators.append(indicator)
 
     return indicators
@@ -378,6 +384,14 @@ CVSS_VERSION_TO_METRIC_KEYS: dict[str, list[str]] = {
 
 # Default priority when no preferred versions are specified.
 _DEFAULT_METRIC_KEY_ORDER = ["cvssMetricV40", "cvssMetricV31", "cvssMetricV30", "cvssMetricV2"]
+
+# Reverse mapping: CVSS version string (as returned by cvssData.version) → NVD metric key.
+_VERSION_STRING_TO_METRIC_KEY: dict[str, str] = {
+    "4.0": "cvssMetricV40",
+    "3.1": "cvssMetricV31",
+    "3.0": "cvssMetricV30",
+    "2.0": "cvssMetricV2",
+}
 
 
 def get_cvss_version_and_score(
@@ -636,7 +650,7 @@ def _ingest_batch(
         demisto.debug(f"Fetch limit reached ({max_indicators} max indicators per fetch).")
         return 0, True
 
-    indicators = build_indicators(client, raw_cves)
+    indicators = build_indicators(client, raw_cves, preferred_versions=client.cvss_versions)
 
     fetch_limit_reached = False
     if len(indicators) >= remaining:

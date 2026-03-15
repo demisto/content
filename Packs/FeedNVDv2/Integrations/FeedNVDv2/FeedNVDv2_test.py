@@ -500,3 +500,62 @@ def test_build_indicators_prefers_primary_score(client):
     assert len(indicators) == 1
     assert indicators[0]["fields"]["cvssscore"] == 9.8
     assert indicators[0]["fields"]["cvssversion"] == "3.1"
+
+
+def test_build_indicators_respects_preferred_versions(client):
+    """
+    Given:
+        A CVE with both cvssMetricV40 (MEDIUM, 6.9) and cvssMetricV31 (CRITICAL, 9.8).
+
+    When:
+        build_indicators is called with preferred_versions=["CVSS v3"].
+
+    Then:
+        The indicator uses the v3 score (9.8) and version ("3.1"), not the v4 score (6.9).
+    """
+    raw_cves = [
+        {
+            "cve": {
+                "id": "CVE-2024-11111",
+                "descriptions": [{"lang": "en", "value": "Test CVE with v3 and v4 scores"}],
+                "lastModified": "2024-01-01T00:00:00Z",
+                "published": "2024-01-01T00:00:00Z",
+                "weaknesses": [],
+                "references": [],
+                "configurations": [],
+                "metrics": {
+                    "cvssMetricV40": [
+                        {
+                            "source": "nvd@nist.gov",
+                            "type": "Primary",
+                            "cvssData": {
+                                "version": "4.0",
+                                "vectorString": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:L/VI:L/VA:L/SC:N/SI:N/SA:N",
+                                "baseScore": 6.9,
+                                "baseSeverity": "MEDIUM",
+                            },
+                        }
+                    ],
+                    "cvssMetricV31": [
+                        {
+                            "source": "nvd@nist.gov",
+                            "type": "Primary",
+                            "cvssData": {
+                                "version": "3.1",
+                                "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                                "baseScore": 9.8,
+                                "baseSeverity": "CRITICAL",
+                            },
+                            "exploitabilityScore": 3.9,
+                            "impactScore": 5.9,
+                        }
+                    ],
+                },
+            }
+        }
+    ]
+    indicators = build_indicators(client, raw_cves, preferred_versions=["CVSS v3"])
+    assert len(indicators) == 1
+    assert indicators[0]["fields"]["cvssscore"] == 9.8, "Expected v3 score (9.8), got v4 score instead"
+    assert indicators[0]["fields"]["cvssversion"] == "3.1", "Expected v3 version string"
+    assert indicators[0]["fields"]["cvssvector"] == "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
