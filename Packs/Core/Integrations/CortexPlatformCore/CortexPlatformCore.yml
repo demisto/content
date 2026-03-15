@@ -4130,6 +4130,23 @@ script:
       name: core-delete-profile
       hidden: true
       outputs: []
+    - arguments:
+        - description: Comma-separated list of broker VM names to filter by.
+          name: broker_vm_names
+          isArray: true
+        - description: Maximum number of brokers to return.
+          name: limit
+          defaultValue: "50"
+      name: core-list-brokers
+      description: Retrieves information about broker VMs configured on the system.
+      hidden: true
+      outputs:
+        - contextPath: Core.Broker.DEVICE_NAME
+          description: The name of the broker VM device.
+          type: String
+        - contextPath: Core.Broker.APPS
+          description: List of applications configured on the broker.
+          type: Array
     - name: core-create-endpoint-policy
       description: Creates a new endpoint policy and applies it to specified endpoints. Automatically handles priority conflicts by shifting existing policies when needed.
       hidden: true
