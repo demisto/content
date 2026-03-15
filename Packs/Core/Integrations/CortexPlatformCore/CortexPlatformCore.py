@@ -5213,7 +5213,7 @@ def verify_support_ticket_permission_command(client: Client) -> CommandResults:
         readable_output = ""
         if not tenant_entitlement_check:
             readable_output += "Support for this tenant has expired."
-        elif not user_csp_permission:
+        if not user_csp_permission:
             readable_output += "You do not have the required CSP permissions to manage support tickets."
 
         output["Error"] = readable_output
@@ -5229,7 +5229,9 @@ def verify_support_ticket_permission_command(client: Client) -> CommandResults:
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.SupportTicketPermission",
         outputs=output,
-        raw_response=response,
+        raw_response=response
+    )
+
 def list_brokers_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves broker information from the BROKER_CLUSTER_TABLE.
