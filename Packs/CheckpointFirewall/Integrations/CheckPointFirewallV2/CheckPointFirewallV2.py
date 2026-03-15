@@ -634,9 +634,7 @@ class Client(BaseClient):
         body: dict = {"package": package, "limit": limit, "offset": offset}
         if filter_str:
             body["filter"] = filter_str
-        return self._http_request(
-            method="POST", url_suffix="show-nat-rulebase", headers=self.headers, json_data=body
-        )
+        return self._http_request(method="POST", url_suffix="show-nat-rulebase", headers=self.headers, json_data=body)
 
     def add_nat_rule(
         self,
@@ -2525,9 +2523,20 @@ def build_nat_settings(
     if not any([nat_settings_auto_rule, nat_method, nat_hide_behind, nat_install_on, nat_settings_ip]):
         return None
 
+    # nat_hide_behind is forbidden when nat_method is 'static'
     if nat_hide_behind and nat_method == "static":
-        raise DemistoException('The "nat_hide_behind" parameter is forbidden when "nat_method" is "static".')
-
+        raise ValueError(
+            "The 'nat_hide_behind' argument is forbidden when 'nat_method' is 'static'. "
+            "Please remove 'nat_hide_behind' or change 'nat_method'."
+        )
+    # When nat_method is 'hide' and nat_hide_behind is 'gateway', nat_ip must not be provided
+    if nat_method == "hide" and nat_hide_behind == "gateway" and nat_settings_ip:
+        raise ValueError(
+            "The 'nat_settings_ip' argument must not be provided when 'nat_method' is 'hide' and "
+            "'nat_hide_behind' is 'gateway'. Please remove 'nat_settings_ip' or change 'nat_hide_behind'."
+            " This prevents ambiguity and matches SmartConsole behavior."
+        )
+        
     nat_settings: dict = {}
     if nat_settings_auto_rule is not None:
         nat_settings["auto-rule"] = nat_settings_auto_rule
@@ -2681,9 +2690,7 @@ def checkpoint_network_add_command(
         "groups",
     ]
     printable_result = build_printable_result(headers, result)
-    readable_output = tableToMarkdown(
-        "CheckPoint data for adding a network:", printable_result, headers=headers, removeNull=True
-    )
+    readable_output = tableToMarkdown("CheckPoint data for adding a network:", printable_result, headers=headers, removeNull=True)
     readable_output, printable_result = build_group_data(result, readable_output, printable_result)
 
     return CommandResults(
@@ -2868,7 +2875,7 @@ def checkpoint_service_list_command(
 
     result = client.list_services(limit, offset, service_type)
 
-    printable_result: list = []
+    printable_results: list = []
     readable_output = ""
 
     if result:
@@ -2880,17 +2887,17 @@ def checkpoint_service_list_command(
                 current_printable_result = {}
                 for endpoint in DEFAULT_LIST_FIELD:
                     current_printable_result[endpoint] = element.get(endpoint)
-                printable_result.append(current_printable_result)
+                printable_results.append(current_printable_result)
 
             readable_output = tableToMarkdown(
-                f"CheckPoint data for all {service_type} services:", printable_result, DEFAULT_LIST_FIELD, removeNull=True
+                f"CheckPoint data for all {service_type} services:", printable_results, DEFAULT_LIST_FIELD, removeNull=True
             )
 
     return CommandResults(
         outputs_prefix=SERVICE_TYPE_CONTEXT_MAP[service_type],
         outputs_key_field="uid",
         readable_output=readable_output,
-        outputs=printable_result,
+        outputs=printable_results,
         raw_response=result,
     )
 
@@ -3042,7 +3049,7 @@ def checkpoint_icmp_service_add_command(
 
     result = client.add_service_icmp(
         identifier=identifier,
-        icmp_type=arg_to_number(icmp_type, required=True),  # type: ignore[arg-type]
+        icmp_type=arg_to_number(icmp_type),
         port=port,
         icmp_code=arg_to_number(icmp_code),
         comments=comments,
@@ -3294,9 +3301,7 @@ def checkpoint_nat_rule_get_command(client: Client, identifier: str, package: st
     rule_number = arg_to_number(identifier)
     result = client.show_nat_rule(rule_number, package)
 
-    readable_output = tableToMarkdown(
-        f"CheckPoint data for NAT rule {identifier}:", result, removeNull=True
-    )
+    readable_output = tableToMarkdown(f"CheckPoint data for NAT rule {identifier}:", result, removeNull=True)
 
     return CommandResults(
         outputs_prefix="CheckPoint.NatRule",
@@ -3308,7 +3313,11 @@ def checkpoint_nat_rule_get_command(client: Client, identifier: str, package: st
 
 
 def checkpoint_nat_rule_list_command(
-    client: Client, package: str, limit: str = "50", offset: str = "0", filter: str = None  # noqa: A002
+    client: Client,
+    package: str,
+    limit: str = "50",
+    offset: str = "0",
+    filter: str = None,  # noqa: A002
 ) -> CommandResults:
     """
     Retrieve all NAT rules from the rulebase.
@@ -3341,9 +3350,7 @@ def checkpoint_nat_rule_list_command(
                         if sub_entry.get("type") == "nat-rule":
                             rules.append(sub_entry)
 
-            readable_output = tableToMarkdown(
-                "CheckPoint NAT rules:", rules, removeNull=True
-            )
+            readable_output = tableToMarkdown("CheckPoint NAT rules:", rules, removeNull=True)
 
     return CommandResults(
         outputs_prefix="CheckPoint.NatRule",
@@ -3419,9 +3426,7 @@ def checkpoint_nat_rule_add_command(
         tags=tags or None,
     )
 
-    readable_output = tableToMarkdown(
-        "CheckPoint data for adding a NAT rule:", result, removeNull=True
-    )
+    readable_output = tableToMarkdown("CheckPoint data for adding a NAT rule:", result, removeNull=True)
 
     return CommandResults(
         outputs_prefix="CheckPoint.NatRule",
@@ -3483,9 +3488,7 @@ def checkpoint_nat_rule_update_command(
         tags=tags or None,
     )
 
-    readable_output = tableToMarkdown(
-        "CheckPoint data for updating a NAT rule:", result, removeNull=True
-    )
+    readable_output = tableToMarkdown("CheckPoint data for updating a NAT rule:", result, removeNull=True)
 
     return CommandResults(
         outputs_prefix="CheckPoint.NatRule",
