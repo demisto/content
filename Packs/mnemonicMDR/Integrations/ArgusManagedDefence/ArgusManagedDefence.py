@@ -362,10 +362,10 @@ def fetch_incidents(
         startTimestamp=start_timestamp if start_timestamp else first_fetch_period,
         endTimestamp="now",
         limit=limit,
-        sortBy=["createdTimestamp"],
+        sortBy=["publishedTimestamp"],
         priority=build_argus_priority_from_min_severity(min_severity),
         subCriteria=sub_criteria,
-        timeFieldStrategy=["createdTimestamp"],
+        timeFieldStrategy=["publishedTimestamp"],
     )
     incidents = []
     for case in result.get("data", []):
@@ -379,7 +379,7 @@ def fetch_incidents(
         case["url"] = f"https://portal.mnemonic.no/spa/case/view/{case['id']}"
         incident = {
             "name": f"#{case['id']}: {case['subject']}",
-            "occurred": case["createdTime"],
+            "occurred": case["publishedTime"],
             "severity": argus_priority_to_demisto_severity(case["priority"]),
             "status": argus_status_to_demisto_status(case["status"]),
             "details": json.dumps(case),
@@ -388,7 +388,7 @@ def fetch_incidents(
         incidents.append(incident)
 
     if result.get("data", []):
-        last_run["start_time"] = str(result.get("data")[-1]["createdTimestamp"] + 1)
+        last_run["start_time"] = str(result.get("data")[-1]["publishedTimestamp"] + 1)
 
     return last_run, incidents
 
