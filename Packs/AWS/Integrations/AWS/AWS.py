@@ -5764,7 +5764,9 @@ class EKS:
             kwargs["username"] = user_name
 
         remove_nulls_from_dictionary(kwargs)
-        print_debug_logs(client, f"Updating EKS access entry for cluster: {cluster_name}, principal: {principal_arn}, kwargs: {kwargs}")
+        print_debug_logs(
+            client, f"Updating EKS access entry for cluster: {cluster_name}, principal: {principal_arn}, kwargs: {kwargs}"
+        )
 
         response = client.update_access_entry(**kwargs)
 
