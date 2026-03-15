@@ -5229,8 +5229,9 @@ def verify_support_ticket_permission_command(client: Client) -> CommandResults:
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.SupportTicketPermission",
         outputs=output,
-        raw_response=response
+        raw_response=response,
     )
+
 
 def list_brokers_command(client: Client, args: dict) -> CommandResults:
     """

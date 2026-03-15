@@ -10307,6 +10307,8 @@ def test_get_support_ticket_taxonomy_command_empty_suggested_values(mocker: Mock
     expected_taxonomy = [{"Agent": []}]
     assert result.outputs == str(expected_taxonomy)
     assert result.raw_response == expected_taxonomy
+
+
 class TestListBrokersCommand:
     """Test cases for list_brokers_command function."""
 
