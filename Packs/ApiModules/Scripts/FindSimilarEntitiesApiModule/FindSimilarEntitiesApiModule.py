@@ -1713,9 +1713,7 @@ class SimilarIssueFinder(BaseSimilarEntityFinder):
         ]
 
         first_col = [x for x in colums_to_display if x in current_entity.columns]
-        col_current_entity_to_display = first_col + [
-            x for x in current_entity.columns if (x not in first_col)
-        ]
+        col_current_entity_to_display = first_col + [x for x in current_entity.columns if (x not in first_col)]
 
         rename_map = {"internal_id": "issue_id"}
         similar_entities = similar_entities.rename(columns=rename_map)

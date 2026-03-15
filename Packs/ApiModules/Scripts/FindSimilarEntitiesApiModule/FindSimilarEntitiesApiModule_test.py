@@ -5,6 +5,19 @@ import numpy as np
 import pandas as pd
 import pytest
 from CommonServerPython import DemistoException
+from FindSimilarEntitiesApiModule import (
+    PREFIXES_TO_REMOVE,
+    REGEX_IP,
+    BaseSimilarEntityFinder,
+    EntityArgs,
+    Model,
+    SimilarIncidentFinder,
+    SimilarIssueFinder,
+    check_list_of_dict,
+    euclidian_similarity_capped,
+    match_one_regex,
+    normalize_command_line,
+)
 
 
 def get_incidents_by_query_mock(fetched_incident, current_incident):
@@ -100,30 +113,22 @@ def check_exist_dataframe_columns(*fields, df):
 
 
 def test_keep_high_level_field():
-    from Scripts.FindSimilarEntityApiModule.FindSimilarEntitiesApiModule import keep_high_level_field
-
     entity_fields = ["xdralerts.comandline", "commandline", "CustomsFields.commandline"]
     res = ["xdralerts", "commandline", "CustomsFields"]
-    assert keep_high_level_field(entity_fields) == res
+    assert BaseSimilarEntityFinder.keep_high_level_field(entity_fields) == res
 
 
 def test_preprocess_entity_field():
-    from Scripts.FindSimilarEntityApiModule.FindSimilarEntitiesApiModule import PREFIXES_TO_REMOVE, preprocess_entity_field
-
-    assert preprocess_entity_field("incident.commandline", PREFIXES_TO_REMOVE) == "commandline"
-    assert preprocess_entity_field("commandline", PREFIXES_TO_REMOVE) == "commandline"
+    assert BaseSimilarEntityFinder.preprocess_entity_field("incident.commandline", PREFIXES_TO_REMOVE) == "commandline"
+    assert BaseSimilarEntityFinder.preprocess_entity_field("commandline", PREFIXES_TO_REMOVE) == "commandline"
 
 
 def test_check_list_of_dict():
-    from Scripts.FindSimilarEntityApiModule.FindSimilarEntitiesApiModule import check_list_of_dict
-
     assert check_list_of_dict([{"test": "value_test"}, {"test1": "value_test1"}]) is True
     assert check_list_of_dict({"test": "value_test"}) is False
 
 
 def test_match_one_regex():
-    from Scripts.FindSimilarEntityApiModule.FindSimilarEntitiesApiModule import REGEX_IP, match_one_regex
-
     assert match_one_regex("123.123.123.123", [REGEX_IP]) is True
     assert match_one_regex("123.123.123", [REGEX_IP]) is False
     assert match_one_regex("abc", [REGEX_IP]) is False
@@ -131,15 +136,11 @@ def test_match_one_regex():
 
 
 def test_normalize_command_line():
-    from Scripts.FindSimilarEntityApiModule.FindSimilarEntitiesApiModule import normalize_command_line
-
     assert normalize_command_line("cmd -k IP=1.1.1.1 [1.1.1.1]") == "cmd -k ip = IP IP"
     assert normalize_command_line('powershell "remove_quotes"') == "powershell remove_quotes"
 
 
 def test_euclidian_similarity_capped():
-    from Scripts.FindSimilarEntityApiModule.FindSimilarEntitiesApiModule import euclidian_similarity_capped
-
     x = np.array([[1, 1, 1], [2, 2, 2]])
     y = np.array([[2.1, 2.1, 2.1]])
     distance = euclidian_similarity_capped(x, y)
@@ -148,8 +149,6 @@ def test_euclidian_similarity_capped():
 
 
 def test_main_regular(mocker):
-    from Scripts.FindSimilarEntityApiModule.FindSimilarEntitiesApiModule import EntityArgs, SimilarIncidentFinder
-
     fetched_incident = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
     current_incident = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
     similar_indicators = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
@@ -191,8 +190,6 @@ def test_main_regular(mocker):
 
 
 def test_main_no_indicators_found(mocker):
-    from Scripts.FindSimilarEntityApiModule.FindSimilarEntitiesApiModule import EntityArgs, SimilarIncidentFinder
-
     fetched_incident = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
     current_incident = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
     similar_indicators = deepcopy(SIMILAR_INDICATORS_EMPTY)
@@ -232,8 +229,6 @@ def test_main_no_indicators_found(mocker):
 
 
 def test_main_no_fetched_incidents_found(mocker):
-    from Scripts.FindSimilarEntityApiModule.FindSimilarEntitiesApiModule import EntityArgs, SimilarIncidentFinder
-
     fetched_incident = deepcopy(FETCHED_INCIDENT_EMPTY)
     current_incident = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
     similar_indicators = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
@@ -269,24 +264,20 @@ def test_main_no_fetched_incidents_found(mocker):
 
 
 def test_main_some_incorrect_fields():
-    from Scripts.FindSimilarEntityApiModule.FindSimilarEntitiesApiModule import find_missing_entity_fields
-
     wrong_field_1 = "wrong_field_1"
     wrong_field_2 = "wrong_field_2"
     correct_field_1 = "empty_fetched_incident_field"
     current_incident_df = pd.DataFrame(CURRENT_INCIDENT_NOT_EMPTY)
-    global_msg, incorrect_fields = find_missing_entity_fields(
-        [correct_field_1, wrong_field_1, wrong_field_2], current_incident_df, ""
-    )
+
+    finder = SimilarIncidentFinder(EntityArgs({}))
+    incorrect_fields = finder.find_missing_entity_fields([correct_field_1, wrong_field_1, wrong_field_2], current_incident_df)
     assert incorrect_fields == ["wrong_field_1", "wrong_field_2"]
-    assert wrong_field_1 in global_msg
-    assert wrong_field_2 in global_msg
-    assert correct_field_1 not in global_msg
+    assert wrong_field_1 in finder.global_msg
+    assert wrong_field_2 in finder.global_msg
+    assert correct_field_1 not in finder.global_msg
 
 
 def test_main_all_incorrect_field(mocker):
-    from Scripts.FindSimilarEntityApiModule.FindSimilarEntitiesApiModule import EntityArgs, SimilarIncidentFinder
-
     fetched_incident = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
     current_incident = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
     similar_indicators = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
@@ -325,8 +316,6 @@ def test_main_all_incorrect_field(mocker):
 
 
 def test_main_incident_truncated(mocker):
-    from Scripts.FindSimilarEntityApiModule.FindSimilarEntitiesApiModule import EntityArgs, SimilarIncidentFinder
-
     fetched_incident = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
     current_incident = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
     similar_indicators = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
@@ -370,8 +359,6 @@ def test_main_incident_truncated(mocker):
 
 
 def test_main_incident_nested(mocker):
-    from Scripts.FindSimilarEntityApiModule.FindSimilarEntitiesApiModule import EntityArgs, SimilarIncidentFinder
-
     fetched_incident = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
     current_incident = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
     similar_indicators = deepcopy(SIMILAR_INDICATORS_NOT_EMPTY)
@@ -428,8 +415,6 @@ expected_results = ["created"]
 
 
 def test_remove_empty_or_short_fields(sample_data):
-    from Scripts.FindSimilarEntityApiModule.FindSimilarEntitiesApiModule import Model
-
     # Create an instance of Model
     my_instance = Model({})
     my_instance.entity_to_match = sample_data
@@ -451,8 +436,6 @@ def test_remove_empty_or_short_fields(sample_data):
 
 
 def test_predict_without_similarity_fields(sample_data):
-    from Scripts.FindSimilarEntityApiModule.FindSimilarEntitiesApiModule import Model
-
     model = Model({})
     model.entity_to_match = sample_data
     model.field_for_command_line = []
@@ -486,9 +469,8 @@ def test_predict_without_similarity_fields(sample_data):
     ],
 )
 def test_extract_fields_from_args(similar_text_field):
-    from Scripts.FindSimilarEntityApiModule.FindSimilarEntitiesApiModule import extract_fields_from_args
-
-    results = extract_fields_from_args(similar_text_field)
+    finder = BaseSimilarEntityFinder(EntityArgs({}))
+    results = finder.extract_fields_from_args(similar_text_field)
     expected_results = [
         "xdralerts.osactorprocesscommandline",
         "xdralerts.actorprocesscommandline",
@@ -501,8 +483,6 @@ def test_extract_fields_from_args(similar_text_field):
 
 
 def test_similar_issue_finder_preprocess_args():
-    from Scripts.FindSimilarEntityApiModule.FindSimilarEntitiesApiModule import EntityArgs, SimilarIssueFinder
-
     args = {
         "text_similarity_fields": "name, description, status",
         "filter_equal_fields": "status, assignee, type",
@@ -543,8 +523,6 @@ def test_similar_issue_finder_preprocess_args():
 
 
 def test_similar_issue_finder_get_display_fields():
-    from Scripts.FindSimilarEntityApiModule.FindSimilarEntitiesApiModule import EntityArgs, SimilarIssueFinder
-
     args = {"fieldsToDisplay": "status, assignee"}
     finder = SimilarIssueFinder(EntityArgs(args))
     display_fields = finder.get_display_fields()
@@ -552,8 +530,6 @@ def test_similar_issue_finder_get_display_fields():
 
 
 def test_similar_issue_finder_load_current_entity(mocker):
-    from Scripts.FindSimilarEntityApiModule.FindSimilarEntitiesApiModule import EntityArgs, SimilarIssueFinder
-
     args = {}
     finder = SimilarIssueFinder(EntityArgs(args))
 
@@ -572,8 +548,6 @@ def test_similar_issue_finder_load_current_entity(mocker):
 
 
 def test_similar_issue_finder_get_all_entities(mocker):
-    from Scripts.FindSimilarEntityApiModule.FindSimilarEntitiesApiModule import EntityArgs, SimilarIssueFinder
-
     args = {}
     finder = SimilarIssueFinder(EntityArgs(args))
 
@@ -599,9 +573,6 @@ def test_similar_issue_finder_get_all_entities(mocker):
 
 
 def test_similar_issue_finder_create_context():
-    from Scripts.FindSimilarEntityApiModule.FindSimilarEntitiesApiModule import EntityArgs, SimilarIssueFinder
-    import pandas as pd
-
     args = {}
     finder = SimilarIssueFinder(EntityArgs(args))
 
