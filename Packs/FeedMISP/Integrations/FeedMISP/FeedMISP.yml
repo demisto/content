@@ -19,6 +19,12 @@ configuration:
   required: true
   hiddenusername: true
   section: Connect
+- display: Client Certificate
+  displaypassword: Private Key
+  name: certificate
+  type: 9
+  required: false
+  section: Connect
 - display: Max. indicators per fetch
   name: max_indicator_to_fetch
   type: 0
