@@ -1,21 +1,21 @@
 args:
-- description: Issue ID to get the prediction of. If empty, predicts the current issue ID.
+- description: The issue ID to use as reference for similarity matching.
   name: issue_id
   required: true
 - auto: PREDEFINED
-  description: 'Comma-separated free-text fields compared using semantic similarity scoring. Suitable for longer descriptive fields where partial matches are meaningful. For example: name, description, remediation.'
+  description: "A comma-separated list of free-text fields compared using semantic similarity (NLP). Suitable for longer descriptive fields where partial matches are meaningful. For example: name, description, remediation."
   name: text_similarity_fields
 - auto: PREDEFINED
-  description: 'Comma-separated fields representing discrete identifiers. Each field contributes 1 if values are equal, or 0 if not. The average of all selected fields affects the overall similarity score. For example: status, type, assignee, severity, starred, category, domain, source.'
+  description: "A comma-separated list of fields representing discrete identifiers. Each field contributes 1 if values are equal, or 0 if not. The average of all selected fields affects the overall similarity score. For example: status, type, assignee, severity, starred, category, domain, source."
   name: discrete_match_fields
 - auto: PREDEFINED
-  description: 'Comma-separated fields containing structured data. Each is compared using element-level similarity.'
+  description: "A comma-separated list of fields containing structured data. Each is compared by flattening nested structures and calculating the overlap of key-value pairs."
   name: json_similarity_fields
 - auto: PREDEFINED
-  description: Comma-separated list of additional issue fields to display, but which will not be taken into account when computing similarity.
+  description: A comma-separated list of additional issue fields to display that will not be taken into account when computing similarity.
   name: fields_to_display
 - auto: PREDEFINED
-  description: Comma-separated issue fields that must exactly match the current issue before any similarity scoring is applied. Acts as a strict pre-filter.
+  description: A comma-separated list of issue fields that must exactly match the current issue's field values before proceeding to the similarity scoring phase. Acts as a strict pre-filter.
   name: filter_equal_fields
   predefined:
   - severity
@@ -28,10 +28,10 @@ args:
   - name
   - source
 - defaultValue: 1 months ago
-  description: The start date by which to filter issues. Date format will be the same as in the issues query page, for example, "3 days ago", "2019-01-01T00:00:00 +0200".
+  description: The start date by which to filter issues. Date format is the same as in the issues query page, for example, "3 days ago", "2019-01-01T00:00:00 +0200".
   name: from_date
 - defaultValue: now
-  description: The end date by which to filter issues. Date format will be the same as in the issues query page, for example, "3 days ago", "2019-01-01T00:00:00 +0200".
+  description: The end date by which to filter issues. Date format is the same as in the issues query page, for example, "3 days ago", "2019-01-01T00:00:00 +0200".
   name: to_date
 - defaultValue: '1500'
   description: The maximum number of issues to query.
@@ -56,7 +56,7 @@ args:
   predefined:
   - 'True'
   - 'False'
-- description: "A custom filter. When using this argument, other filter arguments are not relevant. example: `{\"OR\":[\"SEARCH_FIELD\":\"actor_process_command_line\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"path_to_file\"}]}`."
+- description: "A custom filter to retrieve issues for similarity calculation. For example: `{\"OR\":[\"SEARCH_FIELD\":\"actor_process_command_line\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"path_to_file\"}]}`."
   name: custom_filter
 - auto: PREDEFINED
   defaultValue: 'False'
@@ -66,7 +66,7 @@ args:
   - 'True'
   - 'False'
 comment: |-
-  Searches past similar issues based on issue fields' similarity. Includes an option to also display indicators similarity.
+  Searches past similar issues based on issue fields' similarity.
   Note: For the similarity calculation, at least one field must be provided in one of the "text_similarity_fields", "json_similarity_fields" or "discrete_match_fields" arguments.
 commonfields:
   id: FindSimilarIssues
@@ -90,7 +90,7 @@ outputs:
   description: The name of the similar issue.
   type: string
 - contextPath: SimilarIssues.similar_issue.similarity_score
-  description: The similarity of the similar issue represented as a float in the range 0-1.
+  description: The similarity of the similar issue, represented as a number between 0-1.
   type: number
 - contextPath: SimilarIssues.similar_issue.details
   description: The details of the similar issue.

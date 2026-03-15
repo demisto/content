@@ -6,7 +6,7 @@ from SimilarObjectApiModule import *  # noqa: E402
 def main():
     try:
         args = demisto.args()
-        mapped_args = ObjectArgs(args)
+        mapped_args = EntityArgs(args)
         finder = SimilarIssueFinder(mapped_args)
         finder.run()
     except Exception as e:

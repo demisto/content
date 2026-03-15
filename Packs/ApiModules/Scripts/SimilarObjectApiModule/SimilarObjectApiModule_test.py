@@ -102,16 +102,16 @@ def check_exist_dataframe_columns(*fields, df):
 def test_keep_high_level_field():
     from SimilarObjectApiModule import keep_high_level_field
 
-    incidents_field = ["xdralerts.comandline", "commandline", "CustomsFields.commandline"]
+    entity_fields = ["xdralerts.comandline", "commandline", "CustomsFields.commandline"]
     res = ["xdralerts", "commandline", "CustomsFields"]
-    assert keep_high_level_field(incidents_field) == res
+    assert keep_high_level_field(entity_fields) == res
 
 
-def test_preprocess_incidents_field():
-    from SimilarObjectApiModule import PREFIXES_TO_REMOVE, preprocess_incidents_field
+def test_preprocess_entity_field():
+    from SimilarObjectApiModule import PREFIXES_TO_REMOVE, preprocess_entity_field
 
-    assert preprocess_incidents_field("incident.commandline", PREFIXES_TO_REMOVE) == "commandline"
-    assert preprocess_incidents_field("commandline", PREFIXES_TO_REMOVE) == "commandline"
+    assert preprocess_entity_field("incident.commandline", PREFIXES_TO_REMOVE) == "commandline"
+    assert preprocess_entity_field("commandline", PREFIXES_TO_REMOVE) == "commandline"
 
 
 def test_check_list_of_dict():
@@ -148,7 +148,7 @@ def test_euclidian_similarity_capped():
 
 
 def test_main_regular(mocker):
-    from SimilarObjectApiModule import ObjectArgs, SimilarIncidentFinder
+    from SimilarObjectApiModule import EntityArgs, SimilarIncidentFinder
 
     fetched_incident = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
     current_incident = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
@@ -178,7 +178,7 @@ def test_main_regular(mocker):
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand_mock(similar_indicators))
 
-    finder = SimilarIncidentFinder(ObjectArgs(args))
+    finder = SimilarIncidentFinder(EntityArgs(args))
     res, _ = finder.run()
 
     assert res is not None
@@ -191,7 +191,7 @@ def test_main_regular(mocker):
 
 
 def test_main_no_indicators_found(mocker):
-    from SimilarObjectApiModule import ObjectArgs, SimilarIncidentFinder
+    from SimilarObjectApiModule import EntityArgs, SimilarIncidentFinder
 
     fetched_incident = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
     current_incident = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
@@ -221,7 +221,7 @@ def test_main_no_indicators_found(mocker):
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand_mock(similar_indicators))
 
-    finder = SimilarIncidentFinder(ObjectArgs(args))
+    finder = SimilarIncidentFinder(EntityArgs(args))
     res, _ = finder.run()
 
     assert res is not None
@@ -232,7 +232,7 @@ def test_main_no_indicators_found(mocker):
 
 
 def test_main_no_fetched_incidents_found(mocker):
-    from SimilarObjectApiModule import ObjectArgs, SimilarIncidentFinder
+    from SimilarObjectApiModule import EntityArgs, SimilarIncidentFinder
 
     fetched_incident = deepcopy(FETCHED_INCIDENT_EMPTY)
     current_incident = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
@@ -262,20 +262,22 @@ def test_main_no_fetched_incidents_found(mocker):
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand_mock(similar_indicators))
 
-    finder = SimilarIncidentFinder(ObjectArgs(args))
+    finder = SimilarIncidentFinder(EntityArgs(args))
     res = finder.run()
     assert res[0] is None
     assert "- 0 incidents fetched with these exact match for the given dates." in res[1]
 
 
 def test_main_some_incorrect_fields():
-    from SimilarObjectApiModule import find_incorrect_fields
+    from SimilarObjectApiModule import find_missing_entity_fields
 
     wrong_field_1 = "wrong_field_1"
     wrong_field_2 = "wrong_field_2"
     correct_field_1 = "empty_fetched_incident_field"
     current_incident_df = pd.DataFrame(CURRENT_INCIDENT_NOT_EMPTY)
-    global_msg, incorrect_fields = find_incorrect_fields([correct_field_1, wrong_field_1, wrong_field_2], current_incident_df, "")
+    global_msg, incorrect_fields = find_missing_entity_fields(
+        [correct_field_1, wrong_field_1, wrong_field_2], current_incident_df, ""
+    )
     assert incorrect_fields == ["wrong_field_1", "wrong_field_2"]
     assert wrong_field_1 in global_msg
     assert wrong_field_2 in global_msg
@@ -283,7 +285,7 @@ def test_main_some_incorrect_fields():
 
 
 def test_main_all_incorrect_field(mocker):
-    from SimilarObjectApiModule import ObjectArgs, SimilarIncidentFinder
+    from SimilarObjectApiModule import EntityArgs, SimilarIncidentFinder
 
     fetched_incident = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
     current_incident = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
@@ -316,14 +318,14 @@ def test_main_all_incorrect_field(mocker):
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand_mock(similar_indicators))
 
-    finder = SimilarIncidentFinder(ObjectArgs(args))
+    finder = SimilarIncidentFinder(EntityArgs(args))
     df, msg = finder.run()
     assert df is None
     assert all(field in msg for field in [wrong_field_1, wrong_field_2, wrong_field_3, wrong_field_4])
 
 
 def test_main_incident_truncated(mocker):
-    from SimilarObjectApiModule import ObjectArgs, SimilarIncidentFinder
+    from SimilarObjectApiModule import EntityArgs, SimilarIncidentFinder
 
     fetched_incident = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
     current_incident = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
@@ -356,7 +358,7 @@ def test_main_incident_truncated(mocker):
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand_mock(similar_indicators))
 
-    finder = SimilarIncidentFinder(ObjectArgs(args))
+    finder = SimilarIncidentFinder(EntityArgs(args))
     df, msg = finder.run()
     limit = args["limit"]
     assert df is not None
@@ -368,7 +370,7 @@ def test_main_incident_truncated(mocker):
 
 
 def test_main_incident_nested(mocker):
-    from SimilarObjectApiModule import ObjectArgs, SimilarIncidentFinder
+    from SimilarObjectApiModule import EntityArgs, SimilarIncidentFinder
 
     fetched_incident = deepcopy(FETCHED_INCIDENT_NOT_EMPTY)
     current_incident = deepcopy(CURRENT_INCIDENT_NOT_EMPTY)
@@ -400,7 +402,7 @@ def test_main_incident_nested(mocker):
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand_mock(similar_indicators))
 
-    finder = SimilarIncidentFinder(ObjectArgs(args))
+    finder = SimilarIncidentFinder(EntityArgs(args))
     df, _ = finder.run()
     assert df is not None
     assert not df.empty
@@ -430,7 +432,7 @@ def test_remove_empty_or_short_fields(sample_data):
 
     # Create an instance of Model
     my_instance = Model({})
-    my_instance.incident_to_match = sample_data
+    my_instance.entity_to_match = sample_data
 
     my_instance.field_for_command_line = fields_to_match
     my_instance.field_for_potential_exact_match = []
@@ -452,7 +454,7 @@ def test_predict_without_similarity_fields(sample_data):
     from SimilarObjectApiModule import Model
 
     model = Model({})
-    model.incident_to_match = sample_data
+    model.entity_to_match = sample_data
     model.field_for_command_line = []
     model.field_for_potential_exact_match = []
     model.field_for_json = []
@@ -499,7 +501,7 @@ def test_extract_fields_from_args(similar_text_field):
 
 
 def test_similar_issue_finder_preprocess_args():
-    from SimilarObjectApiModule import ObjectArgs, SimilarIssueFinder
+    from SimilarObjectApiModule import EntityArgs, SimilarIssueFinder
 
     args = {
         "text_similarity_fields": "name, description, status",
@@ -519,7 +521,7 @@ def test_similar_issue_finder_preprocess_args():
         "show_current_issue": "True",
         "show_issue_fields_similarity": "True",
     }
-    finder = SimilarIssueFinder(ObjectArgs(args))
+    finder = SimilarIssueFinder(EntityArgs(args))
     finder.preprocess_args()
 
     assert finder.similar_text_field == "issue_name,issue_description,resolution_status"
@@ -541,49 +543,49 @@ def test_similar_issue_finder_preprocess_args():
 
 
 def test_similar_issue_finder_get_display_fields():
-    from SimilarObjectApiModule import ObjectArgs, SimilarIssueFinder
+    from SimilarObjectApiModule import EntityArgs, SimilarIssueFinder
 
     args = {"fieldsToDisplay": "status, assignee"}
-    finder = SimilarIssueFinder(ObjectArgs(args))
+    finder = SimilarIssueFinder(EntityArgs(args))
     display_fields = finder.get_display_fields()
     assert set(display_fields) == {"internal_id", "issue_name", "issue_description", "status", "assignee"}
 
 
-def test_similar_issue_finder_load_current_incident(mocker):
-    from SimilarObjectApiModule import ObjectArgs, SimilarIssueFinder
+def test_similar_issue_finder_load_current_entity(mocker):
+    from SimilarObjectApiModule import EntityArgs, SimilarIssueFinder
 
     args = {}
-    finder = SimilarIssueFinder(ObjectArgs(args))
+    finder = SimilarIssueFinder(EntityArgs(args))
 
     mock_execute_command = mocker.patch.object(demisto, "executeCommand")
     mock_execute_command.return_value = [
         {"Type": 1, "Contents": {"alerts": [{"alert_fields": {"internal_id": "123", "issue_name": "test"}}]}}
     ]
 
-    issue, incident_id = finder.load_current_incident("123", [], [], [], [], [], "2023-01-01", "2023-12-31")
+    issue, entity_id = finder.load_current_entity("123", [], [], [], [], [], "2023-01-01", "2023-12-31")
 
     assert issue == {"internal_id": "123", "issue_name": "test"}
-    assert incident_id == "123"
+    assert entity_id == "123"
     mock_execute_command.assert_called_once_with(
         "core-get-issues", {"issue_id": "123", "start_time": "2023-01-01", "end_time": "2023-12-31", "time_frame": "custom"}
     )
 
 
-def test_similar_issue_finder_get_all_incidents(mocker):
-    from SimilarObjectApiModule import ObjectArgs, SimilarIssueFinder
+def test_similar_issue_finder_get_all_entities(mocker):
+    from SimilarObjectApiModule import EntityArgs, SimilarIssueFinder
 
     args = {}
-    finder = SimilarIssueFinder(ObjectArgs(args))
+    finder = SimilarIssueFinder(EntityArgs(args))
 
     mock_execute_command_batch = mocker.patch.object(demisto, "executeCommandBatch")
     mock_execute_command_batch.return_value = [
         [{"Type": 1, "Contents": {"alerts": [{"alert_fields": {"internal_id": "456", "issue_name": "test2"}}]}}]
     ]
 
-    incident = {"internal_id": "123", "issue_name": "test", "status": "Open"}
+    entity = {"internal_id": "123", "issue_name": "test", "status": "Open"}
     exact_match_fields = ["status"]
 
-    all_issues, msg = finder.get_all_incidents(exact_match_fields, [], [], [], [], incident, "2023-01-01", "2023-12-31", 50)
+    all_issues, msg = finder.get_all_entities(exact_match_fields, [], [], [], [], entity, "2023-01-01", "2023-12-31", 50)
 
     assert all_issues is not None
     assert len(all_issues) == 1
@@ -597,11 +599,11 @@ def test_similar_issue_finder_get_all_incidents(mocker):
 
 
 def test_similar_issue_finder_create_context():
-    from SimilarObjectApiModule import ObjectArgs, SimilarIssueFinder
+    from SimilarObjectApiModule import EntityArgs, SimilarIssueFinder
     import pandas as pd
 
     args = {}
-    finder = SimilarIssueFinder(ObjectArgs(args))
+    finder = SimilarIssueFinder(EntityArgs(args))
 
     df = pd.DataFrame(
         [{"similarity issue": 0.9, "id": "123", "name": "test", "Identical indicators": "ind1", "similarity indicators": 0.8}]
