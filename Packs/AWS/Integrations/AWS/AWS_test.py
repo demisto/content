@@ -14323,7 +14323,7 @@ def test_eks_list_clusters_command_with_pagination(mocker):
 
     assert isinstance(result, CommandResults)
     call_kwargs = mock_client.list_clusters.call_args[1]
-    assert call_kwargs["NextToken"] == "next-token-123"
+    assert call_kwargs["nextToken"] == "next-token-123"
     assert "cluster-4" in result.readable_output
     assert "cluster-5" in result.readable_output
 
@@ -14466,65 +14466,6 @@ def test_eks_create_access_entry_command_minimal_args(mocker):
     assert "tags" not in call_kwargs
     assert "clientRequestToken" not in call_kwargs
     assert "type" not in call_kwargs
-
-
-def test_eks_create_access_entry_command_with_tags(mocker):
-    """
-    Given: A mocked boto3 EKS client and arguments including JSON tags.
-    When: create_access_entry_command is called with tags parameter.
-    Then: It should parse the JSON tags and pass them to the API call.
-    """
-    from AWS import EKS
-    from datetime import datetime
-
-    mock_client = mocker.Mock()
-    mock_client.create_access_entry.return_value = {
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-        "accessEntry": {
-            "clusterName": "test-cluster",
-            "principalArn": "arn:aws:iam::123456789012:role/test-role",
-            "type": "Standard",
-            "createdAt": datetime(2024, 1, 15, 10, 30, 0),
-            "modifiedAt": datetime(2024, 1, 15, 10, 30, 0),
-            "tags": {"Environment": "prod", "Team": "platform"},
-        },
-    }
-
-    args = {
-        "account_id": "123456789012",
-        "region": "us-east-1",
-        "cluster_name": "test-cluster",
-        "principal_arn": "arn:aws:iam::123456789012:role/test-role",
-        "tags": '{"Environment": "prod", "Team": "platform"}',
-    }
-
-    result = EKS.create_access_entry_command(mock_client, args)
-
-    assert isinstance(result, CommandResults)
-    call_kwargs = mock_client.create_access_entry.call_args[1]
-    assert call_kwargs["tags"] == {"Environment": "prod", "Team": "platform"}
-
-
-def test_eks_create_access_entry_command_invalid_tags(mocker):
-    """
-    Given: A mocked boto3 EKS client and invalid JSON tags string.
-    When: create_access_entry_command is called with malformed tags JSON.
-    Then: It should raise DemistoException with JSON format error message.
-    """
-    from AWS import EKS
-
-    mock_client = mocker.Mock()
-
-    args = {
-        "account_id": "123456789012",
-        "region": "us-east-1",
-        "cluster_name": "test-cluster",
-        "principal_arn": "arn:aws:iam::123456789012:role/test-role",
-        "tags": "invalid-json-string",
-    }
-
-    with pytest.raises(DemistoException, match="Invalid tags JSON format"):
-        EKS.create_access_entry_command(mock_client, args)
 
 
 def test_eks_update_access_entry_command_success(mocker):

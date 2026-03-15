@@ -5866,7 +5866,7 @@ class EKS:
         Returns:
             CommandResults: Results containing the list of EKS cluster names
         """
-        kwargs = build_pagination_kwargs(args, max_limit=100, limit_name="maxResults")
+        kwargs = build_pagination_kwargs(args, max_limit=100, limit_name="maxResults", next_token_name="nextToken")
         remove_nulls_from_dictionary(kwargs)
 
         print_debug_logs(client, f"Listing EKS clusters with parameters: {kwargs}")
