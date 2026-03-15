@@ -2,16 +2,25 @@
     "name": "Barracuda Cloudgen Firewall",
     "description": "Barracuda Cloudgen Friewall modeling rule and parsing rule for XSIAM",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
+        "Network Security",
+        "Cloud Security"
+    ],
+    "tags": [
+        "Network"
+    ],
+    "useCases": [
         "Network Security"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "barracuda ng fw",
+        "barracuda nextgen",
+        "barracuda cg fw"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"
@@ -21,6 +30,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

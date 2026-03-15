@@ -588,6 +588,18 @@ def severity_filter(min_severity):
     return severity_filter
 
 
+def status_filter(statuses):
+    """
+    Create a Status Filter string when statuses is not empty.
+    """
+    status_filter = ""
+    if statuses:
+        conditions = [f"properties/status eq '{s}'" for s in statuses]
+        status_filter = f"and ({ ' or '.join(conditions) })"
+
+    return status_filter
+
+
 def generic_list_incident_items(
     client,
     incident_id,
@@ -1468,6 +1480,7 @@ def fetch_incidents(
     last_run: dict,
     first_fetch_time: str,
     min_severity: str,
+    statuses_to_fetch: list = [],
 ) -> tuple:
     """Fetching incidents.
     Args:
@@ -1475,6 +1488,7 @@ def fetch_incidents(
         client: An AzureSentinelClient client.
         last_run: An dictionary of the last run.
         min_severity: A minimum severity of incidents to fetch.
+        statuses_to_fetch: A list of statuses to fetch.
 
     Returns:
         (tuple): 1. The LastRun object updated with the last run details.
@@ -1502,7 +1516,10 @@ def fetch_incidents(
 
         latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
         command_args = {
-            "filter": f"properties/createdTimeUtc ge {latest_created_time_str} {severity_filter(min_severity)}",
+            "filter": (
+                f"properties/createdTimeUtc ge {latest_created_time_str} {severity_filter(min_severity)}"
+                f" {status_filter(statuses_to_fetch)}".strip()
+            ),
             "orderby": "properties/createdTimeUtc asc",
             "limit": limit,
         }
@@ -1514,7 +1531,10 @@ def fetch_incidents(
         if latest_created_time is None:
             raise DemistoException(f"{last_fetch_time=} couldn't be parsed")
         command_args = {
-            "filter": f"properties/incidentNumber gt {last_incident_number} {severity_filter(min_severity)}",
+            "filter": (
+                f"properties/incidentNumber gt {last_incident_number} {severity_filter(min_severity)}"
+                f" {status_filter(statuses_to_fetch)}".strip()
+            ),
             "orderby": "properties/incidentNumber asc",
             "limit": limit,
         }
@@ -1536,6 +1556,7 @@ def fetch_incidents_command(client, params):
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = params.get("fetch_time", "3 days").strip()
     min_severity = params.get("min_severity", "Informational")
+    statuses_to_fetch = argToList(params.get("statuses_to_fetch", []))
     # Set and define the fetch incidents command to run after activated via integration settings.
     last_run = demisto.getLastRun()
     demisto.debug(f"Current last run is {last_run}")
@@ -1544,6 +1565,7 @@ def fetch_incidents_command(client, params):
         last_run=last_run,
         first_fetch_time=first_fetch_time,
         min_severity=min_severity,
+        statuses_to_fetch=statuses_to_fetch,
     )
     demisto.debug(f"New last run is {last_run}")
     demisto.setLastRun(next_run)

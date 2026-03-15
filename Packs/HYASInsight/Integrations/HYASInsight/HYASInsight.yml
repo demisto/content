@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Silent Push
 commonfields:
   id: HYAS Insight
   version: -1
@@ -785,7 +786,7 @@ script:
     - contextPath: HYAS.HASH-DOMAIN.md5
       description: The provided MD5 value.
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'
   subtype: python3

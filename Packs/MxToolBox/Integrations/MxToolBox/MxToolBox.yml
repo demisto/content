@@ -4,7 +4,8 @@ commonfields:
 name: MxToolBox
 display: MxToolBox
 category: Data Enrichment & Threat Intelligence
-description: All of your MX record, DNS, blacklist and SMTP diagnostics in one integrated tool
+provider: ZiffDavis
+description: All of your MX record, DNS, blacklist and SMTP diagnostics in one integrated tool.
 configuration:
 - display: API Key
   name: apiKey
@@ -49,27 +50,27 @@ script:
       - https
       - ping
       - trace
-      description: The command you want to execute
+      description: The command you want to execute.
     - name: data
       required: true
-      description: The data to query
+      description: The data to query.
     - name: additionalParams
-      description: Any additional query parameters you want to add
+      description: Any additional query parameters you want to add.
     outputs:
     - contextPath: MXToolbox.Passed
-      description: Successful results
+      description: Successful results.
     - contextPath: MXToolbox.Failed
-      description: Query failures
+      description: Query failures.
     - contextPath: MXToolbox.Errors
-      description: Query errors
+      description: Query errors.
     - contextPath: MXToolbox.Warnings
-      description: Warning for query
+      description: Warning for query.
     - contextPath: MXToolbox.Information
-      description: Additional information regarding the query
+      description: Additional information regarding the query.
     - contextPath: MXToolbox.MultiInformation
-      description: Additional multi-information
+      description: Additional multi-information.
     - contextPath: MXToolbox.Transcript
-      description: Query transcript
+      description: Query transcript.
     description: Run any supported command on the mxtoolbox API
 tests:
 - MxToolbox-test

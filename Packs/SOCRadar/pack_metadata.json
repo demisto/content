@@ -1,9 +1,10 @@
 {
     "name": "SOCRadar",
-    "description": "Streamline remediation of alerts and incidents. Make quick, automated queries on ThreatFusion to get a risk reputation score.",
+    "description": "Streamline remediation of alerts and incidents with enhanced multi-tenant capabilities. Easily manage and automate security operations across multiple tenants, including quick, automated queries on ThreatFusion to get a risk reputation score.",
     "support": "partner",
-    "currentVersion": "2.0.16",
+    "currentVersion": "2.2.2",
     "author": "SOCRadar Cyber Intelligence Inc.",
+    "defaultDataSource": "SOCRadarIncidentsV4",
     "url": "www.socradar.io",
     "email": "xsoar@socradar.io",
     "categories": [
@@ -14,7 +15,11 @@
     "keywords": [
         "Threat Intelligence",
         "CTI",
-        "Digital Risk Protection"
+        "Digital Risk Protection",
+        "Incident Management",
+        "Brand Protection",
+        "Credential Monitoring",
+        "SOCRadar"
     ],
     "devEmail": [
         "xsoar@socradar.io"
@@ -51,6 +56,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

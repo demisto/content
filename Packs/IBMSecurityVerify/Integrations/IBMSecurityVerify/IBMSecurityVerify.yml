@@ -1,5 +1,6 @@
 category: Analytics & SIEM
-sectionOrder:
+provider: IBM
+sectionorder:
 - Connect
 - Collect
 commonfields:

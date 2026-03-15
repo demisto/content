@@ -1,5 +1,6 @@
 category: Analytics & SIEM
-sectionOrder:
+provider: GitGuardian
+sectionorder:
 - Connect
 - Collect
 commonfields:

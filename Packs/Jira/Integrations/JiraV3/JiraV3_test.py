@@ -27,7 +27,7 @@ def jira_base_client_mock(username: str = "", api_key: str = "", pat: str = "") 
     however, if this set is empty, the Python interpreter will happily instantiate our class without any problems.
     """
     return JiraBaseClient(
-        base_url="dummy_url",
+        base_url="https://dummy_url",
         proxy=False,
         verify=False,
         callback_url="dummy_callback",
@@ -46,7 +46,7 @@ def jira_cloud_client_mock() -> JiraCloudClient:
         client_secret="dummy_secret",
         callback_url="dummy_url",
         cloud_id="dummy_cloud_id",
-        server_url="dummy_server_url",
+        server_url="https://dummy_server_url",
         username="",
         api_key="",
         pat="",
@@ -60,7 +60,7 @@ def jira_onprem_client_mock() -> JiraOnPremClient:
         client_id="dummy_client_id",
         client_secret="dummy_secret",
         callback_url="dummy_url",
-        server_url="dummy_server_url",
+        server_url="https://dummy_server_url",
         username="",
         api_key="",
         pat="",
@@ -194,28 +194,38 @@ CREATE_ISSUE_QUERY_CASES = [
         "some_jql_string",
         None,
         None,
-        {"jql": "some_jql_string", "startAt": 0, "maxResults": 50},
+        {"jql": "some_jql_string", "maxResults": 50},
+        "",
     ),
     (
         "some_jql_string",
         12,
         None,
         {"jql": "some_jql_string", "startAt": 12, "maxResults": 50},
+        "",
     ),
     (
         "some_jql_string",
         1,
         80,
         {"jql": "some_jql_string", "startAt": 1, "maxResults": 80},
+        "",
+    ),
+    (
+        "some_jql_string",
+        5,
+        80,
+        {"jql": "some_jql_string", "nextPageToken": "dummy_page_token", "maxResults": 80},
+        "dummy_page_token",
     ),
 ]
 
 
-@pytest.mark.parametrize("jql, start_at, max_results, expected_query_params", CREATE_ISSUE_QUERY_CASES)
-def test_create_query_params(jql, start_at, max_results, expected_query_params):
+@pytest.mark.parametrize("jql, start_at, max_results, expected_query_params, next_page_token", CREATE_ISSUE_QUERY_CASES)
+def test_create_query_params(jql, start_at, max_results, expected_query_params, next_page_token):
     from JiraV3 import create_query_params
 
-    query_params = create_query_params(jql_query=jql, start_at=start_at, max_results=max_results)
+    query_params = create_query_params(jql_query=jql, start_at=start_at, max_results=max_results, next_page_token=next_page_token)
     assert query_params == expected_query_params
 
 
@@ -293,7 +303,7 @@ def test_test_module_basic_auth(mocker):
 
     client = jira_base_client_mock("dummy_username", "dummy_api_key")
     mocker.patch.object(client, "jira_test_instance_connection")
-    assert jira_test_module(client) == "ok"
+    assert jira_test_module(client, params={}) == "ok"
 
 
 def test_test_module_pat(mocker):
@@ -309,7 +319,7 @@ def test_test_module_pat(mocker):
 
     client = jira_base_client_mock(pat="dummy_pat")
     mocker.patch.object(client, "jira_test_instance_connection")
-    assert jira_test_module(client) == "ok"
+    assert jira_test_module(client, params={}) == "ok"
 
 
 def test_module_oauth2(mocker):
@@ -326,7 +336,7 @@ def test_module_oauth2(mocker):
     client = jira_base_client_mock()
     mocker.patch.object(client, "jira_test_instance_connection")
     with pytest.raises(DemistoException, match="In order to authorize the instance, first run the command `!jira-oauth-start`."):
-        jira_test_module(client)
+        jira_test_module(client, params={})
 
 
 @pytest.mark.parametrize(
@@ -1946,6 +1956,94 @@ class TestJiraIssueQueryField:
             assert expected_command_result["EntryContext"] == command_result.to_context()["EntryContext"]
             assert expected_command_result["HumanReadable"] == command_result.to_context()["HumanReadable"]
 
+    def test_issue_query_command_uses_new_endpoint_for_cloud(self, mocker, requests_mock):
+        """
+        Given:
+            - A Cloud Jira client
+        When
+            - When calling the jira-issue-query
+        Then
+            - Validate that the new endpoint is used and the command returns the expected output.
+        """
+        from JiraV3 import issue_query_command
+
+        client = jira_cloud_client_mock()
+        mocker.patch.object(client, "get_headers_with_access_token", return_value={})
+        issue_query_raw_response = util_load_json("test_data/get_issue_query_test/raw_response.json")
+        expected_command_results = util_load_json("test_data/get_issue_query_test/parsed_result.json")
+        requests_mock.get("https://dummy_server_url/dummy_cloud_id/rest/api/3/search/jql", json=issue_query_raw_response)
+
+        command_results = issue_query_command(client=client, args={"fields": "watches,rank"})
+        command_results = command_results if isinstance(command_results, list) else [command_results]
+        for expected_command_result, command_result in zip(expected_command_results, command_results):
+            assert expected_command_result["EntryContext"] == command_result.to_context()["EntryContext"]
+            assert expected_command_result["HumanReadable"] == command_result.to_context()["HumanReadable"]
+
+    def test_issue_query_command_uses_old_endpoint_for_onprem(self, mocker, requests_mock):
+        """
+        Given:
+            - An on-prem Jira client
+        When
+            - When calling the jira-issue-query
+        Then
+            - Validate that the old endpoint is used and the command returns the expected output.
+        """
+        from JiraV3 import issue_query_command
+
+        client = jira_onprem_client_mock()
+        mocker.patch.object(client, "get_headers_with_access_token", return_value={})
+        issue_query_raw_response = util_load_json("test_data/get_issue_query_test/raw_response.json")
+        expected_command_results = util_load_json("test_data/get_issue_query_test/parsed_result.json")
+        requests_mock.get("https://dummy_server_url/rest/api/2/search", json=issue_query_raw_response)
+
+        command_results = issue_query_command(client=client, args={"fields": "watches,rank"})
+        command_results = command_results if isinstance(command_results, list) else [command_results]
+        for expected_command_result, command_result in zip(expected_command_results, command_results):
+            assert expected_command_result["EntryContext"] == command_result.to_context()["EntryContext"]
+            assert expected_command_result["HumanReadable"] == command_result.to_context()["HumanReadable"]
+
+    def test_issue_query_command_with_start_at(self, mocker, requests_mock):
+        """
+        Given:
+            - A Jira client
+        When
+            - When calling the jira-issue-query, with the `start_at` argument
+        Then
+            - Validate that the old endpoint is used
+        """
+        from JiraV3 import issue_query_command
+
+        client = jira_cloud_client_mock()
+        mocker.patch.object(client, "get_headers_with_access_token", return_value={})
+        issue_query_raw_response = util_load_json("test_data/get_issue_query_test/raw_response.json")
+        expected_command_results = util_load_json("test_data/get_issue_query_test/parsed_result.json")
+        requests_mock.get("https://dummy_server_url/dummy_cloud_id/rest/api/3/search", json=issue_query_raw_response)
+
+        command_results = issue_query_command(client=client, args={"start_at": "10", "fields": "watches,rank"})
+        command_results = command_results if isinstance(command_results, list) else [command_results]
+        for expected_command_result, command_result in zip(expected_command_results, command_results):
+            assert expected_command_result["EntryContext"] == command_result.to_context()["EntryContext"]
+            assert expected_command_result["HumanReadable"] == command_result.to_context()["HumanReadable"]
+
+    def test_issue_query_command_with_start_at_fail(self, requests_mock):
+        """
+        Given:
+            - A Jira client
+        When
+            - When calling the jira-issue-query, with the `start_at` argument
+            - The old endpoint is no longer available.
+        Then
+            - Validate that the old endpoint is used
+            - Validate that the custom error message is raised for 410 Gone.
+        """
+        from JiraV3 import issue_query_command
+
+        client = jira_base_client_mock(username="user", api_key="key")
+        requests_mock.get("https://dummy_url/rest/api/999/search", status_code=410)
+
+        with pytest.raises(DemistoException, match="The start_at argument is no longer supported in this Jira instance."):
+            issue_query_command(client=client, args={"start_at": "10"})
+
 
 class TestJiraAddUrlLink:
     def test_add_url_link(self, mocker):
@@ -2477,6 +2575,16 @@ class TestJiraFetchIncidents:
             "2023-02-01",
             [1, 2, 3, 4],
             'status!=done AND updated >= "2023-02-01" AND ID NOT IN (1, 2, 3, 4) ORDER BY updated ASC',
+        ),
+        (
+            "id",
+            '"request type" = "Report a Potential Security Incident"',
+            "0",
+            "",
+            "",
+            "",
+            [],
+            '"request type" = "Report a Potential Security Incident" AND id >= 0 ORDER BY id ASC',
         ),
     ]
 
@@ -3481,3 +3589,28 @@ def test_get_remote_data_preview_command():
 
     # Validate interactions
     mock_client.get_issue.assert_called_once_with(issue_id_or_key="JIRA-123")
+
+
+@pytest.mark.parametrize(
+    "url, expected_is_cloud",
+    [
+        ("https://yourcompany.atlassian.net", True),
+        ("https://api.atlassian.com/ex/jira/", True),
+        ("https://www.callback.com", False),
+        ("https://test.atlassian.net.evil.com", False),
+        ("https://dummy_url", False),
+    ],
+)
+def test_is_jira_cloud_url(url, expected_is_cloud):
+    """
+    Given:
+        - Various URL strings including Jira Cloud URLs, on-premises URLs, and invalid URLs
+    When:
+        - Calling is_jira_cloud_url function
+    Then:
+        - Validate that True is returned for Jira Cloud URLs and False for others
+    """
+    from JiraV3 import is_jira_cloud_url
+
+    result = is_jira_cloud_url(url)
+    assert result == expected_is_cloud

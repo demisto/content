@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
+from ContentClientApiModule import *
 
 """ IMPORTS """
 import base64
@@ -12,6 +13,9 @@ from threading import Timer
 from typing import Any
 
 import requests
+import asyncio
+import aiohttp
+import gzip
 
 # Disable insecure warnings
 import urllib3
@@ -22,6 +26,9 @@ urllib3.disable_warnings()
 """ GLOBALS/PARAMS """
 VENDOR = "CrowdStrike"
 PRODUCT = "Falcon_Event"
+CNAPP_PRODUCT = "Falcon_CNAPP"
+SPOTLIGHT_VULN_PRODUCT = "Falcon_Spotlight_Vulnerabilities"
+SPOTLIGHT_ASSETS_PRODUCT = "Falcon_Spotlight_Assets"
 INTEGRATION_NAME = "CrowdStrike Falcon"
 
 # Incidents Type names - use for debugging and context save.
@@ -30,11 +37,13 @@ MOBILE_DETECTION = "MOBILE detection"
 ON_DEMAND_SCANS_DETECTION = "On-Demand Scans detection"
 OFP_DETECTION = "OFP detection"
 NGSIEM_DETECTION = "ngsiem_detection"
+NGSIEM_INCIDENT = "ngsiem_incident"
+NGSIEM_AUTOMATED_LEAD = "ngsiem_automated_lead"
+NGSIEM_CASE = "ngsiem_case"
 THIRD_PARTY_DETECTION = "thirdparty_detection"
 
 # Fetch type names as they appear in the .yml instance configurations
 DETECTION_FETCH_TYPES = ["Detections", "Endpoint Detection"]
-INCIDENT_FETCH_TYPES = ["Incidents", "Endpoint Incident"]
 IDP_DETECTION_FETCH_TYPE = "IDP Detection"
 MOBILE_DETECTION_FETCH_TYPE = "Mobile Detection"
 ON_DEMAND_SCANS_DETECTION_TYPE = "On-Demand Scans Detection"
@@ -42,8 +51,10 @@ OFP_DETECTION_TYPE = "OFP Detection"
 IOM_FETCH_TYPE = "Indicator of Misconfiguration"
 IOA_FETCH_TYPE = "Indicator of Attack"
 NGSIEM_DETECTION_FETCH_TYPE = "NGSIEM Detection"
+NGSIEM_INCIDENT_FETCH_TYPE = "NGSIEM Incident (XDR Alert)"
+NGSIEM_AUTOMATED_LEADS_FETCH_TYPE = "NGSIEM Automated Lead"
+NGSIEM_CASES_FETCH_TYPE = "NGSIEM Case"
 THIRD_PARTY_DETECTION_FETCH_TYPE = "Third Party Detection"
-
 ENDPOINT_DETECTION = "detection"
 
 SUPPORTED_DETECTIONS_TYPES = [
@@ -51,6 +62,9 @@ SUPPORTED_DETECTIONS_TYPES = [
     ON_DEMAND_SCANS_DETECTION_TYPE,
     OFP_DETECTION_TYPE,
     NGSIEM_DETECTION_FETCH_TYPE,
+    NGSIEM_INCIDENT_FETCH_TYPE,
+    NGSIEM_AUTOMATED_LEADS_FETCH_TYPE,
+    NGSIEM_CASES_FETCH_TYPE,
     THIRD_PARTY_DETECTION_FETCH_TYPE,
 ]
 
@@ -65,12 +79,13 @@ SERVER = PARAMS["url"].removesuffix("/")
 # Should we use SSL
 USE_SSL = not PARAMS.get("insecure", False)
 
-# How many time before the first fetch to retrieve incidents
+# How much time before the first fetch to retrieve incidents
 FETCH_TIME = "now" if demisto.command() == "fetch-events" else PARAMS.get("fetch_time", "3 days")
 
 MAX_FETCH_SIZE = 10000
-MAX_FETCH_DETECTION_PER_API_CALL = 10000
-MAX_FETCH_INCIDENT_PER_API_CALL = 500
+MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
+MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
+MAX_FETCH_SPOTLIGHT_ASSETS = 5000
 
 BYTE_CREDS = f"{CLIENT_ID}:{SECRET}".encode()
 
@@ -87,7 +102,13 @@ INCIDENTS_PER_FETCH = int(PARAMS.get("incidents_per_fetch", 15))
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_TIMEOUT = 30
-LEGACY_VERSION = PARAMS.get("legacy_version", False)
+
+DEFAULT_INTERVAL = 60
+DEFAULT_TIMEOUT_NGSIEM_SEARCH = 600
+
+DEFAULT_TIMEOUT_ON_GENERIC_HTTP_REQUEST = 60
+TOTAL_RETRIES_ON_ENRICHMENT = 0
+TIMEOUT_ON_ENRICHMENT = 15
 
 """ KEY DICTIONARY """
 
@@ -258,11 +279,6 @@ ENDPOINT_KEY_MAP = {
         'Index': Split Array Index
     }
 """
-LEGACY_DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
-    {"Path": "parent_details.parent_process_graph_id", "NewKey": "SensorID", "Delim": ":", "Index": 1},
-    {"Path": "parent_details.parent_process_graph_id", "NewKey": "ParentProcessID", "Delim": ":", "Index": 2},
-    {"Path": "triggering_process_graph_id", "NewKey": "ProcessID", "Delim": ":", "Index": 2},
-]
 
 DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
     {"Path": "parent_details.process_graph_id", "NewKey": "SensorID", "Delim": ":", "Index": 1},
@@ -282,23 +298,12 @@ HOST_GROUP_HEADERS = [
     "modified_timestamp",
 ]
 
-STATUS_TEXT_TO_NUM = {"New": "20", "Reopened": "25", "In Progress": "30", "Closed": "40"}
-
-STATUS_NUM_TO_TEXT = {20: "New", 25: "Reopened", 30: "In Progress", 40: "Closed"}
-
 """ MIRRORING DICTIONARIES & PARAMS """
 
-LEGACY_DETECTION_STATUS = {"new", "in_progress", "true_positive", "false_positive", "ignored", "closed", "reopened"}
 STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES = {"new", "in_progress", "closed", "reopened"}
-LEGACY_CS_FALCON_DETECTION_OUTGOING_ARGS = {"status": f'Updated detection status, one of {"/".join(LEGACY_DETECTION_STATUS)}'}
 
 CS_FALCON_DETECTION_OUTGOING_ARGS = {
     "status": f'Updated detection status, one of {"/".join(STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES)}'
-}
-
-CS_FALCON_INCIDENT_OUTGOING_ARGS = {
-    "tag": "A tag that have been added or removed from the incident",
-    "status": f'Updated incident status, one of {"/".join(STATUS_TEXT_TO_NUM.keys())}',
 }
 
 LEGACY_CS_FALCON_DETECTION_INCOMING_ARGS = [
@@ -323,23 +328,15 @@ CS_FALCON_DETECTION_INCOMING_ARGS = [
     "composite_id",
     "display_name",
     "tags",
+    "comments",
+    "assigned_to_uid",
 ]
-CS_FALCON_INCIDENT_INCOMING_ARGS = [
-    "state",
-    "fine_score",
-    "status",
-    "tactics",
-    "techniques",
-    "objectives",
-    "tags",
-    "hosts.hostname",
-    "incident_id",
-]
+CS_FALCON_DETECTION_INCOMING_ARGS_IDP = ["status", "id", "tags", "comments", "assigned_to_uid"]
+NGSIEM_MIRRORING_FIELDS = ["status", "state"]
 
 MIRROR_DIRECTION_DICT = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
 
 HOST_STATUS_DICT = {"online": "Online", "offline": "Offline", "unknown": "Unknown"}
-
 
 QUARANTINE_FILES_OUTPUT_HEADERS = [
     "id",
@@ -371,7 +368,6 @@ CPU_UTILITY_INT_TO_STR_KEY_MAP = {
 }
 CPU_UTILITY_STR_TO_INT_KEY_MAP = {value: key for key, value in CPU_UTILITY_INT_TO_STR_KEY_MAP.items()}
 
-
 SCHEDULE_INTERVAL_STR_TO_INT = {
     "never": 0,
     "daily": 1,
@@ -381,7 +377,7 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
     "monthly": 30,
 }
 
-TOTAL_FETCH_TYPE_XSOAR = 10  # Matches the total number of fetch types for XSOAR in the LastRunIndex class
+TOTAL_FETCH_TYPE_XSOAR = 13  # Matches the total number of fetch types for XSOAR in the LastRunIndex class
 TOTAL_FETCH_TYPE_XSIAM = 6  # Matches the total number of fetch types for XSIAM in the LastRunIndex class
 
 
@@ -396,7 +392,7 @@ class LastRunIndex(IntEnum):
 
     # Common fetch types for fetch-incidents and fetch-events.
     DETECTIONS = 0
-    INCIDENTS = 1
+    _RESERVED_INCIDENTS = 1  # Formerly Endpoint Incidents. Do not reuse.
     IDP_DETECTIONS = 2
     MOBILE_DETECTIONS = 3
     ON_DEMAND_DETECTIONS = 4
@@ -407,33 +403,32 @@ class LastRunIndex(IntEnum):
     IOA = 7
     THIRD_PARTY_DETECTIONS = 8
     NGSIEM_DETECTIONS = 9
+    NGSIEM_INCIDENTS = 10
+    NGSIEM_AUTOMATED_LEADS = 11
+    NGSIEM_CASES = 12
 
 
 class IncidentType(Enum):
-    INCIDENT = "inc"
     LEGACY_ENDPOINT_DETECTION = "ldt"
     ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION = ":ind:"  # OFP was joined here since it has ':ind:' too in its id
     IOM_CONFIGURATIONS = "iom_configurations"
     IOA_EVENTS = "ioa_events"
     ON_DEMAND = "ods"
     OFP = "ofp"
-    NGSIEM = ":ngsiem:"
     THIRD_PARTY = ":thirdparty:"
+    NGSIEM_DETECTION = ":ngsiem:"
+    NGSIEM_AUTOMATED_LEAD = ":automated-lead:"
+    NGSIEM_CASE = ":case"
 
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get("mirror_direction"))
 INTEGRATION_INSTANCE = demisto.integrationInstance()
-
 
 """ HELPER FUNCTIONS """
 
 
 def is_detection_fetch_type_selected(selected_types: list):
     return any(detection_type in selected_types for detection_type in DETECTION_FETCH_TYPES)
-
-
-def is_incident_fetch_type_selected(selected_types: list):
-    return any(incident_type in selected_types for incident_type in INCIDENT_FETCH_TYPES)
 
 
 def disable_for_xsiam():
@@ -484,9 +479,16 @@ def modify_detection_outputs(detection):
 
 
 def error_handler(res):
-    res_json = res.json()
     reason = res.reason
     demisto.debug(f"CrowdStrike Falcon error handler {res.status_code=} {reason=}")
+    try:
+        res_json = res.json()
+    except ValueError:
+        # Non-JSON response (common for NGSIEM errors: text/plain)
+        body = (res.text or "").strip()
+        # keep it short to avoid huge war-room errors
+        body = body[:4000]
+        raise DemistoException(f"Error in API call to CrowdStrike Falcon: code: {res.status_code} - reason: {reason}\n{body}")
     resources = res_json.get("resources", {})
     extracted_error_message = ""
     if resources:
@@ -575,7 +577,13 @@ def http_request(
         demisto.debug(f"In http_request {get_token_flag=} updated retries, status_list_to_retry, valid_status_codes")
 
     headers["User-Agent"] = "PANW-XSOAR"
-    int_timeout = int(timeout) if timeout else 60  # 60 is the default in generic_http_request
+
+    if is_time_sensitive():
+        demisto.debug("Changing timeout to 15 seconds and retries to 0 due to time_sensitive=True")
+        retries = TOTAL_RETRIES_ON_ENRICHMENT
+        request_timeout = TIMEOUT_ON_ENRICHMENT
+    else:
+        request_timeout = int(timeout) if timeout else DEFAULT_TIMEOUT_ON_GENERIC_HTTP_REQUEST
 
     # Handling a case when we want to return an entry for 404 status code.
     if status_code:
@@ -599,7 +607,7 @@ def http_request(
             verify=USE_SSL,
             error_handler=error_handler,
             json_data=json,
-            timeout=int_timeout,
+            timeout=request_timeout,
             ok_codes=valid_status_codes,
             retries=retries,
             status_list_to_retry=status_list_to_retry,
@@ -619,7 +627,7 @@ def http_request(
                 demisto.debug(f"Try to create a new token because {res.status_code=}")
                 token = get_token(new_token=True)
                 headers["Authorization"] = f"Bearer {token}"
-                demisto.debug("calling generic_http_request with retries=5 and status_list_to_retry=[429]")
+                demisto.debug(f"calling generic_http_request with retries={retries} and status_list_to_retry=[429]")  # noqa: E501
                 res = generic_http_request(
                     method=method,
                     server_url=SERVER,
@@ -634,7 +642,7 @@ def http_request(
                     resp_type="response",
                     error_handler=error_handler,
                     json_data=json,
-                    timeout=int_timeout,
+                    timeout=request_timeout,
                     ok_codes=valid_status_codes,
                 )
                 demisto.debug(f"In http_request after the second call to generic_http_request {res=} {res.status_code=}")
@@ -782,6 +790,45 @@ def modify_detection_summaries_outputs(detection: dict):
     return detection
 
 
+def log_falcon_assets(log_line: str, log_type="debug", asset="Spotlight"):
+    """Wrapper for log line for spotlight asset collector"""
+    full_log_line = f"[Falcon Asset Collector] [{asset}] {log_line}"
+    if log_type == "debug":
+        demisto.debug(full_log_line)
+    elif log_type == "info":
+        demisto.info(full_log_line)
+    else:
+        demisto.error(full_log_line)
+
+
+def _normalize_data_to_str(data: Union[str, list, None], data_type: str) -> str | None:
+    """Convert data to a newline-separated JSON string for XSIAM ingestion.
+
+    Handles multiple input types (list of dicts, list of strings, raw string, or None)
+    and returns a unified string representation ready for chunking and sending.
+
+    Args:
+        data: The data to normalize. Can be a list of dicts/strings, a raw string, or None.
+        data_type: The type of data being sent (e.g., "assets", "events").
+
+    Returns:
+        The normalized string, or None if the data cannot be converted
+        (signals the caller to skip sending).
+    """
+    if isinstance(data, list):
+        log_falcon_assets(f"Sending {len(data)} {data_type} (data type) to XSIAM")
+        if data and isinstance(data[0], dict):
+            data = [json.dumps(item) for item in data]
+        return "\n".join(data)
+    elif isinstance(data, str):
+        return data
+    elif not data and data_type == "assets":
+        # Handle explicit None for assets seal
+        return ""
+    # Unknown type or empty data for non-assets
+    return None
+
+
 """ API FUNCTIONS """
 
 
@@ -871,40 +918,6 @@ def detection_to_incident(detection, is_fetch_events: bool = False):
     return incident
 
 
-def incident_to_incident_context(incident, is_fetch_events: bool = False):
-    """
-    Creates an incident context of a incident.
-
-    :type incident: ``dict``
-    :param incident: Single detection object
-
-    :return: Incident context representation of a incident
-    :rtype ``dict``
-    """
-    add_mirroring_fields(incident)
-    if incident.get("status"):
-        incident["status"] = STATUS_NUM_TO_TEXT.get(incident.get("status"))
-
-    incident_id = str(incident.get("incident_id"))
-    incident_context = {
-        "name": f"Incident ID: {incident_id}",
-        "occurred": str(incident.get("start")),
-        "rawJSON": json.dumps(incident),
-    }
-    if is_fetch_events:
-        incident_context["_source_log_type"] = incident.get("incident_type")
-        extract_response_to_dataset_raw(resp=incident, raw=incident_context)
-        # new incident
-        if not incident.get("modified_timestamp") or (incident.get("modified_timestamp") == incident.get("created")):
-            incident_context["_time"] = incident.get("created_timestamp")
-            incident_context["_entry_status"] = "new"
-        # updated detection
-        else:
-            incident_context["_time"] = incident.get("modified_timestamp")
-            incident_context["_entry_status"] = "updated"
-    return incident_context
-
-
 def fix_time_field(detection: dict, time_key: str):
     """
     Fix the value of the date to have only 6 figures after the ".".
@@ -938,7 +951,13 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
     """
     add_mirroring_fields(detection)
     demisto.debug(f"detection_to_incident_context, {detection_type=}")
-    if detection_type in (IDP_DETECTION_FETCH_TYPE, NGSIEM_DETECTION_FETCH_TYPE, THIRD_PARTY_DETECTION_FETCH_TYPE):
+    if detection_type in (
+        IDP_DETECTION_FETCH_TYPE,
+        NGSIEM_DETECTION_FETCH_TYPE,
+        THIRD_PARTY_DETECTION_FETCH_TYPE,
+        NGSIEM_INCIDENT_FETCH_TYPE,
+        NGSIEM_AUTOMATED_LEADS_FETCH_TYPE,
+    ):
         demisto.debug(f"detection_to_incident_context, {detection_type=} calling fix_time_field")
         fix_time_field(detection, start_time_key)
 
@@ -1512,6 +1531,18 @@ def get_file(file_id: list) -> dict:
     return response
 
 
+def get_file_id_by_name(file_name: str) -> str:
+    """
+    Retrieve the file ID for a put-file by its name.
+    :param file_name: Name of the file to search for
+    :return: File ID that matches the given name, or empty string if none found
+    """
+    endpoint_url = "/real-time-response/queries/put-files/v1"
+    params = {"filter": f"name:'{file_name}'"}
+    response = http_request("GET", endpoint_url, params=params)
+    return response.get("resources", "")
+
+
 def list_files() -> dict:
     """
     Get a list of put-file ID's that are available to the user for the put command.
@@ -1574,23 +1605,6 @@ def get_token_request():
     return token_res.get("access_token")
 
 
-def get_behaviors(behavior_ids: list[str]) -> dict:
-    """
-    Get details on behaviors by providing behavior IDs
-
-    Args:
-        behavior_ids: List of behavior IDs to get details on
-
-    Returns:
-        dict: Response data
-    """
-    return http_request(
-        "POST",
-        "/incidents/entities/behaviors/GET/v1",
-        data=json.dumps({"ids": behavior_ids}),
-    )
-
-
 def get_ioarules(rule_ids: list[str]) -> dict:
     """
     Sends ioa rules entities request
@@ -1624,17 +1638,12 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
     elif last_behavior_time:
         params["filter"] = f"first_behavior:>'{last_behavior_time}'"
 
-    if not LEGACY_VERSION:
-        endpoint_url = "alerts/queries/alerts/v2?filter="
-        if filter_arg:
-            # in the new version we send only the filter_arg argument as encoded string without the params
-            endpoint_url += urllib.parse.quote_plus(filter_arg)
-        demisto.debug(f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=}")
-        return http_request("GET", endpoint_url, {"sort": "created_timestamp.asc"})
-    else:
-        endpoint_url = "/detects/queries/detects/v1"
-        demisto.debug(f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=} and {params=}")
-        return http_request("GET", endpoint_url, params)
+    endpoint_url = "alerts/queries/alerts/v2?filter="
+    if filter_arg:
+        # in the new version we send only the filter_arg argument as encoded string without the params
+        endpoint_url += urllib.parse.quote_plus(filter_arg)
+    demisto.debug(f"In get_detections: {endpoint_url=}")
+    return http_request("GET", endpoint_url, {"sort": "created_timestamp.asc"})
 
 
 def get_fetch_detections(
@@ -1652,7 +1661,7 @@ def get_fetch_detections(
     Returns:
         Response json of the get detection endpoint (IDs of the detections)
     """
-    sort_key = "first_behavior.asc" if LEGACY_VERSION else "created_timestamp.asc"
+    sort_key = "created_timestamp.asc"
     params = {
         "sort": sort_key,
         "offset": offset,
@@ -1665,17 +1674,16 @@ def get_fetch_detections(
     elif last_created_timestamp:
         params["filter"] = f"created_timestamp:>'{last_created_timestamp}'"
     elif last_updated_timestamp:
-        timestamp_key = "date_updated" if LEGACY_VERSION else "updated_timestamp"
+        timestamp_key = "updated_timestamp"
         params["filter"] = f"{timestamp_key}:>'{last_updated_timestamp}'"
 
-    endpoint_url = "/detects/queries/detects/v1" if LEGACY_VERSION else "/alerts/queries/alerts/v2?filter=product"
+    endpoint_url = "/alerts/queries/alerts/v2?filter=product"
 
-    if not LEGACY_VERSION:
-        if params.get("filter"):
-            endpoint_url += urllib.parse.quote_plus(f":'epp'+type:'ldt'+{params.pop('filter')}")
-        else:
-            endpoint_url += urllib.parse.quote_plus(":'epp'+type:'ldt'")
-    demisto.debug(f"In get_fetch_detections: {LEGACY_VERSION =}, {endpoint_url=}, {params=}")
+    if params.get("filter"):
+        endpoint_url += urllib.parse.quote_plus(f":'epp'+type:'ldt'+{params.pop('filter')}")
+    else:
+        endpoint_url += urllib.parse.quote_plus(":'epp'+type:'ldt'")
+    demisto.debug(f"In get_fetch_detections: {endpoint_url=}, {params=}")
     response = http_request("GET", endpoint_url, params)
 
     return response
@@ -1687,41 +1695,50 @@ def get_detections_entities(detections_ids: list):
     :param detections_ids: IDs of the requested detections.
     :return: Response json of the get detection entities endpoint (detection objects)
     """
-    ids_json = {"ids": detections_ids} if LEGACY_VERSION else {"composite_ids": detections_ids}
-    url = "/detects/entities/summaries/GET/v1" if LEGACY_VERSION else "/alerts/entities/alerts/v2"
-    demisto.debug(f"Getting detections entities from {url} with {ids_json=}. {LEGACY_VERSION=}")
-    if detections_ids:
+    if not detections_ids:
+        return detections_ids
+
+    combined_resources = []
+
+    url = "/alerts/entities/alerts/v2"
+
+    # Iterate through the detections_ids list in chunks of 1000 (According to API documentation).
+    for i in range(0, len(detections_ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
+        batch_ids = detections_ids[i : i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
+
+        ids_json = {"composite_ids": batch_ids}
+        demisto.debug(f"Getting detections entities from {url} with {ids_json=} " f"with batch_ids len {len(batch_ids)}.")
+
+        # Make the API call with the current batch.
         response = http_request("POST", url, data=json.dumps(ids_json))
-        return response
-    return detections_ids
+
+        if "resources" in response:
+            # Combine the resources from each response.
+            combined_resources.extend(response["resources"])
+
+    # Return the combined result.
+    return {"resources": combined_resources}
 
 
-def get_incidents_ids(
-    last_created_timestamp=None,
-    filter_arg=None,
-    offset: int = 0,
-    last_updated_timestamp=None,
-    has_limit=True,
-    limit=INCIDENTS_PER_FETCH,
-):
-    get_incidents_endpoint = "/incidents/queries/incidents/v1"
-    params = {
-        "sort": "start.asc",
-        "offset": offset,
-    }
-    if has_limit:
-        params["limit"] = limit
+def get_cases_data(url_filter: str = "", limit: int = 100, offset: int = 0) -> tuple[int, list[str]]:
+    """
+    Fetches NGSIEM Case ids with provided filter
+    :param url_filter: URL filter
+    :param limit: number of cases to fetch
+    :param offset: the fetch offset
 
-    if filter_arg:
-        params["filter"] = filter_arg
-    elif last_created_timestamp:
-        params["filter"] = f"start:>'{last_created_timestamp}'"
-    elif last_updated_timestamp:
-        params["filter"] = f"modified_timestamp:>'{last_updated_timestamp}'"
+    Returns:
+        tuple[int, list[str]]: The number of total cases in the filter and the list of cases ids.
+    """
+    params = {"sort": "created_timestamp.asc", "offset": offset, "limit": limit}
+    if url_filter:
+        params["filter"] = url_filter
+    endpoint_url = "/cases/queries/cases/v1"
+    response = http_request("GET", endpoint_url, params)
+    total_cases: int = demisto.get(response, "meta.pagination.total")
+    ids: list[str] = demisto.get(response, "resources", [])
 
-    response = http_request("GET", get_incidents_endpoint, params)
-
-    return response
+    return total_cases, ids
 
 
 def get_detections_ids(filter_arg=None, offset: int = 0, limit=INCIDENTS_PER_FETCH, product_type="idp"):
@@ -1741,23 +1758,75 @@ def get_detections_ids(filter_arg=None, offset: int = 0, limit=INCIDENTS_PER_FET
     params = {"sort": "created_timestamp.asc", "offset": offset, "filter": filter_arg}
     if limit:
         params["limit"] = limit
-    endpoint_url = "/alerts/queries/alerts/v1" if LEGACY_VERSION else "/alerts/queries/alerts/v2?filter="
+    endpoint_url = "/alerts/queries/alerts/v2?filter="
     # in the new version we need to add the product type to the filter to the url as encoded string
-    if not LEGACY_VERSION and params.get("filter"):
+    if params.get("filter"):
         endpoint_url += urllib.parse.quote_plus(params.pop("filter"))
 
     response = http_request("GET", endpoint_url, params)
 
-    demisto.debug(f"CrowdStrikeFalconMsg: Getting {product_type} detections from {endpoint_url} with {params=}. {response=}.\
-        {LEGACY_VERSION=}")
+    demisto.debug(f"CrowdStrikeFalconMsg: Getting {product_type} detections from {endpoint_url} with {params=}. {response=}.")
 
     return response
 
 
-def get_incidents_entities(incidents_ids: list):
-    ids_json = {"ids": incidents_ids}
-    response = http_request("POST", "/incidents/entities/incidents/GET/v1", data=json.dumps(ids_json))
-    return response
+def get_cases_entities(cases_ids: list):
+    """
+    Sends case entities request
+    :param cases_ids: IDs of the requested cases.
+    :return: Response json of the get case entities endpoint (case objects)
+    """
+    ids_json = {"ids": cases_ids}
+    raw_res = http_request("POST", "/cases/entities/cases/v2", data=json.dumps(ids_json))
+    return raw_res["resources"]
+
+
+def get_cases_details(ids: list[str]) -> list[dict[str, Any]]:
+    """
+    Get details on cases by providing case IDs
+    Args:
+        ids: List of case IDs to get details on
+    Returns:
+        list[dict[str, Any]]: Response data
+    """
+    full_cases = []
+
+    for i in range(0, len(ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
+        batch_ids = ids[i : i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
+        batch_cases = get_cases_entities(batch_ids)
+
+        if batch_cases:
+            # Combine the resources from each response.
+            full_cases.extend(batch_cases)
+
+    # Return the combined result.
+    return full_cases
+
+
+def add_case_tags(case_id: str, tags: list[str]) -> dict:
+    """
+    Add tags to a case.
+    Args:
+        case_id: The ID of the case to add tags to.
+        tags: The list of tags to add.
+    Returns:
+        dict: The response from the API.
+    """
+    body = {"id": case_id, "tags": tags}
+    return http_request("POST", "/cases/entities/case-tags/v1", json=body)
+
+
+def delete_case_tags(case_id: str, tag: str) -> dict:
+    """
+    Delete a tag from a case.
+    Args:
+        case_id: The ID of the case to delete the tag from.
+        tag: The tag to delete.
+    Returns:
+        dict: The response from the API.
+    """
+    params = {"id": case_id, "tag": tag}
+    return http_request("DELETE", "/cases/entities/case-tags/v1", params=params)
 
 
 def get_detection_entities(incidents_ids: list):
@@ -1770,11 +1839,26 @@ def get_detection_entities(incidents_ids: list):
     :return: The response.
     :rtype ``dict``
     """
-    url_endpoint_version = "v1" if LEGACY_VERSION else "v2"
-    ids_json = {"ids": incidents_ids} if LEGACY_VERSION else {"composite_ids": incidents_ids}
-    demisto.debug(f"In get_detection_entities: Getting detection entities from\
-        {url_endpoint_version} with {ids_json=}. {LEGACY_VERSION=}")
-    return http_request("POST", f"/alerts/entities/alerts/{url_endpoint_version}", data=json.dumps(ids_json))
+    combined_resources = []
+
+    url = "/alerts/entities/alerts/v2"
+
+    for i in range(0, len(incidents_ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
+        batch_ids = incidents_ids[i : i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
+
+        ids_json = {"composite_ids": batch_ids}
+        demisto.debug(f"In get_detection_entities: Getting detection entities from\
+            {url} with {ids_json=} and with batch_ids len {len(batch_ids)}.")
+
+        # Make the API call with the current batch.
+        raw_res = http_request("POST", url, data=json.dumps(ids_json))
+
+        if "resources" in raw_res:
+            # Combine the resources from each response.
+            combined_resources.extend(raw_res["resources"])
+
+    # Return the combined result.
+    return {"resources": combined_resources}
 
 
 def get_users(offset: int, limit: int, query_filter: str | None = None) -> dict:
@@ -2124,30 +2208,18 @@ def behavior_to_entry_context(behavior):
     :return: Behavior in entry context representation
     """
     raw_entry = get_trasnformed_dict(behavior, DETECTIONS_BEHAVIORS_KEY_MAP)
-    split_key_map = LEGACY_DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP if LEGACY_VERSION else DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP
+    split_key_map = DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP
     raw_entry.update(extract_transformed_dict_with_split(behavior, split_key_map))
     return raw_entry
 
 
-def get_username_uuid(username: str):
-    """
-    Obtain CrowdStrike user’s UUId by email.
-    :param username: Username to get UUID of.
-    :return: The user UUID
-    """
-    response = http_request("GET", "/users/queries/user-uuids-by-email/v1", params={"uid": username})
-    resources: list = response.get("resources", [])
-    if not resources:
-        raise ValueError(f"User {username} was not found")
-    return resources[0]
-
-
-def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag):
+def resolve_detection(ids, status, assigned_to_uuid, username, show_in_ui, comment, tag):
     """
     Sends a resolve detection request
     :param ids: Single or multiple ids in an array string format.
     :param status: New status of the detection.
     :param assigned_to_uuid: uuid to assign the detection to.
+    :param username: Username to assign the detection to.
     :param show_in_ui: Boolean flag in string format (true/false).
     :param comment: Optional comment to add to the detection.
     :param The tag to add.
@@ -2162,25 +2234,18 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag):
         payload["show_in_ui"] = show_in_ui
     if comment:
         payload["comment"] = comment
-    if not LEGACY_VERSION:
-        demisto.debug(f"in resolve_detection: {LEGACY_VERSION =} and {payload=}")
-        # modify the payload to match the Raptor API
-        ids = payload.pop("ids")
-        payload["assign_to_uuid"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
-        payload["update_status"] = payload.pop("status") if "status" in payload else None
-        payload["append_comment"] = payload.pop("comment") if "comment" in payload else None
-        if tag:
-            payload["add_tag"] = tag
+    demisto.debug(f"in resolve_detection: {payload=}")
+    # modify the payload to match the Raptor API
+    ids = payload.pop("ids")
+    payload["assign_to_uuid"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
+    payload["assign_to_user_id"] = username if username else None
+    payload["update_status"] = payload.pop("status") if "status" in payload else None
+    payload["append_comment"] = payload.pop("comment") if "comment" in payload else None
+    if tag:
+        payload["add_tag"] = tag
 
-        data = json.dumps(resolve_detections_prepare_body_request(ids, payload))
-    else:
-        # We do this so show_in_ui value won't contain ""
-        data = (
-            json.dumps(payload)
-            .replace('"show_in_ui": "false"', '"show_in_ui": false')
-            .replace('"show_in_ui": "true"', '"show_in_ui": true')
-        )
-    url = "/alerts/entities/alerts/v3" if not LEGACY_VERSION else "/detects/entities/detects/v2"
+    data = json.dumps(resolve_detections_prepare_body_request(ids, payload))
+    url = "/alerts/entities/alerts/v3"
     return http_request("PATCH", url, data=data)
 
 
@@ -2277,22 +2342,13 @@ def host_group_members(filter: str | None, host_group_id: str | None, limit: str
     return response
 
 
-def update_incident_request(ids: list[str], action_parameters: dict[str, Any]):
-    data = {
-        "action_parameters": [
-            {"name": action_name, "value": action_value} for action_name, action_value in action_parameters.items()
-        ],
-        "ids": ids,
-    }
-
-    return http_request(method="POST", url_suffix="/incidents/entities/incident-actions/v1", json=data)
-
-
 def update_detection_request(ids: list[str], status: str) -> dict:
-    list_of_stats = LEGACY_DETECTION_STATUS if LEGACY_VERSION else STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES
+    list_of_stats = STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES
     if status not in list_of_stats:
         raise DemistoException(f"CrowdStrike Falcon Error: Status given is {status} and it is not in {list_of_stats}")
-    return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None, tag=None)
+    return resolve_detection(
+        ids=ids, status=status, assigned_to_uuid=None, username=None, show_in_ui=None, comment=None, tag=None
+    )
 
 
 def update_request_for_multiple_detection_types(ids: list[str], status: str) -> dict:
@@ -2331,19 +2387,6 @@ def upload_batch_custom_ioc(ioc_batch: list[dict], timeout: float | None = None)
     payload = {"indicators": ioc_batch}
 
     return http_request("POST", "/iocs/entities/indicators/v1", json=payload, timeout=timeout)
-
-
-def get_behaviors_by_incident(incident_id: str, params: dict | None = None) -> dict:
-    return http_request("GET", f'/incidents/queries/behaviors/v1?filter=incident_id:"{incident_id}"', params=params)
-
-
-def get_detections_by_behaviors(behaviors_id):
-    try:
-        body = {"ids": behaviors_id}
-        return http_request("POST", "/incidents/entities/behaviors/GET/v1", json=body)
-    except Exception as e:
-        demisto.error(f"Error occurred when trying to get detections by behaviors: {e!s}")
-        return {}
 
 
 def create_exclusion(exclusion_type: str, body: dict) -> dict:
@@ -2491,14 +2534,8 @@ def get_remote_data_command(args: dict[str, Any]):
         )
         incident_type = find_incident_type(remote_incident_id)
         demisto.debug(f"Successfully identified incident type: {incident_type} for remote incident id: {remote_incident_id}")
-        if incident_type == IncidentType.INCIDENT:
-            mirrored_data, updated_object = get_remote_incident_data(remote_incident_id)
-            if updated_object:
-                demisto.debug(f"Update incident {remote_incident_id} with fields: {updated_object}")
-                detection_type = "Incident"
-                set_xsoar_entries(updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list)
         # for legacy endpoint detections
-        elif incident_type == IncidentType.LEGACY_ENDPOINT_DETECTION:
+        if incident_type == IncidentType.LEGACY_ENDPOINT_DETECTION:
             mirrored_data, updated_object = get_remote_detection_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f"Update detection {remote_incident_id} with fields: {updated_object}")
@@ -2506,12 +2543,18 @@ def get_remote_data_command(args: dict[str, Any]):
                 set_xsoar_entries(
                     updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list
                 )  # sets in place
+        elif incident_type == IncidentType.NGSIEM_CASE:
+            mirrored_data, updated_object = get_remote_ngsiem_case_data(remote_incident_id)
+            if updated_object:
+                demisto.debug(f"Update ngsiem case {remote_incident_id} with fields: {updated_object}")
+                set_xsoar_entries(updated_object, entries, remote_incident_id, NGSIEM_CASE, reopen_statuses_list)  # sets in place
         # for endpoint in the new version
         elif incident_type in (
             IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
             IncidentType.ON_DEMAND,
-            IncidentType.NGSIEM,
             IncidentType.THIRD_PARTY,
+            IncidentType.NGSIEM_DETECTION,
+            IncidentType.NGSIEM_AUTOMATED_LEAD,
         ):
             mirrored_data, updated_object, detection_type = get_remote_detection_data_for_multiple_types(remote_incident_id)
             if updated_object:
@@ -2520,6 +2563,12 @@ def get_remote_data_command(args: dict[str, Any]):
                     updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list
                 )  # sets in place
 
+        elif incident_type is None and remote_incident_id.startswith("inc:"):
+            demisto.debug(
+                f"Skipping get-remote-data for deprecated Endpoint Incident {remote_incident_id}. "
+                "Endpoint Incident mirroring is no longer supported."
+            )
+            return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=entries)
         else:
             # this is here as prints can disrupt mirroring
             raise Exception(f"Executed get-remote-data command with undefined id: {remote_incident_id}")
@@ -2542,37 +2591,39 @@ def get_remote_data_command(args: dict[str, Any]):
 
 
 def find_incident_type(remote_incident_id: str):
-    if IncidentType.INCIDENT.value in remote_incident_id:
-        return IncidentType.INCIDENT
     if IncidentType.LEGACY_ENDPOINT_DETECTION.value in remote_incident_id:
         return IncidentType.LEGACY_ENDPOINT_DETECTION
     if IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION.value in remote_incident_id:
         return IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION
     if IncidentType.ON_DEMAND.value in remote_incident_id:
         return IncidentType.ON_DEMAND
-    if IncidentType.NGSIEM.value in remote_incident_id:
-        return IncidentType.NGSIEM
+    if IncidentType.NGSIEM_DETECTION.value in remote_incident_id:
+        return IncidentType.NGSIEM_DETECTION
     if IncidentType.THIRD_PARTY.value in remote_incident_id:
         return IncidentType.THIRD_PARTY
+    if IncidentType.NGSIEM_AUTOMATED_LEAD.value in remote_incident_id:
+        return IncidentType.NGSIEM_AUTOMATED_LEAD
+    if IncidentType.NGSIEM_CASE.value in remote_incident_id:
+        return IncidentType.NGSIEM_CASE
     demisto.debug(f"Unable to determine incident type for remote incident id: {remote_incident_id}")
     return None
 
 
-def get_remote_incident_data(remote_incident_id: str):
+def get_remote_ngsiem_case_data(remote_case_id: str):
     """
-    Called every time get-remote-data command runs on an incident.
-    Gets the relevant incident entity from the remote system (CrowdStrike Falcon). The remote system returns a list with this
-    entity in it. We take from this entity only the relevant incoming mirroring fields, in order to do the mirroring.
+    Called every time get-remote-data command runs on a NGSIEM case.
+    Gets the relevant case entity from the remote system (CrowdStrike Falcon).
+    We take from this entity only the relevant incoming mirroring fields, in order to do the mirroring.
     """
-    mirrored_data_list = get_incidents_entities([remote_incident_id]).get("resources", [])  # a list with one dict in it
-    mirrored_data = mirrored_data_list[0]
-
-    if "status" in mirrored_data:
-        mirrored_data["status"] = STATUS_NUM_TO_TEXT.get(int(str(mirrored_data.get("status"))))
-
-    updated_object: dict[str, Any] = {"incident_type": "incident"}
-    set_updated_object(updated_object, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
-    return mirrored_data, updated_object
+    # We remove the prefix IncidentType to make the API call, since the CS API does not recognize our internal prefix
+    original_remote_case_id = remote_case_id.replace(f"{IncidentType.NGSIEM_CASE.value}:", "", 1)
+    mirrored_case_list = get_cases_details([original_remote_case_id])
+    if not mirrored_case_list:
+        raise DemistoException(f"Could not find ngsiem case with {original_remote_case_id=}")
+    mirrored_case = mirrored_case_list[0]
+    updated_object = {"incident_type": NGSIEM_CASE}
+    set_updated_object(updated_object, mirrored_case, NGSIEM_MIRRORING_FIELDS)
+    return mirrored_case, updated_object
 
 
 def get_remote_detection_data(remote_incident_id: str):
@@ -2584,11 +2635,11 @@ def get_remote_detection_data(remote_incident_id: str):
     mirrored_data_list = get_detections_entities([remote_incident_id]).get("resources", [])  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
     # severity key name is different in the raptor version
-    severity = mirrored_data.get("max_severity_displayname") if LEGACY_VERSION else mirrored_data.get("severity_name")
+    severity = mirrored_data.get("severity_name")
     mirrored_data["severity"] = severity_string_to_int(severity)
     demisto.debug(f"In get_remote_detection_data {remote_incident_id=} {mirrored_data=}")
 
-    incoming_args = LEGACY_CS_FALCON_DETECTION_INCOMING_ARGS if LEGACY_VERSION else CS_FALCON_DETECTION_INCOMING_ARGS
+    incoming_args = CS_FALCON_DETECTION_INCOMING_ARGS
     updated_object: dict[str, Any] = {"incident_type": "detection"}
     set_updated_object(updated_object, mirrored_data, incoming_args)
     demisto.debug(f"After set_updated_object {updated_object=}")
@@ -2625,28 +2676,36 @@ def get_remote_detection_data_for_multiple_types(remote_incident_id):
     if "idp" in mirrored_data["product"]:
         updated_object = {"incident_type": IDP_DETECTION}
         detection_type = "IDP"
-        mirroring_fields.append("id")
-    if "mobile" in mirrored_data["product"]:
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS_IDP
+    elif "mobile" in mirrored_data["product"]:
         updated_object = {"incident_type": MOBILE_DETECTION}
         detection_type = "Mobile"
         mirroring_fields.append("mobile_detection_id")
-    if "epp" in mirrored_data["product"]:
+    elif "epp" in mirrored_data["product"]:
         updated_object = {"incident_type": ENDPOINT_DETECTION}
         detection_type = "Detection"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
-    if "ofp" in mirrored_data["type"]:
+    elif "ofp" in mirrored_data["type"]:
         updated_object = {"incident_type": OFP_DETECTION}
         detection_type = "ofp"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
-    if "ods" in mirrored_data["type"]:
+    elif "ods" in mirrored_data["type"]:
         updated_object = {"incident_type": ON_DEMAND_SCANS_DETECTION}
         detection_type = "ods"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
-    if "ngsiem" in mirrored_data["product"]:
+    elif "ngsiem" in mirrored_data["product"]:
         updated_object = {"incident_type": NGSIEM_DETECTION}
         detection_type = "ngsiem"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
-    if "thirdparty" in mirrored_data["product"]:
+    elif "xdr" in mirrored_data["product"]:
+        updated_object = {"incident_type": NGSIEM_INCIDENT}
+        detection_type = "xdr"
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
+    elif "automated-lead" in mirrored_data["product"]:
+        updated_object = {"incident_type": NGSIEM_AUTOMATED_LEAD}
+        detection_type = "automated-lead"
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
+    elif "thirdparty" in mirrored_data["product"]:
         updated_object = {"incident_type": THIRD_PARTY_DETECTION}
         detection_type = "thirdparty"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
@@ -2755,9 +2814,6 @@ def get_modified_remote_data_command(args: dict[str, Any]):
 
     raw_ids = []
 
-    if "Incidents" in fetch_types or "Endpoint Incident" in fetch_types:
-        raw_ids += get_incidents_ids(last_updated_timestamp=last_update_timestamp, has_limit=False).get("resources", [])
-
     if "Detections" in fetch_types or "Endpoint Detection" in fetch_types:
         raw_ids += get_fetch_detections(last_updated_timestamp=last_update_timestamp, has_limit=False).get("resources", [])
     if IDP_DETECTION_FETCH_TYPE in fetch_types:
@@ -2781,10 +2837,27 @@ def get_modified_remote_data_command(args: dict[str, Any]):
         raw_ids += get_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'ngsiem'"
         ).get("resources", [])
+    if NGSIEM_INCIDENT_FETCH_TYPE in fetch_types:
+        demisto.debug("fetching ngsiem incident ids")
+        raw_ids += get_detections_ids(
+            filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'xdr'"
+        ).get("resources", [])
+        demisto.debug(f"new {raw_ids=}")
+    if NGSIEM_AUTOMATED_LEADS_FETCH_TYPE in fetch_types:
+        raw_ids += get_detections_ids(
+            filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'automated-lead'"
+        ).get("resources", [])
     if THIRD_PARTY_DETECTION_FETCH_TYPE in fetch_types:
         raw_ids += get_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'thirdparty'"
         ).get("resources", [])
+    if NGSIEM_CASES_FETCH_TYPE in fetch_types:
+        _, case_ids = get_cases_data(
+            url_filter=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'",
+            limit=INCIDENTS_PER_FETCH,
+            offset=0,
+        )
+        raw_ids += [f"{IncidentType.NGSIEM_CASE.value}:{case_id}" for case_id in case_ids]
 
     modified_ids_to_mirror = list(map(str, raw_ids))
     demisto.debug(f"All ids to mirror in are: {modified_ids_to_mirror}")
@@ -2812,24 +2885,29 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
         incident_type = find_incident_type(remote_incident_id)
         demisto.debug(f"Successfully identified incident type: {incident_type} for remote incident id: {remote_incident_id}")
         if parsed_args.incident_changed:
-            if incident_type == IncidentType.INCIDENT:
-                result = update_remote_incident(delta, parsed_args.inc_status, remote_incident_id)
-                if result:
-                    demisto.debug(f"Incident updated successfully. Result: {result}")
-
-            elif incident_type in (IncidentType.LEGACY_ENDPOINT_DETECTION, IncidentType.ON_DEMAND):
+            if incident_type in (IncidentType.ON_DEMAND, IncidentType.LEGACY_ENDPOINT_DETECTION):
                 result = update_remote_detection(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f"Detection updated successfully. Result: {result}")
 
             elif incident_type in (
                 IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
-                IncidentType.NGSIEM,
+                IncidentType.NGSIEM_DETECTION,
                 IncidentType.THIRD_PARTY,
+                IncidentType.NGSIEM_AUTOMATED_LEAD,
             ):
                 result = update_remote_for_multiple_detection_types(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
-                    demisto.debug(f"IDP/Mobile/NGSIEM/Thirs Party Detection updated successfully. Result: {result}")
+                    demisto.debug(f"IDP/Mobile/NGSIEM/Third Party Detection updated successfully. Result: {result}")
+            elif incident_type == IncidentType.NGSIEM_CASE:
+                result = update_remote_ngsiem_case(delta, parsed_args.inc_status, remote_incident_id)
+                if result:
+                    demisto.debug(f"NGSIEM case updated successfully. Result: {result}")
+            elif incident_type is None and remote_incident_id.startswith("inc:"):
+                demisto.debug(
+                    f"Skipping update-remote-system for deprecated Endpoint Incident {remote_incident_id}. "
+                    "Endpoint Incident mirroring is no longer supported."
+                )
             else:
                 raise Exception(f"Executed update-remote-system command with undefined id: {remote_incident_id}")
 
@@ -2871,6 +2949,27 @@ def update_remote_detection(delta, inc_status: IncidentStatus, detection_id: str
     return ""
 
 
+def update_remote_ngsiem_case(delta, inc_status: IncidentStatus, ngsiem_case_id: str) -> str:
+    """
+    Sends the request to update the relevant NGSIEM case entity.
+    :type delta: ``dict``
+    :param delta: The modified fields.
+    :type inc_status: ``IncidentStatus``
+    :param inc_status: The NGSIEM case status.
+    :type ngsiem_case_id: ``str``
+    :param ngsiem_case_id: The NGSIEM case ID to update.
+    :return: The response.
+    :rtype ``str``
+    """
+    remote_id = ngsiem_case_id.replace(f"{IncidentType.NGSIEM_CASE.value}:", "", 1)
+    if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
+        demisto.debug(f"Closing case with remote ID {remote_id} in remote system.")
+        return str(resolve_case(remote_id, status="closed"))
+    elif "status" in delta:
+        return str(resolve_case(remote_id, status=delta.get("status")))
+    return ""
+
+
 def update_remote_for_multiple_detection_types(delta, inc_status: IncidentStatus, detection_id: str) -> str:
     """
     Sends the request to update the relevant IDP/Mobile/NGSIEM/Third Party detection entity.
@@ -2894,78 +2993,11 @@ def update_remote_for_multiple_detection_types(delta, inc_status: IncidentStatus
     return ""
 
 
-def update_remote_incident(delta: dict[str, Any], inc_status: IncidentStatus, incident_id: str) -> str:
-    result = ""
-    result += update_remote_incident_tags(delta, incident_id)
-    result += update_remote_incident_status(delta, inc_status, incident_id)
-    return result
-
-
-def update_remote_incident_status(delta, inc_status: IncidentStatus, incident_id: str) -> str:
-    if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
-        demisto.debug(f"Closing incident with remote ID {incident_id} in remote system.")
-        return str(update_incident_request(ids=[incident_id], action_parameters={"update_status": STATUS_TEXT_TO_NUM["Closed"]}))
-
-    # status field in CS Falcon is mapped to Source Status field in XSOAR. Don't confuse with state field
-    elif "status" in delta:
-        demisto.debug(f'Incident with remote ID {incident_id} status will change to "{delta.get("status")}" in remote system.')
-        status = delta.get("status")
-
-        if status not in STATUS_TEXT_TO_NUM:
-            raise DemistoException(
-                f'CrowdStrike Falcon Error: '
-                f"Status '{status}' is not a valid status ({' | '.join(STATUS_TEXT_TO_NUM.keys())})."
-            )
-
-        return str(update_incident_request(ids=[incident_id], action_parameters={"update_status": STATUS_TEXT_TO_NUM[status]}))
-
-    return ""
-
-
-def update_remote_incident_tags(delta, incident_id: str) -> str:
-    result = ""
-    if "tag" in delta:
-        current_tags = set(delta.get("tag"))
-        prev_tags = get_previous_tags(incident_id)
-        demisto.debug(f"Current tags in XSOAR are {current_tags}, and in remote system {prev_tags}.")
-
-        result += remote_incident_handle_tags(prev_tags - current_tags, "delete_tag", incident_id)
-        result += remote_incident_handle_tags(current_tags - prev_tags, "add_tag", incident_id)
-
-    return result
-
-
-def get_previous_tags(remote_incident_id: str):
-    incidents_entities = get_incidents_entities([remote_incident_id]).get("resources", [])  # a list with one dict in it
-    return set(incidents_entities[0].get("tags", ""))
-
-
-def remote_incident_handle_tags(tags: Set, request: str, incident_id: str) -> str:
-    result = ""
-    for tag in tags:
-        demisto.debug(f'{request} will be requested for incident with remote ID {incident_id} and tag "{tag}" in remote system.')
-        result += str(update_incident_request(ids=[incident_id], action_parameters={request: tag}))
-    return result
-
-
 def get_mapping_fields_command() -> GetMappingFieldsResponse:
     """
     Returns the list of fields to map in outgoing mirroring, for incidents and detections.
     """
     mapping_response = GetMappingFieldsResponse()
-
-    incident_type_scheme = SchemeTypeMapping(type_name="CrowdStrike Falcon Incident")
-    for argument, description in CS_FALCON_INCIDENT_OUTGOING_ARGS.items():
-        incident_type_scheme.add_field(name=argument, description=description)
-    mapping_response.add_scheme_type(incident_type_scheme)
-
-    if LEGACY_VERSION:
-        legacy_detection_type_scheme = SchemeTypeMapping(type_name="CrowdStrike Falcon Detection - LAGACY")
-        for argument, description in LEGACY_CS_FALCON_DETECTION_OUTGOING_ARGS.items():
-            legacy_detection_type_scheme.add_field(name=argument, description=description)
-        mapping_response.add_scheme_type(legacy_detection_type_scheme)
-
-        return mapping_response
 
     # Supported only in the new version (Raptor) and not in the legacy version
     detection_types = [
@@ -3035,13 +3067,12 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
     start_fetch_time, end_fetch_time = get_fetch_run_time_range(
         last_run=current_fetch_info_detections, first_fetch=FETCH_TIME, look_back=look_back, date_format=DETECTION_DATE_FORMAT
     )
-
     fetch_limit = current_fetch_info_detections.get("limit") or fetch_limit
     incident_type = "detection"
 
     fetch_query = demisto.params().get("fetch_query")
     if fetch_query:
-        fetch_query = f"created_timestamp:>'{start_fetch_time}'+{fetch_query}"
+        fetch_query = f"(created_timestamp:>'{start_fetch_time}')+({fetch_query})"
         response = get_fetch_detections(filter_arg=fetch_query, limit=fetch_limit, offset=detections_offset)
     else:
         response = get_fetch_detections(last_created_timestamp=start_fetch_time, limit=fetch_limit, offset=detections_offset)
@@ -3061,10 +3092,10 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
 
     if raw_res is not None and "resources" in raw_res:
         full_detections = demisto.get(raw_res, "resources")
+        # detection_id is for the old version of the API, composite_id is for the new version (Raptor)
         for detection in full_detections:
+            detection_id = detection.get("composite_id")
             detection["incident_type"] = incident_type
-            # detection_id is for the old version of the API, composite_id is for the new version (Raptor)
-            detection_id = detection.get("detection_id") if LEGACY_VERSION else detection.get("composite_id")
             demisto.debug(
                 f"CrowdStrikeFalconMsg: Detection {detection_id} "
                 f"was fetched which was created in {detection['created_timestamp']}"
@@ -3085,7 +3116,7 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
     current_fetch_info_detections = update_last_run_object(
         last_run=current_fetch_info_detections,
         incidents=detections,
-        fetch_limit=fetch_limit,
+        fetch_limit=INCIDENTS_PER_FETCH,
         start_fetch_time=start_fetch_time,
         end_fetch_time=end_fetch_time,
         look_back=look_back,
@@ -3094,86 +3125,9 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
         date_format=DETECTION_DATE_FORMAT,
         new_offset=detections_offset,
     )
-    demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch endpoint_detections. Fetched {len(detections) if detections else 0}")
+    demisto.debug(f"CrowdStrikeFalconMsg: Ending fetch endpoint_detections. Fetched {len(detections) if detections else 0}")
 
     return detections, current_fetch_info_detections
-
-
-def fetch_endpoint_incidents(current_fetch_info_incidents, look_back, is_fetch_events):
-    """
-    Fetch incidents from CrowdStrike Falcon api.
-
-    Args:
-        current_fetch_info_incidents (dict): The last_run of incident fetch type, Contains information about the last fetch run
-        look_back (int): Number of days to look back for incidents
-        is_fetch_events: Flag to determine whether it's for fetch-events command (XSIAM) or fetch-incidents command (XSOAR).
-
-    Returns:
-        tuple: A tuple containing a list of incidents and the updated fetch information dictionary.
-    """
-    incidents = []
-    fetch_limit = MAX_FETCH_INCIDENT_PER_API_CALL if is_fetch_events else INCIDENTS_PER_FETCH
-
-    incidents_offset: int = current_fetch_info_incidents.get("offset") or 0
-    start_fetch_time, end_fetch_time = get_fetch_run_time_range(
-        last_run=current_fetch_info_incidents, first_fetch=FETCH_TIME, look_back=look_back, date_format=DATE_FORMAT
-    )
-
-    fetch_limit = current_fetch_info_incidents.get("limit") or fetch_limit
-    incident_type = "incident"
-
-    fetch_query = demisto.params().get("incidents_fetch_query")
-    if fetch_query:
-        fetch_query = f"start:>'{start_fetch_time}'+{fetch_query}"
-        response = get_incidents_ids(filter_arg=fetch_query, limit=fetch_limit, offset=incidents_offset)
-
-    else:
-        response = get_incidents_ids(last_created_timestamp=start_fetch_time, limit=fetch_limit, offset=incidents_offset)
-    incidents_ids: list[dict] = demisto.get(response, "resources", [])
-    total_incidents = demisto.get(response, "meta.pagination.total")
-    incidents_offset = calculate_new_offset(incidents_offset, len(incidents_ids), total_incidents)
-    if incidents_offset:
-        if incidents_offset + fetch_limit > MAX_FETCH_SIZE:
-            demisto.debug(
-                f"CrowdStrikeFalconMsg: The new offset: {incidents_offset} + limit: {fetch_limit} reached "
-                f"{MAX_FETCH_SIZE}, resetting the offset to 0"
-            )
-            incidents_offset = 0
-        demisto.debug(f"CrowdStrikeFalconMsg: The new incidents offset is {incidents_offset}")
-
-    if incidents_ids:
-        raw_res = get_incidents_entities(incidents_ids)
-        if raw_res is not None and "resources" in raw_res:
-            full_incidents = demisto.get(raw_res, "resources")
-            for incident in full_incidents:
-                incident["incident_type"] = incident_type
-                incident_to_context = incident_to_incident_context(incident, is_fetch_events=is_fetch_events)
-                incidents.append(incident_to_context)
-
-    incidents = filter_incidents_by_duplicates_and_limit(
-        incidents_res=incidents, last_run=current_fetch_info_incidents, fetch_limit=fetch_limit, id_field="name"
-    )
-    for incident in incidents:
-        occurred = dateparser.parse(incident["occurred"])
-        if occurred:
-            incident["occurred"] = occurred.strftime(DATE_FORMAT)
-            demisto.debug(f"CrowdStrikeFalconMsg: Incident {incident['name']} occurred at {incident['occurred']}")
-
-    current_fetch_info_incidents = update_last_run_object(
-        last_run=current_fetch_info_incidents,
-        incidents=incidents,
-        fetch_limit=fetch_limit,
-        start_fetch_time=start_fetch_time,
-        end_fetch_time=end_fetch_time,
-        look_back=look_back,
-        created_time_field="occurred",
-        id_field="name",
-        date_format=DATE_FORMAT,
-        new_offset=incidents_offset,
-    )
-    demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch Incidents. Fetched {len(incidents)}")
-
-    return incidents, current_fetch_info_incidents
 
 
 def fetch_iom_incidents(iom_last_run):
@@ -3283,24 +3237,19 @@ def set_last_run_per_type(last_run: list, index: LastRunIndex, data: dict, is_fe
     Returns:
         The updated last_run list.
     """
-    demisto.debug("CrowdStrikeFalconMsg: set_last_run_per_type1")
+    demisto.debug(f"CrowdStrikeFalconMsg: set_last_run_per_type with {index=}")
     if not isinstance(data, dict):
-        demisto.debug("CrowdStrikeFalconMsg: set_last_run_per_type2")
         return_error(f"Invalid data type : last_run is a list of dictionary, expected dictionary, got {type(data).__name__}")
-    demisto.debug("CrowdStrikeFalconMsg: set_last_run_per_type3")
     last_run_length = TOTAL_FETCH_TYPE_XSIAM if is_fetch_events else TOTAL_FETCH_TYPE_XSOAR
-    demisto.debug("CrowdStrikeFalconMsg: set_last_run_per_type4")
     if index >= last_run_length:
         return_error(f"Invalid last_run index {index}, cannot exceed {last_run_length - 1}")
     if index < 0:
         return_error(f"Invalid last_run index {index}, index cannot be negative")
-    demisto.debug("CrowdStrikeFalconMsg: set_last_run_per_type5")
     # Extend the list if necessary to accommodate the fetch_type index
     while len(last_run) <= index:
         last_run.append({})
-    demisto.debug("CrowdStrikeFalconMsg: set_last_run_per_type6")
     last_run[index] = data
-    demisto.debug(f"CrowdStrikeFalconMsg: set_last_run_per_type7 {last_run}")
+    demisto.debug(f"CrowdStrikeFalconMsg: {last_run}")
 
 
 def get_last_run_per_type(last_run: list, fetch_type: LastRunIndex) -> dict:
@@ -3346,7 +3295,6 @@ def fetch_items(command="fetch-incidents"):
 
     # last_run objects - common for fetch_incident and fetch_events
     detections_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.DETECTIONS)
-    incidents_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.INCIDENTS)
     idp_detections_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.IDP_DETECTIONS)
     mobile_detections_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.MOBILE_DETECTIONS)
     on_demand_detections_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.ON_DEMAND_DETECTIONS)
@@ -3357,6 +3305,9 @@ def fetch_items(command="fetch-incidents"):
     ioa_last_run: dict[str, Any] = {}
     third_party_detection_last_run: dict[str, Any] = {}
     ngsiem_detection_last_run: dict[str, Any] = {}
+    ngsiem_incident_last_run: dict[str, Any] = {}
+    ngsiem_automated_lead_last_run: dict[str, Any] = {}
+    ngsiem_case_last_run: dict[str, Any] = {}
 
     if is_fetch_events:
         fetch_incidents_or_detections = params.get("fetch_events_or_detections", "")
@@ -3370,6 +3321,9 @@ def fetch_items(command="fetch-incidents"):
         ioa_last_run = get_last_run_per_type(last_run, LastRunIndex.IOA)
         third_party_detection_last_run = get_last_run_per_type(last_run, LastRunIndex.THIRD_PARTY_DETECTIONS)
         ngsiem_detection_last_run = get_last_run_per_type(last_run, LastRunIndex.NGSIEM_DETECTIONS)
+        ngsiem_incident_last_run = get_last_run_per_type(last_run, LastRunIndex.NGSIEM_INCIDENTS)
+        ngsiem_automated_lead_last_run = get_last_run_per_type(last_run, LastRunIndex.NGSIEM_AUTOMATED_LEADS)
+        ngsiem_case_last_run = get_last_run_per_type(last_run, LastRunIndex.NGSIEM_CASES)
 
     demisto.debug(f"CrowdstrikeFalconMsg: Selected fetch types: {fetch_incidents_or_detections}")
 
@@ -3381,14 +3335,6 @@ def fetch_items(command="fetch-incidents"):
 
         fetched_detections, detections_last_run = fetch_endpoint_detections(detections_last_run, look_back, is_fetch_events)
         items.extend(fetched_detections)
-
-    # Fetch Endpoint Incidents
-    if is_incident_fetch_type_selected(selected_types=fetch_incidents_or_detections):
-        # if "Incidents" in fetch_incidents_or_detections or "Endpoint Incident" in fetch_incidents_or_detections:
-        demisto.debug("CrowdStrikeFalconMsg: Start fetch Incidents")
-        demisto.debug(f"CrowdStrikeFalconMsg: Current Incidents last_run object: {incidents_last_run}")
-        fetched_incidents, incidents_last_run = fetch_endpoint_incidents(incidents_last_run, look_back, is_fetch_events)
-        items.extend(fetched_incidents)
 
     # Fetch IDP Detections
     if IDP_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
@@ -3429,9 +3375,6 @@ def fetch_items(command="fetch-incidents"):
         demisto.debug("CrowdStrikeFalconMsg: Start fetch ODS Detection")
         demisto.debug(f"CrowdStrikeFalconMsg: Current ODS Detection last_run object: {on_demand_detections_last_run}")
 
-        if LEGACY_VERSION:
-            raise DemistoException("On-Demand Scans Detection is not supported in legacy version.")
-
         fetched_on_demand_detections, on_demand_detections_last_run = fetch_detections_by_product_type(
             on_demand_detections_last_run,
             look_back=look_back,
@@ -3449,9 +3392,6 @@ def fetch_items(command="fetch-incidents"):
         demisto.debug("CrowdStrikeFalconMsg: Start fetch OFP Detection")
         demisto.debug(f"CrowdStrikeFalconMsg: Current OFP Detection last_run object: {ofp_detection_last_run}")
 
-        if LEGACY_VERSION:
-            raise DemistoException(f"{OFP_DETECTION_TYPE} is not supported in legacy version.")
-
         fetched_ofp_detections, ofp_detection_last_run = fetch_detections_by_product_type(
             ofp_detection_last_run,
             look_back=look_back,
@@ -3463,6 +3403,48 @@ def fetch_items(command="fetch-incidents"):
             is_fetch_events=is_fetch_events,
         )
         items.extend(fetched_ofp_detections)
+
+    if NGSIEM_INCIDENT_FETCH_TYPE in fetch_incidents_or_detections:
+        demisto.debug("CrowdstrikeFalconMsg: Start fetch NGSIEM Incident Detection")
+        demisto.debug(f"CrowdStrikeFalconMsg: Current NGSIEM Incident last_run_object: {ngsiem_incident_last_run}")
+
+        fetched_ngsiem_incidents, ngsiem_incident_last_run = fetch_detections_by_product_type(
+            ngsiem_incident_last_run,
+            look_back=look_back,
+            fetch_query=params.get("ngsiem_incidents_fetch_query", ""),
+            detections_type=NGSIEM_INCIDENT,
+            product_type="xdr",
+            detection_name_prefix=NGSIEM_INCIDENT_FETCH_TYPE,
+            start_time_key="created_timestamp",
+            is_fetch_events=False,
+        )
+        items.extend(fetched_ngsiem_incidents)
+
+    if NGSIEM_AUTOMATED_LEADS_FETCH_TYPE in fetch_incidents_or_detections:
+        demisto.debug("CrowdstrikeFalconMsg: Start fetch NGSIEM Automated Lead")
+        demisto.debug(f"CrowdStrikeFalconMsg: Current NGSIEM Automated Lead last_run_object: {ngsiem_automated_lead_last_run}")
+
+        fetched_ngsiem_automated_leads, ngsiem_automated_lead_last_run = fetch_detections_by_product_type(
+            ngsiem_automated_lead_last_run,
+            look_back=look_back,
+            fetch_query=params.get("automated_leads_fetch_query", ""),
+            detections_type=NGSIEM_AUTOMATED_LEAD,
+            product_type="automated-lead",
+            detection_name_prefix=NGSIEM_AUTOMATED_LEADS_FETCH_TYPE,
+            start_time_key="created_timestamp",
+            is_fetch_events=False,
+        )
+        demisto.debug(f"Extending items with Automated Leads: {fetched_ngsiem_automated_leads}")
+        items.extend(fetched_ngsiem_automated_leads)
+
+    if NGSIEM_CASES_FETCH_TYPE in fetch_incidents_or_detections:
+        demisto.debug("CrowdstrikeFalconMsg: Start fetch NGSIEM Cases")
+        demisto.debug(f"CrowdStrikeFalconMsg: Current NGSIEM Cases last_run_object: {ngsiem_case_last_run}")
+
+        fetched_ngsiem_cases, ngsiem_case_last_run = fetch_ngsiem_cases(
+            ngsiem_case_last_run, look_back, params.get("ngsiem_cases_fetch_query", "")
+        )
+        items.extend(fetched_ngsiem_cases)
 
     # Fetch Indicators of Misconfiguration (IOM) - supported for fetch-incidents command only.
     if not is_fetch_events and IOM_FETCH_TYPE in fetch_incidents_or_detections:
@@ -3484,9 +3466,6 @@ def fetch_items(command="fetch-incidents"):
         demisto.debug("CrowdStrikeFalconMsg: Start fetch NGSIEM Detection")
         demisto.debug(f"CrowdStrikeFalconMsg: Current NGSIEM Detection last_run object: {ngsiem_detection_last_run}")
 
-        if LEGACY_VERSION:
-            raise DemistoException(f"{NGSIEM_DETECTION_FETCH_TYPE} is not supported in legacy version.")
-
         fetched_ngsiem_detections, ngsiem_detection_last_run = fetch_detections_by_product_type(
             ngsiem_detection_last_run,
             look_back=look_back,
@@ -3503,9 +3482,6 @@ def fetch_items(command="fetch-incidents"):
         demisto.debug("CrowdStrikeFalconMsg: Start fetch THIRD PARTY Detection")
         demisto.debug(f"CrowdStrikeFalconMsg: Current THIRD PARTY Detection last_run object: {third_party_detection_last_run}")
 
-        if LEGACY_VERSION:
-            raise DemistoException(f"{THIRD_PARTY_DETECTION_FETCH_TYPE} is not supported in legacy version.")
-
         fetched_third_party_detections, third_party_detection_last_run = fetch_detections_by_product_type(
             third_party_detection_last_run,
             look_back=look_back,
@@ -3520,7 +3496,6 @@ def fetch_items(command="fetch-incidents"):
 
     # Assign each sub last_run info per type at its proper index
     set_last_run_per_type(last_run, index=LastRunIndex.DETECTIONS, data=detections_last_run, is_fetch_events=is_fetch_events)
-    set_last_run_per_type(last_run, index=LastRunIndex.INCIDENTS, data=incidents_last_run, is_fetch_events=is_fetch_events)
     set_last_run_per_type(
         last_run, index=LastRunIndex.IDP_DETECTIONS, data=idp_detections_last_run, is_fetch_events=is_fetch_events
     )
@@ -3546,10 +3521,1066 @@ def fetch_items(command="fetch-incidents"):
         set_last_run_per_type(
             last_run, index=LastRunIndex.NGSIEM_DETECTIONS, data=ngsiem_detection_last_run, is_fetch_events=is_fetch_events
         )
+        set_last_run_per_type(last_run, index=LastRunIndex.NGSIEM_INCIDENTS, data=ngsiem_incident_last_run, is_fetch_events=False)
+        set_last_run_per_type(
+            last_run, index=LastRunIndex.NGSIEM_AUTOMATED_LEADS, data=ngsiem_automated_lead_last_run, is_fetch_events=False
+        )
+        set_last_run_per_type(last_run, index=LastRunIndex.NGSIEM_CASES, data=ngsiem_case_last_run, is_fetch_events=False)
         demisto.setLastRun(last_run)
 
     demisto.debug(f"CrowdStrikeFalconMsg: Updated last_run object after fetch: {last_run}")
     return last_run, items
+
+
+def list_cnapp_alerts_command(args: dict[str, Any]) -> CommandResults:
+    filter = args.get("filter", "")
+
+    response = preform_get_cnapp_alerts_request(filter=filter)
+
+    alerts = response.get("resources", [])
+    return CommandResults(
+        outputs_prefix="CrowdStrike.CnappAlert",
+        outputs_key_field="detection_name",
+        outputs=alerts,
+        readable_output=tableToMarkdown(
+            name="CrowdStrike CNAPP alerts",
+            t=alerts,
+            sort_headers=False,
+        ),
+        raw_response=alerts,
+    )
+
+
+def preform_get_cnapp_alerts_request(offset=0, filter=""):
+    """Preforms request to get CNAPP alerts
+
+    Args:
+        offset (int, optional): The offset for pagination
+        filter (str, optional): A filter to use if given.
+
+    Returns:
+       the response.
+    """
+    limit = 100
+    endpoint = "/container-security/combined/container-alerts/v1"
+    params = {"offset": offset, "limit": limit}
+    if filter:
+        params["filter"] = filter
+    demisto.info(f"Preforming a reuest to get cnapp alerts. Calling {endpoint=} with {params=}")
+    return http_request("GET", endpoint, params)
+
+
+def get_cnapp_assets():
+    last_run = demisto.getAssetsLastRun()
+    demisto.debug(f"Starting a new cnapp fetch assets execution with {last_run=}")
+    snapshot_id = last_run.get("snapshot_id", str(round(time.time() * 1000)))
+    offset = int(last_run.get("offset", 0))
+    total_fetched_until_now = int(last_run.get("total_fetched_until_now", 0))
+    new_last_run = {}
+
+    response = preform_get_cnapp_alerts_request(offset=offset)
+
+    cnapp_alerts = response.get("resources", [])
+    total_detections = demisto.get(response, "meta.pagination.total")
+    total_fetched_until_now += len(cnapp_alerts)
+    demisto.debug(f"Fetched {len(cnapp_alerts)} CNAPP assets, reulsting a toal of {total_fetched_until_now}.")
+
+    if total_detections > total_fetched_until_now:  # type: ignore
+        demisto.debug(
+            f"Fetch {total_fetched_until_now} assets out of expected {total_detections} so far, setting NextTrigger to 0."
+        )
+        offset += len(cnapp_alerts)
+        items_count = 1
+        new_last_run = {
+            "offset": offset,
+            "total_fetched_until_now": total_fetched_until_now,
+            "snapshot_id": snapshot_id,
+            "nextTrigger": "0",
+            "type": 1,
+        }
+    else:
+        demisto.debug(f"Fetched all expected assets ({total_detections}), closing the snapshot.")
+        offset = 0
+        items_count = total_fetched_until_now
+        new_last_run = {"offset": offset, "total_fetched_until_now": 0}
+
+    return new_last_run, cnapp_alerts, items_count, snapshot_id
+
+
+def save_spotlight_state(context_store: ContentClientContextStore, spotlight_state: ContentClientState) -> None:
+    """
+    Save Spotlight state to integration context without breaking other keys.
+
+    Args:
+        context_store: Context store for writing integration context
+        spotlight_state: Spotlight state object to save
+    """
+    # Update only the spotlight_assets key, preserving all other context
+    integration_context = context_store.read()
+    integration_context["spotlight_assets"] = spotlight_state.to_dict()
+    context_store.write(integration_context)
+    log_falcon_assets(f"Saved Spotlight state to integration context {integration_context=}")
+
+
+class AssetsDeviceHandler:
+    """
+    Handler for enriching and ingesting device assets asynchronously.
+
+    Buffers unique AIDs from vulnerability batches, enriches them via the Devices API,
+    and sends enriched data to XSIAM using the async fire-and-forget pattern.
+
+    Maintains separate batch tracking from vulnerability chain to prevent out-of-order context saves.
+    """
+
+    def __init__(
+        self,
+        client: ContentClient,
+        context_store: ContentClientContextStore,
+        spotlight_state: ContentClientState,
+        snapshot_id: str,
+        processed_aids: set,
+        batch_limit: int = MAX_FETCH_SPOTLIGHT_ASSETS,
+    ):
+        """
+        Initialize the AssetsDeviceHandler.
+
+        Args:
+            client: ContentClient instance for API calls
+            context_store: Context store for thread-safe state persistence
+            spotlight_state: Spotlight state object for metadata updates
+            snapshot_id: Snapshot ID for asset collection tracking
+            processed_aids: Set of already processed AIDs (for deduplication)
+            batch_limit: Number of AIDs to accumulate before triggering enrichment
+        """
+        self.client = client
+        self.context_store = context_store
+        self.spotlight_state = spotlight_state
+        self.snapshot_id = snapshot_id
+        self.processed_aids = processed_aids
+        self.pending_buffer: set[str] = set()
+        self.batch_limit = batch_limit
+
+        # SEPARATE batch tracking for assets chain (independent from vulnerability chain)
+        self.asset_batch_counter = 0
+        self.asset_last_saved_batch_number = 0
+
+        self.running_tasks: set[asyncio.Task] = set()
+
+    async def receive_new_aids(self, new_aids: set[str]) -> None:
+        """
+        Receive new AIDs and trigger enrichment when buffer reaches batch_limit.
+        Keeps at least 1 item in the buffer to ensure we can send the final count with the last batch.
+
+        Args:
+            new_aids: Set of AIDs extracted from vulnerability batch
+        """
+        # Deduplicate against already processed AIDs
+        unique_new = new_aids - self.processed_aids
+        self.pending_buffer.update(unique_new)
+
+        log_falcon_assets(f"AssetsDeviceHandler: Received {len(unique_new)} new AIDs, buffer size: {len(self.pending_buffer)}")
+
+        # Trigger enrichment for full batches, but keep at least 1 item for the final flush
+        # Threshold is batch_limit + 1 to ensure we always have leftovers for flush_remaining
+        threshold = self.batch_limit + 1
+
+        while len(self.pending_buffer) >= threshold:
+            full_list = list(self.pending_buffer)
+            batch = full_list[: self.batch_limit]
+            self.pending_buffer = set(full_list[self.batch_limit :])
+
+            log_falcon_assets(f"AssetsDeviceHandler: Buffer full, triggering enrichment for {len(batch)} AIDs")
+
+            # Create async enrichment task
+            task = asyncio.create_task(self.enrich_and_ingest_batch(batch))
+            self.running_tasks.add(task)
+            task.add_done_callback(self.running_tasks.discard)
+
+    async def enrich_and_ingest_batch(self, aid_batch: list[str], final_items_count: int = 1) -> None:
+        """
+        Enrich a batch of AIDs via Devices API and send to XSIAM.
+
+        Args:
+            aid_batch: List of AIDs to enrich
+            final_items_count: Total items count to send to XSIAM (1 for intermediate batches, actual total for final batch)
+        """
+        # Increment ASSET batch counter (separate from vulnerability chain)
+        self.asset_batch_counter += 1
+        current_batch_number = self.asset_batch_counter
+
+        log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Enriching {len(aid_batch)} AIDs")
+
+        try:
+            # 1. Enrich via ContentClient (uses OAuth2, retry, rate limiting)
+            response = await self.client._request(
+                method="POST", url_suffix="/devices/entities/devices/v2", json_data={"ids": aid_batch}
+            )
+
+            # Parse response
+            response_data = response.json()
+            devices = response_data.get("resources", [])
+
+            if not devices:
+                log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] No devices returned from API")
+                return
+
+            log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Enriched {len(devices)} devices")
+
+            devices = self._filter_asset_fields(devices)
+
+            # 2. Update state and send it to XSIAM after finish
+            self.processed_aids.update(aid_batch)
+            self.spotlight_state.metadata["processed_aids"] = list(self.processed_aids)
+
+            # 3. Send to XSIAM using existing generic function (fire-and-forget)
+            send_task = create_task_send_batch_to_xsiam_and_save_context(
+                data=devices,
+                product=SPOTLIGHT_ASSETS_PRODUCT,
+                snapshot_id=self.snapshot_id,
+                items_count=final_items_count,
+                batch_number=current_batch_number,
+                last_saved_batch_number=self.asset_last_saved_batch_number,
+                context_store=self.context_store,
+                state=self.spotlight_state,
+                save_state_callback=save_spotlight_state,
+                data_type="assets",
+            )
+
+            # Track task with callback to update last_saved_batch_number
+            def update_last_saved(future):
+                # 'self' is accessible from enclosing method scope - no nonlocal needed
+                try:
+                    saved_batch_num = future.result()
+                    if saved_batch_num > self.asset_last_saved_batch_number:
+                        self.asset_last_saved_batch_number = saved_batch_num
+                        log_falcon_assets(f"AssetsDeviceHandler: Updated asset_last_saved_batch_number to {saved_batch_num}")
+                except asyncio.CancelledError:
+                    log_falcon_assets(
+                        f"AssetsDeviceHandler: [Batch {current_batch_number}] Send task was cancelled (script exiting)."
+                    )
+                except Exception as e:
+                    log_falcon_assets(f"AssetsDeviceHandler: Enrichment task failed: {e}", "error")
+                finally:
+                    self.running_tasks.discard(future)
+
+            # Track the send task
+            self.running_tasks.add(send_task)
+            send_task.add_done_callback(update_last_saved)
+            log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Created send task")
+
+        except Exception as e:
+            log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Error enriching assets: {e}", "error")
+            raise
+
+    async def flush_remaining(self, total_items_count: int) -> None:
+        """
+        Flush remaining AIDs in buffer and wait for all enrichment tasks.
+        This is the FINAL batch, so we send the actual total_items_count.
+
+        Args:
+            total_items_count: The final count of unique assets to report to XSIAM.
+        """
+        # Handle leftover AIDs that didn't reach batch_limit
+        if self.pending_buffer:
+            log_falcon_assets(
+                f"AssetsDeviceHandler: Flushing {len(self.pending_buffer)} remaining AIDs with final count {total_items_count}",
+                "info",
+            )
+            # Create task for remaining batch (fire-and-forget)
+            task = asyncio.create_task(
+                self.enrich_and_ingest_batch(list(self.pending_buffer), final_items_count=total_items_count)
+            )
+            self.running_tasks.add(task)
+            task.add_done_callback(self.running_tasks.discard)
+            self.pending_buffer.clear()
+
+        # Wait for all enrichment and send tasks to complete
+        while self.running_tasks:
+            log_falcon_assets("AssetsDeviceHandler: Starting flush of remaining assets.", "info")
+            # Create a snapshot of the current tasks
+            current_batch = list(self.running_tasks)
+            if not current_batch:
+                break
+            count = len(current_batch)
+            log_falcon_assets(f"AssetsDeviceHandler: Waiting for {count} background tasks to complete...", "info")
+            # Wait for this specific batch.
+            await asyncio.gather(*current_batch, return_exceptions=True)
+            self.running_tasks.difference_update(current_batch)
+        log_falcon_assets("AssetsDeviceHandler: All enrichment/send tasks completed successfully", "info")
+
+    @staticmethod
+    def _filter_asset_fields(assets: list[Dict]) -> list[Dict]:
+        """
+        Filters a list of asset dictionaries to retain only specific keys.
+        """
+        # Filtering assets key according to UVEM request
+        allowed_keys = {
+            "device_id",
+            "cid",
+            "external_ip",
+            "mac_address",
+            "hostname",
+            "first_seen",
+            "last_login_timestamp",
+            "last_seen",
+            "local_ip",
+            "machine_domain",
+            "os_version",
+            "os_build",
+            "serial_number",
+            "status",
+            "os_product_name",
+            "connection_mac_address",
+            "tags",
+        }
+
+        return [{k: asset.get(k, [] if k == "tags" else "") for k in allowed_keys} for asset in assets]
+
+
+async def xsiam_api_call_async(
+    xsiam_url: str, zipped_data: bytes, headers: dict, num_of_attempts: int, data_type: str = "assets"
+) -> aiohttp.ClientResponse | None:
+    """
+    Send data to XSIAM asynchronously with retry logic.
+    Generic function for sending any type of data to XSIAM.
+
+    Args:
+        xsiam_url: XSIAM API endpoint URL (e.g., "https://api-{domain}")
+        zipped_data: Gzip-compressed data bytes to send
+        headers: HTTP headers including authorization token, format, vendor, product, etc.
+        num_of_attempts: Maximum number of retry attempts for failed requests
+        data_type: Type of data being sent (e.g., "assets", "events"). Used for logging. Defaults to "assets"
+
+    Returns:
+        aiohttp.ClientResponse: The HTTP response object from the XSIAM API
+
+    Raises:
+        DemistoException: If all retry attempts fail or non-retryable error occurs
+    """
+    status_code = None
+    attempt_num = 1
+    response = None
+
+    while status_code != 200 and attempt_num < num_of_attempts + 1:
+        log_falcon_assets(f"Sending {data_type} to XSIAM, attempt {attempt_num}/{num_of_attempts}")
+        ok_codes = (200, 429) if attempt_num < num_of_attempts else None
+
+        async with aiohttp.ClientSession() as session:  # noqa: SIM117
+            async with session.post(urljoin(xsiam_url, "/logs/v1/xsiam"), data=zipped_data, headers=headers) as response:
+                try:
+                    response.raise_for_status()
+                    status_code = response.status
+
+                except aiohttp.ClientResponseError as e:
+                    if ok_codes and e.status in ok_codes:
+                        status_code = e.status
+                        if e.status == 429:
+                            await asyncio.sleep(1)
+                            attempt_num += 1
+                        continue
+                    else:
+                        header_msg = f"Error sending {data_type} to XSIAM: {e.message}"
+                        log_falcon_assets(header_msg, "error")
+                        demisto.updateModuleHealth(header_msg + e.message, is_error=True)
+
+        log_falcon_assets(f"received status code: {status_code}")
+        if status_code == 429:
+            await asyncio.sleep(1)
+        attempt_num += 1
+    return response
+
+
+def send_data_to_xsiam_async(
+    data: Union[str, list],
+    vendor: str,
+    product: str,
+    data_format: str = "json",
+    url_key: str = "url",
+    num_of_attempts: int = 3,
+    chunk_size: int = XSIAM_EVENT_CHUNK_SIZE,
+    data_type: str = "assets",
+    snapshot_id: str = "",
+    items_count: int = 1,
+) -> list:
+    """
+    Send data to XSIAM asynchronously by creating async tasks for each data chunk.
+    Generic function for sending any type of data (assets, events, etc.) to XSIAM.
+    Adapted from Rapid7_Nexpose.py lines 7631-7672.
+
+    Args:
+        data: List of data objects to send (e.g., vulnerabilities, alerts, events)
+        vendor: Vendor name for XSIAM headers (e.g., "CrowdStrike")
+        product: Product name for XSIAM headers
+        data_format: Format of the data being sent. Defaults to "json"
+        url_key: Parameter key to retrieve the final reporting device URL from params. Defaults to "url"
+        num_of_attempts: Maximum retry attempts for failed requests. Defaults to 3
+        chunk_size: Maximum size in bytes for each data chunk. Defaults to 1 MiB (2**20)
+        data_type: Type of data being sent for XSIAM collector-type header. Defaults to "assets"
+        snapshot_id: Snapshot ID for asset collection tracking. Required for assets, empty for events
+        items_count: Total items count - final count when complete, 1 when in-progress. Defaults to 1
+
+    Returns:
+        list: List of asyncio.Task objects for each data chunk being sent
+
+    Note:
+        - Data is automatically converted to newline-separated JSON strings
+        - Data is compressed with gzip before sending
+        - Data is split into chunks based on chunk_size parameter
+        - Each chunk is sent as a separate async task
+    """
+    params = demisto.params()
+    calling_context = demisto.callingContext.get("context", {})
+    instance_name = calling_context.get("IntegrationInstance", "")
+    collector_name = calling_context.get("IntegrationBrand", "")
+
+    # We only return early if data is empty AND it's NOT an asset snapshot update.
+    # If it is assets, we might be sending the "Final Seal" (empty data + count header).
+    if not data and data_type != "assets":
+        log_falcon_assets(f"No {data_type} to send to XSIAM")
+        return []
+
+    # Convert data to a newline-separated JSON string
+    data_str = _normalize_data_to_str(data, data_type)
+    if data_str is None:
+        return []
+
+    # Get XSIAM credentials
+    xsiam_api_token = demisto.getLicenseCustomField("Http_Connector.token")
+    xsiam_domain = demisto.getLicenseCustomField("Http_Connector.url")
+    xsiam_url = f"https://api-{xsiam_domain}"
+
+    # Build headers
+    headers = remove_empty_elements(
+        {
+            "authorization": xsiam_api_token,
+            "format": data_format,
+            "product": product,
+            "vendor": vendor,
+            "content-encoding": "gzip",
+            "collector-name": collector_name,
+            "instance-name": instance_name,
+            "final-reporting-device": params.get(url_key, ""),
+            "collector-type": "assets" if data_type == "assets" else "events",
+        }
+    )
+
+    # Adapt headers to asset data
+    if data_type == "assets":
+        if not snapshot_id:
+            snapshot_id = str(round(time.time() * 1000))
+        headers["snapshot-id"] = snapshot_id + instance_name + product
+        headers["total-items-count"] = str(items_count)
+
+    # If data_str is empty (the seal), we force a list with one empty string [""] to ensure the task is created
+    if not data_str and data_type == "assets":
+        data_chunks = [""]
+        log_falcon_assets("Preparing empty 'Seal' batch to close snapshot.")
+    else:
+        data_chunks = list(split_data_to_chunks(data_str, chunk_size))
+
+    async def send_events_async(data_chunk) -> int:
+        chunk_size_val = len(data_chunk)
+        data_chunk = "\n".join(data_chunk)
+        zipped_data = gzip.compress(data_chunk.encode("utf-8"))
+        await xsiam_api_call_async(
+            xsiam_url=xsiam_url, zipped_data=zipped_data, headers=headers, num_of_attempts=num_of_attempts, data_type=data_type
+        )
+        return chunk_size_val
+
+    tasks = [asyncio.create_task(send_events_async(chunk)) for chunk in data_chunks]
+    return tasks
+
+
+async def send_batch_to_xsiam_and_save_context(
+    data: list,
+    vendor: str,
+    product: str,
+    snapshot_id: str,
+    items_count: int,
+    batch_number: int,
+    last_saved_batch_number: int,
+    context_store: ContentClientContextStore,
+    state: ContentClientState,
+    save_state_callback: Callable[[ContentClientContextStore, ContentClientState], None],
+    data_type: str = "assets",
+) -> int:
+    """
+    Send batch to XSIAM asynchronously, then save context ONLY if send succeeds AND this is the latest batch.
+
+    Generic function implementing the async fire-and-forget pattern for sending any type of data
+    to XSIAM while managing state persistence. Prevents out-of-order context saves by only saving
+    when batch_number > last_saved_batch_number.
+
+    Args:
+        data: List of data objects to send (e.g., vulnerabilities, alerts, events)
+        vendor: Vendor name for XSIAM headers (e.g., "CrowdStrike")
+        product: Product name for XSIAM headers (e.g., "Falcon_Spotlight", "Falcon_CNAPP")
+        snapshot_id: Snapshot ID for asset collection tracking
+        items_count: Total items count - use final count when complete, 1 when in-progress
+        batch_number: Current batch number being processed
+        last_saved_batch_number: Highest batch number that has successfully saved context
+        context_store: ContentClientContextStore instance for thread-safe context operations
+        state: ContentClientState object containing cursor and metadata
+        save_state_callback: Callback function to save state with signature:
+                            (ContentClientContextStore, dict, ContentClientState) -> None
+                            Example: save_spotlight_state, save_cnapp_state, etc.
+        data_type: Type of data being sent for XSIAM collector-type header. Defaults to "assets"
+
+    Returns:
+        int: batch_number if context was saved, else last_saved_batch_number
+    """
+    log_falcon_assets(f"[Batch {batch_number}] Sending {len(data)} {data_type} to XSIAM")
+
+    try:
+        # 1. Send to XSIAM (returns list of async tasks)
+        tasks = send_data_to_xsiam_async(
+            data=data,
+            vendor=vendor,
+            product=product,
+            data_format="json",
+            url_key="url",
+            num_of_attempts=3,
+            chunk_size=XSIAM_EVENT_CHUNK_SIZE,
+            data_type=data_type,
+            snapshot_id=snapshot_id,
+            items_count=items_count,
+        )
+
+        # 2. Wait for all chunks to complete
+        await asyncio.gather(*tasks)
+        log_falcon_assets(f"[Batch {batch_number}] for {product=} Successfully sent to XSIAM")
+
+        # 3. Save context ONLY if this is the latest batch using the provided callback
+        if batch_number > last_saved_batch_number:
+            save_state_callback(context_store, state)
+            log_falcon_assets(f"[Batch {batch_number}] Context saved")
+            return batch_number
+        else:
+            log_falcon_assets(
+                f"[Batch {batch_number}] for {product=} Skipped save (batch {last_saved_batch_number} already saved)"
+            )
+            return last_saved_batch_number
+
+    except Exception as e:
+        log_falcon_assets(f"[Batch {batch_number}] Failed: {str(e)}", "error")
+        raise
+
+
+def create_task_send_batch_to_xsiam_and_save_context(
+    data,
+    product,
+    snapshot_id,
+    items_count,
+    batch_number,
+    last_saved_batch_number,
+    context_store,
+    state,
+    save_state_callback,
+    data_type,
+):
+    """
+    Create an async task to send vulnerability batch to XSIAM and save context.
+    Parameters now match the order and names of the internal async function.
+
+    Args:
+        data: List of data items to send
+        product: The product name
+        snapshot_id: Snapshot ID for tracking
+        items_count: Total items count - use final count when complete, 1 when in-progress
+        batch_number: Current batch number being processed
+        last_saved_batch_number: Highest batch number that has successfully saved context
+        context_store: ContentClientContextStore instance for thread-safe context operations
+        state: ContentClientState object containing cursor and metadata
+        save_state_callback: Callback function to save state with signature:
+                            (ContentClientContextStore, dict, ContentClientState) -> None
+                            Example: save_spotlight_state, save_cnapp_state, etc.
+        data_type: Type of data being sent for XSIAM collector-type header. Defaults to "assets"
+    Returns:
+        asyncio.Task: The created async task
+    """
+    # items_count = items_count if batch
+    task = asyncio.create_task(
+        send_batch_to_xsiam_and_save_context(
+            data=data,
+            vendor=VENDOR,
+            product=product,
+            snapshot_id=snapshot_id,
+            items_count=items_count,
+            batch_number=batch_number,
+            last_saved_batch_number=last_saved_batch_number,
+            context_store=context_store,
+            state=state,
+            save_state_callback=save_state_callback,
+            data_type=data_type,
+        )
+    )
+    return task
+
+
+def create_spotlight_client(context_store: ContentClientContextStore) -> ContentClient:
+    """
+    Create and configure ContentClient for Spotlight API with OAuth2 authentication.
+
+    Args:
+        context_store: Context store for token and state persistence
+
+    Returns:
+        Configured ContentClient instance
+    """
+    return ContentClient(
+        base_url=SERVER,
+        verify=USE_SSL,
+        proxy=PROXY,
+        # OAuth2 authentication with token persistence
+        auth_handler=OAuth2ClientCredentialsHandler(
+            token_url=f"{SERVER}/oauth2/token", client_id=CLIENT_ID, client_secret=SECRET, context_store=context_store
+        ),
+        # Enable diagnostics
+        diagnostic_mode=True,
+        client_name="FalconSpotlightAssetCollector",
+    )
+
+
+def extract_unique_aids(vulnerabilities: list, existing_unique_aids: set) -> None:
+    """
+    Extract unique AIDs (Host IDs) from vulnerabilities and merge with existing set.
+    Equivalent to JavaScript: const u_aid = [...new Set(aids)]
+    Update the set of unique AIDs in place.
+
+    Args:
+        vulnerabilities: List of vulnerability objects
+        existing_unique_aids: Existing set of unique AIDs
+    """
+    # Extract AIDs from this batch
+    batch_aids = {vuln.get("aid") for vuln in vulnerabilities if vuln.get("aid")}
+
+    # Merge with existing
+    existing_unique_aids.update(batch_aids)
+
+    log_falcon_assets(f"Batch AIDs: {len(batch_aids)}, Total unique AIDs: {len(existing_unique_aids)}")
+
+
+def load_spotlight_state(context_store: ContentClientContextStore) -> tuple[ContentClientState, str, int, set, set]:
+    """
+    Load Spotlight state from integration context.
+
+    Args:
+        context_store: Context store for reading integration context
+
+    Returns:
+        Tuple of (state_object, integration_context, snapshot_id, total_fetched, unique_aids, processed_aids)
+    """
+    # Read entire integration context (preserves all existing keys)
+    integration_context = context_store.read()
+    log_falcon_assets(f"Loaded integration context with keys: {list(integration_context.keys())}")
+
+    # Get Spotlight-specific state
+    spotlight_state_dict = integration_context.get("spotlight_assets", {})
+    spotlight_state = ContentClientState.from_dict(spotlight_state_dict)
+
+    # Extract state variables
+    snapshot_id = spotlight_state.metadata.get("snapshot_id") or str(round(time.time() * 1000))
+    total_fetched = spotlight_state.metadata.get("total_fetched_until_now", 0)
+    unique_aids = set(spotlight_state.metadata.get("unique_aids", []))
+    processed_aids = set(spotlight_state.metadata.get("processed_aids", []))
+
+    log_falcon_assets(
+        f"Loaded Spotlight state: {snapshot_id=}, {total_fetched=}, "
+        f"unique_aids_count={len(unique_aids)}, processed_aids_count={len(processed_aids)}, "
+        f"after_token={spotlight_state.cursor}"
+    )
+
+    return spotlight_state, snapshot_id, total_fetched, unique_aids, processed_aids
+
+
+def update_spotlight_state_and_metadata(
+    spotlight_state: ContentClientState,
+    cursor: str | None,
+    snapshot_id: str,
+    total_fetched: int,
+    unique_aids: set,
+    processed_aids: set,
+) -> None:
+    """
+    Update Spotlight state with cursor and metadata.
+    Centralizes the repetitive state update logic.
+
+    Args:
+        spotlight_state: State object to update
+        cursor: Pagination cursor/token
+        snapshot_id: Snapshot ID for tracking
+        total_fetched: Total vulnerabilities fetched
+        unique_aids: Set of unique AIDs
+        processed_aids: Set of processed AIDs
+    """
+    spotlight_state.cursor = cursor
+    spotlight_state.metadata = {
+        "snapshot_id": snapshot_id,
+        "total_fetched_until_now": total_fetched,
+        "unique_aids": list(unique_aids),
+        "processed_aids": list(processed_aids),
+    }
+
+
+def handle_spotlight_fetch_error(
+    error: Exception,
+    client: ContentClient,
+    spotlight_state: ContentClientState,
+    context_store: ContentClientContextStore,
+    after_token: str | None,
+    snapshot_id: str,
+    total_fetched: int,
+    unique_aids: set,
+    processed_aids: set,
+) -> None:
+    """
+    Handle errors during Spotlight fetch by logging, saving state, and re-raising.
+    Consolidates error handling logic for both ContentClientError and general exceptions.
+
+    Args:
+        error: The exception that occurred
+        client: ContentClient instance for diagnostics
+        spotlight_state: State object to update
+        context_store: Context store for saving state
+        after_token: Current pagination token
+        snapshot_id: Snapshot ID for tracking
+        total_fetched: Total vulnerabilities fetched so far
+        unique_aids: Set of unique AIDs
+        processed_aids: Set of processed AIDs
+    """
+    # Log error with diagnostics if ContentClientError
+    if isinstance(error, ContentClientError):
+        log_falcon_assets(f"ContentClient error during Spotlight fetch: {str(error)}", "error")
+        diagnosis = client.diagnose_error(error)
+        log_falcon_assets(f"Issue: {diagnosis['issue']}, Solution: {diagnosis['solution']}", "error")
+    else:
+        log_falcon_assets(f"Unexpected error during Spotlight fetch: {str(error)}", "error")
+
+    # Save current state for retry (including processed_aids from handler)
+    update_spotlight_state_and_metadata(
+        spotlight_state=spotlight_state,
+        cursor=after_token,
+        snapshot_id=snapshot_id,
+        total_fetched=total_fetched,
+        unique_aids=unique_aids,
+        processed_aids=processed_aids,
+    )
+    save_spotlight_state(context_store, spotlight_state)
+
+    # Re-raise the exception
+    raise error
+
+
+async def fetch_spotlight_vulnerabilities_batch(client: ContentClient, after_token: str | None) -> tuple[list, dict]:
+    """
+    Fetch a single batch of Spotlight vulnerabilities.
+
+    Args:
+        client: ContentClient instance
+        after_token: Pagination token (None for first request)
+
+    Returns:
+        Tuple of (vulnerabilities_list, response_data)
+    """
+    # Build request parameters
+    params = {"limit": MAX_FETCH_SPOTLIGHT_ASSETS, "filter": "status:['open','reopen']", "facet": ["host_info", "cve"]}
+
+    # Add pagination token if provided
+    if after_token:
+        params["after"] = after_token
+
+    log_falcon_assets(
+        f"Fetching Spotlight batch with limit={MAX_FETCH_SPOTLIGHT_ASSETS}, after_token={'present' if after_token else 'none'}"
+    )
+
+    # Make ASYNC API request
+    response = await client._request(method="GET", url_suffix="/spotlight/combined/vulnerabilities/v1", params=params)
+
+    # Parse JSON response
+    response_data = response.json()
+    vulnerabilities = response_data.get("resources", [])
+
+    log_falcon_assets(f"Fetched {len(vulnerabilities)} vulnerabilities in this batch")
+
+    return vulnerabilities, response_data
+
+
+async def process_vulnerability_batches(
+    client: ContentClient,
+    context_store: ContentClientContextStore,
+    spotlight_state: ContentClientState,
+    snapshot_id: str,
+    asset_handler: AssetsDeviceHandler,
+    unique_aids: set,
+    after_token: str | None,
+    total_fetched: int,
+) -> tuple[int, set, set[asyncio.Task]]:
+    """Paginate through all Spotlight vulnerability pages, dispatching each batch for async send.
+
+    Fetches vulnerability pages sequentially (pagination token required), extracts unique AIDs
+    for asset enrichment, and creates async tasks to send each batch to XSIAM.
+
+    Args:
+        client: The ContentClient used to fetch vulnerability data.
+        context_store: Context store for state persistence.
+        spotlight_state: Current Spotlight state object.
+        snapshot_id: Snapshot ID for asset collection tracking.
+        asset_handler: AssetsDeviceHandler for AID enrichment.
+        unique_aids: Set of unique AIDs accumulated across batches.
+        after_token: Pagination cursor for the next page.
+        total_fetched: Running total of fetched vulnerabilities.
+
+    Returns:
+        A tuple of (total_fetched, unique_aids, pending_tasks).
+    """
+    pending_tasks: set[asyncio.Task] = set()
+    batch_counter = 0
+    last_saved_batch_number = 0
+
+    while True:
+        # Fetch one batch (SEQUENTIAL - must wait for pagination token)
+        vulnerabilities, response_data = await fetch_spotlight_vulnerabilities_batch(client, after_token)
+
+        # Extract unique AIDs from this batch
+        extract_unique_aids(vulnerabilities, unique_aids)
+
+        # Send AIDs to asset handler for enrichment (async fire-and-forget)
+        batch_aids = {vuln.get("aid") for vuln in vulnerabilities if vuln.get("aid")}
+        await asset_handler.receive_new_aids(batch_aids)
+
+        # Update counters
+        total_fetched += len(vulnerabilities)
+
+        # Get next pagination token
+        new_after_token = response_data.get("meta", {}).get("pagination", {}).get("after")
+
+        # Update state
+        batch_counter += 1
+        update_spotlight_state_and_metadata(
+            spotlight_state=spotlight_state,
+            cursor=new_after_token,
+            snapshot_id=snapshot_id,
+            total_fetched=total_fetched,
+            unique_aids=unique_aids,
+            processed_aids=asset_handler.processed_aids,
+        )
+
+        # Determine if this is the last batch
+        is_last_batch = not new_after_token
+        items_count = total_fetched if is_last_batch else 1
+
+        task = create_task_send_batch_to_xsiam_and_save_context(
+            data=vulnerabilities,
+            product=SPOTLIGHT_VULN_PRODUCT,
+            snapshot_id=snapshot_id,
+            items_count=items_count,
+            batch_number=batch_counter,
+            last_saved_batch_number=last_saved_batch_number,
+            context_store=context_store,
+            state=spotlight_state,
+            save_state_callback=save_spotlight_state,
+            data_type="assets",
+        )
+
+        # Track task and update last_saved_batch_number when task completes
+        def update_last_saved(future):
+            nonlocal last_saved_batch_number
+            try:
+                last_saved_batch_number = future.result()
+            except Exception as e:
+                log_falcon_assets(f"Background vulnerability task failed: {e}", "error")
+            finally:
+                pending_tasks.discard(future)
+
+        pending_tasks.add(task)
+        task.add_done_callback(update_last_saved)
+        log_falcon_assets(f"Created background task for vulnerability batch {batch_counter}")
+
+        # Check if more pages exist
+        if is_last_batch:
+            log_falcon_assets(
+                f"Completed fetching vulnerabilities. Total: {total_fetched}, Unique hosts: {len(unique_aids)}", "info"
+            )
+            break
+
+        # More pages exist - continue to next batch
+        log_falcon_assets(f"More pages available. Fetched so far: {total_fetched}")
+        after_token = new_after_token
+
+    return total_fetched, unique_aids, pending_tasks
+
+
+async def wait_for_background_tasks(pending_tasks: set[asyncio.Task], task_description: str = "background") -> None:
+    """Wait for all pending async tasks to complete and raise on first failure.
+
+    Args:
+        pending_tasks: Set of asyncio.Task objects to await.
+        task_description: Human-readable label for log messages (e.g. "vulnerability send").
+
+    Raises:
+        Exception: Re-raises the first exception encountered from a failed task.
+    """
+    if not pending_tasks:
+        return
+
+    log_falcon_assets(f"Waiting for {len(pending_tasks)} {task_description} tasks to complete", "info")
+    results = await asyncio.gather(*pending_tasks, return_exceptions=True)
+
+    for res in results:
+        if isinstance(res, Exception):
+            log_falcon_assets(f"Background {task_description} task failed: {res}", "error")
+            raise res
+
+    log_falcon_assets(f"All {task_description} tasks completed successfully", "info")
+
+
+async def finalize_spotlight_fetch(
+    asset_handler: AssetsDeviceHandler,
+    context_store: ContentClientContextStore,
+    spotlight_state: ContentClientState,
+    total_fetched: int,
+    unique_aids: set,
+) -> None:
+    """Flush remaining asset enrichment tasks and reset Spotlight state after a successful fetch.
+
+    Args:
+        asset_handler: AssetsDeviceHandler managing AID enrichment.
+        context_store: Context store for state persistence.
+        spotlight_state: Current Spotlight state object.
+        total_fetched: Total number of vulnerabilities fetched.
+        unique_aids: Set of unique AIDs discovered during the fetch.
+    """
+    # Flush remaining AIDs and wait for all asset enrichment tasks
+    total_assets_count = len(unique_aids)
+    log_falcon_assets(
+        f"Flushing remaining AIDs and waiting for asset enrichment tasks. Total assets: {total_assets_count}", "info"
+    )
+    await asset_handler.flush_remaining(total_items_count=total_assets_count)
+
+    # Fetch completed successfully - reset state for next run
+    log_falcon_assets("Resetting Spotlight state after successful complete fetch")
+    update_spotlight_state_and_metadata(
+        spotlight_state=spotlight_state, cursor=None, snapshot_id="", total_fetched=0, unique_aids=set(), processed_aids=set()
+    )
+
+    # Save reset state to integration context
+    save_spotlight_state(context_store, spotlight_state)
+
+    log_falcon_assets(
+        f"Finished Spotlight assets fetch. Total vulnerabilities: {total_fetched}, "
+        f"Unique hosts: {len(unique_aids)}, Enriched assets: {len(asset_handler.processed_aids)}",
+        "info",
+    )
+
+
+async def fetch_spotlight_assets():
+    """Fetch Spotlight vulnerabilities using ContentClient with async capabilities.
+
+    Orchestrates the full Spotlight asset fetch lifecycle:
+    1. Loads persisted state and initializes the client and asset handler.
+    2. Paginates through all vulnerability batches via ``process_vulnerability_batches``.
+    3. Waits for all background send tasks via ``wait_for_background_tasks``.
+    4. Flushes remaining asset enrichment and resets state via ``finalize_spotlight_fetch``.
+    """
+    log_falcon_assets("Starting Spotlight assets fetch execution.", "info")
+
+    context_store = ContentClientContextStore(namespace="SpotlightAssets")
+
+    spotlight_state, snapshot_id, total_fetched, unique_aids, processed_aids = load_spotlight_state(context_store)
+
+    client = create_spotlight_client(context_store)
+
+    asset_handler = AssetsDeviceHandler(
+        client=client,
+        context_store=context_store,
+        spotlight_state=spotlight_state,
+        snapshot_id=snapshot_id,
+        processed_aids=processed_aids,
+        batch_limit=MAX_FETCH_SPOTLIGHT_ASSETS,
+    )
+
+    try:
+        total_fetched, unique_aids, pending_tasks = await process_vulnerability_batches(
+            client=client,
+            context_store=context_store,
+            spotlight_state=spotlight_state,
+            snapshot_id=snapshot_id,
+            asset_handler=asset_handler,
+            unique_aids=unique_aids,
+            after_token=spotlight_state.cursor,
+            total_fetched=total_fetched,
+        )
+
+        await wait_for_background_tasks(pending_tasks, "vulnerability send")
+
+        await finalize_spotlight_fetch(
+            asset_handler=asset_handler,
+            context_store=context_store,
+            spotlight_state=spotlight_state,
+            total_fetched=total_fetched,
+            unique_aids=unique_aids,
+        )
+
+    except (ContentClientError, Exception) as e:
+        # Read latest values from spotlight_state which is updated in-place by
+        # even if the function raised before returning.
+        metadata = spotlight_state.metadata
+        if isinstance(metadata, dict):
+            total_fetched = metadata.get("total_fetched_until_now", total_fetched)
+            unique_aids = set(metadata.get("unique_aids", unique_aids))
+        handle_spotlight_fetch_error(
+            error=e,
+            client=client,
+            spotlight_state=spotlight_state,
+            context_store=context_store,
+            after_token=spotlight_state.cursor,
+            snapshot_id=snapshot_id,
+            total_fetched=total_fetched,
+            unique_aids=unique_aids,
+            processed_aids=asset_handler.processed_aids,
+        )
+
+    finally:
+        await client.aclose()
+
+
+def fetch_cnapp_assets():
+    log_falcon_assets("Starting fetch assets execution.", "info", asset="CNAPP Alerts")
+    new_last_run, detections, items_count, snapshot_id = get_cnapp_assets()
+
+    log_falcon_assets(
+        f"Sending a batch of {len(detections)} assets to xsiam with {snapshot_id=}", log_type="debug", asset="CNAPP Alerts"
+    )
+    send_data_to_xsiam(
+        data=detections,
+        vendor=VENDOR,
+        product=CNAPP_PRODUCT,
+        data_type="assets",
+        snapshot_id=snapshot_id,
+        items_count=items_count,
+        should_update_health_module=False,
+    )
+    log_falcon_assets("Finished sending a batch of assets.", log_type="debug", asset="CNAPP Alerts")
+
+    log_falcon_assets(f"Preparing to save assets last run with {new_last_run=}.", log_type="debug", asset="CNAPP Alerts")
+    demisto.setAssetsLastRun(new_last_run)
+    log_falcon_assets("Assets last run was saved succesfuly.", log_type="debug", asset="CNAPP Alerts")
+
+    demisto.updateModuleHealth({"assetsPulled": len(detections)})
+
+    log_falcon_assets("Finished fetch assets exeuction.", log_type="info", asset="CNAPP Alerts")
+
+
+def fetch_assets_command():
+    log_falcon_assets("Starting fetch assets execution.", "info", asset="")
+    params = demisto.params()
+    fetch_assets_types = params.get("fetch_assets_type", "")
+
+    if "CNAPP Alerts" in fetch_assets_types:
+        fetch_cnapp_assets()
+
+    if "Spotlight" in fetch_assets_types:
+        asyncio.run(fetch_spotlight_assets())
 
 
 def fetch_detections_by_product_type(
@@ -3590,7 +4621,7 @@ def fetch_detections_by_product_type(
         filter = filter.replace("product:", "type:")
 
     if fetch_query:
-        filter += f"+{fetch_query}"
+        filter = f"({filter})+({fetch_query})"
     response = get_detections_ids(filter_arg=filter, limit=fetch_limit, offset=offset, product_type=product_type)
     detections_ids: list[dict] = demisto.get(response, "resources", [])
     demisto.debug(f"CrowdStrikeFalconMsg: Total fetched detections: {len(detections_ids)}")
@@ -3618,16 +4649,88 @@ def fetch_detections_by_product_type(
         detections = (
             truncate_long_time_str(detections, "occurred")
             if product_type
-            in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value, IncidentType.NGSIEM, IncidentType.THIRD_PARTY}
+            in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value, IncidentType.NGSIEM_DETECTION, IncidentType.THIRD_PARTY}
             else detections
         )
         detections = filter_incidents_by_duplicates_and_limit(
             incidents_res=detections, last_run=current_fetch_info, fetch_limit=INCIDENTS_PER_FETCH, id_field="name"
         )
 
+    demisto.debug(f"CrowdstrikeFalconMsg: last_run before update: {current_fetch_info}")
     current_fetch_info = update_last_run_object(
         last_run=current_fetch_info,
         incidents=detections,
+        fetch_limit=INCIDENTS_PER_FETCH,
+        start_fetch_time=start_fetch_time,
+        end_fetch_time=end_fetch_time,
+        look_back=look_back,
+        created_time_field="occurred",
+        id_field="name",
+        date_format=DETECTION_DATE_FORMAT,
+        new_offset=offset,
+    )
+    demisto.debug(f"CrowdstrikeFalconMsg: last_run after update: {current_fetch_info}")
+    demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch {detections_type}. Fetched {len(detections)}")
+    return detections, current_fetch_info
+
+
+def fetch_ngsiem_cases(last_run: dict, look_back: int, fetch_query: str):
+    """
+    Fetches NGSIEM cases from CrowdStrikeFalcon
+    :param last_run: The last run object
+    :param look_back: The look back time in minutes
+    :param fetch_query: The fetch query
+    :return: A tuple containing a list of cases and the updated last run object
+    """
+    cases = []
+    offset = last_run.get("offset", 0)
+    fetch_limit = last_run.get("limit", INCIDENTS_PER_FETCH)
+    start_fetch_time, end_fetch_time = get_fetch_run_time_range(
+        last_run=last_run, first_fetch=FETCH_TIME, look_back=look_back, date_format=DETECTION_DATE_FORMAT
+    )
+
+    # build query and fetch cases data
+    filter = f"created_timestamp:>'{start_fetch_time}'"
+    if fetch_query:
+        filter += f"+{fetch_query}"
+    demisto.debug(f"CrowdStrikeFalconMsg: fetching NGSIEM case ids with: {filter=}, {fetch_limit=}, {offset=}")
+    total_cases, ids = get_cases_data(filter, fetch_limit, offset)
+    demisto.debug(f"CrowdStrikeFalconMsg: fetched a total of {len(ids)} NGSIEM case ids")
+
+    # calculate new offset
+    offset = calculate_new_offset(offset, len(ids), total_cases)
+    if offset and offset + fetch_limit > MAX_FETCH_SIZE:
+        demisto.debug(
+            f"CrowdStrikeFalconMsg: The new offset: {offset} + limit: {fetch_limit} reached "
+            f"{MAX_FETCH_SIZE}, resetting the offset to 0"
+        )
+        offset = 0
+    demisto.debug(f"CrowdStrikeFalconMsg: The new ngsiem cases offset is {offset}")
+
+    # fetch cases details if ids exist
+    if ids:
+        cases_details = get_cases_details(ids)
+        # add incident type and append to list
+        demisto.debug(f"CrowdStrikeFalconMsg: fetched cases details: {json.dumps(cases_details)=}")
+        for case in cases_details:
+            add_mirroring_fields(case)
+            case["incident_type"] = NGSIEM_CASE
+            fix_time_field(case, "created_timestamp")
+            case_context = {
+                "name": f"{NGSIEM_CASE} ID: {case.get('id')}",
+                "occurred": case.get("created_timestamp"),
+                "severity": case.get("severity"),
+                "rawJSON": json.dumps(case),
+            }
+            cases.append(case_context)
+        demisto.debug(f"cases before filter: {cases=}")
+        cases = filter_incidents_by_duplicates_and_limit(
+            incidents_res=cases, last_run=last_run, fetch_limit=fetch_limit, id_field="name"
+        )
+    demisto.debug(f"CrowdstrikeFalconMsg: cases last_run before update: {last_run}")
+    last_run = update_last_run_object(
+        last_run=last_run,
+        incidents=cases,
         fetch_limit=fetch_limit,
         start_fetch_time=start_fetch_time,
         end_fetch_time=end_fetch_time,
@@ -3637,8 +4740,10 @@ def fetch_detections_by_product_type(
         date_format=DETECTION_DATE_FORMAT,
         new_offset=offset,
     )
-    demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch {detections_type}. Fetched {len(detections)}")
-    return detections, current_fetch_info
+    demisto.debug(f"CrowdstrikeFalconMsg: cases last_run after update: {last_run}")
+    demisto.debug(f"CrowdstrikeFalconMsg: Ending NGSIEM Cases fetch. Fetched {len(cases)}")
+    demisto.debug(f"CrowdstrikeFalconMsg: Ending NGSIEM Cases fetch. {cases=}")
+    return cases, last_run
 
 
 def parse_ioa_iom_incidents(
@@ -3677,7 +4782,7 @@ def parse_ioa_iom_incidents(
     incidents: list[dict[str, Any]] = []
     fetched_ids: list[str] = []
     # Hold the date_time_since of all fetched incidents, to acquire the largest date
-    fetched_dates: list[datetime] = [datetime.strptime(last_date, date_format)]
+    fetched_dates: list[datetime] = [safe_strptime(last_date, date_format)]
     for data in fetched_data:
         data_id = data.get(id_key, "")
         if data_id not in last_fetched_ids:
@@ -3686,7 +4791,7 @@ def parse_ioa_iom_incidents(
             incident_context = to_incident_context(data, incident_type)
             incidents.append(incident_context)
             event_created = reformat_timestamp(data.get(date_key, ""), date_format)
-            fetched_dates.append(datetime.strptime(event_created, date_format))
+            fetched_dates.append(safe_strptime(event_created, date_format))
         else:
             demisto.debug(f"Ignoring CSPM incident with {data_id=} - was already fetched in the previous run")
     new_last_date = max(fetched_dates).strftime(date_format)
@@ -3794,7 +4899,7 @@ def add_seconds_to_date(date: str, seconds_to_add: int, date_format: str) -> str
     Returns:
         str: The date with an increase in seconds.
     """
-    added_datetime = datetime.strptime(date, date_format) + timedelta(seconds=seconds_to_add)
+    added_datetime = safe_strptime(date, date_format) + timedelta(seconds=seconds_to_add)
     return added_datetime.strftime(date_format)
 
 
@@ -4706,10 +5811,9 @@ def search_detections_command():
         for detection in demisto.get(raw_res, "resources"):
             detection_entry = {}
 
-            if not LEGACY_VERSION:
-                detection = modify_detection_outputs(detection)
+            detection = modify_detection_outputs(detection)
 
-            for path, new_key in LEGACY_DETECTIONS_BASE_KEY_MAP.items() if LEGACY_VERSION else DETECTIONS_BASE_KEY_MAP.items():
+            for path, new_key in DETECTIONS_BASE_KEY_MAP.items():
                 detection_entry[new_key] = demisto.get(detection, path)
             behaviors = []
 
@@ -4719,8 +5823,6 @@ def search_detections_command():
 
             if extended_data:
                 detection_entry["Device"] = demisto.get(detection, "device")
-                if LEGACY_VERSION:  # The new version (raptor) does not have the 'behaviors_processed' key
-                    detection_entry["BehaviorsProcessed"] = demisto.get(detection, "behaviors_processed")
 
             entries.append(detection_entry)
 
@@ -4743,17 +5845,17 @@ def resolve_detection_command():
     comment = args.get("comment")
     if username and assigned_to_uuid:
         raise ValueError("Only one of the arguments assigned_to_uuid or username should be provided, not both.")
-    if username:
-        assigned_to_uuid = get_username_uuid(username)
 
     status = args.get("status")
+    if status in ["true_positive", "false_positive", "ignored"]:
+        raise ValueError(
+            f"The status chosen: {status} is deprecated due to the deprecation of the Legacy API. Choose a different one from the available options."  # noqa: E501
+        )  # noqa: E501
     tag = args.get("tag")
     show_in_ui = args.get("show_in_ui")
     if not (username or assigned_to_uuid or comment or status or show_in_ui or tag):
         raise DemistoException("Please provide at least one argument to resolve the detection with.")
-    if LEGACY_VERSION and tag:
-        raise DemistoException("tag argument is only relevant when running with API V3.")
-    raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag)
+    raw_res = resolve_detection(ids, status, assigned_to_uuid, username, show_in_ui, comment, tag)
     args.pop("ids")
     hr = f"Detection {str(ids)[1:-1]} updated\n"
     hr += "With the following values:\n"
@@ -4975,7 +6077,28 @@ def upload_file_command():
 
 
 def delete_file_command():
+    """
+    This command deletes a file by either file_id or file_name. If file_name is provided
+    without file_id, it will first list all files to find the corresponding file_id.
+    Args:
+        file_id (str, optional): The ID of the file to delete
+        file_name (str, optional): The name of the file to delete
+    Returns:
+        dict: Entry object with deletion confirmation message
+    Raises:
+        ValueError: If neither file_name nor file_id is provided, or if file with given name is not found
+    """
     file_id = demisto.args().get("file_id")
+    file_name = demisto.args().get("file_name")
+
+    if not file_name and not file_id:
+        raise ValueError("Either file_name or file_id must be provided.")
+
+    if not file_id:
+        file_id = get_file_id_by_name(file_name)
+
+        if not file_id:
+            raise ValueError(f"File with name '{file_name}' not found.")
 
     response = delete_file(file_id)
 
@@ -5445,7 +6568,7 @@ def detections_to_human_readable(detections):
     for detection in detections:
         readable_output = assign_params(
             status=detection.get("status"),
-            max_severity=detection.get("max_severity_displayname") if LEGACY_VERSION else detection.get("severity_name"),
+            max_severity=detection.get("severity_name"),
             detection_id=detection.get("detection_id"),
             created_time=detection.get("created_timestamp"),
         )
@@ -5469,9 +6592,8 @@ def list_detection_summaries_command():
         detections_ids = demisto.get(get_fetch_detections(), "resources")
     detections_response_data = get_detections_entities(detections_ids)
     detections = list(detections_response_data.get("resources")) if detections_response_data else []
-    if not LEGACY_VERSION:
-        # modify the new version (raptor) outputs to match the old format for backward compatibility
-        detections = [modify_detection_summaries_outputs(detection) for detection in detections]
+    # modify the new version (raptor) outputs to match the old format for backward compatibility
+    detections = [modify_detection_summaries_outputs(detection) for detection in detections]
     detections_human_readable = detections_to_human_readable(detections)
 
     return CommandResults(
@@ -5482,50 +6604,215 @@ def list_detection_summaries_command():
     )
 
 
-def incidents_to_human_readable(incidents):
-    incidents_readable_outputs = []
-    for incident in incidents:
+def cases_to_human_readable(cases):
+    """
+    Converts a list of cases to a human-readable format.
+    Args:
+        cases: A list of cases.
+    Returns:
+        str: The human-readable string.
+    """
+    cases_readable_outputs = []
+    for case in cases:
         readable_output = assign_params(
-            description=incident.get("description"),
-            state=incident.get("state"),
-            name=incident.get("name"),
-            tags=incident.get("tags"),
-            incident_id=incident.get("incident_id"),
-            created_time=incident.get("created"),
-            status=STATUS_NUM_TO_TEXT.get(incident.get("status")),
+            case_id=case.get("id"),
+            name=case.get("name"),
+            created_time=case.get("created_timestamp"),
+            status=case.get("status"),
+            version=case.get("version"),
+            description=case.get("description"),
+            severity=case.get("severity"),
+            assigned_to=case.get("assigned_to"),
+            tags=case.get("tags"),
         )
-        incidents_readable_outputs.append(readable_output)
-    headers = ["incident_id", "created_time", "name", "description", "status", "state", "tags"]
-    human_readable = tableToMarkdown("CrowdStrike Incidents", incidents_readable_outputs, headers, removeNull=True)
-    return human_readable
-
-
-def list_incident_summaries_command():
-    args = demisto.args()
-    fetch_query = args.get("fetch_query")
-
-    args_ids = args.get("ids")
-    if args_ids:
-        ids = argToList(args_ids)
-    else:
-        if fetch_query:
-            fetch_query = f"{fetch_query}"
-            incidents_ids = get_incidents_ids(filter_arg=fetch_query)
-        else:
-            incidents_ids = get_incidents_ids()
-        handle_response_errors(incidents_ids)
-        ids = incidents_ids.get("resources")
-    if not ids:
-        return CommandResults(readable_output="No incidents were found.")
-    incidents_response_data = get_incidents_entities(ids)
-    incidents = list(incidents_response_data.get("resources"))
-    incidents_human_readable = incidents_to_human_readable(incidents)
-    return CommandResults(
-        readable_output=incidents_human_readable,
-        outputs_prefix="CrowdStrike.Incidents",
-        outputs_key_field="incident_id",
-        outputs=incidents,
+        demisto.debug(f"appending {readable_output=} to cases_readable_outputs")
+        cases_readable_outputs.append(readable_output)
+    headers = ["case_id", "name", "created_timestamp", "status", "version", "description", "severity", "assigned_to", "tags"]
+    return tableToMarkdown(
+        "CrowdStrike Cases", cases_readable_outputs, headers, removeNull=True, headerTransform=string_to_table_header
     )
+
+
+def list_case_summaries_command():
+    """
+    Lists case summaries.
+    """
+    args = demisto.args()
+    ids = argToList(args.get("ids"))
+    if not ids:
+        _, ids = get_cases_data()
+
+    demisto.debug(f"About to call get_cases_entities with {ids=}")
+    cases = get_cases_entities(ids)
+    demisto.debug(f"got {cases=}")
+    cases_human_readable = cases_to_human_readable(cases)
+    return CommandResults(
+        readable_output=cases_human_readable,
+        outputs_prefix="CrowdStrike.Case",
+        outputs_key_field="id",
+        outputs=cases,
+    )
+
+
+def get_evidence_for_case_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Get evidence for a specific case.
+    Args:
+        args: The arguments of the command.
+    Returns:
+        CommandResults: The command results object.
+    """
+    case_id = args.get("id")
+    if not case_id:
+        raise ValueError("The 'id' argument is required.")
+
+    cases = get_cases_entities([case_id])
+    if not cases:
+        return CommandResults(readable_output=f"No case found with id {case_id}")
+
+    case = cases[0]
+    evidence = case.get("evidence", {})
+
+    # Prepare Human Readable output
+    alerts = [record.get("selector", {}).get("id") for record in evidence.get("alerts", {}).get("records", [])]
+    events = [record.get("selector", {}).get("id") for record in evidence.get("events", {}).get("records", [])]
+    leads = [record.get("selector", {}).get("id") for record in evidence.get("leads", {}).get("records", [])]
+
+    readable_output = [{"Case Id": case.get("id"), "Case Alerts": alerts, "Case Events": events, "Case Leads": leads}]
+    markdown_output = tableToMarkdown(
+        "Case Evidence", readable_output, headers=["Case Id", "Case Alerts", "Case Events", "Case Leads"], removeNull=True
+    )
+    return CommandResults(
+        outputs_prefix="CrowdStrike.CaseEvidence", outputs=evidence, readable_output=markdown_output, raw_response=case
+    )
+
+
+def add_case_tags_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Add tags to a case.
+    Args:
+        args: The arguments of the command.
+    Returns:
+        CommandResults: The command results object.
+    """
+    case_id = args.get("id")
+    tags = argToList(args.get("tags"))
+
+    if not case_id:
+        raise ValueError("The 'id' argument is required.")
+    if not tags:
+        raise ValueError("The 'tags' argument is required.")
+
+    add_case_tags(case_id, tags)
+    return CommandResults(readable_output="Tags were added successfully.")
+
+
+def delete_case_tags_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Delete a tag from a case.
+    Args:
+        args: The arguments of the command.
+    Returns:
+        CommandResults: The command results object.
+    """
+    case_id = args.get("id")
+    tag = args.get("tag")
+
+    if not case_id:
+        raise ValueError("The 'id' argument is required.")
+    if not tag:
+        raise ValueError("The 'tag' argument is required.")
+
+    delete_case_tags(case_id, tag)
+    return CommandResults(readable_output="Tags were deleted successfully.")
+
+
+def resolve_case(
+    case_id: str,
+    status: str | None = None,
+    name: str | None = None,
+    assigned_to_uuid: str | None = None,
+    description: str | None = None,
+    remove_user_assignment: bool | None = None,
+    severity: int | None = None,
+    template_id: str | None = None,
+) -> dict:
+    """
+    Updates a specific case object using PATCH /cases/entities/cases/v2.
+
+    Args:
+        case_id (str): The ID of the case to patch.
+        status (str | None): The status to set for the case.
+        assigned_to_uuid (str | None): A UUID of a user to assign the case to.
+        description (str | None): A new description for the case.
+        remove_user_assignment (bool): Whether to remove case assignment from current user.
+        severity (int | None): The new case severity rating (10-100).
+        template_id (str | None): The unique ID of the template to apply to the case.
+
+    Returns:
+        dict: The response from the API.
+    """
+    # Build fields dict with API field names, filtering out None values
+    fields = {
+        "status": status,
+        "name": name,
+        "assigned_to_user_uuid": assigned_to_uuid,
+        "description": description,
+        "severity": severity,
+        "template": {"id": template_id} if template_id else None,
+        "remove_user_assignment": remove_user_assignment if remove_user_assignment else None,
+    }
+    fields = {k: v for k, v in fields.items() if v is not None}
+
+    payload = {"id": case_id, "fields": fields}
+    return http_request("PATCH", "/cases/entities/cases/v2", json=payload)
+
+
+def resolve_case_command(args: dict[str, Any]) -> CommandResults:
+    """
+    Command function for cs-falcon-resolve-case.
+    """
+    case_id = args.get("id")
+
+    if not case_id:
+        raise ValueError("The 'id' argument is required.")
+
+    severity = arg_to_number(args.get("severity"))
+    if severity is not None and not (10 <= severity <= 100):
+        raise ValueError("Severity must be an integer between 10 and 100.")
+
+    # We take care of that value seperatly so that it won't appear in the HR unless passed by the user
+    remove_user_assignment_str_value = args.get("remove_user_assignment")
+
+    # Collect changed fields for both API call and display
+    changed_fields: dict[str, Any] = {
+        "status": args.get("status"),
+        "name": args.get("name"),
+        "assigned_to_uuid": args.get("assigned_to_uuid"),
+        "description": args.get("description"),
+        "severity": severity,
+        "template_id": args.get("template_id"),
+    }
+
+    resolve_case(
+        case_id=case_id, remove_user_assignment=argToBoolean(remove_user_assignment_str_value or False), **changed_fields
+    )
+
+    readable_output = f"Case {case_id} was changed successfully"
+    display_data = {"id": case_id, "remove_user_assignment": remove_user_assignment_str_value, **changed_fields}
+
+    if argToBoolean(remove_user_assignment_str_value or False):
+        display_data["assigned_to_uuid"] = "Unassigned"
+
+    table = tableToMarkdown(
+        "Edited Case",
+        display_data,
+        headers=list(changed_fields.keys()),
+        headerTransform=string_to_table_header,
+        removeNull=True,
+    )
+
+    return CommandResults(readable_output=f"{readable_output}\n{table}")
 
 
 def create_host_group_command(
@@ -5606,58 +6893,6 @@ def remove_host_group_members_command(host_group_id: str, host_ids: list[str]) -
     )
 
 
-def resolve_incident_command(
-    ids: list[str],
-    status: str | None = None,
-    user_uuid: str | None = None,
-    user_name: str | None = None,
-    add_comment: str | None = None,
-    add_tag: str | None = None,
-    remove_tag: str | None = None,
-) -> CommandResults:
-    if not any([status, user_uuid, user_name, add_comment, add_tag, remove_tag]):
-        raise DemistoException(
-            "At least one of the following arguments must be provided:"
-            "status, assigned_to_uuid, username, add_tag, remove_tag, add_comment"
-        )
-
-    if user_name and not user_uuid:
-        user_uuid = get_username_uuid(username=user_name)
-
-    action_parameters = {}
-    readable_output = f"Incident IDs '{', '.join(ids)}' have been updated successfully:\n"
-
-    if status:
-        action_parameters["update_status"] = STATUS_TEXT_TO_NUM[status]
-        readable_output += f"Status has been updated to '{status}'.\n"
-
-    if user_uuid:
-        action_parameters["update_assigned_to_v2"] = user_uuid
-        readable_output += f"Assigned user has been updated to '{user_uuid}'.\n"
-
-    if add_tag:
-        action_parameters["add_tag"] = add_tag
-        readable_output += f"Tag '{add_tag}' has been added.\n"
-
-    if remove_tag:
-        action_parameters["delete_tag"] = remove_tag
-        readable_output += f"Tag '{remove_tag}' has been removed.\n"
-
-    if add_comment:
-        action_parameters["add_comment"] = add_comment
-        readable_output += f"Comment '{add_comment}' has been added.\n"
-
-    update_incident_request(ids=ids, action_parameters=action_parameters)
-
-    return CommandResults(readable_output=readable_output)
-
-
-def update_incident_comment_command(ids: list[str], comment: str):
-    update_incident_request(ids=ids, action_parameters={"add_comment": comment})
-    readable = "\n".join([f'{incident_id} updated successfully with comment "{comment}"' for incident_id in ids])
-    return CommandResults(readable_output=readable)
-
-
 def list_host_groups_command(filter: str | None = None, offset: str | None = None, limit: str | None = None) -> CommandResults:
     response = list_host_groups(filter, limit, offset)
     host_groups = response.get("resources")
@@ -5704,6 +6939,261 @@ def upload_batch_custom_ioc_command(
             )
         )
     return entry_objects_list
+
+
+# ============== NGSIEM Search Events Functions ==============
+def initiate_ngsiem_search_request(repository: str, body: dict) -> dict:
+    """
+    Initiate an NGSIEM search query job.
+
+    Args:
+        repository: The repository to search (e.g., 'search-all').
+        body: The request body containing query parameters.
+
+    Returns:
+        dict: Response containing the job ID.
+    """
+    demisto.debug(f"Initiating NGSIEM search with {repository=}, {body=}")
+
+    return http_request(
+        method="POST",
+        url_suffix=f"/humio/api/v1/repositories/{repository}/queryjobs",
+        json=body,
+    )
+
+
+def get_ngsiem_search_results_request(repository: str, job_id: str) -> dict:
+    """
+    Get the results of an NGSIEM search query job.
+
+    Args:
+        repository: The repository that was searched.
+        job_id: The job ID from the initiate search request.
+
+    Returns:
+        dict: Response containing the search results and status.
+    """
+    demisto.debug(f"Getting NGSIEM search results for {repository=}, {job_id=}")
+
+    return http_request(
+        method="GET",
+        url_suffix=f"/humio/api/v1/repositories/{repository}/queryjobs/{job_id}",
+    )
+
+
+def clean_ngsiem_rawstring_field(events: list[dict]) -> list[dict]:
+    """
+    Clean the @rawstring field by replacing escaped '\\&' sequences with '&'.
+
+    The NGSIEM API may return @rawstring values containing '\\&' (literal backslash + ampersand).
+    This replacement ensures the string is clean before the whole event is later serialized with json.dumps.
+    """
+    for event in events:
+        raw = event.get("@rawstring")
+        if isinstance(raw, str) and "\\&" in raw:
+            event["@rawstring"] = raw.replace("\\&", "&")
+    return events
+
+
+def build_ngsiem_query_with_limit(query: str, limit: int) -> str:
+    """
+    Add tail() function to query if not already present to limit results.
+
+    The default number of events returned for each API call is 200,
+    unless the 'tail' function is used.
+
+    Args:
+        query: The original query string.
+        limit: Maximum number of events to return.
+
+    Returns:
+        str: Query with tail() function appended if needed.
+    """
+    if "tail(" not in query.lower():
+        return f"{query} | tail({limit})"
+    return query
+
+
+def arg_to_timestamp(val: Any) -> Optional[int]:
+    """Converts a value to an epoch-milliseconds timestamp using ``arg_to_datetime``.
+
+    Returns ``None`` for empty/None values, otherwise an ``int`` (epoch ms).
+    """
+    if not val:
+        return None
+    dt = arg_to_datetime(val)
+    return int(dt.timestamp() * 1000) if dt else None
+
+
+def build_ngsiem_search_body(args: dict) -> dict:
+    """
+    Build the request body for NGSIEM search.
+
+    Args:
+        args: Command arguments.
+
+    Returns:
+        dict: The request body.
+    """
+    query = args.get("query", "")
+    around_config = assign_params(
+        eventId=args.get("around_event_id"),
+        numberOfEventsBefore=arg_to_number(args.get("around_number_events_before")),
+        numberOfEventsAfter=arg_to_number(args.get("around_number_events_after")),
+        timestamp=arg_to_timestamp(args.get("around_timestamp")),
+    )
+
+    if not around_config.get("numberOfEventsBefore") and not around_config.get("numberOfEventsAfter"):
+        # If an "around" is used (around_number_events_before/after), adding `limit` would override/ignore the config,
+        # so we only set `limit` when "around" is not used.
+        limit = arg_to_number(args.get("limit")) or 50
+        query = build_ngsiem_query_with_limit(query, limit)
+
+    body = assign_params(
+        queryString=query,
+        start=arg_to_timestamp(args.get("start")),
+        end=arg_to_timestamp(args.get("end")),
+        ingestStart=arg_to_timestamp(args.get("ingest_start")),
+        ingestEnd=arg_to_timestamp(args.get("ingest_end")),
+        useIngestTime=argToBoolean(args.get("use_ingest_time")) if args.get("use_ingest_time") else None,
+        around=around_config,
+    )
+    return body
+
+
+def build_ngsiem_hr_rows(events: list[dict], hr_keys: list[str]) -> list[dict]:
+    """
+    Build human-readable table rows from NGSIEM events.
+
+    For each desired key, resolves the value by trying the bare key first,
+    then falling back to the '@' and '#' prefixed variants.
+    Converts epoch-ms timestamp values to ISO 8601 date strings.
+
+    Args:
+        events: The raw event dicts (not modified).
+        hr_keys: The unprefixed keys to extract for display.
+
+    Returns:
+        list[dict]: A list of dicts ready for tableToMarkdown (HR only).
+    """
+    hr_rows: list[dict] = []
+    for event in events:
+        row: dict[str, Any] = {}
+        for key in hr_keys:
+            val = event.get(key) or event.get(f"@{key}") or event.get(f"#{key}")
+            if key == "timestamp" and val is not None:
+                try:
+                    if isinstance(val, (int | float)):
+                        val = timestamp_to_datestring(val)
+                    elif isinstance(val, str) and val.isdigit():
+                        val = timestamp_to_datestring(int(val))
+                except Exception:
+                    demisto.debug(f"Failed to convert timestamp {val} to date string")
+            row[key] = val
+        hr_rows.append(row)
+    return hr_rows
+
+
+def process_ngsiem_search_completion(response: dict, args: dict) -> PollResult:
+    """
+    Process the completion of an NGSIEM search job.
+
+    Args:
+        response: The response from the search job.
+        args: Command arguments.
+
+    Returns:
+        PollResult: The result of the polling.
+    """
+    args["wait_for_result"] = False
+    events = response.get("events", [])
+    warnings = response.get("warnings", [])
+    if warnings:
+        demisto.debug(f"NGSIEM search completed with warnings: {warnings}")
+
+    if events:
+        events = clean_ngsiem_rawstring_field(events)
+        demisto.debug(f"Returned {len(events)} results from NGSIEM search")
+
+        hr_keys = ["id", "event_simpleName", "user.name", "host.hostname", "timestamp"]
+
+        def header_transform(header: str) -> str:
+            return header.replace("_", " ").replace(".", " ").title()
+
+        hr = tableToMarkdown(
+            name=f"NGSIEM Events (Total: {len(events)})",
+            t=build_ngsiem_hr_rows(events, hr_keys),
+            headerTransform=header_transform,
+            headers=hr_keys,
+            removeNull=True,
+        )
+    else:
+        demisto.debug("No events found matching the query.")
+        hr = "No events found matching the query."
+    command_results = CommandResults(
+        outputs_prefix="CrowdStrike.NGSiemEvent",
+        outputs=events,
+        readable_output=hr,
+        raw_response=response,
+    )
+    return PollResult(response=command_results, continue_to_poll=False)
+
+
+@polling_function(
+    "cs-falcon-search-ngsiem-events",
+    poll_message="Searching NGSIEM events:",
+    polling_arg_name="wait_for_result",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL)),
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds", DEFAULT_TIMEOUT_NGSIEM_SEARCH)),
+)
+def cs_falcon_search_ngsiem_events_command(args: dict) -> PollResult:
+    """
+    Search NGSIEM historical events using polling.
+
+    This command initiates a search query job and polls for results until complete.
+    Query jobs must continue to be polled until complete. If a query job is still
+    in progress, the response will show done as false.
+
+    Args:
+        args: Command arguments including query, repository, time range, etc.
+
+    Returns:
+        PollResult: Contains the search results or indicates to continue polling.
+    """
+    job_id = args.get("job_id")
+    repository = args.get("repository", "search-all")
+
+    if not job_id:
+        # First call - initiate the search job
+        body = build_ngsiem_search_body(args)
+        response = initiate_ngsiem_search_request(repository=repository, body=body)
+
+        job_id = response.get("id")
+        if not job_id:
+            raise DemistoException(f"Failed to initiate NGSIEM search. Response: {response}")
+
+        demisto.debug(f"NGSIEM search job initiated with {job_id=}")
+        args["job_id"] = job_id
+
+    # Poll for results
+    response = get_ngsiem_search_results_request(repository, job_id)
+
+    is_done = response.get("done", False)
+    is_cancelled = response.get("cancelled", False)
+    demisto.debug(f"NGSIEM search job status: {is_done=}, {is_cancelled=}")
+    if is_cancelled:
+        raise DemistoException(f"NGSIEM search job {job_id} was cancelled.")
+
+    if is_done:
+        return process_ngsiem_search_completion(response, args)
+
+    demisto.info(f"NGSIEM search job {job_id} still in progress, continuing to poll...")
+
+    return PollResult(
+        response=CommandResults(readable_output=f"NGSIEM search job {job_id} still in progress, continuing to poll..."),
+        continue_to_poll=True,
+        args_for_next_run=args,
+    )
 
 
 def module_test():
@@ -6022,34 +7512,6 @@ def rtr_get_extracted_file(args_to_get_files: dict, file_name: str):
     ]
 
 
-def get_detection_for_incident_command(incident_id: str) -> CommandResults:
-    behavior_res = get_behaviors_by_incident(incident_id)
-    behaviors_id = behavior_res.get("resources")
-
-    if not behaviors_id or behavior_res.get("meta", {}).get("pagination", {}).get("total", 0) == 0:
-        return CommandResults(readable_output=f"Could not find behaviors for incident {incident_id}")
-
-    detection_res = get_detections_by_behaviors(behaviors_id).get("resources", {})
-    outputs = []
-
-    # detection_ids are under the alert_ids key in the new (raptor) API, see XSUP-41622
-    detection_ids_key = "detection_ids" if LEGACY_VERSION else "alert_ids"
-    for detection in detection_res:
-        outputs.append(
-            {
-                "incident_id": detection.get("incident_id"),
-                "behavior_id": detection.get("behavior_id"),
-                "detection_ids": detection.get(detection_ids_key),
-            }
-        )
-    return CommandResults(
-        outputs_prefix="CrowdStrike.IncidentDetection",
-        outputs=outputs,
-        readable_output=tableToMarkdown("Detection For Incident", outputs),
-        raw_response=detection_res,
-    )
-
-
 def build_url_filter(values: list[str] | str | None):
     return "cve.id:['" + "','".join(argToList(values)) + "']"
 
@@ -6226,35 +7688,38 @@ def get_cve_command(args: dict) -> list[dict[str, Any]]:
     command_results_list = []
     http_response = cve_request(cve)
     raw_cve = [res_element.get("cve") for res_element in http_response.get("resources", [])]
-    for cve in raw_cve:
-        relationships_list = create_relationships(cve)
-        cve_dbot_score = create_dbot_Score(cve=cve, reliability=args.get("Reliability", "A+ - 3rd party enrichment"))
-        cve_indicator = Common.CVE(
-            id=cve.get("id"),
-            cvss="",
-            published=cve.get("published_date"),
-            modified="",
-            description=cve.get("description"),
-            cvss_score=cve.get("base_score"),
-            cvss_vector=cve.get("vector"),
-            dbot_score=cve_dbot_score,
-            publications=create_publications(cve),
-            relationships=relationships_list,
-        )
-        cve_human_readable = {
-            "ID": cve.get("id"),
-            "Description": cve.get("description"),
-            "Published Date": cve.get("published_date"),
-            "Base Score": cve.get("base_score"),
-        }
-        human_readable = tableToMarkdown(
-            "CrowdStrike Falcon CVE", cve_human_readable, headers=["ID", "Description", "Published Date", "Base Score"]
-        )
-        command_results = CommandResults(
-            raw_response=cve, readable_output=human_readable, relationships=relationships_list, indicator=cve_indicator
-        ).to_context()
-        if command_results not in command_results_list:
-            command_results_list.append(command_results)
+    if not raw_cve:
+        command_results_list = [(CommandResults(readable_output="No matching results found.")).to_context()]
+    else:
+        for cve in raw_cve:
+            relationships_list = create_relationships(cve)
+            cve_dbot_score = create_dbot_Score(cve=cve, reliability=args.get("Reliability", "A+ - 3rd party enrichment"))
+            cve_indicator = Common.CVE(
+                id=cve.get("id"),
+                cvss="",
+                published=cve.get("published_date"),
+                modified="",
+                description=cve.get("description"),
+                cvss_score=cve.get("base_score"),
+                cvss_vector=cve.get("vector"),
+                dbot_score=cve_dbot_score,
+                publications=create_publications(cve),
+                relationships=relationships_list,
+            )
+            cve_human_readable = {
+                "ID": cve.get("id"),
+                "Description": cve.get("description"),
+                "Published Date": cve.get("published_date"),
+                "Base Score": cve.get("base_score"),
+            }
+            human_readable = tableToMarkdown(
+                "CrowdStrike Falcon CVE", cve_human_readable, headers=["ID", "Description", "Published Date", "Base Score"]
+            )
+            command_results = CommandResults(
+                raw_response=cve, readable_output=human_readable, relationships=relationships_list, indicator=cve_indicator
+            ).to_context()
+            if command_results not in command_results_list:
+                command_results_list.append(command_results)
     return command_results_list
 
 
@@ -6986,6 +8451,8 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
         "sensor_ml_level_prevention": arg_to_number(args.get("sensor_ml_level_prevention")),
         "cloud_ml_level_detection": arg_to_number(args.get("cloud_ml_level_detection")),
         "cloud_ml_level_prevention": arg_to_number(args.get("cloud_ml_level_prevention")),
+        "cloud_pup_adware_level_detection": arg_to_number(args.get("cloud_pup_adware_level_detection")),
+        "cloud_pup_adware_level_prevention": arg_to_number(args.get("cloud_pup_adware_level_prevention")),
         "max_duration": arg_to_number(args.get("max_duration")),
     }
 
@@ -7006,7 +8473,7 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
 def ODS_create_scan_request(args: dict, is_scheduled: bool) -> dict:
     body = make_create_scan_request_body(args, is_scheduled)
     remove_nulls_from_dictionary(body)
-    return http_request("POST", f'/ods/entities/{"scheduled-"*is_scheduled}scans/v1', json=body)
+    return http_request("POST", f'/ods/entities/{"scheduled-" * is_scheduled}scans/v1', json=body)
 
 
 def ODS_verify_create_scan_command(args: dict) -> None:
@@ -7213,7 +8680,7 @@ def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
     transport = RequestsHTTPTransport(**kwargs)  # type: ignore[arg-type]
     client = Client(
         transport=transport,
-        fetch_schema_from_transport=True,
+        fetch_schema_from_transport=False,
     )
     return client
 
@@ -7446,7 +8913,7 @@ def resolve_detections_prepare_body_request(ids: list[str], action_params_values
         if value:
             param = {"name": key, "value": value}
             action_params.append(param)
-    ids_request_key = "composite_ids" if not LEGACY_VERSION else "ids"
+    ids_request_key = "composite_ids"
     return {"action_parameters": action_params, ids_request_key: ids}
 
 
@@ -7459,9 +8926,9 @@ def resolve_detections_request(ids: list[str], **kwargs) -> dict[str, Any]:
     Returns:
         dict[str, Any]: The raw response of the API.
     """
-    url_suffix = "/alerts/entities/alerts/v3" if not LEGACY_VERSION else "/alerts/entities/alerts/v2"
+    url_suffix = "/alerts/entities/alerts/v3"
     body_payload = resolve_detections_prepare_body_request(ids=ids, action_params_values=kwargs)
-    demisto.debug(f"In resolve_detections: {LEGACY_VERSION=}, {url_suffix=}, {body_payload=} ")
+    demisto.debug(f"In resolve_detections: {url_suffix=}, {body_payload=} ")
     return http_request(method="PATCH", url_suffix=url_suffix, json=body_payload)
 
 
@@ -7502,6 +8969,7 @@ def handle_resolve_detections(args: dict[str, Any], hr_template: str) -> Command
     update_status = args.get("update_status", "")
     assign_to_name = args.get("assign_to_name", "")
     assign_to_uuid = args.get("assign_to_uuid", "")
+    assign_to_user_id = args.get("assign_to_user_id", "")
 
     # This argument is sent to the API in the form of a string, having the values 'true' or 'false'
     unassign = args.get("unassign", "")
@@ -7514,11 +8982,16 @@ def handle_resolve_detections(args: dict[str, Any], hr_template: str) -> Command
     show_in_ui = args.get("show_in_ui", "")
     # We pass the arguments in the form of **kwargs, since we also need the arguments' names for the API,
     # and it easier to achieve that using **kwargs
+
+    if sum(map(bool, [assign_to_uuid, assign_to_name, assign_to_user_id])) > 1:
+        raise ValueError("Only one of the arguments assign_to_uuid, assign_to_name, assign_to_user_id should be provided.")
+
     resolve_detections_request(
         ids=ids,
         update_status=update_status,
         assign_to_name=assign_to_name,
         assign_to_uuid=assign_to_uuid,
+        assign_to_user_id=assign_to_user_id,
         unassign=unassign,
         append_comment=append_comment,
         add_tag=add_tag,
@@ -7567,61 +9040,6 @@ def cs_falcon_list_users_command(args: dict[str, Any]) -> CommandResults:
             sort_headers=False,
         ),
         raw_response=users_data_api_response,
-    )
-
-
-def get_incident_behavior_command(args: dict) -> CommandResults:
-    behavior_ids = argToList(args["behavior_ids"])
-    raw_response = get_behaviors(behavior_ids=behavior_ids)
-
-    results = raw_response.get("resources", [])
-
-    def table_headers_transformer(header: str) -> str:
-        mapping = {
-            "behavior_id": "Behavior ID",
-            "incident_ids": "Incident IDs",
-            "cid": "CID",
-            "aid": "AID",
-            "pattern_id": "Pattern ID",
-            "timestamp": "Timestamp",
-            "cmdline": "Command Line",
-            "filepath": "File Path",
-            "sha256": "SHA256",
-            "tactic": "Tactic",
-            "technique": "Technique",
-            "display_name": "Display Name",
-            "objective": "Objective",
-        }
-
-        return mapping.get(header, header)
-
-    return CommandResults(
-        outputs_prefix="CrowdStrike.IncidentBehavior",
-        outputs_key_field="behavior_id",
-        outputs=results,
-        readable_output=tableToMarkdown(
-            name="CrowdStrike Incident Behavior",
-            t=results,
-            headers=[
-                "behavior_id",
-                "incident_ids",
-                "cid",
-                "aid",
-                "pattern_id",
-                "timestamp",
-                "cmdline",
-                "filepath",
-                "sha256",
-                "tactic",
-                "technique",
-                "display_name",
-                "objective",
-            ],
-            headerTransform=table_headers_transformer,
-            removeNull=True,
-            sort_headers=False,
-        ),
-        raw_response=raw_response,
     )
 
 
@@ -7712,8 +9130,10 @@ def main():  # pragma: no cover
             demisto.results(refresh_session_command())
         elif command == "cs-falcon-list-detection-summaries":
             return_results(list_detection_summaries_command())
-        elif command == "cs-falcon-list-incident-summaries":
-            return_results(list_incident_summaries_command())
+        elif command == "cs-falcon-list-case-summaries":
+            return_results(list_case_summaries_command())
+        elif command == "cs-falcon-get-evidence-for-case":
+            return_results(get_evidence_for_case_command(args))
         elif command == "cs-falcon-search-iocs":
             return_results(search_iocs_command(**args))
         elif command == "cs-falcon-get-ioc":
@@ -7764,20 +9184,6 @@ def main():  # pragma: no cover
                     host_group_id=args.get("host_group_id"), host_ids=argToList(args.get("host_ids"))
                 )
             )
-        elif command == "cs-falcon-resolve-incident":
-            return_results(
-                resolve_incident_command(
-                    ids=argToList(args.get("ids")),
-                    status=args.get("status"),
-                    user_uuid=args.get("assigned_to_uuid"),
-                    user_name=args.get("username"),
-                    add_comment=args.get("add_comment"),
-                    add_tag=args.get("add_tag"),
-                    remove_tag=args.get("remove_tag"),
-                )
-            )
-        elif command == "cs-falcon-update-incident-comment":
-            return_results(update_incident_comment_command(comment=args.get("comment"), ids=argToList(args.get("ids"))))
         elif command == "cs-falcon-batch-upload-custom-ioc":
             return_results(upload_batch_custom_ioc_command(**args))
 
@@ -7823,8 +9229,6 @@ def main():  # pragma: no cover
             )
         elif command == "cs-falcon-rtr-retrieve-file":
             return_results(rtr_polling_retrieve_file_command(args))
-        elif command == "cs-falcon-get-detections-for-incident":
-            return_results(get_detection_for_incident_command(args.get("incident_id")))
         # Mirroring commands
         elif command == "get-remote-data":
             disable_for_xsiam()
@@ -7893,10 +9297,20 @@ def main():  # pragma: no cover
             return_results(cs_falcon_resolve_mobile_detection(args=args))
         elif command == "cs-falcon-list-users":
             return_results(cs_falcon_list_users_command(args=args))
-        elif command == "cs-falcon-get-incident-behavior":
-            return_results(get_incident_behavior_command(args=args))
         elif command == "cs-falcon-get-ioarules":
             return_results(get_ioarules_command(args=args))
+        elif command == "fetch-assets":
+            fetch_assets_command()
+        elif command == "cs-falcon-list-cnapp-alerts":
+            return_results(list_cnapp_alerts_command(args=args))
+        elif command == "cs-falcon-add-case-tag":
+            return_results(add_case_tags_command(args))
+        elif command == "cs-falcon-delete-case-tag":
+            return_results(delete_case_tags_command(args))
+        elif command == "cs-falcon-resolve-case":
+            return_results(resolve_case_command(args))
+        elif command == "cs-falcon-search-ngsiem-events":
+            return_results(cs_falcon_search_ngsiem_events_command(args))
         else:
             raise NotImplementedError(f"CrowdStrike Falcon error: command {command} is not implemented")
     except Exception as e:

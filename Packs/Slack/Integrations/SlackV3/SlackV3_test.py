@@ -1,15 +1,20 @@
 import json as js
 import threading
 from unittest.mock import MagicMock
-
-import aiohttp
+from datetime import datetime, UTC
 import pytest
 import slack_sdk
 from CommonServerPython import *
 from slack_sdk.errors import SlackApiError
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
-from SlackV3 import get_war_room_url, parse_common_channels
+from SlackV3 import (
+    get_war_room_url,
+    parse_common_channels,
+    conversation_history,
+    resolve_conversation_id_from_name,
+    to_unix_seconds_str,
+)
 
 
 def load_test_data(path):
@@ -5053,11 +5058,11 @@ def test_list_channels(mocker):
 def test_conversation_history(mocker):
     """
     Given:
-        A set of conversations.
+        A set of conversations without pagination.
     When:
         Listing conversation history.
     Assert:
-        Conversations are returned.
+        Conversations are returned with proper CommandResults format.
     """
     import SlackV3
 
@@ -5067,25 +5072,28 @@ def test_conversation_history(mocker):
         "send_slack_request_sync",
         side_effect=[slack_response_mock, {"user": js.loads(USERS)[0]}, {"user": js.loads(USERS)[0]}],
     )
-    mocker.patch.object(demisto, "args", return_value={"channel_id": 1, "conversation_id": 1, "limit": 1})
+    mocker.patch.object(demisto, "args", return_value={"channel_id": "C12345", "limit": 10})
     mocker.patch.object(demisto, "setIntegrationContext", side_effect=set_integration_context)
-    mocker.patch.object(demisto, "results")
+    return_results_mock = mocker.patch("SlackV3.return_results")
 
     SlackV3.conversation_history()
 
-    assert (
-        demisto.results.call_args[0][0]["HumanReadable"] == "### Channel details from Channel ID "
-        "- 1\n|FullName|HasReplies|Name|Text|ThreadTimeStamp"
-        "|TimeStamp|Type|UserId|\n|---|---|---|---|---|"
-        "---|---|---|\n| spengler | No | spengler | There"
-        " are two types of people in this world, those"
-        " who can extrapolate from incomplete data... | N/A "
-        "| 1690479909.804939 | message | U047D5QSZD4 |\n|"
-        " spengler | Yes | spengler | Give me a fresh dad joke"
-        " | 1690479887.647239 | 1690479887.647239 | message "
-        "| U047D5QSZD4 |\n"
-    )
-    assert demisto.results.call_args[0][0]["ContentsFormat"] == "json"
+    # Assert return_results was called with a list of CommandResults
+    assert return_results_mock.call_count == 1
+    results = return_results_mock.call_args[0][0]
+
+    # Should have only 1 CommandResult (no pagination token)
+    assert len(results) == 1
+
+    # Verify the CommandResults structure
+    command_result = results[0]
+    assert command_result.outputs_prefix == "Slack.Messages"
+    assert len(command_result.outputs) == 2  # Two messages in MESSAGES
+    assert command_result.raw_response == json.loads(MESSAGES)
+
+    # Verify readable output contains expected content
+    assert "Channel details from Channel ID - C12345" in command_result.readable_output
+    assert "spengler" in command_result.readable_output
 
 
 @pytest.mark.parametrize(
@@ -5161,15 +5169,8 @@ def test_conversation_replies(mocker):
 SAMPLE_PAYLOAD = json.loads(load_test_data("./test_data/entitlement_response_payload.txt"))
 
 
-@pytest.fixture
-async def client_session():
-    session = aiohttp.ClientSession()
-    yield session
-    await session.close()
-
-
 @pytest.mark.asyncio
-async def test_listen(client_session):
+async def test_listen():
     """
     Unit test for the `listen` function in the `SlackV3` module. This test case verifies that the function handles
     Slack events correctly.
@@ -5193,7 +5194,8 @@ async def test_listen(client_session):
         '"selected_options": [{"text": {"type": "plain_text", "text": "*Option 3*", '
         '"emoji": true}, "value": "value-2"}]}}, "timepicker_1": {"timepicker1": '
         '{"type": "timepicker", "selected_time": "06:00"}}}, "xsoar-button-submit": '
-        '"Successful"}'
+        '"Successful", "submitting_user": {"id": "UAALZT5D2", "username": "andrew", '
+        '"name": "andrew", "team_id": "TABQMPKP0"}}'
     )
     req = SocketModeRequest(type="event", payload=SAMPLE_PAYLOAD, envelope_id=default_envelope_id)
     client = mock.MagicMock(spec=SocketModeClient)
@@ -5232,6 +5234,7 @@ class TestGetWarRoomURL:
         url = "https://example.com/WarRoom/INCIDENT-2930"
         expected_war_room_url = "https://example.com/incidents/war_room?caseId=2930"
         mocker.patch("SlackV3.is_xsiam", return_value=True)
+        mocker.patch("SlackV3.is_platform", return_value=False)
         mocker.patch.dict(demisto.callingContext, {"context": {"Inv": {"id": "INCIDENT-2930"}}})
 
         assert get_war_room_url(url) == expected_war_room_url
@@ -5239,16 +5242,38 @@ class TestGetWarRoomURL:
     def test_get_war_room_url_without_xsiam_from_incident_war_room(self, mocker):
         url = "https://example.com/WarRoom/INCIDENT-2930"
         mocker.patch("SlackV3.is_xsiam", return_value=False)
+        mocker.patch("SlackV3.is_platform", return_value=False)
         expected_war_room_url = "https://example.com/WarRoom/INCIDENT-2930"
         assert get_war_room_url(url) == expected_war_room_url
 
     def test_get_war_room_url_with_xsiam_from_alert_war_room(self, mocker):
         url = "https://example.com/WarRoom/ALERT-1234"
         mocker.patch("SlackV3.is_xsiam", return_value=True)
+        mocker.patch("SlackV3.is_platform", return_value=False)
         mocker.patch.dict(demisto.callingContext, {"context": {"Inv": {"id": "1234"}}})
         expected_war_room_url = (
             "https://example.com/incidents/alerts_and_insights?caseId=1234&action:openAlertDetails=1234-warRoom"
         )
+        assert get_war_room_url(url) == expected_war_room_url
+
+    def test_get_war_room_url_with_platform_from_cases_war_room(self, mocker):
+        url = "https://example.com/incidents/war_room?caseId=INCIDENT-2'"
+        expected_war_room_url = "https://example.com/cases/war_room?caseId=2"
+
+        mocker.patch("SlackV3.is_xsiam", return_value=False)
+        mocker.patch("SlackV3.is_platform", return_value=True)
+        mocker.patch.dict(demisto.callingContext, {"context": {"Inv": {"id": "INCIDENT-2"}}})
+
+        assert get_war_room_url(url) == expected_war_room_url
+
+    def test_get_war_room_url_with_platform_from_issue_war_room(self, mocker):
+        url = "https://example.com/incidents/war_room?caseId=1"
+        expected_war_room_url = "https://example.com/issue-view/1"
+
+        mocker.patch("SlackV3.is_xsiam", return_value=False)
+        mocker.patch("SlackV3.is_platform", return_value=True)
+        mocker.patch.dict(demisto.callingContext, {"context": {"Inv": {"id": "1"}}})
+
         assert get_war_room_url(url) == expected_war_room_url
 
 
@@ -5292,3 +5317,178 @@ def test_validate_slack_request_args():
     with pytest.raises(ValueError) as e:
         validate_slack_request_args(http_verb="HI", method="chat.postMessage", file_upload_params=None)
     assert str(e.value) == "Invalid http_verb: HI. Allowed values: POST, GET."
+
+
+def test_conversation_history_no_channel_provided_error(mocker):
+    """
+    Test conversation_history raises error when neither channel_id nor channel_name provided
+
+    Given: A conversation_history command is configured and no channel parameters are provided
+    When: The conversation_history command is called with args missing both conversation_id and conversation_name
+    Then: The command raises ValueError with appropriate error message
+    """
+
+    args = {"limit": "10"}
+
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    with pytest.raises(ValueError, match="Either conversation_id or conversation_name must be provided."):
+        conversation_history()
+
+
+def test_resolve_conversation_id_from_name_private_conversation_found(mocker):
+    """
+    Test resolve_conversation_id_from_name when channel name corresponds to a user name.
+
+    Given: The resolve_conversation_id_from_name is called with a user name as the channel_name parameter.
+    When: A private conversation exists for the specified user and conversation id or channel id is not provided.
+    Then: The function returns the channel ID of the private conversation with that user.
+    """
+    mocker.patch("SlackV3.get_direct_message_channel_id_by_username", return_value="D1234567890")
+    mocker.patch("SlackV3.get_conversation_by_name")
+
+    result = resolve_conversation_id_from_name("john.doe")
+
+    assert result == "D1234567890"
+
+
+def test_resolve_conversation_id_from_name_channel_found(mocker):
+    """
+    Test resolve_conversation_id_from_name when channel name corresponds to a channel name.
+
+    Given: The resolve_conversation_id_from_name function is called with a channel name as the conversation_name parameter.
+    When: A channel with the specified name exists and channel id is not provided.
+    Then: The function returns the channel ID of the channel.
+    """
+    mocker.patch("SlackV3.get_direct_message_channel_id_by_username", return_value=None)
+    mocker.patch("SlackV3.get_conversation_by_name", return_value={"id": "C1234567890", "name": "general"})
+
+    result = resolve_conversation_id_from_name("general")
+
+    assert result == "C1234567890"
+
+
+def test_resolve_conversation_id_from_name_no_channel_found(mocker):
+    """
+    Test resolve_conversation_id_from_name when no channel or user is found.
+
+    Given: The resolve_conversation_id_from_name function is called with a channel name that doesn't exist.
+    When: No private conversation or channel exists for the specified name and channel id is not provided.
+    Then: The function raises ValueError with appropriate error message indicating the channel was not found.
+    """
+    mocker.patch("SlackV3.get_direct_message_channel_id_by_username", return_value=None)
+    mocker.patch("SlackV3.get_conversation_by_name", return_value={})
+
+    with pytest.raises(DemistoException, match="Channel 'nonexistent' does not exist."):
+        resolve_conversation_id_from_name("nonexistent")
+
+
+def test_conversation_history_with_pagination(mocker):
+    """
+    Given:
+        A set of conversations with pagination cursor.
+    When:
+        Listing conversation history with pagination.
+    Assert:
+        Conversations and pagination token are returned in separate CommandResults.
+    """
+    import SlackV3
+
+    slack_response_mock = {
+        "ok": True,
+        "messages": json.loads(MESSAGES),
+        "response_metadata": {"next_cursor": "dGVhbTpDQ0M3UENUTks="},
+    }
+    mocker.patch.object(
+        SlackV3,
+        "send_slack_request_sync",
+        side_effect=[slack_response_mock, {"user": js.loads(USERS)[0]}, {"user": js.loads(USERS)[0]}],
+    )
+    mocker.patch.object(demisto, "args", return_value={"channel_id": "C12345", "limit": 10})
+    mocker.patch.object(demisto, "setIntegrationContext", side_effect=set_integration_context)
+    return_results_mock = mocker.patch("SlackV3.return_results")
+
+    SlackV3.conversation_history()
+
+    # Assert return_results was called with a list of CommandResults
+    assert return_results_mock.call_count == 1
+    results = return_results_mock.call_args[0][0]
+
+    # Should have 2 CommandResults (messages + pagination token)
+    assert len(results) == 2
+
+    # Verify first CommandResult (messages)
+    messages_result = results[0]
+    assert messages_result.outputs_prefix == "Slack.Messages"
+    assert len(messages_result.outputs) == 2
+
+    # Verify second CommandResult (pagination token)
+    pagination_result = results[1]
+    assert pagination_result.outputs_prefix == "SlackConversationHistory"
+    assert pagination_result.outputs_key_field == "NextPageToken"
+    assert pagination_result.outputs == {"NextPageToken": "dGVhbTpDQ0M3UENUTks="}
+
+
+def test_conversation_history_with_page_token(mocker):
+    """
+    Given:
+        A pageToken parameter to continue pagination.
+    When:
+        Listing conversation history with a page token.
+    Assert:
+        The cursor is passed to the Slack API request.
+    """
+    import SlackV3
+
+    slack_response_mock = {"ok": True, "messages": json.loads(MESSAGES)}
+    send_request_mock = mocker.patch.object(
+        SlackV3,
+        "send_slack_request_sync",
+        side_effect=[slack_response_mock, {"user": js.loads(USERS)[0]}, {"user": js.loads(USERS)[0]}],
+    )
+    mocker.patch.object(demisto, "args", return_value={"channel_id": "C12345", "limit": 10, "page_token": "dGVhbTpDQ0M3UENUTks="})
+    mocker.patch.object(demisto, "setIntegrationContext", side_effect=set_integration_context)
+    mocker.patch("SlackV3.return_results")
+
+    SlackV3.conversation_history()
+
+    # Verify the cursor was passed in the API request
+    # Access kwargs from the first call to send_slack_request_sync
+    api_call_kwargs = send_request_mock.call_args_list[0].kwargs
+    assert "body" in api_call_kwargs
+    assert api_call_kwargs["body"]["cursor"] == "dGVhbTpDQ0M3UENUTks="
+
+
+class TestToUnixSecondsStr:
+    def test_valid_unix_timestamp_string(self):
+        result = to_unix_seconds_str("1609459200")
+        assert result == "1609459200.0"
+
+    def test_unix_timestamp_with_decimals(self):
+        result = to_unix_seconds_str("1609459200.123456")
+        assert result == "1609459200.0"
+
+    def test_iso_date_string(self):
+        result = to_unix_seconds_str("2021-01-01T00:00:00Z")
+        expected_timestamp = datetime(2021, 1, 1, tzinfo=UTC).timestamp()
+        assert result == f"{expected_timestamp}"
+
+    def test_human_readable_date(self):
+        result = to_unix_seconds_str("January 1, 2021")
+        expected_timestamp = datetime(2021, 1, 1, tzinfo=UTC).timestamp()
+        assert result == f"{expected_timestamp}"
+
+    def test_date_without_timezone_assumes_utc(self):
+        result = to_unix_seconds_str("2021-01-01T12:00:00")
+        expected_timestamp = datetime(2021, 1, 1, 12, 0, 0, tzinfo=UTC).timestamp()
+        assert result == f"{expected_timestamp}"
+
+    def test_date_with_timezone_converts_to_utc(self):
+        result = to_unix_seconds_str("2021-01-01T12:00:00+05:00")
+        expected_timestamp = datetime(2021, 1, 1, 7, 0, 0, tzinfo=UTC).timestamp()
+        assert result == f"{expected_timestamp}"
+
+    def test_invalid_numeric_string_raises_error(self):
+        with pytest.raises(ValueError) as exc_info:
+            to_unix_seconds_str("not_a_number")
+        assert "Could not parse time string" in str(exc_info.value)

@@ -6,7 +6,7 @@ import json
 import urllib3
 import dateparser  # type: ignore
 from typing import Any, cast
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 import pytz  # type: ignore
 
@@ -70,6 +70,7 @@ class Client(BaseClient):
         alerts_type: str | None,
         sort_by: str | None,
         offset: int | None = 0,
+        direction: str = "asc",
     ) -> dict[str, Any]:
         request_params: dict[str, Any] = {}
 
@@ -93,6 +94,8 @@ class Client(BaseClient):
         """ Sorting parameters"""
         if sort_by:
             request_params["sort"] = sort_by
+
+        request_params["direction"] = direction
 
         return self._http_request(method="GET", url_suffix="/v1/sic/alerts", params=request_params)
 
@@ -242,13 +245,13 @@ class Client(BaseClient):
     def get_kill_chain(self, kill_chain_uuid: str) -> dict[str, Any]:
         return self._http_request(method="GET", url_suffix=f"/v1/sic/kill-chains/{kill_chain_uuid}")
 
-    def http_request(self, method: str, url_suffix: str, params: dict, data: dict) -> dict[str, Any]:
+    def http_request(self, method: str, url_suffix: str, params: dict, data: dict | None) -> dict[str, Any]:
         if not params:
             params = {}
 
         if data and method in ["POST", "PUT", "PATCH"]:
             # If data is provided, we use json_data to send it as JSON
-            return self._http_request(method=method, url_suffix=url_suffix, params=params, json_data=data)
+            return self._http_request(method=method, url_suffix=url_suffix, params=params, data=data)
 
         return self._http_request(method=method, url_suffix=url_suffix, params=params)
 
@@ -313,7 +316,7 @@ def timezone_format(epoch: int) -> str:
     return format_datetime.strftime("%Y-%m-%dT%H:%M:%S")
 
 
-def time_converter(time):
+def time_converter(time) -> str:
     """
     Converts a given time string to a datetime object.
 
@@ -385,7 +388,7 @@ def exclude_info_events(event_info: dict, exclude_info: str) -> list:
     return headers
 
 
-def undot(json_data: dict) -> str:
+def undot(json_data: dict) -> dict:
     """
     Remove/Replace dots from the key names of a JSON.
     This function transform the name of the JSON keys that contain "dots" to make it easier to reference them in XSOAR.
@@ -413,7 +416,7 @@ def undot(json_data: dict) -> str:
             if new_key != key:
                 item[new_key] = item.pop(key)
     # Convert back to JSON and return it
-    return json.dumps(data)
+    return data
 
 
 def filter_list_by_keys(dicts_list: list, keys_to_keep: list) -> list:
@@ -448,7 +451,7 @@ def filter_dict_by_keys(input_dict: dict, keys_to_keep: list) -> dict:
     return {key: value for key, value in input_dict.items() if key in keys_to_keep}
 
 
-def fetch_alerts_with_pagination(
+def fetch_alerts_asc_mode(
     client: Client,
     alert_status: str | None,
     alert_urgency: str | None,
@@ -458,81 +461,96 @@ def fetch_alerts_with_pagination(
     alerts_updated_at: str | None,
     sort_by: str | None,
 ) -> List[Dict[str, Any]]:
+    response = client.list_alerts(
+        alerts_created_at=alerts_created_at,
+        alerts_updated_at=alerts_updated_at,
+        alerts_status=alert_status,
+        alerts_urgency=alert_urgency,
+        alerts_type=alert_type,
+        alerts_limit=max_results,
+        sort_by=sort_by,
+        direction="asc",
+    )
+
+    alerts: List[Dict[str, Any]] = response.get("items", [])
+
+    demisto.debug(f"Fetched {len(alerts)} alerts in ascending direction.")
+
+    return alerts
+
+
+def check_events_ready(client: Client, search_job_uuid: str, max_checks: int = 3) -> tuple[bool, dict | None]:
     """
-    Fetches alerts from the Sekoia XDR API with pagination support.
-    This function retrieves alerts in batches, allowing for efficient handling of large datasets.
+    Check if an event search job is ready (without sleep/polling).
+    Makes multiple rapid checks up to max_checks times.
+
     Args:
-        client (Client): Sekoia XDR client to use.
-        alert_status (str): status of the alert to search for.
-        alert_urgency (str): alert urgency range to search for. Format: "MIN_urgency,MAX_urgency". i.e: 80,100.
-        alert_type (str): type of alerts to search for.
-        max_results (int): Maximum numbers of incidents per fetch.
-        alerts_created_at (str): The date range to search for alerts.
+        client: The Sekoia client
+        search_job_uuid: The UUID of the search job
+        max_checks: Maximum number of status checks to perform (default 3)
+
     Returns:
-        dict: List of alerts retrieved from the API.
+        tuple: (is_ready: bool, events: dict | None)
+            - is_ready: True if job finished (status==2), False otherwise
+            - events: Events dict if ready, None if not ready
     """
+    for attempt in range(max_checks):
+        try:
+            query_status = client.query_events_status(event_search_job_uuid=search_job_uuid)
+            finished_status = query_status["status"] == 2
 
-    final_alerts = []
-    offset = 0
-    total_alerts = 0
+            if finished_status:
+                events = client.retrieve_events(event_search_job_uuid=search_job_uuid)
+                return True, events
+        except Exception as e:
+            demisto.debug(f"Error checking event status (attempt {attempt + 1}/{max_checks}): {e}")
+            if attempt == max_checks - 1:
+                raise
 
-    # Fetch alerts in a loop until all alerts are retrieved
-    # Using offset to paginate through the results
-    while True:
-        response = client.list_alerts(
-            alerts_created_at=alerts_created_at,
-            alerts_updated_at=alerts_updated_at,
-            alerts_status=alert_status,
-            alerts_urgency=alert_urgency,
-            alerts_type=alert_type,
-            alerts_limit=max_results,
-            sort_by=sort_by,
-            offset=offset,
-        )
-
-        alerts: List[Dict[str, Any]] = response.get("items", [])
-        total_alerts = response.get("total", 0)
-
-        # Extend the final alerts list with the current batch of alerts
-        final_alerts.extend(alerts)
-        demisto.debug(f"Fetched {len(alerts)} alerts from offset {offset}.")
-        offset += len(alerts)
-        if offset >= total_alerts:
-            break
-
-    return final_alerts
+    # Not finished after all checks
+    return False, None
 
 
 def handle_alert_events_query(
     client: Client, alert: dict, earliest_time: str, latest_time: str, events_term: str
-) -> dict[str, Any]:
+) -> tuple[dict[str, Any], bool]:
+    """
+    Handle event query for an alert with readiness check.
+
+    Returns:
+        tuple: (alert, is_ready)
+            - alert: The alert dict with events (if ready) or job_uuid (if not ready)
+            - is_ready: True if events are available, False if job still pending
+    """
+    buffered_earliest = apply_time_buffer(earliest_time, -1)
+    buffered_latest = apply_time_buffer(latest_time, 1)
+
     # Create a query to get events
     search = client.query_events(
-        events_earliest_time=earliest_time,
-        events_latest_time=latest_time,
+        events_earliest_time=buffered_earliest,
+        events_latest_time=buffered_latest,
         events_term=events_term,
         max_last_events=None,
     )
 
     # Get the search job uuid
     search_job_uuid = search["uuid"]
+    demisto.debug(f"Created event search job {search_job_uuid} for alert {alert.get('short_id')}")
 
-    # Check the state of the job
-    query_status = client.query_events_status(event_search_job_uuid=search_job_uuid)
-    finished_status = query_status["status"] == 2
+    # Check if events are ready (with multiple rapid checks)
+    is_ready, events = check_events_ready(client, search_job_uuid, max_checks=3)
 
-    # If it's not finished, add the job uuid to the alert
-    if not finished_status:
-        alert["job_uuid"] = search_job_uuid
-
-    else:
-        # If it's finished, get the events
-        # This case is rare but can happen if the fetch is too fast
-        events = client.retrieve_events(event_search_job_uuid=search_job_uuid)
+    if is_ready and events:
+        # Events are ready - add them to the alert
         undoted_events = undot(json_data=events)
         alert["events"] = undoted_events
+        demisto.debug(f"Events ready for alert {alert.get('short_id')}")
+    else:
+        # Events not ready yet - store job_uuid for later retry
+        alert["job_uuid"] = search_job_uuid
+        demisto.debug(f"Events not ready for alert {alert.get('short_id')}, stored job_uuid {search_job_uuid}")
 
-    return alert
+    return alert, is_ready
 
 
 def check_id_in_context(alert_id: str, cache: dict[str, Any] | None) -> tuple[dict[str, Any], int] | None:
@@ -554,13 +572,47 @@ def check_id_in_context(alert_id: str, cache: dict[str, Any] | None) -> tuple[di
     return None
 
 
+def apply_time_buffer(date_str: str, delta_minutes: int) -> str:
+    """
+    Apply a time buffer to a given ISO 8601 date string.
+
+    Args:
+        date_str (str): The date string in ISO 8601 format.
+        delta_minutes (int): The number of minutes to add (positive) or subtract (negative).
+
+    Returns:
+        str: The buffered date string in ISO 8601 format.
+    """
+
+    # Handle None gracefully
+    if date_str is None:
+        raise ValueError(
+            "date_str cannot be None. Alert must have first_seen_at and last_seen_at. "
+            "This indicates a data quality issue with the alert from Sekoia API."
+        )
+
+    try:
+        clean_date_str = date_str.replace("Z", "+00:00") if date_str.endswith("Z") else date_str
+        dt_obj = datetime.fromisoformat(clean_date_str)
+        dt_buffered = dt_obj + timedelta(minutes=delta_minutes)
+        iso_str = dt_buffered.isoformat()
+        # Truncate fractional seconds to milliseconds if present, while preserving timezone/offset.
+        iso_str = re.sub(r"(.*\.\d{3})\d*(Z|[+-]\d{2}:\d{2})$", r"\1\2", iso_str)
+        # Normalize UTC offset to 'Z'.
+        iso_str = iso_str.replace("+00:00", "Z")
+        return iso_str
+    except ValueError as e:
+        demisto.debug(f"Error applying time buffer: {e}")
+        return date_str
+
+
 """ COMMAND FUNCTIONS """
 
 
 def fetch_incidents(
     client: Client,
     max_results: int | None,
-    last_run: dict[str, int],
+    last_run: dict[str, int | list[str]],
     first_fetch_time: int | None,
     alert_status: str | None,
     alert_urgency: str | None,
@@ -569,7 +621,7 @@ def fetch_incidents(
     mirror_direction: str | None,
     fetch_with_assets: bool | None,
     fetch_with_kill_chain: bool | None,
-) -> tuple[dict[str, int], list[dict]]:
+) -> tuple[dict[str, int | list[str]], list[dict[str, Any]]]:
     """
     This function retrieves new alerts every interval (default is 1 minute).
     It has to implement the logic of making sure that incidents are fetched only onces and no incidents are missed.
@@ -630,10 +682,10 @@ def fetch_incidents(
                     demisto.debug(f"Error fetching incident {incident['rawJSON']['short_id']}: {e}")
                     # Rerun command to get events
                     earliest_time = incident["rawJSON"]["first_seen_at"]
-                    latest_time = "now"
+                    latest_time = incident["rawJSON"]["last_seen_at"]
                     term = f"alert_short_ids:{incident['rawJSON']['short_id']}"
 
-                    alert = handle_alert_events_query(client, incident["rawJSON"], earliest_time, latest_time, term)
+                    alert, _ = handle_alert_events_query(client, incident["rawJSON"], earliest_time, latest_time, term)
                     incident["rawJSON"] = alert
                     # If the incident is not finished, we will keep it in the cache
                     not_finished_incident.append(incident)
@@ -642,9 +694,9 @@ def fetch_incidents(
         cached_context["fetch_cache"] = not_finished_incident
         set_integration_context(cached_context)
 
-    # Get the last fetch time, if exists
-    # last_run is a dict with a single key, called last_fetch
+    # Get the last fetch time and processed alert IDs from last_run
     last_fetch = last_run.get("last_fetch")
+    processed_alert_ids: list[str] = cast(list[str], last_run.get("processed_ids", []))
 
     # The case where no last_fetch or first_fetch_time are present.
     if last_fetch is None and first_fetch_time is None:
@@ -658,7 +710,7 @@ def fetch_incidents(
         last_fetch = first_fetch_time
     else:
         # otherwise use the stored last fetch
-        last_fetch = int(last_fetch)
+        last_fetch = cast(int, last_fetch)
 
     # Convert time from epoch to ISO8601 in the correct format and add the ,now also
     alerts_created_at = f"{time_converter(str(last_fetch))},now"
@@ -666,32 +718,57 @@ def fetch_incidents(
     # for type checking, making sure that latest_created_time is int
     latest_created_time = cast(int, last_fetch)
 
-    alerts = fetch_alerts_with_pagination(
+    # Track IDs of alerts with the latest timestamp for next run
+    # Carry forward previously processed IDs to prevent re-processing when no new alerts arrive
+    current_processed_ids: list[str] = list(processed_alert_ids)
+
+    # Increase the API limit to account for already-processed alerts at the boundary timestamp.
+    # Without this, when all returned alerts are already processed, the fetch gets stuck
+    # because there's no room in the API response for newer alerts.
+    num_processed = len(processed_alert_ids)
+    fetch_limit = max_results + num_processed if max_results else max_results
+
+    alerts = fetch_alerts_asc_mode(
         client,
         alert_status,
         alert_urgency,
         alert_type,
-        max_results,
+        fetch_limit,
         alerts_created_at,
         None,
         "created_at",
     )
 
     # Initiate an empty list to store cached incidents
-    cached_incidents = []
+    cached_incidents: list[dict[str, Any]] = []
 
     for alert in alerts:
         # If no created_time set is as epoch (0). We use time in ms so we must
         # convert it from the Sekoia XDR API response
-        incident_created_time = int(alert.get("created_at", "0"))
-        incident_created_time_ms = incident_created_time * 1000
+        alert_created_time = int(alert.get("created_at", "0"))
+        alert_created_time_ms = alert_created_time * 1000
+        alert_id = alert.get("short_id")
 
-        # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
-        if last_fetch and incident_created_time <= last_fetch:
+        # Skip alerts without a valid ID
+        if not alert_id:
+            demisto.debug(f"Skipping alert without short_id: {alert}")
             continue
 
+        # Skip if this alert was already processed (same timestamp as last_fetch and in processed list)
+        if alert_created_time == last_fetch and alert_id in processed_alert_ids:
+            demisto.debug(f"Skipping already processed alert {alert_id} with timestamp {alert_created_time}")
+            continue
+
+        # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
+        if last_fetch and alert_created_time < last_fetch:
+            continue
+
+        # Stop processing if we've reached the max_results limit for new incidents
+        if max_results and (len(incidents) + len(cached_incidents)) >= max_results:
+            break
+
         # If no name is present it will throw an exception
-        incident_name = alert["title"]
+        alert_name = alert["title"]
         urgency = alert["urgency"]
 
         # Add assets information to the alert, if fetch_with_assets is set to True
@@ -717,15 +794,15 @@ def fetch_incidents(
         # Add events information to the alert, if fetch_mode is set to "Fetch With All Events"
         if fetch_mode == "Fetch With All Events":
             earliest_time = alert["first_seen_at"]
-            latest_time = "now"
+            latest_time = alert["last_seen_at"]
             term = f"alert_short_ids:{alert['short_id']}"
 
-            alert = handle_alert_events_query(client, alert, earliest_time, latest_time, term)
+            alert, _ = handle_alert_events_query(client, alert, earliest_time, latest_time, term)
 
         # Start building the incident
         incident = {
-            "name": incident_name,
-            "occurred": timestamp_to_datestring(incident_created_time_ms),
+            "name": alert_name,
+            "occurred": timestamp_to_datestring(alert_created_time_ms),
             "severity": convert_to_demisto_severity(urgency.get("display", "Low")),
         }
         # If the integration parameter is set to mirror add the appropriate fields to the incident
@@ -734,22 +811,30 @@ def fetch_incidents(
             "Outgoing",
             "Incoming and Outgoing",
         ]
-        incident["rawJSON"] = json.dumps(alert)
         incident["dbotMirrorDirection"] = MIRROR_DIRECTION.get(str(mirror_direction))
         incident["dbotMirrorId"] = alert["short_id"]
 
-        # Add the alert to the incident
+        # Add the alert to the incident only if events are ready (or events not requested)
         if not alert.get("job_uuid"):
+            # Events are ready or not requested - create incident immediately
             incident["rawJSON"] = json.dumps(alert)
             incidents.append(incident)
         else:
-            # If the alert has a job uuid, we will not dumps it to a string to make it easy
+            # Events still pending - cache the incident for next fetch cycle
+            # Keep rawJSON as dict (not dumped) for easier manipulation in cache
             incident["rawJSON"] = alert
             cached_incidents.append(incident)
+            demisto.debug(f"Alert {alert_id} cached pending event search {alert.get('job_uuid')}")
 
-        # Update last run and add incident if the incident is newer than last fetch
-        if incident_created_time > latest_created_time:
-            latest_created_time = incident_created_time
+        # Update latest_created_time and track processed IDs
+        # If timestamp is newer than last_fetch, reset the processed_ids list
+        if alert_created_time > latest_created_time:
+            latest_created_time = alert_created_time
+            current_processed_ids = [alert_id]  # Reset for new timestamp
+        elif alert_created_time == latest_created_time:
+            # Same timestamp, add to list if not already there
+            if alert_id not in current_processed_ids:
+                current_processed_ids.append(alert_id)
 
     # Store the list of all alert in the cache
     if len(cached_incidents) > 0:
@@ -765,8 +850,8 @@ def fetch_incidents(
             context_cache["fetch_cache"] = fetch_cache_list
             set_integration_context(context_cache)
 
-    # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {"last_fetch": latest_created_time}
+    # Save the next_run with both timestamp and processed IDs in last_run (persistent)
+    next_run: dict[str, int | list[str]] = {"last_fetch": latest_created_time, "processed_ids": current_processed_ids}
     return next_run, incidents
 
 
@@ -831,10 +916,10 @@ def get_remote_data_command(
         # Add the events to the alert
         if mirror_events and alert["status"]["name"] not in ["Closed", "Rejected"]:
             earliest_time = alert["first_seen_at"]
-            latest_time = "now"
+            latest_time = alert["last_seen_at"]
             term = f"alert_short_ids:{alert['short_id']}"
 
-            alert = handle_alert_events_query(client, alert, earliest_time, latest_time, term)
+            alert, _ = handle_alert_events_query(client, alert, earliest_time, latest_time, term)
 
         # This adds all the information from the XSOAR incident.
         demisto.debug(f"Alert {alert_short_id} with status {alert_status} have this info updated: {alert}")
@@ -924,10 +1009,10 @@ def get_remote_data_command(
             demisto.debug(f"Error fetching incident {alert_object['alert']['short_id']}: {e}")
             # Rerun command to get events
             earliest_time = alert_object["alert"]["first_seen_at"]
-            latest_time = "now"
+            latest_time = alert_object["alert"]["last_seen_at"]
             term = f"alert_short_ids:{alert_object['alert']['short_id']}"
 
-            alert = handle_alert_events_query(client, alert_object["alert"], earliest_time, latest_time, term)
+            alert, _ = handle_alert_events_query(client, alert_object["alert"], earliest_time, latest_time, term)
             alert_object["alert"] = alert
 
             # Update the cached alert in the context
@@ -967,7 +1052,7 @@ def get_modified_remote_data_command(client: Client, args):
     converted_time = time_converter(formatted_last_update)
     last_update_time = f"{converted_time},now"
 
-    raw_alerts = fetch_alerts_with_pagination(client, None, None, None, 100, None, last_update_time, "updated_at")
+    raw_alerts = fetch_alerts_asc_mode(client, None, None, None, 100, None, last_update_time, "updated_at")
 
     # Append the modified alert ids to the list
     # We can have alerts in this list that are already in the cache
@@ -1417,24 +1502,45 @@ def get_kill_chain_command(client: Client, args: dict[str, Any]) -> CommandResul
 
 def http_request_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
-    method, url_suffix, params, data = (
-        args["method"],
-        args["url_sufix"],
-        args.get("parameters", {}),
-        args.get("data", {}),
-    )
+    method = args["method"]
+    url_suffix = args.get("url_suffix") or args.get("url_sufix")
 
-    request = client.http_request(method=method, params=params, url_suffix=url_suffix, data=data)
-    readable_output = tableToMarkdown(
-        f"The HTTP {method} request with params {params} returned the following information:",
-        request["items"] if request["items"] else request,
-    )
+    if not url_suffix:
+        raise DemistoException("Either 'url_suffix' or 'url_sufix' parameter must be provided")
+
+    params = args.get("parameters", {})
+    data_arg = args.get("data", "")
+
+    # Parse data if provided
+    data = None
+    if data_arg:
+        try:
+            data = json.loads(data_arg.replace("'", '"'))
+        except json.JSONDecodeError as e:
+            raise DemistoException(f"Data argument is not a valid JSON: {e}")
+
+    # Make HTTP request with client
+    http_response = client.http_request(method=method, params=params, url_suffix=url_suffix, data=data)
+
+    # Extract response items if available
+    response = http_response.get("items", http_response) if isinstance(http_response, dict) else http_response
+
+    # Build output text based on what parameters were provided
+    output_parts = [f"### HTTP {method} request to {url_suffix}"]
+    if params:
+        output_parts.append(f"with params {params}")
+    if data:
+        output_parts.append(f"with data {data}")
+    output_parts.append("returned:")
+    output_text = " ".join(output_parts)
+
+    readable_output = tableToMarkdown(output_text, response)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="SekoiaXDR.http_request",
         outputs_key_field="uuid",
-        outputs=request,
+        outputs=response,
     )
 
 
@@ -1450,7 +1556,7 @@ def test_module(client: Client) -> str:
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-    # Check a JWT token’s validity
+    # Check a JWT token's validity
     # https://docs.sekoia.io/develop/rest_api/identity_and_authentication/#tag/User-Authentication/operation/get_validate_resource
 
     try:
@@ -1497,7 +1603,10 @@ def main() -> None:
 
     demisto.debug(f"Command being called is {command}")
     try:
-        headers = {"Authorization": f"Bearer {api_key}"}
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
         client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
         if command == "test-module":

@@ -11,7 +11,7 @@
   - Analyze the reputation of the initiating user IP addresses.
 - **Azure Detection Analysis**:
   - Investigate recent Azure security alerts for the initiating user to detect additional suspicious activity.
-  - If any detections found, investigate the related user agent. 
+  - If any detections found, investigate the related user agent.
 - **User Risk Analysis**:
   - Assess the risk level of the initiating user based on Cortex XSIAM Core and Azure risk score.
   - Investigate reasons behind any identified risks, including recent detections.

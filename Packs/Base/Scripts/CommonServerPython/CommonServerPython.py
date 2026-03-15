@@ -21,6 +21,7 @@ import types
 import urllib
 import gzip
 import ssl
+import signal
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -43,7 +44,7 @@ def __line__():
 
 # The number is the line offset from the beginning of the file. If you added an import, update this number accordingly.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 46, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 47, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -60,7 +61,11 @@ SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
 NUM_OF_WORKERS = 20
 HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
-
+JSON_SEPARATORS = (",", ":")  # To get the most compact JSON representation, we should specify (',', ':') to eliminate whitespace.
+DEFAULT_INSIGHT_CACHE_SIZE = 3072
+FETCH_COMMANDS = ('fetch-incidents', 'fetch-credentials', 'fetch-indicators', 'fetch-assets')
+LONG_RUNNING_COMMAND = 'long-running-execution'
+                                                
 
 def register_module_line(module_name, start_end, line, wrapper=0):
     global _MODULES_LINE_MAPPING
@@ -259,6 +264,7 @@ class EntryType(object):
     WARNING = 11
     STATIC_VIDEO_FILE = 12
     MAP_ENTRY_TYPE = 15
+    DEBUG_MODE_FILE = 16
     WIDGET = 17
     EXECUTION_METRICS = 19
 
@@ -345,6 +351,7 @@ class QuickActionPreview(object):
     :return: None
     :rtype: ``None``.
     """
+
     def __init__(self, id=None, title=None, description=None, status=None,
                  assignee=None, creation_date=None, severity=None):
         """
@@ -393,6 +400,7 @@ class MirrorObject(object):
     :return: None
     :rtype: ``None``.
     """
+
     def __init__(self, object_url=None, object_id=None, object_name=None):
         """
         A container class for storing ticket metadata used in mirroring integrations.
@@ -516,6 +524,7 @@ class DBotScoreReliability(object):
     :rtype: ``None``
     """
 
+    A_PLUS_PLUS = 'A++ - Reputation script'
     A_PLUS = 'A+ - 3rd party enrichment'
     A = 'A - Completely reliable'
     B = 'B - Usually reliable'
@@ -533,6 +542,7 @@ class DBotScoreReliability(object):
         # type: (str) -> bool
 
         return _type in (
+            DBotScoreReliability.A_PLUS_PLUS,
             DBotScoreReliability.A_PLUS,
             DBotScoreReliability.A,
             DBotScoreReliability.B,
@@ -544,6 +554,8 @@ class DBotScoreReliability(object):
 
     @staticmethod
     def get_dbot_score_reliability_from_str(reliability_str):  # pragma: no cover
+        if reliability_str == DBotScoreReliability.A_PLUS_PLUS:
+            return DBotScoreReliability.A_PLUS_PLUS
         if reliability_str == DBotScoreReliability.A_PLUS:
             return DBotScoreReliability.A_PLUS
         elif reliability_str == DBotScoreReliability.A:
@@ -596,7 +608,7 @@ class ErrorTypes(object):
 
 
 class FeedIndicatorType(object):
-    """Type of Indicator (Reputations), used in TIP integrations"""
+    """Type of Indicator (Reputations), used in TIM integrations"""
     Account = "Account"
     CVE = "CVE"
     Domain = "Domain"
@@ -2077,20 +2089,21 @@ def argToBoolean(value):
         :param value: the value to evaluate
         :type value: ``string|bool``
 
-        :return: a boolean representatation of 'value'
+        :return: a boolean representation of 'value'
         :rtype: ``bool``
     """
     if isinstance(value, bool):
         return value
     if isinstance(value, STRING_OBJ_TYPES):
-        if value.lower() in ['true', 'yes']:
+        if value.lower() in ('y', 'yes', 't', 'true', 'on', '1'):
             return True
-        elif value.lower() in ['false', 'no']:
+        elif value.lower() in ('n', 'no', 'f', 'false', 'off', '0'):
             return False
         else:
             raise ValueError('Argument does not contain a valid boolean-like value')
     else:
         raise ValueError('Argument is neither a string nor a boolean')
+
 
 def arg_to_bool_or_none(value):
     """
@@ -2106,6 +2119,7 @@ def arg_to_bool_or_none(value):
         return None
     else:
         return argToBoolean(value)
+
 
 def appendContext(key, data, dedup=False):
     """
@@ -2390,7 +2404,9 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     if not headers and isinstance(t, dict) and len(t.keys()) == 1:
         # in case of a single key, create a column table where each element is in a different row.
         headers = list(t.keys())
-        t = list(t.values())[0]
+        # if the value of the single key is a list, unpack it for creating a column table.
+        if isinstance(list(t.values())[0], list):
+            t = list(t.values())[0]
 
     if not isinstance(t, list):
         t = [t]
@@ -2951,6 +2967,24 @@ def is_ipv6_valid(address):
         return False
     return True
 
+def is_ip_address_internal(ip):
+    """
+    Checks if an IP address is an internal (RFC 1918) IP, Available from python3.
+
+    :return: True if the given IP address is an internal.
+    :rtype: ``bool``
+    """
+    if IS_PY3:
+        # pylint: disable=import-error
+        import ipaddress
+        # pylint: enable=import-error
+        try:
+            ip_obj = ipaddress.ip_address(ip)
+            return ip_obj.is_private
+        except ValueError:
+            return False
+    else:
+        return False
 
 def is_ip_valid(s, accept_v6_ips=False):
     """
@@ -3016,6 +3050,10 @@ class Common(object):
 
         @abstractmethod
         def to_context(self):
+            pass
+
+        @abstractmethod
+        def to_minimum_context(self):
             pass
 
         @staticmethod
@@ -3127,6 +3165,9 @@ class Common(object):
             }
             return ret_value
 
+        def to_minimum_context(self):
+            return self.to_context()
+
         def to_readable(self):
             dbot_score_to_text = {0: 'Unknown',
                                   1: 'Good',
@@ -3202,6 +3243,21 @@ class Common(object):
                 relationships_context = [relationship.to_context() for relationship in self.relationships if
                                          relationship.to_context()]
                 ret_value['Relationships'] = relationships_context
+
+            return ret_value
+
+        def to_minimum_context(self):
+            custom_context = {
+                'value': self.value
+            }
+
+            ret_value = {
+                self.CONTEXT_PATH: custom_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+            ret_value[Common.DBotScore.get_context_path()]['Type'] = self.indicator_type
 
             return ret_value
 
@@ -3556,6 +3612,25 @@ class Common(object):
 
             return ret_value
 
+        def to_minimum_context(self):
+            ip_context = {
+                'Address': self.ip
+            }
+
+            if self.ip_type == "IP":
+                context_path = Common.IP.CONTEXT_PATH
+            elif self.ip_type == "IPv6":
+                context_path = Common.IP.CONTEXT_PATH.replace("IP", "IPv6")
+
+            ret_value = {
+                context_path: ip_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
     class FileSignature(object):
         """
         FileSignature class
@@ -3593,6 +3668,9 @@ class Common(object):
                 'OriginalName': self.original_name,
             }
 
+        def to_minimum_context(self):
+            return self.to_context()
+
     class FeedRelatedIndicators(object):
         """
         FeedRelatedIndicators class
@@ -3623,6 +3701,9 @@ class Common(object):
                 'description': self.description
             }
 
+        def to_minimum_context(self):
+            return self.to_context()
+
     class Rank:
         """
         Single row in a rank grid field
@@ -3643,6 +3724,9 @@ class Common(object):
                 'source': self.source,
                 'rank': self.rank
             }
+
+        def to_minimum_context(self):
+            return self.to_context()
 
     class ExternalReference(object):
         """
@@ -3668,6 +3752,9 @@ class Common(object):
                 'sourcename': self.source_name,
                 'sourceid': self.source_id,
             }
+
+        def to_minimum_context(self):
+            return self.to_context()
 
     class Certificates(object):
         """
@@ -3704,6 +3791,9 @@ class Common(object):
                 'validto': self.valid_to
             }
 
+        def to_minimum_context(self):
+            return self.to_context()
+
     class Hash(object):
         """
         Hash class
@@ -3729,6 +3819,9 @@ class Common(object):
                 'value': self.hash_value,
             }
 
+        def to_minimum_context(self):
+            return self.to_context()
+
     class CommunityNotes(object):
         """
         CommunityNotes class
@@ -3753,6 +3846,9 @@ class Common(object):
                 'note': self.note,
                 'timestamp': self.timestamp,
             }
+
+        def to_minimum_context(self):
+            return self.to_context()
 
     class Publications(object):
         """
@@ -3789,6 +3885,9 @@ class Common(object):
                 'timestamp': self.timestamp,
             }
 
+        def to_minimum_context(self):
+            return self.to_context()
+
     class Behaviors(object):
         """
         Behaviors class
@@ -3813,6 +3912,9 @@ class Common(object):
                 'details': self.details,
                 'title': self.action,
             }
+
+        def to_minimum_context(self):
+            return self.to_context()
 
     class ThreatTypes(object):
         """
@@ -3842,6 +3944,9 @@ class Common(object):
                 'threatcategory': self.threat_category,
                 'threatcategoryconfidence': self.threat_category_confidence,
             }
+
+        def to_minimum_context(self):
+            return self.to_context()
 
     class WhoisRecord(object):
         """
@@ -3873,6 +3978,9 @@ class Common(object):
                 'date': self.whois_record_date
             }
 
+        def to_minimum_context(self):
+            return self.to_context()
+
     class DNSRecord(object):
         """
         DNSRecord class
@@ -3903,6 +4011,9 @@ class Common(object):
                 'data': self.dns_record_data
             }
 
+        def to_minimum_context(self):
+            return self.to_context()
+
     class CPE:
         """
         Represents one Common Platform Enumeration (CPE) object, see https://nvlpubs.nist.gov/nistpubs/legacy/ir/nistir7695.pdf
@@ -3922,6 +4033,9 @@ class Common(object):
             return {
                 'CPE': self.cpe,
             }
+
+        def to_minimum_context(self):
+            return self.to_context()
 
     class File(Indicator):
         """
@@ -4268,6 +4382,27 @@ class Common(object):
 
             return ret_value
 
+        def to_minimum_context(self):
+            file_context = {}
+
+            if self.md5:
+                file_context['MD5'] = self.md5
+            if self.sha1:
+                file_context['SHA1'] = self.sha1
+            if self.sha256:
+                file_context['SHA256'] = self.sha256
+            if self.sha512:
+                file_context['SHA512'] = self.sha512
+
+            ret_value = {
+                Common.File.CONTEXT_PATH: file_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
     class CVE(Indicator):
         """
         CVE indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#cve
@@ -4429,6 +4564,20 @@ class Common(object):
 
             return ret_value
 
+        def to_minimum_context(self):
+            cve_context = {
+                'ID': self.id
+            }
+
+            ret_value = {
+                Common.CVE.CONTEXT_PATH: cve_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
     class EMAIL(Indicator):
         """
         EMAIL indicator class
@@ -4517,6 +4666,18 @@ class Common(object):
                 relationships_context = [relationship.to_context() for relationship in self.relationships if
                                          relationship.to_context()]
                 email_context['Relationships'] = relationships_context
+
+            ret_value = {
+                Common.EMAIL.CONTEXT_PATH: email_context
+            }
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+            return ret_value
+
+        def to_minimum_context(self):
+            email_context = {
+                'Email': {'Address': self.address}
+            }
 
             ret_value = {
                 Common.EMAIL.CONTEXT_PATH: email_context
@@ -4765,6 +4926,20 @@ class Common(object):
                 relationships_context = [relationship.to_context() for relationship in self.relationships if
                                          relationship.to_context()]
                 url_context['Relationships'] = relationships_context
+
+            ret_value = {
+                Common.URL.CONTEXT_PATH: url_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
+        def to_minimum_context(self):
+            url_context = {
+                'Data': self.url
+            }
 
             ret_value = {
                 Common.URL.CONTEXT_PATH: url_context
@@ -5092,6 +5267,20 @@ class Common(object):
 
             return ret_value
 
+        def to_minimum_context(self):
+            domain_context = {
+                'Name': self.domain
+            }
+
+            ret_value = {
+                Common.Domain.CONTEXT_PATH: domain_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
     class Endpoint(Indicator):
         """ ignore docstring
         Endpoint indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#endpoint
@@ -5180,6 +5369,17 @@ class Common(object):
                     raise ValueError('Is Isolated does not have a valid value such as: Yes, No, Pending'
                                      ' isolation or Pending unisolation')
                 endpoint_context['IsIsolated'] = self.is_isolated
+
+            ret_value = {
+                Common.Endpoint.CONTEXT_PATH: endpoint_context
+            }
+
+            return ret_value
+
+        def to_minimum_context(self):
+            endpoint_context = {
+                'ID': self.id
+            }
 
             ret_value = {
                 Common.Endpoint.CONTEXT_PATH: endpoint_context
@@ -5280,7 +5480,7 @@ class Common(object):
             if self.creation_date:
                 account_context['CreationDate'] = self.creation_date
 
-            irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'id', 'create_context_table', 'kwargs']
+            irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'id', 'create_context_table', 'kwargs', 'to_minimum_context']
             details = [detail for detail in dir(self) if not detail.startswith('__') and detail not in irrelevent]
 
             for detail in details:
@@ -5333,6 +5533,21 @@ class Common(object):
 
             return ret_value
 
+        def to_minimum_context(self):
+            account_context = {}
+
+            if self.id:
+                account_context['ID'] = self.id
+
+            ret_value = {
+                Common.Account.CONTEXT_PATH: account_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
     class Cryptocurrency(Indicator):
         """
         Cryptocurrency indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#cryptocurrency
@@ -5367,6 +5582,21 @@ class Common(object):
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
+
+            ret_value = {
+                Common.Cryptocurrency.CONTEXT_PATH: crypto_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
+        def to_minimum_context(self):
+            crypto_context = {
+                'Address': self.address,
+                'AddressType': self.address_type
+            }
 
             ret_value = {
                 Common.Cryptocurrency.CONTEXT_PATH: crypto_context
@@ -5467,6 +5697,21 @@ class Common(object):
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
+
+            ret_value = {
+                Common.AttackPattern.CONTEXT_PATH: attack_pattern_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
+        def to_minimum_context(self):
+            attack_pattern_context = {
+                'STIXID': self.stix_id,
+                'Value': self.value
+            }
 
             ret_value = {
                 Common.AttackPattern.CONTEXT_PATH: attack_pattern_context
@@ -5606,6 +5851,9 @@ class Common(object):
 
             return publickey_context
 
+        def to_minimum_context(self):
+            return self.to_context()
+
     class GeneralName(object):
         """
         GeneralName class
@@ -5658,6 +5906,9 @@ class Common(object):
                 'Type': self.gn_type,
                 'Value': self.gn_value
             }
+
+        def to_minimum_context(self):
+            return self.to_context()
 
         def get_value(self):
             return self.gn_value
@@ -5769,6 +6020,9 @@ class Common(object):
             def to_context(self):
                 return self.gn.to_context()
 
+            def to_minimum_context(self):
+                return self.to_context()
+
             def get_value(self):
                 return self.gn.get_value()
 
@@ -5812,6 +6066,9 @@ class Common(object):
                     authority_key_identifier_context["KeyIdentifier"] = self.key_identifier
 
                 return authority_key_identifier_context
+
+            def to_minimum_context(self):
+                return self.to_context()
 
         class DistributionPoint(object):
             """
@@ -5859,6 +6116,9 @@ class Common(object):
 
                 return distribution_point_context
 
+            def to_minimum_context(self):
+                return self.to_context()
+
         class CertificatePolicy(object):
             """
             CertificatePolicy class
@@ -5892,6 +6152,9 @@ class Common(object):
 
                 return certificate_policies_context
 
+            def to_minimum_context(self):
+                return self.to_context()
+
         class AuthorityInformationAccess(object):
             """
             AuthorityInformationAccess class
@@ -5920,6 +6183,9 @@ class Common(object):
                     "AccessMethod": self.access_method,
                     "AccessLocation": self.access_location.to_context()
                 }
+
+            def to_minimum_context(self):
+                return self.to_context()
 
         class BasicConstraints(object):
             """
@@ -5953,6 +6219,9 @@ class Common(object):
                     basic_constraints_context["PathLength"] = self.path_length
 
                 return basic_constraints_context
+
+            def to_minimum_context(self):
+                return self.to_context()
 
         class SignedCertificateTimestamp(object):
             """
@@ -6019,6 +6288,9 @@ class Common(object):
                 timestamps_context["EntryType"] = self.entry_type
 
                 return timestamps_context
+
+            def to_minimum_context(self):
+                return self.to_context()
 
         class ExtensionType(object):
             """
@@ -6257,6 +6529,9 @@ class Common(object):
                 extension_context["Value"] = self.value
 
             return extension_context
+
+        def to_minimum_context(self):
+            return self.to_context()
 
     class Certificate(Indicator):
         """
@@ -6526,6 +6801,29 @@ class Common(object):
 
             return ret_value
 
+        def to_minimum_context(self):
+            certificate_context = {
+                "SubjectDN": self.subject_dn
+            }
+
+            if self.sha512:
+                certificate_context["SHA512"] = self.sha512
+            if self.sha256:
+                certificate_context["SHA256"] = self.sha256
+            if self.sha1:
+                certificate_context["SHA1"] = self.sha1
+            if self.md5:
+                certificate_context["MD5"] = self.md5
+
+            ret_value = {
+                Common.Certificate.CONTEXT_PATH: certificate_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
     class Tactic(Indicator):
         """
         Tactic indicator
@@ -6608,6 +6906,21 @@ class Common(object):
 
             ret_value = {
                 Common.AttackPattern.CONTEXT_PATH: attack_pattern_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
+        def to_minimum_context(self):
+            tactic_context = {
+                'STIXID': self.stix_id,
+                'Value': self.value
+            }
+
+            ret_value = {
+                Common.Tactic.CONTEXT_PATH: tactic_context
             }
 
             if self.dbot_score:
@@ -7436,14 +7749,47 @@ class CommandResults:
         indicators = [self.indicator] if self.indicator else self.indicators
 
         if indicators:
+            # Get InsightCacheSize from demisto.callingContext (in KB, default 3 MB = 3072 KB)
+            insight_cache_size_kb = demisto.callingContext.get("context", {}).get("InsightCacheSize", DEFAULT_INSIGHT_CACHE_SIZE)
+            insight_cache_size_bytes = insight_cache_size_kb * 1024
+
+            virtual_outputs = {}
             for indicator in indicators:
                 context_outputs = indicator.to_context()
 
                 for key, value in context_outputs.items():
-                    if key not in outputs:
-                        outputs[key] = []
+                    if key not in virtual_outputs:
+                        virtual_outputs[key] = []
+                    virtual_outputs[key].append(value)
 
-                    outputs[key].append(value)
+            context_size = len(json.dumps(virtual_outputs, default=str, separators=JSON_SEPARATORS, ensure_ascii=False))
+
+            # If the context size exceeds the limit, use to_minimum_context() instead
+            if context_size > insight_cache_size_bytes:
+                # Measure performance of to_minimum_context() - minimal context generation
+                for indicator in indicators:
+                    context_outputs = indicator.to_minimum_context()
+
+                    for key, value in context_outputs.items():
+                        if key not in outputs:
+                            outputs[key] = []
+
+                        outputs[key].append(value)
+
+                if human_readable:
+                    human_readable += "\nNote! some of the context data was not included because it went over the {}KB limit.".format(insight_cache_size_kb)
+                else:
+                    human_readable = "Note! some of the context data was not included because it went over the {}KB limit.".format(insight_cache_size_kb)
+
+                demisto.debug(
+                    "Context size ({} chars) exceeded limit ({} bytes). Will use the minimum context.".format(context_size, insight_cache_size_bytes)
+                )
+            else:
+                # Use the already calculated full context
+                outputs = virtual_outputs
+                demisto.debug(
+                    "Using full context ({} chars within {} bytes limit). ".format(context_size, insight_cache_size_bytes)
+                )
 
         if self.tags:
             tags = self.tags  # type: ignore[assignment]
@@ -7682,10 +8028,7 @@ def return_error(message, error='', outputs=None):
     """
     is_command = hasattr(demisto, 'command')
     try:
-        is_server_handled = is_command and demisto.command() in ('fetch-incidents',
-                                                                 'fetch-credentials',
-                                                                 'long-running-execution',
-                                                                 'fetch-indicators')
+        is_server_handled = is_command and (demisto.command() in FETCH_COMMANDS or demisto.command() == LONG_RUNNING_COMMAND)
     except Exception:
         is_server_handled = False
     message = LOG(message)
@@ -8487,6 +8830,29 @@ def response_to_context(reponse_obj, user_predefiend_keys=None):
         return reponse_obj
 
 
+def safe_strptime(date_str, datetime_format, strptime=datetime.strptime):
+    """
+    Parses a date string to a datetime object, handling cases where the microsecond component is missing.
+
+    :type date_str: ``str``
+    :param date_str: The date string to parse (required)
+
+    :type datetime_format: ``str``
+    :param datetime_format: The format of the date string (required)
+
+    :type strptime: ``Callable``
+    :param strptime: The function to use for parsing the date string (optional)
+
+    :return: The parsed datetime object
+    :rtype: ``datetime.datetime``
+    """
+    try:
+        return strptime(date_str, datetime_format)
+    except ValueError as e:
+        demisto.debug('Failed to parse date {} with format {}: {}'.format(date_str, datetime_format, str(e)))
+        return strptime(date_str, datetime_format.replace('.%f', ''))
+
+
 def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0, utc=True):
     """
         THIS FUNCTTION IS DEPRECATED - USE dateparser.parse instead
@@ -8602,7 +8968,7 @@ def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
       :rtype: ``int``
     """
     if isinstance(date_str_or_dt, STRING_OBJ_TYPES):
-        return int(time.mktime(time.strptime(date_str_or_dt, date_format)) * 1000)
+        return int(time.mktime(safe_strptime(date_str_or_dt, date_format, time.strptime)) * 1000)
 
     # otherwise datetime.datetime
     return int(time.mktime(date_str_or_dt.timetuple()) * 1000)
@@ -8774,7 +9140,7 @@ def is_xsoar():
     :return: True iff the platform is XSOAR.
     :rtype: ``bool``
     """
-    return "xsoar" in demisto.demistoVersion().get("platform")
+    return "xsoar" in demisto.demistoVersion().get("platform", "")
 
 
 def is_xsoar_on_prem():
@@ -9091,7 +9457,7 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
         :rtype: ``(datetime.datetime, datetime.datetime)``
     """
     try:
-        return datetime.strptime(date_string, date_format)
+        return safe_strptime(date_string, date_format)
     except ValueError as e:
         error_message = str(e)
 
@@ -9138,7 +9504,7 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
         #      '2022-01-23T12:34:56.123456789' to '2022-01-23T12:34:56.123456'
         date_string = re.sub(r'([0-9]+\.[0-9]{6})[0-9]*([Zz]|[+-]\S+?)?', '\\1\\2', date_string)
 
-        return datetime.strptime(date_string, date_format)
+        return safe_strptime(date_string, date_format)
 
 
 def build_dbot_entry(indicator, indicator_type, vendor, score, description=None, build_malicious=True):
@@ -9265,7 +9631,7 @@ if 'requests' in sys.modules:
 
         # The ciphers string used to replace default cipher string
 
-        CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:' \
+        CIPHERS_STRING = '@SECLEVEL=0:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:' \
                          'ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'
 
         class SSLAdapter(HTTPAdapter):
@@ -9324,6 +9690,7 @@ if 'requests' in sys.modules:
         """
 
         REQUESTS_TIMEOUT = 60
+        TIME_SENSITIVE_TOTAL_TIMEOUT = 15
 
         def __init__(
             self,
@@ -9353,7 +9720,6 @@ if 'requests' in sys.modules:
                 ensure_proxy_has_http_prefix()
             else:
                 skip_proxy()
-
             if not verify:
                 skip_cert_verification()
 
@@ -9362,7 +9728,18 @@ if 'requests' in sys.modules:
             system_timeout = os.getenv('REQUESTS_TIMEOUT', '')
             self.timeout = float(entity_timeout or system_timeout or timeout)
 
+            # Time-Sensitive Logic
+            self._time_sensitive_deadline = None
+            self._time_sensitive_total_timeout = self.TIME_SENSITIVE_TOTAL_TIMEOUT
+
+            if is_time_sensitive():
+                demisto.debug("Time-sensitive mode enabled. Setting execution time limit to {} seconds.".format(self._time_sensitive_total_timeout))
+                self._time_sensitive_deadline = time.time() + float(
+                    self._time_sensitive_total_timeout
+                )
+
             self.execution_metrics = ExecutionMetrics()
+
 
         def __del__(self):
             self._return_execution_metrics_results()
@@ -9377,6 +9754,7 @@ if 'requests' in sys.modules:
         def _implement_retry(self, retries=0,
                              status_list_to_retry=None,
                              backoff_factor=5,
+                             backoff_jitter=0.0,
                              raise_on_redirect=False,
                              raise_on_status=False):
             """
@@ -9405,6 +9783,10 @@ if 'requests' in sys.modules:
 
                 By default, backoff_factor set to 5
 
+            :type backoff_jitter ``float``
+            :param backoff_jitter: the sleep (backoff factor) is extended by
+                random.uniform(0, {backoff jitter})
+
             :type raise_on_redirect ``bool``
             :param raise_on_redirect: Whether, if the number of redirects is
                 exhausted, to raise a MaxRetryError, or to return a response with a
@@ -9427,6 +9809,7 @@ if 'requests' in sys.modules:
                     read=retries,
                     connect=retries,
                     backoff_factor=backoff_factor,
+                    backoff_jitter=backoff_jitter,
                     status=retries,
                     status_forcelist=status_list_to_retry,
                     raise_on_status=raise_on_status,
@@ -9454,7 +9837,7 @@ if 'requests' in sys.modules:
         def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
                           params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
-                          backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
+                          backoff_factor=5, backoff_jitter=0.0, raise_on_redirect=False, raise_on_status=False,
                           error_handler=None, empty_valid_codes=None, params_parser=None, with_metrics=False, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
@@ -9529,6 +9912,10 @@ if 'requests' in sys.modules:
 
                 By default, backoff_factor set to 5
 
+            :type backoff_jitter ``float``
+            :param backoff_jitter: the sleep (backoff factor) is extended by
+                random.uniform(0, {backoff jitter})
+
             :type raise_on_redirect ``bool``
             :param raise_on_redirect: Whether, if the number of redirects is
                 exhausted, to raise a MaxRetryError, or to return a response with a
@@ -9559,16 +9946,48 @@ if 'requests' in sys.modules:
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
             """
+            
+            # Time-Sensitive command Logic
+            request_timeout = timeout
+            request_retries = retries
+            remaining_time = None
+
+            # Time-Sensitive command mode
+            if self._time_sensitive_deadline:
+                remaining_time = self._time_sensitive_deadline - time.time()
+
+                if remaining_time <= 0:
+                    raise DemistoException(
+                            "Time-sensitive command execution time limit ({time_limit}s) reached before performing the API request."
+                            .format(time_limit=self._time_sensitive_total_timeout)
+                        )
+
+                request_retries = 0
+                request_timeout = remaining_time
+
+            # Set default timeout if one hasn't been set by user OR by time-sensitive logic
+            if request_timeout is None:
+                request_timeout = self.timeout
+
             try:
                 # Replace params if supplied
                 address = full_url if full_url else urljoin(self._base_url, url_suffix)
                 headers = headers if headers else self._headers
                 auth = auth if auth else self._auth
-                if retries:
-                    self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
-                if not timeout:
-                    timeout = self.timeout
-                if IS_PY3 and params_parser:  # The `quote_via` parameter is supported only in python3.
+
+                if request_retries:
+                    self._implement_retry(
+                        request_retries,
+                        status_list_to_retry,
+                        backoff_factor,
+                        backoff_jitter,
+                        raise_on_redirect,
+                        raise_on_status,
+                    )
+
+                if (
+                    IS_PY3 and params_parser
+                ):  # The `quote_via` parameter is supported only in python3.
                     params = urllib.parse.urlencode(params, quote_via=params_parser)
 
                 # Execute
@@ -9582,19 +10001,37 @@ if 'requests' in sys.modules:
                     files=files,
                     headers=headers,
                     auth=auth,
-                    timeout=timeout,
+                    timeout=request_timeout,
                     **kwargs
                 )
+
                 if not self._is_status_code_valid(res, ok_codes):
                     self._handle_error(error_handler, res, with_metrics)
 
-                return self._handle_success(res, resp_type, empty_valid_codes, return_empty_response, with_metrics)
+                return self._handle_success(
+                    res,
+                    resp_type,
+                    empty_valid_codes,
+                    return_empty_response,
+                    with_metrics,
+                )
 
             except requests.exceptions.ConnectTimeout as exception:
                 if with_metrics:
                     self.execution_metrics.timeout_error += 1
-                err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
-                          ' is incorrect or that the Server is not accessible from your host.'
+                err_msg = (
+                    "Connection Timeout Error - potential reasons might be that the Server URL parameter"
+                    " is incorrect or that the Server is not accessible from your host."
+                )
+                if (
+                    self._time_sensitive_deadline
+                    and remaining_time is not None
+                    and remaining_time <= request_timeout
+                ):
+                    err_msg = "Time-sensitive command execution time limit ({time_limit}s) exceeded. Original error: {original_msg}".format(
+                        time_limit=self._time_sensitive_total_timeout,
+                        original_msg=err_msg
+                    )
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.SSLError as exception:
                 if with_metrics:
@@ -10079,7 +10516,9 @@ def get_integration_context(sync=True, with_version=False):
         if with_version:
             return integration_context
         else:
-            return integration_context.get('context', {})
+            if isinstance(integration_context, list):
+                demisto.error("The integration context is a list with {} items".format(len(integration_context)))
+            return integration_context.get("context", {})
     else:
         return demisto.getIntegrationContext()
 
@@ -11353,6 +11792,10 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
                 *arguments: any additional arguments to the command function.
                 **kwargs: additional keyword arguments to the command function.
             """
+            if not isinstance(args, dict):
+                demisto.debug("Detected args of type {args_type}. Casting to dict.".format(args_type=type(args)))
+                args = dict(args or {})
+
             if not requires_polling_arg or argToBoolean(args.get(polling_arg_name, False)):
                 ScheduledCommand.raise_error_if_not_supported()
                 poll_result = func(args, *arguments, **kwargs)
@@ -11378,97 +11821,20 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
     return dec
 
 
-def get_pack_version(pack_name=''):
+def get_pack_version():
     """
-    Get a pack version.
-    The version can be retrieved either by a pack name or by the calling script/integration in which
-    script/integration is part of.
+    Get the pack version.
+    The version can be retrieved only for the pack that contains the running script or integration.
 
-    To get the version of the pack in which the calling script/integration is part of,
-    just call the function without pack_name.
-
-    :type pack_name: ``str``
-    :param pack_name: the pack name as mentioned in the pack metadata file to query its version.
-            use only if querying by a pack name.
-
-    :return: The pack version in which the integration/script is part of / the version of the requested pack name in
-        case provided. in case not found returns empty string.
+    :return: The pack version in which the integration/script is part of, in case not found returns empty string.
     :rtype: ``str``
     """
-
-    def _get_packs_by_query(_body_request):
-        packs_body_response = demisto.internalHttpRequest(
-            'POST', uri='/contentpacks/marketplace/search', body=json.dumps(body_request)
-        )
-        return _load_response(_response=packs_body_response.get('body')).get('packs') or []
-
-    def _load_response(_response):
-        try:
-            return json.loads(_response)
-        except json.JSONDecodeError:  # type: ignore[attr-defined]
-            demisto.debug('Unable to load response {response}'.format(response=_response))
-            return {}
-
-    def _extract_current_pack_version(_packs, _query_type, _entity_name):
-        # in case we have more than 1 pack returned from the search, need to make sure to retrieve the correct pack
-        if query_type == 'automation' or query_type == 'integration':
-            for pack in _packs:
-                for content_entity in (pack.get('contentItems') or {}).get(_query_type) or []:
-                    if (content_entity.get('name') or '') == _entity_name:
-                        return pack.get('currentVersion') or ''
-        else:
-            for pack in _packs:
-                if pack.get('name') == _entity_name:
-                    return pack.get('currentVersion') or ''
-        return ''
-
-    def _extract_integration_display_name(_integration_brand):
-        integrations_body_response = demisto.internalHttpRequest(
-            'POST', uri='/settings/integration/search', body=json.dumps({})
-        )
-        integrations_body_response = _load_response(_response=integrations_body_response.get('body'))
-        integrations = integrations_body_response.get('configurations') or []
-
-        for integration in integrations:
-            integration_display_name = integration.get('display')
-            if integration.get('id') == _integration_brand and integration_display_name:
-                return integration_display_name
-        return ''
-
-    # query by pack name
-    if pack_name:
-        entity_name = pack_name
-        body_request = {'packsQuery': entity_name}
-        query_type = 'pack'
-    # query by integration name
-    elif demisto.callingContext.get('integration'):  # True means its integration, False means its script/automation.
-        entity_name = (demisto.callingContext.get('context') or {}).get('IntegrationBrand') or ''
-        body_request = {'integrationsQuery': entity_name}
-        query_type = 'integration'
-    # query by script/automation name
+    global_name = "CONSTANT_PACK_VERSION"
+    global_vars = globals()
+    if global_name in global_vars:
+        return global_vars[global_name]
     else:
-        entity_name = (demisto.callingContext.get('context') or {}).get('ScriptName') or ''
-        body_request = {'automationQuery': entity_name}
-        query_type = 'automation'
-
-    pack_version = _extract_current_pack_version(
-        _packs=_get_packs_by_query(_body_request=body_request),
-        _query_type=query_type,
-        _entity_name=entity_name
-    )
-    if not pack_version and query_type == 'integration':
-        # handle the case where the display name of the integration is not the same as the integration brand
-        integration_display = _extract_integration_display_name(_integration_brand=entity_name)
-        if integration_display and integration_display != entity_name:
-            body_request['integrationsQuery'] = integration_display
-
-            return _extract_current_pack_version(
-                _packs=_get_packs_by_query(_body_request=body_request),
-                _query_type=query_type,
-                _entity_name=integration_display
-            )
         return ''
-    return pack_version
 
 
 def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, reliability=None,
@@ -11715,10 +12081,10 @@ def get_latest_incident_created_time(incidents, created_time_field, date_format=
     :rtype: ``str``
     """
     demisto.debug('lb: Getting latest incident created time')
-    latest_incident_time = datetime.strptime(incidents[0][created_time_field], date_format)
+    latest_incident_time = safe_strptime(incidents[0][created_time_field], date_format)
 
     for incident in incidents:
-        incident_time = datetime.strptime(incident[created_time_field], date_format)
+        incident_time = safe_strptime(incident[created_time_field], date_format)
         if incident_time > latest_incident_time:
             latest_incident_time = incident_time
 
@@ -11750,9 +12116,15 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
     deletion_threshold_in_seconds = look_back_in_seconds * 2
 
     new_found_incidents_ids = {}
+    latest_incident_time = max(found_incidents_ids.values() or [current_time])
+    demisto.debug('lb: latest_incident_time is {}'.format(latest_incident_time))
+
     for inc_id, addition_time in found_incidents_ids.items():
 
-        if current_time - addition_time <= deletion_threshold_in_seconds:
+        if (
+            current_time - addition_time <= deletion_threshold_in_seconds
+            or addition_time == latest_incident_time  # The latest IDs must be kept to avoid duplicate incidents
+        ):
             new_found_incidents_ids[inc_id] = addition_time
             demisto.debug('lb: Adding incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(
                 inc_id, addition_time, deletion_threshold_in_seconds))
@@ -11761,6 +12133,7 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
                 inc_id, addition_time, deletion_threshold_in_seconds))
     demisto.debug('lb: Number of new found ids: {}, their ids: {}'.format(
         len(new_found_incidents_ids), new_found_incidents_ids.keys()))
+
     return new_found_incidents_ids
 
 
@@ -12180,7 +12553,7 @@ def split_data_to_chunks(data, target_chunk_size):
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                          chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
-                         add_proxy_to_request=False, multiple_threads=False):
+                         add_proxy_to_request=False, multiple_threads=False, client_class=None):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -12217,6 +12590,9 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type multiple_threads: ``bool``
     :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
 
+    :type client_class: ``BaseClient``
+    :param client_class: The client class to use for the request.
+
     :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
     In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
     for future in concurrent.futures.as_completed(futures):
@@ -12234,7 +12610,8 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         data_type="events",
         should_update_health_module=should_update_health_module,
         add_proxy_to_request=add_proxy_to_request,
-        multiple_threads=multiple_threads
+        multiple_threads=multiple_threads,
+        client_class=client_class if client_class else BaseClient
     )
 
 
@@ -12347,7 +12724,8 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                        chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
-                       add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False):
+                       add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False,
+                       client_class=None):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -12394,6 +12772,9 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :type multiple_threads: ``bool``
     :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
     Note that when set to True, the updateModuleHealth should be done from the itnegration itself.
+
+    :type client_class: ``BaseClient``
+    :param client_class: The client class to use for the request.
 
     :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
     In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
@@ -12487,8 +12868,9 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)
-
-    client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
+    if client_class is None:
+        client_class = BaseClient
+    client = client_class(base_url=xsiam_url, proxy=add_proxy_to_request)
     data_chunks = split_data_to_chunks(data, chunk_size)
 
     def send_events(data_chunk):
@@ -12794,7 +13176,11 @@ def execute_polling_command(
     default_polling_timeout=600,
 ):
     r"""
-    Continuously executes a specified command until the command indicates polling is done or a
+    ###########################################
+    DO NOT USE THIS UNLESS ABOLUTLY NECESSERY!
+    ###########################################
+    This is intended only for special cases where polling is not supported.
+    Continuously executes a specified command and sleeps until the command indicates polling is done or a
     timeout is reached.
     :param command_name: The name of the initial Demisto command to execute.
     :type command_name: ``str``
@@ -12816,7 +13202,7 @@ def execute_polling_command(
     :raises DemistoException: If no command result entry is received, or if the polling times out.
     """
     polling_interval = arg_to_number(args.get(polling_interval_arg_name)) or default_polling_interval
-    polling_timeout =  arg_to_number(args.get(polling_timeout_arg_name)) or default_polling_timeout
+    polling_timeout = arg_to_number(args.get(polling_timeout_arg_name)) or default_polling_timeout
 
     if using_brand:
         args["using-brand"] = using_brand
@@ -12853,7 +13239,8 @@ def execute_polling_command(
             command_results.append(CommandResults(readable_output=human_readable, outputs=context_output))
 
         metadata = execution_result.get("Metadata", {})
-        demisto.debug("Command: {command_name} has entry metadata: {metadata}.".format(command_name=command_name, metadata=metadata))
+        demisto.debug("Command: {command_name} has entry metadata: {metadata}.".format(
+            command_name=command_name, metadata=metadata))
         if not metadata.get("polling"):
             demisto.debug("Finished running command: {command_name} with args: {args}. Returning results to war room.".format(
                 command_name=command_name, args=args))
@@ -12864,10 +13251,118 @@ def execute_polling_command(
         if using_brand:
             args["using-brand"] = using_brand
 
-        demisto.debug("Sleeping {polling_interval} seconds before next command execution.".format(polling_interval=polling_interval))
+        demisto.debug("Sleeping {polling_interval} seconds before next command execution.".format(
+            polling_interval=polling_interval))
         time.sleep(polling_interval)  # pylint: disable=E9003
 
     raise DemistoException("Timed out waiting for command: {command_name}.".format(command_name=command_name))
+
+
+class SignalTimeoutError(Exception):
+    """
+    Custom exception raised when the execution timeout is reached.
+
+    :return: None
+    :rtype: ``None``
+    """
+    pass
+
+
+class ExecutionTimeout(object):
+    """
+    Context manager to limit the execution time of a code block.
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    def __init__(self, seconds):
+        """
+        Initializes the ExecutionTimeout context manager.
+
+        :param seconds: The maximum execution time in seconds.
+        :type seconds: int or float
+        :return: None
+        :rtype: ``None``
+        """
+        self.seconds = int(seconds)
+
+    def _timeout_handler(self, signum, frame):
+        """
+        Signal handler that raises a `SignalTimeoutError`.
+
+        :param signum: The number of the signal received.
+        :type signum: int
+        :param frame: The current stack frame.
+        :type frame: frame object
+        :return: None
+        :rtype: ``None``
+        """
+        raise SignalTimeoutError
+
+    def __enter__(self):
+        """
+        Enters the context manager by setting up the signal handler for
+        SIGALRM and starting the timer.
+
+        :return: None
+        :rtype: ``None``
+        """
+        demisto.debug("Running with execution timeout: {seconds}.".format(seconds=self.seconds))
+        signal.signal(signal.SIGALRM, self._timeout_handler)  # Set handler for SIGALRM
+        signal.alarm(self.seconds)  # start countdown for SIGALRM to be raised
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        Exits the context manager by canceling the SIGALARM and
+        suppressing the `SignalTimeoutError`.
+
+        :param exc_type: The type of the exception that occurred, if any.
+        :param exc_val: The instance of the exception that occurred, if any.
+        :param exc_tb: A traceback object showing where the exception occurred, if any.
+        :return: True if the `SignalTimeoutError` was raised and suppressed, False otherwise.
+        :rtype: bool
+        """
+        demisto.debug("Resetting timed signal")
+        signal.alarm(0)  # Cancel SIGALRM if it's scheduled
+        return exc_type is SignalTimeoutError  # True if a timeout is reacched, False otherwise
+
+    @classmethod
+    def limit_time(cls, seconds, default_return_value=None):
+        """
+        Decorator method to limit the execution time of a function.
+
+        :param seconds: The maximum execution time in seconds.
+        :type seconds: int or float
+        :param default_return_value: The value to return if the function times out.
+        :return: Any
+        :rtype: ``any``
+        """
+        def wrapper(func):
+            @wraps(func)
+            def wrapped(*args, **kwargs):
+                return_value = default_return_value
+                with cls(seconds):
+                    return_value = func(*args, **kwargs)
+                    demisto.debug("The function: '{func_name}' finished in time.".format(func_name=func.__name__))
+                return return_value
+            return wrapped
+        return wrapper
+
+
+class ISOEncoder(json.JSONEncoder):
+    """
+    A custom JSONEncoder that converts datetime objects to ISO 8601 strings.
+
+    :return: The ISOEncoder object
+    :rtype: ``ISOEncoder``
+    """
+
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        # Let the base class handle other objects
+        return json.JSONEncoder.default(self, obj)
 
 
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402

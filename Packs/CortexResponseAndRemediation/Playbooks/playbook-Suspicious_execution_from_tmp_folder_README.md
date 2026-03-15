@@ -20,7 +20,7 @@ Investigation:
   - Suspicious access to shadow file
   - UNIX LOLBIN process connected to a rare external host
   - Persistence through service registration
-  - Adding execution privileges    
+  - Adding execution privileges
   - Modification of systemd service files
   - Adding execution privileges
   - Local account discovery

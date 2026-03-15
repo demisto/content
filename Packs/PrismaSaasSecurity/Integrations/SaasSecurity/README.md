@@ -100,12 +100,12 @@ Retrieves incidents from the SaaS Security platform.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Important: The limit value can range from 10 to 200 and must be in multiples of 10. Default is 50. | Optional |
+| limit | The number of incidents to pull. Important: The limit value can range from 10 to 200 and must be in multiples of 10. Default is 50. | Optional |
 | from | The start time of the query, filtered by the date the incident was updated,\ \ For example, `2021-08-23T09:26:25.872Z`. | Optional |
 | to | The end time of the query, filtered by the date the incident was updated. For example, `2021-08-23T09:26:25.872Z`. | Optional |
 | app_ids | Comma-separated list of application IDs. Run the 'saas-security-get-apps' command to return the Application ID, Name, and Type for all applications. | Optional |
 | state | The state of the incidents. If empty, retrieves all states. Possible values: "All", "Open", and "Closed". Possible values are: All, Open, Closed. Default is open. | Optional |
-| severity | The severity of the incidents. In none is selected, all severities will be pulled. Possible values: "1", "2", "3", "4", and "5". Possible values are: 1, 2, 3, 4, 5. | Optional |
+| severity | The severity of the incidents. If none is selected, all severities will be pulled. Possible values: "1.0", "2.0", "3.0", "4.0", and "5.0". | Optional |
 | status | The status of the incidents. Possible values: "New", "Assigned", "In Progress", "Pending", "No Reason", "Business Justified", "Misidentified", "In The Cloud", and "Dismiss". Possible values are: New, Assigned, In Progress, Pending, No Reason, Business Justified, Misidentified, In The Cloud, Dismiss. | Optional |
 | next_page | Get the next batch of incidents. No other argument is needed when providing this. | Optional |
 

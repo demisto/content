@@ -15,14 +15,9 @@ def test_extract_success(mocker, tavily_extract_client):
     """
     response = Response()
     response.status_code = 200
-    response._content = json.dumps({
-        "results": [
-            {
-                "url": "https://example.com",
-                "raw_content": "Example content from the web page."
-            }
-        ]
-    }).encode("utf-8")
+    response._content = json.dumps(
+        {"results": [{"url": "https://example.com", "raw_content": "Example content from the web page."}]}
+    ).encode("utf-8")
 
     http_request = mocker.patch.object(tavily_extract_client, "_http_request", return_value=response)
 
@@ -67,14 +62,9 @@ def test_extarct_command(mocker, tavily_extract_client):
     """
     response = Response()
     response.status_code = 200
-    response._content = json.dumps({
-        "results": [
-            {
-                "url": "https://example.com",
-                "raw_content": "Example content from the web page."
-            }
-        ]
-    }).encode("utf-8")
+    response._content = json.dumps(
+        {"results": [{"url": "https://example.com", "raw_content": "Example content from the web page."}]}
+    ).encode("utf-8")
 
     mocker.patch.object(tavily_extract_client, "_http_request", return_value=response)
 

@@ -4,7 +4,8 @@ commonfields:
 name: Sekoia XDR
 display: Sekoia XDR
 category: Analytics & SIEM
-sectionOrder:
+provider: Sekoia
+sectionorder:
 - Connect
 - Collect
 description: Fetch alerts and events from SEKOIA.IO XDR.\nTo use this integration, please create an API Key with the appropriate permissions.
@@ -1172,6 +1173,12 @@ script:
       description: Method to use with the http request (GET,POST,etc).
       defaultValue: GET
     - name: url_sufix
+      required: false
+      description: |
+          The URL suffix after https://api.sekoia.io, i.e. /v1/sic/alerts/ or /v1/asset-management/assets/.
+          DEPRECATED: Use 'url_suffix' instead. This parameter is kept for backward compatibility.
+      deprecated: true
+    - name: url_suffix
       required: true
       description: The URL suffix after https://api.sekoia.io, i.e. /v1/sic/alerts/ or /v1/asset-management/assets/.
     - name: parameters
@@ -1179,9 +1186,9 @@ script:
       type: keyValue
     - name: data
       description: Body of the request.
-      type: keyValue
+      type: string
     description: Command that performs a HTTP request to Sekoia using the integration authentication configured.
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.7090913
   isfetch: true
   runonce: false
   subtype: python3

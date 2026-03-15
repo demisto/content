@@ -36,6 +36,8 @@ args:
   predefined:
   - text
   - HTML
+- description: The mailbox address to send the email from.
+  name: from
 comment: |-
   Send email reply
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
@@ -53,7 +55,7 @@ subtype: python3
 system: true
 type: python
 fromversion: 5.0.0
-dockerimage: demisto/bs4-py3:1.0.0.3725026
+dockerimage: demisto/bs4-py3:1.0.0.5184771
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:

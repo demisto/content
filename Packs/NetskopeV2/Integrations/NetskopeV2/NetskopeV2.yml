@@ -1,4 +1,5 @@
 category: Network Security
+provider: Netskope
 commonfields:
   id: Netskope (API v2)
   version: -1
@@ -163,7 +164,7 @@ script:
     - contextPath: Netskope.List.pending
       description: URL List pending status ('1' if pending, '0' if not).
       type: number
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: ''
   subtype: python3

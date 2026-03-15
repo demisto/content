@@ -1,17 +1,35 @@
 category: Analytics & SIEM
-sectionOrder:
+provider: Microsoft
+sectionorder:
 - Connect
 - Collect
 commonfields:
   id: Microsoft Graph
   version: -1
 configuration:
-- defaultvalue: https://graph.microsoft.com
-  display: Host URL
+- defaultvalue: Worldwide
+  display: Azure Cloud
+  name: azure_cloud
+  required: false
+  type: 15
+  options:
+  - Worldwide
+  - US GCC
+  - US GCC-High
+  - DoD
+  - Germany
+  - China
+  - Custom
+  additionalinfo: When selecting the Custom option, the Host URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  section: Connect
+  advanced: true
+- display: Host URL
   name: host
-  required: true
+  required: false
   type: 0
   section: Connect
+  advanced: true
+  additionalinfo: The host URL. When using this parameter, select the Custom option for the Azure Cloud. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - defaultvalue: Alerts v2
   display: MS graph security alert API Version
   name: api_version
@@ -745,7 +763,7 @@ script:
       description: The comment's creation time.
       type: Date
   - deprecated: true
-    description: Deprecated. Use the Azure Active Directory Users integration instead.
+    description: Deprecated. Use the Entra ID Users integration instead.
     name: msg-get-users
     outputs:
     - contextPath: MsGraph.User.Email
@@ -766,7 +784,7 @@ script:
       name: user_id
       required: true
     deprecated: true
-    description: Deprecated. Use the Azure Active Directory Users integration instead.
+    description: Deprecated. Use the Entra ID Users integration instead.
     name: msg-get-user
     outputs:
     - contextPath: MsGraph.User.Email
@@ -1602,7 +1620,83 @@ script:
       isArray: false
       name: search_id
       required: true
+    - description: "Specify the statistics to generate. The possible values are: includeRefiners, includeQueryStats, includeUnindexedStats, advancedIndexing, locationsWithoutHits. The advancedIndexing and locationsWithoutHits values are only considered if includeUnindexedStats is set."
+      isArray: false
+      name: statistics_options
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - 'includeRefiners'
+        - 'includeQueryStats'
+        - 'includeUnindexedStats'
+        - 'advancedIndexing'
+        - 'locationsWithoutHits'
+    description: Starts an eDiscovery estimate statistics operation in Microsoft Purview. The operation calculates the size and number of items matching the search query.
+    execution: false
+    name: msg-run-estimate-statistics
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
     - description: The ID of the eDiscovery search.
+      isArray: false
+      name: search_id
+      required: true
+    outputs:
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.CaseID
+        description: The ID of the eDiscovery case.
+        type: String
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.SearchID
+        description: The ID of the eDiscovery search.
+        type: String
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.OperationID
+        description: The ID of the last estimate statistics operation.
+        type: String
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.Status
+        description: The current status of the last estimate statistics operation (e.g., running, succeeded, failed).
+        type: String
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.PercentProgress
+        description: The percent progress of the last estimate statistics operation.
+        type: Number
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.CreatedDateTime
+        description: The date and time when the estimate operation was created.
+        type: Date
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.CompletedDateTime
+        description: The date and time when the estimate operation completed.
+        type: Date
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.IndexedItemsCount
+        description: The number of indexed items found in the search.
+        type: Number
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.IndexedItemsSize
+        description: The total size (in bytes) of indexed items.
+        type: Number
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.UnindexedItemsCount
+        description: The number of unindexed items found in the search.
+        type: Number
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.UnindexedItemsSize
+        description: The total size (in bytes) of unindexed items.
+        type: Number
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.TotalItemsCount
+        description: The total number of items (indexed + unindexed).
+        type: Number
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.TotalItemsSize
+        description: The total size (in bytes) of all items (indexed + unindexed).
+        type: Number
+    description:  Retrieves the most recent eDiscovery estimate statistics operation for a given search in Microsoft Purview. Use this command after running 'msg-run-estimate-statistics' to check the results.
+    execution: false
+    polling: true
+    name: msg-get-last-estimate-statistics-operation
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The ID of the eDiscovery search.
+      isArray: false
+      name: search_id
+      required: true
+    - description: Whether the action is soft delete or hard delete.
       isArray: false
       name: purge_type
       required: false
@@ -1610,7 +1704,7 @@ script:
       predefined:
       - permanentlyDelete
       - recoverable
-    - description: The ID of the eDiscovery search.
+    - description: Define the locations to be in scope of the purge action.
       isArray: false
       name: purge_areas
       required: false
@@ -1619,8 +1713,7 @@ script:
       - teamsMessages
       - mailboxes
     description: |-
-      Delete Microsoft Teams messages contained in an eDiscovery search.
-      Note: This request purges Teams data only. It does not purge other types of data such as mailbox items.
+      Deletes mailbox items in Exchange or messages in Microsoft Teams that are included in an eDiscovery search.
 
       You can collect and purge the following categories of Teams content:
 
@@ -2197,6 +2290,18 @@ script:
       - truePositive
       - informationalExpectedActivity
       - unknownFutureValue
+    - name: severity
+      description: 'Indicates the possible impact on assets. The higher the severity, the bigger the impact. Typically, higher severity items require the most immediate attention. The possible values are: unknown, informational, low, medium, high, unknownFutureValue.'
+      auto: PREDEFINED
+      predefined:
+      - unknown
+      - informational
+      - low
+      - medium
+      - high
+      - unknownFutureValue
+    - name: resolving_comment
+      description: User input that explains the resolution of the incident and the classification choice. It contains free editable text.
     - name: custom_tags
       description: Array of custom tags associated with an incident.
     - name: timeout
@@ -2256,7 +2361,774 @@ script:
     - contextPath: MsGraph.Incident.systemTags
       description: The system tags associated with the incident.
       type: String collection
-  dockerimage: demisto/crypto:1.0.0.3539024
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The display name of the legal hold policy.
+      isArray: false
+      name: display_name
+      required: true
+    - description: The description of the legal hold policy.
+      isArray: false
+      name: description
+      required: false
+    - description: KQL query specifying content to be held in the specified locations. Learn about KQL (https://learn.microsoft.com/en-us/kusto/query/?view=azure-data-explorer&preserve-view=true).
+      isArray: false
+      name: content_query
+      required: false
+    description: Create a new ediscoveryHoldPolicy object.
+    name: msg-create-ediscovery-case-hold-policy
+    outputs:
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.ID
+      description: The ID of the eDiscovery hold policy.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.DisplayName
+      description: The display name of the legal hold.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.Description
+      description: The legal hold description.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.ContentQuery
+      description: KQL query that specifies content to be held. If empty, all content in the specified locations is held.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.IsEnabled
+      description: Indicates whether the hold is enabled and actively holding content.
+      type: Boolean
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.Status
+      description: The status of the legal hold. Possible values are Pending, Error, Success.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.Errors
+      description: Lists any errors that happened while placing the hold.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedDateTime
+      description: The date and time the legal hold was created.
+      type: Date
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedDateTime
+      description: The date and time the legal hold was last modified.
+      type: Date
+    # --- createdBy (identitySet) ---
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Application.ID
+      description: The unique identifier of the application associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Application.DisplayName
+      description: The display name of the application associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Application.TenantId
+      description: The tenant ID of the application identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ApplicationInstance.ID
+      description: The unique identifier of the application instance associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ApplicationInstance.DisplayName
+      description: The display name of the application instance associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ApplicationInstance.TenantId
+      description: The tenant ID of the application instance identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Conversation.ID
+      description: The unique identifier of the conversation (team or channel) associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Conversation.DisplayName
+      description: The display name of the conversation (team or channel) associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Conversation.TenantId
+      description: The tenant ID of the conversation identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ConversationIdentityType.ID
+      description: The identifier describing whether the conversation identifies a team or channel.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ConversationIdentityType.DisplayName
+      description: The display name describing whether the conversation identifies a team or channel.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ConversationIdentityType.TenantId
+      description: The tenant ID of the conversation identity type.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Device.ID
+      description: The unique identifier of the device associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Device.DisplayName
+      description: The display name of the device associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Device.TenantId
+      description: The tenant ID of the device identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Encrypted.ID
+      description: The unique identifier of the encrypted identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Encrypted.DisplayName
+      description: The display name of the encrypted identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Encrypted.TenantId
+      description: The tenant ID of the encrypted identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.OnPremises.ID
+      description: The unique identifier of the on-premises identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.OnPremises.DisplayName
+      description: The display name of the on-premises identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.OnPremises.TenantId
+      description: The tenant ID of the on-premises identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Guest.ID
+      description: The unique identifier of the guest identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Guest.DisplayName
+      description: The display name of the guest identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Guest.TenantId
+      description: The tenant ID of the guest identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Phone.ID
+      description: The unique identifier of the phone identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Phone.DisplayName
+      description: The display name of the phone identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Phone.TenantId
+      description: The tenant ID of the phone identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.User.ID
+      description: The unique identifier of the user associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.User.DisplayName
+      description: The display name of the user associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.User.TenantId
+      description: The tenant ID of the user identity associated with this action.
+      type: String
+    # --- lastModifiedBy (identitySet) ---
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Application.ID
+      description: The unique identifier of the application associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Application.DisplayName
+      description: The display name of the application associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Application.TenantId
+      description: The tenant ID of the application identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ApplicationInstance.ID
+      description: The unique identifier of the application instance associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ApplicationInstance.DisplayName
+      description: The display name of the application instance associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ApplicationInstance.TenantId
+      description: The tenant ID of the application instance identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Conversation.ID
+      description: The unique identifier of the conversation (team or channel) associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Conversation.DisplayName
+      description: The display name of the conversation (team or channel) associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Conversation.TenantId
+      description: The tenant ID of the conversation identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ConversationIdentityType.ID
+      description: The identifier describing whether the conversation identifies a team or channel.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ConversationIdentityType.DisplayName
+      description: The display name describing whether the conversation identifies a team or channel.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ConversationIdentityType.TenantId
+      description: The tenant ID of the conversation identity type.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Device.ID
+      description: The unique identifier of the device associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Device.DisplayName
+      description: The display name of the device associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Device.TenantId
+      description: The tenant ID of the device identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Encrypted.ID
+      description: The unique identifier of the encrypted identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Encrypted.DisplayName
+      description: The display name of the encrypted identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Encrypted.TenantId
+      description: The tenant ID of the encrypted identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.OnPremises.ID
+      description: The unique identifier of the on-premises identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.OnPremises.DisplayName
+      description: The display name of the on-premises identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.OnPremises.TenantId
+      description: The tenant ID of the on-premises identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Guest.ID
+      description: The unique identifier of the guest identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Guest.DisplayName
+      description: The display name of the guest identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Guest.TenantId
+      description: The tenant ID of the guest identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Phone.ID
+      description: The unique identifier of the phone identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Phone.DisplayName
+      description: The display name of the phone identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Phone.TenantId
+      description: The tenant ID of the phone identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.User.ID
+      description: The unique identifier of the user associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.User.DisplayName
+      description: The display name of the user associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.User.TenantId
+      description: The tenant ID of the user identity associated with this action.
+      type: String
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The policy ID that is intended to be deleted.
+      isArray: false
+      name: hold_policy_id
+      required: true
+    description: Delete an eDiscovery hold policy. This command submits a deletion request to Microsoft Graph; the policy may not be removed immediately and can take some time to complete.
+    name: msg-delete-ediscovery-case-hold-policy
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The policy ID that is intended to be updated.
+      isArray: false
+      name: hold_policy_id
+      required: true
+    - description: The description of the legal hold policy.
+      isArray: false
+      name: description
+      required: false
+    - description: KQL query specifying content to be held in the specified locations. Learn about KQL (https://learn.microsoft.com/en-us/kusto/query/?view=azure-data-explorer&preserve-view=true).
+      isArray: false
+      name: content_query
+      required: false
+    description: Update the properties of an ediscoveryHoldPolicy object.
+    name: msg-update-ediscovery-case-hold-policy
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The ID of the legal hold policy.
+      isArray: false
+      name: hold_policy_id
+      required: false
+    - description: Number of total results to return.
+      isArray: false
+      name: limit
+      required: false
+      defaultValue: 50
+    - description: Show all results if true.
+      isArray: false
+      name: all_results
+      required: false
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+      auto: PREDEFINED
+    description: Get a list of the ediscoveryHoldPolicy objects and their properties.
+    name: msg-list-ediscovery-case-hold-policy
+    outputs:
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.ID
+      description: The ID of the eDiscovery hold policy.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.DisplayName
+      description: The display name of the legal hold.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.Description
+      description: The legal hold description.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.ContentQuery
+      description: KQL query that specifies content to be held. If empty, all content in the specified locations is held.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.IsEnabled
+      description: Indicates whether the hold is enabled and actively holding content.
+      type: Boolean
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.Status
+      description: The status of the legal hold. Possible values are Pending, Error, Success.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.Errors
+      description: Lists any errors that happened while placing the hold.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedDateTime
+      description: The date and time the legal hold was created.
+      type: Date
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedDateTime
+      description: The date and time the legal hold was last modified.
+      type: Date
+    # --- createdBy (identitySet) ---
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Application.ID
+      description: The unique identifier of the application associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Application.DisplayName
+      description: The display name of the application associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Application.TenantId
+      description: The tenant ID of the application identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ApplicationInstance.ID
+      description: The unique identifier of the application instance associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ApplicationInstance.DisplayName
+      description: The display name of the application instance associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ApplicationInstance.TenantId
+      description: The tenant ID of the application instance identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Conversation.ID
+      description: The unique identifier of the conversation (team or channel) associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Conversation.DisplayName
+      description: The display name of the conversation (team or channel) associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Conversation.TenantId
+      description: The tenant ID of the conversation identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ConversationIdentityType.ID
+      description: The identifier describing whether the conversation identifies a team or channel.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ConversationIdentityType.DisplayName
+      description: The display name describing whether the conversation identifies a team or channel.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.ConversationIdentityType.TenantId
+      description: The tenant ID of the conversation identity type.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Device.ID
+      description: The unique identifier of the device associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Device.DisplayName
+      description: The display name of the device associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Device.TenantId
+      description: The tenant ID of the device identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Encrypted.ID
+      description: The unique identifier of the encrypted identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Encrypted.DisplayName
+      description: The display name of the encrypted identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Encrypted.TenantId
+      description: The tenant ID of the encrypted identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.OnPremises.ID
+      description: The unique identifier of the on-premises identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.OnPremises.DisplayName
+      description: The display name of the on-premises identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.OnPremises.TenantId
+      description: The tenant ID of the on-premises identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Guest.ID
+      description: The unique identifier of the guest identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Guest.DisplayName
+      description: The display name of the guest identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Guest.TenantId
+      description: The tenant ID of the guest identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Phone.ID
+      description: The unique identifier of the phone identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Phone.DisplayName
+      description: The display name of the phone identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.Phone.TenantId
+      description: The tenant ID of the phone identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.User.ID
+      description: The unique identifier of the user associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.User.DisplayName
+      description: The display name of the user associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.CreatedBy.User.TenantId
+      description: The tenant ID of the user identity associated with this action.
+      type: String
+    # --- lastModifiedBy (identitySet) ---
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Application.ID
+      description: The unique identifier of the application associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Application.DisplayName
+      description: The display name of the application associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Application.TenantId
+      description: The tenant ID of the application identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ApplicationInstance.ID
+      description: The unique identifier of the application instance associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ApplicationInstance.DisplayName
+      description: The display name of the application instance associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ApplicationInstance.TenantId
+      description: The tenant ID of the application instance identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Conversation.ID
+      description: The unique identifier of the conversation (team or channel) associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Conversation.DisplayName
+      description: The display name of the conversation (team or channel) associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Conversation.TenantId
+      description: The tenant ID of the conversation identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ConversationIdentityType.ID
+      description: The identifier describing whether the conversation identifies a team or channel.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ConversationIdentityType.DisplayName
+      description: The display name describing whether the conversation identifies a team or channel.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.ConversationIdentityType.TenantId
+      description: The tenant ID of the conversation identity type.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Device.ID
+      description: The unique identifier of the device associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Device.DisplayName
+      description: The display name of the device associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Device.TenantId
+      description: The tenant ID of the device identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Encrypted.ID
+      description: The unique identifier of the encrypted identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Encrypted.DisplayName
+      description: The display name of the encrypted identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Encrypted.TenantId
+      description: The tenant ID of the encrypted identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.OnPremises.ID
+      description: The unique identifier of the on-premises identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.OnPremises.DisplayName
+      description: The display name of the on-premises identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.OnPremises.TenantId
+      description: The tenant ID of the on-premises identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Guest.ID
+      description: The unique identifier of the guest identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Guest.DisplayName
+      description: The display name of the guest identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Guest.TenantId
+      description: The tenant ID of the guest identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Phone.ID
+      description: The unique identifier of the phone identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Phone.DisplayName
+      description: The display name of the phone identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.Phone.TenantId
+      description: The tenant ID of the phone identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.User.ID
+      description: The unique identifier of the user associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.User.DisplayName
+      description: The display name of the user associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.HoldPolicy.LastModifiedBy.User.TenantId
+      description: The tenant ID of the user identity associated with this action.
+      type: String
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The ID of the operation.
+      isArray: false
+      name: operation_id
+      required: false
+    - description: Number of total results to return.
+      isArray: false
+      name: limit
+      required: false
+      defaultValue: 50
+    - description: Show all results if true.
+      isArray: false
+      name: all_results
+      required: false
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+      auto: PREDEFINED
+    - description: 'Download the export report when an export file link is available. This only applies if `operation_id` is provided. For authorization or permission errors while downloading, see: https://learn.microsoft.com/en-us/graph/api/security-caseoperation-get?view=graph-rest-1.0&tabs=http#response-1'
+      name: download_file
+      isArray: false
+      required: false
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+      auto: PREDEFINED
+    description: Get a list of the caseOperation objects and their properties, or retrieve a specific operation by ID. When operation_id is provided, you can set download_file=true to download the export report (if available).
+    name: msg-list-case-operation
+    outputs:
+    - contextPath: MsGraph.eDiscoveryCase.Operation.ID
+      description: The ID of the case operation. Read-only.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.Action
+      description: >
+        The type of action the operation represents (caseAction).
+        Example values: contentExport, applyTags, convertToPdf, index, estimateStatistics,
+        addToReviewSet, holdUpdate, purgeData, exportReport, exportResult, holdPolicySync.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.Status
+      description: >
+        The status of the case operation.
+        Possible values: notStarted, submissionFailed, running, succeeded, partiallySucceeded, failed.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.PercentProgress
+      description: The progress of the operation.
+      type: Number
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedDateTime
+      description: The date and time the operation was created.
+      type: Date
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CompletedDateTime
+      description: The date and time the operation was completed.
+      type: Date
+    # --- createdBy (identitySet) ---
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Application.ID
+      description: The unique identifier of the application associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Application.DisplayName
+      description: The display name of the application associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Application.TenantId
+      description: The tenant ID of the application identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.ApplicationInstance.ID
+      description: The unique identifier of the application instance associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.ApplicationInstance.DisplayName
+      description: The display name of the application instance associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.ApplicationInstance.TenantId
+      description: The tenant ID of the application instance identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Conversation.ID
+      description: The unique identifier of the conversation (team or channel) associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Conversation.DisplayName
+      description: The display name of the conversation (team or channel) associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Conversation.TenantId
+      description: The tenant ID of the conversation identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.ConversationIdentityType.ID
+      description: The identifier describing whether the conversation identifies a team or channel.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.ConversationIdentityType.DisplayName
+      description: The display name describing whether the conversation identifies a team or channel.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.ConversationIdentityType.TenantId
+      description: The tenant ID of the conversation identity type.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Device.ID
+      description: The unique identifier of the device associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Device.DisplayName
+      description: The display name of the device associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Device.TenantId
+      description: The tenant ID of the device identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Encrypted.ID
+      description: The unique identifier of the encrypted identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Encrypted.DisplayName
+      description: The display name of the encrypted identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Encrypted.TenantId
+      description: The tenant ID of the encrypted identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.OnPremises.ID
+      description: The unique identifier of the on-premises identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.OnPremises.DisplayName
+      description: The display name of the on-premises identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.OnPremises.TenantId
+      description: The tenant ID of the on-premises identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Guest.ID
+      description: The unique identifier of the guest identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Guest.DisplayName
+      description: The display name of the guest identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Guest.TenantId
+      description: The tenant ID of the guest identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Phone.ID
+      description: The unique identifier of the phone identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Phone.DisplayName
+      description: The display name of the phone identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.Phone.TenantId
+      description: The tenant ID of the phone identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.User.ID
+      description: The unique identifier of the user associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.User.DisplayName
+      description: The display name of the user associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.CreatedBy.User.TenantId
+      description: The tenant ID of the user identity associated with this action.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.ResultInfo.Code
+      description: The result code (2xx success, 4xx client error, 5xx server error).
+      type: Number
+    - contextPath: MsGraph.eDiscoveryCase.Operation.ResultInfo.Message
+      description: The result message.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.Operation.ResultInfo.Subcode
+      description: The result subcode.
+      type: Number
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The ID of the search.
+      isArray: false
+      name: search_id
+      required: true
+    - description: The additional options for the export.
+      isArray: false
+      name: additional_options
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - none
+      - teamsAndYammerConversations
+      - cloudAttachments
+      - allDocumentVersions
+      - subfolderContents
+      - listAttachments
+      - htmlTranscripts
+      - advancedIndexing
+      - allItemsInFolder
+      - includeFolderAndPath
+      - condensePaths
+      - friendlyName
+      - splitSource
+      - includeReport
+    - description: The portion of the estimate results to be exported.
+      isArray: true
+      name: export_criteria
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - searchHits
+      - partiallyIndexed
+    - description: The desired format of the exported emails.
+      isArray: false
+      name: export_format
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - pst
+      - msg
+    - description: The versions of cloud attachments to include in messages.
+      isArray: false
+      name: cloud_attachment_version
+      required: false
+      defaultValue: latest
+      auto: PREDEFINED
+      predefined:
+      - latest
+      - recent10
+      - recent100
+      - all
+    - description: The description of the export result.
+      isArray: false
+      name: description
+      required: false
+    - description: The display name of the export result.
+      isArray: false
+      name: display_name
+      required: true
+    - description: The versions of files in SharePoint to include.
+      isArray: false
+      name: document_version
+      required: false
+      defaultValue: latest
+      auto: PREDEFINED
+      predefined:
+      - latest
+      - recent10
+      - recent100
+      - all
+    - description: Location scope for partially indexed items. You can choose to include partially indexed items only in responsive locations with search hits or in all targeted locations.
+      isArray: false
+      name: export_location
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - responsiveLocations
+      - nonresponsiveLocations
+    description: Export results from an estimated ediscoverySearch. For details, see Manage a collection estimate (https://learn.microsoft.com/en-us/purview/ediscovery-create-draft-collection#manage-a-collection-estimate).
+    name: msg-export-result-ediscovery-data
+  dockerimage: demisto/crypto:1.0.0.6308375
   isfetch: true
   runonce: false
   script: '-'
@@ -2266,7 +3138,6 @@ script:
 tests:
 - Microsoft Graph Security Test dev
 - Microsoft Graph Security Test prod
-- Microsoft Graph Security Test self deployed
 - Microsoft Graph Security Test dev v2
 - Microsoft Graph Security Test prod v2
 - Microsoft Graph Security Test self deployed v2

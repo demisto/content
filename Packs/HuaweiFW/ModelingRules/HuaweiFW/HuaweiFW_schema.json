@@ -1,0 +1,16 @@
+{
+    "huawei_fw_raw": {
+      "_raw_log": {
+        "type": "string",
+        "is_array": false
+      },
+      "parsed_fields_headers": {
+        "type": "string",
+        "is_array": false
+      },
+     "parsed_fields_description": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+}

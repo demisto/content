@@ -6,7 +6,7 @@ Calculate the time difference, in minutes
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python2 |
+| Script Type | javascript |
 | Tags | Utilities |
 
 ## Used In

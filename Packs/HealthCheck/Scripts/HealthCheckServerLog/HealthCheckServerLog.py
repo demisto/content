@@ -161,11 +161,11 @@ else:
                         if err in line and suggest not in suggestions:
                             suggestions.append(suggest)
                 if (context_since is None) and (since is None):
-                    since = re.findall("(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", line)
+                    since = re.findall(r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", line)
                     oldestDate = since[0]
                     continue
                 elif (context_since is not None) and (since is None):
-                    since = re.findall("(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", line)
+                    since = re.findall(r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", line)
                     oldestDate = findOldestDate(since[0], context_since)
                     continue
                 else:
@@ -173,14 +173,14 @@ else:
             # find Last Log
             for line in reversed(data_line):
                 if (context_log_until is None) and (log_until is None):
-                    log_until = re.findall("(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", line)
+                    log_until = re.findall(r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", line)
                     if not log_until:
                         log_until = None
                         continue
                     newestDate = log_until[0]
                     break
                 elif (context_since is not None) and (log_until is None):
-                    log_until = re.findall("(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", line)
+                    log_until = re.findall(r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", line)
                     if not log_until:
                         continue
                     newestDate = log_until[0]

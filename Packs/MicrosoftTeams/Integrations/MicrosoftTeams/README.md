@@ -45,7 +45,10 @@ Creating the Demisto Bot using Microsoft Azure Portal:
 1. Navigate to the [Create an Azure Bot page](https://portal.azure.com/#create/Microsoft.AzureBot).
 2. In the Bot Handle field, type **Demisto Bot**.
 3. Fill in the required Subscription and Resource Group, relevant links: [Subscription](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/create-subscription), [Resource Groups](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal).
-4. For Type of App, select **Multi Tenant**.
+4. For Type of App, select **Single Tenant**.
+    - **Note ⚠️:** The **Multi Tenant** App type was deprecated by Microsoft.
+    Existing apps remain functional and do no require any changes.
+    You can change existing apps to a Single Tenant in the Azure portal's bot configuration, but it is not required.
 5. For Creation type, select **Create new Microsoft App ID** for Creation Type if you don't already have an app registration, otherwise, select **Use existing app registration**, and fill in you App ID.
     - **Note ⚠️:** if you choose **Use existing app registration**, make sure to delete the previous created bot with the same app id, remove it from the team it was added to as well.
 6. Click **Review + Create**, and wait for the validation to pass.
@@ -71,7 +74,7 @@ In order to connect to Microsoft Teams use one of the following authentication m
 
 **Perform the following steps to add the needed permissions**:
 
-1. Go to your [Microsoft Azure portal](https://portal.azure.com/), and from the left navigation pane select **Azure Active Directory > App registrations**.
+1. Go to your [Microsoft Azure portal](https://portal.azure.com/), and from the left navigation pane select **Entra ID > App registrations**.
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application/Delegated permissions**.
 4. For each of the next permissions listed below, search for the permission, select the checkbox, and click **Add permissions**.
@@ -136,27 +139,28 @@ To configure the integration, do the following:
 1. Search for Microsoft Teams integration after you have installed it from the Marketplace.
 2. Click **Add instance** to create and configure a new integration instance by using one of the flows. Instructions below.
 
-    | **Parameter** | **Description**                                                                                                                                                             | **Required** |
-    | --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-    | Name | The integration instance name.<br />If using Cortex XSOAR/XSIAM rerouting configuration, insert here the instance name you configured in the messaging endpoint.                  | True |
-    | Bot ID | Bot ID.                                                                                                                                                                     | True |
-    | Bot Password | Bot Password.                                                                                                                                                               | True |
-    | Authentication Type | Can be Client Credentials or Authorization Code. Please check the limitations for each flow.                                                                                | True |
-    | Application redirect URI | **Used for Authorization Code flow**. Need to be configured in the Teams application in the Azure portal as well.                                                           | False |
-    | Authorization code | **Used for Authorization Code flow**. Received from the authorization step, after running generate-login-url command. See the Detailed instructions under the Help section. | False |
-    | Default team | The team to which messages and notifications are sent. If a team is specified as a command argument, it overrides this parameter.                                           | True |
-    | Notifications channel |                                                                                                                                                                             | True |
-    | Certificate (Required for HTTPS) |                                                                                                                                                                             | False |
-    | Private Key (Required for HTTPS) |                                                                                                                                                                             | False |
-    | Minimum incident severity to send notifications to Teams by |                                                                                                                                                                             | False |
-    | Disable Automatic Notifications | Whether to disable automatic notifications to the configured notifications channel.                                                                                         | False |
-    | Allow external users to create incidents via direct message |                                                                                                                                                                             | False |
-    | The header of an external form hyperlink. |                                                                                                                                                                             | False |
-    | Trust any certificate (not secure) | Do not check for Cortex XSOAR version 8 and Cortex XSIAM.                                                                                                                   | False |
-    | Use system proxy settings |                                                                                                                                                                             | False |
-    | Long running instance | **Must be checked when using the Bot.**                                                                                                                                     | True |
-    | Listen port, e.g., 7000 (Required for investigation mirroring and direct messages) | The long running port.                                                                                                                                                      | False |
-    | Incident type | Incident type.                                                                                                                                                              | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Bot ID |  | False |
+| Bot Password |  | False |
+| Authentication Type | When switching from the 'Client Credentials Flow' to the 'Authorization Code Flow' do as follow: Save the instance, run the 'microsoft-teams-generate-login-url' command and follow the instructions mentioned there. Once done, test the validity of your instance by running the 'microsoft-teams-auth-test' command.<br/>When switching from the 'Authorization Code Flow' to the 'Client Credentials Flow', test the validity of the instance by clicking the 'Test' button. | False |
+| Application redirect URI (for Authorization Code mode) |  | False |
+| Authorization code |  | False |
+| Default team |  | True |
+| Notifications channel |  | True |
+| Certificate (Required for HTTPS) |  | False |
+| Private Key (Required for HTTPS) |  | False |
+| Bot Type Converted to Single-Tenant | Select this option if the bot was originally created as multi-tenant and later converted to single-tenant. The system will detect the bot type automatically in all other standard cases. | False |
+| Minimum incident severity to send notifications to Teams by |  | False |
+| Disable Automatic Notifications | Whether to disable automatic notifications to the configured notifications channel. | False |
+| Allow external users to create incidents via direct message |  | False |
+| The header of an external form hyperlink. |  | False |
+| Trust any certificate (not secure) | Do not check for Cortex XSOAR version 8 | False |
+| Use system proxy settings |  | False |
+| Custom New Incident Welcome Message | Optional - Welcome message when creating new incidents using the bot. If left empty \(default option\) the current default welcome message will be used, i.e., "Successfully created incident &lt;incident_name&gt;. View it on: &lt;incident_link&gt;". If the parameter is set to "no_welcome_message" value, no message will be displayed. Any non-empty string value set will be used as the custom new incident welcome message. | False |
+| Long running instance |  | False |
+| Listen port | E.g., 7000 \(Required for investigation mirroring and direct messages\). | False |
+| Incident type |  | False |
 
 ### Authentication Using the Client Credentials Flow
 
@@ -411,6 +415,35 @@ When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), ac
     - If your authentication type is the `Authorization Code Flow`, after running the `microsoft-teams-auth-reset` command you will need to regenerate the **Authorization code** parameter by running the ***microsoft-teams-generate-login-url*** command, and to verify the authentication by running the ***!microsoft-teams-auth-test*** command.
 3. Since the integration works based on Docker port mapping, it can't function if the Docker is set to run with the host networking (`--network=host`). For more details, refer to the [Docker documentation](https://docs.docker.com/network/host/).
 4. If you are receiving repeated `Connection reset by peer` errors, the requests might be getting blocked temporarily by Azure due to repeated permission errors. Ensure you are not missing any permissions that might cause constant failures and eventually leading to server timeouts.
+5. If you encounter the following error:
+
+    ```
+    Error code [401] in API call to Microsoft Teams:
+    Authorization error in call to the Microsoft Bot Framework, ensure the "Microsoft Teams" channel was added to the bot in the Azure portal during setup.
+
+    (Error Message): {"message":"Authorization has been denied for this request."}
+    ```
+
+    *And* the bot's application type was converted *from Multi-tenant to Single-tenant*, the integration may fail to recognize the change, leading to the denial of authorization.
+
+    *To resolve this:*
+
+    - Navigate to your instance configuration settings.
+
+    - Select the *Bot Type Converted to Single-Tenant parameter* in the advanced settings of the Connect section.
+
+    - Run the command !microsoft-teams-auth-reset in the War Room.
+
+    Your bot should now be properly authorized and functional.
+6. If you see the following error message: `Forbidden: Failed to get license information for the user. Ensure user has a valid Office365 license assigned to them.`, it indicates that the user who approved the authentication URL likely does not have a valid Office 365 license assigned.
+
+    To resolve this, please follow these steps:
+
+    - *Re-authorize*: Re-run the command `!microsoft-teams-generate-login-url` and open the URL that is returned. This time, approve the authorization using a different user who has a valid Office 365 license.
+
+    - *Update Instance*: Copy the new Authorization Code that is generated and paste it into the **Authorization code** parameter in the instance settings.
+
+    - *Reset Token*: Run the command `!microsoft-teams-auth-reset` in the Playground.
 
 ## Download Demisto Bot
 
@@ -741,7 +774,7 @@ The authentication process is conducted on behalf of the specific user who initi
 | start_time        | The meeting start time in ISO 8601 format e.g., "2019-07-12T14:30:34.2444915-07:00". | Optional     |
 | end_time          | The meeting end time in ISO 8601 format e.g., "2019-07-12T14:30:34.2444915-07:00".   | Optional     |
 | subject           | The meeting subject.                                                                 | Required     |
-| member            | Display name/mail/UPN of user who created the meeting, e.g., Adam Smith.             | Required     |
+| member            | Display name/mail/UPN of user who created the meeting, e.g., Adam Testman.             | Required     |
 
 ##### Context Output
 
@@ -930,6 +963,8 @@ Notes:
 ##### Required Permissions
 
 `User.Read.All` - *Delegated*
+
+`Chat.ReadBasic` - *Delegated*
 
 `Chat.Create` - *Delegated*
 
@@ -1406,7 +1441,7 @@ Updates a message.
 | team | The team in which the specified message exists. | Optional |
 | channel | The channel in which the specified message exists. | Optional |
 | message | The new message content. | Optional |
-| team_member | The team member the message to be edited was sent to. | Optional |
+| team_member | The message recipient. Accepts the team member's email address or username. | Optional |
 | format_as_card | Whether or not an adaptive card is being updated. | Optional |
 
 ##### Context Output
@@ -1422,3 +1457,60 @@ Updates a message.
 ##### Human Readable Output
 
 Message was sent successfully.
+
+### microsoft-teams-list-messages
+
+***
+Retrieves a list of messages in a chat or channel.
+
+Notes:
+
+- When retrieving messages from a chat, this command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
+
+#### Base Command
+
+`microsoft-teams-list-messages`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| conversation_id | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN) / channel name. Note - the consent user must be a member of the chat. | Required |
+| team_name | The channel's team. Required if specifying a channel name in the conversation_id argument. | Optional |
+| limit | The number of results to retrieve. Default is 50. | Optional |
+| order_by | Orders results by lastModifiedDateTime (default) or createdDateTime in descending order. Possible values are: lastModifiedDateTime, createdDateTime. Default is lastModifiedDateTime. | Optional |
+| next_link | A link that specifies a starting point to use for subsequent calls. | Optional |
+| message_id | Id of a message to retrieve its replies. Supported only for channels. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftTeams.MessagesList.conversationId | String | The conversation's unique identifier. |
+| MicrosoftTeams.MessagesList.messages.id | String | Unique ID of the message. |
+| MicrosoftTeams.MessagesList.messages.replyToId | String | ID of the parent message or root message of the thread. |
+| MicrosoftTeams.MessagesList.messages.etag | String | Version number of the message. |
+| MicrosoftTeams.MessagesList.messages.messageType | String | The type of message. |
+| MicrosoftTeams.MessagesList.messages.createdDateTime | String | Timestamp of when the message was created. |
+| MicrosoftTeams.MessagesList.messages.lastModifiedDateTime | String | Timestamp when the message is created \(initial setting\) or modified, including when a reaction is added or removed. |
+| MicrosoftTeams.MessagesList.messages.lastEditedDateTime | String | Timestamp when edits to the message were made. Triggers an "Edited" flag in the Teams UI. If no edits are made the value is null. |
+| MicrosoftTeams.MessagesList.messages.deletedDateTime | String | Timestamp when the message was deleted, or null if not deleted. |
+| MicrosoftTeams.MessagesList.messages.subject | String | The subject of the message, in plaintext. |
+| MicrosoftTeams.MessagesList.messages.summary | String | Summary text of the message that could be used for push notifications and summary views or fall back views. |
+| MicrosoftTeams.MessagesList.messages.chatId | String | If the message was sent in a chat, represents the identity of the chat. |
+| MicrosoftTeams.MessagesList.messages.importance | String | The importance of the message. |
+| MicrosoftTeams.MessagesList.messages.locale | String | Locale of the message set by the client. |
+| MicrosoftTeams.MessagesList.messages.webUrl | String | Link to the message in Microsoft Teams. |
+| MicrosoftTeams.MessagesList.messages.channelIdentity | String | If the message was sent in a channel, represents the identity of the channel. |
+| MicrosoftTeams.MessagesList.messages.policyViolation | String | Defines the properties of a policy violation set by a data loss prevention \(DLP\) application. |
+| MicrosoftTeams.MessagesList.messages.eventDetail | String | If present, represents details of an event that happened in a chat, a channel, or a team, for example, adding new members. |
+| MicrosoftTeams.MessagesList.messages.from | String | Details of the sender of the message. |
+| MicrosoftTeams.MessagesList.messages.body.content | String | The content of the message. |
+| MicrosoftTeams.MessagesList.messages.body.contentType | String | Plaintext/HTML representation of the content of the message. |
+| MicrosoftTeams.MessagesList.messages.attachments | String | References to attached objects like files, tabs, meetings, etc. |
+| MicrosoftTeams.MessagesList.messages.attachments.content | String | The content of the attachments. |
+| MicrosoftTeams.MessagesList.messages.mentions | String | List of entities mentioned in the message. |
+| MicrosoftTeams.MessagesList.messages.reactions | String | Reactions for this message \(for example, Like\). |
+| MicrosoftTeams.MessagesListNextLink | String | Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. |
+| MicrosoftTeams.MessagesListMetadata.returned_count | Number | The actual number of messages returned in this specific execution. |
+| MicrosoftTeams.MessagesListMetadata.filtered_count | Number | The total number of messages in the system that match the specified filter criteria. |

@@ -5,7 +5,7 @@ ignore=IN139
 ignore=PB106
 
 [file:README.md]
-ignore=RM104,RM106
+ignore=RM104,RM106,RM102
 
 [file:1_3_23.md]
 ignore=RN115,RN113
@@ -25,6 +25,21 @@ ignore=LO107
 
 [file:layoutscontainer-Identity_Analytics_Alerts.json]
 ignore=LO107
+
+[file:CoreQuarantineFiles.yml]
+ignore=SC105
+
+[file:CoreTerminateCausality.yml]
+ignore=SC105
+
+[file:CoreIsolateEndpoint.yml]
+ignore=SC105
+
+[file:CoreTerminateProcess.yml]
+ignore=SC105
+
+[file:CoreUnisolateEndpoint.yml]
+ignore=SC105
 
 [known_words]
 xsiam

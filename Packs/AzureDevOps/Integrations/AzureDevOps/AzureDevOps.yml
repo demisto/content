@@ -1,8 +1,9 @@
 category: Utilities
+provider: Microsoft
 commonfields:
   id: AzureDevOps
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:

@@ -13,11 +13,12 @@ Sets multiple key/value pairs to the context under a common parent key.
 
 ---
 
-| **Argument Name** | **Description** |
-| --- | --- |
-| parent | The parent key to which we append all the other keys. |
-| keys | The comma-separated list of keys. |
-| values | The comma-separated list of values. |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| parent | The parent key to which we append all the other keys. | Required |
+| keys | Separated list of keys separated by the specified delimiter (Comma is the default delimiter). | Required |
+| values | Separated list of values separated by the specified delimiter (Comma is the default delimiter). | Required |
+| delimiter | Delimiter by which the content of the values and keys lists are separated.<br/>Eg:  "," , ":", "|||". Default is ",". | Optional |
 
 ## Outputs
 

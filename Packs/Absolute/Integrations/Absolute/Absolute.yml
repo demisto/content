@@ -1,5 +1,6 @@
 category: Endpoint
-sectionOrder:
+provider: Absolute Software
+sectionorder:
 - Connect
 - Collect
 commonfields:

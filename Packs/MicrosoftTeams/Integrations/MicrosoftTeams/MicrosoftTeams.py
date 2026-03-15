@@ -33,8 +33,8 @@ class FormType(Enum):  # Used for 'send-message', and by the MicrosoftTeamsAsk s
 EXTERNAL_FORM_URL_DEFAULT_HEADER = "Microsoft Teams Form"
 PARAMS: dict = demisto.params()
 BOT_ID: str = PARAMS.get("credentials", {}).get("identifier", "") or PARAMS.get("bot_id", "")
+IS_SINGLE_TENANT_BOT_TYPE: bool = PARAMS.get("is_single_tenant_bot_type") or False
 BOT_PASSWORD: str = PARAMS.get("credentials", {}).get("password", "") or PARAMS.get("bot_password", "")
-TENANT_ID: str = PARAMS.get("tenant_id", "")
 APP: Flask = Flask("demisto-teams")
 PLAYGROUND_INVESTIGATION_TYPE: int = 9
 GRAPH_BASE_URL: str = "https://graph.microsoft.com"
@@ -129,6 +129,7 @@ class GraphPermissions(str, Enum):
     CHANNEL_CREATE = "Channel.Create"
     CHANNELMEMBER_READ_ALL = "ChannelMember.Read.All"
     CHANNELMEMBER_READWRITE_ALL = "ChannelMember.ReadWrite.All"
+    CHANNELMESSAGE_READ_ALL = "ChannelMessage.Read.All"
     CHANNELMESSAGE_SEND = "ChannelMessage.Send"
     CHAT_READ = "Chat.Read"
     CHAT_READBASIC = "Chat.ReadBasic"
@@ -194,6 +195,7 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, dict[str, list[GraphPermissions]]] = {
         ],
         "microsoft-teams-message-send-to-chat": [
             Perms.USER_READ_ALL,
+            Perms.CHAT_READBASIC,
             Perms.CHAT_CREATE,
             Perms.CHATMESSAGE_SEND,
             Perms.APPCATALOG_READ_ALL,
@@ -203,6 +205,11 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, dict[str, list[GraphPermissions]]] = {
         "microsoft-teams-chat-member-list": [Perms.USER_READ_ALL, Perms.CHAT_READBASIC],
         "microsoft-teams-chat-list": [Perms.USER_READ_ALL, Perms.CHAT_READBASIC],
         "microsoft-teams-chat-message-list": [Perms.USER_READ_ALL, Perms.CHAT_READ],
+        "microsoft-teams-list-messages": [
+            Perms.USER_READ_ALL,
+            Perms.CHAT_READ,
+            Perms.CHANNELMESSAGE_READ_ALL,
+        ],
         "microsoft-teams-chat-update": [Perms.USER_READ_ALL, Perms.CHAT_READWRITE],
         "microsoft-teams-message-update": [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
         "microsoft-teams-integration-health": [],
@@ -254,6 +261,7 @@ COMMANDS_REQUIRED_PERMISSIONS: dict[str, dict[str, list[GraphPermissions]]] = {
         "microsoft-teams-chat-member-list": [],
         "microsoft-teams-chat-list": [],
         "microsoft-teams-chat-message-list": [],
+        "microsoft-teams-list-messages": [Perms.CHANNELMESSAGE_READ_ALL],
         "microsoft-teams-chat-update": [],
         "microsoft-teams-message-update": [Perms.GROUPMEMBER_READ_ALL, Perms.CHANNEL_READBASIC_ALL],
         "microsoft-teams-integration-health": [],
@@ -325,7 +333,6 @@ def handle_teams_proxy_and_ssl():
 
 PROXIES, USE_SSL = handle_teams_proxy_and_ssl()
 
-
 """ HELPER FUNCTIONS """
 
 
@@ -353,7 +360,7 @@ def error_parser(resp_err: requests.Response, api: str = "graph") -> str:
         if api == "graph":
             error_codes = response.get("error_codes", [""])
             if set(error_codes).issubset(TOKEN_EXPIRED_ERROR_CODES):
-                reset_graph_auth(error_codes, response.get("error_description", ""))
+                reset_auth(error_codes, response.get("error_description", ""), graph_only=True)
 
             error = response.get("error", {})
             err_str = (
@@ -373,10 +380,13 @@ def error_parser(resp_err: requests.Response, api: str = "graph") -> str:
         return resp_err.text
 
 
-def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
+def reset_auth(error_codes: list = [], error_desc: str = "", graph_only: bool = False):
     """
-    Reset the Graph API authorization in the integration context.
-    This function clears the current graph authorization data: current_refresh_token, graph_access_token, graph_valid_until
+    Reset the cached API authorization data in the integration context.
+    This function clears the current authorization data: current graph/bot tokens, token validity, refresh tokens and bot type
+    :param error_codes: Error codes to log when resetting after token expiration
+    :param error_desc: Error description to output when resetting after token expiration
+    :param graph_only: Boolean to determine if only graph tokens should be reset
     """
 
     integration_context: dict = get_integration_context()
@@ -385,6 +395,10 @@ def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
     integration_context.pop("graph_valid_until", "")
     integration_context[AUTHCODE_TOKEN_PARAMS] = "{}"
     integration_context[CREDENTIALS_TOKEN_PARAMS] = "{}"
+    if not graph_only:
+        integration_context.pop("bot_access_token", "")
+        integration_context.pop("bot_valid_until", "")
+        integration_context.pop("bot_type", "")
     set_integration_context(integration_context)
 
     if error_codes or error_desc:
@@ -396,14 +410,14 @@ def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
             "parameter and then run !microsoft-teams-auth-test to re-authenticate"
         )
 
-    demisto.debug("Successfully reset the current_refresh_token, graph_access_token and graph_valid_until.")
+    demisto.debug("Successfully reset the cached API authorization data.")
 
 
-def reset_graph_auth_command():
+def reset_auth_command():
     """
-    A wrapper function for the reset_graph_auth() which resets the Graph API authorization in the integration context.
+    A wrapper function for the reset_auth() which resets the cached API authorization in the integration context.
     """
-    reset_graph_auth()
+    reset_auth()
     return_results(CommandResults(readable_output="Authorization was reset successfully."))
 
 
@@ -799,7 +813,30 @@ def add_data_to_actions(card_json, data_value):
             add_data_to_actions(card_json["card"], data_value)
 
 
-def process_adaptive_card(adaptive_card_obj: dict) -> dict:
+def handle_raw_adaptive_card(adaptive_card_obj: dict) -> dict:
+    """
+    Check if the adaptive card is already wrapped with the contentType and content keys, otherwise try to fix it.
+
+    :param adaptive_card_obj: The user supplied adaptive card
+    :return: Adaptive card with contentType and content keys
+    """
+    if (
+        "contentType" not in adaptive_card_obj
+        and "content" not in adaptive_card_obj
+        and adaptive_card_obj.get("type") == "AdaptiveCard"
+    ):
+        # This is a 'raw' adaptive card
+        wrapped_adaptive_card = {
+            "contentType": "application/vnd.microsoft.card.adaptive",
+            "content": adaptive_card_obj,
+        }
+        return wrapped_adaptive_card
+
+    # We are not completely sure this is a raw adaptive card so we will not modify it
+    return adaptive_card_obj
+
+
+def process_teams_ask_adaptive_card(adaptive_card_obj: dict) -> dict:
     """
     Processes adaptive cards coming from MicrosoftTeamsAsk. It will find all action elements
     of type Action.Submit or Action.Execute within adaptive_card_obj['adaptive_card'] and add entitlement,
@@ -808,7 +845,8 @@ def process_adaptive_card(adaptive_card_obj: dict) -> dict:
     :return: Adaptive card with entitlement.
     """
 
-    adaptive_card = adaptive_card_obj.get("adaptive_card", "")
+    adaptive_card = adaptive_card_obj.get("adaptive_card", {})
+    adaptive_card = handle_raw_adaptive_card(adaptive_card)
     data_obj: dict = {}
     data_obj["entitlement"] = str(adaptive_card_obj.get("entitlement", ""))
     data_obj["investigation_id"] = str(adaptive_card_obj.get("investigation_id", ""))
@@ -825,20 +863,44 @@ def get_bot_access_token() -> str:
     """
     integration_context: dict = get_integration_context()
     access_token: str = integration_context.get("bot_access_token", "")
-    valid_until: int = integration_context.get("bot_valid_until", int)
+    valid_until: int = integration_context.get("bot_valid_until", 0)
+    bot_type: str = "single-tenant" if IS_SINGLE_TENANT_BOT_TYPE else integration_context.get("bot_type", "multi-tenant")
     if access_token and valid_until and epoch_seconds() < valid_until:
         return access_token
-    url: str = "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token"
+
     data: dict = {
         "grant_type": "client_credentials",
         "client_id": BOT_ID,
         "client_secret": BOT_PASSWORD,
         "scope": "https://api.botframework.com/.default",
     }
-    response: requests.Response = requests.post(url, data=data, verify=USE_SSL, proxies=PROXIES)
+
+    if bot_type == "multi-tenant":
+        demisto.debug("Attempting authentication to the multi-tenant bot framework url")
+        url: str = "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token"
+        response: requests.Response = requests.post(url, data=data, verify=USE_SSL, proxies=PROXIES)
+        if response.json().get("error", "") == "unauthorized_client":
+            # Could not find bot-id in the common directory for multi-tenant bots, assume it is a single-tenant bot
+            demisto.debug("Failed to authenticate, falling back to single-tenant bot type")
+            bot_type = "single-tenant"
+
+    if bot_type == "single-tenant":
+        tenant_id = integration_context.get("tenant_id")
+        if not tenant_id:
+            raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
+        demisto.debug(f"Attempting authentication to the {tenant_id} tenant specific bot framework url")
+        url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
+        response = requests.post(url, data=data, verify=USE_SSL, proxies=PROXIES)
+
     if not response.ok:
+        if "bot_type" in integration_context:  # Clear cached bot type on authentication error to avoid issues
+            demisto.debug("Authentication failed, resetting cached bot type")
+            integration_context.pop("bot_type")
+            set_integration_context(integration_context)
+
         error = error_parser(response, "bot")
         raise ValueError(f"Failed to get bot access token [{response.status_code}] - {error}")
+
     try:
         response_json: dict = response.json()
         access_token = response_json.get("access_token", "")
@@ -849,6 +911,7 @@ def get_bot_access_token() -> str:
             expires_in -= time_buffer
         integration_context["bot_access_token"] = access_token
         integration_context["bot_valid_until"] = time_now + expires_in
+        integration_context["bot_type"] = bot_type
         set_integration_context(integration_context)
         return access_token
     except ValueError:
@@ -1002,6 +1065,8 @@ channel was added to the bot in the Azure portal during setup.
 Refer to steps #13-14 of the "Creating the Demisto Bot using Microsoft Azure Portal" \
 section in the integration documentation for more information.
 
+If the problem is not resolved, see Troubleshooting step #5 in the integration documentation.
+
 (Error Message): {error}"""
 
             raise ValueError(f"Error code [{response.status_code}] in API call to Microsoft Teams:\n{error}")
@@ -1053,7 +1118,7 @@ def integration_health():
 
     api_health_output: list = [{"Bot Framework API Health": bot_framework_api_health, "Graph API Health": graph_api_health}]
 
-    adi_health_human_readable: str = tableToMarkdown("Microsoft API Health", api_health_output)
+    api_health_human_readable: str = tableToMarkdown("Microsoft API Health", api_health_output)
 
     mirrored_channels_output = []
     integration_context: dict = get_integration_context()
@@ -1076,35 +1141,29 @@ def integration_health():
     else:
         mirrored_channels_human_readable = "No mirrored channels."
 
-    demisto.results(
-        {
-            "ContentsFormat": formats["json"],
-            "Type": entryTypes["note"],
-            "HumanReadable": adi_health_human_readable + mirrored_channels_human_readable,
-            "Contents": adi_health_human_readable + mirrored_channels_human_readable,
-        }
+    res = api_health_human_readable + mirrored_channels_human_readable
+    return_results(
+        CommandResults(raw_response=res, readable_output=res, entry_type=EntryType.NOTE, content_format=EntryFormat.MARKDOWN)
     )
 
 
 def validate_auth_header(headers: dict) -> bool:
     """
-    Validated authorization header provided in the bot activity object
+    Validates authorization header provided in the bot activity object.
+    Uses fail-close approach: returns True ONLY if ALL validations pass.
     :param headers: Bot activity headers
     :return: True if authorized, else False
     """
     parts: list = headers.get("Authorization", "").split(" ")
     if len(parts) != 2:
+        error_message = "Authorization header validation failed - invalid authorization header format"
+        demisto.info(error_message)
         return False
-    scehma: str = parts[0]
+    schema: str = parts[0]
     jwt_token: str = parts[1]
-    if scehma != "Bearer" or not jwt_token:
-        demisto.info("Authorization header validation - failed to verify schema")
-        return False
-
-    decoded_payload: dict = jwt.decode(jwt=jwt_token, options={"verify_signature": False})
-    issuer: str = decoded_payload.get("iss", "")
-    if issuer != "https://api.botframework.com":
-        demisto.info("Authorization header validation - failed to verify issuer")
+    if schema != "Bearer" or not jwt_token:
+        error_message = "Authorization header validation failed - failed to verify schema"
+        demisto.info(error_message)
         return False
 
     integration_context: dict = get_integration_context()
@@ -1127,24 +1186,28 @@ def validate_auth_header(headers: dict) -> bool:
             open_id_url: str = "https://login.botframework.com/v1/.well-known/openidconfiguration"
             response: requests.Response = requests.get(open_id_url, verify=USE_SSL, proxies=PROXIES)
             if not response.ok:
-                demisto.info(f"Authorization header validation failed to fetch open ID config - {response.reason}")
+                error_message = f"Authorization header validation failed to fetch open ID config - {response.reason}"
+                demisto.info(error_message)
                 return False
             response_json: dict = response.json()
             jwks_uri: str = response_json.get("jwks_uri", "")
             keys_response: requests.Response = requests.get(jwks_uri, verify=USE_SSL, proxies=PROXIES)
             if not keys_response.ok:
-                demisto.info(f"Authorization header validation failed to fetch keys - {response.reason}")
+                error_message = f"Authorization header validation failed to fetch keys - {response.reason}"
+                demisto.info(error_message)
                 return False
             keys_response_json: dict = keys_response.json()
             keys = keys_response_json.get("keys", [])
             open_id_metadata["keys"] = keys
         except ValueError:
-            demisto.info("Authorization header validation - failed to parse keys response")
+            error_message = "Authorization header validation failed - failed to parse keys response"
+            demisto.info(error_message)
             return False
 
     if not keys:
         # Didn't get new keys
-        demisto.info("Authorization header validation - failed to get keys")
+        error_message = "Authorization header validation failed - failed to get keys"
+        demisto.info(error_message)
         return False
 
     # Find requested key in new keys
@@ -1155,33 +1218,72 @@ def validate_auth_header(headers: dict) -> bool:
 
     if not key_object:
         # Didn't find requested key in new keys
-        demisto.info("Authorization header validation - failed to find relevant key")
+        error_message = "Authorization header validation failed - failed to find relevant key"
+        demisto.info(error_message)
         return False
 
     endorsements: list = key_object.get("endorsements", [])
     if not endorsements or "msteams" not in endorsements:
-        demisto.info("Authorization header validation - failed to verify endorsements")
+        error_message = "Authorization header validation failed - failed to verify endorsements"
+        demisto.info(error_message)
         return False
 
     public_key = RSAAlgorithm.from_jwk(json.dumps(key_object))
     public_key: RSAPublicKey = cast(RSAPublicKey, public_key)
 
+    # Enable comprehensive JWT validation (defense-in-depth)
     options = {
-        "verify_aud": False,
+        "verify_aud": True,
         "verify_exp": True,
-        "verify_signature": False,
+        "verify_iss": True,
+        "verify_signature": True,
     }
-    decoded_payload = jwt.decode(jwt_token, public_key, options=options)
-
-    audience_claim: str = decoded_payload.get("aud", "")
-    if audience_claim != BOT_ID:
-        demisto.debug(f"failed to verify audience_claim: {audience_claim} with BOT_ID: {BOT_ID}.")
-        demisto.info("Authorization header validation - failed to verify audience_claim")
+    try:
+        decoded_payload = jwt.decode(
+            jwt_token, public_key, algorithms=["RS256"], options=options, audience=BOT_ID, issuer="https://api.botframework.com"
+        )
+    except jwt.InvalidSignatureError:
+        error_message = "Authorization header validation failed - JWT signature verification failed"
+        demisto.info(error_message)
+        return False
+    except jwt.ExpiredSignatureError:
+        error_message = "Authorization header validation failed - JWT token has expired"
+        demisto.info(error_message)
+        return False
+    except jwt.InvalidAudienceError:
+        error_message = "Authorization header validation failed - Invalid audience claim"
+        demisto.info(error_message)
+        return False
+    except jwt.InvalidIssuerError:
+        error_message = "Authorization header validation failed - Invalid issuer claim"
+        demisto.info(error_message)
+        return False
+    except jwt.PyJWTError as e:
+        error_message = f"Authorization header validation failed - JWT validation error: {e}"
+        demisto.info(error_message)
         return False
 
-    integration_context["open_id_metadata"] = json.dumps(open_id_metadata)
-    set_integration_context(integration_context)
-    return True
+    # Explicit fail-close validation (defense-in-depth)
+    # Even though PyJWT validates these, we explicitly check as a second layer of security
+    audience_claim: str = decoded_payload.get("aud", "")
+    issuer_claim: str = decoded_payload.get("iss", "")
+
+    # Fail-close: ALL conditions must be satisfied for token to be valid
+    if audience_claim == BOT_ID and issuer_claim == "https://api.botframework.com":
+        # All validations passed - token is valid
+        integration_context["open_id_metadata"] = json.dumps(open_id_metadata)
+        set_integration_context(integration_context)
+        demisto.debug(f"JWT validation successful - aud={audience_claim}, iss={issuer_claim}")
+        return True
+
+    # Explicit failure - log details for security auditing
+    demisto.info(
+        f"JWT validation failed (fail-close check) - "
+        f"audience: expected={BOT_ID}, actual={audience_claim}, match={audience_claim == BOT_ID} | "
+        f"issuer: expected='https://api.botframework.com', actual={issuer_claim}, "
+        f"match={issuer_claim == 'https://api.botframework.com'} | "
+    )
+    return False
 
 
 """ COMMANDS + REQUESTS FUNCTIONS """
@@ -1455,6 +1557,21 @@ def get_messages_list(chat_id: str, odata_params: dict) -> dict[str, Any]:
     :return: The response body - collection of chatMessage objects.
     """
     url = f"{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/messages"
+    return cast(dict[str, Any], http_request("GET", url, params=odata_params))
+
+
+def get_channel_messages_list(team_id: str, channel_id: str, odata_params: dict, message_id: str = "") -> dict[str, Any]:
+    """
+    Retrieve the list of messages in a channel.
+    :param team_id: The team_id
+    :param channel_id: The channel_id
+    :param odata_params: The OData query parameters.
+    :param message_id: The message_id to get its replies.
+    :return: The response body - collection of chatMessage objects.
+    """
+    url = f"{GRAPH_BASE_URL}/v1.0/teams/{team_id}/channels/{channel_id}/messages"
+    if message_id:
+        url = f"{url}/{message_id}/replies"
     return cast(dict[str, Any], http_request("GET", url, params=odata_params))
 
 
@@ -1839,6 +1956,130 @@ def chat_message_list_command():
         outputs={
             "MicrosoftTeams(true)": {"MessageListNextLink": next_link},
             "MicrosoftTeams.ChatList(val.chatId && val.chatId === obj.chatId)": {"messages": messages_data, "chatId": chat_id},
+        },
+    )
+    return_results(result)
+
+
+def resolve_chat_or_channel(
+    chat_or_channel: str,
+    team_name: str,
+) -> tuple[str, str | None]:
+    """
+    Resolve whether the identifier refers to a chat or a channel.
+
+    Returns:
+        ("chat", chat_id) or ("channel", channel_id)
+
+    Raises:
+        ValueError if channel is intended but team is missing.
+    """
+    # First, try to resolve as channel if team_name is provided
+    if team_name:
+        try:
+            team_id = get_team_aad_id(team_name)
+            channel_id = get_channel_id(chat_or_channel, team_id, investigation_id=None)
+            demisto.debug(f"Resolved {chat_or_channel} as channel {channel_id} in team {team_name}.")
+            return "channel", channel_id
+        except Exception:
+            pass
+
+    # If not channel, try to resolve as chat
+    try:
+        if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
+            # Client Credentials flow cannot resolve chats, so we skip this check
+            pass
+        else:
+            chat_id, _ = get_chat_id_and_type(chat_or_channel, create_dm_chat=False)
+            if chat_id:
+                demisto.debug(f"Resolved {chat_or_channel} as chat.")
+                return "chat", chat_id
+    except Exception:
+        pass
+
+    error_message = "Failed to find chat or channel."
+    if not team_name:
+        error_message += " If you are trying to get messages from a channel, please provide the 'team_name'."
+    if AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
+        error_message += " If you are trying to get messages from a chat, please use the Authorization Code flow."
+
+    raise DemistoException(error_message)
+
+
+def fetch_channel_messages(
+    channel_id: str,
+    team_name: str,
+    top: int,
+    message_id: str = "",
+) -> dict[str, Any]:
+    team_id = get_team_aad_id(team_name)
+    demisto.debug(f"Fetching messages from channel {channel_id} in team {team_name}.")
+    return get_channel_messages_list(
+        team_id=team_id,
+        channel_id=channel_id,
+        odata_params={"$top": top},
+        message_id=message_id,
+    )
+
+
+def list_messages_command():
+    """
+    Retrieve the list of messages in a chat or channel.
+    """
+    args = demisto.args()
+    chat_or_channel = args.get("conversation_id", "")
+    team_name = args.get("team_name", "")
+    message_id = args.get("message_id", "")
+    next_link = args.get("next_link", "")
+
+    limit = arg_to_number(args.get("limit")) or MAX_ITEMS_PER_RESPONSE
+    top = min(MAX_ITEMS_PER_RESPONSE, limit)
+    order_by = args.get("order_by", "lastModifiedDateTime")
+
+    if next_link:
+        messages_list_response = cast(dict[str, Any], http_request("GET", next_link))
+    else:
+        entity_type, resolved_id = resolve_chat_or_channel(chat_or_channel, team_name)
+        if not resolved_id:
+            raise ValueError(f"Could not resolve {chat_or_channel} as a valid chat or channel.")
+
+        if entity_type == "chat":
+            demisto.debug(f"Fetching messages from chat {resolved_id}.")
+            messages_list_response = get_messages_list(
+                chat_id=resolved_id,
+                odata_params={
+                    "$orderBy": f"{order_by} desc",
+                    "$top": top,
+                },
+            )
+        else:
+            messages_list_response = fetch_channel_messages(
+                channel_id=resolved_id,
+                team_name=team_name,
+                top=top,
+                message_id=message_id,
+            )
+
+    messages_data, next_link = pages_puller(messages_list_response, limit)
+
+    hr = [get_message_human_readable(message) for message in messages_data]
+    result = CommandResults(
+        readable_output=tableToMarkdown(f'Messages list in "{chat_or_channel}":', hr, url_keys=["webUrl"], removeNull=True)
+        + (
+            f"\nThere are more results than shown. "
+            f"For more data please enter the next_link argument:\n "
+            f"next_link={next_link}"
+            if next_link
+            else ""
+        ),
+        outputs_key_field="conversationId",
+        outputs={
+            "MicrosoftTeams(true)": {"MessagesListNextLink": next_link},
+            "MicrosoftTeams.MessagesList(val.conversationId && val.conversationId === obj.conversationId)": {
+                "messages": messages_data,
+                "conversationId": chat_or_channel,
+            },
+            "MicrosoftTeams.MessagesListMetadata": {"returned_count": len(messages_data), "filtered_count": limit},
         },
     )
     return_results(result)
@@ -2361,9 +2602,10 @@ def send_message():
         # This use case is relevant for TeamsAsk script when the entitlement is one of the keys under the adaptive_card
         entitlement_match_ac: Match[str] | None = re.search(ENTITLEMENT_REGEX, adaptive_card.get("entitlement", ""))
         if entitlement_match_ac:
-            adaptive_card_processed = process_adaptive_card(adaptive_card)
+            adaptive_card_processed = process_teams_ask_adaptive_card(adaptive_card)
             conversation = {"type": "message", "attachments": [adaptive_card_processed]}
         else:
+            adaptive_card = handle_raw_adaptive_card(adaptive_card)
             conversation = {"type": "message", "attachments": [adaptive_card]}
 
     service_url: str = integration_context.get("service_url", "")
@@ -2644,16 +2886,20 @@ def member_added_handler(integration_context: dict, request_body: dict, channel_
     if not service_url:
         raise ValueError("Did not find service URL. Try messaging the bot on Microsoft Teams")
 
+    integration_context["bot_name"] = recipient_name
+
+    if tenant_id != integration_context.get("tenant_id"):
+        # Update the tenant id in context immediately to avoid errors
+        demisto.debug(f"Saving tenant ID to context: {tenant_id=}")
+        integration_context["tenant_id"] = tenant_id
+        set_integration_context(integration_context)
+
     for member in members_added:
         member_id = member.get("id", "")
         if bot_id in member_id:
-            # The bot was added to a team, caching team ID and team members
             demisto.info(f"The bot was added to team {team_name}")
         else:
-            demisto.info(f"Someone was added to team {team_name}")
-        integration_context["tenant_id"] = tenant_id
-        integration_context["bot_name"] = recipient_name
-        break
+            demisto.info(f"A user was added to team {team_name}")
 
     team_members: list = get_team_members(service_url, team_id)
 
@@ -2951,7 +3197,7 @@ def messages() -> Response:
         headers: dict = cast(dict[Any, Any], request.headers)
 
         if validate_auth_header(headers) is False:
-            demisto.info(f"Authorization header failed: {headers!s}")
+            return Response(response="Authorization header validation failed - JWT validation error", status=401)
         else:
             request_body: dict = request.json  # type: ignore[assignment]
             integration_context: dict = get_integration_context()
@@ -3332,14 +3578,11 @@ def test_module():
     """
     if not BOT_ID or not BOT_PASSWORD:
         raise DemistoException("Bot ID and Bot Password must be provided.")
-    if "Client" not in AUTH_TYPE:
-        raise DemistoException(
-            "Test module is available for Client Credentials only."
-            " For other authentication types use the !microsoft-teams-auth-test command"
-        )
 
-    get_bot_access_token()  # Tests token retrieval for Bot Framework API
-    return_results("ok")
+    raise DemistoException(
+        "Test module is unavailable for the Microsoft Teams Integration."
+        " Please use the !microsoft-teams-integration-health command to test connectivity."
+    )
 
 
 def generate_login_url_command():
@@ -3399,7 +3642,7 @@ def auth_type_switch_handling():
             f"The user switched the instance authentication type from {current_auth_type} to {AUTH_TYPE}.\n"
             f"Resetting the integration context."
         )
-        reset_graph_auth()
+        reset_auth()
         integration_context = get_integration_context()
         demisto.debug(f"Setting the current_auth_type in the integration context to {AUTH_TYPE}.")
         integration_context["current_auth_type"] = AUTH_TYPE
@@ -3534,10 +3777,11 @@ def main():  # pragma: no cover
         "microsoft-teams-channel-user-list": channel_user_list_command,
         "microsoft-teams-user-remove-from-channel": user_remove_from_channel_command,
         "microsoft-teams-generate-login-url": generate_login_url_command,
-        "microsoft-teams-auth-reset": reset_graph_auth_command,
+        "microsoft-teams-auth-reset": reset_auth_command,
         "microsoft-teams-token-permissions-list": token_permissions_list_command,
         "microsoft-teams-create-messaging-endpoint": create_messaging_endpoint_command,
         "microsoft-teams-message-update": message_update_command,
+        "microsoft-teams-list-messages": list_messages_command,
     }
 
     commands_auth_code: dict = {
@@ -3553,7 +3797,6 @@ def main():  # pragma: no cover
 
     """ EXECUTION """
     command: str = demisto.command()
-
     if command != "test-module":  # skipping test-module since it doesn't have integration context
         auth_type_switch_handling()  # handles auth type switch cases
 

@@ -1,5 +1,6 @@
 category: IT Services
-sectionOrder:
+provider: Amazon
+sectionorder:
 - Connect
 - Collect
 commonfields:

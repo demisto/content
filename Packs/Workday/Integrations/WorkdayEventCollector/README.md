@@ -39,6 +39,7 @@ Returns activity loggings extracted from Workday.
 | offset | The zero-based index of the first object in a response collection. Default is 0.                                                                                                                                                | Optional |
 | from_date | The date and time of the earliest log entry. The default timezone is UTC/GMT. The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC. Possible values are: . | Required |
 | to_date | The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC. Possible values are: .                                                                               | Required |
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. |  |
 
 #### Context Output
 

@@ -5,14 +5,15 @@ description: |-
   This playbook receives ChronicleAsset identifier information and provides a list of events related to each one of them.
   Supported integration:
   - Chronicle
+  - Google SecOps.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c663d51c-653d-44d0-89c0-6187fd10cc98
+    taskid: 748f07e4-7cd5-4c08-8796-72b986943c39
     type: start
     task:
-      id: c663d51c-653d-44d0-89c0-6187fd10cc98
+      id: 748f07e4-7cd5-4c08-8796-72b986943c39
       version: -1
       name: ""
       iscommand: false
@@ -26,7 +27,7 @@ tasks:
       {
         "position": {
           "x": 350,
-          "y": -280
+          "y": -300
         }
       }
     note: false
@@ -34,12 +35,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: e31de2ce-b2d2-444d-871c-a399bf7b3963
+    taskid: ec8a3378-eb0b-4177-8146-b5f70dfad165
     type: title
     task:
-      id: e31de2ce-b2d2-444d-871c-a399bf7b3963
+      id: ec8a3378-eb0b-4177-8146-b5f70dfad165
       version: -1
       name: Done
       type: title
@@ -59,12 +63,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 41ee7b16-7816-4c79-8585-263332cf6ab9
+    taskid: 8ec83674-1d65-4f01-806e-1cef09eb88dd
     type: condition
     task:
-      id: 41ee7b16-7816-4c79-8585-263332cf6ab9
+      id: 8ec83674-1d65-4f01-806e-1cef09eb88dd
       version: -1
       name: Is there a hostname associated with the ChronicleAsset?
       description: Checks if there is a hostname associated with the ChronicleAsset.
@@ -98,16 +105,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 428f3108-2c45-4e1d-8442-9c1d9ac7c213
+    taskid: 9b07f072-9f31-4e06-8dd8-d000158fac31
     type: regular
     task:
-      id: 428f3108-2c45-4e1d-8442-9c1d9ac7c213
+      id: 9b07f072-9f31-4e06-8dd8-d000158fac31
       version: -1
       name: Get the list of events for the IP address
-      description: Gets the list of events discovered within your enterprise for the
-        specified IP address within the specified time range.
+      description: Gets the list of events discovered within your enterprise for the specified IP address within the specified time range.
       script: '|||gcb-list-events'
       type: regular
       iscommand: true
@@ -121,12 +130,8 @@ tasks:
           root: inputs.chronicleasset_ip
       asset_identifier_type:
         simple: IP Address
-      end_time: {}
-      page_size: {}
       preset_time_range:
         simple: Last 30 days
-      reference_time: {}
-      start_time: {}
     reputationcalc: 3
     continueonerror: true
     separatecontext: false
@@ -142,16 +147,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: abcf21df-13fb-4618-84fc-45bbdc354b73
+    taskid: ed8d8fa0-3da8-488d-88f3-642745da7e47
     type: regular
     task:
-      id: abcf21df-13fb-4618-84fc-45bbdc354b73
+      id: ed8d8fa0-3da8-488d-88f3-642745da7e47
       version: -1
       name: Get the list of events for the product ID
-      description: Gets the list of events discovered within your enterprise for the
-        specified product ID within the specified time range.
+      description: Gets the list of events discovered within your enterprise for the specified product ID within the specified time range.
       script: '|||gcb-list-events'
       type: regular
       iscommand: true
@@ -165,12 +172,8 @@ tasks:
           root: inputs.chronicleasset_product_id
       asset_identifier_type:
         simple: Product ID
-      end_time: {}
-      page_size: {}
       preset_time_range:
         simple: Last 30 days
-      reference_time: {}
-      start_time: {}
     reputationcalc: 3
     continueonerror: true
     separatecontext: false
@@ -186,16 +189,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 49bc1b9b-140a-4a5f-8c7c-290d2d8890a0
+    taskid: 164373e3-b86b-4a97-8964-aba5c281f8eb
     type: regular
     task:
-      id: 49bc1b9b-140a-4a5f-8c7c-290d2d8890a0
+      id: 164373e3-b86b-4a97-8964-aba5c281f8eb
       version: -1
       name: Get the list of events for the MAC address
-      description: Gets the list of events discovered within your enterprise for the
-        specified MAC address within the specified time range.
+      description: Gets the list of events discovered within your enterprise for the specified MAC address within the specified time range.
       script: '|||gcb-list-events'
       type: regular
       iscommand: true
@@ -209,12 +214,8 @@ tasks:
           root: inputs.chronicleasset_mac
       asset_identifier_type:
         simple: MAC Address
-      end_time: {}
-      page_size: {}
       preset_time_range:
         simple: Last 30 days
-      reference_time: {}
-      start_time: {}
     reputationcalc: 3
     continueonerror: true
     separatecontext: false
@@ -230,16 +231,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 6a74941f-586b-4452-834a-5e96681d2a30
+    taskid: 607fc131-6d40-44d4-80ec-b3ff599e692a
     type: regular
     task:
-      id: 6a74941f-586b-4452-834a-5e96681d2a30
+      id: 607fc131-6d40-44d4-80ec-b3ff599e692a
       version: -1
       name: Get the list of events for the hostname
-      description: Gets the list of events discovered within your enterprise for the
-        specified hostname within the specified time range.
+      description: Gets the list of events discovered within your enterprise for the specified hostname within the specified time range.
       script: '|||gcb-list-events'
       type: regular
       iscommand: true
@@ -253,12 +256,8 @@ tasks:
           root: inputs.chronicleasset_hostname
       asset_identifier_type:
         simple: Host Name
-      end_time: {}
-      page_size: {}
       preset_time_range:
         simple: Last 30 days
-      reference_time: {}
-      start_time: {}
     reputationcalc: 3
     continueonerror: true
     separatecontext: false
@@ -274,12 +273,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 7029544c-817f-45a8-8905-d5209567f3f2
+    taskid: 4b5bc9bf-b67f-40b9-80e2-cecb1546568c
     type: condition
     task:
-      id: 7029544c-817f-45a8-8905-d5209567f3f2
+      id: 4b5bc9bf-b67f-40b9-80e2-cecb1546568c
       version: -1
       name: Is there an IP address associated with the ChronicleAsset?
       description: Checks if there is an IP address associated with the ChronicleAsset.
@@ -313,12 +315,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 23202ff9-f864-485a-8d22-47327d028c4a
+    taskid: 7e9310ee-f784-4d99-8a2a-72dc2782515d
     type: condition
     task:
-      id: 23202ff9-f864-485a-8d22-47327d028c4a
+      id: 7e9310ee-f784-4d99-8a2a-72dc2782515d
       version: -1
       name: Is there a MAC address associated with the ChronicleAsset?
       description: Checks if there is a MAC address associated with the ChronicleAsset.
@@ -352,12 +357,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 26d40f29-7d15-45bc-89df-2e80efc22b4a
+    taskid: bab568a7-8c26-4fe2-8dd2-9f93c73b7933
     type: condition
     task:
-      id: 26d40f29-7d15-45bc-89df-2e80efc22b4a
+      id: bab568a7-8c26-4fe2-8dd2-9f93c73b7933
       version: -1
       name: Is there a product ID associated with the ChronicleAsset?
       description: Checks if there is a product ID associated with the ChronicleAsset.
@@ -391,15 +399,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 072bb478-718c-41ae-8ec5-96e853448527
+    taskid: 4ade3d59-7c84-4508-8fb9-39746609d52f
     type: condition
     task:
-      id: 072bb478-718c-41ae-8ec5-96e853448527
+      id: 4ade3d59-7c84-4508-8fb9-39746609d52f
       version: -1
-      name: Is the Chronicle integration enabled?
-      description: Checks whether there is an active instance of the Chronicle integration.
+      name: Is the Chronicle or Google SecOps integration enabled?
+      description: Checks whether there is an active instance of the Chronicle or Google SecOps integration.
       type: condition
       iscommand: false
       brand: ""
@@ -436,11 +447,37 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
+          right:
+            value: {}
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GoogleSecOps
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 350,
-          "y": -160
+          "y": -170
         }
       }
     note: false
@@ -448,16 +485,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 3e621e01-22fe-41de-858c-de037bc9d917
+    taskid: 6784ef44-7bb5-46c7-8701-7b03563bc39d
     type: regular
     task:
-      id: 3e621e01-22fe-41de-858c-de037bc9d917
+      id: 6784ef44-7bb5-46c7-8701-7b03563bc39d
       version: -1
       name: Clear the list of events fetched for the previous indicator
-      description: Deletes the "GoogleChronicleBackstory.Events" key from the context
-        to clear the list of events fetched for the previous indicator.
+      description: Deletes the "GoogleChronicleBackstory.Events" key from the context to clear the list of events fetched for the previous indicator.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -466,11 +505,8 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: GoogleChronicleBackstory.Events
-      keysToKeep: {}
       subplaybook:
         simple: auto
     reputationcalc: 1
@@ -479,7 +515,7 @@ tasks:
       {
         "position": {
           "x": 120,
-          "y": 10
+          "y": 0
         }
       }
     note: false
@@ -487,6 +523,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -497,10 +536,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1875,
+        "height": 1895,
         "width": 840,
         "x": -110,
-        "y": -280
+        "y": -300
       }
     }
   }

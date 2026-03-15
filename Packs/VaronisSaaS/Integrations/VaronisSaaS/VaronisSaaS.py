@@ -13,7 +13,7 @@ MAX_USERS_TO_SEARCH = 5
 MAX_DAYS_BACK = 180
 THREAT_MODEL_ENUM_ID = 5821
 ALERT_STATUSES = {"new": 1, "under investigation": 2, "closed": 3}
-ALERT_SEVERITIES = {"high": 0, "medium": 1, "low": 2}
+ALERT_SEVERITIES = {"high": 0, "medium": 1, "low": 2, "informational": 3}
 CLOSE_REASONS = {
     "none": 0,
     "other": 1,
@@ -209,7 +209,7 @@ class Client(BaseClient):
         self.headers["varonis-integration"] = "XSOAR Cortex"
 
     def varonis_authenticate(self, apiKey: str) -> dict[str, Any]:
-        headers = {"x-api-key": apiKey}
+        headers = {"x-api-key": apiKey, "content-type": "application/x-www-form-urlencoded"}
         response = self._http_request(
             "POST", url_suffix="/api/authentication/api_keys/token", data="grant_type=varonis_custom", headers=headers
         )
@@ -1317,24 +1317,29 @@ class ThreatModelObjectMapper(BaseMapper):
 """
 
 
-def convert_to_demisto_severity(severity: Optional[str]) -> int:
+def convert_to_demisto_severity(severity: Optional[str]) -> float:
     """Maps Varonis severity to Cortex XSOAR severity
 
-    Converts the Varonis alert severity level ('Low', 'Medium',
-    'High') to Cortex XSOAR incident severity (1 to 4)
+    Converts the Varonis alert severity level ('Informational', 'Low', 'Medium',
+    'High') to Cortex XSOAR incident severity (0.5 to 4)
     for mapping.
 
     :type severity: ``str``
     :param severity: severity as returned from the Varonis API (str)
 
-    :return: Cortex XSOAR Severity (1 to 4)
-    :rtype: ``int``
+    :return: Cortex XSOAR Severity value (may be fractional for INFO)
+    :rtype: ``float``
     """
 
     if severity is None:
         return IncidentSeverity.LOW
 
-    return {"Low": IncidentSeverity.LOW, "Medium": IncidentSeverity.MEDIUM, "High": IncidentSeverity.HIGH}[severity]
+    return {
+        "Informational": IncidentSeverity.INFO,
+        "Low": IncidentSeverity.LOW,
+        "Medium": IncidentSeverity.MEDIUM,
+        "High": IncidentSeverity.HIGH,
+    }[severity]
 
 
 def get_included_severitires(severity: Optional[str]) -> list[str]:
@@ -1349,16 +1354,19 @@ def get_included_severitires(severity: Optional[str]) -> list[str]:
     if not severity:
         return []
 
-    severities = list(ALERT_SEVERITIES.keys()).copy()
+    # Normalize and validate severity
+    sev_key = severity.lower()
+    if sev_key not in ALERT_SEVERITIES:
+        return []
 
-    if severity.lower() == "medium":
-        severities.remove("low")
+    # ALERT_SEVERITIES maps severity -> numeric priority (lower number == higher severity)
+    # We want to return severities that are equal or higher than the requested severity.
+    requested_priority = ALERT_SEVERITIES[sev_key]
 
-    if severity.lower() == "high":
-        severities.remove("low")
-        severities.remove("medium")
-
-    return severities
+    # Sort severities by priority (high -> medium -> low -> informational) and include those
+    # whose priority is <= requested_priority (i.e., equal or higher severity).
+    sorted_severities = sorted(ALERT_SEVERITIES.items(), key=lambda kv: kv[1])
+    return [name for name, pr in sorted_severities if pr <= requested_priority]
 
 
 def try_convert(item, converter, error=None):
@@ -1715,6 +1723,13 @@ def fetch_incidents_command(
         statuses.append(alert_status)
 
     severities = get_included_severitires(severity)
+
+    if last_fetched_ingest_time is None:
+        raise ValueError("last_fetched_ingest_time cannot be None")
+
+    max_window = timedelta(days=7)
+    if ingest_time_to - last_fetched_ingest_time > max_window:
+        last_fetched_ingest_time = ingest_time_to - max_window
 
     alerts = client.varonis_get_alerts(
         threat_model_names=threat_model_names,

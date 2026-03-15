@@ -1,8 +1,9 @@
 category: Case Management
+provider: Open Source
 commonfields:
   id: RTIR
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:

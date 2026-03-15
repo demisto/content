@@ -250,7 +250,12 @@ class Client(BaseClient):
         Returns:
             dict: dict containing whether the assignment request was successful.
         """
-        request_data = {"request_data": {"incident_id": incident_id}}
+        request_data = {
+            "request_data": {
+                "incident_id": incident_id,
+                "full_alert_fields": True,
+            },
+        }
         response = self._http_request("POST", f"{V1_URL_SUFFIX}/incidents/get_incident_extra_data/", json_data=request_data)
 
         return response
@@ -1118,27 +1123,35 @@ def get_incident_command(client: Client, args: dict[str, Any]) -> CommandResults
     return command_results
 
 
-def list_external_websites_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_external_websites_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
     """
-    list_external_websites command: Get external websites .
+    asm-list-external-websites command: Get external websites.
 
     Args:
         client (Client): CortexXpanse client to use.
         args (dict): all command arguments, usually passed from ``demisto.args()``.
             ``args['filter']`` Used for filter websites based on authentication type
             ``args['limit']`` Used for limit num of results
+            ``args['use_page_token']`` Boolean value used to specify pagination
+            ``args['next_page_token']`` String value of a page token to get the next page of results
 
     Returns:
-        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``
+        CommandResults: A list of ``CommandResults`` objects that is then passed to ``return_results``
     """
     limit = int(args.get("limit", DEFAULT_SEARCH_LIMIT))
     searchFilter = args.get("authentication")
+    use_page_token = args.get("use_page_token")
+    next_page_token = args.get("next_page_token")
     if limit > 500:
         raise ValueError("Limit cannot be more than 500, please try again")
 
     filters = {"filters": [], "search_to": limit}
     if searchFilter:
         filters["filters"] = [{"field": "authentication", "operator": "contains", "value": searchFilter}]
+    if use_page_token:
+        filters["use_page_token"] = use_page_token
+    if next_page_token:
+        filters["next_page_token"] = next_page_token
 
     response = client.get_external_websites(filters)
 
@@ -1152,12 +1165,30 @@ def list_external_websites_command(client: Client, args: Dict[str, Any]) -> Comm
         if hosts
         else "No Results"
     )
-    command_results = CommandResults(
+
+    command_results = []
+    website_results = CommandResults(
         outputs_prefix="ASM.ExternalWebsite", outputs_key_field="", raw_response=response, readable_output=human_readable
     )
 
     if outputs := response.get("reply", {}).get("websites", None):
-        command_results.outputs = outputs
+        reply_results = CommandResults(
+            outputs_prefix="ASM.ExternalWebsiteReply", outputs_key_field="", readable_output=None, replace_existing=True
+        )
+        reply_outputs = {}
+        if response.get("reply", {}).get("next_page_token", None):
+            reply_outputs["NextPageToken"] = response.get("reply", {}).get("next_page_token")
+        if response.get("reply", {}).get("total_count", None):
+            reply_outputs["TotalCount"] = response.get("reply", {}).get("total_count")
+        if response.get("reply", {}).get("result_count", None):
+            reply_outputs["ResultCount"] = response.get("reply", {}).get("result_count")
+        if reply_outputs:
+            reply_results.outputs = reply_outputs
+            reply_results.raw_response = reply_outputs
+
+        website_results.outputs = outputs
+        command_results.append(website_results)
+        command_results.append(reply_results)
 
     return command_results
 

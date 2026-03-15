@@ -2,7 +2,7 @@
     "name": "Impossible Traveler",
     "description": "Catch the impossible traveler. This Content Pack helps you quickly determine the legitimacy of remote access attempts and contain malicious activity.",
     "support": "xsoar",
-    "currentVersion": "1.2.14",
+    "currentVersion": "1.2.16",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -47,10 +47,6 @@
         "Symantec_Deepsight": {
             "mandatory": false,
             "display_name": "Symantec Deepsight Intelligence (Beta)"
-        },
-        "SlashNextPhishingIncidentResponse": {
-            "mandatory": false,
-            "display_name": "SlashNext Phishing Incident Response"
         },
         "PassiveTotal": {
             "mandatory": false,
@@ -194,7 +190,6 @@
         "Maltiverse",
         "XForceExchange",
         "Symantec_Deepsight",
-        "SlashNextPhishingIncidentResponse",
         "PassiveTotal",
         "isight",
         "APIVoid",
@@ -239,6 +234,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

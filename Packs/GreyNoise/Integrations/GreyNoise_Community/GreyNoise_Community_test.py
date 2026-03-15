@@ -8,6 +8,7 @@ from test_data.input_data import (  # type: ignore
     get_ip_reputation_score_data,
     ip_reputation_command_data,
     test_module_data,
+    get_ip_tag_names_data,
 )
 
 
@@ -42,9 +43,11 @@ def test_test_module(api_key, api_response, status_code, expected_output, mocker
     """
     Tests test_module for GreyNoise integration.
     """
-    client = GreyNoise_Community.Client(api_key, "dummy_server", 10, "proxy", False, "dummy_integration")
+    api_config = GreyNoise_Community.APIConfig(api_key, "dummy_server", 10, "proxy", False, "dummy_integration")
+    client = GreyNoise_Community.Client(api_config)
     if isinstance(api_key, str) and api_key == "true_key":
-        mocker.patch("greynoise.GreyNoise._request", return_value=api_response)
+        dummy_response = DummyResponse({}, api_response, status_code)
+        mocker.patch("greynoise.GreyNoise._request", return_value=dummy_response)
         response = GreyNoise_Community.test_module(client)
         assert response == expected_output
     else:
@@ -63,7 +66,15 @@ def test_ip_reputation_command(args, test_scenario, api_response, status_code, e
     """
     Tests various combinations of vald and invalid responses for IPReputation command.
     """
-    client = GreyNoise_Community.Client("true_api_key", "dummy_server", 10, "proxy", False, "dummy_integration")
+    api_config = GreyNoise_Community.APIConfig(
+        api_key="true_api_key",
+        api_server="dummy_server",
+        cache_ttl=10,
+        proxy="proxy",
+        use_cache=False,
+        integration_name="dummy_integration",
+    )
+    client = GreyNoise_Community.Client(api_config)
     dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(api_response), status_code)
     reliability = "B - Usually reliable"
     if test_scenario == "positive":
@@ -80,9 +91,18 @@ def test_ip_reputation_command(args, test_scenario, api_response, status_code, e
 @pytest.mark.parametrize("input_data, expected_output", get_ip_context_data_data)
 def test_get_ip_context_data(input_data, expected_output):
     """
-    Tests various combinations for converting ip-context and query command responses from sdk to Human Readable format.
+    Tests get_ip_context_data function.
     """
     response = GreyNoise_Community.get_ip_context_data(input_data)
+    assert response == expected_output
+
+
+@pytest.mark.parametrize("input_data, expected_output", get_ip_tag_names_data)
+def test_get_ip_tag_names(input_data, expected_output):
+    """
+    Tests get_ip_tag_names function.
+    """
+    response = GreyNoise_Community.get_ip_tag_names(input_data)
     assert response == expected_output
 
 

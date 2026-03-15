@@ -1,7 +1,7 @@
 !ctix-get-indicator-details object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator
 !ctix-get-indicator-observations object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator
 !ctix-get-conversion-feed-source object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator
-!ctix-get-indicator-relations object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator
+!ctix-get-object-relations object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator
 !ctix-get-indicator-tags object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator
 !ctix-get-saved-searches
 !ctix-get-server-collections
@@ -14,7 +14,7 @@
 !ctix-remove-tag-from-indicator object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator tag_id=fb35000b-82e7-4440-8f18-8b63bba5b372
 !ctix-create-tag tag_name=xsoar_test_trial color_code=#95A1B1
 !ctix-search-for-tag q=xsoar_test_trial
-!ctix-delete-tag tag_name=xsoar_test_trial
+!ctix-disable-or-enable-tags tag_ids=fb35000b-82e7-4440-8f18-8b63bba5b372 action=disabled
 !ctix-get-tags
 !ctix-deprecate-ioc object_ids=f3064a83-304e-4801-bec2-2f26a432bfd2,0aced40d-9a83-46cd-a92b-0c776c92594c object_type=indicator
 !ctix-ioc-manual-review object_ids=f3064a83-304e-4801-bec2-2f26a432bfd2,0aced40d-9a83-46cd-a92b-0c776c92594c object_type=indicator

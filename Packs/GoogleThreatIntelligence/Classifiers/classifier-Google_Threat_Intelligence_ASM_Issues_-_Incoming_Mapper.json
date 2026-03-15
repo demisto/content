@@ -1,0 +1,245 @@
+{
+    "description": "Map incoming ASM issue JSON data to XSOAR fields.",
+    "feed": false,
+    "id": "Google Threat Intelligence ASM Issues - Incoming Mapper",
+    "mapping": {
+        "Google Threat Intelligence ASM Issue": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue Alias Group": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alias_group",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue Category": {
+                    "complex": {
+                        "accessor": "category",
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue Collection": {
+                    "complex": {
+                        "filters": [],
+                        "root": "collection",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue Collection Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "collection_type",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue Collection UUID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "collection_uuid",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue Confidence": {
+                    "complex": {
+                        "accessor": "confidence",
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue Dynamic ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "dynamic_id",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue Entity Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "entity_name",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue Entity Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "entity_type",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue Entity UID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "entity_uid",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue First Seen": {
+                    "complex": {
+                        "filters": [],
+                        "root": "first_seen",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue Identifiers": {
+                    "complex": {
+                        "accessor": "identifiers",
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue Last Seen": {
+                    "complex": {
+                        "filters": [],
+                        "root": "last_seen",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "name",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue Organization UUID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "organization_uuid",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue Scoped": {
+                    "complex": {
+                        "accessor": "scoped",
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue Status": {
+                    "complex": {
+                        "accessor": "status",
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue Status New": {
+                    "complex": {
+                        "accessor": "status_new",
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue Status New Detailed": {
+                    "complex": {
+                        "accessor": "status_new_detailed",
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue Ticket List": {
+                    "complex": {
+                        "accessor": "ticket_list",
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue UID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "uid",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue UUID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "uuid",
+                        "transformers": []
+                    }
+                },
+                "GTI ASM Issue Upstream": {
+                    "complex": {
+                        "filters": [],
+                        "root": "upstream",
+                        "transformers": []
+                    }
+                },
+                "Incident Link": {
+                    "complex": {
+						"filters": [],
+						"root": "incident_link",
+						"transformers": []
+					}
+                },
+                "Tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_direction",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorId": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_id",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorInstance": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_instance",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorTags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_tags",
+                        "transformers": []
+                    }
+                },
+                "occurred": {
+                    "complex": {
+						"filters": [],
+						"root": "first_seen",
+						"transformers": []
+					}
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "Google Threat Intelligence ASM Issues - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

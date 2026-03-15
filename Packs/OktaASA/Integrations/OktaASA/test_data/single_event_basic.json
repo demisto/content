@@ -1,0 +1,27 @@
+{
+    "list": [
+        {
+            "id": "test_1",
+            "timestamp": "2025-01-15T10:30:00Z",
+            "details": {
+                "server": "srv_123",
+                "project": "proj_456",
+                "user": "usr_789"
+            }
+        }
+    ],
+    "related_objects": {
+        "srv_123": {
+            "type": "server",
+            "object": {"name": "web-server-01", "ip": "192.168.1.100"}
+        },
+        "proj_456": {
+            "type": "project", 
+            "object": {"name": "production-env", "region": "us-east-1"}
+        },
+        "usr_789": {
+            "type": "user",
+            "object": {"email": "john.doe@company.com", "role": "admin"}
+        }
+    }
+}

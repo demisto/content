@@ -1,12 +1,13 @@
 commonfields:
   id: Symantec Endpoint Security
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Symantec Endpoint Security
 display: Symantec Endpoint Security
 category: Analytics & SIEM
+provider: Broadcom
 description: "Symantec Endpoint Security Event Collector for Cortex XSIAM."
 configuration:
 - display: Server URL

@@ -2,7 +2,7 @@
     "name": "TheHive Project",
     "description": "Provides an integration, incident type and layout for use with TheHive Project.",
     "support": "xsoar",
-    "currentVersion": "1.1.28",
+    "currentVersion": "1.1.29",
     "author": "aburt-demisto",
     "url": "",
     "email": "",
@@ -25,6 +25,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

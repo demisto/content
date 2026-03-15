@@ -1,4 +1,5 @@
 category: Analytics & SIEM
+provider: Microsoft
 commonfields:
   id: Azure Security Center v2
   version: -1
@@ -453,7 +454,7 @@ script:
       type: Unknown
     - contextPath: Azure.ResourceGroupName.properties.provisioningState
       description: Resource group provisioning state.
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.5490413
   runonce: false
   script: '-'
   type: python
@@ -461,6 +462,6 @@ script:
 tests:
 - Azure SecurityCenter - Test
 fromversion: 5.0.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

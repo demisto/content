@@ -106,3 +106,15 @@ Packs/**/ModelingRules/**/**/*_testdata.json
 .cache/
 .npm/
 pipeline_jobs_folder/
+
+# Ignore windsurf config
+.windsurf
+
+# Ignore AI generated dump files
+plan.md
+report.md
+plans/
+
+# IDEX custom tools and rules
+.roomodes
+.roo/

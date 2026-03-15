@@ -1,5 +1,6 @@
 category: Messaging and Conferencing
-sectionOrder:
+provider: Microsoft
+sectionorder:
 - Connect
 - Collect
 commonfields:

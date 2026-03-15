@@ -1,5 +1,6 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+provider: ReversingLabs
+sectionorder:
   - Connect
   - Collect
 commonfields:

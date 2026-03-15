@@ -1,0 +1,30 @@
+[
+    {
+        "name": "Example City District",
+        "type": "city",
+        "description": "Example City District is a district located in the Demo Region. The administrative center of the district is the urban-type settlement of Sampleville. Population: 12,345 (2023 estimate); 11,678 (2015 census results); 10,234 (2005 census results).",
+        "timezone": {
+            "utcOffsetSeconds": 10800,
+            "displayName": "UTC+03:00"
+        },
+        "stateOrProvince": "Demo Region"
+    },
+    {
+        "name": "Exampleland",
+        "type": "country",
+        "description": "Exampleland, officially the Republic of Exampleland, is a fictional country used for demonstration purposes. It borders Placeholderia to the north, Samplestan to the east, and Mockistan to the south, with a coastline along the Imaginary Sea. Its capital is Mock City, and its largest city is Placeholder Town.",
+        "travelAdvisories": [
+            {
+                "issuingCountry": "Demo Country",
+                "issuedDate": "2024-01-01T00:00:00Z",
+                "issuedCountry": "Exampleland",
+                "advisoryText": "Level 2: Exercise increased caution"
+            }
+        ],
+        "president": "President: John Doe | Prime Minister: Jane Smith",
+        "officialLanguages": [
+            "Examplean * Sampleish"
+        ],
+        "capital": "Mock City"
+    }
+]

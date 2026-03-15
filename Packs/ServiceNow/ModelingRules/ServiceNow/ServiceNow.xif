@@ -1,63 +1,56 @@
-[MODEL:dataset="servicenow_servicenow_raw"]
-
+[MODEL:dataset = "servicenow_servicenow_raw"]
 // Transaction Logs
 filter source_log_type = "syslog transactions"
-
 |alter 
-        // Event
-        event_type = source_log_type ,
-        event_original_type = type ,
-        event_id = sys_id ,
-        event_duration_1 = to_integer(total_wait_time),
-        event_duration_2 = to_integer(transaction_processing_time) ,
-        event_description = object_create(
-        "Interaction ID", interaction_id ,  "Transaction Number", transaction_number , "Output Length", output_length , "Database Category", db_category, 
-        "Additional Information", additional_info , "Debug Information", additional_debug_info  ),
-        // IP Extraction
-        remote_ip_ipv4 = arrayindex(regextract(remote_ip , "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0) ,
-        remote_ip_ipv6 = arrayindex(regextract(remote_ip  , "(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"), 0),
-        created_by = sys_created_by ,
-        system_identifier = system_id ,
-        source_user_agent = user_agent ,
-        target_url = url ,
-        session_con_id = session ,
-        protocol_layer = protocol ,
-        is_truncated = to_boolean(gzip) ,
-        tmp_origin_scope_val = origin_scope ->value,
-        tmp_trim_url = arrayindex(regextract(url,"table\/(\w+)\?"),0),
-
-        //database
-        db_name = db_pool ,
-        response_time = to_integer(multiply(to_integer(sql_time),1000)) // Convert from ms to s
-|alter 
-        table_name = to_string(if(len(`table`) >=1, `table` , tmp_trim_url ))     
-| alter event_duration = to_integer(add(event_duration_1 , event_duration_2 )),
-        application_name = if(tmp_origin_scope_val="global", "Display Name: Global", concat("Display Name: ",app_scope ," ,ID: ",tmp_origin_scope_val ))
-
-// XDM Mapping
+    // Event
+    event_type = source_log_type,
+    event_original_type = type,
+    event_id = sys_id,
+    event_duration_1 = to_integer(total_wait_time),
+    event_duration_2 = to_integer(transaction_processing_time),
+    event_description = object_create("Interaction ID", interaction_id, "Transaction Number", transaction_number, "Output Length", output_length, "Database Category", db_category, 
+    "Additional Information", additional_info, "Debug Information", additional_debug_info),
+    // IP Extraction
+    remote_ip_ipv4 = arrayindex(regextract(remote_ip, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    remote_ip_ipv6 = arrayindex(regextract(remote_ip , "(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"), 0),
+    created_by = sys_created_by,
+    system_identifier = system_id,
+    source_user_agent = user_agent,
+    target_url = url,
+    session_con_id = session,
+    protocol_layer = protocol,
+    is_truncated = to_boolean(gzip),
+    tmp_origin_scope_val = origin_scope -> value,
+    tmp_trim_url = arrayindex(regextract(url, "table\/(\w+)\?"), 0),
+    //database
+    db_name = db_pool,
+    response_time = to_integer(multiply(to_integer(sql_time),1000)) // Convert from ms to s
+|alter
+    table_name = to_string(if(len(`table`) >= 1, `table`, tmp_trim_url)),
+    event_duration = to_integer(add(event_duration_1, event_duration_2)),
+    application_name = if(tmp_origin_scope_val = "global", "Display Name: Global", concat("Display Name: ", app_scope," ,ID: ", tmp_origin_scope_val))
 | alter
-        xdm.event.id = event_id ,
-        xdm.event.type = event_type, 
-        xdm.event.original_event_type = event_original_type ,
-        xdm.event.duration = event_duration ,
-        xdm.event.description = to_string(event_description) ,
-        xdm.source.application.name = application_name ,
-        xdm.source.user.username = created_by ,
-        xdm.source.user.identifier = system_identifier , 
-        xdm.source.user_agent = source_user_agent ,
-        xdm.source.ipv4 = remote_ip_ipv4 ,
-        xdm.source.ipv6 = remote_ip_ipv6, 
-        xdm.target.url = target_url ,
-        xdm.database.tables = arraycreate(table_name), 
-        xdm.database.response_time = response_time  , 
-        xdm.database.name = db_name , 
-        xdm.network.dns.is_truncated = is_truncated , 
-        xdm.network.application_protocol = protocol_layer , 
-        xdm.session_context_id = session_con_id ;
+    xdm.event.id = event_id,
+    xdm.event.type = event_type, 
+    xdm.event.original_event_type = event_original_type,
+    xdm.event.duration = event_duration,
+    xdm.event.description = to_string(event_description),
+    xdm.source.application.name = application_name,
+    xdm.source.user.username = created_by,
+    xdm.source.user.identifier = system_identifier,
+    xdm.source.user_agent = source_user_agent,
+    xdm.source.ipv4 = remote_ip_ipv4,
+    xdm.source.ipv6 = remote_ip_ipv6, 
+    xdm.target.url = target_url,
+    xdm.database.tables = arraycreate(table_name), 
+    xdm.database.response_time = response_time,
+    xdm.database.name = db_name,
+    xdm.network.dns.is_truncated = is_truncated, 
+    xdm.network.application_protocol = protocol_layer, 
+    xdm.session_context_id = session_con_id;
 
 // Audit Logs
-filter source_log_type != "syslog transactions"
-
+filter source_log_type not in ("syslog transactions", "case")
 |alter // sys_audit: https://docs.servicenow.com/bundle/vancouver-platform-security/page/administer/time/concept/exploring-auditing.html#d227507e148
     xdm.database.tables = arraycreate(tablename), // Table that the audit record is for (for example, "incident")
     xdm.event.type = "AUDIT", 
@@ -70,3 +63,52 @@ filter source_log_type != "syslog transactions"
     xdm.target.resource.name = fieldname, // Field that changed
     xdm.target.resource.type = tablename, // Table that the audit record is for (for example, "incident")
     xdm.target.resource.value = newvalue; // New value of the field change represented by this sys_audit record.
+
+
+filter source_log_type = "case"
+| alter
+    get_impact = to_string(impact),
+    get_urgency = to_string(urgency),
+    get_escalation = to_string(escalation),
+    get_category = to_string(category),
+    get_priority = to_string(priority)
+| alter
+    check_impact = if(get_impact = "1", "impact:High", get_impact = "2", "impact:Medium", get_impact = "3", "impact:Low"),
+    check_urgency = if(get_urgency = "1", "urgency:High", get_urgency = "2", "urgency:Medium", get_urgency = "3", "urgency:Low"),
+    check_escalation = if(get_escalation = "0", "escalation:Normall", get_escalation = "1", "escalation:Moderate", get_escalation = "2", "escalation:High", get_escalation = "3", "escalation:Overdue")
+| alter
+    xdm.event.type = "Case",
+    xdm.event.id = sys_id,
+    xdm.alert.original_alert_id = coalesce(number, case_report),
+    xdm.alert.risks = arraycreate(check_impact, check_urgency, check_escalation),
+    xdm.event.description = object_create("active", active, "made_sla", made_sla, "knowledge", knowledge, "time_worked", time_worked, "upon_reject", upon_reject, "upon_approval", upon_approval, "follow_the_sun", follow_the_sun),
+    xdm.event.outcome = if(
+        approval = "approved", XDM_CONST.OUTCOME_SUCCESS, 
+        approval = "cancelled", XDM_CONST.OUTCOME_FAILED, 
+        approval = "duplicate", XDM_CONST.OUTCOME_UNKNOWN, 
+        approval = "not_required", XDM_CONST.OUTCOME_UNKNOWN, 
+        approval = "not requested", XDM_CONST.OUTCOME_UNKNOWN, 
+        approval = "rejected", XDM_CONST.OUTCOME_FAILED, 
+        approval = "requested", XDM_CONST.OUTCOME_PARTIAL, 
+        approval = null, null, to_string(approval)
+    ),
+    xdm.event.outcome_reason = coalesce(resolution_code, approval),
+    xdm.alert.category = if(get_category = "0", "Question", get_category = "1", "Issue", get_category = "2", "Feature"),
+    xdm.alert.severity = if(get_priority = "1", "Low", get_priority = "2", "Moderate", get_priority = "3", "High", get_priority = "4", "Critical"),
+    xdm.source.user.identifier = opened_by,
+    xdm.source.user.domain = concat(sys_domain_path, sys_domain),
+    xdm.alert.subcategory = if(subcategory != null, "Question", null),
+    xdm.source.interface = contact_type,
+    xdm.observer.content_version = to_string(object_create("N_of_CaseUpdates", sys_mod_count, "N_of_CaseReassign", reassignment_count)),
+    xdm.database.tables = arraycreate(sys_class_name),
+    xdm.source.user.username = sys_created_by,
+    xdm.alert.description = coalesce(short_description, description),
+    xdm.observer.name = assigned_to,
+    xdm.observer.type = assignment_group,
+    xdm.target.location.city = account -> city,
+    xdm.target.location.country = account -> country,
+    xdm.target.location.latitude = to_float(account -> latitude),
+    xdm.target.location.longitude = to_float(account -> longitude),
+    xdm.target.user.username = account -> name,
+    xdm.target.user.identifier = account -> number,
+    xdm.target.url = account -> website;

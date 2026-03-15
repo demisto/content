@@ -1,0 +1,44 @@
+name: Handle New Internal PRs
+on:
+  pull_request_target:
+    types: [opened]
+
+permissions:
+  contents: read
+
+jobs:
+  handle_new_internal_pr:
+    runs-on: ubuntu-latest
+    if: github.repository == 'demisto/content' && github.event.action == 'opened' && github.event.pull_request.head.repo.fork == false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"  # The Python version set here is the minimum supported by content, if you change it here, please change all the places containing this comment.
+
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@v9
+
+
+      - name: Install Python Dependencies
+        run: |
+          poetry install --with github-actions
+
+      - name: set pythonpath
+        run: |
+          echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+
+      - name: Post AI Review Introduction
+        env:
+          CONTENTBOT_GH_TOKEN: ${{ secrets.MARKETPLACE_AI_REVIEWER_GITHUB_TOKEN }}
+          EVENT_PAYLOAD: ${{ toJson(github.event) }}
+        run: |
+          echo "Posting AI review introduction on Internal PR"
+          cd .github/github_workflow_scripts
+          poetry run ./handle_internal_pr.py
+          echo "Finished handling Internal PR"

@@ -1,8 +1,9 @@
 category: Utilities
+provider: Perplexity AI Inc
 commonfields:
   id: Perplexity AI
   version: -1
-sectionOrder:
+sectionorder:
   - Connect
   - Collect
 configuration:

@@ -1,5 +1,6 @@
 category: IT Services
-sectionOrder:
+provider: Box
+sectionorder:
 - Connect
 - Collect
 commonfields:

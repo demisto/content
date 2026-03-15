@@ -2,7 +2,7 @@
     "name": "ThycoticDSV (Deprecated)",
     "description": "Deprecated. Use DelineaDSV instead.",
     "support": "partner",
-    "currentVersion": "1.0.5",
+    "currentVersion": "1.0.6",
     "author": "Thycotic Inc",
     "url": "https://thycotic.force.com/support/s/login",
     "email": "support@thycotic.com",
@@ -26,6 +26,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

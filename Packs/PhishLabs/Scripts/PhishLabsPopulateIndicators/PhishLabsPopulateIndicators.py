@@ -1,5 +1,3 @@
-from distutils.util import strtobool
-
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -34,7 +32,7 @@ def indicator_type_and_value_finder(indicator_data: dict):
 
 def main():
     since = demisto.args().get("since")
-    delete_false_positive = bool(strtobool(demisto.args().get("delete_false_positive", "false")))
+    delete_false_positive = argToBoolean(demisto.args().get("delete_false_positive", "false"))
     limit = demisto.args().get("limit")
     indicator_type = demisto.args().get("indicator_type")
     remove_protocol = demisto.args().get("remove_protocol")
@@ -66,7 +64,7 @@ def main():
         feed = content.get("data", [])
 
         if delete_false_positive:
-            false_positives = list(filter(lambda f: bool(strtobool(str(f.get("falsePositive", "false")))) is True, feed))
+            false_positives = list(filter(lambda f: argToBoolean(str(f.get("falsePositive", "false"))) is True, feed))
             for false_positive in false_positives:
                 delete_res = demisto.executeCommand(
                     "deleteIndicators",

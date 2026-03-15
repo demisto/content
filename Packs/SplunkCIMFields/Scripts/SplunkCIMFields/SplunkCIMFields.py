@@ -12,7 +12,7 @@ def splunk_cim_fields(match):
     return data.replace("$" + match + "$", inc.get(match))
 
 
-matches = re.findall("\$([^\$]*)\$", data)
+matches = re.findall(r"\$([^\$]*)\$", data)
 
 for match in matches:
     data = splunk_cim_fields(match)

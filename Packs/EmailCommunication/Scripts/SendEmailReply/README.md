@@ -1,3 +1,5 @@
+The script is a part of the Email Communication pack.
+
 The script sends the email to the recipient's list, including the following information:
 
 - The original email.
@@ -7,11 +9,15 @@ The script sends the email to the recipient's list, including the following info
 - BCC addresses, if they exist (Email Threads layout only)
 - Attachments, if they exist.
 
-For the "Email Communication" layout, the email body is taken from the incident 'notes,' and the email subject will contain the incident ID and the incident name.
+For the "**Email Communication**" layout:
 
-For the "Email Threads" layout, email message details (recipients, subject, email body, etc) are set in Incident fields, as well as extracted from any previous messages on the same email thread.  Outbound email subjects will include a unique message ID and a custom subject line set when the first message in the thread is created.
+- The email body is taken from the incident 'notes,' and the email subject will contain the incident ID and the incident name.
 
-The script is a part of the Email Communication pack.
+For the "**Email Threads**" layout:
+
+- Email message details (recipients, subject, email body, etc.) are set in Incident fields, as well as extracted from any previous messages on the same email thread.
+- Outbound email subjects will include a unique message ID and a custom subject line set when the first message in the thread is created.
+- If you include any Markdown in the body, the script will send it as HTML even if body_type argument is set to "text". To send the body without applying Markdown formatting, check the ***Send Body as Raw Text (No Markdown)*** checkbox.
 
 ## Permissions
 

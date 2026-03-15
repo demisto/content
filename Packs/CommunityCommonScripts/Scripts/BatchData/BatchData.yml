@@ -1,8 +1,8 @@
 args:
-- description: number of items that will be returned in each dictionary items (must be of type int)
+- description: number of items that will be returned in each dictionary items (must be of type int).
   name: batch_size
   required: true
-- description: comma separated list of items
+- description: comma separated list of items.
   name: data
   required: true
 - description: This nest the path under BatchedData in context. If you are running this script multiple times/simultaneously in a playbook, your  data will be over written.
@@ -15,7 +15,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.12.6204436
 enabled: true
 name: BatchData
 runas: DBotWeakRole

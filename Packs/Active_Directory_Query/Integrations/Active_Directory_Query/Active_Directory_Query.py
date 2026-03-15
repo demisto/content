@@ -417,11 +417,13 @@ def search(search_filter, search_base, attributes=None, size_limit=0, time_limit
 
     """
     assert connection is not None
+    demisto.debug(f"searching using {search_filter=} {search_base=}")
     success = connection.search(
         search_base=search_base, search_filter=search_filter, attributes=attributes, size_limit=size_limit, time_limit=time_limit
     )
 
     if not success:
+        demisto.info("Search failed")
         raise Exception("Search failed")
     return connection.entries
 
@@ -442,9 +444,16 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
 
     entries: list[Entry] = []
     entries_left_to_fetch = size_limit
+    page_num_debug = 0
     while True:
+        page_num_debug += 1
         if 0 < entries_left_to_fetch < page_size:
             page_size = entries_left_to_fetch
+        demisto.debug(
+            f"search_with_paging: fetching page {page_num_debug}. "
+            f"{page_size=}, total_so_far={total_entries} "
+            f"has_cookie={bool(cookie)}, elapsed={(datetime.now() - start).total_seconds():.2f}s"
+        )
         connection.search(
             search_base, search_filter, search_scope=SUBTREE, attributes=attributes, paged_size=page_size, paged_cookie=cookie
         )
@@ -457,6 +466,11 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
 
         # stop when: 1.reached size limit 2.reached time limit 3. no cookie
         if (size_limit and size_limit <= total_entries) or (time_limit and time_diff >= time_limit) or (not cookie):
+            demisto.debug(
+                f"search_with_paging: stopping after {page_num_debug} page(s). "
+                f"total_entries={total_entries}, size_limit={size_limit}, time_limit={time_limit}, "
+                f"time_elapsed={time_diff}s, has_more_pages={bool(cookie)}"
+            )
             break
 
     # keep the raw entry for raw content (backward compatibility)
@@ -479,6 +493,10 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
 
 
 def user_dn(sam_account_name, search_base):
+    if "\\" in sam_account_name:
+        domain_throw_out, sam_account_name = sam_account_name.split("\\", 1)
+        demisto.info(f"chopping off domain {domain_throw_out} and using {sam_account_name=}")
+
     search_filter = f"(&(objectClass=user)(sAMAccountName={sam_account_name}))"
     entries = search(search_filter, search_base)
     if not entries:
@@ -619,9 +637,15 @@ def search_users(default_base_dn, page_size):
     attributes = list(set(custom_attributes + DEFAULT_PERSON_ATTRIBUTES) - set(argToList(args.get("attributes-to-exclude"))))
     if "userAccountControl" in attributes:
         attributes.append("msDS-User-Account-Control-Computed")
+
+    demisto.debug(
+        f"ad-get-user: starting search_with_paging. "
+        f"{query=}, {default_base_dn=}, {limit=}, {page_size=}, attributes={attributes}"
+    )
     entries = search_with_paging(
         query, default_base_dn, page_cookie=page_cookie, attributes=attributes, size_limit=limit, page_size=page_size
     )
+    demisto.debug(f"ad-get-user: search_with_paging completed.\nReturned {len(entries.get('flat', []))} entries.")
 
     accounts = [account_entry(entry, custom_attributes) for entry in entries["flat"]]
     if "userAccountControl" in attributes:
@@ -753,9 +777,15 @@ def search_computers(default_base_dn, page_size):
     if args.get("attributes"):
         custom_attributes = args["attributes"].split(",")
     attributes = list(set(custom_attributes + DEFAULT_COMPUTER_ATTRIBUTES))
+
+    demisto.debug(
+        f"ad-get-computer: starting search_with_paging. "
+        f"{query=}, {default_base_dn=}, {size_limit=}, {page_size=}, attributes={attributes}"
+    )
     entries = search_with_paging(
         query, default_base_dn, attributes=attributes, page_size=page_size, size_limit=size_limit, page_cookie=page_cookie
     )
+    demisto.debug(f"ad-get-computer: search_with_paging completed.\nReturned {len(entries.get('flat', []))} entries.")
 
     endpoints = [endpoint_entry(entry, custom_attributes) for entry in entries["flat"]]
     readable_output = tableToMarkdown("Active Directory - Get Computers", entries["flat"])

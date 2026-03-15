@@ -4,6 +4,7 @@ commonfields:
 name: Palo Alto Networks Automatic SLR (Community)
 display: Palo Alto Networks Automatic SLR
 category: Utilities
+provider: Open Source
 description: Allow XSOAR to automatically generate Security Lifecycle Review's (SLR's).
 configuration:
 - display: Firewall Management FQDN or IP Address
@@ -298,7 +299,7 @@ script:
       type: boolean
     description: This command will dump all the non-sensitive parameters to the context, useful for debugging purposes.
     execution: true
-  dockerimage: demisto/xml-feed:1.0.0.116765
+  dockerimage: demisto/xml-feed:1.0.0.3540467
   subtype: python3
 fromversion: 5.0.0
 tests:

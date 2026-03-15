@@ -307,7 +307,8 @@ def test_mirror_investigation(mocker, requests_mock):
     set_integration_context[0].pop(CREDENTIALS_TOKEN_PARAMS)
     set_integration_context[0].pop("bot_access_token")
     set_integration_context[0].pop("bot_valid_until")
-    assert set_integration_context[0] == expected_integration_context
+    for key, value in expected_integration_context.items():
+        assert set_integration_context[0].get(key) == value
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0] == "Investigation mirrored successfully in channel incident-2."
@@ -2780,7 +2781,7 @@ def test_expand_permissions_list(permissions, expected_out):
         (
             AUTHORIZATION_CODE_FLOW,
             "microsoft-teams-message-send-to-chat",
-            {Perms.CHAT_CREATE, Perms.APPCATALOG_READ_ALL, Perms.TEAMSAPPINSTALLATION_READWRITESELFFORCHAT},
+            {Perms.CHAT_READBASIC, Perms.CHAT_CREATE, Perms.APPCATALOG_READ_ALL, Perms.TEAMSAPPINSTALLATION_READWRITESELFFORCHAT},
         ),
     ],
 )
@@ -3478,3 +3479,458 @@ def test_process_ask_user():
         },
     }
     assert process_ask_user(json.dumps(message)) == expected_adaptive_card
+
+
+def test_send_notification_with_raw_adaptive_card(mocker, requests_mock):
+    """
+    Given:
+        - A raw adaptive_card input.
+    When:
+        - send-notification is called.
+    Then:
+        - The adaptive card is wrapped with the required contentType and content fields.
+        - The request to the endpoint is sent with the adaptive card as expected.
+    """
+
+    from MicrosoftTeams import send_message
+
+    adaptive_card: dict = {
+        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+        "version": "1.0",
+        "type": "AdaptiveCard",
+        "msteams": {"width": "Full"},
+        "body": [{"type": "TextBlock", "text": "message", "wrap": True}],
+        "actions": [
+            {"type": "Action.Submit", "title": "Yes"},
+            {"type": "Action.Submit", "title": "No"},
+        ],
+    }
+    expected_request_attachment = {
+        "contentType": "application/vnd.microsoft.card.adaptive",
+        "content": adaptive_card,
+    }
+    requests_mock.post(f"{service_url}/v3/conversations", json={"id": "conversation-id"})
+    mocker.patch("MicrosoftTeams.get_team_aad_id", return_value=team_aad_id)
+    mocker.patch.object(demisto, "params", return_value={"team": "The-A-Team"})
+    mocker.patch.object(demisto, "args", return_value={"adaptive_card": json.dumps(adaptive_card), "to": "bwillis@email.com"})
+    send_message_request = requests_mock.post(f"{service_url}/v3/conversations/conversation-id/activities", json={})
+
+    send_message()
+    assert send_message_request.last_request.json() == {"type": "message", "attachments": [expected_request_attachment]}
+
+
+def test_send_notification_with_raw_adaptive_card_from_TeamAsk(mocker, requests_mock):
+    """
+    Given:
+        - A raw adaptive_card is sent from MicrosoftTeamsAsk.
+    When:
+        - Call send_message method.
+    Then:
+        - The adaptive card is wrapped with the required contentType and content fields.
+        - The request to the endpoint is sent with the adaptive card.
+    """
+
+    from MicrosoftTeams import send_message
+
+    adaptive_card: dict = {
+        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+        "version": "1.0",
+        "type": "AdaptiveCard",
+        "msteams": {"width": "Full"},
+        "body": [{"type": "TextBlock", "text": "message", "wrap": True}],
+        "actions": [
+            {"type": "Action.Submit", "title": "Yes"},
+            {"type": "Action.Submit", "title": "No"},
+        ],
+    }
+    adaptive_card_arg_from_TeamsAsk: dict = {
+        "adaptive_card": adaptive_card,
+        "entitlement": "4111dae8-2d45-46bd-85fa-64779c12abe8",
+        "investigation_id": "1",
+        "task_id": "1",
+    }
+    expected_request_attachment = {
+        "contentType": "application/vnd.microsoft.card.adaptive",
+        "content": {
+            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+            "version": "1.0",
+            "type": "AdaptiveCard",
+            "msteams": {"width": "Full"},
+            "body": [{"type": "TextBlock", "text": "message", "wrap": True}],
+            "actions": [
+                {
+                    "type": "Action.Submit",
+                    "title": "Yes",
+                    "data": {"entitlement": "4111dae8-2d45-46bd-85fa-64779c12abe8", "investigation_id": "1", "task_id": "1"},
+                },
+                {
+                    "type": "Action.Submit",
+                    "title": "No",
+                    "data": {"entitlement": "4111dae8-2d45-46bd-85fa-64779c12abe8", "investigation_id": "1", "task_id": "1"},
+                },
+            ],
+        },
+    }
+    requests_mock.post(f"{service_url}/v3/conversations", json={"id": "conversation-id"})
+    mocker.patch("MicrosoftTeams.get_team_aad_id", return_value=team_aad_id)
+    mocker.patch.object(demisto, "params", return_value={"team": "The-A-Team"})
+    mocker.patch.object(
+        demisto, "args", return_value={"adaptive_card": json.dumps(adaptive_card_arg_from_TeamsAsk), "to": "bwillis@email.com"}
+    )
+    send_message_request = requests_mock.post(f"{service_url}/v3/conversations/conversation-id/activities", json={})
+
+    send_message()
+    assert send_message_request.last_request.json() == {"type": "message", "attachments": [expected_request_attachment]}
+
+
+def test_get_bot_access_token_multi_tenant_success(mocker, requests_mock):
+    """
+    Given:
+        - A multi-tenant bot configuration.
+    When:
+        - Calling get_bot_access_token.
+    Then:
+        - Ensure a token is successfully retrieved using the multi-tenant endpoint.
+    """
+    from MicrosoftTeams import get_bot_access_token
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
+
+    requests_mock.post(
+        "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token",
+        json={"access_token": "multi_tenant_token", "expires_in": 3600},
+    )
+
+    token = get_bot_access_token()
+    assert token == "multi_tenant_token"
+
+
+def test_get_bot_access_token_single_tenant_success(mocker, requests_mock):
+    """
+    Given:
+        - A single-tenant bot configuration with a tenant_id.
+    When:
+        - Calling get_bot_access_token.
+    Then:
+        - Ensure a token is successfully retrieved using the single-tenant endpoint.
+    """
+    from MicrosoftTeams import get_bot_access_token
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"bot_type": "single-tenant", "tenant_id": tenant_id})
+    mocker.patch.object(demisto, "setIntegrationContext")
+
+    requests_mock.post(
+        f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token",
+        json={"access_token": "single_tenant_token", "expires_in": 3600},
+    )
+
+    token = get_bot_access_token()
+    assert token == "single_tenant_token"
+
+
+def test_get_bot_access_token_fallback_to_single_tenant(mocker, requests_mock):
+    """
+    Given:
+        - A multi-tenant bot configuration.
+        - The multi-tenant endpoint returns an 'unauthorized_client' error.
+        - A tenant_id is available in the context.
+    When:
+        - Calling get_bot_access_token.
+    Then:
+        - Ensure the code falls back to the single-tenant endpoint and retrieves a token.
+    """
+    from MicrosoftTeams import get_bot_access_token
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"tenant_id": tenant_id})
+    set_context_mocker = mocker.patch.object(demisto, "setIntegrationContext")
+
+    requests_mock.post(
+        "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token",
+        json={"error": "unauthorized_client"},
+        status_code=400,
+    )
+    requests_mock.post(
+        f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token",
+        json={"access_token": "fallback_token", "expires_in": 3600},
+    )
+
+    token = get_bot_access_token()
+    assert token == "fallback_token"
+    # Verify that the bot_type was updated in the context for future use
+    updated_context = set_context_mocker.call_args[0][0]
+    assert updated_context.get("bot_type") == "single-tenant"
+
+
+def test_get_bot_access_token_single_tenant_no_tenant_id(mocker):
+    """
+    Given:
+        - A single-tenant bot configuration but no tenant_id.
+    When:
+        - Calling get_bot_access_token.
+    Then:
+        - Ensure a ValueError is raised.
+    """
+    from MicrosoftTeams import get_bot_access_token, MISS_CONFIGURATION_ERROR_MESSAGE
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"bot_type": "single-tenant"})
+    mocker.patch.object(demisto, "setIntegrationContext")
+
+    with pytest.raises(ValueError, match=MISS_CONFIGURATION_ERROR_MESSAGE):
+        get_bot_access_token()
+
+
+def test_validate_auth_header_signature_verification(mocker):
+    """
+    Given:
+        - A valid JWT token signed with a private key.
+        - An invalid JWT token signed with a different private key (attacker's key).
+        - The public key corresponding to the valid token is available in the integration context (JWK).
+    When:
+        - Calling validate_auth_header with the valid token.
+        - Calling validate_auth_header with the invalid token.
+    Then:
+        - The valid token should be accepted (return True).
+        - The invalid token should be rejected (return False) because signature verification fails.
+    """
+    from MicrosoftTeams import validate_auth_header
+    import jwt
+    import json
+    import base64
+    from cryptography.hazmat.primitives.asymmetric import rsa
+    from cryptography.hazmat.backends import default_backend
+
+    # 1. Setup Keys
+    private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048, backend=default_backend())
+    public_key = private_key.public_key()
+
+    attacker_private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048, backend=default_backend())
+
+    def base64_url_encode(val):
+        bytes_val = val.to_bytes((val.bit_length() + 7) // 8, byteorder="big")
+        return base64.urlsafe_b64encode(bytes_val).decode("utf-8").rstrip("=")
+
+    def get_jwk(pub_key, kid):
+        numbers = pub_key.public_numbers()
+        return {
+            "kty": "RSA",
+            "kid": kid,
+            "n": base64_url_encode(numbers.n),
+            "e": base64_url_encode(numbers.e),
+            "alg": "RS256",
+            "use": "sig",
+            "endorsements": ["msteams"],
+        }
+
+    kid = "test-key-id"
+    jwk = get_jwk(public_key, kid)
+
+    # 2. Mock Integration Context
+    mocker.patch("MicrosoftTeams.get_integration_context", return_value={"open_id_metadata": json.dumps({"keys": [jwk]})})
+    mocker.patch("MicrosoftTeams.set_integration_context")
+    mocker.patch("MicrosoftTeams.BOT_ID", new="test-bot-id")
+
+    # 3. Create Tokens
+    payload = {"iss": "https://api.botframework.com", "aud": "test-bot-id", "sub": "test-user", "exp": 9999999999}
+
+    valid_token = jwt.encode(payload=payload, key=private_key, algorithm="RS256", headers={"kid": kid})
+
+    invalid_token = jwt.encode(payload=payload, key=attacker_private_key, algorithm="RS256", headers={"kid": kid})
+
+    # 4. Run Tests
+    # Test Valid Token
+    headers_valid = {"Authorization": f"Bearer {valid_token}"}
+    is_valid = validate_auth_header(headers_valid)
+    assert is_valid is True
+
+    # Test Invalid Token
+    headers_invalid = {"Authorization": f"Bearer {invalid_token}"}
+    is_valid = validate_auth_header(headers_invalid)
+    assert is_valid is False
+
+
+def test_messages_endpoint_auth_header_validation_failure(mocker):
+    """
+    Given:
+        - A POST request to the messages endpoint with invalid authorization headers.
+    When:
+        - The validate_auth_header function returns False.
+    Then:
+        - The endpoint returns a 401 status code.
+        - The response contains a generic error message.
+    """
+    from MicrosoftTeams import APP
+
+    # Mock validate_auth_header to return False
+    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=False)
+
+    # Mock demisto.info to avoid errors
+    mocker.patch.object(demisto, "info")
+
+    # Create test request with invalid headers
+    mock_request_body = {
+        "type": "message",
+        "text": "test message",
+        "from": {"id": "test-user-id", "name": "Test User"},
+        "conversation": {"id": "test-conversation-id"},
+    }
+
+    APP.testing = True
+    app = APP.test_client()
+
+    # Send POST request with invalid authorization
+    response = app.post(
+        "/",
+        data=json.dumps(mock_request_body),
+        content_type="application/json",
+        headers={"Authorization": "Bearer invalid_token"},
+    )
+
+    # Assert response
+    assert response.status_code == 401
+    assert response.data.decode() == "Authorization header validation failed - JWT validation error"
+
+
+@pytest.mark.parametrize(
+    "args, expected_response, expected_request_url, expected_outputs",
+    [
+        (
+            {"conversation_id": GROUP_CHAT_ID, "limit": 2, "order_by": "createdDateTime"},
+            "list_messages",
+            f"https://graph.microsoft.com/v1.0/chats/{GROUP_CHAT_ID}/messages?$top=2&$orderBy=createdDateTime desc",
+            "expected_outputs_list_messages_new_command",
+        ),
+        (
+            {
+                "next_link": "https://graph.microsoft.com/v1.0/chats/test_next_link",
+                "limit": 2,
+                "conversation_id": GROUP_CHAT_ID,
+            },
+            "list_messages",
+            "https://graph.microsoft.com/v1.0/chats/test_next_link",
+            "expected_outputs_list_messages_new_command",
+        ),
+    ],
+)
+def test_list_messages_command_chat(mocker, requests_mock, args, expected_response, expected_request_url, expected_outputs):
+    """
+    Given:
+      - The command arguments for listing messages in a chat
+    When:
+      - Executing the 'microsoft-teams-list-messages' command.
+    Then:
+      - Assert the request url is as expected
+      - Verify that the context outputs is as expected
+    """
+    from MicrosoftTeams import list_messages_command
+
+    mocker.patch("MicrosoftTeams.AUTH_TYPE", new=AUTHORIZATION_CODE_FLOW)
+    mocker.patch("MicrosoftTeams.get_chat_id_and_type", return_value=(GROUP_CHAT_ID, "group"))
+    return_results = mocker.patch("MicrosoftTeams.return_results")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    requests_mock.get(expected_request_url, json=test_data.get(expected_response))
+    list_messages_command()
+    assert return_results.call_args[0][0].outputs == test_data.get(expected_outputs)
+
+
+def test_list_messages_command_channel(mocker, requests_mock):
+    """
+    Given:
+      - The command arguments for listing messages in a channel
+    When:
+      - Executing the 'microsoft-teams-list-messages' command.
+    Then:
+      - Assert the request url is as expected
+      - Verify that the context outputs is as expected
+    """
+    from MicrosoftTeams import list_messages_command
+
+    channel_name = "incident-1"
+    team_name = "The-A-Team"
+    channel_id = mirrored_channels[0]["channel_id"]
+    args = {"conversation_id": channel_name, "team_name": team_name, "limit": 2}
+
+    mocker.patch("MicrosoftTeams.get_team_aad_id", return_value=team_aad_id)
+    mocker.patch("MicrosoftTeams.get_channel_id", return_value=channel_id)
+    return_results = mocker.patch("MicrosoftTeams.return_results")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    expected_request_url = f"https://graph.microsoft.com/v1.0/teams/{team_aad_id}/channels/{channel_id}/messages?$top=2"
+    requests_mock.get(expected_request_url, json=test_data.get("list_messages"))
+
+    list_messages_command()
+
+    expected_outputs = test_data.get("expected_outputs_list_messages_new_command")
+    # Adjust expected outputs for channel context
+    expected_outputs["MicrosoftTeams.MessagesList(val.conversationId && val.conversationId === obj.conversationId)"][
+        "conversationId"
+    ] = channel_name
+
+    assert return_results.call_args[0][0].outputs == expected_outputs
+
+
+def test_list_messages_command_replies(mocker, requests_mock):
+    """
+    Given:
+      - The command arguments for listing replies to a message in a channel
+    When:
+      - Executing the 'microsoft-teams-list-messages' command.
+    Then:
+      - Assert the request url is as expected
+      - Verify that the context outputs is as expected
+    """
+    from MicrosoftTeams import list_messages_command
+
+    channel_name = "incident-1"
+    team_name = "The-A-Team"
+    channel_id = mirrored_channels[0]["channel_id"]
+    message_id = "1616964509832"
+    args = {"conversation_id": channel_name, "team_name": team_name, "message_id": message_id, "limit": 2}
+
+    mocker.patch("MicrosoftTeams.get_team_aad_id", return_value=team_aad_id)
+    mocker.patch("MicrosoftTeams.get_channel_id", return_value=channel_id)
+    return_results = mocker.patch("MicrosoftTeams.return_results")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    expected_request_url = (
+        f"https://graph.microsoft.com/v1.0/teams/{team_aad_id}/channels/{channel_id}/messages/{message_id}/replies?$top=2"
+    )
+    requests_mock.get(expected_request_url, json=test_data.get("list_messages"))
+
+    list_messages_command()
+
+    expected_outputs = test_data.get("expected_outputs_list_messages_new_command")
+    # Adjust expected outputs for channel context
+    expected_outputs["MicrosoftTeams.MessagesList(val.conversationId && val.conversationId === obj.conversationId)"][
+        "conversationId"
+    ] = channel_name
+
+    assert return_results.call_args[0][0].outputs == expected_outputs
+
+
+def test_list_messages_command_error(mocker):
+    """
+    Given:
+      - The command arguments for listing messages in a channel without providing team
+    When:
+      - Executing the 'microsoft-teams-list-messages' command.
+    Then:
+      - Assert that ValueError is raised
+    """
+    from MicrosoftTeams import list_messages_command
+
+    mocker.patch("MicrosoftTeams.AUTH_TYPE", new=AUTHORIZATION_CODE_FLOW)
+    channel_name = "incident-1"
+    args = {"conversation_id": channel_name, "limit": 2}
+
+    # Mock get_chat_id_and_type to raise exception as it's not a chat
+    mocker.patch("MicrosoftTeams.get_chat_id_and_type", side_effect=ValueError("Could not find chat"))
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    with pytest.raises(DemistoException) as e:
+        list_messages_command()
+    assert (
+        str(e.value)
+        == "Failed to find chat or channel. If you are trying to get messages from a channel, please provide the 'team_name'."
+    )

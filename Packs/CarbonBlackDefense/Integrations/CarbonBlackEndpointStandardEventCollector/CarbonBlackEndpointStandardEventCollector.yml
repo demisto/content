@@ -1,5 +1,6 @@
 category: Endpoint
-sectionOrder:
+provider: Broadcom
+sectionorder:
 - Connect
 - Collect
 commonfields:

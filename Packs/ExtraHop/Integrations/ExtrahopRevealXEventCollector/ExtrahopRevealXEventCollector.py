@@ -10,8 +10,8 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-VENDOR = 'Extrahop'
-PRODUCT = 'RevealX'
+VENDOR = "Extrahop"
+PRODUCT = "RevealX"
 MAX_FETCH_LIMIT = 25000
 DEFAULT_FETCH_LIMIT = 5000
 
@@ -21,17 +21,17 @@ DEFAULT_FETCH_LIMIT = 5000
 class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool, client_id: str, client_secret: str, use_proxy: bool, ok_codes: tuple) -> None:
         """
-          Prepare constructor for Client class.
+        Prepare constructor for Client class.
 
-          Calls the constructor of BaseClient class and updates the header with the authentication token.
+        Calls the constructor of BaseClient class and updates the header with the authentication token.
 
-          Args:
-              base_url: The url of ExtraHop instance.
-              verify: True if verify SSL certificate is checked in integration configuration, False otherwise.
-              client_id: The Client ID to use for authentication.
-              client_secret: The Client Secret to use for authentication.
-              use_proxy: True if the proxy server needs to be used, False otherwise.
-          """
+        Args:
+            base_url: The url of ExtraHop instance.
+            verify: True if verify SSL certificate is checked in integration configuration, False otherwise.
+            client_id: The Client ID to use for authentication.
+            client_secret: The Client Secret to use for authentication.
+            use_proxy: True if the proxy server needs to be used, False otherwise.
+        """
 
         super().__init__(base_url=base_url, verify=verify, ok_codes=ok_codes, proxy=use_proxy)
 
@@ -97,20 +97,14 @@ class Client(BaseClient):
             "client_id": client_id,
             "client_secret": client_secret,
         }
-        response = self._http_request(
-            method="POST",
-            url_suffix="/oauth2/token",
-            data=req_body,
-            headers=req_headers
-        )
+        response = self._http_request(method="POST", url_suffix="/oauth2/token", data=req_body, headers=req_headers)
         token = response.get("access_token")
         expires_in = response.get("expires_in")
 
         return token, expires_in
 
     def detections_list(self, body: dict) -> dict:
-        """Retrieve the detections from Reveal(X).
-        """
+        """Retrieve the detections from Reveal(X)."""
         # Make sure we have a valid token
         self.set_headers()
         return self._http_request("POST", url_suffix="/api/v1/detections/search", json_data=body)
@@ -119,7 +113,7 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def prepare_list_detections_output(detections : List[dict[str, Any]]) -> str:
+def prepare_list_detections_output(detections: List[dict[str, Any]]) -> str:
     """Prepare human-readable output for list-detections command.
 
     Args:
@@ -157,18 +151,13 @@ def validate_fetch_events_params(last_run: dict) -> dict:
         Dictionary containing validated configuration parameters in proper format.
     """
     detection_start_time: int = int(get_current_time().timestamp() * 1000)
-    if last_run and 'detection_start_time' in last_run:
-        detection_start_time = cast(int, last_run.get('detection_start_time'))
+    if last_run and "detection_start_time" in last_run:
+        detection_start_time = cast(int, last_run.get("detection_start_time"))
 
-    offset : int = 0
-    if last_run and 'offset' in last_run:
+    offset: int = 0
+    if last_run and "offset" in last_run:
         offset = cast(int, last_run.get("offset"))
-    return {
-        'detection_start_time': detection_start_time,
-        'offset': offset,
-        'limit': DEFAULT_FETCH_LIMIT
-    }
-
+    return {"detection_start_time": detection_start_time, "offset": offset, "limit": DEFAULT_FETCH_LIMIT}
 
 
 def update_time_values_detections(detections: List[dict[str, Any]]) -> None:
@@ -191,8 +180,7 @@ def update_time_values_detections(detections: List[dict[str, Any]]) -> None:
                     detection["_ENTRY_STATUS"] = "updated"
 
 
-def get_detections_list(client: Client,
-                            advanced_filter=None) -> List[dict[str, Any]]:
+def get_detections_list(client: Client, advanced_filter=None) -> List[dict[str, Any]]:
     """Retrieve the detections from ExtraHop-Reveal(X).
 
     Args:
@@ -281,22 +269,24 @@ def fetch_extrahop_detections(
                 advanced_filter["mod_time"] = detection_start_time
                 advanced_filter["offset"] = 0
 
-
     except Exception as error:
         raise DemistoException(f"extrahop: exception occurred {str(error)}")
 
     demisto.debug(f"Extrahop fetched {len(events)} events with the advanced filter: {advanced_filter}")
 
-    last_run.update({
-        "detection_start_time": int(detection_start_time),
-        "offset": advanced_filter["offset"],
-        "already_fetched": already_fetched
-    })
+    last_run.update(
+        {
+            "detection_start_time": int(detection_start_time),
+            "offset": advanced_filter["offset"],
+            "already_fetched": already_fetched,
+        }
+    )
 
     return events, last_run
 
 
 """ COMMAND FUNCTIONS """
+
 
 def test_module(client: Client) -> str:
     """
@@ -306,10 +296,7 @@ def test_module(client: Client) -> str:
     Returns:
         str: 'ok' if the connection is successful. If an authorization error occurs, an appropriate error message is returned.
     """
-    last_run = {
-        'detection_start_time': int(get_current_time().timestamp() * 1000) ,
-        'offset': 0
-    }
+    last_run = {"detection_start_time": int(get_current_time().timestamp() * 1000), "offset": 0}
     fetch_events(client, last_run, 1)
     return "ok"
 
@@ -317,17 +304,20 @@ def test_module(client: Client) -> str:
 def fetch_events(client: Client, last_run: dict, max_events: int):
     """Fetch the specified ExtraHop entity and push into XSIAM.
 
-     Args:
-        max_events: max events to fetch
-        client: ExtraHop client to be used.
-        last_run: The last_run dictionary having the state of previous cycle.
+    Args:
+       max_events: max events to fetch
+       client: ExtraHop client to be used.
+       last_run: The last_run dictionary having the state of previous cycle.
     """
     demisto.debug("Extrahop fetch_events invoked")
     fetch_params = validate_fetch_events_params(last_run)
 
-    advanced_filter = {"mod_time": fetch_params["detection_start_time"],
-                       "limit": fetch_params["limit"], "offset": fetch_params["offset"],
-                       "sort": [{"direction": "asc", "field": "mod_time"}]}
+    advanced_filter = {
+        "mod_time": fetch_params["detection_start_time"],
+        "limit": fetch_params["limit"],
+        "offset": fetch_params["offset"],
+        "sort": [{"direction": "asc", "field": "mod_time"}],
+    }
 
     events, next_run = fetch_extrahop_detections(client, advanced_filter, last_run, max_events)
     demisto.debug(f"Extrahop next_run is {next_run}")
@@ -349,11 +339,11 @@ def get_events(client: Client, args: dict, max_events: int) -> CommandResults:
 
     # if the user limits in the get events arguments
     last_run = {
-        'detection_start_time': int(first_fetch.timestamp() * 1000),
-        'offset': 0,
+        "detection_start_time": int(first_fetch.timestamp() * 1000),
+        "offset": 0,
     }
 
-    output, _  = fetch_events(client, last_run, max_events)
+    output, _ = fetch_events(client, last_run, max_events)
     human_readable = prepare_list_detections_output(output)
 
     command_results = CommandResults(
@@ -376,15 +366,17 @@ def main():
         verify_certificate = not argToBoolean(params.get("insecure", False))
         client_id = params.get("credentials", {}).get("identifier")
         client_secret = params.get("credentials", {}).get("password")
-        use_proxy: bool = params.get('proxy', False)
-        max_events = arg_to_number(params.get('max_events_per_fetch')) or MAX_FETCH_LIMIT
+        use_proxy: bool = params.get("proxy", False)
+        max_events = arg_to_number(params.get("max_events_per_fetch")) or MAX_FETCH_LIMIT
 
-        client = Client(base_url=base_url,
-                        verify=verify_certificate,
-                        client_id=client_id,
-                        client_secret=client_secret,
-                        use_proxy=use_proxy,
-                        ok_codes=(200, 201, 204))
+        client = Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            client_id=client_id,
+            client_secret=client_secret,
+            use_proxy=use_proxy,
+            ok_codes=(200, 201, 204),
+        )
 
         if command == "test-module":
             # Command made to test the integration
@@ -394,15 +386,15 @@ def main():
             last_run = demisto.getLastRun()
             events, next_run = fetch_events(client, last_run, max_events)
             if len(events):
-                demisto.debug(f'Sending {len(events)} events.')
+                demisto.debug(f"Sending {len(events)} events.")
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
-            demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
+            demisto.debug(f"Successfully saved last_run= {demisto.getLastRun()}")
         elif command == "revealx-get-events":
             command_results = get_events(client, args, max_events)
             events = command_results.outputs
-            if events and argToBoolean(args.get('should_push_events')):
-                demisto.debug(f'Sending {len(events)} events.')
+            if events and argToBoolean(args.get("should_push_events")):
+                demisto.debug(f"Sending {len(events)} events.")
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             return_results(command_results)
         else:

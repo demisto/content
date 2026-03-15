@@ -292,7 +292,7 @@ def main() -> None:  # pragma: no cover
     server_url = params.get("server_url")
     if server_url not in ENDPOINT_TO_ZOHO_ACCOUNTS:
         return_error("Invalid URL: Make sure it matches one of the options listed in the help section.")
-    client_id = params.get("credentials", {}).get("username")
+    client_id = params.get("credentials", {}).get("identifier")
     client_secret = params.get("credentials", {}).get("password")
     client_code = params.get("client_code", {}).get("password")
     verify = not params.get("insecure", False)

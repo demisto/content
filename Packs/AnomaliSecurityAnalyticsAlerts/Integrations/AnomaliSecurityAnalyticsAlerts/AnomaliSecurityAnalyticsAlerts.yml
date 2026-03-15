@@ -1,5 +1,6 @@
 category: Analytics & SIEM
-sectionOrder:
+provider: Anomali
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -233,5 +234,6 @@ fromversion: 6.10.0
 marketplaces:
 - xsoar
 - marketplacev2
+- platform
 tests:
 - No tests

@@ -1,5 +1,6 @@
 category: Utilities
-sectionOrder:
+provider: Open Source
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -290,7 +291,7 @@ script:
     - contextPath: IP.Relationships.EntityBType
       description: The type of the destination of the relationship.
       type: string
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   script: '-'

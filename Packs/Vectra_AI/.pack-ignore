@@ -18,6 +18,8 @@ Unassign
 retries
 Unmark
 optimizes
+refetch
+checkbox
 
 [file:Vectra_AIEventCollector_1_3.yml]
 ignore=MR108

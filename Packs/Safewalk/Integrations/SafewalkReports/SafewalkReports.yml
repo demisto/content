@@ -4,6 +4,7 @@ commonfields:
 name: SafewalkReports
 display: Safewalk Reports
 category: Analytics & SIEM
+provider: Protectimus
 description: Safewalk server integration.
 configuration:
 - display: Server URL (e.g. https://soar.monstersofhack.com)
@@ -319,7 +320,7 @@ script:
       type: Number
     arguments: []
     description: safewalk-get-users-associations-indicators.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   script: '-'

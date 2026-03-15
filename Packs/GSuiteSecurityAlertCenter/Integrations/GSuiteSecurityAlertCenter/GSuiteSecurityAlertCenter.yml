@@ -1,5 +1,6 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+provider: Google
+sectionorder:
 - Connect
 - Collect
 commonfields:

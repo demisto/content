@@ -1,9 +1,9 @@
-IT service management. Cortex XSOAR interfaces with ServiceNow to help streamline security-related service management and IT operations. For example, you can use the `ServiceNow` integration in order to:
+IT service management. Cortex interfaces with ServiceNow to help streamline security-related service management and IT operations. For example, you can use the `ServiceNow` integration in order to:
 
-- View, create, update or delete a ServiceNow ticket directly from the Cortex XSOAR CLI, and enrich it with Cortex XSOAR data.
+- View, create, update or delete a ServiceNow ticket directly from the Cortex CLI, and enrich it with Cortex data.
 - View, create, update and delete records from any ServiceNow table.
 - Query ServiceNow data with the ServiceNow query syntax.
-- Manage Security Incident Response (SIR) tickets with Cortex XSOAR, update tickets and enrich them with data.
+- Manage Security Incident Response (SIR) tickets with Cortex, update tickets and enrich them with data.
 
 Please refer to ServiceNow documentation for additional information. We especially recommend the [Operators available for filters and queries](https://docs.servicenow.com/bundle/xanadu-platform-user-interface/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html) page.
 
@@ -19,7 +19,7 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Required Permissions
 
-To use ServiceNow on Cortex XSOAR, ensure your user account has the *snc_platform_rest_api_access* role.
+To use ServiceNow on Cortex, ensure your user account has the *snc_platform_rest_api_access* role.
  This role is required to make API calls.
  Also add to your user account the specific tables that you want to have access to.
  However, these permissions may not suffice for managing records in some tables. Make sure you have the correct role so you have permissions to work with the relevant table.
@@ -34,7 +34,7 @@ servicenow-update-record - ServiceNowUpdateIncident
 You can use these scripts if you want to wrap these commands around a ServiceNow table of your choice.
 These scripts are wrapped around the incident table, so to wrap them around another table simply copy the scripts and edit the code, arguments and outputs accordingly.
 
-## Configure ServiceNow v2 on Cortex XSOAR
+## Configure ServiceNow v2 on Cortex
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for ServiceNow v2.
@@ -58,7 +58,7 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 
 ## Instance Creation Flow
 
-This integration supports two types of authorization:
+This integration supports three types of authorization:
 
 1. Basic authorization using username and password.
 2. OAuth 2.0 authorization
@@ -69,40 +69,37 @@ This integration supports two types of authorization:
 To use OAuth 2.0 authorization follow the next steps:
 
 1. Login to your ServiceNow instance and create an endpoint for XSOAR to access your instance (please see [Snow OAuth](https://docs.servicenow.com/bundle/xanadu-platform-security/page/administer/security/concept/c_OAuthApplications.html) for more information).
-2. Copy the `Client Id` and `Client Secret` (press the lock next to the client secret to reveal it) that were automatically generated when creating the endpoint into the `Username` and `Password` fields of the instance configuration.
-3. Select the `Use OAuth Login` checkbox and click the `Done` button.
-4. Run the command `!servicenow-oauth-login` from the XSOAR CLI and fill in the username and password of the ServiceNow instance. This step generates an access token to the ServiceNow instance and is required only in the first time after configuring a new instance in the XSOAR platform.
-5. (Optional) Test the created instance by running the `!servicenow-oauth-test` command.
+2. Copy the **Client Id** and **Client Secret** (click the lock next to the client secret to reveal it) that were automatically generated when creating the endpoint into the **Client ID** and **Client Secret** fields of the integration instance configuration.
+3. (Recommended) Enter the ServiceNow account **Username** and **Password** in the integration instance configuration. When provided, the integration automatically performs the initial OAuth login on first use. It also automatically renews the refresh token when it expires.
+4. Select the **Use OAuth Login** checkbox and click **Done**.
+5. If you did not provide the **Username** and **Password** in step 3, run the command `!servicenow-oauth-login` from the Cortex XSOAR CLI and fill in the ServiceNow user's User ID (admin or a dedicated integration username) and corresponding password of the ServiceNow integration instance. This step generates an access token to the ServiceNow integration instance and is required only the first time after configuring a new integration instance in Cortex XSOAR. If you provided **Username** and **Password**, this step is handled automatically.
+6. (Optional) Test the created integration instance by running the `!servicenow-oauth-test` command.
 
 **Notes:**
 
 1. When running the `!servicenow-oauth-login` command, a refresh token is generated and will be used to produce new access tokens after the current access token has expired.
-2. Every time the refresh token expires you will have to run the `servicenow-oauth-login` command again. Hence, we recommend setting the `Refresh Token Lifespan` field in the endpoint created in step 1 to a long period (can be set to several years).
+2. If the `Username` and `Password` fields are configured, the integration will automatically perform the initial login and renew the refresh token when it expires — no manual commands are needed. Otherwise, you will have to run the `servicenow-oauth-login` command for the initial login and again each time the refresh token expires.
 3. The grant type used to get an access token is `Resource owner password credentials`. See the [Snow documentation](https://docs.servicenow.com/bundle/xanadu-platform-security/page/administer/security/concept/c_OAuthApplications.html#d25788e201) for more information.
 
 #### JWT Authentication
 
 #### Prerequisites in order to support JWT
 
-1. Create a Java Key Store and upload it to the instance. (Accessing from the upper menu :**Al** > **System Definition** > **Certificates**.)
-(Private key will be used as an integration parameter)
-2. Configure a JWT signing key (Use the keystore from above. Keep the Key ID. It will be used as kid integration parameter)
-(**All** > **System OAuth** > **JWT Keys**)
-3. Create a JWT provider with a JWT signing key
-(You are required to set in Standard Claims the same values for aud, iss, and sub that will be used as integration parameters. Claim Name sub in Standard Claims has to be an existing non-admin ServiceNow user with all necessary roles.)
-
-(**All** > **System OAuth** > **JWT providers**)
-4. Connect to an OAuth provider and create an OAuth application registry (aud in JWT provider has to be equal to Client ID from OAuth JWT application - update JWT provider If necessary. The value of kid in JWT Verifier Maps has to be the  same as Key Id in JWT signing key. The value can be updated if necessary.)
-(**All** > **System OAuth** > **Application Registry**)
-
-5. Create an API Access Policy or add an Authentication profile to an existing Policy (**All** > **System Web Services** > **API Access Policies** > **Rest API Access Policies** )
+1. Create a Java Key Store and upload it to the instance by accessing from the upper menu: **All** > **System Definition** > **Certificates**. The private key will be used as an integration parameter.
+2. Configure a JWT signing key by accessing: All→System OAuth→JWT Keys using the keystore from above and keep the Key ID as it will be used as kid integration parameter.
+3. Create a JWT provider with a JWT signing key by accessing: All→System OAuth→JWT providers. Claim Name sub in Standard Claims has to be existing non-admin servicenow user with all necessary roles.
+4. Connect to an OAuth provider and create an OAuth application registry by accessing All→System OAuth→Application Registry:
+   1. aud in JWT provider has to be equal to Client ID from OAuth JWT application - update JWT provider If necessary.
+   2. The value of kid in JWT Verifier Maps has to be the same as Key Id in JWT signing key.
+      The value can be updated if necessary.
+5. Create API Access Policy or add Authentication profile to existing Policy by accessing: All→System Web Services→API Access Policies→Rest API Access Policies
 
 **IMPORTANT:**
 
-1. Standard Authentication Profile of type Oauth should already be present in ServiceNow and needs to be added to the Policy.
+1. The Standard Authentication Profile of type Oauth should be already present in ServiceNow and has to be added to the Policy.
 API Access Policy should be configured as global in order to cover all available resources and not just now/table
 2. Granting JWT to admin is not allowed.
-You should have a non-admin user with all necessary roles (only non-admin roles) in addition to the existing  role snc_platform_rest_api_access that is required to make API calls.
+You should have a non-admin user with all necessary roles (only non-admin roles) in addition to the existing role snc_platform_rest_api_access that is required to make API calls.
 
 ### Using Multi-Factor Authentication (MFA)
 
@@ -117,42 +114,51 @@ If MFA is enabled for your user, follow the next steps:
 1. When using basic authorization, you will have to update your password with the current OTP every time the current code expires (30 seconds), hence we recommend using OAuth 2.0 authorization.
 2. For using OAuth 2.0 see the above instructions. The OTP code should be appended to the password parameter in the `!servicenow-oauth-login` command.
 
-    | **Parameter** | **Description** | **Required** |
-    |--------| --- | --- |
-    | ServiceNow URL, in the format <https://company.service-now.com/> |  | True |
-    | Username/Client ID |  | False |
-    | Password |  | False |
-    | Use OAuth Login | Select this checkbox if to use OAuth 2.0 authentication. See \(?\) for more information. | False |
-    | Default ticket type for running ticket commands and fetching incidents | The ticket type can be: incident, problem, change_request, sc_request, sc_task or sc_req_item. | False |
-    | ServiceNow API Version (e.g. 'v1') |  | False |
-    | Fetch incidents |  | False |
-    | The query to use when fetching incidents |  | False |
-    | How many incidents to fetch each time |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) |  | False |
-    | Timestamp field to filter by (e.g., `opened_at`) This is how the filter is applied to the query: "ORDERBYopened_at^opened_at&gt;[Last Run]".<br/>To prevent duplicate incidents, this field is mandatory for fetching incidents. |  | False |
-    | ServiceNow ticket column to be set as the incident name. Default is the incident number |  | False |
-    | Incident type |  | False |
-    | Get incident attachments |  | False |
-    | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from ServiceNow to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to ServiceNow\), or Incoming and Outgoing \(from/to Cortex XSOAR and ServiceNow\). | False |
-    | Use Display Value | Select this checkbox to retrieve comments and work notes without accessing the \`sys_field_journal\` table. | False |
-    | Instance Date Format | Select the date format of your ServiceNow instance. Mandatory when using the \`Use Display Value\` option. More details under the troubleshooting section in the documentation of the integration. The integration supports the ServiceNow default time format (full form) `HH:mm:ss` with support to `a` notation for AM/PM. | False |
-    | Comment Entry Tag | Choose the tag to add to an entry to mirror it as a comment in ServiceNow. | False |
-    | Work Note Entry Tag | Choose the tag to add to an entry to mirror it as a work note in ServiceNow. | False |
-    | File Entry Tag To ServiceNow | Choose the tag to add to an entry to mirror it as a file in ServiceNow. | False |
-    | File Entry Tag From ServiceNow | Choose the tag to add to an entry to mirror it as a file from ServiceNow. | False |
-    | Timestamp field to query for updates as part of the mirroring flow | According to the timestamp in this field, records will be queried to check for updates. | False |
-    | How many incidents to mirror incoming each time | If a greater number of incidents than the limit were modified, then they won't be mirrored in. | False |
-    | Custom Fields to Mirror | Custom \(user defined\) fields in the format: u_fieldname1,u_fieldname2 custom fields start with a 'u_'. These fields will be included in the mirroring capabilities, if added here. | False |
-    | Mirrored XSOAR Ticket closure method | Define how to close the mirrored tickets in Cortex XSOAR. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'. Choose 'None' to disable closing the mirrored tickets in Cortex XSOAR. | False |
-    | Mirrored XSOAR Ticket custom close state code | Define how to close the mirrored tickets in Cortex XSOAR with a custom state. Enter here a comma-separated list of custom closure state codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason. | False |
-    | Mirrored XSOAR Ticket custom close resolution code | Define how to close the mirrored tickets in Cortex XSOAR with a custom resolution code. Enter a comma-separated list of custom resolution codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason. | False |
-    | Mirrored ServiceNow Ticket closure method | Define how to close the mirrored tickets in ServiceNow, choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'. | False |
-    | Mirrored ServiceNow Ticket custom close state code | Define how to close the mirrored tickets in ServiceNow with custom state. Enter here the custom closure state code \(should be an integer\) to override the default closure method. If the closure code does not exist, the default one will be used instead. | False |
-    | Mirror Existing Notes For New Fetched Incidents | When enabled, comments and work notes are mirrored as note entries for each newly fetched incident. Note: This setting triggers an API call for each incident during the first mirroring, potentially causing overload if numerous incidents are present. | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Incidents Fetch Interval |  | False |
-    | Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| ServiceNow URL, in the format https://company.service-now.com/ |  | True |
+| Use OAuth Login | Select this checkbox if to use OAuth 2.0 authentication. See \(?\) for more information. | False |
+| Use JWT Authentication | Select this checkbox to use JWT authentication. See \(?\) for more information. | False |
+| Client ID/JWT Audience (aud) |  | False |
+| Client Secret |  | False |
+| Username |  | False |
+| Password |  | False |
+| Private key |  | False |
+| kid (Key Id) |  | False |
+| sub |  | False |
+| iss (Issuer) | If not set, Client ID will be used. | False |
+| Default ticket type for running ticket commands and fetching incidents | The ticket type can be: incident, problem, change_request, sc_request, sc_task or sc_req_item. | False |
+| ServiceNow API Version (e.g. 'v1') |  | False |
+| Fetch incidents |  | False |
+| The query to use when fetching incidents |  | False |
+| How many incidents to fetch each time |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) |  | False |
+| Timestamp field to filter by (e.g., `opened_at`) This is how the filter is applied to the query: "ORDERBYopened_at^opened_at&gt;[Last Run]".<br/>To prevent duplicate incidents, this field is mandatory for fetching incidents. |  | False |
+| ServiceNow ticket column to be set as the incident name. Default is the incident number |  | False |
+| Incident type |  | False |
+| Get incident attachments |  | False |
+| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from ServiceNow to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to ServiceNow\), or Incoming and Outgoing \(from/to Cortex XSOAR and ServiceNow\). | False |
+| Use Display Value | Select this checkbox to retrieve comments and work notes without accessing the \`sys_field_journal\` table. | False |
+| Instance Date Format | Select the date format of your ServiceNow instance. Mandatory when using the \`Use Display Value\` option. More details under the troubleshooting section in the documentation of the integration. The integration supports the ServiceNow default time format \(full form\) \`HH:mm:ss\` with support to \`a\` notation for AM/PM. | False |
+| Comment Entry Tag To ServiceNow | Choose the tag to add to an entry to mirror it as a comment in ServiceNow. | False |
+| Comment Entry Tag From ServiceNow | Choose the tag to add to an entry to mirror it as a comment from ServiceNow. | False |
+| Work Note Entry Tag To ServiceNow | Choose the tag to add to an entry to mirror it as a work note in ServiceNow. | False |
+| Work Note Entry Tag From ServiceNow | Choose the tag to add to an entry to mirror it as a work note from ServiceNow. | False |
+| File Entry Tag To ServiceNow | Choose the tag to add to an entry to mirror it as a file in ServiceNow. | False |
+| File Entry Tag From ServiceNow | Choose the tag to add to an entry to mirror it as a file from ServiceNow. | False |
+| Timestamp field to query for updates as part of the mirroring flow | According to the timestamp in this field, records will be queried to check for updates. | False |
+| How many incidents to mirror incoming each time | If a greater number of incidents than the limit were modified, then they won't be mirrored in. | False |
+| Custom Fields to Mirror | Custom \(user defined\) fields in the format: u_fieldname1,u_fieldname2 custom fields start with a 'u_'. These fields will be included in the mirroring capabilities, if added here. | False |
+| Mirrored XSOAR Ticket closure method | When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR. | False |
+| Mirrored XSOAR Ticket custom close state code | Define how to close the mirrored tickets in Cortex XSOAR with a custom state. Enter here a comma-separated list of custom closure state codes and their labels \(acceptable format example: “10=Design,11=Development,12=Testing”\) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason. | False |
+| Mirrored XSOAR Ticket custom close resolution code (overwrites the custom close state) | Define how to close the mirrored tickets in Cortex XSOAR with a custom resolution code. Enter a comma-separated list of custom resolution codes and their labels \(acceptable format example: “10=Design,11=Development,12=Testing”\) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason. | False |
+| Mirrored ServiceNow Ticket closure method | Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'. | False |
+| Mirrored ServiceNow Ticket custom close state code | Define how to close the mirrored tickets in ServiceNow with a custom state. Enter here the custom closure state code \(should be an integer\) to override the default closure method. If the closure code does not exist, the default code will be used instead. | False |
+| Mirror Existing Notes For New Fetched Incidents | When enabled, comments and work notes are mirrored as note entries for each newly fetched incident. Note: This setting triggers an API call for each incident during the first mirroring, potentially causing overload if numerous incidents are present. | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Incidents Fetch Interval |  | False |
+| Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
 
 3. Click **Test** to validate the URLs, token, and connection.
 4. Click **Done.**
@@ -900,26 +906,36 @@ Deletes a ticket from ServiceNow.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Ticket System ID | Required |
+| id | Ticket System ID. | Required |
 | ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". | Optional |
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ServiceNow.Ticket.ID | string | Ticket ID. |
+| ServiceNow.Ticket.DeleteMessage | string | Message indicating the result of the ticket deletion operation. |
 
 #### Command Example
 
-```!servicenow-delete-ticket id=id```
+```!servicenow-delete-ticket id=existingId"```
+
+#### Human Readable Output
+
+Ticket with ID id was successfully deleted from incident table.
 
 #### Context Example
 
 ```json
-{}
+{
+    "ServiceNow": {
+        "Ticket": {
+            "ID": "id",
+            "DeleteMessage": "Ticket with ID id was successfully deleted from incident table.",
+        }
+    }
+}
 ```
-
-#### Human Readable Output
-
->Ticket with ID id was successfully deleted.
 
 ### servicenow-query-tickets
 
@@ -1987,7 +2003,7 @@ Queries the sys_user table in ServiceNow.
             "Created": "2012-02-18 03:04:50",
             "Email": "sean.bonnet@example.com",
             "ID": "id",
-            "Name": "Sean Bonnet",
+            "Name": "Sean Testman",
             "Updated": "2020-04-25 19:01:46",
             "UserName": "sean.bonnet"
         }
@@ -2001,7 +2017,7 @@ Queries the sys_user table in ServiceNow.
 >
 >|ID|Name|User Name|Email|Created|Updated|
 >|---|---|---|---|---|---|
->| id | Sean Bonnet | sean.bonnet | <sean.bonnet@example.com> | 2012-02-18 03:04:50 | 2020-04-25 19:01:46 |
+>| id | Sean Testman | sean.bonnet | <sean.bonnet@example.com> | 2012-02-18 03:04:50 | 2020-04-25 19:01:46 |
 
 ### servicenow-get-table-name
 
@@ -2705,7 +2721,7 @@ The following are tips for handling issues with mirroring incidents between Serv
 
 | **Issue** | **Recommendation**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Unauthorized connection error. | Check the credentials. <br></br>Make sure the oauth ID and secret are created using the account configured on Cortex XSOAR. [Refer the KB](https://support.servicenow.com/kb?id=kb_article_view&sysparm_article=KB0783632).<br></br>Check the roles to ensure the following roles are granted - itil (For ServiceNow v2), cmdb_inst_admin (For ServiceNow CMDB), rest_api_explorer, snc_platform_rest_api_access, web_service_admin.<br></br>Use the client ID and secret in place of username and password in the instance configuration. And use the account's username and password during the oauth step in the pop up window.<br></br>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Unauthorized connection error. | Check the credentials. <br></br>Make sure the oauth ID and secret are created using the account configured in Cortex XSOAR. See the [ServiceNow article](https://support.servicenow.com/kb?id=kb_article_view&sysparm_article=KB0783632).<br></br>Check the roles to ensure the following roles are granted - itil (For ServiceNow v2), cmdb_inst_admin (For ServiceNow CMDB), rest_api_explorer, snc_platform_rest_api_access, web_service_admin.<br></br>Enter the client ID and secret in the dedicated **Client ID** and **Client Secret** fields, and the account username and password in the **Username** and **Password`**fields of the integration instance configuration.<br></br>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Mirroring is not working. | Open Context Data and search for dbot. Confirm the dbot fields are configured correctly either through the mapper for that specific incident type or using setIncident. Specifically, make sure the integration instance is configured correctly for the mirroring direction (ingoing, outgoing, both) - dbotMirrorId, dbotMirrorDirection, dbotMirrorInstance, dbotMirrorTags                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Comments and work notes from before incident creation are not fetched/mirrored. | Mirroring settings apply only for incidents that are fetched after applying the settings. <br></br> For example, if a user creates a ServiceNow incident with added comments/work notes and then defines a ServiceNow integration instance with mirroring in Cortex XSOAR, those comments/work notes are not fetched with the incident in Cortex XSOAR. <br></br> To fetch pre-existing comments/work notes, you can use the ***servicenow-get-ticket-notes*** command.  <br></br> To retrieve comments and work notes using this command follow one of these steps: <br></br> - Grant elevated privileges to the **sys_journal_field**. This is done by assigning the **Itil** role (see this ServiceNow community link on [giving elevated read access](https://community.servicenow.com/community?id=community_question&sys_id=b4051bf4db4c1cd823f4a345ca9619dc) and potential risks). <br></br> - Select the `Use Display Value` checkbox in the instance configuration. This will retrieve comments and work notes using their display value from ServiceNow. When choosing this option, you must select the date format of your instance from the `Instance Date Format` dropdown menu (see the [ServiceNow documentation](https://docs.servicenow.com/bundle/tokyo-platform-administration/page/administer/time/task/t_PersonalizeTheSystemDateFormat.html) for an explanation how to find the date format of your instance). Note that in this case, the values that will appear under the `sys_created_by` field of the retrieved notes are the display values from ServiceNow and not the system values, e.g., "System Administrator" instead of "admin". |  
 | Ticket is not closing. | Verify the integration instance is configured correctly for the *Mirrored XSOAR Ticket closure method* or *Mirrored ServiceNow Ticket closure method* fields.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |

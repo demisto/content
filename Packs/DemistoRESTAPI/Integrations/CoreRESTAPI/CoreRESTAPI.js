@@ -4,6 +4,9 @@ const PLAYBOOK_METADATA = 'playbook_metadata';
 const INTEGRATION_NAME = 'CoreRESTAPI';
 const xsoar_hosted = ['xsoar', 'xsoar_hosted']
 const platform_hosted = ['x2', 'unified_platform']
+// Default timeout for HTTP requests (3 minutes in milliseconds)
+const default_timeout = 3 * 60 * 1000;
+
 var serverURL = params.url;
 if (serverURL.slice(-1) === '/') {
     serverURL = serverURL.slice(0,-1);
@@ -87,7 +90,7 @@ getRequestURL = function (uri) {
     return requestUrl
 }
 
-sendMultipart = function (uri, entryID, body) {
+sendMultipart = function (uri, entryID, body, timeoutInMilliseconds) {
     var requestUrl = getRequestURL(uri)
     try {
         body = JSON.parse(body);
@@ -109,12 +112,13 @@ sendMultipart = function (uri, entryID, body) {
     else if (params.auth_method == 'Advanced') {
         headers = getAdvancedAuthMethodHeaders(key, auth_id, 'multipart/form-data')
     }
-    timeout = 3 * 60 * 1000; // timeout in milliseconds
+    // Default timeout to 3 minutes if not provided
+    timeoutInMilliseconds = timeoutInMilliseconds ? timeoutInMilliseconds : 3 * 60 * 1000; // timeout in milliseconds
 
     var res;
     var tries = 0;
     do {
-        logDebug('Calling httpMultipart from sendMultipart, try number ' + tries + ', with requestUrl = ' + requestUrl + ', entryID = ' + entryID + ', body = ' + JSON.stringify(body) + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy + ', undefined = ' + undefined + ', file, ' + ' timeout in milliseconds = ' + timeout);
+        logDebug('Calling httpMultipart from sendMultipart, try number ' + tries + ', with requestUrl = ' + requestUrl + ', entryID = ' + entryID + ', body = ' + JSON.stringify(body) + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy + ', undefined = ' + undefined + ', file, ' + ' timeout in milliseconds = ' + timeoutInMilliseconds);
         res = httpMultipart(
             requestUrl,
             entryID,
@@ -128,7 +132,7 @@ sendMultipart = function (uri, entryID, body) {
             'file',
             undefined,
             undefined,
-            timeout
+            timeoutInMilliseconds
         );
         logDebug('The result of calling httpMultipart, with the requestUrl = ' + requestUrl + ' is ' + res.Status + ' and res is ' + JSON.stringify(res))
         tries++;
@@ -177,7 +181,7 @@ var addPlaybookMetadataToRequest = function(body, command) {
 };
 
 
-var sendRequest = function(method, uri, body, raw) {
+var sendRequest = function(method, uri, body, raw, timeout = default_timeout) {
     var requestUrl = getRequestURL(uri);
     var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
     if (key == ''){
@@ -200,7 +204,6 @@ var sendRequest = function(method, uri, body, raw) {
         body = addPlaybookMetadataToRequest(body, command);
     }
 
-    timeout = 3 * 60 * 1000; // timeout in milliseconds
     logDebug('Calling http() from sendRequest, with requestUrl = ' + requestUrl + ', method = ' + method + ', body = ' + JSON.stringify(body) + ', SaveToFile = ' + raw + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy + ', timeout in milliseconds = ' + timeout);
     var res = http(
         requestUrl,
@@ -278,8 +281,11 @@ var deleteIncidents = function(ids_to_delete) {
     };
 };
 
-var installPack = function(pack_url, entry_id, skip_verify, skip_validation){
+var installPack = function(pack_url, entry_id, skip_verify, skip_validation, timeoutInSeconds){
     let file_path;
+    // Convert timeout from seconds to milliseconds, default to 180 seconds (3 minutes)
+    var timeoutInMilliseconds = timeoutInSeconds ? parseInt(timeoutInSeconds) * 1000 : 3 * 60 * 1000;
+    
     if (entry_id){
         file_path = entry_id;
     }
@@ -287,8 +293,7 @@ var installPack = function(pack_url, entry_id, skip_verify, skip_validation){
         var method = 'GET';
         var save_to_file = true;
         // download pack zip file
-        timeout = 3 * 60 * 1000; // timeout in milliseconds
-        logDebug('Calling http() from installPack, with pack_url = ' + pack_url + ', Method = ' + method + ', SaveToFile = ' + save_to_file + ', timeout in milliseconds = ' + timeout);
+        logDebug('Calling http() from installPack, with pack_url = ' + pack_url + ', Method = ' + method + ', SaveToFile = ' + save_to_file + ', timeout in milliseconds = ' + timeoutInMilliseconds);
         var res = http(
         pack_url,
         {
@@ -300,7 +305,7 @@ var installPack = function(pack_url, entry_id, skip_verify, skip_validation){
         undefined,
         undefined,
         undefined,
-        timeout
+        timeoutInMilliseconds
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
@@ -330,20 +335,20 @@ var installPack = function(pack_url, entry_id, skip_verify, skip_validation){
         }
     }
     // upload the pack
-    sendMultipart(upload_url, file_path,'{}');
+    sendMultipart(upload_url, file_path,'{}', timeoutInMilliseconds);
 };
 
-var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, skip_validation) {
+var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, skip_validation, timeoutInSeconds = 3 * 60) {
     if ((!packs_to_install) && (!file_url) && (!entry_id)) {
         throw 'Either packs_to_install, file_url or entry_id argument must be provided.';
     }
     else if (file_url) {
-        installPack(file_url, undefined, skip_verify, skip_validation)
+        installPack(file_url, undefined, skip_verify, skip_validation, timeoutInSeconds)
         logDebug('Pack installed successfully from ' + file_url)
         return 'The pack installed successfully from the file ' + file_url
     }
     else if (entry_id) {
-        installPack(undefined, entry_id, skip_verify, skip_validation)
+        installPack(undefined, entry_id, skip_verify, skip_validation, timeoutInSeconds)
         logDebug('The pack installed successfully from the file.')
         return 'The pack installed successfully from the file.'
     }
@@ -357,7 +362,7 @@ var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, s
             let pack_version = pack[pack_id]
 
             let pack_url = '{0}{1}/{2}/{3}.zip'.format(marketplace_url,pack_id,pack_version,pack_id)
-            installPack(pack_url, undefined, skip_verify, skip_validation)
+            installPack(pack_url, undefined, skip_verify, skip_validation, timeoutInSeconds)
             logDebug(pack_id + ' pack installed successfully')
             installed_packs.push(pack_id)
         }
@@ -585,19 +590,28 @@ var fileDeleteAttachmentCommand = function (attachment_path, incident_id, field_
 
 switch (command) {
     case 'test-module':
-        res = sendRequest('GET','user');
-        if (res.response.id == undefined){
-            throw 'Test integration failed, The URL or The API key you entered might be incorrect.';
-        }
+        res = sendRequest('GET','user');  // throws an exception if the request fails
         return 'ok';
     case 'demisto-api-post':
     case 'core-api-post':
         if(args.body)
             var body = JSON.parse(args.body);
         else
-            logDebug('The body is empty.')
+            logDebug('The body is empty.');
+        var timeout; // Declare timeout.
+        if (args.timeout) {
+            var parsedTimeout = parseInt(args.timeout);
+            if (!isNaN(parsedTimeout) && parsedTimeout >= 0) {
+                timeout = parsedTimeout * 60 * 1000; // timeout in milliseconds
+                logDebug('Timeout was set to ' + timeout + ' milliseconds.');
+            }
+        }
+        if (!timeout) {
+            timeout = default_timeout; // Default 3 minutes timeout
+            logDebug('Timeout was not provided or it is invalid. Will use the default 3 minutes timeout.');
+        }
 
-        return sendRequest('POST',args.uri, args.body);
+        return sendRequest('POST', args.uri, args.body, false, timeout);
     case 'demisto-api-get':
     case 'core-api-get':
         return sendRequest('GET',args.uri);
@@ -631,7 +645,7 @@ switch (command) {
         return deleteIncidents(ids);
     case 'demisto-api-install-packs':
     case 'core-api-install-packs':
-        return installPacks(args.packs_to_install, args.file_url, args.entry_id, args.skip_verify, args.skip_validation);
+        return installPacks(args.packs_to_install, args.file_url, args.entry_id, args.skip_verify, args.skip_validation, args.timeout_in_seconds);
     case 'core-api-file-upload':
         return fileUploadCommand(args.incident_id, args.file_content, args.file_name, args.entry_id)
     case 'core-api-file-delete':

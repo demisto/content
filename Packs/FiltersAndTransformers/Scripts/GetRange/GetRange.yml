@@ -22,8 +22,9 @@ tags:
 - general
 - entirelist
 timeout: '0'
+isllm: false
 type: python
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.6204436
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

@@ -2,7 +2,7 @@ import json
 
 import dateparser
 import demistomock as demisto
-from Claroty import Client, fetch_incidents
+from Claroty import Client, fetch_incidents, query_alerts_command
 
 MOCK_AUTHENTICATION = {
     "first_name": "admin",
@@ -98,6 +98,7 @@ GET_ALERTS_RESPONSE = {
             "type": 1001,
             "type__": "eConfigurationDownload",
             "timestamp": "2020-02-16T10:46:00+00:00",
+            "initial_arr_flow_completed": True,
         }
     ],
 }
@@ -192,6 +193,25 @@ def test_claroty_query_alerts(mocker, requests_mock):
     assert response["objects"][0]["resource_id"] == "48-1"
     assert response["objects"][0]["severity"] == 3
     assert response["objects"][0]["alert_indicators"]
+
+
+def test_query_with_arr_filter__filter_is_applied(mocker, requests_mock):
+    client = _create_client(mocker, requests_mock, "https://website.com:5000/ranger/alerts", GET_ALERTS_RESPONSE, "GET")
+
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "include_only_arr_completed_alerts": "True",
+            "fields": "all",
+        },
+    )
+
+    _readable_output, outputs, response = query_alerts_command(client, demisto.args())
+
+    assert "initial_arr_flow_completed__exact=true" in requests_mock.last_request.url
+    assert response["objects"][0]["resource_id"] == "48-1"
+    assert "Claroty.Alert(val.ResourceID == obj.ResourceID)" in outputs
 
 
 def test_claroty_get_assets(mocker, requests_mock):

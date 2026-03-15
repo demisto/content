@@ -56,13 +56,24 @@ class MainTester:
         self.__xql_last_resp = None
         self.__xql_resp_iter = None
 
+        self.__locking_params: dict[str, Any] | None = None
+        args = ent.get("args") or {}
+        templates = args.get("templates")
+        if isinstance(templates, dict) and (template := templates.get(args.get("template_name"))):
+            self.__locking_params = demisto.get(template, "query.locking") or {}
+
         incident = {"id": "1"}
-        if is_xsiam := to_bool(demisto.get(ent, "config.is_xsiam", "false")):
+        is_platform = to_bool(demisto.get(ent, "config.is_platform", "false"))
+        is_xsiam = to_bool(demisto.get(ent, "config.is_xsiam", "false"))
+        if is_platform:
+            incident.update(ent.get("issue") or {})
+        elif is_xsiam:
             incident.update(ent.get("alert") or {})
         else:
             incident.update(ent.get("incident") or {})
 
         mocker.patch.object(XQLDSHelper, "is_xsiam", return_value=is_xsiam)
+        mocker.patch.object(XQLDSHelper, "is_platform", return_value=is_platform)
         mocker.patch.object(demisto, "incident", return_value=incident)
         mocker.patch.object(demisto, "args", return_value=ent.get("args") or {})
         mocker.patch.object(demisto, "executeCommand", side_effect=self.__demisto_execute_command)
@@ -350,6 +361,20 @@ class MainTester:
                 else:
                     raise RuntimeError(f"Invalid data type - {data_type}")
             raise RuntimeError("No List - {list_name}")
+        elif command in ("core-lock-get", "demisto-lock-get"):
+            for k in ["name", "info", "timeout", "using"]:
+                av = args.get(k)
+                lv = self.__locking_params.get(k)
+                if av != lv:
+                    raise ValueError(f"Incorrect locking parameter - {k}: {av} is not {lv}")
+            return []
+        elif command in ("core-lock-release", "demisto-lock-release"):
+            for k in ["name", "using"]:
+                av = args.get(k)
+                lv = self.__locking_params.get(k)
+                if av != lv:
+                    raise ValueError(f"Incorrect locking parameter - {k}: {av} is not {lv}")
+            return []
         else:
             raise RuntimeError(f"Not implemented - {command}")
 

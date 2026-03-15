@@ -453,7 +453,7 @@ def test_email_with_special_character(mocker):
     #   'This is test メール�と�日本語文字が表示されない文字のテスト'
     # )
     # ( 'Test =?UTF-8?Q?Seguran=C3=A7a=20?=da =?UTF-8?Q?Informa=C3=A7=C3=A3o?=',
-    #   'Test Segurança da Informação'
+    #   'Test Departamento de Teste'
     #  )
     # This test should pass, it extend the case of This example "=?UTF-8?B?VGVzdMKu?= passes" and include multiple
     # encoding parts.
@@ -523,7 +523,7 @@ def test_email_raw_headers_from_is_cyrillic_characters(mocker):
     assert results[0]['EntryContext']['Email']['From'] == 'no-reply@google.com'
     assert results[0]['EntryContext']['Email']['To'] == 'test@test.com, example1@example.com'
     assert results[0]['EntryContext']['Email']['CC'] == 'test@test.com, example1@example.com'
-    assert results[0]['EntryContext']['Email']['HeadersMap']['From'] == u'"✅✅✅ ВА ! ' \
+    assert results[0]['EntryContext']['Email']['HeadersMap']['From'] == u'"✅✅✅ BA ! ' \
                                                                         u'https://example.com  ." ' \
                                                                         u'<no-reply@google.com>'
     assert results[0]['EntryContext']['Email']['HeadersMap']['To'] == 'Guy Test <test@test.com>' \

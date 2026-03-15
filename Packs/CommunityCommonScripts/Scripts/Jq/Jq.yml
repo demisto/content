@@ -1,11 +1,11 @@
 args:
-- description: JSON String
+- description: JSON String.
   name: value
   required: true
-- description: JQ compatible query
+- description: JQ compatible query.
   name: query
   required: true
-comment: "Run JQ Query. \n\nCheck these links:\n- https://stedolan.github.io/jq/manual/#Invokingjq\n- https://jqplay.org/"
+comment: "Deprecated. Use JMESPath transformer from the Filters and Transformers content pack instead."
 commonfields:
   id: jq
   version: -1
@@ -20,7 +20,7 @@ name: jq
 outputs:
 - contextPath: jq.result
   type: unknown
-  description: Result of jq-query
+  description: Result of jq-query.
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
@@ -30,4 +30,5 @@ tags:
 type: python
 fromversion: 6.1.0
 tests:
-- No tests (auto formatted)
+- No tests (deprecated)
+deprecated: true

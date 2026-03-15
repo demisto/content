@@ -27,6 +27,7 @@ from EWSO365 import (
     handle_html,
     handle_incorrect_message_id,
     handle_transient_files,
+    is_item_duplicate,
     parse_incident_from_item,
     parse_item_as_dict,
 )
@@ -194,6 +195,7 @@ MESSAGES = [
         datetime_received=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone(key="UTC")),
         datetime_sent=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone(key="UTC")),
         datetime_created=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone(key="UTC")),
+        last_modified_time=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone(key="UTC")),
     ),
     Message(
         subject="message2",
@@ -203,6 +205,7 @@ MESSAGES = [
         datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
         datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
         datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
+        last_modified_time=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
     ),
     Message(
         subject="message3",
@@ -212,6 +215,7 @@ MESSAGES = [
         datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
         datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
         datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
+        last_modified_time=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
     ),
 ]
 CASE_FIRST_RUN_NO_INCIDENT = ({}, [], {"lastRunTime": None, "folderName": "Inbox", "ids": [], "errorCounter": 0})
@@ -264,11 +268,11 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
     """
 
     class MockObject:
-        def filter(self, last_modified_time__gte="", datetime_received__gte=""):
+        def filter(self, last_modified_time__gte="", datetime_received__gte="", is_read=None):
             return MockObject2()
 
     class MockObject2:
-        def filter(self):
+        def filter(self, **kwargs):
             return MockObject2()
 
         def only(self, *args):
@@ -294,7 +298,7 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
     last_run = mocker.patch.object(demisto, "setLastRun")
     fetch_emails_as_incidents(client, current_last_run, RECEIVED_FILTER, False)
     assert last_run.call_args[0][0].get("lastRunTime") == expected_last_run.get("lastRunTime")
-    assert set(last_run.call_args[0][0].get("ids")) == set(expected_last_run.get("ids"))
+    assert set(last_run.call_args[0][0].get("ids_dict")) == set(expected_last_run.get("ids"))
 
 
 @pytest.mark.parametrize(
@@ -351,11 +355,11 @@ def test_fetch_and_mark_as_read(mocker):
     """
 
     class MockObject:
-        def filter(self, last_modified_time__gte="", datetime_received__gte=""):
+        def filter(self, last_modified_time__gte="", datetime_received__gte="", is_read=None):
             return MockObject2()
 
     class MockObject2:
-        def filter(self):
+        def filter(self, **kwargs):
             return MockObject2()
 
         def only(self, *args):
@@ -489,8 +493,12 @@ def test_handle_html(mocker, html_input, expected_output):
 @pytest.mark.parametrize(
     "since_datetime, filter_arg, expected_result",
     [
-        ("", "last_modified_time__gte", EWSDateTime.from_string("2021-05-23 13:08:14.901293+00:00")),
-        ("2021-05-23 21:28:14.901293+00:00", "datetime_received__gte", "2021-05-23 21:28:14.901293+00:00"),
+        ("", "datetime_received__gte", EWSDateTime.from_string("2021-05-23 13:08:14.901293+00:00")),
+        (
+            "2021-05-23 21:28:14.901293+00:00",
+            "datetime_received__gte",
+            "2021-05-23 21:28:14.901293+00:00",
+        ),
     ],
 )
 def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result):
@@ -503,16 +511,16 @@ def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result):
         - Fetching last emails
 
     Then:
-        - Verify last_modified_time__gte is ten minutes earlier
+        - Verify datetime_received__gte is ten minutes earlier
         - Verify datetime_received__gte according to the datetime received
     """
 
     class MockObject:
-        def filter(self, last_modified_time__gte="", datetime_received__gte=""):
+        def filter(self, last_modified_time__gte="", datetime_received__gte="", is_read=None):
             return MockObject2()
 
     class MockObject2:
-        def filter(self):
+        def filter(self, **kwargs):
             return MockObject2()
 
         def only(self, *args):
@@ -536,6 +544,68 @@ def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result):
     assert MockObject.filter.call_args[1].get(filter_arg) == expected_result
 
 
+@freeze_time("2021-05-23 13:18:14.901293+00:00")
+@pytest.mark.parametrize(
+    "exclude_ids, expected_result, incident_filter",
+    [
+        # Legacy: empty stored time - ID not in results, should return both
+        ({"id1": ""}, [Message(message_id="id2"), Message(message_id="id3")], "received-time"),
+        # ID not in results (id1 not in id2/id3), should return both
+        ({"id1": "2021-05-23T13:19:14Z"}, [Message(message_id="id2"), Message(message_id="id3")], "received-time"),
+        # ID in results with newer stored time - should exclude id2
+        ({"id2": "2021-05-23T13:19:14Z"}, [Message(message_id="id3")], "received-time"),
+        # ID in results with older stored time - should include id2 (item is newer)
+        ({"id2": "2021-05-23T13:17:14Z"}, [Message(message_id="id2"), Message(message_id="id3")], "received-time"),
+        # Same as above but with modified-time filter
+        ({"id2": "2021-05-23T13:17:14Z"}, [Message(message_id="id2"), Message(message_id="id3")], "modified-time"),
+        # Smart lookup: stored with brackets, item without - should exclude id2
+        ({"<id2>": "2021-05-23T13:19:14Z"}, [Message(message_id="id3")], "received-time"),
+    ],
+)
+def test_fetch_last_emails_dedup_mechanism(mocker, exclude_ids, expected_result, incident_filter):
+    class MockObject:
+        def filter(self, last_modified_time__gte="", datetime_received__gte="", is_read=None):
+            return MockObject2()
+
+    class MockObject2:
+        def filter(self, **kwargs):
+            return MockObject2()
+
+        def only(self, *args):
+            return self
+
+        def order_by(self, *args):
+            class MockQuerySet:
+                def __iter__(self):
+                    return (
+                        m
+                        for m in [
+                            Message(
+                                message_id="id2",
+                                datetime_created=EWSDateTime.from_string("2021-05-23T13:18:14Z"),
+                                last_modified_time=EWSDateTime.from_string("2021-05-23T13:18:14Z"),
+                            ),
+                            Message(
+                                message_id="id3",
+                                datetime_created=EWSDateTime.from_string("2021-05-23T13:19:14Z"),
+                                last_modified_time=EWSDateTime.from_string("2021-05-23T13:18:14Z"),
+                            ),
+                        ]
+                    )
+
+            return MockQuerySet()
+
+    def mock_get_folder_by_path(path, account=None, is_public=False):
+        return MockObject()
+
+    client = TestNormalCommands.MockClient()
+    client.get_folder_by_path = mock_get_folder_by_path
+    results = fetch_last_emails(client, exclude_ids=exclude_ids, incident_filter=incident_filter)
+    result_ids = [msg.message_id for msg in results]
+    expected_ids = [msg.message_id for msg in expected_result]
+    assert result_ids == expected_ids
+
+
 @freeze_time("2021-05-23 18:28:14.901293+00:00")
 @pytest.mark.parametrize("max_fetch, expected_result", [(6, 5), (2, 2), (5, 5)])
 def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
@@ -555,11 +625,11 @@ def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
     """
 
     class MockObject:
-        def filter(self, last_modified_time__gte="", datetime_received__gte=""):
+        def filter(self, last_modified_time__gte="", datetime_received__gte="", is_read=None):
             return MockObject2()
 
     class MockObject2:
-        def filter(self):
+        def filter(self, **kwargs):
             return MockObject2()
 
         def only(self, *args):
@@ -1157,6 +1227,7 @@ def test_fetch_attachments_for_message_output(mocker):
     """
     from EWSO365 import main
     from EWSApiModule import CustomDomainOAuth2Credentials
+
     from CommonServerPython import CommandResults
 
     client = TestNormalCommands.MockClient()
@@ -1192,3 +1263,138 @@ def test_fetch_attachments_for_message_output(mocker):
     assert results[1].outputs.get("attachmentName") == "mock_item_id-attachmentName-item_attachment_mock"
     assert results[2].get("File") == "mock_item_id-attachmentName-item_attachment_mock.eml"
     assert results[2].get("content") == "mock mime content"
+
+
+@pytest.mark.parametrize(
+    "message_id, item_time, exclude_ids, incident_filter, expected_result",
+    [
+        pytest.param(
+            "abc",
+            "2021-01-01T12:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="exact_match_same_time_is_duplicate",
+        ),
+        pytest.param(
+            "<abc>",
+            "2021-01-01T12:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="smart_lookup_item_has_brackets_stored_clean",
+        ),
+        pytest.param(
+            "abc",
+            "2021-01-01T12:00:00Z",
+            {"<abc>": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="smart_lookup_item_clean_stored_brackets",
+        ),
+        pytest.param(
+            "abc",
+            "2021-01-01T13:00:00Z",
+            {"abc": ""},
+            "received-time",
+            True,
+            id="legacy_empty_stored_time_is_duplicate",
+        ),
+        pytest.param(
+            "abc",
+            "2021-01-01T13:00:00Z",
+            {"abc": None},
+            "received-time",
+            True,
+            id="legacy_none_stored_time_is_duplicate",
+        ),
+        pytest.param(
+            "abc",
+            "2021-01-01T13:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            False,
+            id="item_newer_than_stored_not_duplicate",
+        ),
+        pytest.param(
+            "abc",
+            "2021-01-01T11:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="item_older_than_stored_is_duplicate",
+        ),
+        pytest.param(
+            "xyz",
+            "2021-01-01T12:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            False,
+            id="no_id_match_not_duplicate",
+        ),
+        pytest.param(
+            "abc",
+            "2021-01-01T13:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "modified-time",
+            False,
+            id="modified_filter_item_newer_not_duplicate",
+        ),
+        pytest.param(
+            "abc",
+            "2021-01-01T11:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "modified-time",
+            True,
+            id="modified_filter_item_older_is_duplicate",
+        ),
+        pytest.param(
+            None,
+            "2021-01-01T12:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            False,
+            id="no_message_id_not_duplicate",
+        ),
+        pytest.param(
+            "abc",
+            "2021-01-01T12:00:00Z",
+            {},
+            "received-time",
+            False,
+            id="empty_exclude_ids_not_duplicate",
+        ),
+    ],
+)
+def test_is_item_duplicate(message_id, item_time, exclude_ids, incident_filter, expected_result):
+    """
+    Tests the is_item_duplicate function logic.
+
+    Given:
+        - Various combinations of message IDs, timestamps, and exclude_ids dictionaries.
+    When:
+        - Checking if an item is a duplicate during fetch.
+    Then:
+        - Returns a tuple (is_duplicate, stored_time) where:
+            - is_duplicate is True if the item should be skipped (is a duplicate).
+            - is_duplicate is False if the item should be processed (not a duplicate).
+            - stored_time is the stored fetch time for the item, or None if not found.
+
+    Test cases cover:
+        1. Exact ID match with same timestamp - duplicate
+        2. Smart ID lookup (brackets vs clean) - duplicate
+        3. Legacy handling (empty/None stored time) - duplicate
+        4. Item newer than stored time - not duplicate
+        5. Item older than stored time - duplicate
+        6. No ID match - not duplicate
+        7. Modified-time filter behavior
+        8. Edge cases (no message_id, empty exclude_ids)
+    """
+    item_datetime = EWSDateTime.from_string(item_time)
+    msg = Message(
+        message_id=message_id,
+        datetime_created=item_datetime,
+        last_modified_time=item_datetime,
+    )
+    is_duplicate, _ = is_item_duplicate(msg, exclude_ids, incident_filter)
+    assert is_duplicate is expected_result

@@ -2,7 +2,8 @@ commonfields:
   id: AWS - IAM Identity Center
   version: -1
 category: IT Services
-sectionOrder:
+provider: Amazon
+sectionorder:
 - Connect
 configuration:
 - display: Role Arn

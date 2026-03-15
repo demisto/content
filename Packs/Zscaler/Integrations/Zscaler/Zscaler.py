@@ -49,7 +49,7 @@ AUTO_ACTIVATE_CHANGES_COMMANDS = (
     "zscaler-category-remove-url",
     "zscaler-category-remove-ip",
     "zscaler-list-ip-destination-groups",
-    "zscaler-edit-ip-destination-groups",
+    "zscaler-edit-ip-destination-group",
     "zscaler-create-ip-destination-group",
     "zscaler-delete-ip-destination-groups",
 )
@@ -124,9 +124,9 @@ def http_request(method, url_suffix, data=None, headers=None, resp_type="json"):
 
 def validate_urls(urls):
     for url in urls:
-        if url.startswith(("http://", "https://")):
+        if url.startswith(("http://", "https://", "*")):
             return_error(
-                "Enter a valid URL address without an http:// or https:// prefix. URL should have at least host."
+                "Enter a valid URL address without an http:// or https:// or * prefix. URL should have at least host."
                 "domain pattern to qualify."
             )
 
@@ -534,6 +534,76 @@ def ip_lookup(ip):
     return results or "No results found."
 
 
+def domain_lookup(args):
+    domain_arg = args.get("domain", "")
+    multiple = argToBoolean(args.get("multiple", "true"))
+    response = lookup_request(domain_arg, multiple)
+    raw_res = json.loads(response)
+
+    results: List[CommandResults] = []
+
+    for data in raw_res:
+        res_domain = data.get("url")
+
+        ioc_context = {"Name": res_domain}
+        score = Common.DBotScore.GOOD
+
+        if not data.get("urlClassifications", []):
+            data["domainClassifications"] = ""
+            ioc_context["domainClassifications"] = ""
+        else:
+            data["domainClassifications"] = "".join(data["urlClassifications"])
+            ioc_context["domainClassifications"] = data["domainClassifications"]
+            if data["domainClassifications"] == "MISCELLANEOUS_OR_UNKNOWN":
+                score = Common.DBotScore.NONE
+
+        data.pop("urlClassifications", None)
+
+        if not data.get("urlClassificationsWithSecurityAlert", []):
+            data["domainClassificationsWithSecurityAlert"] = ""
+            ioc_context["domainClassificationsWithSecurityAlert"] = ""
+        else:
+            data["domainClassificationsWithSecurityAlert"] = "".join(data["urlClassificationsWithSecurityAlert"])
+            ioc_context["domainClassificationsWithSecurityAlert"] = data["domainClassificationsWithSecurityAlert"]
+            if data["domainClassificationsWithSecurityAlert"] in SUSPICIOUS_CATEGORIES:
+                score = Common.DBotScore.SUSPICIOUS
+            else:
+                score = Common.DBotScore.BAD
+
+        data.pop("urlClassificationsWithSecurityAlert", None)
+
+        data["domain"] = data.pop("url", None)
+
+        domain_indicator = Common.Domain(
+            domain=ioc_context["Name"],
+            dbot_score=Common.DBotScore(
+                indicator=ioc_context["Name"],
+                indicator_type=DBotScoreType.DOMAIN,
+                integration_name=INTEGRATION_NAME,
+                malicious_description=data.get("domainClassificationsWithSecurityAlert", None),
+                score=score,
+                reliability=demisto.params().get("reliability"),
+            ),
+        )
+
+        results.append(
+            CommandResults(
+                outputs_prefix=f"{INTEGRATION_NAME}.Domain",
+                outputs_key_field="Name",
+                indicator=domain_indicator,
+                readable_output=tableToMarkdown(
+                    f'Zscaler Domain Lookup for {ioc_context["Name"]}',
+                    data,
+                    removeNull=True,
+                ),
+                outputs=createContext(data=ioc_context, removeNull=True),
+                raw_response=data,
+            )
+        )
+
+    return results or "No results found."
+
+
 def lookup_request(ioc, multiple=True):
     cmd_url = "/urlLookup"
     if multiple:
@@ -546,11 +616,11 @@ def lookup_request(ioc, multiple=True):
     return response
 
 
-def category_add(category_id, data, retaining_parent_category_data, data_type):
+def category_add(category_id, data, retaining_parent_category_data, data_type, category_name=None):
     if not any((data, retaining_parent_category_data)):
         return_error(f"Either {data_type} argument or retaining-parent-category-{data_type} argument must be provided.")
 
-    category_data = get_category_by_id(category_id)
+    category_data = get_category_by_id(category_id, category_name)
     demisto.debug(f"{category_data=}")
     if category_data:  # check if the category exists
         data_list = argToList(data)
@@ -562,7 +632,7 @@ def category_add(category_id, data, retaining_parent_category_data, data_type):
             return_error(f"Either {data_type} argument or retaining-parent-category-{data_type} argument must be provided.")
 
         add_or_remove_urls_from_category(
-            ADD, data_list, category_data, retaining_parent_category_data_list
+            ADD, data_list, category_data, retaining_parent_category_data_list, category_name
         )  # add the urls to the category
         context = {
             "ID": category_id,
@@ -593,11 +663,11 @@ def category_add(category_id, data, retaining_parent_category_data, data_type):
         return return_error("Category could not be found.")
 
 
-def category_remove(category_id, data, retaining_parent_category_data, data_type):
+def category_remove(category_id, data, retaining_parent_category_data, data_type, category_name=None):
     if not any((data, retaining_parent_category_data)):
         return_error(f"Either {data_type} argument or retaining-parent-category-{data_type} argument must be provided.")
 
-    category_data = get_category_by_id(category_id)  # check if the category exists
+    category_data = get_category_by_id(category_id, category_name)  # check if the category exists
     demisto.debug(f"{category_data=}")
 
     if category_data:
@@ -620,7 +690,7 @@ def category_remove(category_id, data, retaining_parent_category_data, data_type
                 removed_data += f"- {item}\n"
 
         add_or_remove_urls_from_category(
-            REMOVE, data_list, category_data, retaining_parent_category_data_list
+            REMOVE, data_list, category_data, retaining_parent_category_data_list, category_name
         )  # remove the urls from list
 
         context = {
@@ -647,13 +717,15 @@ def category_remove(category_id, data, retaining_parent_category_data, data_type
         return return_error("Category could not be found.")
 
 
-def add_or_remove_urls_from_category(action, urls, category_data, retaining_parent_category_data=None):
+def add_or_remove_urls_from_category(action, urls, category_data, retaining_parent_category_data=None, category_name=None):
     """
     Add or remove urls from a category.
     Args:
         str action: The action requested, can be 'ADD_TO_LIST' for adding or 'REMOVE_FROM'_LIST for removing.
         List[Any] urls: the list of urls to add or remove from the category
         Dict[str: Any] category_data: the data of the category as returned from the API
+        List[Any] retaining_parent_category_data: optional list of URLs to add/remove from dbCategorizedUrls
+        str category_name: optional category name to use (required for custom categories in newer API versions)
 
     Returns:
         The response as returned from the API
@@ -671,8 +743,26 @@ def add_or_remove_urls_from_category(action, urls, category_data, retaining_pare
         data["dbCategorizedUrls"] = retaining_parent_category_data
     if "description" in category_data:
         data["description"] = category_data["description"]
-    if "configuredName" in category_data:
-        data["configuredName"] = category_data["configuredName"]
+
+    # Per Zscaler API documentation: If you are modifying a custom URL category, this request must
+    # additionally specify the configuredName and superCategory information in the request Body.
+    # For predefined categories, these fields are optional but included if available.
+    configured_name = category_name or category_data.get("configuredName")
+    super_category = category_data.get("superCategory")
+    is_custom = argToBoolean(category_data.get("customCategory"))
+
+    if is_custom and not configured_name:
+        raise DemistoException(
+            "The 'configuredName' field is required for custom categories but was not found in the category data. "
+            "Please provide the category name using the 'category-name' argument. "
+            "You can find the category name by running 'zscaler-get-categories' command."
+        )
+
+    if configured_name:
+        data["configuredName"] = configured_name
+    if super_category:
+        data["superCategory"] = super_category
+
     demisto.debug(f"{data=}")
     json_data = json.dumps(data)
     http_request("PUT", cmd_url, json_data)  # if the request is successful, it returns an empty response
@@ -843,10 +933,23 @@ def test_module():
     return "ok"
 
 
-def get_category_by_id(category_id):
+def get_category_by_id(category_id, category_name=None):
+    """
+    Get category data by ID.
+
+    Args:
+        category_id: The category ID to look up
+        category_name: Optional category name to inject into the result for custom categories
+
+    Returns:
+        The category data dict, or None if not found
+    """
     categories = get_categories()
     for category in categories:
         if category["id"] == category_id:
+            # If category_name is provided and the category doesn't have configuredName, add it
+            if category_name and "configuredName" not in category:
+                category["configuredName"] = category_name
             return category
     return None
 
@@ -1129,24 +1232,27 @@ def edit_ip_destination_group(args: dict):
         "Countries",
         "IpCategories",
     ]
-    payload = {}
-    ip_group_id = str(args.get("ip_group_id", "")).strip()
+    payload: dict = {}
+    ip_group_id = str(args["ip_group_id"]).strip()
+
     check_url = f"/ipDestinationGroups/{ip_group_id}"
-    response_data = {}
+    demisto.debug(f"Fetching existing IP destination group: {ip_group_id}")
     response_data = http_request("GET", check_url)
-    if response_data.get("id", 0) == 0:
+    demisto.debug(f"Fetched group data: {response_data}")
+    if not response_data or not response_data.get("id"):
         raise Exception(f"Resource not found with ip_group_id {ip_group_id}")
 
-    payload["name"] = args.get("name", response_data["name"])
-    payload["countries"] = argToList(args.get("countries", response_data["countries"]))
-    payload["ipCategories"] = argToList(args.get("ip_categories", response_data["ipCategories"]))
-    payload["addresses"] = argToList(args.get("addresses", response_data["addresses"]))
-    payload["description"] = args.get("description", response_data["description"])
+    payload["name"] = args.get("name", response_data.get("name", ""))
+    payload["countries"] = argToList(args.get("countries", response_data.get("countries", [])))
+    payload["ipCategories"] = argToList(args.get("ip_categories", response_data.get("ipCategories", [])))
+    payload["addresses"] = argToList(args.get("addresses", response_data.get("addresses", [])))
+    payload["description"] = args.get("description", response_data.get("description", ""))
     payload["isNonEditable"] = args.get("is_non_editable", False)
-    payload["type"] = response_data["type"]
+    payload["type"] = response_data.get("type", "")
 
     cmd_url = f"/ipDestinationGroups/{ip_group_id}"
     json_data = json.dumps(payload)
+    demisto.debug(f"Updating IP destination group {ip_group_id} with payload={payload}")
     response = http_request("PUT", cmd_url, json_data, DEFAULT_HEADERS)
     content = {
         "ID": int(response.get("id", "")),
@@ -1182,12 +1288,14 @@ def delete_ip_destination_groups(args: dict):
 
 def main():  # pragma: no cover
     command = demisto.command()
+    params = demisto.params()
+    args = demisto.args()
 
     add_sensitive_log_strs(USERNAME)
     add_sensitive_log_strs(PASSWORD)
 
     demisto.debug(f"command is {command}")
-    args = demisto.args()
+
     if command == "zscaler-login":
         return_results(login_command())
     elif command == "zscaler-logout":
@@ -1198,9 +1306,11 @@ def main():  # pragma: no cover
             if command == "test-module":
                 return_results(test_module())
             elif command == "url":
-                return_results(url_lookup(demisto.args()))
+                return_results(url_lookup(args))
             elif command == "ip":
                 return_results(ip_lookup(args.get("ip")))
+            elif command == "domain":
+                return_results(domain_lookup(args))
             elif command == "zscaler-blacklist-url":
                 return_results(blacklist_url(args.get("url")))
             elif command == "zscaler-undo-blacklist-url":
@@ -1219,19 +1329,43 @@ def main():  # pragma: no cover
                 return_results(unwhitelist_ip(args.get("ip")))
             elif command == "zscaler-category-add-url":
                 return_results(
-                    category_add(args.get("category-id"), args.get("url"), args.get("retaining-parent-category-url"), "url")
+                    category_add(
+                        args.get("category-id"),
+                        args.get("url"),
+                        args.get("retaining-parent-category-url"),
+                        "url",
+                        args.get("category-name"),
+                    )
                 )
             elif command == "zscaler-category-add-ip":
                 return_results(
-                    category_add(args.get("category-id"), args.get("ip"), args.get("retaining-parent-category-ip"), "ip")
+                    category_add(
+                        args.get("category-id"),
+                        args.get("ip"),
+                        args.get("retaining-parent-category-ip"),
+                        "ip",
+                        args.get("category-name"),
+                    )
                 )
             elif command == "zscaler-category-remove-url":
                 return_results(
-                    category_remove(args.get("category-id"), args.get("url"), args.get("retaining-parent-category-url"), "url")
+                    category_remove(
+                        args.get("category-id"),
+                        args.get("url"),
+                        args.get("retaining-parent-category-url"),
+                        "url",
+                        args.get("category-name"),
+                    )
                 )
             elif command == "zscaler-category-remove-ip":
                 return_results(
-                    category_remove(args.get("category-id"), args.get("ip"), args.get("retaining-parent-category-ip"), "ip")
+                    category_remove(
+                        args.get("category-id"),
+                        args.get("ip"),
+                        args.get("retaining-parent-category-ip"),
+                        "ip",
+                        args.get("category-name"),
+                    )
                 )
             elif command == "zscaler-get-categories":
                 return_results(get_categories_command(args))
@@ -1246,29 +1380,33 @@ def main():  # pragma: no cover
             elif command == "zscaler-url-quota":
                 return_results(url_quota_command())
             elif command == "zscaler-get-users":
-                return_results(get_users_command(demisto.args()))
+                return_results(get_users_command(args))
             elif command == "zscaler-update-user":
-                return_results(set_user_command(demisto.args()))
+                return_results(set_user_command(args))
             elif command == "zscaler-get-departments":
-                return_results(get_departments_command(demisto.args()))
+                return_results(get_departments_command(args))
             elif command == "zscaler-get-usergroups":
-                return_results(get_usergroups_command(demisto.args()))
+                return_results(get_usergroups_command(args))
             elif command == "zscaler-list-ip-destination-groups":
-                return_results(list_ip_destination_groups(demisto.args()))
+                return_results(list_ip_destination_groups(args))
             elif command == "zscaler-create-ip-destination-group":
-                return_results(create_ip_destination_group(demisto.args()))
+                return_results(create_ip_destination_group(args))
             elif command == "zscaler-edit-ip-destination-group":
-                return_results(edit_ip_destination_group(demisto.args()))
+                return_results(edit_ip_destination_group(args))
             elif command == "zscaler-delete-ip-destination-groups":
-                return_results(delete_ip_destination_groups(demisto.args()))
+                return_results(delete_ip_destination_groups(args))
+            else:
+                raise NotImplementedError(f"Command {command} is not implemented")
         except Exception as e:
             return_error(f"Failed to execute {command} command. Error: {str(e)}")
         finally:
             try:
                 # activate changes only when required
-                if demisto.params().get("auto_activate") and command in AUTO_ACTIVATE_CHANGES_COMMANDS:
+                if params.get("auto_activate") and command in AUTO_ACTIVATE_CHANGES_COMMANDS:
+                    demisto.debug(f"Activating changes for command {command}")
                     activate_changes()
-                if demisto.params().get("auto_logout"):
+                if params.get("auto_logout"):
+                    demisto.debug("Logging out")
                     logout()
             except Exception as err:
                 return_error("Zscaler error: " + str(err))

@@ -21,7 +21,7 @@ def count_partitions(filesystem):
             if "/data/partitionsData" in path:
                 for file in filesystem[path]:
                     name = file.get("name")
-                    regx = re.search("demisto_\d{6}\.db", name)
+                    regx = re.search(r"demisto_\d{6}\.db", name)
                     if regx:
                         partitionscounter += 1
         return partitionscounter
@@ -109,8 +109,8 @@ def main(args):
         if large_files:
             large += large_files
 
-        if re.match(".*_(?:0[1-9]|1[0-2])[0-9]{4}\/store", path) and re.match(
-            "total\s(?:[1-9]\d*[MG]$|\d*.\d*[MG])", total
+        if re.match(r".*_(?:0[1-9]|1[0-2])[0-9]{4}\/store", path) and re.match(
+            r"total\s(?:[1-9]\d*[MG]$|\d*.\d*[MG])", total
         ):  # bigger than M and G
             entry = {"path": path, "size": total[6:]}
             importantPathTable.append(entry)

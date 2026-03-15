@@ -95,8 +95,9 @@ Use the following arguments in the URL to change the request:
 Make sure you run the ***!export-indicators-list-update*** command for the first time to initialize the export process.
 
 ### Important Notes:
-- If constantly using different queries for the same EDL instance through the *q* inline argument, it is recommended to use different instances of the EDL (one for each query), and set each one with a default query for better performance.
-- When using the *q* inline argument, the number of exported indicators is limited to 100,000 due to performance reasons. To export more than 100,000 indicators, create a new instance of the integration with the desired Indicator Query and List Size.
+- If you frequently use different queries for the same EDL instance through the *q* inline argument, use separate EDL instances (one per query) and set a default query for each to improve performance.
+- When using the *q* inline argument, the number of exported indicators is limited to 100,000 for performance reasons. To export more than 100,000 indicators, create a new integration instance with the desired Indicator Query and List Size.
+- When the integration is configured with ***Update list on demand only***, the indicator list refreshes based on the value set in the ***Refresh Rate*** parameter.
 
 ## Troubleshoot
 

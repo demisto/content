@@ -5,19 +5,19 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 86477c2b-720a-4adf-8fa2-e7cb2e936744
+    taskid: 5e335083-c38c-409b-8646-e09a59536090
     type: start
     task:
-      id: 86477c2b-720a-4adf-8fa2-e7cb2e936744
+      id: 5e335083-c38c-409b-8646-e09a59536090
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -34,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: faa34e65-459f-45b4-8e24-044f101195dd
+    taskid: d938edf4-7eae-4806-8c89-766c16fda327
     type: regular
     task:
-      id: faa34e65-459f-45b4-8e24-044f101195dd
+      id: d938edf4-7eae-4806-8c89-766c16fda327
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -51,6 +51,7 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -67,10 +68,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: f379ac76-510e-4bc5-8fd3-5bf09ccdd2ed
+    taskid: db63c83b-df56-4e57-8481-c075f75ef5eb
     type: regular
     task:
-      id: f379ac76-510e-4bc5-8fd3-5bf09ccdd2ed
+      id: db63c83b-df56-4e57-8481-c075f75ef5eb
       version: -1
       name: Set File
       description: Sends an http request and returns the response as JSON.
@@ -80,10 +81,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "5"
     scriptarguments:
       filename:
-        simple: "# script.py"
+        simple: '# script.py'
       method:
         simple: GET
       saveAsFile:
@@ -91,6 +92,7 @@ tasks:
       url:
         simple: https://raw.githubusercontent.com/demisto/content/3ef746414beb35924fd5ce4c74bf646867ccbba6/Packs/CrowdStrikeFalconX/Integrations/CrowdStrikeFalconX/CrowdStrikeFalconX.py
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -107,18 +109,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 584e68fb-7de6-4342-8cd6-557463729486
+    taskid: 74881140-e0aa-49f9-94d7-76fc8f19a54d
     type: playbook
     task:
-      id: 584e68fb-7de6-4342-8cd6-557463729486
+      id: 74881140-e0aa-49f9-94d7-76fc8f19a54d
       version: -1
-      name: Detonate File - CrowsStrike Falcon Intelligence Sandbox
-      playbookName: Detonate File - CrowdStrike Falcon Intelligence Sandbox
-      type: playbook
-      iscommand: false
-      brand: ""
+      name: Detonate File - CrowdStrike Falcon Intelligence Sandbox
       description: |-
-        Detonates a File using CrowdStrike Falcon Intelligence Sandbox.
+        Detonates a file using CrowdStrike Falcon Intelligence Sandbox.
         Accepted file formats:
         Portable executables: .exe, .scr, .pif, .dll, .com, .cpl, etc.
         Office documents: .doc, .docx, .ppt, .pps, .pptx, .ppsx, .xls, .xlsx, .rtf, .pub
@@ -139,12 +137,32 @@ tasks:
         Python: .py
         Linux ELF executables
         Email files: MIME RFC 822 .eml, Outlook .msg.
+      playbookName: Detonate File - CrowdStrike Falcon Intelligence Sandbox v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      EnvironmentID:
+        simple: '160: Windows 10 (64-bit)'
+      File:
+        complex:
+          root: File
+      FullReport:
+        simple: "True"
+      Interval:
+        simple: "1"
     separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 580
+          "y": 710
         }
       }
     note: false
@@ -152,19 +170,43 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    scriptarguments:
-      File:
-        complex:
-          root: File
-      Interval:
-        simple: "1"
-      Timeout:
-        simple: "35"
-    loop:
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: a2b83fc4-2a00-4aa6-9687-c115d74405d2
+    type: regular
+    task:
+      id: a2b83fc4-2a00-4aa6-9687-c115d74405d2
+      version: -1
+      name: Set file type
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
       iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: File.Type
+      value:
+        simple: PYTHON
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
 view: |-
@@ -172,7 +214,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 625,
+        "height": 735,
         "width": 380,
         "x": 50,
         "y": 50

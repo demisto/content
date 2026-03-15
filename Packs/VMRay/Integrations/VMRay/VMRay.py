@@ -1,5 +1,6 @@
 import io
 import os
+from dataclasses import dataclass
 from zipfile import ZipFile
 
 import demistomock as demisto  # noqa: F401
@@ -23,7 +24,7 @@ HEADERS = {"Authorization": f"api_key {API_KEY}", "User-Agent": "Cortex XSOAR/1.
 ERROR_FORMAT = "Error in API call to VMRay [{}] - {}"
 RELIABILITY = demisto.params().get("integrationReliability", DBotScoreReliability.C) or DBotScoreReliability.C
 INDEX_LOG_DELIMITER = "|"
-INDEX_LOG_FILENAME_POSITION = 3
+VENDOR_NAME = "vmray"
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -42,7 +43,7 @@ SEVERITY_DICT = {
 VERDICT_DICT = {
     "malicious": "Malicious",
     "suspicious": "Suspicious",
-    "clean": "Clean",
+    "clean": "Benign",
     "not_available": "Not Available",
     None: "Not Available",
 }
@@ -51,11 +52,52 @@ DBOTSCORE = {
     "Malicious": 3,
     "Suspicious": 2,
     "Clean": 1,
+    "Benign": 1,
     "Not Available": 0,
 }
 
 RATE_LIMIT_REACHED = 429
 MAX_RETRIES = 10
+
+""" HELPER CLASSES """
+
+
+@dataclass
+class ScreenshotLogEntry:
+    timestamp: int
+    file_size: int
+    md5: str
+    sha1: str
+    sha256: str
+    filename: str
+
+    @classmethod
+    def parse(cls, line: bytes) -> "ScreenshotLogEntry":
+        """Parse a log line and return a ScreenshotLogEntry instance."""
+        parts = [part.strip() for part in line.decode("utf-8", errors="replace").split(INDEX_LOG_DELIMITER)]
+
+        if len(parts) != 4:
+            raise ValueError(f"Expected 4 parts separated by `{INDEX_LOG_DELIMITER}`, got {len(parts)}")
+
+        timestamp = int(parts[0])
+        file_size = int(parts[1])
+        filename = parts[3]
+
+        # Parse the hash string
+        hashes = {}
+        for hash_pair in parts[2].split(","):
+            key, value = hash_pair.split("=")
+            hashes[key] = value
+
+        return cls(
+            timestamp=timestamp,
+            file_size=file_size,
+            md5=hashes["md5"],
+            sha1=hashes["sha1"],
+            sha256=hashes["sha256"],
+            filename=filename,
+        )
+
 
 """ HELPER FUNCTIONS """
 
@@ -236,7 +278,7 @@ def dbot_score_by_hash(data):
                 {
                     "Indicator": data.get(hash_type),
                     "Type": "hash",
-                    "Vendor": "VMRay",
+                    "Vendor": VENDOR_NAME,
                     "Score": DBOTSCORE.get(data.get("Verdict", 0)),
                     "Reliability": RELIABILITY,
                 }
@@ -636,6 +678,7 @@ def create_sample_entry(data):
     entry["Classification"] = data.get("sample_classifications")
     entry["ChildSampleIDs"] = data.get("sample_child_sample_ids")
     entry["ParentSampleIDs"] = data.get("sample_parent_sample_ids")
+    entry["URL"] = data.get("sample_url")
 
     return entry
 
@@ -656,10 +699,41 @@ def get_sample_command():
         outputPaths.get("dbotscore"): scores,
     }
 
+    header_type_name = "FileName"
+    score = DBOTSCORE.get(entry.get("Verdict", "Not Available"), 0)
+    if (url := entry.get("URL")) is not None:
+        dbot_score = Common.DBotScore(
+            indicator=url,
+            indicator_type="url",
+            integration_name=VENDOR_NAME,
+            score=score,
+            reliability=RELIABILITY,
+        )
+        url_ctx = Common.URL(url=url, dbot_score=dbot_score)
+        entry_context.update(url_ctx.to_context())
+        header_type_name = "URL"
+    else:
+        dbot_score = Common.DBotScore(
+            indicator=entry["SHA256"],
+            indicator_type="file",
+            integration_name=VENDOR_NAME,
+            score=score,
+            reliability=RELIABILITY,
+        )
+        file_ctx = Common.File(
+            dbot_score=dbot_score,
+            md5=entry["MD5"],
+            sha1=entry["SHA1"],
+            sha256=entry["SHA256"],
+            ssdeep=entry["SSDeep"],
+            name=entry["FileName"],
+        )
+        entry_context.update(file_ctx.to_context())
+
     human_readable = tableToMarkdown(
         "Results for sample id: {} with verdict {}".format(entry.get("SampleID"), entry.get("Verdict", "Unknown")),
         entry,
-        headers=["FileName", "Type", "MD5", "SHA1", "SHA256", "SSDeep", "SampleURL"],
+        headers=[header_type_name, "Type", "MD5", "SHA1", "SHA256", "SSDeep", "SampleURL"],
     )
     return_outputs(human_readable, entry_context, raw_response=raw_response)
 
@@ -1027,8 +1101,9 @@ def get_iocs_command():  # pragma: no cover
                 dbot_score = Common.DBotScore(
                     indicator=hashes.get("MD5"),
                     indicator_type=dbot_score_type,
-                    integration_name="VMRay",
+                    integration_name=VENDOR_NAME,
                     score=DBOTSCORE.get(object["Verdict"], 0),
+                    reliability=RELIABILITY,
                 )
                 # ... and have multiple parameters
                 indicator = Common.File(
@@ -1046,8 +1121,9 @@ def get_iocs_command():  # pragma: no cover
                 dbot_score = Common.DBotScore(
                     indicator=key_value,
                     indicator_type=dbot_score_type,
-                    integration_name="VMRay",
+                    integration_name=VENDOR_NAME,
                     score=DBOTSCORE.get(object["Verdict"], 0),
+                    reliability=RELIABILITY,
                 )
                 # first argument must always be the "main" value and second arg the score
                 indicator = indicator_class(key_value, dbot_score)
@@ -1424,14 +1500,18 @@ def get_screenshots_command():
     screenshots_data = get_screenshots(analysis_id)
 
     file_results = []
+    processed_screenshots = []
     screenshot_counter = 0
     try:
         with ZipFile(io.BytesIO(screenshots_data), "r") as screenshots_zip:
             index_log_data = screenshots_zip.read("screenshots/index.log")
             for line in index_log_data.splitlines():
-                filename = line.decode("utf-8").split(INDEX_LOG_DELIMITER)[INDEX_LOG_FILENAME_POSITION].strip()
-                extension = os.path.splitext(filename)[1]
-                screenshot_data = screenshots_zip.read(f"screenshots/{filename}")
+                log_entry = ScreenshotLogEntry.parse(line)
+                if log_entry.sha256 in processed_screenshots:
+                    continue
+
+                extension = os.path.splitext(log_entry.filename)[1]
+                screenshot_data = screenshots_zip.read(f"screenshots/{log_entry.filename}")
                 file_results.append(
                     fileResult(
                         filename=f"analysis_{analysis_id}_screenshot_{screenshot_counter}{extension}",
@@ -1439,6 +1519,7 @@ def get_screenshots_command():
                         file_type=EntryType.IMAGE,
                     )
                 )
+                processed_screenshots.append(log_entry.sha256)
                 screenshot_counter += 1
     except Exception as exc:  # noqa
         demisto.error(f"Failed to read screenshots.zip, error: {exc}")
@@ -1509,6 +1590,34 @@ def vmray_get_license_usage_reports_command():  # pragma: no cover
     return_results(results)
 
 
+def get_pdf_report(sample_id):
+    """
+
+    Args:
+        sample_id (str):
+
+    Returns:
+        str: response
+    """
+    suffix = f"sample/{sample_id}/report"
+    response = http_request("GET", suffix, get_raw=True)
+    return response
+
+
+def vmray_get_pdf_report_command():  # pragma: no cover
+    """
+
+    Returns:
+        dict: response
+    """
+    sample_id = demisto.args().get("sample_id")
+    check_id(sample_id)
+
+    pdf_report = get_pdf_report(sample_id)
+    file_entry = fileResult(filename=f"{sample_id}_report.pdf", data=pdf_report, file_type=EntryType.ENTRY_INFO_FILE)
+    return_results(file_entry)
+
+
 def main():  # pragma: no cover
     try:
         command = demisto.command()
@@ -1549,6 +1658,8 @@ def main():  # pragma: no cover
             vmray_get_license_usage_verdicts_command()
         elif command == "vmray-get-license-usage-reports":
             vmray_get_license_usage_reports_command()
+        elif command == "vmray-get-pdf-report":
+            vmray_get_pdf_report_command()
     except Exception as exc:
         return_error(f"Failed to execute `{demisto.command()}` command. Error: {exc!s}")
 

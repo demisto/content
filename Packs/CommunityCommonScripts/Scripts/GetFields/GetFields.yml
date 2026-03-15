@@ -15,14 +15,14 @@ args:
   predefined:
   - 'true'
   - 'false'
-comment: Retrieves fields from an object using dot notation
+comment: Retrieves fields from an object using dot notation.
 commonfields:
   id: GetFields
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.12.6204436
 enabled: true
 name: GetFields
 runas: DBotWeakRole

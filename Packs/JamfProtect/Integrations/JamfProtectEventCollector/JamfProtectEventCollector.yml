@@ -1,5 +1,6 @@
 category: Analytics & SIEM
-sectionOrder:
+provider: Jamf
+sectionorder:
 - Connect
 - Collect
 commonfields:

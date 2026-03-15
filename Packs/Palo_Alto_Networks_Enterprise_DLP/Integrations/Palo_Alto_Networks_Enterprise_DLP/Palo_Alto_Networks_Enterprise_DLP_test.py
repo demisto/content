@@ -13,6 +13,8 @@ from Palo_Alto_Networks_Enterprise_DLP import (
     parse_incident_details,
     slack_bot_message_command,
     update_incident_command,
+    create_incident,
+    arg_to_datetime,
 )
 
 DLP_URL = "https://api.dlp.paloaltonetworks.com/v1"
@@ -364,3 +366,54 @@ def test_query_sleep_time(requests_mock):
     client = Client(DLP_URL, CREDENTIALS, False, None)
     time = client.query_for_sleep_time()
     assert time == 10
+
+
+@pytest.mark.parametrize(
+    "incident_type_input, expected_type",
+    [
+        (None, "Data Loss Prevention"),
+        ("custom type", "custom type"),
+    ],
+)
+def test_create_incident(incident_type_input, expected_type):
+    """
+    Given:
+        - A DLP notification containing an incident.
+    When:
+        - Calling `create_incident` with or without specifying an incident type.
+    Then:
+        - Ensure no errors due to the lack of `userId` in `INCIDENT_JSON`.
+        - Ensure the incident is created with the correct type.
+    """
+    import copy
+
+    # Inputs
+    notification = {"incident": copy.deepcopy(INCIDENT_JSON), "previous_notifications": []}
+    region = "us"
+
+    # Prepare
+    parsed_details = parse_incident_details(INCIDENT_JSON["incidentDetails"])
+    occurred_time = arg_to_datetime(INCIDENT_JSON["createdAt"]).isoformat()
+    user_id = parsed_details["headers"][0]["attribute_value"]  # Take `attribute_value` where `attribute_name` = "username"
+    raw_data = {
+        **INCIDENT_JSON,
+        "userId": user_id,
+        "incidentDetails": parsed_details,
+        "region": region,
+        "previousNotification": None,
+    }
+
+    # Act
+    if incident_type_input is None:
+        result = create_incident(notification, region=region)
+    else:
+        result = create_incident(notification, region=region, incident_type=incident_type_input)
+
+    # Assert
+    assert result == {
+        "name": f"Palo Alto Networks DLP Incident {INCIDENT_JSON['incidentId']}",
+        "type": expected_type,
+        "occurred": occurred_time,
+        "rawJSON": json.dumps(raw_data),
+        "details": json.dumps(raw_data),
+    }

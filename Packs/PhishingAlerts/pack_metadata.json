@@ -2,7 +2,7 @@
     "name": "PhishingAlerts",
     "description": "This pack will help you handle your email security gateway alerts",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -29,6 +29,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

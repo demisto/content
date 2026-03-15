@@ -183,3 +183,38 @@ def test_main_styled_html(mocker):
     main()
     results_call_args = return_results_mocker.call_args
     assert " color" not in results_call_args.args[0]["Contents"]
+
+
+def test_rewrites_single_img_src():
+    """
+    Given
+    - HTML contains image tag with src values in the form:
+      src="xsoar/entry/download/<id>"
+    When
+    - The rewrite_img_src function is executed with a valid account name
+    Then
+    - Validate that the function returns appropriate HTML with the account name
+      correctly inserted into the image src path.
+    """
+    from DisplayEmailHtmlThread import rewrite_img_src
+
+    html = '<img src="xsoar/entry/download/12345">'
+    result = rewrite_img_src(html, "myaccount")
+    assert result == '<img src="xsoar/myaccount/entry/download/12345">'
+
+
+def test_rewrites_single_img_src_without_account():
+    """
+    Given
+    - HTML contains image tag with src values in the form:
+      src="xsoar/entry/download/<id>"
+    When
+    - The rewrite_img_src function is executed with no account name
+    Then
+    - Validate that the function returns the HTML input with no changes
+    """
+    from DisplayEmailHtmlThread import rewrite_img_src
+
+    html = '<img src="xsoar/entry/download/12345">'
+    result = rewrite_img_src(html)
+    assert result == html

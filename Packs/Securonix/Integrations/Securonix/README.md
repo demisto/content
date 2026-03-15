@@ -640,6 +640,7 @@ Gets a list of activity data for the specified resource group.
 | from | Start date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss). | Required |
 | to | End date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss). | Required |
 | query | Free-text query. For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation".<br/>Note: Use the XSOAR automation browser to run the command if the "query" argument contains the special characters. | Optional |
+| max | Maximum number of activity records to retrieve. Default is 1000. Maximum allowed value is 10000. | Optional |
 
 ##### Context Output
 <!-- markdownlint-disable MD049 -->

@@ -312,6 +312,12 @@ def get_search_args(args: dict):
     if not user_id:
         raise ValueError(missing_field_error_message.format(field_name="Reported Email To"))
 
+    if "," in user_id:
+        raise ValueError(
+            "Script is supporting only deleting mail from one recipient mailbox at a time."
+            "Please make sure that there is only one 'Reported Email To' address."
+        )
+
     search_args = {
         "delete-type": delete_type,
         "using-brand": delete_from_brand,

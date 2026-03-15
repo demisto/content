@@ -4,6 +4,7 @@ commonfields:
 name: RiskSense
 display: RiskSense
 category: Vulnerability Management
+provider: Ivanti
 description: RiskSense is a cloud-based platform that provides vulnerability management and prioritization to measure and control cybersecurity risk.
 configuration:
 - display: URL
@@ -1912,7 +1913,7 @@ script:
       description: The time when the tag was associated.
       type: String
     description: Apply the new or existing tag to the asset, creates a new tag if it does not exist in RiskSense.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   subtype: python3
   type: python

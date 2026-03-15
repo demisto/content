@@ -1,5 +1,6 @@
 category: Vulnerability Management
-sectionOrder:
+provider: CyCognito
+sectionorder:
 - Connect
 - Collect
 commonfields:

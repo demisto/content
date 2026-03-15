@@ -842,7 +842,7 @@ class MicrosoftClient(BaseClient):
             kwargs["error_handler"] = self.handle_error_with_metrics
 
         response = super()._http_request(  # type: ignore[misc]
-            *args, resp_type="response", headers=default_headers, **kwargs
+            *args, resp_type="response", headers=default_headers, status_list_to_retry=[503], retries=3, **kwargs
         )
 
         if should_http_retry_on_rate_limit and MicrosoftClient.is_command_executed_from_integration():
@@ -1339,6 +1339,7 @@ class MicrosoftClient(BaseClient):
         if err_str:
             if set(error_codes).issubset(TOKEN_EXPIRED_ERROR_CODES):
                 err_str += (
+                    f"\nGot the following error codes from Microsoft: {error_codes}."
                     f"\nYou can run the ***{self.command_prefix}-auth-reset*** command to reset the authentication process."
                 )
             return err_str

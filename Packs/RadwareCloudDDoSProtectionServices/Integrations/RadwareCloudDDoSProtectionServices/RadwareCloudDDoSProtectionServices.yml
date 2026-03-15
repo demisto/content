@@ -1,5 +1,6 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+provider: Radware
+sectionorder:
 - Connect
 - Collect
 commonfields:

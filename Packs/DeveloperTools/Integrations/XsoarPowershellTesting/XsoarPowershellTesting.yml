@@ -1,5 +1,6 @@
 category: Utilities
-sectionOrder:
+provider: Palo Alto Networks
+sectionorder:
 - Connect
 - Collect
 commonfields:

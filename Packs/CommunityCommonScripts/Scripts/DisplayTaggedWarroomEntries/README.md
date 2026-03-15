@@ -16,7 +16,7 @@ Display warroom entries in a dynamic section which are tagged with 'report'
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| filter | The JSON filter for warroom entries described here: https://xsoar.pan.dev/docs/integrations/get-entries-filter |
+| filter | The JSON filter for warroom entries described here: <https://xsoar.pan.dev/docs/integrations/get-entries-filter> |
 
 ## Outputs
 

@@ -194,6 +194,12 @@ def search_incidents(args: Dict):  # pragma: no cover
     demisto.debug(f"Amount of incidents after filtering = {len(all_found_incidents)} before pagination")
     page = STARTING_PAGE_NUMBER
 
+    if all_found_incidents and "todate" not in args:
+        # In case todate is not part of the argumetns we add it to avoid duplications
+        first_incident = all_found_incidents[0]
+        args["todate"] = first_incident.get("created")
+        demisto.info(f"Setting todate argument to be {first_incident.get('created')} to avoid duplications")
+
     while more_pages and len(all_found_incidents) < limit:
         args["page"] = page
         current_page_found_incidents = execute_command("getIncidents", args).get("data") or []

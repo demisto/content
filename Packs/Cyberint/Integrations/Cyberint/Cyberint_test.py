@@ -5,6 +5,7 @@ from unittest.mock import Mock, patch
 import Cyberint
 import pytest
 from CommonServerPython import DemistoException, EntryType, GetModifiedRemoteDataResponse, GetRemoteDataResponse
+from Packs.Cyberint.Integrations.Cyberint.CommonServerPython import IncidentStatus
 
 BASE_URL = "https://test.cyberint.io/alert"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -744,3 +745,80 @@ def test_get_modified_remote_data(
         severities=None,
         types=None,
     )
+
+
+def test_update_remote_system_xsoar_incident_closed(requests_mock, client):
+    """
+    Test update_remote_system when XSOAR incident is closed (inc_status=2).
+    """
+    from Cyberint import update_remote_system
+
+    requests_mock.put(f"{BASE_URL}/api/v1/alerts/status", json={})
+
+    args = {
+        "remoteId": "INT-123",
+        "status": IncidentStatus.DONE,  # XSOAR closed status
+        "incidentChanged": True,
+        "delta": {"closure_reason": "resolved"},
+        "data": {},
+    }
+
+    result = update_remote_system(client, args)
+    req = requests_mock.last_request
+
+    assert req.method == "PUT"
+    assert req.url == f"{BASE_URL}/api/v1/alerts/status"
+
+    payload = req.json()
+    assert payload == {
+        "alert_ref_ids": ["INT-123"],
+        "data": {
+            "closure_reason": "resolved",
+            "closure_reason_description": "Closed from XSOAR",
+            "status": "closed",
+        },
+    }
+
+    assert result == "INT-123"
+
+
+def test_update_remote_system_status_closed_in_delta(requests_mock, client):
+    """
+    Test update_remote_system when status is closed in delta.
+    """
+    from Cyberint import update_remote_system
+
+    requests_mock.put(f"{BASE_URL}/api/v1/alerts/status", json={})
+
+    args = {
+        "remoteId": "INT-124",
+        "status": 1,
+        "incidentChanged": True,
+        "delta": {"status": "closed", "closure_reason": "other"},
+        "data": {},
+    }
+
+    result = update_remote_system(client, args)
+    assert result == "INT-124"
+
+
+def test_update_remote_system_cyberint_alert_already_closed(requests_mock, client):
+    """
+    Test update_remote_system when Cyberint alert is already closed.
+    """
+    from Cyberint import update_remote_system
+
+    mock_alert = {"alert": {"status": "closed", "closure_reason": "resolved", "closure_reason_description": "Already resolved"}}
+    requests_mock.get(f"{BASE_URL}/api/v1/alerts/INT-125", json=mock_alert)
+    requests_mock.put(f"{BASE_URL}/api/v1/alerts/status", json={})
+
+    args = {
+        "remoteId": "INT-125",
+        "status": 1,
+        "incidentChanged": True,
+        "delta": {},  # No status change
+        "data": {},
+    }
+
+    result = update_remote_system(client, args)
+    assert result == "INT-125"

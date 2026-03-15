@@ -1,5 +1,6 @@
 category: Case Management
-sectionOrder:
+provider: Freshworks Inc.
+sectionorder:
 - Connect
 - Collect
 commonfields:

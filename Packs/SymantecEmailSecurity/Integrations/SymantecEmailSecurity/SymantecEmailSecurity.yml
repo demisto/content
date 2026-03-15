@@ -1,5 +1,6 @@
 category: Email
-sectionOrder:
+provider: Broadcom
+sectionorder:
 - Connect
 - Collect
 commonfields:

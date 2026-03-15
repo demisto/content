@@ -54,7 +54,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: true
-dockerimage: demisto/crypto:1.0.0.3539024
+dockerimage: demisto/crypto:1.0.0.5490413
 runas: DBotWeakRole
 engineinfo: {}
 fromversion: 6.10.0

@@ -5,8 +5,8 @@ This integration was integrated and tested with version 1.2.0 of Cortex Attack S
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | The web UI with \`api-\` appended to front \(e.g., https://api-xsiam.paloaltonetworks.com\). For more information please see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis. | True |
-| API Key ID | For more information please see <https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis>.  Only a standard API key type is supported. | True |
+| Server URL | The web UI with `api-` appended to front (e.g., https://api-xsiam.paloaltonetworks.com). For more information please see [Cortex XDR API documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-REST-API/Get-Started-with-Cortex-XDR-APIs). | True |
+| API Key ID | For more information please see [Cortex XDR API documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-REST-API/Get-Started-with-Cortex-XDR-APIs). Only a standard API key type is supported. | True |
 | API Key |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
@@ -134,6 +134,9 @@ Get a list of all your external services filtered by business units, externally 
                 "first_observed": 1659396480000,
                 "inactive_classifications": [],
                 "ip_address": [
+                    "1.1.1.1",
+                    "1.1.1.1",
+                    "1.1.1.1",
                     "1.1.1.1",
                     "1.1.1.1",
                     "1.1.1.1",
@@ -652,7 +655,7 @@ Get a list of all your internet exposure filtered by business units and organiza
 
 >### External IP Address Ranges
 
->|Active Responsive Ips Count|Business Units|Date Added|Details|First Ip|Ips Count|Last Ip|Organization Handles|Range Id|
+>|Active Responsive Ips Count|Business Units|Date Added|First Ip|Ips Count|Last Ip|Organization Handles|Range Id|
 >|---|---|---|---|---|---|---|---|
 >| 0 | VanDelay Industries | 1663031000145 | 1.1.1.1 | 64 | 1.1.1.1 | MAINT-HK-PCCW-BIA-CS,<br/>BNA2-AP,<br/>TA66-AP | 4da29b7f-3086-3b52-981b-aa8ee5da1e60 |
 >| 0 | VanDelay Industries | 1663031000144 | 1.1.1.1 | 16 | 1.1.1.1 | AR17615-RIPE,<br/>EASYNET-UK-MNT,<br/>JW372-RIPE,<br/>EH92-RIPE | 6ef4638e-7788-3ef5-98a5-ad5b7f4e02f5 |
@@ -1021,7 +1024,6 @@ Get internet exposure asset details according to the asset ID.
                     "issuerOrg": "Thawte\\\\, Inc.",
                     "issuerOrgUnit": null,
                     "issuerState": null,
-                    "md5Fingerprint": "498ec19ebd6c6883ecd43d064e713002",
                     "publicKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAp21W/QVHuo0Nyy9l6Qp6Ye7yniuCccplWLdkL34pB0roNWBiklLJFftFTXJLtUuYEBhEbUtOPtNr5QRZFo+LQSj+JMQsGajEgNvIIMDms2xtc+vYkuJeNRsN/0zRm8iBjCNEZ0zBbWdupO6xee+Lngq5RiyRzAN2+Q5HlmHmVOcc7NtY5VIQhajp3a5Gc7tmLXa7ZxwQb+afdlpmE0iv4ZxmXFyHwlPXUlIxfETDDjtv2EzAgrnpZ5juo7TEFZA7AjsT0lO6cC2qPE9x9kC02PeC1Heg4hWf70CsXcKQBsprLqusrPYM9+OYfZnj+Dq9j6FjZD314Nz4qTGwmZrwDQIDAQAB",
                     "publicKeyAlgorithm": "RSA",
                     "publicKeyBits": 2048,
@@ -1085,7 +1087,7 @@ Get internet exposure asset details according to the asset ID.
 ### asm-list-remediation-rule
 
 ***
-Returns list of remediation path rules.
+Returns the list of remediation path rules. This command applies only to Expander v2.
 
 #### Base Command
 

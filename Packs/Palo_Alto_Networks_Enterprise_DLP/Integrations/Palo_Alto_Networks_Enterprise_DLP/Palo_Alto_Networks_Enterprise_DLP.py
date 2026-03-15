@@ -395,10 +395,11 @@ def parse_incident_details(compressed_details: str):
     details_byte_data = bz2.decompress(base64.b64decode(compressed_details))
     details_string = details_byte_data.decode("utf-8")
     details_obj = json.loads(details_string)
+    demisto.debug(f"Parsed incident details: {details_obj}.")
     return details_obj
 
 
-def create_incident(notification: dict, region: str):
+def create_incident(notification: dict, region: str, incident_type: str = "Data Loss Prevention"):
     raw_incident = notification["incident"]
     previous_notifications = notification["previous_notifications"]
     raw_incident["region"] = region
@@ -406,15 +407,17 @@ def create_incident(notification: dict, region: str):
     incident_creation_time = dateparser.parse(raw_incident["createdAt"])
     parsed_details = parse_incident_details(raw_incident["incidentDetails"])
     raw_incident["incidentDetails"] = parsed_details
-    if not raw_incident["userId"]:
-        for header in parsed_details["headers"]:
-            if header["attribute_name"] == "username":
-                raw_incident["userId"] = header["attribute_value"]
+    if not raw_incident.get("userId"):
+        for header in parsed_details.get("headers", []):
+            attribute_name = header.get("attribute_name")
+            attribute_value = header.get("attribute_value")
+            if attribute_name == "username" and attribute_value:
+                raw_incident["userId"] = attribute_value
 
     event_dump = json.dumps(raw_incident)
     incident = {
         "name": f'Palo Alto Networks DLP Incident {raw_incident["incidentId"]}',
-        "type": "Data Loss Prevention",
+        "type": incident_type,
         "occurred": incident_creation_time.isoformat(),  # type: ignore
         "rawJSON": event_dump,
         "details": event_dump,
@@ -422,7 +425,9 @@ def create_incident(notification: dict, region: str):
     return incident
 
 
-def fetch_incidents(client: Client, regions: str, start_time: int = None, end_time: int = None):
+def fetch_incidents(
+    client: Client, regions: str, start_time: int = None, end_time: int = None, incident_type: str = "Data Loss Prevention"
+):
     if start_time and end_time:
         print_debug_msg(f"Start fetching incidents between {start_time} and {end_time}.")
     else:
@@ -431,8 +436,9 @@ def fetch_incidents(client: Client, regions: str, start_time: int = None, end_ti
     notification_map, _ = client.get_dlp_incidents(regions=regions, start_time=start_time, end_time=end_time)
     incidents = []
     for region, notifications in notification_map.items():
+        demisto.debug(f"Received {len(notifications)} raw notifications from {region=}.")
         for notification in notifications:
-            incident = create_incident(notification, region)
+            incident = create_incident(notification, region, incident_type)
             incidents.append(incident)
     return incidents
 
@@ -457,16 +463,17 @@ def is_reset_triggered():
     return False
 
 
-def fetch_notifications(client: Client, regions: str):
+def fetch_notifications(client: Client, regions: str, incident_type: str = "Data Loss Prevention"):
     integration_context = demisto.getIntegrationContext()
     access_token = integration_context.get(ACCESS_TOKEN)
     if access_token:
         client.set_access_token(access_token)
 
-    incidents = fetch_incidents(client=client, regions=regions)
-    print_debug_msg(f"Received {len(incidents)} incidents")
+    incidents = fetch_incidents(client=client, regions=regions, incident_type=incident_type)
+    print_debug_msg(f"Received {len(incidents)} incidents from raw notifications.")
     if not is_reset_triggered():
         demisto.createIncidents(incidents)
+        demisto.debug(f"Created {len(incidents)} incidents: {[incident.get('name') for incident in incidents]}.")
         new_ctx = {ACCESS_TOKEN: client.access_token, "samples": incidents}
         demisto.setIntegrationContext(new_ctx)
     elif len(incidents) > 0:
@@ -483,12 +490,13 @@ def long_running_execution_command(client: Client, params: dict):
     """
     demisto.setIntegrationContext({ACCESS_TOKEN: ""})
     regions = demisto.get(params, "dlp_regions", "")
+    incident_type = params.get("incidentType", "Data Loss Prevention")
     sleep_time = FETCH_SLEEP
     last_time_sleep_interval_queries = math.floor(datetime.now().timestamp())
     while True:
         try:
             current_time = math.floor(datetime.now().timestamp())
-            fetch_notifications(client, regions)
+            fetch_notifications(client, regions, incident_type=incident_type)
 
             if current_time - last_time_sleep_interval_queries > 5 * 60:
                 overriden_sleep_time = client.query_for_sleep_time()

@@ -1,6 +1,6 @@
-[INGEST:vendor="atlassian", product="jira", target_dataset="atlassian_jira_raw", no_hit=keep]
+[INGEST:vendor="atlassian", product="jira", target_dataset="atlassian_jira_raw", no_hit=drop]
 // Support only date time of format: YYYY-MM-DDTHH:MM:SS.E3Z%z. For example: "2022-11-20T15:17:11.419+0000".
-filter created ~= "\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}[\+|\-]\d{4}"
+filter created ~= "\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}[\+|\-]\d{4}" and _raw_log = null //adding rawlog filter for Jira Datacenter events
 |alter 
     tmp_date_part = arraystring(regextract(created, "^(\d{4}\-\d{2}\-\d{2})T"), ""),
     tmp_time_part = arraystring(regextract(created, "T(\d{2}\:\d{2}\:\d{2})\."), ""),

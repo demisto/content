@@ -7,12 +7,13 @@ from CommonServerUserPython import *
 IMPORTS
 """
 
+import base64
 import copy
 import json
 import os
 import re
-from datetime import datetime, timedelta
-
+import time
+from datetime import datetime, UTC
 import requests
 import urllib3
 
@@ -22,11 +23,43 @@ urllib3.disable_warnings()
 GLOBAL VARS
 """
 
-API_KEY = demisto.params().get("credentials_api_key", {}).get("password") or demisto.params().get("api_key")
-BASE_PATH = "{}/api/v1".format(demisto.params().get("server"))
+PARAMS = demisto.params()
+
+ALERT_INCIDENT_TYPE_NAME = "trellix_alerts"
+"""
+Cloud REST APIs are rate-limited to 60 requests per minute per API route
+(e.g., /trace, /alert, /quarantine) per customer.
+The fetch command uses:
+    - 1 request to retrieve the list of alerts
+    - 1 additional request per alert to retrieve its severity
+As a result, a maximum of 59 alerts can be fetched per minute.
+"""
+MAX_FETCHED_ALERT = min(int(PARAMS.get("incidents_per_fetch", 59)), 59)
+FETCH_TIME = PARAMS.get("fetch_time", "1 minutes")
+
+CLIENT_ID = PARAMS.get("credentials", {}).get("identifier", "")
+CLIENT_SECRET = PARAMS.get("credentials", {}).get("password", "")
+SCOPES = PARAMS.get(
+    "oauth_scopes",
+    (
+        "etp.conf.ro etp.trce.rw etp.admn.ro etp.domn.ro etp.accs.rw etp.quar.rw "
+        "etp.domn.rw etp.rprt.rw etp.accs.ro etp.quar.ro etp.alrt.rw etp.rprt.ro "
+        "etp.conf.rw etp.trce.ro etp.alrt.ro etp.admn.rw"
+    ),
+).strip()
+API_KEY = PARAMS.get("credentials_api_key", {}).get("password") or PARAMS.get("api_key")
+
+BASE_PATH_V1 = "{}/api/v1".format(PARAMS.get("server"))  # Deprecated endpoint
+BASE_PATH_V2 = "{}/api/v2".format(PARAMS.get("server"))
+
+
 HTTP_HEADERS = {"Content-Type": "application/json"}
-USE_SSL = not demisto.params().get("unsecure")
-MESSAGE_STATUS = argToList(demisto.params().get("message_status"))
+USE_SSL = not PARAMS.get("unsecure")
+MESSAGE_STATUS = argToList(PARAMS.get("message_status"))
+
+# OAuth2 token constants
+OAUTH_TOKEN_KEY = "oauth_access_token"
+OAUTH_EXPIRES_KEY = "oauth_token_expires_at"
 
 """
 SEARCH ATTRIBUTES VALID VALUES
@@ -66,12 +99,187 @@ STATUS_VALUES = [
     "temporary failure",
 ]
 
+ISO_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 """
 BASIC FUNCTIONS
 """
 
 
+def is_iso_utc(date_str) -> bool:
+    if not date_str:
+        return False
+    try:
+        datetime.strptime(date_str, ISO_FORMAT)
+        return True
+    except ValueError:
+        return False
+
+
+def fetch_oauth_token():
+    """
+    Fetch OAuth 2.0 access token
+    """
+    # Trellix OAuth2 endpoint
+    token_url = "https://auth.trellix.com/auth/realms/IAM/protocol/openid-connect/token"
+    credentials = f"{CLIENT_ID}:{CLIENT_SECRET}"
+    encoded_credentials = base64.b64encode(credentials.encode()).decode()
+
+    headers = {"Content-Type": "application/x-www-form-urlencoded", "Authorization": f"Basic {encoded_credentials}"}
+
+    data = {"grant_type": "client_credentials", "scope": SCOPES}
+
+    try:
+        response = requests.post(token_url, headers=headers, data=data, verify=USE_SSL)
+        response.raise_for_status()
+
+        result = response.json()
+        access_token = result.get("access_token")
+        expires_in = result.get("expires_in", 600)  # Default is 10 minutes
+
+        if not access_token:
+            raise DemistoException("Failed to retrieve access token from OAuth response")
+
+        # Store token and expiration time in integration context
+        expires_at = time.time() + expires_in
+        ctx = get_integration_context() or {}
+        ctx[OAUTH_TOKEN_KEY] = access_token
+        ctx[OAUTH_EXPIRES_KEY] = expires_at
+        set_integration_context(ctx)
+
+        demisto.debug(f"OAuth token fetched successfully, expires in {expires_in} seconds")
+        return access_token
+
+    except Exception as e:
+        raise DemistoException(f"OAuth authentication failed: {str(e)}")
+
+
+def is_oauth_token_expired(ctx):
+    """
+    Check if the current OAuth token is expired or about to expire (within 60 seconds)
+    """
+    expires_at = ctx.get(OAUTH_EXPIRES_KEY, 0)
+    current_time = time.time()
+
+    # Consider token expired if it expires within the next 60 seconds
+    is_expired = current_time >= (expires_at - 60)
+    return is_expired
+
+
+def get_valid_oauth_token():
+    """
+    Get a valid OAuth token, refreshing if necessary
+    """
+    ctx = get_integration_context() or {}
+    access_token = ctx.get(OAUTH_TOKEN_KEY)
+
+    if not access_token:
+        demisto.debug("No OAuth token found, fetching new one")
+    elif is_oauth_token_expired(ctx):
+        demisto.debug("OAuth token expired, fetching new one")
+    else:
+        demisto.debug("Using existing valid OAuth token")
+        return access_token
+
+    return fetch_oauth_token()
+
+
+def validate_authentication_params():
+    """
+    Validate authentication parameters and determine which method to use.
+    The SCOPES parameter is required only for OAuth2.
+    Returns: 'oauth2' for Client ID/Secret, 'api_key' for API Key
+    Raises: ValueError if authentication configuration is invalid or over-configured.
+    """
+    has_client_id = bool(CLIENT_ID)
+    has_client_secret = bool(CLIENT_SECRET)
+    has_api_key = bool(API_KEY)
+    has_scopes = bool(SCOPES)
+
+    # 1. CHECK FOR AMBIGUOUS OVER-CONFIGURATION
+    if has_client_id and has_client_secret and has_api_key:
+        raise ValueError(
+            "Both OAuth2 (Client ID/Secret) and API Key were provided. " "Please configure only one authentication method."
+        )
+
+    # 2. OAUTH2 VALIDATION
+    if has_client_id and has_client_secret:
+        # Check for required SCOPES when using OAuth2
+        if not has_scopes:
+            raise ValueError(
+                "Client ID and Client Secret provided, but the 'OAuth Scopes' parameter is missing. "
+                "Scopes are required for OAuth2 authentication."
+            )
+
+        demisto.info("Authentication: Using OAuth2 (Client ID/Secret)")
+        return "oauth2"
+
+    # 3. API KEY VALIDATION
+    if has_api_key and not has_client_id and not has_client_secret:
+        demisto.info("Authentication: Using API Key")
+        return "api_key"
+
+    # 4. INCOMPLETE OAUTH2 CONFIGURATION
+    if has_client_id and not has_client_secret:
+        raise ValueError(
+            "Client ID provided but Client Secret is missing. "
+            "Both Client ID and Client Secret are required for OAuth2 authentication."
+        )
+
+    if has_client_secret and not has_client_id:
+        raise ValueError(
+            "Client Secret provided but Client ID is missing. "
+            "Both Client ID and Client Secret are required for OAuth2 authentication."
+        )
+
+    # 5. NO AUTHENTICATION METHOD PROVIDED
+    raise ValueError("No authentication credentials provided.")
+
+
+def get_auth_headers():
+    """Get authentication headers based on available authentication method."""
+    auth_method = validate_authentication_params()
+
+    if auth_method == "oauth2":
+        access_token = get_valid_oauth_token()
+        return {"Content-Type": "application/json", "Authorization": f"Bearer {access_token}"}
+    elif auth_method == "api_key":
+        return {"Content-Type": "application/json", "x-fireeye-api-key": API_KEY}
+    else:
+        raise ValueError("Unknown authentication method")
+
+
 class Client(BaseClient):
+    def get_alerts_request_v2(self, size=None, start_time=None, end_time=None, pagination_token=None, body={}):
+        """
+        size (int, optional): Maximum number of alerts to return.
+        start_time (str, optional): Start time in ISO 8601 UTC format (e.g., 2025-01-18T14:34:59Z).
+        end_time (str, optional): End time in ISO 8601 UTC format (e.g., 2025-01-19T14:34:59Z).
+        pagination_token (str, optional): Token used for pagination.
+        body (dict, optional): Additional request body parameters.
+
+        """
+        url = "/public/alerts/search"
+        body["sort"] = {"order": "asc"}
+        if size:
+            body["size"] = int(size)
+        if start_time and end_time:
+            body["date_range"] = {"from": start_time, "to": end_time}
+        if pagination_token:
+            body["sort"]["search_after"] = pagination_token
+
+        response = self._http_request(method="POST", url_suffix=url, json_data=body)
+        return response
+
+    def get_alert_request_v2(self, alert_id):
+        url = f"/public/alerts/{alert_id}"
+        response = self._http_request(method="GET", url_suffix=url)
+        return response
+
+    def get_artifacts_v2(self, alert_id):
+        url = f"/public/alerts/{alert_id}/casefile"
+        response = self._http_request(method="GET", url_suffix=url, resp_type="response")
+        return response
+
     def get_artifacts(self, alert_id):
         url = f"/alerts/{alert_id}/downloadzip"
         response = self._http_request(method="POST", url_suffix=url, resp_type="response")
@@ -89,9 +297,7 @@ class Client(BaseClient):
 
     def upload_yara_file(self, policy_uuid, ruleset_uuid, files):
         url = f"/policies/{policy_uuid}/configuration/rules/yara/rulesets/{ruleset_uuid}/file"
-        response = self._http_request(
-            method="PUT", headers={"x-fireeye-api-key": API_KEY}, url_suffix=url, files=files, resp_type="response"
-        )
+        response = self._http_request(method="PUT", url_suffix=url, files=files, resp_type="response")
         return response
 
     def get_events_data(self, message_id):
@@ -103,16 +309,15 @@ class Client(BaseClient):
     def quarantine_release(self, message_id):
         url = f"/quarantine/release/{message_id}"
 
-        response = self._http_request(method="POST", headers={"x-fireeye-api-key": API_KEY}, url_suffix=url, resp_type="response")
+        response = self._http_request(method="POST", url_suffix=url, resp_type="response")
         return response
 
 
 def set_proxies():
-    if not demisto.params().get("proxy", False):
-        del os.environ["HTTP_PROXY"]
-        del os.environ["HTTPS_PROXY"]
-        del os.environ["http_proxy"]
-        del os.environ["https_proxy"]
+    if not PARAMS.get("proxy", False):
+        # Remove proxy environment variables if they exist
+        for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
+            os.environ.pop(proxy_var, None)
 
 
 def listify(comma_separated_list):
@@ -126,8 +331,11 @@ def http_request(method, url, body=None, headers={}, url_params=None):
     returns the http response
     """
 
-    # add API key to headers
-    headers["x-fireeye-api-key"] = API_KEY
+    # Use proper authentication method
+    auth_headers = get_auth_headers()
+    demisto.debug(f"Headers before update: {headers}")
+    headers.update(auth_headers)
+    demisto.debug(f"Headers after update: {headers}")
 
     request_kwargs = {"headers": headers, "verify": USE_SSL}
 
@@ -269,7 +477,7 @@ def message_context_data(message):
 
 
 def search_messages_request(attributes={}, has_attachments=None, max_message_size=None):
-    url = f"{BASE_PATH}/messages/trace"
+    url = f"{BASE_PATH_V1}/messages/trace"
     body = {"attributes": attributes, "type": "MessageAttributes", "size": max_message_size or 20}
     if has_attachments is not None:
         body["hasAttachments"] = has_attachments
@@ -313,8 +521,7 @@ def search_messages_command():
 
     # create readable data
     messages_readable_data = [readable_message_data(message) for message in messages_context]
-    messages_md_headers = ["Message ID", "Accepted Time", "From", "Recipients", "Subject", "Message Status"]
-    md_table = tableToMarkdown("FireEye ETP - Search Messages", messages_readable_data, headers=messages_md_headers)
+    md_table = tableToMarkdown("Trellix Email Security - Cloud - Search Messages", messages_readable_data, removeNull=True)
 
     entry = {
         "Type": entryTypes["note"],
@@ -328,7 +535,7 @@ def search_messages_command():
 
 
 def get_message_request(message_id):
-    url = f"{BASE_PATH}/messages/{message_id}"
+    url = f"{BASE_PATH_V1}/messages/{message_id}"
     response = http_request("GET", url)
     if response["meta"]["total"] == 0:
         return {}
@@ -346,7 +553,9 @@ def get_message_command():
         # create readable data
         message_readable_data = readable_message_data(context_data)
         messages_md_headers = ["Message ID", "Accepted Time", "From", "Recipients", "Subject", "Message Status"]
-        md_table = tableToMarkdown("FireEye ETP - Get Message", message_readable_data, headers=messages_md_headers)
+        md_table = tableToMarkdown(
+            "Trellix Email Security - Cloud - Get Message", message_readable_data, headers=messages_md_headers
+        )
 
         entry = {
             "Type": entryTypes["note"],
@@ -364,9 +573,24 @@ def get_message_command():
             "Contents": {},
             "ContentsFormat": formats["text"],
             "ReadableContentsFormat": formats["markdown"],
-            "HumanReadable": "### FireEye ETP - Get Message \n no results",
+            "HumanReadable": "### Trellix Email Security - Cloud - Get Message \n no results",
         }
         demisto.results(entry)
+
+
+def get_search_alert_summary_v2(alert):
+    return {
+        "Alert ID": alert.get("id"),
+        "Sha256": alert.get("sha256"),
+        "md5": alert.get("md5"),
+        "Domain": alert.get("domain"),
+        "Original": alert.get("original"),
+        "Report id": alert.get("report_id"),
+        "Alert date": alert.get("alert_date"),
+        "Malware name": [item.get("name") for item in alert.get("malware")],
+        "Malware stype": [item.get("stype") for item in alert.get("malware")],
+        "Email status": alert.get("email_status"),
+    }
 
 
 def alert_readable_data_summery(alert):
@@ -399,6 +623,34 @@ def alert_readable_data(alert):
     }
 
 
+def get_single_alert_summary_v2(alert):
+    return {
+        "Alert ID": alert.get("id"),
+        "Domain": alert.get("domain"),
+        "Msg": alert.get("msg"),
+        "Traffic type": alert.get("traffic_type"),
+        "Verdict": alert.get("verdict"),
+        "Report id": alert.get("report_id"),
+        "Alert date": alert.get("alert_date"),
+        "Product": alert.get("product"),
+        "Occurred": alert.get("alert").get("occurred"),
+        "Name": alert.get("alert").get("name"),
+        "Attack time": alert.get("alert").get("attack-time"),
+        "Severity": alert.get("alert").get("severity"),
+    }
+
+
+def malware_readable_data_v2(malware):
+    return {
+        "Name": malware.get("name"),
+        "Domain": malware.get("domain"),
+        "Downloaded At": malware.get("downloaded-at"),
+        "Executed At": malware.get("executed-at"),
+        "Type": malware.get("stype"),
+        "Submitted At": malware.get("submitted-at"),
+    }
+
+
 def malware_readable_data(malware):
     return {
         "Name": malware.get("name"),
@@ -418,8 +670,9 @@ def alert_context_data(alert):
     return context_data
 
 
+# Deprecated endpoint
 def get_alerts_request(legacy_id=None, from_last_modified_on=None, etp_message_id=None, size=None, raw_response=False):
-    url = f"{BASE_PATH}/alerts"
+    url = f"{BASE_PATH_V1}/alerts"
 
     # constract the body for the request
     body = {}
@@ -443,6 +696,7 @@ def get_alerts_request(legacy_id=None, from_last_modified_on=None, etp_message_i
     return response["data"]
 
 
+# Deprecated command
 def get_alerts_command():
     args = demisto.args()
 
@@ -477,7 +731,9 @@ def get_alerts_command():
         "Email Status",
         "Threat Intel",
     ]
-    md_table = tableToMarkdown("FireEye ETP - Get Alerts", alerts_readable_data, headers=alerts_summery_headers)
+    md_table = tableToMarkdown(
+        "Trellix Email Security - Cloud - Get Alerts", alerts_readable_data, headers=alerts_summery_headers
+    )
     entry = {
         "Type": entryTypes["note"],
         "Contents": alerts_raw,
@@ -534,12 +790,21 @@ def get_events_data_command(client, args):
     return command_results
 
 
+# Deprecated command
 def download_alert_artifacts_command(client, args):
     alert_id = args.get("alert_id")
 
     response = client.get_artifacts(alert_id)
     file_entry = fileResult(alert_id + ".zip", data=response.content, file_type=EntryType.FILE)
 
+    return [CommandResults(readable_output="Download alert artifact completed successfully"), file_entry]
+
+
+def download_alert_case_files(client: Client, args):
+    alert_id = args.get("alert_id")
+
+    response = client.get_artifacts_v2(alert_id)
+    file_entry = fileResult(alert_id + ".zip", data=response.content, file_type=EntryType.FILE)
     return [CommandResults(readable_output="Download alert artifact completed successfully"), file_entry]
 
 
@@ -570,12 +835,34 @@ def download_yara_file_command(client, args):
     return [CommandResults(readable_output="Download yara file completed successfully."), file_entry]
 
 
+# Deprecated endpoint
 def get_alert_request(alert_id):
-    url = f"{BASE_PATH}/alerts/{alert_id}"
+    url = f"{BASE_PATH_V1}/alerts/{alert_id}"
     response = http_request("GET", url)
     if response["meta"]["total"] == 0:
         return {}
     return response["data"][0]
+
+
+def create_request_body_alert_search_endpoint(args):
+    body = assign_params(
+        domain=argToList(args.get("domain")),
+        domain_group=argToList(args.get("domain_group")),
+        is_read=argToBoolean(args.get("is_read")) if args.get("is_read") else None,
+        is_retro=argToBoolean(args.get("is_retro")) if args.get("is_retro") else None,
+        malwarename=argToList(args.get("malwarename")),
+        malwarestype=argToList(args.get("malwarestype")),
+        md5=argToList(args.get("md5")),
+        mta_msg_id=argToList(args.get("mta_msg_id")),
+        traffic_type=args.get("traffic_type"),
+        verdict=argToList(args.get("verdict")),
+    )
+
+    email_header_subject = argToList(args.get("email_header_subject"))
+    if email_header_subject:
+        body["email-header"] = {"subject": email_header_subject}
+
+    return body
 
 
 def quarantine_release_command(client, args):
@@ -592,6 +879,54 @@ def quarantine_release_command(client, args):
     return command_results
 
 
+def get_single_alert_entry(alert_id, client: Client):
+    alert = client.get_alert_request_v2(alert_id)
+    alert_summary = get_single_alert_summary_v2(alert)
+    readable_output = tableToMarkdown("Alert Details", alert_summary)
+
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="FireEyeETP.Alerts", outputs_key_field="id", outputs=alert
+    )
+
+
+def get_alerts_entry(args, client: Client):
+    body = create_request_body_alert_search_endpoint(args)
+    size = args.get("limit")
+    start_time = args.get("date_from")
+    end_time = args.get("date_to")
+    if start_time and not is_iso_utc(start_time):
+        start_time = parse_date_range(start_time)[0].strftime("%Y-%m-%dT%H:%M:%SZ")
+    if end_time and not is_iso_utc(end_time):
+        end_time = parse_date_range(end_time)[0].strftime("%Y-%m-%dT%H:%M:%SZ")
+    if start_time and not end_time:
+        end_time = datetime.now(UTC).strftime(ISO_FORMAT)
+
+    response = client.get_alerts_request_v2(size=size, start_time=start_time, end_time=end_time, body=body)
+    alerts = response.get("data") or []
+    alerts_summaries = [get_search_alert_summary_v2(alert) for alert in alerts]
+    readable_output = tableToMarkdown("Trellix Email Security - Cloud - Get Alerts", alerts_summaries)
+
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="FireEyeETP.Alerts", outputs_key_field="id", outputs=alerts
+    )
+
+
+def get_alert_list(client: Client):
+    args = demisto.args()
+    alert_id = args.get("alert_id")
+
+    # In case alert_id is provided, calling: GET /api/v2/public/alerts/<alert_id>
+    if alert_id:
+        command_result = get_single_alert_entry(alert_id, client)
+
+    # alert_id is not provided, POST calling: /api/v2/public/alerts/search
+    else:
+        command_result = get_alerts_entry(args, client)
+
+    return command_result
+
+
+# Deprecated command
 def get_alert_command():
     # get raw data
     alert_raw = get_alert_request(demisto.args()["alert_id"])
@@ -611,7 +946,7 @@ def get_alert_command():
             "Contents": alert_raw,
             "ContentsFormat": formats["json"],
             "ReadableContentsFormat": formats["markdown"],
-            "HumanReadable": f"## FireEye ETP - Get Alert\n{alert_md_table}\n{malware_md_table}",
+            "HumanReadable": f"## Trellix Email Security - Cloud - Get Alert\n{alert_md_table}\n{malware_md_table}",
             "EntryContext": {"FireEyeETP.Alerts(obj.id==val.id)": alert_context},
         }
         demisto.results(entry)
@@ -622,7 +957,7 @@ def get_alert_command():
             "Contents": {},
             "ContentsFormat": formats["json"],
             "ReadableContentsFormat": formats["markdown"],
-            "HumanReadable": "### FireEye ETP - Get Alert\nno results",
+            "HumanReadable": "### Trellix Email Security - Cloud - Get Alert\nno results",
         }
         demisto.results(entry)
 
@@ -639,58 +974,113 @@ def parse_string_in_iso_format_to_datetime(iso_format_string):
     return alert_last_modified
 
 
-def parse_alert_to_incident(alert):
-    context_data = alert_context_data(alert)
-    incident = {"name": context_data["email"]["headers"]["subject"], "rawJSON": json.dumps(context_data)}
-    return incident
+def convert_to_demisto_severity(severity: str) -> int:
+    """
+    Converts the FireEyeETP alert severity level ('Low', 'Medium', 'High', 'Critical') to Cortex XSOAR alert
+    severity (1 to 4).
+
+    Args:
+        severity (str): severity as returned from the FireEyeETP API.
+
+    Returns:
+        int: Cortex XSOAR Severity (1 to 4)
+    """
+
+    return {
+        "crit": IncidentSeverity.CRITICAL,
+        "majr": IncidentSeverity.HIGH,
+        "minr": IncidentSeverity.LOW,
+        "unkn": IncidentSeverity.UNKNOWN,
+    }.get(severity, IncidentSeverity.UNKNOWN)
 
 
-def fetch_incidents():
+def parse_alert_to_incident(response):
+    """
+    Creates an incident from an alert with proper field mapping.
+
+    Args:
+        alert: The alert from the search API (first API call)
+        detailed_alert: The detailed alert from the get alert API (second API call)
+
+    Returns:
+        Incident dictionary with mapped fields
+    """
+    occurred = arg_to_datetime(arg=response.get("alert", {}).get("occurred", ""))
+    occurred = occurred.strftime(ISO_FORMAT) if occurred else None
+
+    severity = response.get("alert", {}).get("severity")
+    return {
+        "name": response.get("id", ""),
+        "occurred": occurred,
+        "severity": convert_to_demisto_severity(severity),
+        "rawJSON": json.dumps(response),
+        "incident_type": ALERT_INCIDENT_TYPE_NAME,
+    }
+
+
+def fetch_incidents(client: Client):
     last_run = demisto.getLastRun()
-    week_ago = datetime.now() - timedelta(days=7)
-    iso_format = "%Y-%m-%dT%H:%M:%S.%f"
+    demisto.debug(f"[FireEyeETP - fetch_incidents] last_run before fetching:\n{last_run}")
 
-    if "last_modified" not in last_run:
-        # parse datetime to iso format string yyy-mm-ddThh:mm:ss.fff
-        last_run["last_modified"] = week_ago.strftime(iso_format)[:-3]
-    if "last_created" not in last_run:
-        last_run["last_created"] = week_ago.strftime(iso_format)
+    # The start time does not change, progress happens using the pagination token.
+    start_time_dt = arg_to_datetime(FETCH_TIME)
+    start_time = start_time_dt.strftime("%Y-%m-%dT%H:%M:%SZ") if start_time_dt else None
+    now_utc = datetime.now(UTC).strftime(ISO_FORMAT)
+    pagination_token = last_run.get("pagination_token")
 
-    alerts_raw_response = get_alerts_request(from_last_modified_on=last_run["last_modified"], size=100, raw_response=True)
-    # end if no results returned
-    if not alerts_raw_response or not alerts_raw_response.get("data"):
-        demisto.incidents([])
-        return
+    demisto.debug("[FireEyeETP - fetch_incidents] calling /api/v2/public/alerts/search")
+    alerts_response = client.get_alerts_request_v2(
+        size=MAX_FETCHED_ALERT, start_time=start_time, end_time=now_utc, pagination_token=pagination_token
+    )
 
-    alerts = alerts_raw_response.get("data", [])
-    last_alert_created = parse_string_in_iso_format_to_datetime(last_run["last_created"])
-    alert_creation_limit = parse_string_in_iso_format_to_datetime(last_run["last_created"])
+    # When no alerts are found, there is no search_after token in the response.
+    if not alerts_response or not alerts_response.get("data"):
+        demisto.debug("[FireEyeETP - fetch_incidents] No incident found.")
+        return [], last_run
+
+    pagination_token = alerts_response.get("meta", {}).get("search_after")
+    if pagination_token:
+        demisto.debug(f"[FireEyeETP - fetch_incidents] response includes a pagination token.\n{pagination_token}")
+        last_run["pagination_token"] = pagination_token
+
+    total_alert_fetched = alerts_response.get("meta", {}).get("size")
+    demisto.debug(
+        f"[FireEyeETP - fetch_incidents] Total incidents fetched from /api/v2/public/alerts/search: {total_alert_fetched}."
+    )
+
+    alerts = alerts_response.get("data", [])
     incidents = []
-
     for alert in alerts:
-        # filter by message status if specified
-        if MESSAGE_STATUS and alert["attributes"]["email"]["status"] not in MESSAGE_STATUS:
+        alert_id = alert.get("id")
+        email_status = alert.get("email_status")
+
+        if MESSAGE_STATUS and email_status not in MESSAGE_STATUS:
+            demisto.debug(f"[FireEyeETP - fetch_incidents] alert: {alert_id} with status {email_status} filtered out.")
             continue
-        # filter alerts created before 'last_created'
-        current_alert_created = parse_string_in_iso_format_to_datetime(alert["attributes"]["alert"]["timestamp"])
-        if current_alert_created < alert_creation_limit:
-            continue
-        # append alert to incident
-        incidents.append(parse_alert_to_incident(alert))
-        # set last created
-        if current_alert_created > last_alert_created:
-            last_alert_created = current_alert_created
 
-    last_run["last_modified"] = alerts_raw_response["meta"]["fromLastModifiedOn"]["end"]
-    last_run["last_created"] = last_alert_created.strftime(iso_format)
+        demisto.debug(f"[FireEyeETP - fetch_incidents] calling /api/v2/public/alerts/{alert_id}")
+        alert_info = client.get_alert_request_v2(alert_id)
+        incidents.append(parse_alert_to_incident(alert_info))
 
-    demisto.incidents(incidents)
-    demisto.setLastRun(last_run)
+    if not incidents:
+        demisto.debug("[FireEyeETP - fetch_incidents] all alerts filtered out, 0 alerts left.")
+        return [], last_run
+
+    demisto.debug(f"[FireEyeETP - fetch_incidents] Total incidents left after filtering: {len(incidents)}.")
+    return incidents, last_run
 
 
-"""
-EXECUTION
-"""
+def test_module(client: Client):
+    params = demisto.params()
+    try:
+        if params.get("isFetch"):
+            fetch_incidents(client)
+        else:
+            client.get_alerts_request_v2(size=1)
+
+    except Exception as e:
+        return f"test-module failed: {str(e)}"
+    return "ok"
 
 
 def main():
@@ -704,40 +1094,55 @@ def main():
 
     verify_certificate = not params.get("unsecure", False)
 
-    if not API_KEY:
-        return_error("API key must be provided.")
     set_proxies()
 
     try:
-        headers = {"Content-Type": "application/json", "x-fireeye-api-key": API_KEY}
+        # Validate authentication configuration
+        validate_authentication_params()
+        headers = get_auth_headers()
 
-        client = Client(base_url=BASE_PATH, verify=verify_certificate, headers=headers, proxy=proxy)
+        command = demisto.command()
 
-        if demisto.command() == "test-module":
-            get_alerts_request(size=1)
-            # request was succesful
-            demisto.results("ok")
-        if demisto.command() == "fetch-incidents":
-            fetch_incidents()
-        if demisto.command() == "fireeye-etp-search-messages":
+        if command == "test-module":
+            client = Client(base_url=BASE_PATH_V2, verify=verify_certificate, headers=headers, proxy=proxy)
+            result = test_module(client)
+            return_results(result)
+        elif command == "fetch-incidents":
+            client = Client(base_url=BASE_PATH_V2, verify=verify_certificate, headers=headers, proxy=proxy)
+            incidents, last_run = fetch_incidents(client)
+            demisto.setLastRun(last_run)
+            demisto.incidents(incidents)
+        elif command == "fireeye-etp-search-messages":
             search_messages_command()
-        if demisto.command() == "fireeye-etp-get-message":
+        elif command == "fireeye-etp-get-message":
             get_message_command()
-        if demisto.command() == "fireeye-etp-get-alerts":
+        elif command == "fireeye-etp-get-alerts":
             get_alerts_command()
-        if demisto.command() == "fireeye-etp-get-alert":
+        elif command == "fireeye-etp-get-alert":
             get_alert_command()
-        if demisto.command() == "fireeye-etp-download-alert-artifact":
+        elif command == "fireeye-etp-list-alerts":
+            client = Client(base_url=BASE_PATH_V2, verify=verify_certificate, headers=headers, proxy=proxy)
+            return_results(get_alert_list(client))
+        elif command == "fireeye-etp-download-alert-artifact":
+            client = Client(base_url=BASE_PATH_V1, verify=verify_certificate, headers=headers, proxy=proxy)
             return_results(download_alert_artifacts_command(client, args))
-        if demisto.command() == "fireeye-etp-list-yara-rulesets":
+        elif command == "fireeye-etp-download-alert-case-files":
+            client = Client(base_url=BASE_PATH_V2, verify=verify_certificate, headers=headers, proxy=proxy)
+            return_results(download_alert_case_files(client, args))
+        elif command == "fireeye-etp-list-yara-rulesets":
+            client = Client(base_url=BASE_PATH_V1, verify=verify_certificate, headers=headers, proxy=proxy)
             return_results(list_yara_rulesets_command(client, args))
-        if demisto.command() == "fireeye-etp-download-yara-file":
+        elif command == "fireeye-etp-download-yara-file":
+            client = Client(base_url=BASE_PATH_V1, verify=verify_certificate, headers=headers, proxy=proxy)
             return_results(download_yara_file_command(client, args))
-        if demisto.command() == "fireeye-etp-upload-yara-file":
+        elif command == "fireeye-etp-upload-yara-file":
+            client = Client(base_url=BASE_PATH_V1, verify=verify_certificate, headers=headers, proxy=proxy)
             return_results(upload_yara_file_command(client, args))
-        if demisto.command() == "fireeye-etp-get-events-data":
+        elif command == "fireeye-etp-get-events-data":
+            client = Client(base_url=BASE_PATH_V1, verify=verify_certificate, headers=headers, proxy=proxy)
             return_results(get_events_data_command(client, args))
-        if demisto.command() == "fireeye-etp-quarantine-release":
+        elif command == "fireeye-etp-quarantine-release":
+            client = Client(base_url=BASE_PATH_V1, verify=verify_certificate, headers=headers, proxy=proxy)
             return_results(quarantine_release_command(client, args))
     except ValueError as e:
         LOG(e)

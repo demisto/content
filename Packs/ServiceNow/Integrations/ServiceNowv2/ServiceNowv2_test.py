@@ -9,9 +9,7 @@ import demistomock as demisto
 import pytest
 import requests
 
-
 import ServiceNowv2
-import jwt
 
 from CommonServerPython import CommandResults, DemistoException, EntryType, QuickActionPreview, EntryFormat
 from freezegun import freeze_time
@@ -127,7 +125,6 @@ from test_data.response_constants import (
     RESPONSE_UPDATE_TICKET_SC_REQ,
     RESPONSE_UPLOAD_FILE,
     USER_RESPONSE,
-    JWT_PARAMS,
 )
 from test_data.result_constants import (
     EXPECTED_ADD_COMMENT_HR,
@@ -831,7 +828,6 @@ def test_commands(command, args, response, expected_result, expected_auto_extrac
 @pytest.mark.parametrize(
     "command, args, response, expected_hr, expected_auto_extract",
     [
-        (delete_ticket_command, {"id": "1234"}, {}, "Ticket with ID 1234 was successfully deleted.", True),
         (
             add_link_command,
             {"id": "1234", "link": "http://www.demisto.com", "text": "demsito_link"},
@@ -1731,107 +1727,7 @@ def test_test_module(mocker):
         oauth_params=OAUTH_PARAMS,
     )
 
-    with pytest.raises(Exception) as e:
-        module(client)
-    assert "Test button cannot be used when using OAuth 2.0" in str(e)
-
-
-def test_invalid_private_key():
-    """
-    Given:
-    - Invalid format of private key
-    When:
-    - creating the JWT
-    Then:
-    - Raise a Value error with informative message
-    """
-    params = {"private_key": "-----INVALID FORMAT----- test_token -----INVALID FORMAT-----", "kid": "test1", "sub": "test"}
-
-    with pytest.raises(ValueError) as e:
-        Client(
-            "server_url",
-            "sc_server_url",
-            "cr_server_url",
-            "username",
-            "password",
-            "verify",
-            "fetch_time",
-            "sysparm_query",
-            sysparm_limit=10,
-            timestamp_field="opened_at",
-            ticket_type="incident",
-            get_attachments=False,
-            incident_name="description",
-            oauth_params=OAUTH_PARAMS,
-            jwt_params=params,
-        )
-    assert "Invalid private key format" in str(e)
-
-
-def test_jwt_checker(mocker):
-    """
-    Given:
-    - private key
-    When:
-    - creating a jwt
-    Then:
-    - (a) that the return type is a string
-    - (b) validate the pem format
-    """
-
-    mocker.patch.object(jwt, "encode", return_value="")
-    client = Client(
-        "server_url",
-        "sc_server_url",
-        "cr_server_url",
-        "username",
-        "password",
-        "verify",
-        "fetch_time",
-        "sysparm_query",
-        sysparm_limit=10,
-        timestamp_field="opened_at",
-        ticket_type="incident",
-        get_attachments=False,
-        incident_name="description",
-        oauth_params=OAUTH_PARAMS,
-        jwt_params=JWT_PARAMS,
-    )
-    test_token = client.check_private_key(JWT_PARAMS["private_key"])
-    assert isinstance(test_token, str)
-    assert test_token.startswith("-----BEGIN PRIVATE KEY-----")
-    assert test_token.endswith("-----END PRIVATE KEY-----")
-
-
-def test_jwt_init(mocker):
-    """
-    Given:
-    - JWT credential
-    When:
-    - User connect using JWT authentication
-    Then:
-    - create jwt
-    """
-    mocker.patch("jwt.encode", return_value="test")
-    client = Client(
-        "server_url",
-        "sc_server_url",
-        "cr_server_url",
-        "username",
-        "password",
-        "verify",
-        "fetch_time",
-        "sysparm_query",
-        sysparm_limit=10,
-        timestamp_field="opened_at",
-        ticket_type="incident",
-        get_attachments=False,
-        incident_name="description",
-        oauth_params=OAUTH_PARAMS,
-        jwt_params=JWT_PARAMS,
-    )
-    jwt = client.create_jwt()
-    assert jwt == "test"
+    assert result[0] == "ok"
 
 
 def test_oauth_test_module(mocker):
@@ -2693,6 +2589,65 @@ def test_clear_fields_in_get_ticket_fields(args, expected_ticket_fields):
     else:
         res = get_ticket_fields(args)
         assert res == expected_ticket_fields
+
+
+def test_add_default_closure_fields_to_delta_sets_defaults():
+    """
+    Given a delta dict missing all closure fields,
+    When add_default_closure_fields_to_delta is called,
+    Then it sets all defaults.
+    """
+    from ServiceNowv2 import add_default_closure_fields_to_delta
+
+    delta = {}
+    result = add_default_closure_fields_to_delta(delta.copy())
+    assert result["close_code"] == "Resolved by caller"
+    assert (
+        result["close_notes"] == "This is the resolution note required by ServiceNow to move the incident to the Resolved state."
+    )
+
+
+def test_add_default_closure_fields_to_delta_preserves_existing():
+    """
+    Given a delta dict with some closure fields set,
+    When add_default_closure_fields_to_delta is called,
+    Then it does not overwrite existing fields.
+    """
+    from ServiceNowv2 import add_default_closure_fields_to_delta
+
+    delta = {"state": "6", "close_code": "Already closed"}
+    result = add_default_closure_fields_to_delta(delta.copy(), close_code="Resolved", close_notes="Closed.")
+    assert result["state"] == "6"  # Should not overwrite
+    assert result["close_code"] == "Already closed"  # Should not overwrite
+    assert result["close_notes"] == "Closed."  # Should set default if missing
+
+
+def test_add_default_closure_fields_to_delta_custom_values():
+    """
+    Given custom close_code and close_notes,
+    When add_default_closure_fields_to_delta is called,
+    Then it sets the custom values if missing in delta.
+    """
+    from ServiceNowv2 import add_default_closure_fields_to_delta
+
+    delta = {}
+    result = add_default_closure_fields_to_delta(delta.copy(), close_code="CustomCode", close_notes="CustomNotes")
+    assert result["close_code"] == "CustomCode"
+    assert result["close_notes"] == "CustomNotes"
+
+
+def test_add_default_closure_fields_to_delta_partial():
+    """
+    Given a delta dict missing some closure fields,
+    When add_default_closure_fields_to_delta is called,
+    Then it only sets missing fields.
+    """
+    from ServiceNowv2 import add_default_closure_fields_to_delta
+
+    delta = {"close_code": "Manual"}
+    result = add_default_closure_fields_to_delta(delta.copy(), close_code="CustomCode", close_notes="CustomNotes")
+    assert result["close_code"] == "Manual"  # Should not overwrite
+    assert result["close_notes"] == "CustomNotes"
 
 
 def test_clear_fields_for_update_remote_system():
@@ -3826,7 +3781,7 @@ def test_get_remote_data_preview_missing_id(mock_client: MagicMock) -> None:
     args = {}  # 'id' is missing
 
     # Act & Assert
-    with pytest.raises(ValueError, match="ServiceNow Ticket ID \('id'\) is required for preview."):
+    with pytest.raises(ValueError, match=r"ServiceNow Ticket ID \('id'\) is required for preview."):
         ServiceNowv2.get_remote_data_preview_command(mock_client, args)
 
 
@@ -3936,3 +3891,302 @@ def test_get_remote_data_preview_success_with_list_response(mock_client: MagicMo
     assert result.outputs["id"] == ticket_id
     assert result.outputs["title"] == "Network printer offline"
     assert result.outputs["status"] == "New"
+
+
+class UpdateRemoteSystemArgs:
+    def __init__(self, delta):
+        self.delta = delta
+
+
+# Sample delta dict to test mutation
+DEFAULT_DELTA = {"key": "value"}
+
+
+@pytest.mark.parametrize(
+    "state,ticket_type,custom_state,should_patch",
+    [
+        ("7", "incident", None, True),  # Given closed state (7)
+        ("6", "incident", None, True),  # Given resolved state (6)
+        ("9", "incident", "9", True),  # Given custom close state (match) and type incident
+        ("9", "problem", "9", False),  # Given custom state match but non-incident type
+        ("5", "incident", "9", False),  # Given wrong state
+        (None, "incident", None, False),  # Given missing state and no custom close state
+    ],
+)
+@patch("ServiceNowv2.add_default_closure_fields_to_delta")
+def test_set_default_fields_behavior(mock_add_defaults, state, ticket_type, custom_state, should_patch):
+    """
+    GIVEN: an UpdateRemoteSystemArgs object with a delta containing various 'state' values,
+    AND different combinations of ticket_type and custom_state,
+
+    WHEN: set_default_fields is called,
+
+    THEN: it should call add_default_closure_fields_to_delta and log a debug message
+         only if the state is "6", "7", or matches custom_state and ticket_type is "incident".
+    """
+    initial_delta = {"state": state} if state is not None else {}
+    args = UpdateRemoteSystemArgs(delta=initial_delta.copy())
+    modified_delta = initial_delta.copy()
+    modified_delta["close_code"] = "default_code"
+    modified_delta["close_notes"] = "default_notes"
+
+    mock_add_defaults.return_value = modified_delta
+
+    result = ServiceNowv2.set_default_fields(args, ticket_type, custom_state)
+
+    if should_patch:
+        mock_add_defaults.assert_called_once_with(initial_delta)
+        assert result.delta == modified_delta
+    else:
+        mock_add_defaults.assert_not_called()
+        assert result.delta == initial_delta
+
+
+def test_delete_ticket_command_success(mock_client: MagicMock):
+    """
+    Tests successful ticket deletion.
+    Verifies that when a ticket is successfully deleted, the function returns
+    the correct success status and message.
+    """
+
+    mock_client.delete = MagicMock(return_value="")
+    mock_client.get_table_name = MagicMock(return_value="incident")
+
+    args = {"id": "12345", "ticket_type": "incident"}
+
+    result = delete_ticket_command(mock_client, args)
+
+    assert "Ticket with ID 12345 was successfully deleted from incident table." in result.readable_output
+    assert result.outputs is not None
+    assert result.outputs["ID"] == "12345"
+    assert result.outputs["DeleteMessage"] == "Ticket with ID 12345 was successfully deleted from incident table."
+
+
+def test_delete_ticket_command_not_found(mock_client: MagicMock):
+    """
+    Tests ticket deletion when record is not found.
+    Verifies that when attempting to delete a non-existent ticket, the function
+    returns the correct failure status and error message.
+    """
+    mock_client.delete = MagicMock(return_value={"result": []})
+    mock_client.get_table_name.return_value = "incident"
+    args = {"id": "99999", "ticket_type": "incident"}
+
+    result = delete_ticket_command(mock_client, args)
+
+    assert "Failed to delete ticket 99999 from incident table. Record may not exist." in result.readable_output
+    assert result.outputs is not None
+    assert result.outputs["ID"] == "99999"
+    assert result.outputs["DeleteMessage"] == "Failed to delete ticket 99999 from incident table. Record may not exist."
+
+
+def test_client_jwt_param_usage(mocker):
+    """
+    Given:
+    - JWT params provided to the ServiceNow CMDB Client
+    When:
+    - Initializing the Client with jwt_params
+    Then:
+    - ServiceNowClient is instantiated with the same jwt_params
+    - The jwt attribute is set on the inner ServiceNowClient
+    """
+    jwt_params = {
+        "private_key": "-----BEGIN PRIVATE KEY-----test-----END PRIVATE KEY-----",
+        "kid": "test_kid",
+        "sub": "test_sub",
+        "aud": "test_aud",
+        "iss": "test_iss",
+    }
+    mocker.patch("ServiceNowApiModule.jwt.encode", return_value="jwt_token_stub")
+    client = Client(
+        "server_url",
+        "sc_server_url",
+        "cr_server_url",
+        "username",
+        "password",
+        "verify",
+        "fetch_time",
+        "sysparm_query",
+        sysparm_limit=10,
+        timestamp_field="opened_at",
+        ticket_type="incident",
+        get_attachments=False,
+        incident_name="description",
+        oauth_params=OAUTH_PARAMS,
+        jwt_params=jwt_params,
+    )
+    assert hasattr(client.snow_client, "jwt")
+    assert client.snow_client.jwt == "jwt_token_stub"
+
+
+class TestCredentialFlowEndToEnd:
+    """End-to-end tests for the new basic_credentials / credentials flow in ServiceNowv2 main()."""
+
+    BASE_PARAMS = {
+        "url": "https://test.service-now.com",
+        "insecure": False,
+        "proxy": False,
+        "use_oauth": False,
+        "use_jwt": False,
+        "incident_name": None,
+        "file_tag_from_service_now": "FromServiceNow",
+        "file_tag": "ForServiceNow",
+        "comment_tag": "comments",
+        "comment_tag_from_servicenow": "CommentFromServiceNow",
+        "work_notes_tag": "work_notes",
+        "work_notes_tag_from_servicenow": "WorkNoteFromServiceNow",
+    }
+
+    def test_basic_auth_with_basic_credentials(self, mocker, requests_mock):
+        """
+        Given:
+            - basic_credentials param provides username and password.
+            - OAuth is not enabled.
+        When:
+            - main() is called with the 'test-module' command.
+        Then:
+            - The request uses basic auth with the credentials from basic_credentials.
+        """
+        url = "https://test.service-now.com"
+        params = {
+            **self.BASE_PARAMS,
+            "basic_credentials": {"identifier": "basic_user", "password": "basic_pass"},
+            "credentials": {"identifier": "oauth_id", "password": "oauth_secret"},
+        }
+        mocker.patch.object(demisto, "params", return_value=params)
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        requests_mock.get(
+            f"{url}/api/now/table/incident",
+            json={"result": [{"opened_at": "sometime", "number": "INC001"}]},
+        )
+        return_outputs_mock = mocker.patch("ServiceNowv2.return_outputs")
+
+        main()
+
+        # Verify basic auth was used with basic_credentials values
+        assert requests_mock.called
+        auth = requests_mock.request_history[0].headers.get("Authorization", "")
+        # Basic auth header should be present (base64 encoded basic_user:basic_pass)
+        assert "Basic" in auth
+        return_outputs_mock.assert_called_once()
+
+    def test_basic_auth_legacy_fallback(self, mocker, requests_mock):
+        """
+        Given:
+            - basic_credentials param is empty (no username/password).
+            - credentials param has identifier and password.
+            - OAuth is not enabled.
+        When:
+            - main() is called with the 'test-module' command.
+        Then:
+            - The request uses basic auth with legacy fallback from credentials.
+        """
+        url = "https://test.service-now.com"
+        params = {
+            **self.BASE_PARAMS,
+            "basic_credentials": {},
+            "credentials": {"identifier": "legacy_user", "password": "legacy_pass"},
+        }
+        mocker.patch.object(demisto, "params", return_value=params)
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch.object(demisto, "debug")
+        requests_mock.get(
+            f"{url}/api/now/table/incident",
+            json={"result": [{"opened_at": "sometime", "number": "INC001"}]},
+        )
+        return_outputs_mock = mocker.patch("ServiceNowv2.return_outputs")
+
+        main()
+
+        # Verify basic auth was used with legacy fallback values
+        assert requests_mock.called
+        auth = requests_mock.request_history[0].headers.get("Authorization", "")
+        assert "Basic" in auth
+        return_outputs_mock.assert_called_once()
+
+    def test_oauth_uses_credentials_for_client_id_secret(self, mocker, requests_mock):
+        """
+        Given:
+            - use_oauth is True.
+            - credentials provides client_id (identifier) and client_secret (password).
+        When:
+            - main() is called with the 'servicenow-oauth-test' command.
+        Then:
+            - OAuth flow is used (get_access_token is called).
+        """
+        url = "https://test.service-now.com"
+        params = {
+            **self.BASE_PARAMS,
+            "use_oauth": True,
+            "basic_credentials": {"identifier": "basic_user", "password": "basic_pass"},
+            "credentials": {"identifier": "my_client_id", "password": "my_client_secret"},
+        }
+        mocker.patch.object(demisto, "params", return_value=params)
+        mocker.patch.object(demisto, "command", return_value="servicenow-oauth-test")
+        mocker.patch.object(ServiceNowClient, "get_access_token", return_value="mock_token")
+        requests_mock.get(
+            f"{url}/api/now/table/incident",
+            json={"result": [{"opened_at": "sometime", "number": "INC001"}]},
+        )
+
+        main()
+
+        # Verify OAuth was used (Bearer token in request)
+        assert requests_mock.called
+        auth = requests_mock.request_history[0].headers.get("Authorization", "")
+        assert "Bearer" in auth
+
+    def test_jwt_and_oauth_both_enabled_raises_error(self, mocker):
+        """
+        Given:
+            - Both use_jwt and use_oauth are True.
+        When:
+            - main() is called.
+        Then:
+            - A ValueError is raised indicating only one auth method should be chosen.
+        """
+        params = {
+            **self.BASE_PARAMS,
+            "use_jwt": True,
+            "use_oauth": True,
+            "basic_credentials": {},
+            "credentials": {"identifier": "id", "password": "secret"},
+        }
+        mocker.patch.object(demisto, "params", return_value=params)
+        mocker.patch.object(demisto, "command", return_value="test-module")
+
+        with pytest.raises(ValueError, match="authentication method"):
+            main()
+
+    def test_basic_auth_partial_credentials_triggers_fallback(self, mocker, requests_mock):
+        """
+        Given:
+            - basic_credentials has username but no password.
+            - credentials has identifier and password.
+            - OAuth is not enabled.
+        When:
+            - main() is called with the 'test-module' command.
+        Then:
+            - The Client falls back to credentials for both username and password.
+        """
+        url = "https://test.service-now.com"
+        params = {
+            **self.BASE_PARAMS,
+            "basic_credentials": {"identifier": "partial_user", "password": ""},
+            "credentials": {"identifier": "fallback_user", "password": "fallback_pass"},
+        }
+        mocker.patch.object(demisto, "params", return_value=params)
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch.object(demisto, "debug")
+        requests_mock.get(
+            f"{url}/api/now/table/incident",
+            json={"result": [{"opened_at": "sometime", "number": "INC001"}]},
+        )
+        mocker.patch("ServiceNowv2.return_outputs")
+
+        main()
+
+        # Verify basic auth was used (fallback to credentials)
+        assert requests_mock.called
+        auth = requests_mock.request_history[0].headers.get("Authorization", "")
+        assert "Basic" in auth

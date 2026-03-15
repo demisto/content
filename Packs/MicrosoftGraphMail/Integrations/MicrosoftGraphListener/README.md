@@ -538,7 +538,7 @@ Creates a new folder under the specified folder (parent).
 ### msgraph-mail-move-email
 
 ***
-Moves a message to a different folder.
+Move a message to another folder. This operation creates a new copy of the message in the destination folder and deletes the original message. As a result, the message ID changes.
 
 #### Base Command
 
