@@ -935,7 +935,7 @@ script:
         - Email address (e.g., "john.doe@example.com")
         - User Principal Name (e.g., "john.doe@domain.onmicrosoft.com")
         - Display name (e.g., "John Doe")
-        - User GUID (e.g., "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2")
+        - User GUID (e.g., "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2").
       name: user_id
       required: true
     - description: The text message to send to the user.
@@ -960,7 +960,7 @@ script:
     - contextPath: MicrosoftTeams.Conversation.UserIdentifier
       description: The original user identifier provided.
       type: String
-  dockerimage: demisto/teams:1.0.0.6091526
+  dockerimage: demisto/teams:1.0.0.7529797
   longRunning: true
   longRunningPort: true
   script: ''
