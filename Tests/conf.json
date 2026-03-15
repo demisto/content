@@ -5848,7 +5848,8 @@
         {
             "playbookID": "GetUserData - Test",
             "integrations": [
-                "Microsoft Graph User"
+                "Microsoft Graph User",
+                "AWS - IAM"
             ],
             "instance_names": [
                 "ms_graph_user_dev"
