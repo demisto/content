@@ -1,13 +1,14 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 import dateparser
 import pytest
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, EntryType
 from XSOARmirroring import (
     XSOAR_DATE_FORMAT,
     Client,
     fetch_incidents,
     get_mapping_fields_command,
+    get_modified_remote_data_command,
     update_remote_system_command,
     validate_and_prepare_basic_params,
 )
@@ -566,3 +567,184 @@ def test_get_incident_entries_without_entries(mocker):
     )
     assert result is not None
     assert result == []
+
+
+# ── get-modified-remote-data tests ────────────────────────────────────────────
+
+
+def test_get_modified_remote_data_returns_ids(mocker):
+    """
+    Given:
+        - A lastUpdate timestamp and a remote server that returns two modified incident IDs.
+
+    When:
+        - Running get_modified_remote_data_command.
+
+    Then:
+        - The response contains exactly those two incident IDs.
+    """
+    last_update = datetime(2026, 3, 1, 12, 0, 0, tzinfo=UTC)
+    args = {"lastUpdate": last_update.isoformat()}
+
+    mocker.patch.object(
+        Client,
+        "get_modified_incidents",
+        return_value=["101", "202"],
+    )
+
+    client = Client(base_url="https://test.com")
+    result = get_modified_remote_data_command(client, args)
+
+    assert result.modified_incident_ids == ["101", "202"]
+
+
+def test_get_modified_remote_data_empty_response(mocker):
+    """
+    Given:
+        - A lastUpdate timestamp and a remote server that returns no modified incidents.
+
+    When:
+        - Running get_modified_remote_data_command.
+
+    Then:
+        - The response contains an empty list of incident IDs.
+    """
+    last_update = datetime(2026, 3, 1, 12, 0, 0, tzinfo=UTC)
+    args = {"lastUpdate": last_update.isoformat()}
+
+    mocker.patch.object(
+        Client,
+        "get_modified_incidents",
+        return_value=[],
+    )
+
+    client = Client(base_url="https://test.com")
+    result = get_modified_remote_data_command(client, args)
+
+    assert result.modified_incident_ids == []
+
+
+def test_get_modified_remote_data_passes_correct_timestamp(mocker):
+    """
+    Given:
+        - A specific lastUpdate ISO8601 timestamp.
+
+    When:
+        - Running get_modified_remote_data_command.
+
+    Then:
+        - The client's get_modified_incidents is called with the correct epoch seconds derived from lastUpdate.
+    """
+    last_update = datetime(2026, 3, 1, 12, 0, 0, tzinfo=UTC)
+    expected_epoch = int(last_update.timestamp())
+    args = {"lastUpdate": last_update.isoformat()}
+
+    mock_get_modified = mocker.patch.object(
+        Client,
+        "get_modified_incidents",
+        return_value=["999"],
+    )
+
+    client = Client(base_url="https://test.com")
+    get_modified_remote_data_command(client, args)
+
+    mock_get_modified.assert_called_once_with(from_timestamp=expected_epoch)
+
+
+def test_get_modified_incidents_client_method(mocker):
+    """
+    Given:
+        - A mock HTTP response from /incidents/modified returning a list of incident IDs.
+
+    When:
+        - Calling client.get_modified_incidents with a from_timestamp.
+
+    Then:
+        - The method returns the list of incident IDs as-is.
+    """
+    client = Client(base_url="https://test.com")
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_value=["101", "202", "303"],
+    )
+
+    result = client.get_modified_incidents(from_timestamp=1740830400)
+
+    assert sorted(result) == ["101", "202", "303"]
+
+
+def test_get_modified_incidents_client_method_empty_response(mocker):
+    """
+    Given:
+        - A mock HTTP response from /incidents/modified returning an empty dict.
+
+    When:
+        - Calling client.get_modified_incidents.
+
+    Then:
+        - The method returns an empty list.
+    """
+    client = Client(base_url="https://test.com")
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_value={},
+    )
+
+    result = client.get_modified_incidents(from_timestamp=1740830400)
+
+    assert result == []
+
+
+@pytest.mark.parametrize("status_code", [303, 404])
+def test_get_modified_remote_data_unsupported_endpoint_handled_gracefully(mocker, status_code):
+    """
+    Given:
+        - client.get_modified_incidents raises a DemistoException with a 303 or 404 response,
+          indicating the remote machine does not support the /public/v1/incidents/modified endpoint.
+
+    When:
+        - Running get_modified_remote_data_command.
+
+    Then:
+        - demisto.error is called twice: once for the general log and once for the user-facing message.
+        - The user-facing error message mentions the unsupported endpoint and actionable guidance.
+        - demisto.results is called with an ERROR entry whose Contents explains the issue.
+        - sys.exit(0) is called to terminate gracefully.
+    """
+    import sys
+    from unittest.mock import MagicMock
+
+    last_update = datetime(2026, 3, 1, 12, 0, 0, tzinfo=UTC)
+    args = {"lastUpdate": last_update.isoformat()}
+
+    mock_res = MagicMock()
+    mock_res.status_code = status_code
+    exc = DemistoException("Endpoint not found", res=mock_res)
+
+    mocker.patch.object(Client, "get_modified_incidents", side_effect=exc)
+    mock_error = mocker.patch("demistomock.error")
+    mock_results = mocker.patch("demistomock.results")
+    mock_exit = mocker.patch.object(sys, "exit", side_effect=SystemExit)
+
+    client = Client(base_url="https://test.com")
+
+    with pytest.raises(SystemExit):
+        get_modified_remote_data_command(client, args)
+
+    # demisto.error should be called twice: general log + user-facing message
+    assert mock_error.call_count == 2
+    all_error_msgs = " ".join(call[0][0] for call in mock_error.call_args_list)
+    assert "/public/v1/incidents/modified" in all_error_msgs
+    assert str(status_code) in all_error_msgs
+
+    # demisto.results should carry an ERROR entry with the actionable message
+    mock_results.assert_called_once()
+    result_entry = mock_results.call_args[0][0]
+    assert result_entry["Type"] == EntryType.ERROR  # 4
+    contents = result_entry["Contents"]
+    assert "/public/v1/incidents/modified" in contents
+    assert "XSOAR 8" in contents
+
+    mock_exit.assert_called_once_with(0)
