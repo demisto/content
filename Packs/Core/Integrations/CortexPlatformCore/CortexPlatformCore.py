@@ -474,6 +474,24 @@ DAYS_MAPPING = {
 }
 
 
+def is_real_user_id() -> bool:
+    """Determines whether the command is being executed by a real human user.
+
+    Checks the calling context to retrieve the user ID and compares it against
+    known non-human identifiers (DBot, DBotWeak, system) to distinguish manual
+    user executions from automated or system-triggered ones.
+
+    Returns:
+        bool: True if the caller is a real user, False if it is an automated
+              system account (DBot, DBotWeak, or system).
+    """
+    user_id = demisto.callingContext.get("context", {}).get("User", {}).get("id")
+    DBOT_USERNAME = "DBot"
+    WEAK_DBOT_USER_ID = "DBotWeak"
+    SYSTEM_USER_NAME = "system"
+    return user_id != "" and user_id != DBOT_USERNAME and user_id != WEAK_DBOT_USER_ID and user_id != SYSTEM_USER_NAME
+
+
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
     """
     Replace all occurrences of a substring in the keys of a dictionary with a new substring or in a string.
@@ -4983,7 +5001,13 @@ def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, 
 
     Returns:
         CommandResults object with consolidated forensic enrichment data
+
+    Raises:
+        DemistoException: If the command is not executed by a real user (e.g., triggered
+            by automation or a system account such as DBot, DBotWeak, or system).
     """
+    if not is_real_user_id():
+        raise DemistoException("This command is restricted to manual execution by a user and cannot be run via automation.")
     internet_message_id = args.get("internet_message_id", "")
     days_timeframe = timeframe_to_days(args.get("from_time", "last 30 days"))
     demisto.debug(f"Timeframe set to {days_timeframe} days.")
@@ -5107,7 +5131,14 @@ def get_email_investigation_summary_command(client: Client, args: dict) -> Comma
 
     Returns:
         CommandResults: The command results containing email investigation summaries.
+
+    Raises:
+        DemistoException: If the command is not executed by a real user (e.g., triggered
+            by automation or a system account such as DBot, DBotWeak, or system).
     """
+    if not is_real_user_id():
+        raise DemistoException("This command is restricted to manual execution by a user and cannot be run via automation.")
+
     min_severity = args.get("min_severity")
     min_severity_phishing = args.get("min_severity_phishing")
 

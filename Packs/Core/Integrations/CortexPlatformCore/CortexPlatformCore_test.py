@@ -10549,6 +10549,35 @@ def test_timeframe_to_days_minimum_one_day(mocker: MockerFixture):
     assert result == 1
 
 
+@pytest.mark.parametrize(
+    "user_id, expected_result",
+    [
+        ("real-user-id-123", True),  # Real user ID → should return True
+        ("", False),  # Empty string → should return False
+        ("DBot", False),  # DBot system account → should return False
+        ("DBotWeak", False),  # DBotWeak system account → should return False
+        ("system", False),  # system account → should return False
+    ],
+)
+def test_is_real_user_id(mocker, user_id, expected_result):
+    """
+    Given:
+        Various user IDs from the calling context (real user, empty, DBot, DBotWeak, system).
+    When:
+        The is_real_user_id function is called.
+    Then:
+        Returns True only for real (non-system) user IDs, False for all system/empty IDs.
+    """
+    from CortexPlatformCore import is_real_user_id
+
+    mock_calling_context = {"context": {"User": {"id": user_id}}}
+    mocker.patch.object(demisto, "callingContext", mock_calling_context)
+
+    result = is_real_user_id()
+
+    assert result == expected_result
+
+
 def test_decrypt_email_content_command_success(mocker: MockerFixture):
     """
     Given:
