@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-from SimilarObjectApiModule import *  # noqa: E402
+from FindSimilarEntitiesApiModule import *  # noqa: E402
 
 
 def main():

@@ -1,7 +1,7 @@
 commonfields:
-  id: SimilarObjectApiModule
+  id: FindSimilarEntitiesApiModule
   version: -1
-name: SimilarObjectApiModule
+name: FindSimilarEntitiesApiModule
 script: ''
 type: python
 subtype: python3
