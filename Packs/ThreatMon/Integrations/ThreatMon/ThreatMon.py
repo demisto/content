@@ -89,11 +89,17 @@ def fetch_incidents(client: Client, last_run: dict[str, Any]) -> tuple[list[dict
     except (ValueError, TypeError):
         last_incident_id = 0
 
-    page = int(last_run.get("page", 0))
+    try:
+        page = int(last_run.get("page", 0))
+    except (ValueError, TypeError):
+        page = 0
     # max_seen_id tracks the highest alarmCode seen across pages within the current batch.
     # It is kept separate from last_incident_id so that afterAlarmCode stays constant
     # for all pages of a batch (changing it mid-batch would shift page offsets).
-    max_seen_id = int(last_run.get("max_seen_id", last_incident_id))
+    try:
+        max_seen_id = int(last_run.get("max_seen_id", last_incident_id))
+    except (ValueError, TypeError):
+        max_seen_id = last_incident_id
     incidents = []
     pages_fetched = 0
 
