@@ -108,6 +108,7 @@ configuration:
   type: 0
   additionalinfo: Record Summary Fields included when fetching Insights
   required: false
+  section: Collect
 script:
   script: ''
   type: python
