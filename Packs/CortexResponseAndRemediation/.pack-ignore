@@ -554,32 +554,3 @@ xdrir
 NGFW
 HTTPS
 SMTP
-
-# GR109 fails on playbooks that use modules that the pack does not support. This ignore entry should be removed once GR109 can be ignored at the pack level / no longer poses an issue (new repo or pack).
-[file:silent-playbook-New_Administrative_Behavior.yml]
-ignore=GR109
-
-# GR109 fails on playbooks that use modules that the pack does not support. This ignore entry should be removed once GR109 can be ignored at the pack level / no longer poses an issue (new repo or pack).
-[file:subplaybook_-_BlockIP_-_Add_hostname_to_blocked_ip_action.yml]
-ignore=GR109
-
-# GR109 fails on playbooks that use modules that the pack does not support. This ignore entry should be removed once GR109 can be ignored at the pack level / no longer poses an issue (new repo or pack).
-[file:subplaybook_-_New_Administrative_Behavior_-_Session_XQL_Query.yml]
-ignore=GR109
-
-# GR109 fails on scripts that use modules that the pack does not support. This ignore entry should be removed once GR109 can be ignored at the pack level / no longer poses an issue (new repo or pack).
-[file:CalculateRDPSessionTimes.yml]
-ignore=GR109
-
-# GR109 fails on scripts that use modules that the pack does not support. This ignore entry should be removed once GR109 can be ignored at the pack level / no longer poses an issue (new repo or pack).
-[file:CalculateVNCSessionTimes.yml]
-ignore=GR109
-
-# GR109 fails on scripts that use modules that the pack does not support. This ignore entry should be removed once GR109 can be ignored at the pack level / no longer poses an issue (new repo or pack).
-[file:ParseAndAnalyzeCommandLines.yml]
-ignore=GR109
-
-# GR109 fails on scripts that use modules that the pack does not support. This ignore entry should be removed once GR109 can be ignored at the pack level / no longer poses an issue (new repo or pack).
-[file:SummarizeProtocolActivity.yml]
-ignore=GR109
-
