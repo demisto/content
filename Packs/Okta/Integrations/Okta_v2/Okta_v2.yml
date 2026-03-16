@@ -1557,8 +1557,15 @@ script:
     - description: Okta User ID.
       name: userId
       required: true
+    - description: When true, revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
+      name: revokeOauthTokens
+      auto: PREDEFINED
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
     description: |-
-      Removes all active identity provider sessions. This forces the user to authenticate upon the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
+      Removes all active identity provider sessions. This forces the user to authenticate upon the next operation. By default, OpenID Connect and OAuth refresh and access tokens issued to the user are revoked. Token revocation can be disabled if needed.
       For more information and examples:
       https://developer.okta.com/docs/reference/api/users/#user-sessions
     name: okta-clear-user-sessions

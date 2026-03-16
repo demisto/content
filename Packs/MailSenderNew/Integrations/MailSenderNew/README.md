@@ -141,6 +141,10 @@
 <p>Custom header to add to an email.</p>
 </td>
 </tr>
+<tr>
+<td>sender</td>
+<td>The sender address to use for the email. If provided, it overrides the default sender address configured in the integration instance.</td>
+</tr>
 </tbody>
 </table>
 <p> </p>
