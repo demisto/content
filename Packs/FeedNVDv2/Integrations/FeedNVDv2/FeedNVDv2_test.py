@@ -559,3 +559,134 @@ def test_build_indicators_respects_preferred_versions(client):
     assert indicators[0]["fields"]["cvssscore"] == 9.8, "Expected v3 score (9.8), got v4 score instead"
     assert indicators[0]["fields"]["cvssversion"] == "3.1", "Expected v3 version string"
     assert indicators[0]["fields"]["cvssvector"] == "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+
+
+def _make_cve_with_v2_and_v31(cve_id: str = "CVE-2024-55555") -> dict:
+    """Helper: build a raw CVE wrapper with both CVSS v2 and v3.1 metrics."""
+    return {
+        "_matched_cvss_version": "CVSS v2",
+        "_matched_cvss_severity": "HIGH",
+        "cve": {
+            "id": cve_id,
+            "descriptions": [{"lang": "en", "value": "Test CVE with v2 and v3 scores"}],
+            "lastModified": "2024-06-01T00:00:00Z",
+            "published": "2024-06-01T00:00:00Z",
+            "weaknesses": [],
+            "references": [],
+            "configurations": [],
+            "metrics": {
+                "cvssMetricV31": [
+                    {
+                        "source": "nvd@nist.gov",
+                        "type": "Primary",
+                        "cvssData": {
+                            "version": "3.1",
+                            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                            "baseScore": 9.8,
+                            "baseSeverity": "CRITICAL",
+                        },
+                        "exploitabilityScore": 3.9,
+                        "impactScore": 5.9,
+                    }
+                ],
+                "cvssMetricV2": [
+                    {
+                        "source": "nvd@nist.gov",
+                        "type": "Primary",
+                        "cvssData": {
+                            "version": "2.0",
+                            "vectorString": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+                            "baseScore": 7.5,
+                        },
+                        "baseSeverity": "HIGH",
+                        "exploitabilityScore": 10.0,
+                        "impactScore": 6.4,
+                    }
+                ],
+            },
+        },
+    }
+
+
+def test_build_indicators_uses_matched_cvss_version(client):
+    """
+    Given:
+        A CVE tagged with _matched_cvss_version="CVSS v2" (from severity-filter dedup),
+        which also has a CVSS v3.1 score.
+
+    When:
+        build_indicators is called with preferred_versions=["CVSS v3", "CVSS v2"].
+
+    Then:
+        The indicator uses the v2 score (7.5) because the CVE was matched via v2,
+        NOT the v3 score (9.8) which would normally win by preference order.
+    """
+    raw_cves = [_make_cve_with_v2_and_v31()]
+    indicators = build_indicators(client, raw_cves, preferred_versions=["CVSS v3", "CVSS v2"])
+    assert len(indicators) == 1
+    assert indicators[0]["fields"]["cvssscore"] == 7.5, "Expected v2 score (7.5), got v3 score instead"
+    assert indicators[0]["fields"]["cvssversion"] == "2.0", "Expected v2 version string"
+
+
+def test_build_indicators_falls_back_without_matched_version(client):
+    """
+    Given:
+        A CVE without _matched_cvss_version (no severity filter was used),
+        which has both CVSS v2 and v3.1 scores.
+
+    When:
+        build_indicators is called with preferred_versions=["CVSS v3", "CVSS v2"].
+
+    Then:
+        The indicator uses the v3 score (9.8) per the normal preference order.
+    """
+    raw_cve = _make_cve_with_v2_and_v31()
+    del raw_cve["_matched_cvss_version"]
+    del raw_cve["_matched_cvss_severity"]
+    indicators = build_indicators(client, [raw_cve], preferred_versions=["CVSS v3", "CVSS v2"])
+    assert len(indicators) == 1
+    assert indicators[0]["fields"]["cvssscore"] == 9.8, "Expected v3 score (9.8) as fallback"
+    assert indicators[0]["fields"]["cvssversion"] == "3.1"
+
+
+def test_cves_to_war_room_uses_matched_cvss_version():
+    """
+    Given:
+        A CVE tagged with _matched_cvss_version="CVSS v2" (from severity-filter dedup),
+        which also has a CVSS v3.1 score.
+
+    When:
+        cves_to_war_room is called with preferred_versions=["CVSS v3", "CVSS v2"].
+
+    Then:
+        The war room entry uses the v2 score (7.5) because the CVE was matched via v2.
+    """
+    raw_cves = [_make_cve_with_v2_and_v31()]
+    result = cves_to_war_room(raw_cves, preferred_versions=["CVSS v3", "CVSS v2"])
+    outputs = result.outputs
+    assert len(outputs) == 1
+    assert outputs[0]["CVSS"] == 7.5, "Expected v2 score (7.5)"
+    assert outputs[0]["CVSSVersion"] == "2.0"
+    assert outputs[0]["Severity"] == "HIGH"
+
+
+def test_cves_to_war_room_falls_back_without_matched_version():
+    """
+    Given:
+        A CVE without _matched_cvss_version (no severity filter was used),
+        which has both CVSS v2 and v3.1 scores.
+
+    When:
+        cves_to_war_room is called with preferred_versions=["CVSS v3", "CVSS v2"].
+
+    Then:
+        The war room entry uses the v3 score (9.8) per the normal preference order.
+    """
+    raw_cve = _make_cve_with_v2_and_v31()
+    del raw_cve["_matched_cvss_version"]
+    del raw_cve["_matched_cvss_severity"]
+    result = cves_to_war_room([raw_cve], preferred_versions=["CVSS v3", "CVSS v2"])
+    outputs = result.outputs
+    assert len(outputs) == 1
+    assert outputs[0]["CVSS"] == 9.8, "Expected v3 score (9.8) as fallback"
+    assert outputs[0]["CVSSVersion"] == "3.1"

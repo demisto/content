@@ -213,7 +213,9 @@ def build_indicators(client: Client, raw_cves: List[dict], preferred_versions: l
                     cpes.extend({"CPE": cpe["criteria"]} for cpe in node["cpeMatch"])
         fields["vulnerableproducts"] = cpes
 
-        fields.update(_build_cvss_fields(raw_cve.get("metrics", {}), preferred_versions))
+        matched_version = cve.get("_matched_cvss_version")
+        effective_preferred_versions = [matched_version] if matched_version else preferred_versions
+        fields.update(_build_cvss_fields(raw_cve.get("metrics", {}), effective_preferred_versions))
 
         if cpes:
             tags, relationships = parse_cpe_command([d["CPE"] for d in cpes], raw_cve.get("id"))
@@ -336,9 +338,11 @@ def cves_to_war_room(raw_cves: list[dict], preferred_versions: list[str] | None 
         fields["ID"] = cve.get("id")
         fields["CVSS"] = 0
         try:
+            matched_version = raw_cve.get("_matched_cvss_version")
+            effective_preferred_versions = [matched_version] if matched_version else preferred_versions
             fields["CVSSVersion"], fields["CVSS"], fields["Severity"] = get_cvss_version_and_score(
                 cve.get("metrics"),
-                preferred_versions=preferred_versions,
+                preferred_versions=effective_preferred_versions,
             )
         except Exception:
             demisto.debug(f"Cant find CVSS score for {raw_cve}")
@@ -586,6 +590,8 @@ def retrieve_cves(client: Client, start_date: Any, end_date: Any, use_pub_date: 
                 cve_id = cve.get("cve", {}).get("id", "")
                 if cve_id and cve_id not in seen_ids:
                     seen_ids.add(cve_id)
+                    cve["_matched_cvss_version"] = version_label
+                    cve["_matched_cvss_severity"] = sev_value
                     deduplicated.append(cve)
 
     # Sort by last-modified date for consistent batch trimming.
