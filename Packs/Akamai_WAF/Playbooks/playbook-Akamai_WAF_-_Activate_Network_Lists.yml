@@ -40,7 +40,7 @@ tasks:
     task:
       id: fb437f2c-767d-46d7-8000-482a1b4a77c4
       version: -1
-      name: Activate network list in selected enviorment
+      name: Activate network list in selected environment
       description: ''
       script: '|||akamai-activate-network-list'
       type: regular
