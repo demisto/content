@@ -481,7 +481,16 @@ def get_last_run() -> dict[str, Any]:
     Returns:
         dict[str, Any]: Dictionary containing optional start_timestamp and last_ids from previous fetch.
     """
-    return LOCAL_LAST_RUN or demisto.getLastRun()
+    if LOCAL_LAST_RUN:
+        demisto.debug(f"Returning in-memory last_run={LOCAL_LAST_RUN} .")
+        return LOCAL_LAST_RUN
+
+    if server_last_run := demisto.getLastRun():
+        demisto.debug(f"Returning server-stored last_run={server_last_run}.")
+        return server_last_run
+
+    demisto.debug("Falling back on empty last run.")
+    return {}
 
 
 def set_last_run(last_run: dict[str, Any]) -> None:
@@ -494,7 +503,11 @@ def set_last_run(last_run: dict[str, Any]) -> None:
         last_run (dict[str, Any]): Dictionary containing start_timestamp and last_ids for next fetch.
     """
     global LOCAL_LAST_RUN
+
+    demisto.debug(f"Updating in-memory {last_run=}.")
     LOCAL_LAST_RUN = last_run
+
+    demisto.debug(f"Updating server-stored {last_run=}.")
     demisto.setLastRun(last_run)
 
 
