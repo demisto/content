@@ -51,6 +51,7 @@ Gets a list of URLs and IPs that are in the denylist.
 #### Human Readable Output
 
 >### Denylist
+>
 >|URL|
 >|---|
 >| malware.com |
@@ -116,6 +117,7 @@ Gets a list of URLs and IPs that are in the allowlist.
 #### Human Readable Output
 
 >### Allowlist
+>
 >|URL|
 >|---|
 >| trusted.com |
@@ -208,6 +210,7 @@ Gets information about all or custom URL categories. By default, the response in
 #### Human Readable Output
 
 >### URL Categories
+>
 >|ID|Configured Name|Super Category|Custom Category|
 >|---|---|---|---|
 >| CUSTOM_01 | My Custom Category | USER_DEFINED | true |
@@ -287,6 +290,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### URL Quota
+>
 >|Unique URLs Provisioned|Remaining URLs Quota|
 >|---|---|
 >| 25000 | 24850 |
@@ -351,6 +355,7 @@ Gets a list of all IP destination groups or for the specified ID.
 #### Human Readable Output
 
 >### IP Destination Groups
+>
 >|ID|Name|Type|Addresses|Description|
 >|---|---|---|---|---|
 >| 1234 | My IP Group | DSTN_IP | 8.8.8.8, 1.1.1.1 | DNS servers |
@@ -536,6 +541,7 @@ Gets a list of all users or the user information for the specified ID.
 #### Human Readable Output
 
 >### Users
+>
 >|ID|Name|Email|Comments|
 >|---|---|---|---|
 >| 100 | John Doe | john.doe@example.com | Engineering team member |
@@ -634,6 +640,7 @@ Gets a list of groups.
 #### Human Readable Output
 
 >### Groups
+>
 >|ID|Name|IdP ID|Comments|System Defined|
 >|---|---|---|---|---|
 >| 200 | Engineering | 1 | Engineering department group | false |
@@ -695,6 +702,7 @@ Gets a list of all departments or the department information for the specified I
 #### Human Readable Output
 
 >### Departments
+>
 >|ID|Name|IdP ID|Comments|Deleted|
 >|---|---|---|---|---|
 >| 300 | Engineering | 1 | Engineering department | false |
@@ -765,6 +773,7 @@ Gets a full or summary detail report for an MD5 hash of a file that was analyzed
 #### Human Readable Output
 
 >### Sandbox Report for 9de5069c5afe602b2ea0a04b66beb2c0
+>
 >|Status|Category|File Type|Score|
 >|---|---|---|---|
 >| MALICIOUS | Malware | PE32 | 3 |
@@ -807,6 +816,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Activation Status
+>
 >|Status|
 >|---|
 >| ACTIVE |
@@ -879,6 +889,7 @@ Retrieve Zscaler's default classification for a given set of URLs.
 #### Human Readable Output
 
 >### Zscaler URL Lookup
+>
 >|URL|Classifications|Security Alert Classifications|
 >|---|---|---|
 >| facebook.com | SOCIAL_NETWORKING |  |
@@ -947,6 +958,7 @@ Retrieve the classification for each of the specified IP addresses.
 #### Human Readable Output
 
 >### Zscaler IP Lookup
+>
 >|IP|Classifications|Security Alert Classifications|
 >|---|---|---|
 >| 8.8.8.8 | WEB_SEARCH |  |
@@ -1017,6 +1029,7 @@ Retrieve Zscaler's default classification for a given set of domains.
 #### Human Readable Output
 
 >### Zscaler Domain Lookup
+>
 >|Domain|Classifications|Security Alert Classifications|
 >|---|---|---|
 >| google.com | WEB_SEARCH |  |
