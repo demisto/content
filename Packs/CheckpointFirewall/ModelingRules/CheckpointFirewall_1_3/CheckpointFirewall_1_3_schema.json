@@ -171,7 +171,27 @@
         "cs3Label": {
         "type": "string",
         "is_array": false
-      }
+      },
+        "request": {
+        "type": "string",
+        "is_array": false
+      },
+        "requestClientApplication": {
+        "type": "string",
+        "is_array": false
+      },
+        "requestMethod": {
+        "type": "string",
+        "is_array": false
+      },
+        "sni": {
+        "type": "string",
+        "is_array": false
+      },
+        "tls_server_host_name": {
+        "type": "string",
+        "is_array": false
+      } 
     },
     "check_point_url_filtering_raw": {
         "rt": {
