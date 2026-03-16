@@ -1,4 +1,4 @@
-Zscaler Internet Access via ZIdentity OAuth 2.0. Provides URL/IP/domain classification, denylist and allowlist management, URL category management, sandbox reporting, user and group management, and IP destination group management using OAuth 2.0 client credentials authentication through ZIdentity.
+This integration uses ZIdentity OAuth 2.0 client credentials to authenticate with Zscaler Internet Access (ZIA). It enables the management of denylists, allowlists, URL categories, IP destination groups, and users/groups, while also providing URL, IP, and domain classifications and sandbox reporting..
 
 This is a Beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
 
