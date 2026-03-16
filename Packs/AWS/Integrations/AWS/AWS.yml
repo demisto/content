@@ -538,7 +538,7 @@ script:
           Bucket Name: ${asset.xdm.asset.name}
       - name: policy
         description: The bucket policy to apply as a JSON string.
-        defaultValue: '{"Version":"2012-10-17","Statement":[{"Sid":"EnforceSSLOnly","Effect":"Deny","Principal":"*","Action":"s3:*","Resource":["arn:aws:s3:::${asset.xdm.asset.name}","arn:aws:s3:::${asset.xdm.asset.name}/*"],"Condition":{"Bool":{"aws:SecureTransport":"false"}}}]}'
+        defaultValue: '{"Version":"2012-10-17","Statement":[{"Sid":"ForceSSLOnlyAccess","Effect":"Deny","Principal":"*","Action":"s3:*","Resource":["arn:aws:s3:::${asset.xdm.asset.name}","arn:aws:s3:::${asset.xdm.asset.name}/*"],"Condition":{"Bool":{"aws:SecureTransport":"false"}}}]}'
         hidden: true
 
   - name: aws-s3-bucket-website-delete
