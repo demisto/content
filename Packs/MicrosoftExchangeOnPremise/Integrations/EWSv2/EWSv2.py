@@ -1732,7 +1732,7 @@ def sub_main():  # pragma: no cover
         elif demisto.command() == "ews-delete-attachment":
             return_results(delete_attachments_for_message(client, args))
         elif demisto.command() == "ews-get-searchable-mailboxes":
-            return_results(get_searchable_mailboxes(client))
+            return_results(get_searchable_mailboxes(client, args))
         elif demisto.command() == "ews-search-mailboxes":
             return_results(search_mailboxes(client, args))
         elif demisto.command() == "ews-move-item-between-mailboxes":
