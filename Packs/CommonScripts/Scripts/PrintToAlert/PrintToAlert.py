@@ -9,6 +9,7 @@ def print_to_alert_command(current_alert_id: str, value: str, alert_id: str, mar
         current_alert_id (str): The alert ID running the script.
         value (str): The value to print.
         alert_id (str): The alert ID to print to.
+        mark_as_note (book): Whether to mark the printed war-room entry as a note.
     """
     entry_note = json.dumps(
         [
@@ -36,7 +37,7 @@ def main():  # pragma: no cover
         args = demisto.args()
         value: str = args["value"]
         alert_id = args["alert_id"]
-        mark_as_note = argToBoolean(args["mark_as_note"])
+        mark_as_note = argToBoolean(args.get("mark_as_note", False))
         print_to_alert_command(current_alert_id=current_alert_id, value=value, alert_id=alert_id, mark_as_note=mark_as_note)
     except Exception as ex:
         return_error(f"Failed to execute PrintToAlert. Error: {ex!s}")
