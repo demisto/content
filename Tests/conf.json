@@ -160,10 +160,6 @@
         },
         {
             "integrations": "CrowdstrikeFalcon",
-            "playbookID": "Test Playbook - CrowdStrike Falcon - Get Detections by Incident"
-        },
-        {
-            "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data"
         },
         {
@@ -5936,7 +5932,7 @@
             "instance_names": [
                 "virus_total_v3"
             ],
-            "fromversion": "6.10.0"
+            "fromversion": "8.0.0"
         },
         {
             "playbookID": "GetEndpointData-Test",
@@ -5945,7 +5941,7 @@
                 "active_directory_80k"
             ],
             "timeout": 300,
-            "fromversion": "6.10.0"
+            "fromversion": "8.0.0"
         },
         {
             "integrations": "Unit 42 Intelligence",
@@ -6148,7 +6144,8 @@
         "OpenPhish Test Playbook": "API issue CIAC-13583",
         "SaasSecurity-Test": "blocked by SCA-8028",
         "Mail-Listener Test Playbook": " invalid creds CRTX-171878",
-        "DbotPredictOufOfTheBoxTest": "Script DBotPredictOutOfTheBox is deprecated"
+        "DbotPredictOufOfTheBoxTest": "Script DBotPredictOutOfTheBox is deprecated",
+        "Gmail Single User - Test": "CIAC-11417"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
@@ -6260,6 +6257,7 @@
         "AMPv2": "No instance - developed by Qmasters",
         "Cisco Umbrella Reporting": "No instance - developed by Login-Soft",
         "fortiweb_vm": "No instance - developed by Qmasters",
+        "Tenable.io": "No instance",
         "_comment2": "~~~ UNSTABLE ~~~",
         "ThreatConnect v2": "unstable instance",
         "_comment3": "~~~ QUOTA ISSUES ~~~",
@@ -6399,6 +6397,9 @@
         "Whois A new layout implemented with python-whois service",
         "Detonate URL - WildFire-v2 - Test",
         "CrowdStrike Falcon Basic Test",
+        "Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data",
+        "Test Playbook - CrowdStrike Falcon - Retrieve File",
+        "Test Playbook - CrowdStrike Falcon Malware - Verify Containment Actions",
         "TestDemistoRestAPI",
         "Test XDR Playbook execute script commands",
         "Test XDR Playbook quarantine file command",

@@ -1,0 +1,56 @@
+{
+    "cyfirma_decyfir_raw": {
+      "principal": {
+        "type": "string",
+        "is_array": false
+      },
+        "uid": {
+        "type": "string",
+        "is_array": false
+      },
+        "event_type": {
+        "type": "string",
+        "is_array": false
+      },
+        "ip": {
+        "type": "string",
+        "is_array": false
+      },
+        "name": {
+        "type": "string",
+        "is_array": false
+      },
+        "asset_comments": {
+        "type": "string",
+        "is_array": false
+      },
+        "event_action": {
+        "type": "string",
+        "is_array": false
+      },
+        "asset_name": {
+        "type": "string",
+        "is_array": false
+      },
+        "vendor": {
+        "type": "string",
+        "is_array": false
+      },
+        "modified_by": {
+        "type": "string",
+        "is_array": false
+      },
+        "version": {
+        "type": "string",
+        "is_array": false
+      },
+        "asset_type": {
+        "type": "string",
+        "is_array": false
+      },
+        "source_log_type": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

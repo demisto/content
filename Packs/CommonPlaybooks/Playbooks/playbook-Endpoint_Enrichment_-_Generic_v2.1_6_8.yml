@@ -1985,4 +1985,8 @@ outputs:
 tests:
 - Endpoint Enrichment - Generic v2.1.6.8 - Test
 fromversion: 6.8.0
+supportedModules:
+- cloud_runtime_security
+- xsiam
+- edr
 system: true
