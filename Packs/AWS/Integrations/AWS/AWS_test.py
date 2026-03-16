@@ -14306,7 +14306,7 @@ def test_parse_key_1_value_to_dict_single_valid():
     """
     from AWS import parse_key_1_value_to_dict
 
-    assert parse_key_1_value_to_dict("key=my_key,value=myvalue") == {"my_key": "myvalue"}
+    assert parse_key_1_value_to_dict("key=my_key,value=my_value") == {"my_key": "my_value"}
 
 
 def test_parse_key_1_value_to_dict_multiple_valid():
@@ -14463,8 +14463,8 @@ def test_build_kwargs_lambda_function_config_update():
         "application_log_level": "INFO",
         "system_log_level": "DEBUG",
         "log_group": "/aws/lambda/my-function",
-        "file_system_configs": "Key=/mnt/efs,Value=arn:aws:elasticfilesystem:us-east-1:123456789012:access-point"
-                               "/fsap-0123456789abcdef0",
+        "file_system_configs": "key=/mnt/efs,value=arn:aws:elasticfilesystem:us-east-1:123456789012:access-point"
+        "/fsap-0123456789abcdef0",
     }
 
     expected_kwargs = {
@@ -14486,11 +14486,7 @@ def test_build_kwargs_lambda_function_config_update():
         "TracingConfig": {"Mode": "Active"},
         "RevisionId": "1",
         "Layers": ["layer1-arn", "layer2-arn"],
-        "ImageConfig": {
-            "EntryPoint": ["/entry.sh"],
-            "Command": ["/app/run"],
-            "WorkingDirectory": "/app",
-        },
+        "ImageConfig": {"EntryPoint": ["/entry.sh"], "Command": ["/app/run"], "WorkingDirectory": "/app"},
         "EphemeralStorage": {"Size": 1024},
         "SnapStart": {"ApplyOn": "PublishedVersions"},
         "LoggingConfig": {
@@ -14499,14 +14495,20 @@ def test_build_kwargs_lambda_function_config_update():
             "SystemLogLevel": "DEBUG",
             "LogGroup": "/aws/lambda/my-function",
         },
+        "CapacityProviderConfig": {
+            "LambdaManagedInstancesCapacityProviderConfig": {
+                "CapacityProviderArn": None,
+                "PerExecutionEnvironmentMaxConcurrency": None,
+                "ExecutionEnvironmentMemoryGiBPerVCpu": None,
+            }
+        },
+        "DurableConfig": {"RetentionPeriodInDays": None, "ExecutionTimeout": None},
         "FileSystemConfigs": [
             {
                 "Arn": "/mnt/efs",
                 "LocalMountPath": "arn:aws:elasticfilesystem:us-east-1:123456789012:access-point/fsap-0123456789abcdef0",
             }
         ],
-        "CapacityProviderConfig": None,
-        "DurableConfig": None,
     }
 
     kwargs = build_kwargs_lambda_function_config_update(args)
@@ -14545,8 +14547,8 @@ def test_rds_describe_db_instances_command_success(mocker):
 
     assert (
         result.readable_output
-        == "### AWS RDS DB Instances\n|DBInstanceIdentifier|DBInstanceClass|Engine|DBInstanceStatus|\n|---|---|---|---|\n"
-           "| test-instance | db.t2.micro | mysql | available |\n"
+        == "### AWS RDS DB Instances\n|DB Instance Identifier|DB Instance Class|Engine|DB Instance Status|\n|---|---|---|---|\n|"
+        " test-instance | db.t2.micro | mysql | available |\n"
     )
     assert (
         result.outputs["AWS.RDS.DBInstances(val.DBInstanceIdentifier && val.DBInstanceIdentifier == obj.DBInstanceIdentifier)"][
@@ -14598,10 +14600,10 @@ def test_rds_describe_db_instances_command_pagination(mocker):
     mock_client.describe_db_instances.return_value = response
     mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=response)
 
-    result = RDS.describe_db_instances_command(mock_client, {"limit": "1"})
+    result = RDS.describe_db_instances_command(mock_client, {"limit": "20"})
     assert result.outputs["AWS.RDS(true)"]["DBInstancesNextToken"] == "next-page-token"
     calling_args = mock_client.describe_db_instances.call_args[1]
-    assert calling_args["MaxRecords"] == 1
+    assert calling_args["MaxRecords"] == 20
 
 
 def test_redshift_modify_cluster_command_success(mocker):

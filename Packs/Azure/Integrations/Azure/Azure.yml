@@ -3074,49 +3074,49 @@ script:
         - Standard
         - Elastic
     outputs:
-    - contextPath: Azure.VirtualNetwork.Interfaces.id
+    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.id
       description: The network interface ID.
       type: String
-    - contextPath: Azure.VirtualNetwork.Interfaces.name
+    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.name
       description: The network interface name.
       type: String
-    - contextPath: Azure.VirtualNetwork.Interfaces.location
+    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.location
       description: The Azure region where the network interface is deployed.
       type: String
-    - contextPath: Azure.VirtualNetwork.Interfaces.etag
+    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.etag
       description: A unique read-only string that changes whenever the network interface resource is updated.
       type: String
-    - contextPath: Azure.VirtualNetwork.Interfaces.properties.provisioningState
+    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.provisioningState
       description: The current provisioning state of the network interface (e.g., Succeeded, Updating, Failed).
       type: String
-    - contextPath: Azure.VirtualNetwork.Interfaces.properties.ipConfigurations
+    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.ipConfigurations
       description: The list of IP configurations for the network interface.
       type: Unknown
-    - contextPath: Azure.VirtualNetwork.Interfaces.properties.dnsSettings
+    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.dnsSettings
       description: The DNS configuration of the network interface, including DNS servers and domain name.
       type: Unknown
-    - contextPath: Azure.VirtualNetwork.Interfaces.properties.macAddress
+    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.macAddress
       description: The MAC address of the network interface.
       type: String
-    - contextPath: Azure.VirtualNetwork.Interfaces.properties.enableIPForwarding
+    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.enableIPForwarding
       description: Indicates whether IP forwarding is enabled for the network interface.
       type: Boolean
-    - contextPath: Azure.VirtualNetwork.Interfaces.properties.enableAcceleratedNetworking
+    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.enableAcceleratedNetworking
       description: Indicates whether accelerated networking is enabled for the network interface.
       type: Boolean
-    - contextPath: Azure.VirtualNetwork.Interfaces.properties.networkSecurityGroup
+    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.networkSecurityGroup
       description: The network security group associated with the network interface.
       type: Unknown
-    - contextPath: Azure.VirtualNetwork.Interfaces.properties.primary
+    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.primary
       description: Indicates whether this is a primary network interface on a virtual machine.
       type: Boolean
-    - contextPath: Azure.VirtualNetwork.Interfaces.properties.virtualMachine
+    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.virtualMachine
       description: The reference to a virtual machine.
       type: Unknown
-    - contextPath: Azure.VirtualNetwork.Interfaces.properties.nicType
+    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.properties.nicType
       description: The type of network interface (Standard or Elastic).
       type: String
-    - contextPath: Azure.VirtualNetwork.Interfaces.type
+    - contextPath: Azure.VirtualNetwork.NetworkInterfaces.type
       description: The resource type.
       type: String
   - name: azure-vm-public-ip-details-get
