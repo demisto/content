@@ -2226,7 +2226,7 @@ def incident_update_command(client: Client, args: Dict[str, Any]) -> CommandResu
     service_type = args.get("service_type")
     reported_source = args.get("reported_source")
     details = args.get("detailed_description")
-    company = args.get("location_company")
+    company = args.get("company")
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_company = args.get("assigned_support_company")
     assigned_group = args.get("assigned_group")

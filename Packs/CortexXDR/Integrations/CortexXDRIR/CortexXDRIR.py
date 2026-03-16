@@ -680,6 +680,147 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
+    def get_vulnerability_details(self, vulnerability_id: str):
+        """
+        Gets vulnerability details by ID.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Vulnerabilities
+        """
+        res = self._http_request(
+            method="GET",
+            url_suffix="../uvem/v1/vulnerabilities",  # we want to remove the v1 from the endpoint so we use ..
+            params={"vulnerabilityId": vulnerability_id},
+        )
+        return res
+
+    def run_healthcheck(self):
+        """
+        Runs a system health check.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/System-Health-Check
+        """
+        res = self._http_request(
+            method="GET",
+            url_suffix="/healthcheck",
+        )
+        return res
+
+    def get_triage_presets(self):
+        """
+        Gets triage presets.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-triage-presets
+        """
+        res = self._http_request(
+            method="POST",
+            url_suffix="/get_triage_presets",
+            json_data={"request_data": {}},  # required to be empty
+        )
+        return res.get("reply", {}).get("triage_presets", [])
+
+    def triage_endpoint(self, request_data: dict):
+        """
+        Initiates forensics triage on endpoints.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Initiate-Forensics-Triage
+        """
+        res = self._http_request(
+            method="POST",
+            url_suffix="/triage_endpoint",
+            json_data=request_data,
+        )
+        return res.get("reply", {})
+
+    def create_automation_script(self, files: dict):
+        """
+        Creates or updates an automation script by uploading a file.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-a-script
+
+        Args:
+            files (dict): A dictionary containing the file to upload, e.g. {'file': (filename, file_content)}.
+
+        Returns:
+            dict: The API response.
+        """
+        res = self._http_request(
+            method="POST",
+            url_suffix="/scripts/insert",
+            files=files,
+        )
+        return res
+
+    def get_automation_script(self, request_data: dict) -> bytes:
+        """
+        Gets an automation script.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-a-script
+
+        Args:
+            request_data (dict): The request data containing the filter to identify the script.
+
+        Returns:
+            bytes: The script file content.
+        """
+        return self._http_request(method="POST", url_suffix="/scripts/get", json_data=request_data, resp_type="content")
+
+    def delete_automation_script(self, request_data: dict):
+        """
+        Deletes an automation script.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-API-keys
+
+        Args:
+            request_data (dict): The request data containing the filter to identify the script to delete.
+        """
+        self._http_request(
+            method="POST",
+            url_suffix="/scripts/delete",
+            json_data=request_data,
+        )
+
+    def create_automation_playbook(self, files: dict):
+        """
+        Creates or updates an automation playbook by uploading a file.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-playbooks
+
+        Args:
+            files (dict): A dictionary containing the file to upload, e.g. {'file': (filename, file_content)}.
+
+        Returns:
+            dict: The API response.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/playbooks/insert",
+            files=files,
+        )
+
+    def get_automation_playbook(self, request_data: dict) -> bytes:
+        """
+        Gets an automation playbook.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-a-playbook
+
+        Args:
+            request_data (dict): The request data containing the filter to identify the playbook.
+
+        Returns:
+            bytes: The playbook file content.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/playbooks/get",
+            json_data=request_data,
+            resp_type="content",
+        )
+
+    def delete_automation_playbook(self, request_data: dict):
+        """
+        Deletes an automation playbook.
+        API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-a-playbook
+
+        Args:
+            request_data (dict): The request data containing the filter to identify the playbook to delete.
+        """
+        self._http_request(
+            method="POST",
+            url_suffix="/playbooks/delete",
+            json_data=request_data,
+        )
+
     def search_cases(self, request_data: dict):
         res = self._http_request(
             method="POST",
@@ -2370,6 +2511,260 @@ def update_asset_group_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output="Asset group updated successfully")
 
 
+def get_vulnerability_details_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Vulnerabilities
+    Gets vulnerability details by ID.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    vulnerability_id = args.get("vulnerability_id", "")
+    response = client.get_vulnerability_details(vulnerability_id)
+
+    hr_data = {
+        "Vulnerability ID": response.get("vulnerabilityID"),
+        "Description": response.get("description"),
+        "Score": response.get("cvss", {}).get("score"),
+        "Publish Date": arg_to_timestamp(response.get("publishedDate"), "publishedDate")
+        if response.get("publishedDate")
+        else None,
+    }
+
+    readable_output = tableToMarkdown(
+        name="Vulnerability Details",
+        t=hr_data,
+        headers=["Vulnerability ID", "Description", "Score", "Publish Date"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Vulnerability",
+        outputs_key_field="vulnerabilityID",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def endpoint_triage_preset_list_command(client: Client) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-triage-presets
+    Gets triage presets.
+    Args:
+        client (Client): The Cortex XDR client.
+    Returns:
+        CommandResults: The command results.
+    """
+    presets: list = client.get_triage_presets()
+    readable_output = tableToMarkdown(
+        name="Endpoint Triage Presets",
+        t=presets,
+        headers=["name", "uuid", "os", "type", "created_by", "description"],
+        headerTransform=string_to_table_header,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EndpointTriagePreset",
+        outputs=presets,
+        outputs_key_field="uuid",
+        raw_response=presets,
+    )
+
+
+def healthcheck_run_command(client: Client) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/System-Health-Check
+    Runs a system health check.
+    Args:
+        client (Client): The Cortex XDR client.
+    Returns:
+        CommandResults: The command results.
+    """
+    response = client.run_healthcheck()
+    status = response.get("status", "unknown")
+
+    return CommandResults(
+        readable_output=f"**Cortex XDR health status: {status}**",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.HealthStatus",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def endpoint_triage_command(client: Client, args: Dict) -> CommandResults:
+    """
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Initiate-Forensics-Triage
+    Initiates forensics triage on endpoints.
+    Args:
+        client (Client): The Cortex XDR client.
+        args (Dict): The command arguments.
+    Returns:
+        CommandResults: The command results.
+    """
+    agent_ids = argToList(args.get("endpoint_id"))
+    collector_uuid = args.get("collector_uuid")
+
+    request_data: Dict[str, Any] = {"agent_ids": agent_ids}
+    if collector_uuid:
+        request_data["collector_uuid"] = collector_uuid
+
+    raw_response = client.triage_endpoint({"request_data": request_data})
+
+    readable_output = tableToMarkdown(
+        name="Triage Endpoint Results",
+        t=raw_response,
+        headers=["TRIAGE_ID", "SUCCESSFUL_AGENT_IDS", "UNSUCCESSFUL_AGENT_IDS"],
+        headerTransform=string_to_table_header,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EndpointTriage",
+        outputs=raw_response,
+        outputs_key_field="EndpointTriage",
+        raw_response=raw_response,
+    )
+
+
+def automation_script_create_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Creates or updates an automation script by uploading a file.
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-a-script
+
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The results of the command.
+    """
+    entry_id = args.get("entry_id")
+    file_info = demisto.getFilePath(entry_id)
+
+    file_path = file_info.get("path", "")
+    file_name = file_info.get("name", "")
+    demisto.debug(f"Got file info {file_info}")
+
+    with open(file_path, "rb") as f:
+        file_content = f.read()
+
+    files = {"file": (file_name, file_content)}
+    client.create_automation_script(files)
+    return CommandResults(readable_output="Automation script created successfully.")
+
+
+def automation_script_get_command(client: Client, args: Dict) -> dict:
+    """
+    Gets an automation script and returns it as a file.
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-a-script
+
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+
+    Returns:
+        dict: A file result dictionary.
+    """
+    field = args.get("field", "")
+    value = args.get("value", "")
+
+    request_data = {"request_data": {"filter": {"field": field, "value": value}}}
+    file_content = client.get_automation_script(request_data)
+    return fileResult(filename=f"automation_script_{value}", data=file_content)
+
+
+def automation_script_delete_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Deletes an automation script.
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-API-keys
+
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The results of the command.
+    """
+    field = args.get("field", "")
+    value = args.get("value", "")
+
+    request_data = {"request_data": {"filter": {"field": field, "value": value}}}
+    client.delete_automation_script(request_data)
+    return CommandResults(readable_output="Automation script deleted successfully.")
+
+
+def automation_playbook_create_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Creates or updates an automation playbook by uploading a file.
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-playbooks
+
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The results of the command.
+    """
+    entry_id = args.get("entry_id")
+    file_info = demisto.getFilePath(entry_id)
+
+    demisto.debug(f"Got file info {file_info}")
+    file_path = file_info.get("path", "")
+    file_name = file_info.get("name", "")
+
+    with open(file_path, "rb") as f:
+        file_content = f.read()
+
+    files = {"file": (file_name, file_content)}
+    client.create_automation_playbook(files)
+    return CommandResults(readable_output="Automation playbook created successfully.")
+
+
+def automation_playbook_get_command(client: Client, args: Dict) -> dict:
+    """
+    Gets an automation playbook and returns it as a file.
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-a-playbook
+
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+
+    Returns:
+        dict: A file result dictionary.
+    """
+    field = args.get("field", "")
+    value = args.get("value", "")
+
+    request_data = {"request_data": {"filter": {"field": field, "value": value}}}
+    file_content = client.get_automation_playbook(request_data)
+    return fileResult(filename=f"automation_playbook_{value}", data=file_content)
+
+
+def automation_playbook_delete_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Deletes an automation playbook.
+    API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Delete-a-playbook
+
+    Args:
+        client (Client): The Cortex XDR client.
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The results of the command.
+    """
+    field = args.get("field", "")
+    value = args.get("value", "")
+    request_data = {"request_data": {"filter": {"field": field, "value": value}}}
+    client.delete_automation_playbook(request_data)
+    return CommandResults(readable_output="Automation playbook deleted successfully.")
+
+
 def case_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Retrieve-cases-based-on-filters
@@ -3056,6 +3451,35 @@ def main():  # pragma: no cover
 
         elif command == "xdr-api-key-delete":
             return_results(api_key_delete_command(client, args))
+
+        elif command == "xdr-vulnerability-details-get":
+            return_results(get_vulnerability_details_command(client, args))
+
+        elif command == "xdr-healthcheck-run":
+            return_results(healthcheck_run_command(client))
+
+        elif command == "xdr-endpoint-triage-preset-list":
+            return_results(endpoint_triage_preset_list_command(client))
+
+        elif command == "xdr-endpoint-triage":
+            return_results(endpoint_triage_command(client, args))
+        elif command == "xdr-automation-script-create":
+            return_results(automation_script_create_command(client, args))
+
+        elif command == "xdr-automation-script-get":
+            return_results(automation_script_get_command(client, args))
+
+        elif command == "xdr-automation-script-delete":
+            return_results(automation_script_delete_command(client, args))
+
+        elif command == "xdr-automation-playbook-create":
+            return_results(automation_playbook_create_command(client, args))
+
+        elif command == "xdr-automation-playbook-get":
+            return_results(automation_playbook_get_command(client, args))
+
+        elif command == "xdr-automation-playbook-delete":
+            return_results(automation_playbook_delete_command(client, args))
 
         elif command == "xdr-case-list":
             return_results(case_list_command(client, args))
