@@ -1,6 +1,6 @@
 This integration uses ZIdentity OAuth 2.0 client credentials to authenticate with Zscaler Internet Access (ZIA). It enables the management of denylists, allowlists, URL categories, IP destination groups, and users/groups, while also providing URL, IP, and domain classifications and sandbox reporting..
 
-This is a Beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
+This integration is currently in Beta, allowing you to test pre-release software. Note that it may contain bugs, and future updates could include changes that are not backward compatible. We welcome your feedback to help us identify issues and improve the integration.
 
 ## Configure Zscaler Internet Access via ZIdentity (Beta) in Cortex
 
