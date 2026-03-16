@@ -1030,7 +1030,7 @@ def delete_attachments_for_message(client: EWSClient, args: dict) -> list[Comman
     return entries
 
 
-def get_searchable_mailboxes(client: EWSClient) -> CommandResults:
+def get_searchable_mailboxes(client: EWSClient, args: dict) -> CommandResults:
     """
     Retrieve searchable mailboxes command
     :param client: EWS Client
