@@ -657,8 +657,9 @@ class Client(CoreClient):
         """
         data = json.dumps(json_data) if json_data is not None else data
 
-        demisto.debug(f"platform_http_request: {url_suffix=}")
+        demisto.debug(f"platform_http_request: {url_suffix=}, {method=}, {params=}, {data=}, {timeout=}")
         response = demisto._platformAPICall(path=url_suffix, method=method, params=params, data=data, timeout=timeout)
+        demisto.debug(f"platform_http_request response: {response}")
         if ok_codes and response.get("status") not in ok_codes:
             self._handle_error(error_handler, response, with_metrics)
         try:
@@ -4475,8 +4476,11 @@ def get_xql_query_results_platform(client: Client, execution_id: str) -> dict:
     Returns:
         dict: The query results including status, execution_id, and results if completed.
     """
+    args = demisto.args()
+    force_stream = argToBoolean(args.get("force_stream", True))
     data: dict[str, Any] = {
         "query_id": execution_id,
+        "force_stream": force_stream,
     }
 
     demisto.debug(f"Calling get_query_results with {data=}")
@@ -4488,7 +4492,13 @@ def get_xql_query_results_platform(client: Client, execution_id: str) -> dict:
 
     if response.get("status") != "PENDING" and response.get("status") != "FAIL":
         stream_id = response.get("stream_id")
-        if stream_id:
+        rows = response.get("rows")
+        if rows is not None:
+            # If rows are present in the response, use them directly
+            demisto.debug("Query results received directly in response without streaming.")
+            response["results"] = rows
+            response.pop("rows", None)
+        elif stream_id:
             # Fallback: fetch results via stream if stream_id is present
             stream_data: dict[str, str] = {"stream_id": stream_id}
             demisto.debug(f"Requesting query results using stream_id={stream_id}")
@@ -4650,14 +4660,14 @@ def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str
     data: Dict[str, Any] = {
         "query": query,
         "timeframe": timeframe,
-        "consume_compute_units": False,
-        "read_only_mode": True,
-        "skip_limit_enforcement": False,
-        "xql_source_metadata": {
-            "source": "cortex_assistant",
-            "source_id": "",
-            "source_name": "",
-        }
+        # "consume_compute_units": False,
+        # "read_only_mode": True,
+        # "skip_limit_enforcement": False,
+        # "xql_source_metadata": {
+        #     "source": "cortex_assistant",
+        #     "source_id": "",
+        #     "source_name": "",
+        # }
     }
 
     demisto.debug(f"Calling xql_queries/submit with {data=}")
