@@ -554,3 +554,8 @@ xdrir
 NGFW
 HTTPS
 SMTP
+
+# GR109 fails on playbooks that use modules that the pack does not support. This ignore entry should be removed once GR109 can be ignored at the pack level / no longer poses an issue (new repo or pack).
+[file:Packs/CortexResponseAndRemediation/Playbooks/silent-playbook-New_Administrative_Behavior.yml]
+ignore=GR109
+
