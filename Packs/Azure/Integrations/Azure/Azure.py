@@ -4672,7 +4672,7 @@ def network_interface_update_command(client: AzureClient, params: dict[str, Any]
     )
 
     return CommandResults(
-        outputs_prefix="Azure.VirtualNetwork.Interfaces",
+        outputs_prefix="Azure.VirtualNetwork.NetworkInterfaces",
         outputs_key_field="id",
         outputs=response,
         readable_output=human_readable,
