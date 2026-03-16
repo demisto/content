@@ -111,3 +111,7 @@ tests:
 - No tests (auto formatted)
 marketplaces:
 - platform
+supportedModules:
+  - cloud
+  - cloud_posture
+  - cloud_runtime_security

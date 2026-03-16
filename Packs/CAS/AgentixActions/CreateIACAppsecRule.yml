@@ -10,9 +10,9 @@ fromversion: 8.14.0
 marketplaces:
   - platform
 supportedModules:
-  - agentix
-  - xsiam
+  - cloud
   - cloud_posture
+  - cloud_runtime_security
 tags:
   - Appsec
   - Rules

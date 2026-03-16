@@ -16,5 +16,10 @@
         "xsoar",
         "marketplacev2"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "supportedModules": [
+        "cloud",
+        "cloud_posture",
+        "cloud_runtime_security"
+    ]
 }
