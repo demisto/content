@@ -10,7 +10,8 @@ alter
     ICMP_type = to_integer(if(cn2Label = "ICMP Type", cn2, null)),
     ICMP_code = to_integer(if(cn3Label = "ICMP Code", cn3, null)),
     protection_Type = if(cs3Label = "Protection Type", cs3, null),
-    proto = to_string(proto)
+    proto = to_string(proto),
+    http_hostname = if(request contains "http://" or request contains "https://", arrayindex(split(request,"/"), 2), null)
 | alter
     ipv6src = if(src != null and ipv4src = null, src, null),
     ipv6dest = if(dst != null and ipv4dest = null, dst, null),
@@ -28,7 +29,7 @@ alter
     xdm.network.dns.dns_question.type = dns_type,
     xdm.network.dns.dns_resource_record.type = dns_query,
     xdm.network.http.browser = requestClientApplication,
-    xdm.network.http.domain = if(request contains "http://" or request contains "https://", arrayindex(split(request,"/"), 2), null),
+    xdm.network.http.domain = http_hostname,
     xdm.network.http.method = requestMethod,
     xdm.network.http.url = request,
     xdm.network.tls.server_name = sni,
@@ -41,7 +42,8 @@ alter
     xdm.source.ipv6 = ipv6src,
     xdm.source.port = to_integer(spt),
     xdm.source.zone = inzone,
-    xdm.target.host.hostname = coalesce(dhost, if(request contains "http://" or request contains "https://", arrayindex(split(request,"/"),2),null), sni, tls_server_host_name),
+    xdm.target.host.hostname = coalesce(dhost, http_hostname, sni, tls_server_host_name, dst_domain_name),
+    xdm.target.url = request,
     xdm.target.user.username = duser,
     xdm.target.ipv4 = ipv4dest,
     xdm.target.ipv6 = ipv6dest,

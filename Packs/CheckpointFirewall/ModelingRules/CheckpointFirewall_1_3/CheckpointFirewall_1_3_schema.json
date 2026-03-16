@@ -172,6 +172,10 @@
         "type": "string",
         "is_array": false
       },
+        "dst_domain_name": {
+        "type": "string",
+        "is_array": false
+      },
         "request": {
         "type": "string",
         "is_array": false
