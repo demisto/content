@@ -113,7 +113,7 @@ The IBM Guardium Data Security Center centralizes data security, compliance, and
 2. Click **Create API key** and enter an API key description (key name).
 3. Copy and securely store your API key and secret API key.
 
-**IMPORTANT:**   
+**IMPORTANT:**
 The API key details are displayed only once. Ensure you copy and securely store the credentials before leaving the page.
 
 ### Configure the IBM Security Guardium integration in Cortex XSIAM
