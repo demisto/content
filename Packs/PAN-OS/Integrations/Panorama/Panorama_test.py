@@ -9494,3 +9494,451 @@ def test_get_hitcounts_filters_param(unused_only, no_new_hits_since, expected_co
         if no_new_hits_since is not None:
             last_hit_dt = datetime.strptime(r.last_hit_timestamp, "%Y-%m-%dT%H:%M:%SZ")
             assert last_hit_dt <= no_new_hits_since
+
+
+"""Tests for HA commands ported from PANOS-HA integration"""
+
+
+class TestHASyncToRemote:
+    """Tests for FirewallCommand.sync_ha_to_remote"""
+
+    @patch("Panorama.run_op_command")
+    def test_sync_config(self, patched_run_op_command, mock_firewall_topology):
+        from Panorama import FirewallCommand
+
+        result = FirewallCommand.sync_ha_to_remote(mock_firewall_topology, MOCK_FIREWALL_1_SERIAL, "config")
+        assert result.sync_type == "config"
+        assert "configuration" in result.message.lower()
+        assert result.hostid == MOCK_FIREWALL_1_SERIAL
+        patched_run_op_command.assert_called_once()
+        call_args = patched_run_op_command.call_args
+        assert "running-config" in call_args[0][1]
+
+    @patch("Panorama.run_op_command")
+    def test_sync_state(self, patched_run_op_command, mock_firewall_topology):
+        from Panorama import FirewallCommand
+
+        result = FirewallCommand.sync_ha_to_remote(mock_firewall_topology, MOCK_FIREWALL_1_SERIAL, "state")
+        assert result.sync_type == "state"
+        assert "state" in result.message.lower()
+        assert result.hostid == MOCK_FIREWALL_1_SERIAL
+        patched_run_op_command.assert_called_once()
+        call_args = patched_run_op_command.call_args
+        assert "<state/>" in call_args[0][1]
+
+    def test_invalid_sync_type(self, mock_firewall_topology):
+        from Panorama import FirewallCommand
+
+        with pytest.raises(ValueError, match="Invalid sync_type"):
+            FirewallCommand.sync_ha_to_remote(mock_firewall_topology, MOCK_FIREWALL_1_SERIAL, "invalid")
+
+
+class TestGetHAConfiguration:
+    """Tests for FirewallCommand.get_ha_configuration"""
+
+    def test_ha_config_basic(self, mock_firewall_topology):
+        from Panorama import FirewallCommand
+
+        xml_str = """<response status="success">
+            <result>
+                <high-availability>
+                    <enabled>yes</enabled>
+                    <group>
+                        <group-id>1</group-id>
+                        <mode>
+                            <active-passive>
+                                <passive-link-state>auto</passive-link-state>
+                            </active-passive>
+                        </mode>
+                        <peer-ip>192.168.1.2</peer-ip>
+                        <configuration-synchronization>
+                            <enabled>yes</enabled>
+                        </configuration-synchronization>
+                        <state-synchronization>
+                            <enabled>yes</enabled>
+                        </state-synchronization>
+                        <election-option>
+                            <device-priority>100</device-priority>
+                            <preemptive>yes</preemptive>
+                            <heartbeat-backup>no</heartbeat-backup>
+                        </election-option>
+                    </group>
+                    <interface>
+                        <ha1>
+                            <port>ha1-a</port>
+                            <ip-address>192.168.26.1</ip-address>
+                            <netmask>255.255.255.252</netmask>
+                        </ha1>
+                        <ha2>
+                            <port>ha2-a</port>
+                            <ip-address>192.168.27.1</ip-address>
+                            <netmask>255.255.255.252</netmask>
+                        </ha2>
+                    </interface>
+                </high-availability>
+            </result>
+        </response>"""
+        xml_element = ElementTree.fromstring(xml_str)
+
+        firewall = list(mock_firewall_topology.firewall_objects.values())[0]
+        firewall.xapi = MagicMock()
+        firewall.xapi.element_root = xml_element
+
+        result = FirewallCommand.get_ha_configuration(mock_firewall_topology, MOCK_FIREWALL_1_SERIAL)
+        assert result.enabled == "yes"
+        assert result.group_id == "1"
+        assert result.peer_ip == "192.168.1.2"
+        assert result.ha1_port == "ha1-a"
+        assert result.ha2_port == "ha2-a"
+        assert result.mode == "Active/Passive"
+
+    def test_ha_not_configured(self, mock_firewall_topology):
+        from Panorama import FirewallCommand
+
+        xml_str = """<response status="success">
+            <result/>
+        </response>"""
+        xml_element = ElementTree.fromstring(xml_str)
+
+        firewall = list(mock_firewall_topology.firewall_objects.values())[0]
+        firewall.xapi = MagicMock()
+        firewall.xapi.element_root = xml_element
+
+        with pytest.raises(DemistoException, match="not configured"):
+            FirewallCommand.get_ha_configuration(mock_firewall_topology, MOCK_FIREWALL_1_SERIAL)
+
+
+class TestGetAvailableInterfaces:
+    """Tests for FirewallCommand.get_available_interfaces"""
+
+    def test_returns_all_interface_types(self, mock_firewall_topology):
+        from Panorama import FirewallCommand
+
+        xml_str = """<response status="success">
+            <result>
+                <interface>
+                    <ethernet>
+                        <entry name="ethernet1/1"/>
+                        <entry name="ethernet1/2"/>
+                    </ethernet>
+                    <aggregate-ethernet>
+                        <entry name="ae1"/>
+                    </aggregate-ethernet>
+                    <loopback>
+                        <entry name="1"/>
+                    </loopback>
+                    <tunnel>
+                        <entry name="1"/>
+                    </tunnel>
+                    <vlan>
+                        <entry name="100"/>
+                    </vlan>
+                </interface>
+            </result>
+        </response>"""
+        xml_element = ElementTree.fromstring(xml_str)
+
+        firewall = list(mock_firewall_topology.firewall_objects.values())[0]
+        firewall.xapi = MagicMock()
+        firewall.xapi.element_root = xml_element
+
+        result = FirewallCommand.get_available_interfaces(mock_firewall_topology, MOCK_FIREWALL_1_SERIAL)
+        assert "ethernet1/1" in result.interfaces
+        assert "ethernet1/2" in result.interfaces
+        assert "ae1" in result.interfaces
+        assert "loopback.1" in result.interfaces
+        assert "tunnel.1" in result.interfaces
+        assert "vlan.100" in result.interfaces
+        assert "ha1-a" in result.interfaces
+        assert "ha2-a" in result.interfaces
+        assert result.interface_count > 0
+
+    def test_no_interfaces(self, mock_firewall_topology):
+        from Panorama import FirewallCommand
+
+        xml_str = """<response status="success">
+            <result/>
+        </response>"""
+        xml_element = ElementTree.fromstring(xml_str)
+
+        firewall = list(mock_firewall_topology.firewall_objects.values())[0]
+        firewall.xapi = MagicMock()
+        firewall.xapi.element_root = xml_element
+
+        result = FirewallCommand.get_available_interfaces(mock_firewall_topology, MOCK_FIREWALL_1_SERIAL)
+        # Still has HA dedicated interfaces
+        assert "ha1-a" in result.interfaces
+        assert result.interface_count == 5  # 5 HA interfaces
+
+    def test_none_response(self, mock_firewall_topology):
+        from Panorama import FirewallCommand
+
+        firewall = list(mock_firewall_topology.firewall_objects.values())[0]
+        firewall.xapi = MagicMock()
+        firewall.xapi.element_root = None
+
+        result = FirewallCommand.get_available_interfaces(mock_firewall_topology, MOCK_FIREWALL_1_SERIAL)
+        # Still has HA dedicated interfaces
+        assert result.interface_count == 5
+
+
+class TestValidateInterfaces:
+    """Tests for FirewallCommand.validate_interfaces"""
+
+    @patch("Panorama.FirewallCommand.get_available_interfaces")
+    def test_all_valid(self, mock_get_interfaces, mock_firewall_topology):
+        from Panorama import FirewallCommand, HAInterfaceListResult
+
+        mock_get_interfaces.return_value = HAInterfaceListResult(
+            hostid=MOCK_FIREWALL_1_SERIAL,
+            interface_count=3,
+            interfaces=["ethernet1/1", "ha1-a", "ha2-a"],
+        )
+
+        result = FirewallCommand.validate_interfaces(
+            mock_firewall_topology, MOCK_FIREWALL_1_SERIAL, "ha1-a,ha2-a"
+        )
+        assert result.all_valid is True
+        assert result.missing_interfaces == []
+
+    @patch("Panorama.FirewallCommand.get_available_interfaces")
+    def test_missing_interfaces(self, mock_get_interfaces, mock_firewall_topology):
+        from Panorama import FirewallCommand, HAInterfaceListResult
+
+        mock_get_interfaces.return_value = HAInterfaceListResult(
+            hostid=MOCK_FIREWALL_1_SERIAL,
+            interface_count=2,
+            interfaces=["ethernet1/1", "ha1-a"],
+        )
+
+        result = FirewallCommand.validate_interfaces(
+            mock_firewall_topology, MOCK_FIREWALL_1_SERIAL, "ha1-a,ha3"
+        )
+        assert result.all_valid is False
+        assert "ha3" in result.missing_interfaces
+
+    def test_empty_interfaces(self, mock_firewall_topology):
+        from Panorama import FirewallCommand
+
+        with pytest.raises(ValueError, match="required"):
+            FirewallCommand.validate_interfaces(mock_firewall_topology, MOCK_FIREWALL_1_SERIAL, "")
+
+
+class TestSetHAEnabledState:
+    """Tests for FirewallCommand.set_ha_enabled_state"""
+
+    def test_enable_ha(self, mock_firewall_topology):
+        from Panorama import FirewallCommand
+
+        firewall = list(mock_firewall_topology.firewall_objects.values())[0]
+        firewall.xapi = MagicMock()
+
+        result = FirewallCommand.set_ha_enabled_state(
+            mock_firewall_topology, MOCK_FIREWALL_1_SERIAL, enabled=True, commit="false"
+        )
+        assert result.enabled is True
+        assert "enabled" in result.message.lower()
+        firewall.xapi.edit.assert_called_once()
+        call_args = firewall.xapi.edit.call_args
+        assert "<enabled>yes</enabled>" in call_args[1]["element"]
+
+    def test_disable_ha(self, mock_firewall_topology):
+        from Panorama import FirewallCommand
+
+        firewall = list(mock_firewall_topology.firewall_objects.values())[0]
+        firewall.xapi = MagicMock()
+
+        result = FirewallCommand.set_ha_enabled_state(
+            mock_firewall_topology, MOCK_FIREWALL_1_SERIAL, enabled=False, commit="false"
+        )
+        assert result.enabled is False
+        assert "disabled" in result.message.lower()
+
+    def test_enable_with_commit(self, mock_firewall_topology):
+        from Panorama import FirewallCommand
+
+        firewall = list(mock_firewall_topology.firewall_objects.values())[0]
+        firewall.xapi = MagicMock()
+        firewall.commit = MagicMock(return_value="Commit OK")
+
+        result = FirewallCommand.set_ha_enabled_state(
+            mock_firewall_topology, MOCK_FIREWALL_1_SERIAL, enabled=True, commit="true"
+        )
+        assert result.committed is True
+        assert "commit" in result.message.lower()
+        firewall.commit.assert_called_once_with(sync=True)
+
+
+class TestConfigureHA:
+    """Tests for FirewallCommand.configure_ha"""
+
+    @patch("Panorama.FirewallCommand.get_available_interfaces")
+    def test_basic_config(self, mock_get_interfaces, mock_firewall_topology, mocker):
+        from Panorama import FirewallCommand, HAInterfaceListResult
+
+        mock_get_interfaces.return_value = HAInterfaceListResult(
+            hostid=MOCK_FIREWALL_1_SERIAL,
+            interface_count=5,
+            interfaces=["ha1-a", "ha1-b", "ha2-a", "ha2-b", "ha3"],
+        )
+        mock_ha_class = mocker.patch("Panorama.HighAvailability")
+        mock_ha_instance = MagicMock()
+        mock_ha_instance.element_str.return_value = "<entry><group><group-id>1</group-id></group></entry>"
+        mock_ha_class.return_value = mock_ha_instance
+
+        firewall = list(mock_firewall_topology.firewall_objects.values())[0]
+        firewall.xapi = MagicMock()
+
+        args = {
+            "peer_ip": "192.168.1.2",
+            "group_id": "1",
+            "device_priority": "100",
+            "commit": "false",
+        }
+        result = FirewallCommand.configure_ha(mock_firewall_topology, MOCK_FIREWALL_1_SERIAL, args)
+        assert "candidate config" in result.message.lower()
+        assert result.committed is False
+        firewall.xapi.edit.assert_called_once()
+
+    @patch("Panorama.FirewallCommand.get_available_interfaces")
+    def test_config_with_ha1_ha2(self, mock_get_interfaces, mock_firewall_topology, mocker):
+        from Panorama import FirewallCommand, HAInterfaceListResult
+
+        mock_get_interfaces.return_value = HAInterfaceListResult(
+            hostid=MOCK_FIREWALL_1_SERIAL,
+            interface_count=5,
+            interfaces=["ha1-a", "ha1-b", "ha2-a", "ha2-b", "ha3"],
+        )
+        mock_ha_class = mocker.patch("Panorama.HighAvailability")
+        mock_ha_instance = MagicMock()
+        mock_ha_instance.element_str.return_value = "<entry><group><group-id>1</group-id></group></entry>"
+        mock_ha_class.return_value = mock_ha_instance
+        mock_ha1 = mocker.patch("Panorama.HA1")
+        mock_ha2 = mocker.patch("Panorama.HA2")
+
+        firewall = list(mock_firewall_topology.firewall_objects.values())[0]
+        firewall.xapi = MagicMock()
+
+        args = {
+            "peer_ip": "192.168.1.2",
+            "group_id": "1",
+            "device_priority": "100",
+            "ha1_port": "ha1-a",
+            "ha1_ip_address": "192.168.26.1",
+            "ha1_netmask": "255.255.255.252",
+            "ha2_port": "ha2-a",
+            "ha2_ip_address": "192.168.27.1",
+            "ha2_netmask": "255.255.255.252",
+            "commit": "false",
+        }
+        result = FirewallCommand.configure_ha(mock_firewall_topology, MOCK_FIREWALL_1_SERIAL, args)
+        assert "candidate config" in result.message.lower()
+        mock_ha1.assert_called_once()
+        mock_ha2.assert_called_once()
+
+    @patch("Panorama.FirewallCommand.get_available_interfaces")
+    def test_config_with_commit(self, mock_get_interfaces, mock_firewall_topology, mocker):
+        from Panorama import FirewallCommand, HAInterfaceListResult
+
+        mock_get_interfaces.return_value = HAInterfaceListResult(
+            hostid=MOCK_FIREWALL_1_SERIAL,
+            interface_count=5,
+            interfaces=["ha1-a", "ha1-b", "ha2-a", "ha2-b", "ha3"],
+        )
+        mock_ha_class = mocker.patch("Panorama.HighAvailability")
+        mock_ha_instance = MagicMock()
+        mock_ha_instance.element_str.return_value = "<entry><group><group-id>1</group-id></group></entry>"
+        mock_ha_class.return_value = mock_ha_instance
+
+        firewall = list(mock_firewall_topology.firewall_objects.values())[0]
+        firewall.xapi = MagicMock()
+        firewall.commit = MagicMock(return_value="Commit OK")
+
+        args = {
+            "peer_ip": "192.168.1.2",
+            "commit": "true",
+        }
+        result = FirewallCommand.configure_ha(mock_firewall_topology, MOCK_FIREWALL_1_SERIAL, args)
+        assert "commit" in result.message.lower()
+        assert result.committed is True
+        firewall.commit.assert_called_once_with(sync=True)
+
+    @patch("Panorama.FirewallCommand.get_available_interfaces")
+    def test_config_missing_interface_fails(self, mock_get_interfaces, mock_firewall_topology):
+        from Panorama import FirewallCommand, HAInterfaceListResult
+
+        mock_get_interfaces.return_value = HAInterfaceListResult(
+            hostid=MOCK_FIREWALL_1_SERIAL,
+            interface_count=5,
+            interfaces=["ha1-a", "ha1-b", "ha2-a", "ha2-b", "ha3"],
+        )
+
+        args = {
+            "peer_ip": "192.168.1.2",
+            "ha1_port": "ethernet99/99",
+        }
+        with pytest.raises(DemistoException, match="not found"):
+            FirewallCommand.configure_ha(mock_firewall_topology, MOCK_FIREWALL_1_SERIAL, args)
+
+    @patch("Panorama.FirewallCommand.get_available_interfaces")
+    def test_config_with_backup_interfaces(self, mock_get_interfaces, mock_firewall_topology, mocker):
+        from Panorama import FirewallCommand, HAInterfaceListResult
+
+        mock_get_interfaces.return_value = HAInterfaceListResult(
+            hostid=MOCK_FIREWALL_1_SERIAL,
+            interface_count=5,
+            interfaces=["ha1-a", "ha1-b", "ha2-a", "ha2-b", "ha3"],
+        )
+        mock_ha_class = mocker.patch("Panorama.HighAvailability")
+        mock_ha_instance = MagicMock()
+        mock_ha_instance.element_str.return_value = "<entry><group><group-id>1</group-id></group></entry>"
+        mock_ha_class.return_value = mock_ha_instance
+        mocker.patch("Panorama.HA1")
+        mocker.patch("Panorama.HA2")
+        mock_ha1_backup = mocker.patch("Panorama.HA1Backup")
+        mock_ha2_backup = mocker.patch("Panorama.HA2Backup")
+
+        firewall = list(mock_firewall_topology.firewall_objects.values())[0]
+        firewall.xapi = MagicMock()
+
+        args = {
+            "peer_ip": "192.168.1.2",
+            "ha1_port": "ha1-a",
+            "ha1_ip_address": "192.168.26.1",
+            "ha1_netmask": "255.255.255.252",
+            "ha1_backup_port": "ha1-b",
+            "ha1_backup_ip_address": "192.168.28.1",
+            "ha1_backup_netmask": "255.255.255.252",
+            "ha2_port": "ha2-a",
+            "ha2_ip_address": "192.168.27.1",
+            "ha2_netmask": "255.255.255.252",
+            "ha2_backup_port": "ha2-b",
+            "ha2_backup_ip_address": "192.168.29.1",
+            "ha2_backup_netmask": "255.255.255.252",
+            "heartbeat_backup": "true",
+            "commit": "false",
+        }
+        result = FirewallCommand.configure_ha(mock_firewall_topology, MOCK_FIREWALL_1_SERIAL, args)
+        assert "candidate config" in result.message.lower()
+        mock_ha1_backup.assert_called_once()
+        mock_ha2_backup.assert_called_once()
+
+
+class TestPanoramaHAReconfigure:
+    """Tests for FirewallCommand.panorama_ha_reconfigure"""
+
+    def test_panorama_reconfigure(self, mock_single_device_topology, mocker):
+        from Panorama import FirewallCommand
+
+        mock_ha = MagicMock()
+        mocker.patch("Panorama.HighAvailability", return_value=mock_ha)
+
+        result = FirewallCommand.panorama_ha_reconfigure(mock_single_device_topology)
+        assert "panorama" in result.message.lower()
+        mock_ha.revert_to_running.assert_called_once()
+
+    def test_no_panorama_device(self, mock_firewall_topology):
+        from Panorama import FirewallCommand
+
+        with pytest.raises(DemistoException, match="No Panorama device"):
+            FirewallCommand.panorama_ha_reconfigure(mock_firewall_topology)
