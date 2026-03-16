@@ -6,7 +6,6 @@ import json
 
 def main():
     try:
-        args = demisto.args()
         """
         Creates a new rule in Cortex Platform with defined conditions, scope, and triggers.
         Args:
@@ -28,6 +27,7 @@ def main():
         Raises:
             DemistoException: If rule name is missing.
         """
+        args = demisto.args()
 
         rule_name = args.get("rule_name")
         severity = args.get("severity")
@@ -90,14 +90,13 @@ def main():
 
         else:
             context = res[0]["EntryContext"]
-            data = context.get("data")
+            data = context.get("data" , {})
             data = json.loads(data)
 
             return_results(
                 CommandResults(
                     outputs_prefix="Appsec.Rule",
                     outputs=data,
-                    readable_output=f"Rules {data}",
                     raw_response=data,
                 )
             )
