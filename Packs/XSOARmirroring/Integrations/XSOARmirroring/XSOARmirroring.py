@@ -1,5 +1,5 @@
 import json
-from datetime import timedelta
+from datetime import timedelta, UTC
 from typing import Any
 
 import dateparser
@@ -104,6 +104,30 @@ class Client(BaseClient):
 
     def get_incident_types(self) -> list[dict[str, Any]]:
         return self._http_request(method="GET", url_suffix="/incidenttype")
+
+    def get_modified_incidents(self, from_timestamp: int | None = None) -> list[str]:
+        """Calls the /incidents/modified endpoint to get IDs of incidents modified in the given time range.
+
+        Args:
+            from_timestamp: Start of the time range (epoch seconds).
+
+        Returns:
+            A list of modified incident IDs.
+        """
+        params: dict[str, Any] = {"fromTimeStamp": from_timestamp}
+        demisto.debug(f"get_modified_incidents: calling GET /public/v1/incidents/modified with {params=}")
+
+        response = self._http_request(method="GET", url_suffix="/public/v1/incidents/modified", params=params)
+        demisto.debug(f"get_modified_incidents: response type={type(response).__name__} value={response}")
+
+        # The API returns a list of incident IDs.
+        if isinstance(response, list):
+            demisto.debug(f"get_modified_incidents: returning {len(response)} IDs: {response}")
+            return response
+
+        # If the response is not a list, log a debug message and return an empty list.
+        demisto.debug("get_modified_incidents: unexpected non-list response, returning empty list")
+        return []
 
     def update_incident(self, incident: dict[str, Any]) -> dict[str, Any]:
         return self._http_request(method="POST", url_suffix="/incident", json_data=incident)
@@ -792,6 +816,66 @@ def update_remote_system_command(client: Client, args: dict[str, Any], mirror_ta
     return new_incident_id
 
 
+def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> GetModifiedRemoteDataResponse:
+    """get-modified-remote-data command: Returns a list of incident IDs that were modified since the last check.
+
+    This command enables incremental mirroring by allowing the XSOAR engine to fetch only
+    the incidents that changed since the last sync, rather than performing a full blind sync.
+
+    :type client: ``Client``
+    :param client: XSOAR client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['lastUpdate']`` ISO8601 timestamp of the last successful sync
+
+    :return:
+        A ``GetModifiedRemoteDataResponse`` containing the list of modified incident IDs.
+
+    :rtype: ``GetModifiedRemoteDataResponse``
+    """
+    remote_args = GetModifiedRemoteDataArgs(args)
+
+    # last_update is an ISO8601 string (e.g. '2026-01-10T00:00:00.123456789Z'); fall back to now minus 1 minute if empty.
+    if not remote_args.last_update:
+        from_timestamp = int((datetime.now(tz=UTC) - timedelta(minutes=1)).timestamp())
+        demisto.debug(
+            f"get-modified-remote-data: last_update was empty, defaulting to now minus 1 minute (epoch: {from_timestamp})"
+        )
+    else:
+        parsed = dateparser.parse(str(remote_args.last_update), settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True})
+        if not parsed:
+            raise DemistoException(f"Failed to parse last_update={remote_args.last_update!r} as ISO8601")
+        from_timestamp = int(parsed.timestamp())
+
+    demisto.debug(f"get-modified-remote-data: fetching incidents modified since epoch {from_timestamp}")
+
+    try:
+        modified_incident_ids = client.get_modified_incidents(from_timestamp=from_timestamp)
+    except DemistoException as e:
+        status_code = e.res.status_code if e.res is not None else None
+        demisto.error(f"get-modified-remote-data: encountered an error while fetching modified incidents: {e}")
+        if e.res is not None and status_code in (303, 404):
+            error_msg = (
+                f"The remote XSOAR machine does not support the /public/v1/incidents/modified endpoint "
+                f"(HTTP {status_code=}). This endpoint is only available on XSOAR 8.14.0 and later. Original error: {e}"
+            )
+            demisto.error(f"get-modified-remote-data: {error_msg}")
+            demisto.results(
+                {
+                    "Type": EntryType.ERROR,
+                    "ContentsFormat": EntryFormat.TEXT,
+                    "Contents": error_msg,
+                }
+            )
+            sys.exit(0)
+        raise
+
+    demisto.debug(f"get-modified-remote-data: found {len(modified_incident_ids)} modified incident(s): {modified_incident_ids}")
+    return GetModifiedRemoteDataResponse(modified_incident_ids)
+
+
 def get_and_dedup_incidents(
     client: Client, last_fetched_incidents: list[Any], query: str, max_results: int, last_fetch: Union[str, int]
 ) -> tuple[list[dict], list[dict], Optional[datetime]]:
@@ -935,6 +1019,9 @@ def main() -> None:  # pragma: no cover
 
         elif demisto.command() == "update-remote-system":
             return_results(update_remote_system_command(client, demisto.args(), mirror_tags))
+
+        elif demisto.command() == "get-modified-remote-data":
+            return_results(get_modified_remote_data_command(client, demisto.args()))
 
         else:
             raise NotImplementedError("Command not implemented")
