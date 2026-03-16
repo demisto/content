@@ -150,7 +150,7 @@ script:
       description: The organization of the IP.
       type: String
     - contextPath: IP.Organization.Type
-      description: The organization type of the IP.
+      description: The organization type of the IP test.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
