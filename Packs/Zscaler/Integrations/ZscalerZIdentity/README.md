@@ -23,7 +23,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### zia-denylist-list
 
 ***
-Gets a list of URLs and IPs that are on the denylist.
+Gets a list of URLs and IPs that are in the denylist.
 
 #### Base Command
 
@@ -35,8 +35,8 @@ Gets a list of URLs and IPs that are on the denylist.
 | --- | --- | --- |
 | filter | Filter results by URL or IP objects. Possible values are: url, ip. | Optional |
 | query | Query to match against (Python regular expressions, for example, 8.*.*.8). | Optional |
-| limit | The number of items to return. The default is 50. Default is 50. | Optional |
-| all_results | Whether to retrieve all results at once. Possible values are True, False. The default is False. Possible values are: True, False. Default is False. | Optional |
+| limit | The number of items to return. Default is 50. | Optional |
+| all_results | Whether to retrieve all results at once. Default is False. | Optional |
 
 #### Context Output
 
@@ -59,7 +59,7 @@ Gets a list of URLs and IPs that are on the denylist.
 ### zia-denylist-update
 
 ***
-Updates the list of URLs and IPs that are on the denylist.
+Updates the list of URLs and IPs that are in the denylist.
 
 #### Base Command
 
@@ -88,7 +88,7 @@ There is no context output for this command.
 ### zia-allowlist-list
 
 ***
-Gets a list of URLs and IPs that are on the allowlist.
+Gets a list of URLs and IPs that are in the allowlist.
 
 #### Base Command
 
@@ -100,14 +100,14 @@ Gets a list of URLs and IPs that are on the allowlist.
 | --- | --- | --- |
 | filter | Filter results by URL or IP objects. Possible values are: url, ip. | Optional |
 | query | Query to match against (Python regular expressions, for example, 8.*.*.8). | Optional |
-| limit | The number of items to return. The default is 50. Default is 50. | Optional |
-| all_results | Whether to retrieve all results at once. Possible values are True, False. The default is False. Possible values are: True, False. Default is False. | Optional |
+| limit | The number of items to return. Default is 50. | Optional |
+| all_results | Whether to retrieve all results at once. Default is False. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ZIA.AllowList | String | The list of URLs on the allowlist. |
+| ZIA.AllowList | String | The list of URLs in the allowlist. |
 
 #### Command Example
 
@@ -124,7 +124,7 @@ Gets a list of URLs and IPs that are on the allowlist.
 ### zia-allowlist-update
 
 ***
-Updates the list of URLs that are on the allowlist.
+Updates the list of URLs that are in the allowlist.
 
 #### Base Command
 
@@ -134,8 +134,8 @@ Updates the list of URLs that are on the allowlist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | A comma-separated list of URLs to update the allowlist. For example, snapchat.com,facebook.com. | Optional |
-| ip | A comma-separated list of IPs to update the allowlist. For example, 1.2.3.4,8.8.8.8. | Optional |
+| url | A comma-separated list of URLs to update in the allowlist. For example, snapchat.com,facebook.com. | Optional |
+| ip | A comma-separated list of IPs to update in the allowlist. For example, 1.2.3.4,8.8.8.8. | Optional |
 | action | The action applied to the allowlist. Possible values are: ADD_TO_LIST, REMOVE_FROM_LIST, OVERWRITE. | Required |
 
 #### Context Output
@@ -163,13 +163,13 @@ Gets information about all or custom URL categories. By default, the response in
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| category_id | Gets the URL category information for the specified ID. The category Id should be one of the possible values https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/url-categories/get-url-categories. | Optional |
-| custom_only | If set to true, gets information on custom URL categories only. Default value: false. Possible values are: true, false. Default is false. | Optional |
-| include_only_url_keyword_counts | If set to true, the response only includes URL and keyword counts. Possible values are: true, false. Default is false. | Optional |
-| lite | Gets a lightweight key-value list of all or custom URL categories. Cannot be used with other parameters. Possible values are: true, false. Default is false. | Optional |
-| limit | The number of items to return. The default is 50. Default is 50. | Optional |
-| all_results | Whether to retrieve all results at once. Possible values are True, False. The default is False. Possible values are: True, False. Default is False. | Optional |
-| display_url | Whether to display the URLs of each category in the War Room. URLs will always be returned to the Context Data. Possible values are: true, false. Default is false. | Optional |
+| category_id | The URL category for the specified ID. For more information about category ID values, see [the Zscaler documentation](https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/url-categories/get-url-categories). | Optional |
+| custom_only | If set to true, gets information on custom URL categories only. Default  is false. | Optional |
+| include_only_url_keyword_counts | If set to true, the response only includes URL and keyword counts. Default is false. | Optional |
+| lite | Whether to get a lightweight key-value list of all or custom URL categories. Cannot be used with other parameters. Default is false. | Optional |
+| limit | The number of items to return. Default is 50. | Optional |
+| all_results | Whether to retrieve all results at once. Default is False. | Optional |
+| display_url | Whether to display the URLs of each category in the War Room. URLs will always be returned to the Context Data. Default is false. | Optional |
 
 #### Context Output
 
@@ -225,9 +225,9 @@ Updates the URL category for the specified ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| category_id | The unique identifier for the URL category. The category Id should be one of the possible values https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/url-categories/get-url-categories. | Required |
-| url | A comma-separated list of URLs to update the specified category. For example, pandora.com,spotify.com. Important: If any URL contains a comma (,), you must pass the url argument as a JSON list wrapped in backticks (\`). Example: url=\`["https://example.com/foo,bar"]\`. | Optional |
-| ip | A comma-separated list of IP ranges to update the specified category. For example, 1.2.3.4,8.8.8.8. | Optional |
+| category_id | The URL category for the specified ID. For more information about category ID values, see [the Zscaler documentation](https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/url-categories/get-url-categories). | Required |
+| url | A comma-separated list of URLs to update in the specified category. For example, pandora.com,spotify.com. Important: If any URL contains a comma (,), you must pass the url argument as a JSON list wrapped in backticks (\`). Example: url=\`["https://example.com/foo,bar"]\`. | Optional |
+| ip | A comma-separated list of IP ranges to update in the specified category. For example, 1.2.3.4,8.8.8.8. | Optional |
 | action | The action applied to the URL category. Possible values are: ADD_TO_LIST, REMOVE_FROM_LIST, OVERWRITE. | Required |
 | keywords | Custom keywords associated with a URL category. Up to 2048 custom keywords can be added per organization across all categories. | Optional |
 | description | Description of the URL category. Contains tag name and needs to be localized on client side in case of predefined category. | Optional |
@@ -305,12 +305,12 @@ Gets a list of all IP destination groups or for the specified ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_id | The unique identifier for the IP destination group. | Optional |
-| include_ipv6 | Retrieve IPv6 destination groups. Possible values are: True, False. The default is False. Possible values are: True, False. Default is False. | Optional |
+| include_ipv6 | Whether to retrieve IPv6 destination groups. Default is False. | Optional |
 | exclude_type | Filter based on the IP destination group's type. Possible values are: DSTN_IP, DSTN_FQDN, DSTN_DOMAIN, DSTN_OTHER. | Optional |
 | category_type | Filter based on the IP destination group's type. Possible values are: DSTN_IP, DSTN_FQDN, DSTN_DOMAIN, DSTN_OTHER. | Optional |
-| lite | Gets a lightweight dictionary (name and ID) of all IP destination groups. Possible values are: True, False. Default is False. | Optional |
-| limit | The number of items to return. The default is 50. Default is 50. | Optional |
-| all_results | Whether to retrieve all results at once. Possible values are True, False. The default is False. Possible values are: True, False. Default is False. | Optional |
+| lite | Gets a lightweight dictionary (name and ID) of all IP destination groups. Default is False. | Optional |
+| limit | The number of items to return. Default is 50. | Optional |
+| all_results | Whether to retrieve all results at once. Default is False. | Optional |
 
 #### Context Output
 
@@ -374,8 +374,8 @@ Updates an existing IP destination group.
 | address | Destination IP addresses. | Optional |
 | action | The action applied to the addresses list. Possible values are: ADD_TO_LIST, REMOVE_FROM_LIST, OVERWRITE. | Required |
 | description | Additional information about the destination IP group. | Optional |
-| ip_category | Destination IP address URL categories. Possible values can be found here https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/firewall-policies/ip-destination-group-resource-edit-destination-ip-group. | Optional |
-| country | Destination IP address countries. Possible values can be found here https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/firewall-policies/ip-destination-group-resource-edit-destination-ip-group. | Optional |
+| ip_category | Destination IP address URL categories. Possible values can be found [here](https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/firewall-policies/ip-destination-group-resource-edit-destination-ip-group). | Optional |
+| country | Destination IP address countries. Possible values can be found [here](https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/firewall-policies/ip-destination-group-resource-edit-destination-ip-group). | Optional |
 
 #### Context Output
 
@@ -414,9 +414,9 @@ Adds a new IP destination group.
 | group_type | Destination IP group type. Possible values are: DSTN_IP, DSTN_FQDN, DSTN_DOMAIN, DSTN_OTHER. | Optional |
 | address | Destination IP addresses. | Optional |
 | description | Additional information about the destination IP group. | Optional |
-| ip_category | Destination IP address URL categories. Possible values can be found here https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/firewall-policies/ip-destination-group-resource-edit-destination-ip-group. | Optional |
-| country | Destination IP address countries. Possible values can be found here https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/firewall-policies/ip-destination-group-resource-edit-destination-ip-group. | Optional |
-| is_non_editable | If set to true, the destination IP address group is non-editable. Possible values are: true, false. Default is false. | Optional |
+| ip_category | Destination IP address URL categories. Possible values can be found [here](https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/firewall-policies/ip-destination-group-resource-edit-destination-ip-group). | Optional |
+| country | Destination IP address countries. Possible values can be found [here](https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/firewall-policies/ip-destination-group-resource-edit-destination-ip-group). | Optional |
+| is_non_editable | If set to true, the destination IP address group is non-editable. Default is false. | Optional |
 
 #### Context Output
 
@@ -500,8 +500,8 @@ Gets a list of all users or the user information for the specified ID.
 | dept | Filters by department name. | Optional |
 | group | Filters by group name. | Optional |
 | page | Specifies the page offset. Default is 1. | Optional |
-| page_size | Specifies the page size. The default size is 100 and the maximum size is 10,000. Default is 100. | Optional |
-| all_results | Whether to retrieve all results at once. Possible values are True, False. The default is False. Possible values are: True, False. Default is False. | Optional |
+| page_size | Specifies the page size. The maximum size is 10,000. Default is 100. | Optional |
+| all_results | Whether to retrieve all results at once. Default is False. | Optional |
 
 #### Context Output
 
@@ -596,8 +596,8 @@ Gets a list of groups.
 | sort_by | Sorts the groups based on available values. Possible values are: id, name, expiry, status, externalId, rank, modTime. Default is id. | Optional |
 | sort_order | Sorts the order of groups based on available values. Possible values are: asc, desc, ruleExecution. Default is asc. | Optional |
 | page | Specifies the page offset. Default is 1. | Optional |
-| page_size | Specifies the page size. The default size is 100 and the maximum size is 10,000. Default is 100. | Optional |
-| all_results | Whether to retrieve all results at once. Possible values are True, False. The default is False. Possible values are: True, False. Default is False. | Optional |
+| page_size | Specifies the page size. The maximum size is 10,000. Default is 100. | Optional |
+| all_results | Whether to retrieve all results at once. Default is False. | Optional |
 
 #### Context Output
 
@@ -653,12 +653,12 @@ Gets a list of all departments or the department information for the specified I
 | --- | --- | --- |
 | department_id | Unique identifier for the department. | Optional |
 | search | The search string used to match against a department's name or comments attributes. | Optional |
-| limit_search | Limits the search to match only against the department name. Possible values are: true, false. Default is false. | Optional |
+| limit_search | Whether to limit the search to match only against the department name. Default is false. | Optional |
 | sort_by | Sorts the departments based on available values. Possible values are: id, name, expiry, status, externalId, rank. Default is id. | Optional |
 | sort_order | Sorts the order of departments based on available values. Possible values are: asc, desc, ruleExecution. Default is asc. | Optional |
 | page | Specifies the page offset. Default is 1. | Optional |
-| page_size | Specifies the page size. The default size is 100 and the maximum size is 10,000. Default is 100. | Optional |
-| all_results | Whether to retrieve all results at once. Possible values are True, False. The default is False. Possible values are: True, False. Default is False. | Optional |
+| page_size | Specifies the page size. The maximum size is 10,000. Default is 100. | Optional |
+| all_results | Whether to retrieve all results at once. Default is False. | Optional |
 
 #### Context Output
 

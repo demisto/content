@@ -71,7 +71,7 @@ beta: true
 script:
   commands:
   - name: zia-denylist-list
-    description: Gets a list of URLs and IPs that are on the denylist.
+    description: Gets a list of URLs and IPs that are in the denylist.
     arguments:
     - name: filter
       description: Filter results by URL or IP objects.
@@ -96,7 +96,7 @@ script:
       description: The list of URLs and IPs on the denylist.
       type: String
   - name: zia-denylist-update
-    description: Updates the list of URLs and IPs that are on the denylist.
+    description: Updates the list of URLs and IPs that are in the denylist.
     execution: true
     arguments:
     - name: url
@@ -114,7 +114,7 @@ script:
       - REMOVE_FROM_LIST
       - OVERWRITE
   - name: zia-allowlist-list
-    description: Gets a list of URLs and IPs that are on the allowlist.
+    description: Gets a list of URLs and IPs that are in the allowlist.
     arguments:
     - name: filter
       description: Filter results by URL or IP objects.
@@ -136,17 +136,17 @@ script:
       defaultValue: 'False'
     outputs:
     - contextPath: ZIA.AllowList
-      description: The list of URLs on the allowlist.
+      description: The list of URLs in the allowlist.
       type: String
   - name: zia-allowlist-update
-    description: Updates the list of URLs that are on the allowlist.
+    description: Updates the list of URLs that are in the allowlist.
     execution: true
     arguments:
     - name: url
-      description: A comma-separated list of URLs to update the allowlist. For example, snapchat.com,facebook.com.
+      description: A comma-separated list of URLs to update in the allowlist. For example, snapchat.com,facebook.com.
       isArray: true
     - name: ip
-      description: A comma-separated list of IPs to update the allowlist. For example, 1.2.3.4,8.8.8.8.
+      description: A comma-separated list of IPs to update in the allowlist. For example, 1.2.3.4,8.8.8.8.
       isArray: true
     - name: action
       description: The action applied to the allowlist.
