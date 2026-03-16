@@ -824,7 +824,7 @@ class TestSandboxReportCommand:
         dbot_entries = ctx.get("EntryContext", {}).get("DBotScore(val.Indicator && val.Indicator == obj.Indicator)", [])
         if isinstance(dbot_entries, list) and dbot_entries:
             assert dbot_entries[0].get("Score") == Common.DBotScore.BAD
-        assert "3" in result.readable_output  ## "3" is the severity level for "Malicious" in XSOAR
+        assert "3" in result.readable_output  # "3" is the severity level for "Malicious" in XSOAR
 
     def test_requires_md5(self, mock_client):
         """

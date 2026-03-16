@@ -162,7 +162,7 @@ script:
     - name: category_id
       description: Gets the URL category information for the specified ID. The category Id should be one of the possible values https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/url-categories/get-url-categories.
     - name: custom_only
-      description: "If set to true, gets information on custom URL categories only. Default value: false"
+      description: "If set to true, gets information on custom URL categories only. Default value: false."
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -226,7 +226,7 @@ script:
       description: The unique identifier for the URL category. The category Id should be one of the possible values https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/url-categories/get-url-categories.
       required: true
     - name: url
-      description: 'A comma-separated list of URLs to update the specified category. For example, pandora.com,spotify.com. Important: If any URL contains a comma (,), you must pass the url argument as a JSON list wrapped in backticks (`). Example: url=`["https://example.com/foo,bar"]`'
+      description: 'A comma-separated list of URLs to update the specified category. For example, pandora.com,spotify.com. Important: If any URL contains a comma (,), you must pass the url argument as a JSON list wrapped in backticks (`). Example: url=`["https://example.com/foo,bar"]`.'
       isArray: true
     - name: ip
       description: A comma-separated list of IP ranges to update the specified category. For example, 1.2.3.4,8.8.8.8.
@@ -243,12 +243,12 @@ script:
       description: Custom keywords associated with a URL category. Up to 2048 custom keywords can be added per organization across all categories.
       isArray: true
     - name: description
-      description: Description of the URL category. Contains tag name and needs to be localized on client side in case of predefined category
+      description: Description of the URL category. Contains tag name and needs to be localized on client side in case of predefined category.
     - name: db_categorized_urls
       description: URLs added to a custom URL category that are also retained under the original parent URL category.
       isArray: true
     - name: keywords_retaining_parent_category
-      description: Retained custom keywords from the parent URL category. Up to 2048 retained parent keywords can be added per organization across all categories
+      description: Retained custom keywords from the parent URL category. Up to 2048 retained parent keywords can be added per organization across all categories.
       isArray: true
     - name: ip_ranges_retaining_parent_category
       description: The retaining parent custom IP address ranges associated with a URL category. Up to 2000 custom IP ranges and retaining parent custom IP address ranges can be added, per organization, across all categories.
@@ -689,6 +689,7 @@ script:
       description: A comma-separated list of URLs for which to look up the classification. For example, abc.com,xyz.com. Up to 100 URLs can be looked up per request, and a URL cannot exceed 1,024 characters.
       isArray: true
       required: true
+      default: true
     outputs:
     - contextPath: ZIA.URL.Data
       description: The URL that was searched.
