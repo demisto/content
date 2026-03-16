@@ -580,7 +580,7 @@ def test_main_uses_new_separate_client_id(mocker):
     mocker.patch.object(demisto, "command", return_value="test-module")
     mock_client_cls = mocker.patch("AzureLogAnalytics.Client", autospec=True)
     mocker.patch.object(AzureLogAnalytics, "return_results")
-    mocker.patch("AzureLogAnalytics.test_module", return_value="ok")
+    mocker.patch("AzureLogAnalytics.test_connection")
 
     main()
 
@@ -618,7 +618,7 @@ def test_main_falls_back_to_legacy_client_id_when_new_param_absent(mocker):
     mocker.patch.object(demisto, "command", return_value="test-module")
     mock_client_cls = mocker.patch("AzureLogAnalytics.Client", autospec=True)
     mocker.patch.object(AzureLogAnalytics, "return_results")
-    mocker.patch("AzureLogAnalytics.test_module", return_value="ok")
+    mocker.patch("AzureLogAnalytics.test_connection")
 
     main()
 
