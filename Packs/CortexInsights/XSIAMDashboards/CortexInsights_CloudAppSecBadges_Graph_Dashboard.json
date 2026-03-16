@@ -2,7 +2,7 @@
     "dashboards_data": [
         {
             "name": "Cortex Cloud AppSec Badges (Graph)",
-            "description": "Widgets",
+            "description": "This dashboard visualizes your organization's adoption and maturity level of Cloud Application Security features. It provides key metrics for achieving security milestones, such as the creation of custom policies, the configuration of enforcement actions, and recent CI/CD scan activity.",
             "status": "ENABLED",
             "layout": [
                 {
@@ -14,7 +14,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 488.5,
-                                "phrase": "config timeframe = 30d\n| dataset = cas_policies\n| filter is_custom = true | comp count(policy_id ) as custom_cas_policies \n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy for any Finding Type\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#e20606\",\"#01ff00\",\"1\") dataunit = \"custom CAS policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\">1 implies Bronze is Achieved\") ",
+                                "phrase": "config timeframe = 30d\n| dataset = cas_policies\n| filter is_custom = true | comp count(policy_id ) as custom_cas_policies \n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy for any Finding Type\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#e20606\",\"#01ff00\",\"1\") dataunit = \"custom CAS policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\"\u003e1 implies Bronze is Achieved\") ",
                                 "timeSpan": {
                                     "toTime": "now",
                                     "fromTime": "30d",
@@ -96,7 +96,7 @@
                                             "func": {
                                                 "args": [
                                                     "custom_cas_policies",
-                                                    ">1 implies Bronze is Achieved"
+                                                    "\u003e1 implies Bronze is Achieved"
                                                 ],
                                                 "name": "seriestitle"
                                             }
@@ -111,7 +111,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 488.5,
-                                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions = \"REPORT_CLI\"| comp count(policy_id ) as custom_cas_policies\n\n\n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy with CI Comment\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#f20909\",\"#00ff61\",\"1\") dataunit = \"policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\">1 implies Silver is Achieved\") ",
+                                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions = \"REPORT_CLI\"| comp count(policy_id ) as custom_cas_policies\n\n\n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy with CI Comment\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#f20909\",\"#00ff61\",\"1\") dataunit = \"policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\"\u003e1 implies Silver is Achieved\") ",
                                 "timeSpan": {
                                     "toTime": "now",
                                     "fromTime": "30d",
@@ -193,7 +193,7 @@
                                             "func": {
                                                 "args": [
                                                     "custom_cas_policies",
-                                                    ">1 implies Silver is Achieved"
+                                                    "\u003e1 implies Silver is Achieved"
                                                 ],
                                                 "name": "seriestitle"
                                             }
@@ -208,7 +208,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 488.5,
-                                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions in (\"REPORT_PR_COMMENTS\", \"BLOCK_PR\") | comp count(policy_id ) as custom_cas_policies\n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy with PR Comment or Block\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#f20909\",\"#00ff61\",\"1\") dataunit = \"policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\">1 implies Gold is Achieved\") ",
+                                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions in (\"REPORT_PR_COMMENTS\", \"BLOCK_PR\") | comp count(policy_id ) as custom_cas_policies\n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy with PR Comment or Block\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#f20909\",\"#00ff61\",\"1\") dataunit = \"policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\"\u003e1 implies Gold is Achieved\") ",
                                 "timeSpan": {
                                     "toTime": "now",
                                     "fromTime": "30d",
@@ -290,7 +290,7 @@
                                             "func": {
                                                 "args": [
                                                     "custom_cas_policies",
-                                                    ">1 implies Gold is Achieved"
+                                                    "\u003e1 implies Gold is Achieved"
                                                 ],
                                                 "name": "seriestitle"
                                             }
@@ -310,7 +310,7 @@
                                 "type": "Custom XQL",
                                 "width": 50,
                                 "height": 488.5,
-                                "phrase": "config timeframe = 7d\n| dataset = scans_management \n| filter type = \"cicd\"\n| comp count_distinct(scan_id ) as distinct_scans\n\n| view graph type = gauge subtype = radial header = \"At least one CI scan in past week\" yaxis = distinct_scans maxscalerange = 100 scale_threshold(\"#fa0649\",\"#00ff98\",\"1\") dataunit = \"scans\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"distinct_scans\",\">1 implies Silver is Achieved\") ",
+                                "phrase": "config timeframe = 7d\n| dataset = scans_management \n| filter type = \"cicd\"\n| comp count_distinct(scan_id ) as distinct_scans\n\n| view graph type = gauge subtype = radial header = \"At least one CI scan in past week\" yaxis = distinct_scans maxscalerange = 100 scale_threshold(\"#fa0649\",\"#00ff98\",\"1\") dataunit = \"scans\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"distinct_scans\",\"\u003e1 implies Silver is Achieved\") ",
                                 "timeSpan": {
                                     "toTime": "now",
                                     "fromTime": "7d",
@@ -392,7 +392,7 @@
                                             "func": {
                                                 "args": [
                                                     "distinct_scans",
-                                                    ">1 implies Silver is Achieved"
+                                                    "\u003e1 implies Silver is Achieved"
                                                 ],
                                                 "name": "seriestitle"
                                             }
@@ -407,7 +407,7 @@
                                 "type": "Custom XQL",
                                 "width": 50,
                                 "height": 488.5,
-                                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions = \"BLOCK_CLI\"| comp count(policy_id ) as custom_cas_policies\n\n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy with CI Block\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#f20909\",\"#00ff61\",\"1\") dataunit = \"policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\">1 implies Gold is Achieved\") ",
+                                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions = \"BLOCK_CLI\"| comp count(policy_id ) as custom_cas_policies\n\n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy with CI Block\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#f20909\",\"#00ff61\",\"1\") dataunit = \"policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\"\u003e1 implies Gold is Achieved\") ",
                                 "timeSpan": {
                                     "toTime": "now",
                                     "fromTime": "30d",
@@ -489,7 +489,7 @@
                                             "func": {
                                                 "args": [
                                                     "custom_cas_policies",
-                                                    ">1 implies Gold is Achieved"
+                                                    "\u003e1 implies Gold is Achieved"
                                                 ],
                                                 "name": "seriestitle"
                                             }
@@ -513,9 +513,9 @@
             "widget_key": "xql_1771872426686",
             "title": "Appsec Coverage - Silver",
             "creation_time": 1771872426686,
-            "description": "AppSec widget",
+            "description": "This widget displays the count of custom AppSec policies configured to provide feedback directly within the CI/CD pipeline. The presence of at least one such policy indicates that the 'Silver' maturity standard for developer-centric security has been achieved.",
             "data": {
-                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions = \"REPORT_CLI\"| comp count(policy_id ) as custom_cas_policies\n\n\n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy with CI Comment\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#f20909\",\"#00ff61\",\"1\") dataunit = \"policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\">1 implies Silver is Achieved\") ",
+                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions = \"REPORT_CLI\"| comp count(policy_id ) as custom_cas_policies\n\n\n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy with CI Comment\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#f20909\",\"#00ff61\",\"1\") dataunit = \"policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\"\u003e1 implies Silver is Achieved\") ",
                 "timeSpan": {
                     "toTime": "now",
                     "fromTime": "30d",
@@ -597,7 +597,7 @@
                             "func": {
                                 "args": [
                                     "custom_cas_policies",
-                                    ">1 implies Silver is Achieved"
+                                    "\u003e1 implies Silver is Achieved"
                                 ],
                                 "name": "seriestitle"
                             }
@@ -611,18 +611,15 @@
                     "cas_policies"
                 ],
                 "query_uses_library": false
-            },
-            "creator_mail": "bpachauli@paloaltonetworks.com",
-            "is_public": false,
-            "is_predefined": false
+            }
         },
         {
             "widget_key": "xql_1771868131431",
             "title": "AppSec coverage - Bronze",
             "creation_time": 1771868131431,
-            "description": "AppSec widget",
+            "description": "This widget displays the number of custom AppSec policies created over the last 30 days. This metric tracks progress toward the \"Bronze\" maturity level, which is achieved by creating at least one custom policy to address specific organizational risks.",
             "data": {
-                "phrase": "config timeframe = 30d\n| dataset = cas_policies\n| filter is_custom = true | comp count(policy_id ) as custom_cas_policies \n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy for any Finding Type\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#e20606\",\"#01ff00\",\"1\") dataunit = \"custom CAS policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\">1 implies Bronze is Achieved\") ",
+                "phrase": "config timeframe = 30d\n| dataset = cas_policies\n| filter is_custom = true | comp count(policy_id ) as custom_cas_policies \n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy for any Finding Type\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#e20606\",\"#01ff00\",\"1\") dataunit = \"custom CAS policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\"\u003e1 implies Bronze is Achieved\") ",
                 "timeSpan": {
                     "toTime": "now",
                     "fromTime": "30d",
@@ -704,7 +701,7 @@
                             "func": {
                                 "args": [
                                     "custom_cas_policies",
-                                    ">1 implies Bronze is Achieved"
+                                    "\u003e1 implies Bronze is Achieved"
                                 ],
                                 "name": "seriestitle"
                             }
@@ -718,18 +715,15 @@
                     "cas_policies"
                 ],
                 "query_uses_library": false
-            },
-            "creator_mail": "bpachauli@paloaltonetworks.com",
-            "is_public": false,
-            "is_predefined": false
+            }
         },
         {
             "widget_key": "xql_1771868507476",
             "title": "AppSec coverage - Gold",
             "creation_time": 1771868507476,
-            "description": "AppSec widget",
+            "description": "This widget displays the count of custom AppSec policies configured to automatically block or comment on developer pull requests. The existence of at least one such policy confirms a \"Gold\" standard of security maturity by embedding automated checks into the development workflow.",
             "data": {
-                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions in (\"REPORT_PR_COMMENTS\", \"BLOCK_PR\") | comp count(policy_id ) as custom_cas_policies\n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy with PR Comment or Block\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#f20909\",\"#00ff61\",\"1\") dataunit = \"policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\">1 implies Gold is Achieved\") ",
+                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions in (\"REPORT_PR_COMMENTS\", \"BLOCK_PR\") | comp count(policy_id ) as custom_cas_policies\n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy with PR Comment or Block\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#f20909\",\"#00ff61\",\"1\") dataunit = \"policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\"\u003e1 implies Gold is Achieved\") ",
                 "timeSpan": {
                     "toTime": "now",
                     "fromTime": "30d",
@@ -811,7 +805,7 @@
                             "func": {
                                 "args": [
                                     "custom_cas_policies",
-                                    ">1 implies Gold is Achieved"
+                                    "\u003e1 implies Gold is Achieved"
                                 ],
                                 "name": "seriestitle"
                             }
@@ -825,18 +819,15 @@
                     "cas_policies"
                 ],
                 "query_uses_library": false
-            },
-            "creator_mail": "bpachauli@paloaltonetworks.com",
-            "is_public": false,
-            "is_predefined": false
+            }
         },
         {
             "widget_key": "xql_1771869058036",
             "title": "Fixing issues earlier in the Application Lifecycle - Gold",
             "creation_time": 1771869058036,
-            "description": "AppSec widget",
+            "description": "This widget displays the count of custom policies configured to block risky builds within the CI/CD pipeline. The presence of at least one policy indicates that the 'Gold' standard for shifting security left has been achieved, proactively preventing vulnerabilities from reaching production.",
             "data": {
-                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions = \"BLOCK_CLI\"| comp count(policy_id ) as custom_cas_policies\n\n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy with CI Block\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#f20909\",\"#00ff61\",\"1\") dataunit = \"policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\">1 implies Gold is Achieved\") ",
+                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions = \"BLOCK_CLI\"| comp count(policy_id ) as custom_cas_policies\n\n\n| view graph type = gauge subtype = radial header = \"Create AppSec Policy with CI Block\" yaxis = custom_cas_policies maxscalerange = 100 scale_threshold(\"#f20909\",\"#00ff61\",\"1\") dataunit = \"policies\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"custom_cas_policies\",\"\u003e1 implies Gold is Achieved\") ",
                 "timeSpan": {
                     "toTime": "now",
                     "fromTime": "30d",
@@ -918,7 +909,7 @@
                             "func": {
                                 "args": [
                                     "custom_cas_policies",
-                                    ">1 implies Gold is Achieved"
+                                    "\u003e1 implies Gold is Achieved"
                                 ],
                                 "name": "seriestitle"
                             }
@@ -932,18 +923,15 @@
                     "cas_policies"
                 ],
                 "query_uses_library": false
-            },
-            "creator_mail": "bpachauli@paloaltonetworks.com",
-            "is_public": false,
-            "is_predefined": false
+            }
         },
         {
             "widget_key": "xql_1771872253927",
             "title": "Fixing issues earlier in the Application Lifecycle - Silver",
             "creation_time": 1771872253927,
-            "description": "AppSec widget",
+            "description": "This widget indicates whether at least one CI/CD scan has occurred in the past seven days. Achieving this \"Silver\" benchmark confirms that security is being integrated early into the application lifecycle, allowing for faster vulnerability remediation.",
             "data": {
-                "phrase": "config timeframe = 7d\n| dataset = scans_management \n| filter type = \"cicd\"\n| comp count_distinct(scan_id ) as distinct_scans\n\n| view graph type = gauge subtype = radial header = \"At least one CI scan in past week\" yaxis = distinct_scans maxscalerange = 100 scale_threshold(\"#fa0649\",\"#00ff98\",\"1\") dataunit = \"scans\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"distinct_scans\",\">1 implies Silver is Achieved\") ",
+                "phrase": "config timeframe = 7d\n| dataset = scans_management \n| filter type = \"cicd\"\n| comp count_distinct(scan_id ) as distinct_scans\n\n| view graph type = gauge subtype = radial header = \"At least one CI scan in past week\" yaxis = distinct_scans maxscalerange = 100 scale_threshold(\"#fa0649\",\"#00ff98\",\"1\") dataunit = \"scans\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"distinct_scans\",\"\u003e1 implies Silver is Achieved\") ",
                 "timeSpan": {
                     "toTime": "now",
                     "fromTime": "7d",
@@ -1025,7 +1013,7 @@
                             "func": {
                                 "args": [
                                     "distinct_scans",
-                                    ">1 implies Silver is Achieved"
+                                    "\u003e1 implies Silver is Achieved"
                                 ],
                                 "name": "seriestitle"
                             }
@@ -1039,12 +1027,8 @@
                     "scans_management"
                 ],
                 "query_uses_library": false
-            },
-            "creator_mail": "bpachauli@paloaltonetworks.com",
-            "is_public": false,
-            "is_predefined": false
+            }
         }
     ],
-    "id": "2c1f7745d09149379179b97a4016b6c3",
-    "name": "Cortex Cloud AppSec Badges (Graph)"
+    "fromVersion": "6.10.0"
 }
