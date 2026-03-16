@@ -49,7 +49,7 @@ Configure the integration in Cortex XSIAM using the following parameters.
 | Status | Incident status to filter in Exabeam. Possible values are: closed, closedFalsePositive, inprogress, new, pending, resolved. | False |
 | Fetch incidents |  | False |
 | Max incidents per fetch |  | False |
-| First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days) |  | False |
+| First fetch timestamp (**number**, **time unit**, e.g., 12 hours, 7 days) |  | False |
 | Advanced: Minutes to look back when fetching | The number of minutes to look back for incidents created before the last run that did not match the initial query. Default is 1. | False |
 | Incident type |  | False |
 | Trust any certificate (not secure) |  | False |
