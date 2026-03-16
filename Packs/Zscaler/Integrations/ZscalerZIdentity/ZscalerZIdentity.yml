@@ -98,6 +98,9 @@ script:
   - name: zia-denylist-update
     description: Updates the list of URLs and IPs that are in the denylist.
     execution: true
+    compliantpolicies:
+    - Domain Blockage
+    - IP Blockage
     arguments:
     - name: url
       description: A comma-separated list of URLs to update the denylist. For example, snapchat.com,facebook.com.
@@ -141,6 +144,9 @@ script:
   - name: zia-allowlist-update
     description: Updates the list of URLs that are in the allowlist.
     execution: true
+    compliantpolicies:
+    - Domain Blockage
+    - IP Blockage
     arguments:
     - name: url
       description: A comma-separated list of URLs to update in the allowlist. For example, snapchat.com,facebook.com.
@@ -162,7 +168,7 @@ script:
     - name: category_id
       description: Gets the URL category information for the specified ID. The category Id should be one of the possible values https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/url-categories/get-url-categories.
     - name: custom_only
-      description: "If set to true, gets information on custom URL categories only. Default value: false."
+      description: If set to true, gets information on custom URL categories only. Default value is false.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -221,12 +227,15 @@ script:
   - name: zia-category-update
     description: Updates the URL category for the specified ID.
     execution: true
+    compliantpolicies:
+    - Domain Blockage
+    - IP Blockage
     arguments:
     - name: category_id
       description: The unique identifier for the URL category. The category Id should be one of the possible values https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/url-categories/get-url-categories.
       required: true
     - name: url
-      description: 'A comma-separated list of URLs to update the specified category. For example, pandora.com,spotify.com. Important: If any URL contains a comma (,), you must pass the url argument as a JSON list wrapped in backticks (`). Example: url=`["https://example.com/foo,bar"]`.'
+      description: A comma-separated list of URLs to update the specified category. For example, pandora.com,spotify.com. Important If any URL contains a comma (,), you must pass the url argument as a JSON list wrapped in backticks (`). Example url=`["https://example.com/foo,bar"]`.
       isArray: true
     - name: ip
       description: A comma-separated list of IP ranges to update the specified category. For example, 1.2.3.4,8.8.8.8.
@@ -451,6 +460,8 @@ script:
       required: true
   - name: zia-user-list
     description: Gets a list of all users or the user information for the specified ID.
+    compliantpolicies:
+    - User Soft Remediation
     arguments:
     - name: user_id
       description: Filters by the unique identifier for the user.
@@ -487,6 +498,9 @@ script:
   - name: zia-user-update
     description: Updates the user information for the specified ID.
     execution: true
+    compliantpolicies:
+    - User Hard Remediation
+    - User Soft Remediation
     arguments:
     - name: user_id
       description: The unique identifier for the user.
@@ -684,6 +698,8 @@ script:
       type: String
   - name: url
     description: Retrieve Zscaler's default classification for a given set of URLs.
+    compliantpolicies:
+    - Domain Blockage
     arguments:
     - name: url
       description: A comma-separated list of URLs for which to look up the classification. For example, abc.com,xyz.com. Up to 100 URLs can be looked up per request, and a URL cannot exceed 1,024 characters.
@@ -732,6 +748,8 @@ script:
       type: String
   - name: ip
     description: Retrieve the classification for each of the specified IP addresses.
+    compliantpolicies:
+    - IP Blockage
     arguments:
     - name: ip
       description: A comma-separated list of IP addresses for which to look up the classification. For example, 8.8.8.8,1.2.3.4. The maximum number of IPs per call is 100.
@@ -774,6 +792,8 @@ script:
       type: String
   - name: domain
     description: Retrieve Zscaler's default classification for a given set of domains.
+    compliantpolicies:
+    - User Soft Remediation
     arguments:
     - name: domain
       description: A comma-separated list of domains for which to look up the classification. For example, abc.com,xyz.com. The maximum number of domains per call is 100.
