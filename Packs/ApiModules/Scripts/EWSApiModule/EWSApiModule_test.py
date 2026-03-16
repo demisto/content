@@ -1092,7 +1092,7 @@ def test_get_searchable_mailboxes(mocker, client):
 
     mocker.patch.object(GetSearchableMailboxes, "_get_elements", return_value=mock_elements)
 
-    results = get_searchable_mailboxes(client)
+    results = get_searchable_mailboxes(client, {})
 
     assert results.outputs == expected_output
 

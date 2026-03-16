@@ -156,7 +156,7 @@ class TestNormalCommands:
         mocker.patch.object(GetSearchableMailboxes, "__init__", return_value=None)
         mocker.patch.object(GetSearchableMailboxes, "call", return_value=raw_response)
         client = self.MockClient()
-        res = get_searchable_mailboxes(client)
+        res = get_searchable_mailboxes(client, {})
         actual_ec = res.outputs
         assert expected.get(res.outputs_prefix) == actual_ec
 
