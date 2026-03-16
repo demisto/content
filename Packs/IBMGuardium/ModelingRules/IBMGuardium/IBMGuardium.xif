@@ -104,4 +104,4 @@ alter
     xdm.source.ipv6 = if(is_ipv6(Client_IP), Client_IP, null),
     // Checks weather the Target IP is IPv4 / IPv6
     xdm.target.ipv4 = if(is_ipv4(Server_IP), Server_IP, null),
-    xdm.target.ipv6 = if(is_ipv6(Server_IP), Server_IP, null);שׁ
+    xdm.target.ipv6 = if(is_ipv6(Server_IP), Server_IP, null);
