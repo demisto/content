@@ -248,7 +248,10 @@ script:
       name: notify
     description: Deprecated. Use “akamai-activate-client-list” instead.
     name: akamai-activate-network-list
-    deprecated: true
+    supportedModules:
+    - cloud_runtime_security
+    - edr
+    - xsiam
   - arguments:
     - description: The ID of the network where elements will be added.
       name: network_list_id
