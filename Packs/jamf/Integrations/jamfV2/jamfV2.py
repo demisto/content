@@ -1405,6 +1405,22 @@ def get_sections_from_query(query: str) -> list[str]:
     return list(sections)
 
 
+def get_full_identifier_from_mapping(identifier: str) -> str:
+    identifier_mapping = {
+        "id": "id",
+        "name": "general.name",
+        "udid": "udid",
+        "serialnumber": "hardware.serialNumber",
+        "macaddress": "hardware.macAddress",
+    }
+    
+    if not identifier in identifier_mapping:
+        demisto.debug("Identifier is a PREDEFINED value, and needs mapping for the Pro API.")
+        raise DemistoException(f"The identifier '{identifier}' is not supported.")
+    
+    return identifier_mapping[identifier]
+
+
 def computers_endpoint_request(client: Client, filter_query: str) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """
     Helper for the endpoint command. Requests computer inventory data and maps it to a simplified structure.
@@ -1813,7 +1829,7 @@ def get_computer_subset_command(client: Client, args: dict[str, Any], subset_nam
     sections = ComputersInventorySection.subset_to_sections(subset_name)
 
     if identifier and identifier_value:
-        filter_query = f'{identifier}=="{identifier_value}"'
+        filter_query = f'{get_full_identifier_from_mapping(identifier)}=="{identifier_value}"'
     else:
         filter_query = None
 
@@ -1864,7 +1880,7 @@ def get_computer_section_command(client: Client, args: dict[str, Any]) -> Comman
     section_as_enum = ComputersInventorySection(section_arg) if section_arg else ComputersInventorySection.GENERAL
 
     if identifier and identifier_value:
-        filter_query = f'{identifier}=="{identifier_value}"'
+        filter_query = f'{get_full_identifier_from_mapping(identifier)}=="{identifier_value}"'
     else:
         filter_query = None
 
