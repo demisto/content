@@ -43,12 +43,12 @@ def test_get_computers_command(mocker):
     mocker.patch.object(Client, "_get_token")
     client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
     args = {}
-    mock_response = util_load_json("test_data/get_computer/get_computer_raw_response.json")
+    mock_response = util_load_json("test_data/get_computer/get_computers_raw_response.json")
 
     mocker.patch.object(client, "get_computers_inventory_request", return_value=mock_response)
 
     computer_response = get_computers_command(client, args)
-    expected_response = util_load_json("test_data/get_computer/get_computer_context.json")
+    expected_response = util_load_json("test_data/get_computer/get_computers_context.json")
     assert computer_response[0].outputs == expected_response
 
 
@@ -66,12 +66,12 @@ def test_get_computers_limit_command(mocker):
     mocker.patch.object(Client, "_get_token")
     client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
     args = {"limit": 10, "page": 2}
-    mock_response = util_load_json("test_data/get_computer/get_computer_raw_response.json")
+    mock_response = util_load_json("test_data/get_computer/get_computers_limit_raw_response.json")
 
     mocker.patch.object(client, "get_computers_inventory_request", return_value=mock_response)
 
     response = get_computers_command(client, args)
-    expected_response = util_load_json("test_data/get_computer/get_computer_limit_context.json")
+    expected_response = util_load_json("test_data/get_computer/get_computers_limit_context.json")
     assert response[0].outputs == expected_response
 
 
@@ -91,7 +91,7 @@ def test_get_computers_by_id_command(mocker):
     args = {"id": 1}
     mock_response = util_load_json("test_data/get_computer/get_computer_by_id_raw_response.json")
 
-    mocker.patch.object(client, "get_computers_inventory_request", return_value=mock_response)
+    mocker.patch.object(client, "get_computer_inventory_detail_request", return_value=mock_response)
 
     response = get_computer_by_id_command(client, args)
     expected_response = util_load_json("test_data/get_computer/get_computer_by_id_context.json")
@@ -107,16 +107,16 @@ def test_get_computers_by_match_command(mocker):
     Then
     - Ensure the result are according to the id and match args.
     """
-    from jamfV2 import Client, get_computers_command
+    from jamfV2 import Client, get_computer_by_match_command
 
     mocker.patch.object(Client, "_get_token")
     client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
-    args = {"match": "564D26*"}
+    args = {"filter": "udid==CA40F812-60A3-11E4-90B8-12DF261F2C7E"}
     mock_response = util_load_json("test_data/get_computer/get_computer_by_match_raw_response.json")
 
     mocker.patch.object(client, "get_computers_inventory_request", return_value=mock_response)
 
-    response = get_computers_command(client, args)
+    response = get_computer_by_match_command(client, args)
     expected_response = util_load_json("test_data/get_computer/get_computer_by_match_context.json")
     assert response[0].outputs == expected_response
 
@@ -130,18 +130,44 @@ def test_get_computer_general_subset_command(mocker):
     Then
     - Ensure the command output matched the given query.
     """
+    from jamfV2 import Client, get_computer_subset_command
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+    args = {"identifier": "name", "identifier_value": "Computer 95"}
+
+    mock_response = util_load_json("test_data/get_computer/get_computer_general_subset_raw_response.json")
+
+    mocker.patch.object(client, "get_computers_inventory_request", return_value=mock_response)
+
+    computer_response = get_computer_subset_command(client, args, "General")
+    expected_response = util_load_json("test_data/get_computer/get_computer_general_subset_context.json")
+
+    assert computer_response.outputs == expected_response
+
+
+def test_get_computer_general_subset_deprecated_command(mocker):
+    """
+    Given
+    - Name of the computer and subset arguments.
+    When
+    - Run get computer subset command
+    Then
+    - Ensure the command output matched the given query.
+    """
     from jamfV2 import Client, get_computer_subset_deprecated_command
 
     mocker.patch.object(Client, "_get_token")
     client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
     args = {"identifier": "name", "identifier_value": "Computer 95"}
-    mock_response_general_subset = util_load_json(
-        "test_data/get_computer_subset/get_computer_by_name_general_subset_raw_response.json"
-    )
-    mocker.patch.object(client, "get_computer_subset_deprecated_request", return_value=mock_response_general_subset)
+
+    mock_response = util_load_json("test_data/get_computer_subset/get_computer_by_name_general_subset_raw_response.json")
+
+    mocker.patch.object(client, "get_computer_subset_deprecated_request", return_value=mock_response)
 
     computer_response = get_computer_subset_deprecated_command(client, args, "General")
     expected_response = util_load_json("test_data/get_computer_subset/get_computer_by_name_general_subset_context.json")
+
     assert computer_response.outputs == expected_response
 
 
@@ -421,6 +447,35 @@ def test_mobile_device_erase_command(mocker):
     assert computer_response.outputs == expected_response
 
 
+def test_computers_endpoint_request(mocker):
+    """
+    test helper function for the endpoint command.
+    """
+    from jamfV2 import Client, computers_endpoint_request
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+
+    mock_response = util_load_json("test_data/get_computer/get_computer_general_subset_raw_response.json")
+
+    mocker.patch.object(client, "get_computers_inventory_request", return_value=mock_response)
+
+    mapped_response_list, _ = computers_endpoint_request(client, filter_query="id==1")
+
+    expected_mapped_response_list = [
+        {
+            "id": "1",
+            "name": "Computer 95",
+            "ip": "123.243.192.20",
+            "platform": "Mac",
+            "mac_address": "68:5B:35:CA:12:56",
+            "udid": "CA40F812-60A3-11E4-90B8-12DF261F2C7E",
+        }
+    ]
+
+    assert mapped_response_list == expected_mapped_response_list
+
+
 def test_endpoint_command(mocker):
     """
     Given:
@@ -436,20 +491,37 @@ def test_endpoint_command(mocker):
 
     mocker.patch.object(Client, "_get_token")
     client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
-    args = {"id": "id", "hostname": "hostname"}
-    endpoint_response = util_load_json("test_data/get_computer_subset/get_computer_by_name_general_subset_raw_response.json")
-    mocker.patch.object(client, "get_computer_subset_deprecated_request", return_value=endpoint_response)
+    args = {"id": "1", "ip": "123.243.192.20", "hostname": "Computer 95"}
+
+    mock_mapped_response = [
+        {
+            "id": "1",
+            "name": "Computer 95",
+            "ip": "123.243.192.20",
+            "platform": "Mac",
+            "mac_address": "68:5B:35:CA:12:56",
+            "udid": "CA40F812-60A3-11E4-90B8-12DF261F2C7E",
+        }
+    ]
+
+    mocker.patch("jamfV2.computers_endpoint_request", return_value=(mock_mapped_response, []))
 
     outputs = endpoint_command(client, args)
 
     get_endpoints_response = {
         Common.Endpoint.CONTEXT_PATH: [
-            {"ID": 1, "Hostname": "Computer 95", "OS": "Mac", "Vendor": "JAMF v2", "MACAddress": "12:5B:35:CA:12:56"}
+            {
+                "ID": "1",
+                "Hostname": "Computer 95",
+                "OS": "Mac",
+                "Vendor": "JAMF v2",
+                "MACAddress": "68:5B:35:CA:12:56",
+                "IPAddress": "123.243.192.20",
+            }
         ]
     }
+
     results = outputs[0].to_context()
-    for key, _val in results.get("EntryContext").items():
-        assert results.get("EntryContext")[key] == get_endpoints_response[key]
     assert results.get("EntryContext") == get_endpoints_response
     assert len(outputs) == 1
 
