@@ -331,9 +331,7 @@ class Client(BaseClient):
 
         demisto.debug(f"Sending a Pro API /computers-inventory request with params: {params}")
 
-        return self._pro_api_get(
-            url_suffix="/computers-inventory", params=params, error_handler=self._generic_error_handler
-        )
+        return self._pro_api_get(url_suffix="/computers-inventory", params=params, error_handler=self._generic_error_handler)
 
     def get_computer_inventory_detail_request(self, computer_id: str) -> dict[str, Any]:
         """Retrieve all inventory sections for a specific computer record from Pro API.
@@ -653,10 +651,12 @@ def get_computers_readable_output(computers: list[dict[str, Any]]) -> list[dict[
     readable_output = []
     for computer in computers:
         general = computer.get("general", {})
-        readable_output.append({
-            "Computer ID": computer.get("id"),
-            "Computer Name": general.get("name"),
-        })
+        readable_output.append(
+            {
+                "Computer ID": computer.get("id"),
+                "Computer Name": general.get("name"),
+            }
+        )
 
     return readable_output
 
@@ -676,14 +676,16 @@ def get_computers_basic_subset_readable_output(computers: list[dict[str, Any]]) 
         hardware = computer.get("hardware", {})
         user_location = computer.get("userAndLocation", {})
 
-        readable_output.append({
-            "ID": computer.get("id"),
-            "Mac Address": hardware.get("macAddress"),
-            "Name": general.get("name"),
-            "Serial Number": hardware.get("serialNumber"),
-            "UDID": computer.get("udid"),
-            "Username": user_location.get("username"),
-        })
+        readable_output.append(
+            {
+                "ID": computer.get("id"),
+                "Mac Address": hardware.get("macAddress"),
+                "Name": general.get("name"),
+                "Serial Number": hardware.get("serialNumber"),
+                "UDID": computer.get("udid"),
+                "Username": user_location.get("username"),
+            }
+        )
 
     return readable_output
 
@@ -729,14 +731,16 @@ def get_computer_by_match_readable_output(computers: list[dict[str, Any]]) -> li
         hardware = computer.get("hardware", {})
         user_location = computer.get("userAndLocation", {})
 
-        readable_output.append({
-            "ID": computer.get("id"),
-            "Name": general.get("name"),
-            "MAC Address": hardware.get("macAddress"),
-            "Serial Number": hardware.get("serialNumber"),
-            "UDID": computer.get("udid"),
-            "Username": user_location.get("username"),
-        })
+        readable_output.append(
+            {
+                "ID": computer.get("id"),
+                "Name": general.get("name"),
+                "MAC Address": hardware.get("macAddress"),
+                "Serial Number": hardware.get("serialNumber"),
+                "UDID": computer.get("udid"),
+                "Username": user_location.get("username"),
+            }
+        )
 
     return readable_output
 
@@ -905,32 +909,32 @@ def get_computer_subset_context_mapping(response, subset):
         remote_management = general.get("remoteManagement", {})
         mdm_capable = general.get("mdmCapable", {})
 
-        context["general"].update({
-            "id": response.get("id"),
-            "network_adapter_type": hardware.get("networkAdapterType"),
-            "mac_address": hardware.get("macAddress"),
-            "alt_network_adapter_type": hardware.get("altNetworkAdapterType"),
-            "alt_mac_address": hardware.get("altMacAddress"),
-            "ip_address": general.get("lastIpAddress"),
-            "last_reported_ip": general.get("lastReportedIpV4"),
-            "serial_number": hardware.get("serialNumber"),
-            "udid": response.get("udid"),
-            "jamf_version": general.get("jamfBinaryVersion"),
-            "barcode_1": general.get("barcode1"),
-            "barcode_2": general.get("barcode2"),
-            "asset_tag": general.get("assetTag"),
-            "remote_management": {
-                "managed": remote_management.get("managed"),
-                "management_username": remote_management.get("managementUsername"),
-            },
-            "mdm_capable": mdm_capable.get("capable"),
-            "mdm_capable_users": mdm_capable.get("capableUsers"),
-            "management_status": {
-                "user_approved_mdm": general.get("userApprovedMdm")
-            },
-            "distribution_point": general.get("distributionPoint"),
-            "itunes_store_account_is_active": general.get("itunesStoreAccountActive"),
-        })
+        context["general"].update(
+            {
+                "id": response.get("id"),
+                "network_adapter_type": hardware.get("networkAdapterType"),
+                "mac_address": hardware.get("macAddress"),
+                "alt_network_adapter_type": hardware.get("altNetworkAdapterType"),
+                "alt_mac_address": hardware.get("altMacAddress"),
+                "ip_address": general.get("lastIpAddress"),
+                "last_reported_ip": general.get("lastReportedIpV4"),
+                "serial_number": hardware.get("serialNumber"),
+                "udid": response.get("udid"),
+                "jamf_version": general.get("jamfBinaryVersion"),
+                "barcode_1": general.get("barcode1"),
+                "barcode_2": general.get("barcode2"),
+                "asset_tag": general.get("assetTag"),
+                "remote_management": {
+                    "managed": remote_management.get("managed"),
+                    "management_username": remote_management.get("managementUsername"),
+                },
+                "mdm_capable": mdm_capable.get("capable"),
+                "mdm_capable_users": mdm_capable.get("capableUsers"),
+                "management_status": {"user_approved_mdm": general.get("userApprovedMdm")},
+                "distribution_point": general.get("distributionPoint"),
+                "itunes_store_account_is_active": general.get("itunesStoreAccountActive"),
+            }
+        )
 
         reportDate = format_date_fields(general.get("reportDate"))
         lastContactTime = format_date_fields(general.get("lastContactTime"))
@@ -939,23 +943,25 @@ def get_computer_subset_context_mapping(response, subset):
         lastEnrolledDate = format_date_fields(general.get("lastEnrolledDate"))
         mdmProfileExpiration = format_date_fields(general.get("mdmProfileExpiration"))
 
-        context["general"].update({
-            "report_date": reportDate.get("date"),
-            "report_date_epoch": reportDate.get("epoch"),
-            "report_date_utc": reportDate.get("utc"),
-            "last_contact_time": lastContactTime.get("date"),
-            "last_contact_time_epoch": lastContactTime.get("epoch"),
-            "last_contact_time_utc": lastContactTime.get("utc"),
-            "initial_entry_date": initialEntryDate.get("date"),
-            "initial_entry_date_epoch": initialEntryDate.get("epoch"),
-            "initial_entry_date_utc": initialEntryDate.get("utc"),
-            "last_cloud_backup_date_epoch": lastCloudBackupDate.get("epoch"),
-            "last_cloud_backup_date_utc": lastCloudBackupDate.get("utc"),
-            "last_enrolled_date_epoch": lastEnrolledDate.get("epoch"),
-            "last_enrolled_date_utc": lastEnrolledDate.get("utc"),
-            "mdm_profile_expiration_epoch": mdmProfileExpiration.get("epoch"),
-            "mdm_profile_expiration_utc": mdmProfileExpiration.get("utc"),
-        })
+        context["general"].update(
+            {
+                "report_date": reportDate.get("date"),
+                "report_date_epoch": reportDate.get("epoch"),
+                "report_date_utc": reportDate.get("utc"),
+                "last_contact_time": lastContactTime.get("date"),
+                "last_contact_time_epoch": lastContactTime.get("epoch"),
+                "last_contact_time_utc": lastContactTime.get("utc"),
+                "initial_entry_date": initialEntryDate.get("date"),
+                "initial_entry_date_epoch": initialEntryDate.get("epoch"),
+                "initial_entry_date_utc": initialEntryDate.get("utc"),
+                "last_cloud_backup_date_epoch": lastCloudBackupDate.get("epoch"),
+                "last_cloud_backup_date_utc": lastCloudBackupDate.get("utc"),
+                "last_enrolled_date_epoch": lastEnrolledDate.get("epoch"),
+                "last_enrolled_date_utc": lastEnrolledDate.get("utc"),
+                "mdm_profile_expiration_epoch": mdmProfileExpiration.get("epoch"),
+                "mdm_profile_expiration_utc": mdmProfileExpiration.get("utc"),
+            }
+        )
 
     elif subset == "Location":
         context["location"] = {
@@ -970,75 +976,85 @@ def get_computer_subset_context_mapping(response, subset):
         }
 
     elif subset == "Purchasing":
-        context["purchasing"].update({
-            "is_purchased": purchasing.get("purchased"),
-            "is_leased": purchasing.get("leased"),
-            "po_number": purchasing.get("poNumber"),
-            "vendor": purchasing.get("vendor"),
-            "applecare_id": purchasing.get("appleCareId"),
-            "purchase_price": purchasing.get("purchasePrice"),
-            "purchasing_account": purchasing.get("purchasingAccount"),
-            "life_expectancy": purchasing.get("lifeExpectancy"),
-            "purchasing_contact": purchasing.get("purchasingContact"),
-        })
+        context["purchasing"].update(
+            {
+                "is_purchased": purchasing.get("purchased"),
+                "is_leased": purchasing.get("leased"),
+                "po_number": purchasing.get("poNumber"),
+                "vendor": purchasing.get("vendor"),
+                "applecare_id": purchasing.get("appleCareId"),
+                "purchase_price": purchasing.get("purchasePrice"),
+                "purchasing_account": purchasing.get("purchasingAccount"),
+                "life_expectancy": purchasing.get("lifeExpectancy"),
+                "purchasing_contact": purchasing.get("purchasingContact"),
+            }
+        )
 
         po_date = format_date_fields(purchasing.get("poDate"))
         warranty_expires = format_date_fields(purchasing.get("warrantyDate"))
         lease_expires = format_date_fields(purchasing.get("leaseDate"))
 
-        context["purchasing"].update({
-            "po_date": po_date.get("date"),
-            "po_date_epoch": po_date.get("epoch"),
-            "po_date_utc": po_date.get("utc"),
-            "warranty_expires": warranty_expires.get("date"),
-            "warranty_expires_epoch": warranty_expires.get("epoch"),
-            "warranty_expires_utc": warranty_expires.get("utc"),
-            "lease_expires": lease_expires.get("date"),
-            "lease_expires_epoch": lease_expires.get("epoch"),
-            "lease_expires_utc": lease_expires.get("utc"),
-        })
+        context["purchasing"].update(
+            {
+                "po_date": po_date.get("date"),
+                "po_date_epoch": po_date.get("epoch"),
+                "po_date_utc": po_date.get("utc"),
+                "warranty_expires": warranty_expires.get("date"),
+                "warranty_expires_epoch": warranty_expires.get("epoch"),
+                "warranty_expires_utc": warranty_expires.get("utc"),
+                "lease_expires": lease_expires.get("date"),
+                "lease_expires_epoch": lease_expires.get("epoch"),
+                "lease_expires_utc": lease_expires.get("utc"),
+            }
+        )
 
     elif subset == "Hardware":
-        context["hardware"].update({
-            "make": hardware.get("make"),
-            "model": hardware.get("model"),
-            "model_identifier": hardware.get("modelIdentifier"),
-            "os_name": operating_system.get("name"),
-            "os_version": operating_system.get("version"),
-            "os_build": operating_system.get("build"),
-            "active_directory_status": operating_system.get("activeDirectoryStatus"),
-        })
+        context["hardware"].update(
+            {
+                "make": hardware.get("make"),
+                "model": hardware.get("model"),
+                "model_identifier": hardware.get("modelIdentifier"),
+                "os_name": operating_system.get("name"),
+                "os_version": operating_system.get("version"),
+                "os_build": operating_system.get("build"),
+                "active_directory_status": operating_system.get("activeDirectoryStatus"),
+            }
+        )
 
-        context["hardware"].update({
-            "processor_type": hardware.get("processorType"),
-            "processor_architecture": hardware.get("processorArchitecture"),
-            "processor_speed": hardware.get("processorSpeedMhz"),
-            "processor_speed_mhz": hardware.get("processorSpeedMhz"),
-            "number_processors": hardware.get("processorCount"),
-            "number_cores": hardware.get("coreCount"),
-            "total_ram": hardware.get("totalRamMegabytes"),
-            "total_ram_mb": hardware.get("totalRamMegabytes"),
-            "boot_rom": hardware.get("bootRom"),
-            "bus_speed": hardware.get("busSpeedMhz"),
-            "bus_speed_mhz": hardware.get("busSpeedMhz"),
-            "battery_capacity": hardware.get("batteryCapacityPercent"),
-            "cache_size": hardware.get("cacheSizeKilobytes"),
-            "cache_size_kb": hardware.get("cacheSizeKilobytes"),
-            "available_ram_slots": hardware.get("openRamSlots"),
-            "optical_drive": hardware.get("opticalDrive"),
-            "nic_speed": hardware.get("nicSpeed"),
-            "smc_version": hardware.get("smcVersion"),
-            "ble_capable": hardware.get("bleCapable"),
-            "supports_ios_app_installs": hardware.get("supportsIosAppInstalls"),
-        })
+        context["hardware"].update(
+            {
+                "processor_type": hardware.get("processorType"),
+                "processor_architecture": hardware.get("processorArchitecture"),
+                "processor_speed": hardware.get("processorSpeedMhz"),
+                "processor_speed_mhz": hardware.get("processorSpeedMhz"),
+                "number_processors": hardware.get("processorCount"),
+                "number_cores": hardware.get("coreCount"),
+                "total_ram": hardware.get("totalRamMegabytes"),
+                "total_ram_mb": hardware.get("totalRamMegabytes"),
+                "boot_rom": hardware.get("bootRom"),
+                "bus_speed": hardware.get("busSpeedMhz"),
+                "bus_speed_mhz": hardware.get("busSpeedMhz"),
+                "battery_capacity": hardware.get("batteryCapacityPercent"),
+                "cache_size": hardware.get("cacheSizeKilobytes"),
+                "cache_size_kb": hardware.get("cacheSizeKilobytes"),
+                "available_ram_slots": hardware.get("openRamSlots"),
+                "optical_drive": hardware.get("opticalDrive"),
+                "nic_speed": hardware.get("nicSpeed"),
+                "smc_version": hardware.get("smcVersion"),
+                "ble_capable": hardware.get("bleCapable"),
+                "supports_ios_app_installs": hardware.get("supportsIosAppInstalls"),
+            }
+        )
 
-        context["hardware"].update({
-            "sip_status": security.get("sipStatus"),
-            "gatekeeper_status": security.get("gatekeeperStatus"),
-            "xprotect_version": security.get("xprotectVersion"),
-            "disk_encryption_configuration": disk_encryption.get("diskEncryptionConfigurationName"),
-            "storage": response.get("storage", {}),  # NOTE: no mapping is performed for storage.*
-        })
+        context["hardware"].update(
+            {
+                "sip_status": security.get("sipStatus"),
+                "gatekeeper_status": security.get("gatekeeperStatus"),
+                "xprotect_version": security.get("xprotectVersion"),
+                "disk_encryption_configuration": disk_encryption.get("diskEncryptionConfigurationName"),
+                "storage": response.get("storage", {}),  # NOTE: no mapping is performed for storage.*
+            }
+        )
 
     elif subset == "Certificates":
         for cert in context.get("certificates", []):
@@ -1048,11 +1064,13 @@ def get_computer_subset_context_mapping(response, subset):
             cert["expires_epoch"] = expiration_date.get("epoch")
 
     elif subset == "Security":
-        context["security"].update({
-            "activation_lock": security.get("activationLockEnabled"),
-            "secure_boot_level": security.get("secureBootLevel"),
-            "external_boot_level": security.get("externalBootLevel"),
-        })
+        context["security"].update(
+            {
+                "activation_lock": security.get("activationLockEnabled"),
+                "secure_boot_level": security.get("secureBootLevel"),
+                "external_boot_level": security.get("externalBootLevel"),
+            }
+        )
 
     elif subset == "Software":
         package_receipts = response.get("packageReceipts", {})
@@ -1372,11 +1390,9 @@ def get_sections_from_query(query: str) -> list[str]:
         list[str]: A list of unique section names required by the query.
     """
     # Mapping with lowercase keys for case-insensitive matching
-    prefix_map = {
-        section.value.lower().replace('_', ''): section for section in ComputersInventorySection
-    }
+    prefix_map = {section.value.lower().replace("_", ""): section for section in ComputersInventorySection}
 
-    key_pattern = r'([a-z0-9._-]+)(?:==|!=|=in=|=out=|<|>|<=|>=)'  # any keyword that is followed by an RSQL operator
+    key_pattern = r"([a-z0-9._-]+)(?:==|!=|=in=|=out=|<|>|<=|>=)"  # any keyword that is followed by an RSQL operator
     found_keys = re.findall(key_pattern, query.lower())
 
     sections = set()
@@ -1403,20 +1419,18 @@ def computers_endpoint_request(client: Client, filter_query: str) -> tuple[list[
             - The raw computer inventory results from the API.
     """
     sections = ComputersInventorySection.subset_to_sections("general")
-    
-    raw_response = client.get_computers_inventory_request(
-        filter_query=filter_query, sections=sections
-    )
-    
+
+    raw_response = client.get_computers_inventory_request(filter_query=filter_query, sections=sections)
+
     # only a single match is expected, but handle as if there are multiple matches
     mapped_response_list = []
-    
+
     raw_computers = raw_response.get("results", [])
-    
+
     for computer_response in raw_computers:
         general = computer_response.get("general", {})
         hardware = computer_response.get("hardware", {})
-        
+
         mapped_response = {
             "id": computer_response.get("id"),
             "name": general.get("name"),
@@ -1425,9 +1439,9 @@ def computers_endpoint_request(client: Client, filter_query: str) -> tuple[list[
             "mac_address": hardware.get("macAddress"),
             "udid": computer_response.get("udid"),
         }
-        
+
         mapped_response_list.append(mapped_response)
-    
+
     return mapped_response_list, raw_computers
 
 
@@ -1487,10 +1501,12 @@ def get_computers_command(client: Client, args: dict[str, Any]) -> list[CommandR
     context_outputs = copy.deepcopy(computers)
     for computer_context in context_outputs:
         general = computer_context.get("general", {})
-        
-        computer_context.update({
-            "name": general.get("name"),
-        })
+
+        computer_context.update(
+            {
+                "name": general.get("name"),
+            }
+        )
 
     return [
         CommandResults(
@@ -1541,21 +1557,23 @@ def get_computers_basic_subset_command(client: Client, args: dict[str, Any]) -> 
         remoteManagement = general.get("remoteManagement", {})
         userAndLocation = computer_context.get("userAndLocation", {})
         hardware = computer_context.get("hardware", {})
-        
+
         report_date = format_date_fields(general.get("reportDate"))
-        
-        computer_context.update({
-            "name": general.get("name"),
-            "managed": remoteManagement.get("managed"),
-            "username": userAndLocation.get("username"),
-            "model": hardware.get("model"),
-            "department": userAndLocation.get("departmentId"),
-            "building": userAndLocation.get("buildingId"),
-            "mac_address": hardware.get("macAddress"),
-            "serial_number": hardware.get("serialNumber"),
-            "report_date_utc": report_date.get("utc"),
-            "report_date_epoch": report_date.get("epoch"),
-        })
+
+        computer_context.update(
+            {
+                "name": general.get("name"),
+                "managed": remoteManagement.get("managed"),
+                "username": userAndLocation.get("username"),
+                "model": hardware.get("model"),
+                "department": userAndLocation.get("departmentId"),
+                "building": userAndLocation.get("buildingId"),
+                "mac_address": hardware.get("macAddress"),
+                "serial_number": hardware.get("serialNumber"),
+                "report_date_utc": report_date.get("utc"),
+                "report_date_epoch": report_date.get("epoch"),
+            }
+        )
 
     return [
         CommandResults(
@@ -1616,22 +1634,24 @@ def get_computer_by_match_command(client: Client, args: dict[str, Any]) -> list[
         general = computer_context.get("general", {})
         hardware = general.get("hardware", {})
         userAndLocation = computer_context.get("userAndLocation", {})
-        
-        computer_context.update({
-            "name": general.get("name"),
-            "serial_number": hardware.get("serialNumber"),
-            "mac_address": hardware.get("macAddress"),
-            "alt_mac_address": hardware.get("altMacAddress"),
-            "asset_tag": general.get("assetTag"),
-            "barcode_1": general.get("barcode1"),
-            "barcode_2": general.get("barcode2"),
-            "username": userAndLocation.get("username"),
-            "realname": userAndLocation.get("realname"),
-            "email": userAndLocation.get("email"),
-            "email_address": userAndLocation.get("email"),
-            "room": userAndLocation.get("room"),
-            "position": userAndLocation.get("position"),
-        })
+
+        computer_context.update(
+            {
+                "name": general.get("name"),
+                "serial_number": hardware.get("serialNumber"),
+                "mac_address": hardware.get("macAddress"),
+                "alt_mac_address": hardware.get("altMacAddress"),
+                "asset_tag": general.get("assetTag"),
+                "barcode_1": general.get("barcode1"),
+                "barcode_2": general.get("barcode2"),
+                "username": userAndLocation.get("username"),
+                "realname": userAndLocation.get("realname"),
+                "email": userAndLocation.get("email"),
+                "email_address": userAndLocation.get("email"),
+                "room": userAndLocation.get("room"),
+                "position": userAndLocation.get("position"),
+            }
+        )
 
     return [
         CommandResults(
@@ -1675,34 +1695,36 @@ def get_computer_by_id_command(client: Client, args: dict[str, Any]) -> CommandR
     site = general.get("site", {})
 
     context_outputs = copy.deepcopy(response)
-    context_outputs.update({
-        "name": general.get("name"),
-        "network_adapter_type": hardware.get("networkAdapterType"),
-        "mac_address": hardware.get("macAddress"),
-        "alt_network_adapter_type": hardware.get("altNetworkAdapterType"),
-        "alt_mac_address": hardware.get("altMacAddress"),
-        "ip_address": general.get("lastIpAddress"),
-        "last_reported_ip": general.get("lastReportedIpV4"),
-        "serial_number": hardware.get("serialNumber"),
-        "jamf_version": general.get("jamfBinaryVersion"),
-        "platform": general.get("platform"),
-        "barcode_1": general.get("barcode1"),
-        "barcode_2": general.get("barcode2"),
-        "asset_tag": general.get("assetTag"),
-        "remote_management": {
-            "managed": remoteManagement.get("managed"),
-            "management_username": remoteManagement.get("managementUsername"),
-        },
-        "supervised": general.get("supervised"),
-        "mdm_capable": mdmCapable.get("capable"),
-        "mdm_capable_users": mdmCapable.get("capableUsers"),
-        "distribution_point": general.get("distributionPoint"),
-        "site": {
-            "id": site.get("id"),
-            "name": site.get("name"),
-        },
-        "itunes_store_account_is_active": general.get("itunesStoreAccountActive"),
-    })
+    context_outputs.update(
+        {
+            "name": general.get("name"),
+            "network_adapter_type": hardware.get("networkAdapterType"),
+            "mac_address": hardware.get("macAddress"),
+            "alt_network_adapter_type": hardware.get("altNetworkAdapterType"),
+            "alt_mac_address": hardware.get("altMacAddress"),
+            "ip_address": general.get("lastIpAddress"),
+            "last_reported_ip": general.get("lastReportedIpV4"),
+            "serial_number": hardware.get("serialNumber"),
+            "jamf_version": general.get("jamfBinaryVersion"),
+            "platform": general.get("platform"),
+            "barcode_1": general.get("barcode1"),
+            "barcode_2": general.get("barcode2"),
+            "asset_tag": general.get("assetTag"),
+            "remote_management": {
+                "managed": remoteManagement.get("managed"),
+                "management_username": remoteManagement.get("managementUsername"),
+            },
+            "supervised": general.get("supervised"),
+            "mdm_capable": mdmCapable.get("capable"),
+            "mdm_capable_users": mdmCapable.get("capableUsers"),
+            "distribution_point": general.get("distributionPoint"),
+            "site": {
+                "id": site.get("id"),
+                "name": site.get("name"),
+            },
+            "itunes_store_account_is_active": general.get("itunesStoreAccountActive"),
+        }
+    )
 
     reportDate = format_date_fields(general.get("reportDate"))
     lastContactTime = format_date_fields(general.get("lastContactTime"))
@@ -1711,23 +1733,25 @@ def get_computer_by_id_command(client: Client, args: dict[str, Any]) -> CommandR
     lastEnrolledDate = format_date_fields(general.get("lastEnrolledDate"))
     mdmProfileExpiration = format_date_fields(general.get("mdmProfileExpiration"))
 
-    context_outputs.update({
-        "report_date": reportDate.get("date"),
-        "report_date_epoch": reportDate.get("epoch"),
-        "report_date_utc": reportDate.get("utc"),
-        "last_contact_time": lastContactTime.get("date"),
-        "last_contact_time_epoch": lastContactTime.get("epoch"),
-        "last_contact_time_utc": lastContactTime.get("utc"),
-        "initial_entry_date": initialEntryDate.get("date"),
-        "initial_entry_date_epoch": initialEntryDate.get("epoch"),
-        "initial_entry_date_utc": initialEntryDate.get("utc"),
-        "last_cloud_backup_date_epoch": lastCloudBackupDate.get("epoch"),
-        "last_cloud_backup_date_utc": lastCloudBackupDate.get("utc"),
-        "last_enrolled_date_epoch": lastEnrolledDate.get("epoch"),
-        "last_enrolled_date_utc": lastEnrolledDate.get("utc"),
-        "mdm_profile_expiration_epoch": mdmProfileExpiration.get("epoch"),
-        "mdm_profile_expiration_utc": mdmProfileExpiration.get("utc"),
-    })
+    context_outputs.update(
+        {
+            "report_date": reportDate.get("date"),
+            "report_date_epoch": reportDate.get("epoch"),
+            "report_date_utc": reportDate.get("utc"),
+            "last_contact_time": lastContactTime.get("date"),
+            "last_contact_time_epoch": lastContactTime.get("epoch"),
+            "last_contact_time_utc": lastContactTime.get("utc"),
+            "initial_entry_date": initialEntryDate.get("date"),
+            "initial_entry_date_epoch": initialEntryDate.get("epoch"),
+            "initial_entry_date_utc": initialEntryDate.get("utc"),
+            "last_cloud_backup_date_epoch": lastCloudBackupDate.get("epoch"),
+            "last_cloud_backup_date_utc": lastCloudBackupDate.get("utc"),
+            "last_enrolled_date_epoch": lastEnrolledDate.get("epoch"),
+            "last_enrolled_date_utc": lastEnrolledDate.get("utc"),
+            "mdm_profile_expiration_epoch": mdmProfileExpiration.get("epoch"),
+            "mdm_profile_expiration_utc": mdmProfileExpiration.get("utc"),
+        }
+    )
 
     return CommandResults(
         readable_output=tableToMarkdown(computers_hr, readable_output, removeNull=True),
@@ -1890,7 +1914,10 @@ def get_computer_id_deprecated(client: Client, response, subset_name, identifier
     # Need to send another request with General subset to get the computer ID.
     if subset_name != "General":
         computer_id = (
-            client.get_computer_subset_deprecated_request(identifier, identifier_value, "General").get("computer").get("general").get("id")
+            client.get_computer_subset_deprecated_request(identifier, identifier_value, "General")
+            .get("computer")
+            .get("general")
+            .get("id")
         )
     else:
         computer_id = response.get("computer").get("general").get("id")
@@ -2171,7 +2198,6 @@ def endpoint_command(client, args):
             mapped, raw = computers_endpoint_request(client, filter_query)
             outputs.extend(mapped)
             raw_outputs.extend(raw)
-            
 
     if endpoint_hostname_list:
         for endpoint_hostname in endpoint_hostname_list:
@@ -2185,7 +2211,7 @@ def endpoint_command(client, args):
         outputs = list({v["udid"]: v for v in outputs}.values())
     if raw_outputs:
         raw_outputs = list({v["udid"]: v for v in raw_outputs}.values())
-    
+
     standard_endpoints = generate_endpoint_by_context_standard(outputs)
     command_results = command_results_endpoint_command(standard_endpoints, raw_outputs)
 

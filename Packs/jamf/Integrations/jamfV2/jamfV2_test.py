@@ -648,110 +648,113 @@ def test_get_mobile_configuration_profiles_by_id(mocker):
     assert outputs.outputs["general"]["id"] == 1
 
 
-@pytest.mark.parametrize("query, expected", [
-    pytest.param(
-        "general.name=='MacBook'",
-        ["GENERAL"],
-        id="Simple single keyword (Full Path)",
-    ),
-    pytest.param(
-        "hardware.serialNumber=='XYZ123'",
-        ["HARDWARE"],
-        id="Simple single keyword (Full Path - Updated from Alias)",
-    ),
-    pytest.param(
-        "HARDWARE.MACADDRESS=='00:00:00:00'",
-        ["HARDWARE"],
-        id="Case Insensitivity check",
-    ),
-    pytest.param(
-        "general.assetTag=='123' and general.barcode1=='456'",
-        ["GENERAL"],
-        id="Multiple keywords same section",
-    ),
-    pytest.param(
-        "hardware.model=='MacBook Pro' and operatingsystem.version=='14.1'",
-        ["HARDWARE", "OPERATING_SYSTEM"],
-        id="Multiple keywords different sections (Full Paths)",
-    ),
-    pytest.param(
-        "userandlocation.buildingId=in=(1, 2, 3)",
-        ["USER_AND_LOCATION"],
-        id="Using the =in= operator",
-    ),
-    pytest.param(
-        "purchasing.purchased!='2023-01-01'",
-        ["PURCHASING"],
-        id="Using the != operator",
-    ),
-    pytest.param(
-        "general.remoteManagement.managed==true",
-        ["GENERAL"],
-        id="Deeply nested full path",
-    ),
-    pytest.param(
-        "udid=='550e8400-e29b'",
-        [],
-        id="Key with no mapped section (udid)",
-    ),
-    pytest.param(
-        "id==10 and hardware.appleSilicon==true",
-        ["HARDWARE"],
-        id="Combination of mapped and unmapped keys",
-    ),
-    pytest.param(
-        "userandlocation.email=='test@me.com' or (hardware.make=='Apple' and userandlocation.departmentId==5)",
-        ["HARDWARE", "USER_AND_LOCATION"],
-        id="Complex query OR/AND",
-    ),
-    pytest.param(
-        "operatingsystem.activeDirectoryStatus=='Bound' or operatingsystem.fileVault2Status=='All'",
-        ["OPERATING_SYSTEM"],
-        id="Operating System specific keys",
-    ),
-    pytest.param(
-        "security.firewallEnabled==true and diskencryption.fileVault2Enabled==true",
-        ["DISK_ENCRYPTION", "SECURITY"],
-        id="Security and Disk Encryption",
-    ),
-    pytest.param(
-        "general.lastLoggedInUsernameSelfService=='admin'",
-        ["GENERAL"],
-        id="Deeply nested names",
-    ),
-    pytest.param(
-        "purchasing.lifeExpectancy>=3",
-        ["PURCHASING"],
-        id="Numeric operators",
-    ),
-    pytest.param(
-        "purchasing.warrantyDate<'2025-01-01' and general.reportDate>'2024-01-01'",
-        ["GENERAL", "PURCHASING"],
-        id="Date based fields",
-    ),
-    pytest.param(
-        "hardware.model=='Air' and hardware.macAddress=='00' and hardware.appleSilicon==false",
-        ["HARDWARE"],
-        id="Duplicate sections deduplication",
-    ),
-    pytest.param(
-        "OPERATINGSYSTEM.SUPPLEMENTALBUILDVERSION=='23F80' AND operatingsystem.build=='23F70'",
-        ["OPERATING_SYSTEM"],
-        id="Mixed casing in operators and keys",
-    ),
-    pytest.param(
-        "general.name=='X' and hardware.serialNumber=='Y' and operatingsystem.version=='Z' and "
-        "security.activationLockEnabled==true and userandlocation.email=='A' and "
-        "diskencryption.fileVault2Enabled==true and purchasing.vendor=='B'",
-        ["DISK_ENCRYPTION", "GENERAL", "HARDWARE", "OPERATING_SYSTEM", "PURCHASING", "SECURITY", "USER_AND_LOCATION"],
-        id="Universal query (All sections using Full Paths)",
-    ),
-    pytest.param(
-        "unknownField=='foo' and 123==456",
-        [],
-        id="Unrelated or unknown fields",
-    ),
-])
+@pytest.mark.parametrize(
+    "query, expected",
+    [
+        pytest.param(
+            "general.name=='MacBook'",
+            ["GENERAL"],
+            id="Simple single keyword (Full Path)",
+        ),
+        pytest.param(
+            "hardware.serialNumber=='XYZ123'",
+            ["HARDWARE"],
+            id="Simple single keyword (Full Path - Updated from Alias)",
+        ),
+        pytest.param(
+            "HARDWARE.MACADDRESS=='00:00:00:00'",
+            ["HARDWARE"],
+            id="Case Insensitivity check",
+        ),
+        pytest.param(
+            "general.assetTag=='123' and general.barcode1=='456'",
+            ["GENERAL"],
+            id="Multiple keywords same section",
+        ),
+        pytest.param(
+            "hardware.model=='MacBook Pro' and operatingsystem.version=='14.1'",
+            ["HARDWARE", "OPERATING_SYSTEM"],
+            id="Multiple keywords different sections (Full Paths)",
+        ),
+        pytest.param(
+            "userandlocation.buildingId=in=(1, 2, 3)",
+            ["USER_AND_LOCATION"],
+            id="Using the =in= operator",
+        ),
+        pytest.param(
+            "purchasing.purchased!='2023-01-01'",
+            ["PURCHASING"],
+            id="Using the != operator",
+        ),
+        pytest.param(
+            "general.remoteManagement.managed==true",
+            ["GENERAL"],
+            id="Deeply nested full path",
+        ),
+        pytest.param(
+            "udid=='550e8400-e29b'",
+            [],
+            id="Key with no mapped section (udid)",
+        ),
+        pytest.param(
+            "id==10 and hardware.appleSilicon==true",
+            ["HARDWARE"],
+            id="Combination of mapped and unmapped keys",
+        ),
+        pytest.param(
+            "userandlocation.email=='test@me.com' or (hardware.make=='Apple' and userandlocation.departmentId==5)",
+            ["HARDWARE", "USER_AND_LOCATION"],
+            id="Complex query OR/AND",
+        ),
+        pytest.param(
+            "operatingsystem.activeDirectoryStatus=='Bound' or operatingsystem.fileVault2Status=='All'",
+            ["OPERATING_SYSTEM"],
+            id="Operating System specific keys",
+        ),
+        pytest.param(
+            "security.firewallEnabled==true and diskencryption.fileVault2Enabled==true",
+            ["DISK_ENCRYPTION", "SECURITY"],
+            id="Security and Disk Encryption",
+        ),
+        pytest.param(
+            "general.lastLoggedInUsernameSelfService=='admin'",
+            ["GENERAL"],
+            id="Deeply nested names",
+        ),
+        pytest.param(
+            "purchasing.lifeExpectancy>=3",
+            ["PURCHASING"],
+            id="Numeric operators",
+        ),
+        pytest.param(
+            "purchasing.warrantyDate<'2025-01-01' and general.reportDate>'2024-01-01'",
+            ["GENERAL", "PURCHASING"],
+            id="Date based fields",
+        ),
+        pytest.param(
+            "hardware.model=='Air' and hardware.macAddress=='00' and hardware.appleSilicon==false",
+            ["HARDWARE"],
+            id="Duplicate sections deduplication",
+        ),
+        pytest.param(
+            "OPERATINGSYSTEM.SUPPLEMENTALBUILDVERSION=='23F80' AND operatingsystem.build=='23F70'",
+            ["OPERATING_SYSTEM"],
+            id="Mixed casing in operators and keys",
+        ),
+        pytest.param(
+            "general.name=='X' and hardware.serialNumber=='Y' and operatingsystem.version=='Z' and "
+            "security.activationLockEnabled==true and userandlocation.email=='A' and "
+            "diskencryption.fileVault2Enabled==true and purchasing.vendor=='B'",
+            ["DISK_ENCRYPTION", "GENERAL", "HARDWARE", "OPERATING_SYSTEM", "PURCHASING", "SECURITY", "USER_AND_LOCATION"],
+            id="Universal query (All sections using Full Paths)",
+        ),
+        pytest.param(
+            "unknownField=='foo' and 123==456",
+            [],
+            id="Unrelated or unknown fields",
+        ),
+    ],
+)
 def test_get_sections_from_query(query, expected):
     """
     Given:
@@ -765,6 +768,4 @@ def test_get_sections_from_query(query, expected):
 
     actual_sections = get_sections_from_query(query)
 
-    assert set(actual_sections) == set(expected), (
-        f"Failed for query: {query}\nExpected: {expected}\nActual: {actual_sections}"
-    )
+    assert set(actual_sections) == set(expected), f"Failed for query: {query}\nExpected: {expected}\nActual: {actual_sections}"
