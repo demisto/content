@@ -1441,7 +1441,7 @@ class CoreClient(BaseClient):
     def get_webapp_data(self, request_data: dict) -> dict:
         return self._http_request(
             method="POST",
-            url_suffix="/get_data",
+            url_suffix="/get_data/",
             json_data=request_data,
         )
 
@@ -4328,13 +4328,13 @@ def get_issues_by_filter_command(client: CoreClient, args: Dict):
         on_demand_fields=on_demand_fields,
         start_page=start_index,
     )
-    demisto.info(f"{request_data=}")
+    demisto.debug(f"{request_data=}")
     response = client.get_webapp_data(request_data)
     reply = response.get("reply", {})
     demisto.debug(f"{reply=}")
     data = reply.get("DATA", [])
 
-    filtered_count = int(reply.get("FILTER_COUNT", "0"))
+    filtered_count = int(reply.get("FILTER_COUNT") or "0")
     returned_count = len(data)
 
     for issue in data:

@@ -153,12 +153,12 @@ Multiple filter arguments will be concatenated using the AND operator, while arg
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Core.Issue.internal_id | String | The unique ID of the issue. |
-| Core.Issue.identity_type | String | The identity type of the account. |
+| Core.Issue.Identity_type | String | The identity type of the account. |
 | Core.Issue.source_insert_ts | Number | The detection timestamp. |
 | Core.Issue.issue_name | String | The name of the issue. |
 | Core.Issue.issue_category | String | The category of the issue. |
 | Core.Issue.issue_description | String | The issue description. |
-| Core.Issue.agent_ids | List | The agent \(endpoint\) IDs associated with the issue. |
+| Core.Issue.agent_id | List | The agent \(endpoint\) IDs associated with the issue. |
 | Core.Issue.asset_ids | List | The asset IDs related to the issue. |
 | Core.Issue.severity | String | The severity of the issue. |
 | Core.Issue.issue_domain | String | The domain of the issue. |
@@ -179,6 +179,8 @@ Multiple filter arguments will be concatenated using the AND operator, while arg
 | Core.Issue.causality_actor_process_image_sha256 | String | Causality actor process image SHA256 hash. |
 | Core.Issue.os_actor_process_image_sha256 | String | OS Parent SHA256 hash of the OS actor process image. |
 | Core.Issue.actor_process_image_sha256 | String | Actor process image SHA256 hash. |
+| Core.IssueMetadata.returned_count | Number | The actual number of issues that match all filter criteria and returned in this specific response. |
+| Core.IssueMetadata.filtered_count | Number | The total number of issues in the system that match all filter criteria. |
 
 ### core-get-case-extra-data
 
