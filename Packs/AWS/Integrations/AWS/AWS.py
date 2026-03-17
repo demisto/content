@@ -339,7 +339,7 @@ def parse_key_1_value_to_dict(key_value_str: str) -> dict:
     results = {}
     list_variables = argToList(key_value_str, separator=";")
     regex = re.compile(
-        r"^key=(\b[^0-9\d][\w]+),value=([ \w@,.*-\/:]+)",
+        r"^key=(\b[^0-9][\w]+),value=([ \w@,.*-\/:]+)",
         flags=re.I,
     )
     for var in list_variables:
