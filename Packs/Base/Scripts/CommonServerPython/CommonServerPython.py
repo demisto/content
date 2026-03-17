@@ -9659,6 +9659,24 @@ if 'requests' in sys.modules:
                 kwargs['ssl_context'] = self.context
                 return super(SSLAdapter, self).proxy_manager_for(*args, **kwargs)
 
+    class UcpRequestContext:
+        """Mutable container for request components that _apply_ucp_credentials can modify.
+
+        BaseClient._http_request creates this, passes it to _apply_ucp_credentials,
+        then unpacks the (possibly modified) values back into the request call.
+
+        Integration overrides should mutate the fields they need. Do NOT replace
+        the object — mutate it in place.
+        """
+        __slots__ = ('headers', 'params', 'auth', 'data', 'json_data')
+
+        def __init__(self, headers, params, auth, data, json_data):
+            self.headers = headers
+            self.params = params
+            self.auth = auth
+            self.data = data
+            self.json_data = json_data
+
     class BaseClient(object):
         """Client to use in integrations with powerful _http_request
         :type base_url: ``str``
@@ -9740,6 +9758,181 @@ if 'requests' in sys.modules:
 
             self.execution_metrics = ExecutionMetrics()
 
+            # ── UCP: Detection + Profile Resolution (once) ──
+            self._ucp_enabled = False
+            self._ucp_profile_id = "81dbc913e1afd5c68bf6488fe866f537"
+            self._ucp_creds_cache = None       # cached credentials dict
+            self._ucp_creds_expiry = 0         # epoch timestamp
+
+            try:
+                connector_info = demisto.unifiedConnectorInfo()
+                if connector_info:
+                    self._ucp_enabled = True
+                    self._ucp_info = connector_info
+                    self._ucp_profile_id = "81dbc913e1afd5c68bf6488fe866f537"
+                    demisto.debug(
+                        'BaseClient: UCP enabled, profile={}'.format(self._ucp_profile_id)
+                    )
+            except Exception as e:
+                demisto.debug('UCP detection skipped: {}'.format(e))
+            # ── End UCP ──
+
+        def _apply_connectus_headers(self, integration_headers):
+            """Merge BE-provided auth headers with integration-provided headers.
+            
+            Integration headers (Content-Type, Accept, etc.) are preserved.
+            BE auth headers take precedence for auth-related keys.
+            """
+            merged = dict(integration_headers) if integration_headers else {}
+            
+            if self._connectus_auth_data:
+                auth_type = self._connectus_auth_data.get('auth_type', '')
+                
+                if auth_type == 'header':
+                    # BE provides ready-to-use headers (Authorization, X-Api-Key, etc.)
+                    be_headers = self._connectus_auth_data.get('headers', {})
+                    merged.update(be_headers)
+                    
+                elif auth_type == 'bearer':
+                    token = self._connectus_auth_data.get('token', '')
+                    merged['Authorization'] = 'Bearer {}'.format(token)
+            
+            return merged if merged else None
+
+        # ── UCP: Refresh threshold (seconds). Overridable by subclass. ──
+        _UCP_REFRESH_THRESHOLD_SECONDS = 30
+
+        def _resolve_ucp_profile(self):
+            """Resolve which connection profile to use for the current command.
+
+            Resolution order:
+            1. Single profile → use it (no ambiguity)
+            2. Per-command capability from YML metadata
+            3. Default capability from YML metadata
+            4. Fallback: best profile by auth type priority
+            """
+            profiles = self._ucp_info.get('connectionProfiles', [])
+
+            if len(profiles) == 1:
+                return profiles[0]['profileInstanceId']
+
+            # Check command-to-capability mapping from integration YML
+            cmd = demisto.command()
+            calling_context = demisto.callingContext.get('context', {})
+            ucp_meta = calling_context.get('connectus', {})
+
+            capability = ucp_meta.get('command_capabilities', {}).get(cmd)
+            if not capability:
+                capability = ucp_meta.get('default_capability')
+
+            if capability:
+                for profile in profiles:
+                    if capability in profile.get('capabilities', []):
+                        demisto.debug(
+                            'UCP: Command "{}" -> capability "{}" -> profile "{}"'.format(
+                                cmd, capability, profile['profileInstanceId']
+                            )
+                        )
+                        return profile['profileInstanceId']
+
+            # Fallback: best profile by auth type priority
+            priority = {
+                'oauth2_client_credentials': 1,
+                'oauth2_code_exchange': 2,
+                'api_key': 3,
+                'plain': 4,
+            }
+            if not profiles:
+                raise DemistoException('UCP enabled but no connection profiles available')
+            sorted_profiles = sorted(
+                profiles, key=lambda p: priority.get(p.get('type', ''), 99)
+            )
+            selected = sorted_profiles[0]
+            demisto.debug(
+                'UCP: Fallback profile -> "{}" (type={})'.format(
+                    selected['profileInstanceId'], selected.get('type')
+                )
+            )
+            return selected['profileInstanceId']
+
+        def _get_ucp_credentials(self):
+            """Get UCP credentials with TTL-aware caching.
+
+            - api_key / plain: fetched once, cached forever (no expiry)
+            - oauth2: cached until (expires_at - refresh_threshold),
+                      then re-fetched from BE for a fresh token
+            """
+            now = time.time()
+
+            # Return cached if still valid
+            if self._ucp_creds_cache is not None:
+                if self._ucp_creds_expiry == 0:
+                    # Static creds (api_key, plain) — never expire
+                    return self._ucp_creds_cache
+                if now < (self._ucp_creds_expiry - self._UCP_REFRESH_THRESHOLD_SECONDS):
+                    return self._ucp_creds_cache
+
+            # Fetch fresh credentials from BE
+            creds = demisto.getUCPCredentials("81dbc913e1afd5c68bf6488fe866f537")
+
+            # Determine cache expiry
+            expires_at = creds.get('expires_at')
+            if expires_at:
+                try:
+                    dt = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+                    self._ucp_creds_expiry = dt.timestamp()
+                except (ValueError, AttributeError):
+                    self._ucp_creds_expiry = now + 300
+            else:
+                self._ucp_creds_expiry = 0
+
+            self._ucp_creds_cache = creds
+            demisto.debug(
+                'UCP: Fetched fresh credentials, type={}, expires_at={}'.format(
+                    creds.get('type'), expires_at or 'static'
+                )
+            )
+            return creds
+
+        def _apply_ucp_credentials(self, credentials, ctx):
+            """Apply UCP credentials to the request context. OVERRIDABLE by subclasses.
+
+            Default behavior (opinionated):
+            - oauth2  → Authorization: {token_type} {access_token} header
+            - api_key → Authorization: Bearer {key} header
+            - plain   → requests auth=(username, password) tuple
+
+            Override this method if the vendor API uses a different mechanism
+            (custom header name, query param, request body, etc.).
+
+            Args:
+                credentials: dict from demisto.getCredentials()
+                ctx: UcpRequestContext — mutate this to apply credentials.
+                     Do NOT return anything.
+            """
+            cred_type = credentials.get('type')
+
+            if ctx.headers is None:
+                ctx.headers = {}
+
+            if cred_type == 'oauth2':
+                token_type = credentials.get('token_type', 'Bearer')
+                ctx.headers['Authorization'] = '{} {}'.format(
+                    token_type, credentials.get('access_token')
+                )
+            elif cred_type == 'api_key':
+                ctx.headers['Authorization'] = 'Bearer {}'.format(
+                    credentials.get('key')
+                )
+            elif cred_type == 'plain':
+                ctx.auth = (
+                    credentials.get('username', ''),
+                    credentials.get('password', ''),
+                )
+            else:
+                raise DemistoException(
+                    'Unknown UCP credential type: {}'.format(cred_type)
+                )
 
         def __del__(self):
             self._return_execution_metrics_results()
@@ -9990,6 +10183,28 @@ if 'requests' in sys.modules:
                 ):  # The `quote_via` parameter is supported only in python3.
                     params = urllib.parse.urlencode(params, quote_via=params_parser)
 
+                # ── UCP: Inject credentials ──
+                if self._ucp_enabled:
+                    metadata = demisto.unifiedConnectorMetadata()
+                    demisto.log('UCP Metadata: {}'.format(metadata))
+                    demisto.log(f"Params: {demisto.params()}")
+                    demisto.log(f"Credentials: {demisto.getUCPCredentials('81dbc913e1afd5c68bf6488fe866f537')}")
+                    ucp_creds = self._get_ucp_credentials()
+                    ctx = UcpRequestContext(
+                        headers=dict(headers) if headers else {},
+                        params=dict(params) if params else {},
+                        auth=auth,
+                        data=data,
+                        json_data=json_data,
+                    )
+                    self._apply_ucp_credentials(ucp_creds, ctx)
+                    headers = ctx.headers
+                    params = ctx.params or None
+                    auth = ctx.auth
+                    data = ctx.data
+                    json_data = ctx.json_data
+                # ── End UCP ──
+
                 # Execute
                 res = self._session.request(
                     method,
@@ -10004,6 +10219,34 @@ if 'requests' in sys.modules:
                     timeout=request_timeout,
                     **kwargs
                 )
+
+                # ── UCP: Single 401 retry with cache invalidation ──
+                if self._ucp_enabled and res.status_code == 401:
+                    demisto.debug('UCP: Got 401, invalidating cache and retrying')
+                    self._ucp_creds_cache = None
+                    ucp_creds = self._get_ucp_credentials()
+                    ctx = UcpRequestContext(
+                        headers=dict(self._headers) if self._headers else {},
+                        params=dict(params) if params else {},
+                        auth=self._auth,
+                        data=data,
+                        json_data=json_data,
+                    )
+                    self._apply_ucp_credentials(ucp_creds, ctx)
+                    res = self._session.request(
+                        method,
+                        address,
+                        verify=self._verify,
+                        params=ctx.params or None,
+                        data=ctx.data,
+                        json=ctx.json_data,
+                        files=files,
+                        headers=ctx.headers,
+                        auth=ctx.auth,
+                        timeout=request_timeout,
+                        **kwargs
+                    )
+                # ── End UCP ──
 
                 if not self._is_status_code_valid(res, ok_codes):
                     self._handle_error(error_handler, res, with_metrics)
