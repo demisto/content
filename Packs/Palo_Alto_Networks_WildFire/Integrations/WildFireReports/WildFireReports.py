@@ -16,11 +16,11 @@ class Client(BaseClient):
         ok_codes=(),
         headers: dict = None,
         token: str = None,
-        override_agent: str = "",
+        agent: str = "",
     ):
         super().__init__(base_url, verify, proxy, ok_codes, headers)
         self.token = token
-        self.agent = self.get_agent(override_agent)
+        self.agent = self.get_agent(agent)
         add_sensitive_log_strs(token)
 
     @staticmethod
@@ -138,7 +138,7 @@ def main():  # pragma: no coverage
             sys.exit()
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    override_agent = params.get("override_agent", "")
+    agent = params.get("agent", "")
 
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
@@ -151,7 +151,7 @@ def main():  # pragma: no coverage
             headers=headers,
             verify=verify_certificate,
             proxy=proxy,
-            agent_override=override_agent,
+            agent=agent,
         )
 
         if command == "test-module":
