@@ -813,6 +813,61 @@ def test_get_email_related_incident_id_email_in_context(mocker):
     assert id == "3"
 
 
+@pytest.mark.parametrize(
+    "message_id, query_result, expected_id",
+    [
+        # Case 1: Match found — returns incident ID
+        (
+            "<CAOvM-jN0Lg@mail.gmail.com>",
+            [{"id": "42", "emaillatestmessage": "<CAOvM-jN0Lg@mail.gmail.com>"}],
+            "42",
+        ),
+        # Case 2: No match found — returns None
+        (
+            "<unknown@mail.gmail.com>",
+            [],
+            None,
+        ),
+        # Case 3: Empty message_id — returns None without querying
+        (
+            "",
+            [],
+            None,
+        ),
+        # Case 4: None message_id — returns None without querying
+        (
+            None,
+            [],
+            None,
+        ),
+    ],
+)
+def test_get_incident_by_message_id(message_id, query_result, expected_id, mocker):
+    """Unit Test
+    Given
+    - An incoming reply email whose emaillatestmessage (In-Reply-To) value may or may not
+      match the emaillatestmessage field of an existing XSOAR incident
+    When
+    - get_incident_by_message_id is called with the message_id
+    Then
+    - Validate that the correct incident ID is returned when a match exists,
+      and None is returned when no match is found or message_id is empty/None
+    """
+    import PreprocessEmail
+    from PreprocessEmail import get_incident_by_message_id
+
+    query_mocker = mocker.patch.object(PreprocessEmail, "get_incident_by_query", return_value=query_result)
+    mocker.patch.object(demisto, "debug")
+
+    result = get_incident_by_message_id(message_id)
+    assert result == expected_id
+
+    if message_id:
+        query_mocker.assert_called_once()
+    else:
+        query_mocker.assert_not_called()
+
+
 def test_main_untagged_email(mocker):
     """
     Given

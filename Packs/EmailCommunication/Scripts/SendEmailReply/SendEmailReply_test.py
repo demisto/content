@@ -179,6 +179,7 @@ def test_validate_email_sent_fails(mocker):
                 "replyTo": "soc_sender@company.com",
                 "using": "soc_sender@company.com",
                 "bodyType": "html",
+                "references": "5",
             },
         ),
         (
@@ -210,6 +211,7 @@ def test_validate_email_sent_fails(mocker):
                 "attachIDs": "10,12",
                 "replyTo": "soc_sender@company.com",
                 "bodyType": "html",
+                "references": "5",
             },
         ),
         (
@@ -243,6 +245,7 @@ def test_validate_email_sent_fails(mocker):
                 "replyTo": "soc_sender@company.com",
                 "using": "soc_sender@company.com",
                 "bodyType": "html",
+                "references": "5",
             },
         ),
         (
@@ -274,6 +277,7 @@ def test_validate_email_sent_fails(mocker):
                 "attachIDs": "10,12",
                 "replyTo": "soc_sender@company.com",
                 "bodyType": "html",
+                "references": "5",
             },
         ),
     ],
@@ -292,9 +296,85 @@ def test_execute_reply_mail(test_args, expected_response, mocker):
 
     execute_command_mocker = mocker.patch.object(demisto, "executeCommand", return_value=True)
     mocker.patch.object(SendEmailReply, "return_error", return_value=True)
+    # Mock get_references_chain to return the inReplyTo value (simulates no prior thread context)
+    mocker.patch.object(SendEmailReply, "get_references_chain", side_effect=lambda incident_id, email_code, email_latest_message: email_latest_message or "")
     execute_reply_mail(*test_args)
     execute_command_call_args = execute_command_mocker.call_args
     assert execute_command_call_args.args[1] == expected_response
+
+
+@pytest.mark.parametrize(
+    "email_threads, email_code, email_latest_message, expected_references",
+    [
+        # Case 1: No thread context — falls back to email_latest_message
+        (
+            None,
+            "12345678",
+            "<original@mail.com>",
+            "<original@mail.com>",
+        ),
+        # Case 2: Single thread entry as dict (one outbound message) — returns its MessageID
+        (
+            {
+                "EmailCommsThreadId": "12345678",
+                "MessageID": "<msg1@mail.com>",
+                "MessageDirection": "outbound",
+            },
+            "12345678",
+            "<msg1@mail.com>",
+            "<msg1@mail.com>",
+        ),
+        # Case 3: Multiple thread entries — returns full chain space-separated
+        (
+            [
+                {"EmailCommsThreadId": "12345678", "MessageID": "<msg1@mail.com>", "MessageDirection": "inbound"},
+                {"EmailCommsThreadId": "12345678", "MessageID": "<msg2@mail.com>", "MessageDirection": "outbound"},
+                {"EmailCommsThreadId": "12345678", "MessageID": "<msg3@mail.com>", "MessageDirection": "inbound"},
+            ],
+            "12345678",
+            "<msg3@mail.com>",
+            "<msg1@mail.com> <msg2@mail.com> <msg3@mail.com>",
+        ),
+        # Case 4: Thread entries from a different thread code — falls back to email_latest_message
+        (
+            [
+                {"EmailCommsThreadId": "99999999", "MessageID": "<other@mail.com>", "MessageDirection": "inbound"},
+            ],
+            "12345678",
+            "<original@mail.com>",
+            "<original@mail.com>",
+        ),
+        # Case 5: Thread entries with missing MessageID — skipped
+        (
+            [
+                {"EmailCommsThreadId": "12345678", "MessageID": "<msg1@mail.com>", "MessageDirection": "inbound"},
+                {"EmailCommsThreadId": "12345678", "MessageID": None, "MessageDirection": "outbound"},
+                {"EmailCommsThreadId": "12345678", "MessageID": "<msg3@mail.com>", "MessageDirection": "inbound"},
+            ],
+            "12345678",
+            "<msg3@mail.com>",
+            "<msg1@mail.com> <msg3@mail.com>",
+        ),
+    ],
+)
+def test_get_references_chain(email_threads, email_code, email_latest_message, expected_references, mocker):
+    """Unit Test
+    Given
+    - EmailThreads context with various states (None, single dict, list of entries)
+    When
+    - get_references_chain is called with the incident_id, email_code, and email_latest_message
+    Then
+    - Validate that the returned References chain is a space-separated string of all MessageIDs
+      for the given thread, or falls back to email_latest_message when no context is available
+    """
+    import SendEmailReply
+    from SendEmailReply import get_references_chain
+
+    mocker.patch.object(SendEmailReply, "get_email_threads", return_value=email_threads)
+    mocker.patch.object(demisto, "debug")
+
+    result = get_references_chain("incident_1", email_code, email_latest_message)
+    assert result == expected_references
 
 
 GET_EMAIL_RECIPIENTS = [

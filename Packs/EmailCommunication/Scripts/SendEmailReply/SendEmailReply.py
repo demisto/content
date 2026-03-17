@@ -227,6 +227,48 @@ def validate_email_sent(
     return msg
 
 
+def get_references_chain(incident_id: str, email_code: str, email_latest_message: str | None) -> str:
+    """Build the full RFC 2822 References header chain from all MessageIDs stored in the
+    EmailThreads context for the given thread (identified by email_code).
+
+    Email clients (Gmail, Outlook, etc.) require the References header to contain the
+    complete chain of all prior Message-IDs in the conversation in order to reliably
+    group replies into the same thread.
+
+    Args:
+        incident_id: The current incident ID.
+        email_code: The unique code identifying the email thread (EmailCommsThreadId).
+        email_latest_message: Fallback message ID if no thread context is found.
+
+    Returns:
+        Space-separated string of Message-IDs, e.g.
+        "<msg1@mail.com> <msg2@mail.com> <msg3@mail.com>"
+    """
+    email_threads = get_email_threads(incident_id)
+    if not email_threads:
+        demisto.debug(f"get_references_chain: no EmailThreads context found for incident {incident_id}, "
+                      f"falling back to email_latest_message")
+        return email_latest_message or ""
+
+    if isinstance(email_threads, dict):
+        email_threads = [email_threads]
+
+    message_ids = [
+        entry["MessageID"]
+        for entry in email_threads
+        if entry.get("EmailCommsThreadId") == email_code and entry.get("MessageID")
+    ]
+
+    if not message_ids:
+        demisto.debug(f"get_references_chain: no MessageIDs found for thread {email_code}, "
+                      f"falling back to email_latest_message")
+        return email_latest_message or ""
+
+    references = " ".join(message_ids)
+    demisto.debug(f"get_references_chain: built References chain for thread {email_code}: {references}")
+    return references
+
+
 def execute_reply_mail(
     incident_id,
     email_subject,
@@ -269,7 +311,7 @@ def execute_reply_mail(
     mail_content = {
         "to": email_to,
         "inReplyTo": email_latest_message,
-        "subject": subject_with_id,
+        "subject": email_subject,
         "cc": email_cc,
         "bcc": email_bcc,
         "htmlBody": reply_html_body,
@@ -284,11 +326,10 @@ def execute_reply_mail(
     if mail_sender_instance:
         mail_content["using"] = mail_sender_instance
 
-        # If using Gmail Single User,
-        # add references header to mail_content to properly group replies into conversations in user's inbox.
-        instances = demisto.getModules()
-        if instances.get(mail_sender_instance, {}).get("brand") == "Gmail Single User":
-            mail_content["references"] = email_latest_message
+    # Add the References header with the full chain of all prior Message-IDs in this thread.
+    # Both In-Reply-To and References are required by RFC 2822 for email clients to reliably
+    # group replies into the same conversation thread (Gmail, Outlook, etc.).
+    mail_content["references"] = get_references_chain(incident_id, email_code, email_latest_message)
     demisto.debug(f"Sending email with the following subject: {subject_with_id}, and content: {mail_content}")
     is_succeed, email_reply = execute_command("reply-mail", mail_content, extract_contents=False, fail_on_error=False)
     if is_succeed:

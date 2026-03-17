@@ -341,6 +341,37 @@ def get_email_related_incident_id(email_related_incident_code, email_original_su
     return None
 
 
+def get_incident_by_message_id(message_id: str) -> str | None:
+    """Search for an existing Email Communication incident whose 'emaillatestmessage' field
+    matches the given message_id (the In-Reply-To value of the incoming reply email).
+
+    This is used as a fallback routing mechanism when the incoming reply subject does not
+    contain the XSOAR incident code (e.g., because the outgoing reply was sent with the
+    original subject to preserve email client threading).
+
+    Args:
+        message_id: The Message-ID of the email being replied to (from the incoming email's
+                    emaillatestmessage / In-Reply-To header).
+
+    Returns:
+        The incident ID as a string if a match is found, otherwise None.
+    """
+    if not message_id:
+        return None
+
+    demisto.debug(f"get_incident_by_message_id: searching for incident with emaillatestmessage={message_id}")
+    query = f'emaillatestmessage:"{message_id}"'
+    incidents_details = get_incident_by_query(query)
+
+    if incidents_details:
+        incident_id = str(incidents_details[0].get("id"))
+        demisto.debug(f"get_incident_by_message_id: found incident {incident_id} for message_id={message_id}")
+        return incident_id
+
+    demisto.debug(f"get_incident_by_message_id: no incident found for message_id={message_id}")
+    return None
+
+
 def get_unique_code():
     """
         Create an 8-digit unique random code that should be used to identify new created incidents.
@@ -538,12 +569,57 @@ def main():
             # Return False - tell pre-processing not to create a new incident.
             demisto.debug("No incident was created, Reason: CreateIncidentUntaggedEmail is False")
             return_results(False)
+        elif isinstance(e, IndexError):
+            # Subject did not contain a <code> — try to route by In-Reply-To message ID.
+            # This handles the case where the outgoing reply was sent with the original subject
+            # (no <code> prefix) to preserve email client threading behaviour.
+            email_related_incident = get_incident_by_message_id(email_latest_message)
+            if email_related_incident:
+                demisto.debug(
+                    f"Routed reply to incident {email_related_incident} via emaillatestmessage fallback "
+                    f"(message_id={email_latest_message})"
+                )
+                update_latest_message_field(email_related_incident, email_latest_message)
+                query = f"id:{email_related_incident}"
+                incident_details = get_incident_by_query(query)[0]
+                check_incident_status(incident_details, email_related_incident)
+                email_html_clean = remove_html_conversation_history(email_html)
+                get_attachments_using_instance(email_related_incident, incident.get("labels"), email_to)
+                time.sleep(5)
+                files = get_incident_related_files(email_related_incident)
+                entry_id_list = get_entry_id_list(attachments, files, email_html_clean)
+                html_body = create_email_html(email_html_clean, entry_id_list)
+                if incident_details["type"] == "Email Communication":
+                    email_reply = set_email_reply(email_from, email_to, email_cc, html_body, attachments)
+                    add_entries(email_reply, email_related_incident, reputation_calc_async)
+                else:
+                    email_related_incident_code = incident_details.get("CustomFields", {}).get("emailgeneratedcode", "")
+                    create_thread_context(
+                        email_related_incident_code,
+                        email_cc,
+                        email_bcc,
+                        email_text,
+                        email_from,
+                        html_body,
+                        email_latest_message,
+                        email_received,
+                        email_replyto,
+                        email_subject,
+                        email_to,
+                        email_related_incident,
+                        attachments,
+                    )
+                return_results(False)
+            else:
+                # No match found — create a new incident.
+                demisto.debug("No related incident was found via subject or message-ID. A new incident was created.")
+                demisto.executeCommand(
+                    "setIncident", {"id": incident.get("id"), "customFields": {"emailgeneratedcode": get_unique_code()}}
+                )
+                return_results(True)
         else:
             # Return True - tell pre-processing to create a new incident.
-            if isinstance(e, IndexError):
-                demisto.debug("No related incident was found. A new incident was created.")
-            else:
-                demisto.debug(f"A new incident was created. Reason: \n {e}")
+            demisto.debug(f"A new incident was created. Reason: \n {e}")
             demisto.executeCommand(
                 "setIncident", {"id": incident.get("id"), "customFields": {"emailgeneratedcode": get_unique_code()}}
             )
