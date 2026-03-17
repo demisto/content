@@ -360,7 +360,12 @@ def get_incident_by_message_id(message_id: str) -> str | None:
         return None
 
     demisto.debug(f"get_incident_by_message_id: searching for incident with emaillatestmessage={message_id}")
-    query = f'emaillatestmessage:"{message_id}"'
+
+    # Strip angle brackets from the Message-ID before querying — Lucene treats < and > as
+    # range query operators, so <msg@domain.com> must be queried as *msg@domain.com* or
+    # with the brackets stripped. We use a wildcard on the stripped value for robustness.
+    stripped_id = message_id.strip("<>")
+    query = f"emaillatestmessage:*{stripped_id}*"
     incidents_details = get_incident_by_query(query)
 
     if incidents_details:
@@ -507,6 +512,14 @@ def main():
     email_received = custom_fields.get("emailreceived", "")
     email_replyto = custom_fields.get("emailreplyto", "")
     email_latest_message = custom_fields.get("emaillatestmessage", "")
+    demisto.debug(
+        f"PreprocessEmail main() called. "
+        f"incident_id={incident.get('id')}, "
+        f"email_subject={email_subject!r}, "
+        f"email_from={email_from!r}, "
+        f"email_to={email_to!r}, "
+        f"email_latest_message={email_latest_message!r}"
+    )
 
     reputation_calc_async = argToBoolean(args.get("reputation_calc_async", False))
 
@@ -573,11 +586,15 @@ def main():
             # Subject did not contain a <code> — try to route by In-Reply-To message ID.
             # This handles the case where the outgoing reply was sent with the original subject
             # (no <code> prefix) to preserve email client threading behaviour.
+            demisto.debug(
+                f"IndexError: subject {email_subject!r} does not contain a routing code. "
+                f"Attempting fallback routing via emaillatestmessage={email_latest_message!r}"
+            )
             email_related_incident = get_incident_by_message_id(email_latest_message)
             if email_related_incident:
                 demisto.debug(
-                    f"Routed reply to incident {email_related_incident} via emaillatestmessage fallback "
-                    f"(message_id={email_latest_message})"
+                    f"Fallback routing succeeded: reply routed to incident {email_related_incident} "
+                    f"via emaillatestmessage match (message_id={email_latest_message!r})"
                 )
                 update_latest_message_field(email_related_incident, email_latest_message)
                 query = f"id:{email_related_incident}"
@@ -609,10 +626,17 @@ def main():
                         email_related_incident,
                         attachments,
                     )
+                demisto.debug(
+                    f"Fallback routing: successfully appended reply to incident {email_related_incident}. "
+                    f"Returning False to suppress new incident creation."
+                )
                 return_results(False)
             else:
                 # No match found — create a new incident.
-                demisto.debug("No related incident was found via subject or message-ID. A new incident was created.")
+                demisto.debug(
+                    f"Fallback routing failed: no incident found with emaillatestmessage={email_latest_message!r}. "
+                    f"A new incident will be created."
+                )
                 demisto.executeCommand(
                     "setIncident", {"id": incident.get("id"), "customFields": {"emailgeneratedcode": get_unique_code()}}
                 )

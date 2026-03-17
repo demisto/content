@@ -814,35 +814,39 @@ def test_get_email_related_incident_id_email_in_context(mocker):
 
 
 @pytest.mark.parametrize(
-    "message_id, query_result, expected_id",
+    "message_id, query_result, expected_id, expected_query_fragment",
     [
-        # Case 1: Match found — returns incident ID
+        # Case 1: Match found with angle brackets — brackets stripped, wildcard query used
         (
             "<CAOvM-jN0Lg@mail.gmail.com>",
             [{"id": "42", "emaillatestmessage": "<CAOvM-jN0Lg@mail.gmail.com>"}],
             "42",
+            "*CAOvM-jN0Lg@mail.gmail.com*",
         ),
         # Case 2: No match found — returns None
         (
             "<unknown@mail.gmail.com>",
             [],
             None,
+            "*unknown@mail.gmail.com*",
         ),
         # Case 3: Empty message_id — returns None without querying
         (
             "",
             [],
             None,
+            None,  # query should not be called
         ),
         # Case 4: None message_id — returns None without querying
         (
             None,
             [],
             None,
+            None,  # query should not be called
         ),
     ],
 )
-def test_get_incident_by_message_id(message_id, query_result, expected_id, mocker):
+def test_get_incident_by_message_id(message_id, query_result, expected_id, expected_query_fragment, mocker):
     """Unit Test
     Given
     - An incoming reply email whose emaillatestmessage (In-Reply-To) value may or may not
@@ -850,8 +854,10 @@ def test_get_incident_by_message_id(message_id, query_result, expected_id, mocke
     When
     - get_incident_by_message_id is called with the message_id
     Then
-    - Validate that the correct incident ID is returned when a match exists,
-      and None is returned when no match is found or message_id is empty/None
+    - Validate that the correct incident ID is returned when a match exists
+    - Validate that angle brackets are stripped from the message_id before querying
+      (Lucene treats < and > as range operators)
+    - Validate that None is returned when no match is found or message_id is empty/None
     """
     import PreprocessEmail
     from PreprocessEmail import get_incident_by_message_id
@@ -864,6 +870,8 @@ def test_get_incident_by_message_id(message_id, query_result, expected_id, mocke
 
     if message_id:
         query_mocker.assert_called_once()
+        actual_query = query_mocker.call_args[0][0]
+        assert expected_query_fragment in actual_query
     else:
         query_mocker.assert_not_called()
 
