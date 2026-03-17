@@ -1355,6 +1355,73 @@ script:
       description: Name of the analyst verdict action performed on the alerts.
       type: String
   - arguments:
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - New
+      - In progress
+      - Resolved
+      description: UAM alert status.
+    - name: alert_ids
+      required: true
+      description: A comma-separated list of UAM alert IDs.
+      isArray: true
+    description: Updates the status for a group of UAM alerts. Relevant for API version 2.1.
+    name: sentinelone-update-uam-alert-status
+    outputs:
+    - contextPath: SentinelOne.UAMAlert.ID
+      description: The UAM alert ID.
+      type: String
+    - contextPath: SentinelOne.UAMAlert.Updated
+      description: Whether the status was successfully updated.
+      type: Boolean
+    - contextPath: SentinelOne.UAMAlert.Status
+      description: Name of the status performed on the alerts.
+      type: String
+  - arguments:
+    - name: analyst_verdict
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - False positive - Benign
+      - False positive - Benign but suspicious
+      - False positive - System error
+      - False positive - Undefined
+      - False positive - User error
+      - True positive - Advanced persistent threat
+      - True positive - Benign
+      - True positive - Benign but suspicious
+      - True positive - Data exfiltration
+      - True positive - Denial of service
+      - True positive - Exploitation tools
+      - True positive - Insider threat
+      - True positive - Malware
+      - True positive - Phishing attack
+      - True positive - Policy violation
+      - True positive - PUA/Adware
+      - True positive - Ransomware
+      - True positive - Unauthorized access
+      - True positive - Undefined
+      - Undefined
+      description: UAM alert analyst verdict.
+    - name: alert_ids
+      required: true
+      description: A comma-separated list of UAM alert IDs.
+      isArray: true
+    description: Updates the analyst verdict for a group of UAM alerts. Relevant for API version 2.1.
+    name: sentinelone-update-uam-alert-verdict
+    outputs:
+    - contextPath: SentinelOne.UAMAlert.ID
+      description: The UAM alert ID.
+      type: String
+    - contextPath: SentinelOne.UAMAlert.Updated
+      description: Whether the analyst verdict was successfully updated.
+      type: Boolean
+    - contextPath: SentinelOne.UAMAlert.AnalystVerdict
+      description: Name of the analyst verdict performed on the alerts.
+      type: String
+  - arguments:
     - name: name
       required: true
       description: The name of the STAR rule.
