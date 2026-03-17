@@ -1,3 +1,5 @@
+from asyncore import tenant
+
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -11,37 +13,187 @@ CONTEXT_KEY = "CyberArkEPMSOCResponse_Context"
 RISK_PLAN_ACTION_ADD = "add"
 RISK_PLAN_ACTION_REMOVE = "remove"
 
+GRANT_TYPE_CLIENT_CREDENTIALS = "client_credentials"
+ACCESS_TOKEN = "access_token"
+TENANT_URL = "tenantUrl"
+EXPIRES_IN = "expires_in"
+VALID_UNTIL = "valid_until"
+DEFAULT_TOKEN_TTL_SECONDS = 6 * 60 * 60
+CACHE_BUFFER_SECONDS = 60
+
 """ CLIENT CLASS """
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, username, password, application_id, verify=True, proxy=False):
-        super().__init__(base_url, verify=verify, proxy=proxy)
+    def __init__(self,
+                 base_tenant_url,
+                 token_url: str,
+                 client_id: str,
+                 client_secret: str,
+                 api_key: str,
+                 region: str,
+                 verify: bool=True,
+                 proxy: bool=False):
+        super().__init__(base_url="", verify=verify, proxy=proxy)
         self._headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
             "x-cybr-telemetry": "aW49RVBNIFNPQyBSZXNwb25zZSZpdj0xLjAmdm49UGFsbyBBbHRvJml0PUVQTQ==",
         }
-        self.username = username
-        self.password = password
-        self.application_id = application_id
-        self.epm_auth_to_cyber_ark()
+        self.token_url = token_url
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.api_key = api_key
+        self.base_tenant_url = base_tenant_url
+        #self.epm_auth_to_cyber_ark()
 
-    def epm_auth_to_cyber_ark(self):  # pragma: no cover
-        data = {
-            "Username": self.username,
-            "Password": self.password,
-            "ApplicationID": self.application_id or "CyberArkXSOAR",
+    def _get_access_token(self) -> str:
+        """Get or refresh OAuth2 access token with caching."""
+        current_timestamp = int(time.time())
+        cached_context = get_integration_context() or {}
+        cached_token = cached_context.get(ACCESS_TOKEN)
+        cached_valid_until = cached_context.get(VALID_UNTIL)
+
+        # Check if cached token is valid
+        if cached_token and cached_valid_until:
+            try:
+                valid_until_timestamp = int(float(cached_valid_until))
+                if current_timestamp < valid_until_timestamp:
+                    demisto.debug("[Token Cache] Hit! Token is still valid.")
+                    return cached_token
+                demisto.debug("[Token Cache] Miss. Token expired.")
+            except (ValueError, TypeError):
+                demisto.debug("[Token Cache] Error parsing cache. Ignoring.")
+
+        # Request new token
+        demisto.debug(f"[Token Request] Requesting new token from {self.token_url}")
+
+        # Prepare request data
+        token_data = {
+            'grant_type': GRANT_TYPE_CLIENT_CREDENTIALS,
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
         }
-        result = self._http_request("POST", url_suffix="/EPM/API/Auth/EPM/Logon", json_data=data)
 
-        if result.get("IsPasswordExpired"):
-            return_error("CyberArk is reporting that the user password is expired. Terminating script.")
-        self._base_url = urljoin(result.get("ManagerURL"), "/EPM/API/")
-        self._headers["Authorization"] = f"Basic {result.get('EPMAuthenticationResult')}"
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+
+        try:
+            token_response = self.http_request(
+                method="POST",
+                full_url=self.token_url,
+                data=token_data,
+                headers=headers,
+                resp_type="json",
+            )
+        except DemistoException as error:
+            error_msg = str(error)
+            demisto.error(f"[Token Request] Failed: {error_msg}")
+            raise DemistoException(f"Failed to obtain access token: {error_msg}")
+
+        access_token = token_response.get(ACCESS_TOKEN)
+
+        if not access_token:
+            raise DemistoException("Failed to obtain access token. Response missing access_token.")
+
+        # Update Cache
+        token_expires_in = token_response.get(EXPIRES_IN, DEFAULT_TOKEN_TTL_SECONDS)
+        token_valid_until = current_timestamp + token_expires_in - CACHE_BUFFER_SECONDS
+
+        demisto.debug(f"[Token Request] Success. Expires in {token_expires_in}s.")
+
+        new_context = {ACCESS_TOKEN: access_token, VALID_UNTIL: str(token_valid_until)}
+        set_integration_context(new_context)
+
+        return access_token
+
+    def _get_tenant_url(self, access_token: str) -> str:
+        cached_context = get_integration_context() or {}
+        cached_tenant_url = cached_context.get(TENANT_URL)
+
+        if cached_tenant_url:
+            return cached_tenant_url
+
+        headers = {
+            'Authentication': f"Bearer {access_token}",
+            'Content-Type': 'application/json'
+        }
+
+        try:
+            tenant_url_response = self.http_request(
+                method="GET",
+                full_url=f"{self.base_tenant_url}/api/accounts/tenanturl",
+                headers=headers,
+                resp_type="json",
+            )
+        except DemistoException as error:
+            error_msg = str(error)
+            demisto.error(f"[Tenant URL Request] Failed: {error_msg}")
+            raise DemistoException(f"Failed to tenant URL: {error_msg}")
+
+        tenant_url = tenant_url_response.get(TENANT_URL)
+        demisto.debug(f"[Tenant URL Request] Success. tenant URL: {tenant_url}.")
+        update_integration_context({TENANT_URL: tenant_url})
+
+        return tenant_url
+
+    def http_request(
+        self,
+        method: str,
+        url_suffix: str,
+        json_data: dict[str, Any] | None = None,
+        return_full_response: bool = False,
+    ) -> Any:
+        """Execute HTTP request with authentication and detailed logging."""
+        access_token = self._get_access_token()
+        tenant_url = self._get_tenant_url(access_token)
+
+        auth_headers = {
+            'Authentication': f"Bearer {access_token}",
+            'Content-Type': 'application/json'
+        }
+        demisto.debug(f"[HTTP Call] {method} {url_suffix}")
+        full_url = f"{tenant_url}{url_suffix}"
+
+        try:
+            http_response = self._http_request(
+                method=method,
+                full_url=full_url,
+                json_data=json_data,
+                headers=auth_headers,
+                resp_type="response",
+                ok_codes=(200, 201, 202, 204),
+                retries=3,
+                backoff_factor=2,
+            )
+        except DemistoException as error:
+            error_msg = str(error)
+            if "401" in error_msg or "403" in error_msg:
+                demisto.error(f"[HTTP Error] Authentication failed: {error_msg}")
+                raise DemistoException(f"Authentication error: {error_msg}. Please check credentials.")
+            raise
+
+        status_code = http_response.status_code
+        demisto.debug(f"[HTTP Call] Response Status: {status_code}")
+
+        if status_code == 204:
+            demisto.debug("[HTTP Call] 204 No Content received.")
+            return ({}, http_response.headers) if return_full_response else {}
+
+        try:
+            response_json = http_response.json()
+        except ValueError:
+            demisto.debug(f"[HTTP Error] Failed to parse JSON. Status: {status_code}, Body: {http_response.text[:200]}")
+            raise DemistoException(f"API returned non-JSON response with status {status_code}")
+
+        if return_full_response:
+            return response_json, http_response.headers
+
+        return response_json
 
     def get_sets(self) -> dict:
-        return self._http_request("GET", url_suffix="Sets")
+        return self.http_request("GET", url_suffix="Sets")
 
 
 """ HELPER FUNCTIONS """
@@ -65,7 +217,7 @@ def search_endpoints(endpoint_name: str, external_ip: str, client: Client) -> li
     set_ids = [set["Id"] for set in sets.get("Sets", [])]
     for set_id in set_ids:
         url_suffix = f"Sets/{set_id}/Endpoints/Search"
-        result = client._http_request("POST", url_suffix=url_suffix, json_data=data)
+        result = client.http_request("POST", url_suffix=url_suffix, json_data=data)
         if result.get("endpoints"):
             endpoint_ids = [endpoint.get("id") for endpoint in result.get("endpoints")]
             set_integration_context({CONTEXT_KEY: {"set_id": set_id}})
@@ -88,7 +240,7 @@ def search_endpoint_group_id(group_name: str, client: Client) -> str:
     context = get_integration_context().get(CONTEXT_KEY, {})
     set_id = context.get("set_id")
     url_suffix = f"Sets/{set_id}/Endpoints/Groups/Search"
-    result = client._http_request("POST", url_suffix=url_suffix, json_data=data)
+    result = client.http_request("POST", url_suffix=url_suffix, json_data=data)
     if result and len(result) > 0:
         endpoint_group_id = result[0].get("id")
         group_id = endpoint_group_id
@@ -107,7 +259,7 @@ def add_endpoint_to_group(endpoint_ids: list[str], endpoint_group_id: str, clien
     context = get_integration_context().get(CONTEXT_KEY, {})
     set_id = context.get("set_id")
     url_suffix = f"Sets/{set_id}/Endpoints/Groups/{endpoint_group_id}/Members/ids"
-    return client._http_request("POST", url_suffix=url_suffix, json_data=data)
+    return client.http_request("POST", url_suffix=url_suffix, json_data=data)
 
 
 def remove_endpoint_from_group(endpoint_ids: list[str], endpoint_group_id: str, client: Client) -> dict:
@@ -122,7 +274,7 @@ def remove_endpoint_from_group(endpoint_ids: list[str], endpoint_group_id: str, 
     context = get_integration_context().get(CONTEXT_KEY, {})
     set_id = context.get("set_id")
     url_suffix = f"Sets/{set_id}/Endpoints/Groups/{endpoint_group_id}/Members/ids/remove"
-    return client._http_request("POST", url_suffix=url_suffix, json_data=data)
+    return client.http_request("POST", url_suffix=url_suffix, json_data=data)
 
 
 """ COMMAND FUNCTIONS """
