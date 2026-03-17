@@ -1,5 +1,3 @@
-from asyncore import tenant
-
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -25,15 +23,16 @@ CACHE_BUFFER_SECONDS = 60
 
 
 class Client(BaseClient):
-    def __init__(self,
-                 base_tenant_url,
-                 token_url: str,
-                 client_id: str,
-                 client_secret: str,
-                 api_key: str,
-                 region: str,
-                 verify: bool=True,
-                 proxy: bool=False):
+    def __init__(
+        self,
+        base_tenant_url: str,
+        token_url: str,
+        client_id: str,
+        client_secret: str,
+        web_app_id: str,
+        verify: bool = True,
+        proxy: bool = False,
+    ):
         super().__init__(base_url="", verify=verify, proxy=proxy)
         self._headers = {
             "Accept": "application/json",
@@ -43,9 +42,8 @@ class Client(BaseClient):
         self.token_url = token_url
         self.client_id = client_id
         self.client_secret = client_secret
-        self.api_key = api_key
+        self.web_app_id = web_app_id
         self.base_tenant_url = base_tenant_url
-        #self.epm_auth_to_cyber_ark()
 
     def _get_access_token(self) -> str:
         """Get or refresh OAuth2 access token with caching."""
@@ -70,17 +68,15 @@ class Client(BaseClient):
 
         # Prepare request data
         token_data = {
-            'grant_type': GRANT_TYPE_CLIENT_CREDENTIALS,
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
+            "grant_type": GRANT_TYPE_CLIENT_CREDENTIALS,
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
         }
 
-        headers = {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
         try:
-            token_response = self.http_request(
+            token_response = self._http_request(
                 method="POST",
                 full_url=self.token_url,
                 data=token_data,
@@ -115,13 +111,10 @@ class Client(BaseClient):
         if cached_tenant_url:
             return cached_tenant_url
 
-        headers = {
-            'Authentication': f"Bearer {access_token}",
-            'Content-Type': 'application/json'
-        }
+        headers = {"Authentication": f"Bearer {access_token}", "Content-Type": "application/json"}
 
         try:
-            tenant_url_response = self.http_request(
+            tenant_url_response = self._http_request(
                 method="GET",
                 full_url=f"{self.base_tenant_url}/api/accounts/tenanturl",
                 headers=headers,
@@ -149,10 +142,7 @@ class Client(BaseClient):
         access_token = self._get_access_token()
         tenant_url = self._get_tenant_url(access_token)
 
-        auth_headers = {
-            'Authentication': f"Bearer {access_token}",
-            'Content-Type': 'application/json'
-        }
+        auth_headers = {"Authentication": f"Bearer {access_token}", "Content-Type": "application/json"}
         demisto.debug(f"[HTTP Call] {method} {url_suffix}")
         full_url = f"{tenant_url}{url_suffix}"
 
@@ -337,13 +327,20 @@ def main():
 
     # Parse parameters
     base_url = params.get("url")
-    application_id = params.get("application_id")
-    username = params.get("credentials").get("identifier")
-    password = params.get("credentials").get("password")
+    identity_url = params.get("identity_url")
+    web_app_id = params.get("web_app_id")
+    client_id = params.get("client_id")
+    client_secret = params.get("credentials").get("password")
 
     try:
         result: Any = None
-        client = Client(base_url=base_url, username=username, password=password, application_id=application_id)
+        client = Client(
+            base_tenant_url=base_url,
+            token_url=identity_url,
+            client_id=client_id,
+            client_secret=client_secret,
+            web_app_id=web_app_id,
+        )
         if command == "test-module":
             return_results(test_module(client))
         elif command == "cyberarkepm-activate-risk-plan":
