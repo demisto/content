@@ -7,6 +7,18 @@ commonfields:
   id: WildFire-Reports
   version: -1
 configuration:
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
 - defaultvalue: https://wildfire.paloaltonetworks.com/publicapi
   display: Server base URL (e.g., https://192.168.0.1/publicapi)
   name: server
@@ -42,18 +54,6 @@ configuration:
   - pcc
   - other
 
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  section: Connect
-  advanced: true
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  section: Connect
-  advanced: true
-  required: false
 description: Generates a Palo Alto Networks WildFire PDF report. For internal use with the TIM Sample Analysis feature.
 display: Palo Alto Networks WildFire Reports
 name: WildFire-Reports
