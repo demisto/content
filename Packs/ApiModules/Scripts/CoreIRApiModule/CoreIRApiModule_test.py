@@ -3268,7 +3268,7 @@ class TestGetIssueByFilter:
         from CoreIRApiModule import CoreClient, get_issues_by_filter_command
 
         api_response = load_test_data("./test_data/get_issues_by_filter_results.json")
-        requests_mock.post(f"{Core_URL}/api/webapp/get_data", json=api_response)
+        requests_mock.post(f"{Core_URL}/api/webapp/get_data/", json=api_response)
         client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
         args = {
             "start_time": "2018-11-06T08:56:41",
@@ -3292,7 +3292,7 @@ class TestGetIssueByFilter:
         from CoreIRApiModule import CoreClient, get_issues_by_filter_command
 
         api_response = load_test_data("./test_data/get_issues_by_filter_results.json")
-        requests_mock.post(f"{Core_URL}/api/webapp/get_data", json=api_response)
+        requests_mock.post(f"{Core_URL}/api/webapp/get_data/", json=api_response)
         request_data_log = mocker.patch.object(demisto, "info")
 
         client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
@@ -3325,7 +3325,7 @@ class TestGetIssueByFilter:
         from CoreIRApiModule import CoreClient, get_issues_by_filter_command
 
         api_response = load_test_data("./test_data/get_issues_by_filter_results.json")
-        requests_mock.post(f"{Core_URL}/api/webapp/get_data", json=api_response)
+        requests_mock.post(f"{Core_URL}/api/webapp/get_data/", json=api_response)
         request_data_log = mocker.patch.object(demisto, "info")
 
         client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
@@ -3357,7 +3357,7 @@ class TestGetIssueByFilter:
         from CoreIRApiModule import CoreClient, get_issues_by_filter_command
 
         api_response = load_test_data("./test_data/get_issues_by_filter_results.json")
-        requests_mock.post(f"{Core_URL}/api/webapp/get_data", json=api_response)
+        requests_mock.post(f"{Core_URL}/api/webapp/get_data/", json=api_response)
         request_data_log = mocker.patch.object(demisto, "info")
 
         client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
@@ -5902,7 +5902,7 @@ def test_get_issues_by_filter_custom_filter_valid_json(requests_mock):
     from CoreIRApiModule import CoreClient, get_issues_by_filter_command
 
     api_response = load_test_data("./test_data/get_issues_by_filter_results.json")
-    requests_mock.post(f"{Core_URL}/api/webapp/get_data", json=api_response)
+    requests_mock.post(f"{Core_URL}/api/webapp/get_data/", json=api_response)
     client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
 
     # Valid JSON with agent_id
@@ -5926,7 +5926,7 @@ def test_get_issues_by_filter_custom_filter_malformed_json_fixed(requests_mock):
     from CoreIRApiModule import CoreClient, get_issues_by_filter_command
 
     api_response = load_test_data("./test_data/get_issues_by_filter_results.json")
-    requests_mock.post(f"{Core_URL}/api/webapp/get_data", json=api_response)
+    requests_mock.post(f"{Core_URL}/api/webapp/get_data/", json=api_response)
     client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
 
     # Malformed JSON with agent_id - array values as string with unescaped quotes
