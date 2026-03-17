@@ -10,13 +10,21 @@ alter
     xdm.source.user.user_type = XDM_CONST.USER_TYPE_REGULAR,
     xdm.source.user.scope = XDM_CONST.SCOPE_TYPE_SAAS;
 
+[RULE: salesforce_authentication_common_fields]
+alter
+    xdm.event.type = "authentication",
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION),
+    xdm.event.original_event_type = api_object_type,
+    xdm.source.port = to_integer(0),
+    xdm.target.port = to_integer(0),
+    xdm.network.ip_protocol = XDM_CONST.IP_PROTOCOL_TCP,
+    xdm.auth.service = "SP",
+    xdm.source.cloud.project_id = salesforce_domain,
+    xdm.source.user.identifier = UserId,
+    xdm.source.user.scope = XDM_CONST.SCOPE_TYPE_SAAS;
+
 [MODEL: dataset="salesforce_realtime_raw"]
-
-//////////////////////////////
-// ApiEvent
-//////////////////////////////
-
-filter api_object_type ~= "ApiEvent|APIEvent"
+filter api_object_type ~= "ApiEvent|APIEvent" // ApiEvent
 | call salesforce_saas_audit_common_fields
 // Extract Username parts for identity normalization
 | alter
@@ -52,39 +60,6 @@ filter api_object_type ~= "ApiEvent|APIEvent"
     xdm.event.operation_sub_type = PolicyOutcome,
     xdm.network.session_id = SessionKey;
 
-
-//////////////////////////////
-// LoginAsEvent
-//////////////////////////////
-
-filter api_object_type ~= "LoginAsEvent"
-| call salesforce_saas_audit_common_fields
-// Extract Username parts for identity normalization
-| alter
-    get_Username = if(Username != null, split(Username, "@"))
-
-| alter //xdm mapping
-    xdm.event.id = coalesce(EventIdentifier, EventUuid),
-    xdm.session_context_id = LoginKey,
-    xdm.logon.logon_guid = LoginKey,
-    xdm.source.user.upn = Username,
-    xdm.source.user.full_domain_name = arrayindex(get_Username, 1),
-    xdm.auth.privilege_level = if(
-        UserType = "Guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST,
-        XDM_CONST.PRIVILEGE_LEVEL_USER),
-    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
-    xdm.target.resource.id = DelegatedUsername,
-    xdm.target.resource.name = DelegatedUsername,
-    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
-    xdm.source.user_agent = Browser,
-    xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
-    xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
-    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
-    xdm.source.application.name = Application,
-    xdm.source.host.os = Platform,
-    xdm.network.session_id = SessionKey,
-    xdm.target.url = TargetUrl;
-
 //////////////////////////////
 // BulkApiResultEvent
 //////////////////////////////
@@ -112,7 +87,6 @@ filter api_object_type ~= "BulkApi"
     xdm.network.rule = PolicyId,
     xdm.event.operation_sub_type = PolicyOutcome,
     xdm.network.session_id = SessionKey;
-
 
 //////////////////////////////
 // FileEvent
@@ -188,7 +162,6 @@ filter api_object_type ~= "LightningUriEventStream"
     xdm.event.outcome_reason = EffectivePageTimeDeviationReason,
     xdm.source.host.os = OsName;
 
-
 //////////////////////////////
 // ReportEventStream
 //////////////////////////////
@@ -217,7 +190,6 @@ filter api_object_type ~= "ReportEventStream"
     xdm.event.operation_sub_type = Operation,
     xdm.network.rule = PolicyId,
     xdm.network.session_id = SessionKey;
-
 
 //////////////////////////////
 // ListViewEventStream
@@ -286,7 +258,6 @@ filter api_object_type ~= "UriEventStream"
     xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
     xdm.network.session_id = SessionKey;
 
-
 //////////////////////////////
 // PermissionSetEvent
 //////////////////////////////
@@ -354,7 +325,6 @@ filter api_object_type ~= "IdentityVerificationEvent"
     xdm.source.location.longitude = to_float(Longitude),
     xdm.network.session_id = SessionKey;
 
-
 //////////////////////////////
 // IdentityProviderEventStore
 //////////////////////////////
@@ -387,7 +357,6 @@ filter api_object_type ~= "IdentityProviderEventStore"
     xdm.target.application.bundle_id = AppId,
     xdm.target.url = SamlEntityUrl;
 
-
 //////////////////////////////
 // CredentialStuffingEvent
 //////////////////////////////
@@ -418,7 +387,6 @@ filter api_object_type ~= "CredentialStuffingEvent"
     xdm.event.operation_sub_type = PolicyOutcome,
     xdm.network.session_id = SessionKey,
     xdm.event.description = Summary;
-
 
 //////////////////////////////
 // ApiAnomalyEvent
@@ -451,7 +419,6 @@ filter api_object_type ~= "ApiAnomalyEvent"
     xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
     xdm.network.session_id = SessionKey,
     xdm.event.description = Summary;
-
 
 //////////////////////////////
 // ReportAnomalyEvent
@@ -499,6 +466,22 @@ filter api_object_type ~= "SessionHijackingEvent"
     xdm.logon.logon_guid = LoginKey,
     xdm.source.user.upn = Username,
     xdm.source.user.full_domain_name = arrayindex(get_Username,1),
+    xdm.source.host.os = CurrentPlatform,
+    xdm.source.host.os_family = if(
+        CurrentPlatform ~= "Windows", XDM_CONST.OS_FAMILY_WINDOWS,
+        CurrentPlatform ~= "Mac\s*OS" , XDM_CONST.OS_FAMILY_MACOS,
+        CurrentPlatform ~= "Android", XDM_CONST.OS_FAMILY_ANDROID,
+        CurrentPlatform IN("*iPhone*", "*iPad*", "*iOS*"), XDM_CONST.OS_FAMILY_IOS,
+        PreviousPlatform ~= "Linux", XDM_CONST.OS_FAMILY_LINUX),
+    xdm.source.user_agent = CurrentUserAgent,
+    xdm.intermediate.host.os = PreviousPlatform,
+    xdm.intermediate.host.os_family = if(
+        PreviousPlatform ~= "Windows", XDM_CONST.OS_FAMILY_WINDOWS,
+        PreviousPlatform ~= "Mac\s*OS" , XDM_CONST.OS_FAMILY_MACOS,
+        PreviousPlatform ~= "Android", XDM_CONST.OS_FAMILY_ANDROID,
+        PreviousPlatform IN("*iPhone*", "*iPad*", "*iOS*"), XDM_CONST.OS_FAMILY_IOS,
+        PreviousPlatform ~= "Linux", XDM_CONST.OS_FAMILY_LINUX),
+    xdm.intermediate.user_agent = PreviousUserAgent,
     xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
     xdm.event.outcome = if(
         PolicyOutcome IN("Error", "ExemptNoAction", "MeteringBlock"), XDM_CONST.OUTCOME_FAILED,
@@ -507,14 +490,14 @@ filter api_object_type ~= "SessionHijackingEvent"
     xdm.target.resource.id = UserId,
     xdm.target.resource.name = Username,
     xdm.event.operation = "OTHER",
-    xdm.source.user_agent = UserAgent,
-    xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
-    xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
-    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.source.ipv4 = if(is_ipv4(CurrentIp), CurrentIp, ""),
+    xdm.source.ipv6 = if(is_ipv6(CurrentIp), CurrentIp, ""),
+    xdm.intermediate.ipv4 = if(is_ipv4(SourceIp), SourceIp, ""),
+    xdm.intermediate.ipv6 = if(is_ipv6(SourceIp), SourceIp, ""),
+    xdm.intermediate.user.scope = XDM_CONST.SCOPE_TYPE_SAAS,
     xdm.network.rule = PolicyId,
     xdm.network.session_id = SessionKey,
     xdm.event.description = Summary;
-
 
 //////////////////////////////
 // MobileEmailEvent
@@ -541,7 +524,6 @@ filter api_object_type ~= "MobileEmailEvent"
         EmailAddress != null, arraycreate(EmailAddress)),
     xdm.event.description = EventDescription,
     xdm.source.host.os = OsName;
-
 
 //////////////////////////////
 // MobileEnforcedPolicyEvent
@@ -601,7 +583,6 @@ filter api_object_type ~= "MobileTelephonyEvent"
     xdm.event.description = EventDescription,
     xdm.source.host.os = OsName;
 
-
 //////////////////////////////
 // MobileScreenshotEvent
 //////////////////////////////
@@ -625,7 +606,6 @@ filter api_object_type ~= "MobileScreenshotEvent"
     xdm.event.description = EventDescription,
     xdm.source.host.os = OsName,
     xdm.target.resource.value = ScreenDescription;
-
 
 //////////////////////////////
 // LogoutEventStream
@@ -720,13 +700,12 @@ filter api_object_type ~= "LoginAnomalyEvent"
     xdm.network.rule = PolicyId,
     xdm.network.session_id = SessionKey;
 
-
 //////////////////////////////
 // LoginEvent
 //////////////////////////////
 
 filter api_object_type ~= "LoginEvent"
-| call salesforce_saas_audit_common_fields
+| call salesforce_authentication_common_fields
 // Extract Username parts for identity normalization
 | alter
     get_Username = if(Username != null, split(Username, "@"))
@@ -736,31 +715,115 @@ filter api_object_type ~= "LoginEvent"
     xdm.session_context_id = LoginKey,
     xdm.logon.logon_guid = LoginKey,
     xdm.source.user.upn = Username,
+    xdm.source.user.username = arrayindex(get_Username, 0),
     xdm.source.user.full_domain_name = arrayindex(get_Username,1),
-    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.source.host.os = Platform,
+    xdm.source.host.os_family = if(
+        Platform ~= "Windows", XDM_CONST.OS_FAMILY_WINDOWS,
+        Platform ~= "Mac\s*OS" , XDM_CONST.OS_FAMILY_MACOS,
+        Platform ~= "Android", XDM_CONST.OS_FAMILY_ANDROID,
+        Platform IN("*iPhone*", "*iPad*", "*iOS*"), XDM_CONST.OS_FAMILY_IOS,
+        Platform ~= "Linux", XDM_CONST.OS_FAMILY_LINUX),
     xdm.event.outcome = if(
         Status = "Success", XDM_CONST.OUTCOME_SUCCESS,
         XDM_CONST.OUTCOME_FAILED),
-    xdm.event.outcome_reason = Status,
-    xdm.target.resource.id = UserId,
-    xdm.target.resource.name = Username,
+    xdm.event.outcome_reason = if(
+        Status IN("*Failed: Computer activation required*", "*Failed: API security token required*", "*Failed: Mobile License Required*"), "auth_login_restrictions",
+        Status CONTAINS "Invalid Password", "bad_credentials",
+        Status CONTAINS "Failed: Token request is already being processed", "failed_login",
+        Status CONTAINS "Password Lockout", "account_locked",
+        Status IN("*User is Inactive*", "*User Is Frozen*"), "account_expired_or_disabled",
+        "OTHER"),
+    xdm.source.user_agent = concat(Platform," ",Browser),
     xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
     xdm.source.ipv4 = if(
         is_ipv4(ForwardedForIp), ForwardedForIp,
-        is_ipv4(SourceIp), SourceIp,
-        ""),
+        is_ipv4(SourceIp), SourceIp),
     xdm.source.ipv6 = if(
         is_ipv6(ForwardedForIp), ForwardedForIp,
-        is_ipv6(SourceIp), SourceIp,
-        ""),
+        is_ipv6(SourceIp), SourceIp),
     xdm.intermediate.ipv4 = if(ForwardedForIp != null AND is_ipv4(SourceIp), SourceIp),
     xdm.intermediate.ipv6 = if(ForwardedForIp != null AND is_ipv6(SourceIp), SourceIp),
+    xdm.target.ipv4 = "",
     xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
-    xdm.source.application.name = Application,
+    xdm.source.application.name = Browser,
     xdm.network.http.browser = Browser,
     xdm.source.location.city = City,
     xdm.source.location.country = Country,
     xdm.source.location.latitude = to_float(LoginLatitude),
     xdm.source.location.longitude = to_float(LoginLongitude),
+    xdm.source.location.region = Subdivision,
     xdm.target.url = LoginUrl,
-    xdm.network.session_id = SessionKey;
+    xdm.target.resource.id = LoginUrl,
+    xdm.target.resource.name = if(LoginUrl != null, "Salesforce"),
+    xdm.network.session_id = SessionKey,
+    xdm.event.description = LoginType,
+    xdm.logon.type = if(
+        LoginType IN("Application", "ChatterCommunityPortalUnPwd","AppExchange","ChatterCommunityThirdPartySso", "EmployeeLoginToCommunity", "HelpAndTraining", "IeOfflineClient", "LightningLogin", "PasswordlessLogin", "Portal", "PortalThirdPartySso", "PrmPortalThirdPartySso", "PrmPortal", "saml", "SamlChatterNetworks", "SamlCspPortal", "SamlPrmPortal", "SamlSite", "Saml2", "SelfService"),XDM_CONST.LOGON_TYPE_INTERACTIVE,
+        LoginType IN("NetworksPortalApiOnly", "Oauth*", "OtherApi","Partner"), XDM_CONST.LOGON_TYPE_SERVICE),
+    xdm.event.operation_sub_type = if(
+        LoginType IN("ChatterCommunityPortalUnPwd" ,"EmployeeLoginToCommunity", "HelpAndTraining", "IeOfflineClient", "Portal", "PrmPortal", "SelfService"), "password",
+        LoginType IN("AppExchange", "LightningLogin"), "application",
+        LoginType IN("ChatterCommunityThirdPartySso", "PortalThirdPartySso", "PrmPortalThirdPartySso", "saml","SamlChatterNetworks", "SamlCspPortal", "SamlPrmPortal", "SamlSite","Saml2"), "Generic SSO"),
+    xdm.source.user.user_type = if(
+        LoginType CONTAINS "Remote Access", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        XDM_CONST.USER_TYPE_REGULAR),
+    xdm.auth.privilege_level = if(
+        UserType ~= "Guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST,
+        UserType ~= "SelfService", XDM_CONST.PRIVILEGE_LEVEL_SYSTEM,
+        XDM_CONST.PRIVILEGE_LEVEL_USER
+    );
+
+//////////////////////////////
+// LoginAsEvent
+//////////////////////////////
+
+filter api_object_type ~= "LoginAsEvent"
+| call salesforce_authentication_common_fields
+// Extract Username parts for identity normalization
+| alter
+    get_Username = if(Username != null, split(Username, "@"))
+
+| alter //XDM mapping
+    xdm.event.id = coalesce(EventIdentifier, EventUuid),
+    xdm.session_context_id = LoginKey,
+    xdm.logon.logon_guid = LoginKey,
+    xdm.source.user.upn = Username,
+    xdm.source.user.username = arrayindex(get_Username, 0),
+    xdm.source.user.full_domain_name = arrayindex(get_Username, 1),
+    xdm.auth.privilege_level = if(
+        UserType ~= "Guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST,
+        UserType ~= "SelfService", XDM_CONST.PRIVILEGE_LEVEL_SYSTEM,
+        XDM_CONST.PRIVILEGE_LEVEL_USER),
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
+    xdm.target.user.upn = DelegatedUsername,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
+    xdm.event.outcome_reason = "OTHER",
+    xdm.source.user_agent = concat(Platform," ",Browser),
+    xdm.source.ipv4 = if(is_ipv4(SourceIp), SourceIp),
+    xdm.source.ipv6 = if(is_ipv6(SourceIp), SourceIp),
+    xdm.target.ipv4 = "",
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.source.application.name = Application,
+    xdm.source.host.os = Platform,
+    xdm.source.host.os_family = if(
+        Platform ~= "Windows", XDM_CONST.OS_FAMILY_WINDOWS,
+        Platform ~= "Mac\s*OS" , XDM_CONST.OS_FAMILY_MACOS,
+        Platform ~= "Android", XDM_CONST.OS_FAMILY_ANDROID,
+        Platform IN("*iPhone*", "*iPad*", "*iOS*"), XDM_CONST.OS_FAMILY_IOS,
+        Platform ~= "Linux", XDM_CONST.OS_FAMILY_LINUX),
+    xdm.network.session_id = SessionKey,
+    xdm.target.url = TargetUrl,
+    xdm.target.resource.id = TargetUrl,
+    xdm.target.resource.name = if(TargetUrl != null, "Salesforce"),
+    xdm.event.description = LoginType,
+    xdm.logon.type = if(
+        LoginType IN("Application", "ChatterCommunityPortalUnPwd","AppExchange","ChatterCommunityThirdPartySso", "EmployeeLoginToCommunity", "HelpAndTraining", "IeOfflineClient", "LightningLogin", "PasswordlessLogin", "Portal", "PortalThirdPartySso", "PrmPortalThirdPartySso", "PrmPortal", "saml", "SamlChatterNetworks", "SamlCspPortal", "SamlPrmPortal", "SamlSite", "Saml2", "SelfService", "SelfService"),XDM_CONST.LOGON_TYPE_INTERACTIVE,
+        LoginType IN("NetworksPortalApiOnly", "Oauth*", "OtherApi","Partner"), XDM_CONST.LOGON_TYPE_SERVICE),
+    xdm.event.operation_sub_type = if(
+        LoginType IN("ChatterCommunityPortalUnPwd" ,"EmployeeLoginToCommunity", "HelpAndTraining", "IeOfflineClient", "Portal", "PrmPortal", "SelfService"), "password",
+        LoginType IN("AppExchange", "LightningLogin"), "application",
+        LoginType IN("ChatterCommunityThirdPartySso", "PortalThirdPartySso", "PrmPortalThirdPartySso", "saml","SamlChatterNetworks", "SamlCspPortal", "SamlPrmPortal", "SamlSite","Saml2"), "Generic SSO"),
+    xdm.source.user.user_type = if(
+        LoginType CONTAINS "Remote Access", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        XDM_CONST.USER_TYPE_REGULAR);
