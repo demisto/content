@@ -249,8 +249,6 @@ Jamf Pro Server Objects → Computers → Read
 | JAMF.Computer.mac_address | String | The computer MAC address. |
 | JAMF.Computer.udid | String | The computer UDID. |
 | JAMF.Computer.serial_number | String | The computer serial number. |
-| JAMF.Computer.report_date_utc | Date | The computer report date in UTC format. |
-| JAMF.Computer.report_date_epoch | Number | The computer report date in epoch format. |
 
 #### Command Example
 
@@ -371,8 +369,6 @@ Jamf Pro Server Objects → Computers → Read
                 "packageReceipts": null,
                 "printers": null,
                 "purchasing": null,
-                "report_date_epoch": 1617021886840,
-                "report_date_utc": "2021-03-29T12:44:46Z",
                 "security": null,
                 "serial_number": null,
                 "services": null,
@@ -469,21 +465,6 @@ Jamf Pro Server Objects → Computers → Read
 | JAMF.Computer.supervised | Boolean | Whether the computer is supervised. |
 | JAMF.Computer.mdm_capable | Boolean | Whether the computer is enabled for mobile device management \(MDM\). |
 | JAMF.Computer.mdm_capable_users | Boolean | The computer has MDM capable users. |
-| JAMF.Computer.report_date | Date | The computer report date. |
-| JAMF.Computer.report_date_epoch | Date | The computer report date in epoch format. |
-| JAMF.Computer.report_date_utc | Date | The computer report date in UTC format. |
-| JAMF.Computer.last_contact_time | Date | The computer last contact time. |
-| JAMF.Computer.last_contact_time_epoch | Date | The computer last contact time in epoch format. |
-| JAMF.Computer.last_contact_time_utc | Date | The computer last contact time in UTC format. |
-| JAMF.Computer.initial_entry_date | Date | The computer initial entry date. |
-| JAMF.Computer.initial_entry_date_epoch | Date | The computer initial entry date in epoch format. |
-| JAMF.Computer.initial_entry_date_utc | Date | The computer initial entry date in UTC format. |
-| JAMF.Computer.last_cloud_backup_date_epoch | Number | The computer last cloud backup date in epoch format. |
-| JAMF.Computer.last_cloud_backup_date_utc | String | The computer last cloud backup date in UTC format. |
-| JAMF.Computer.last_enrolled_date_epoch | Date | The computer last enrolled date in epoch format. |
-| JAMF.Computer.last_enrolled_date_utc | Date | The computer last enrolled date in UTC format. |
-| JAMF.Computer.mdm_profile_expiration_epoch | Number | The computer MDM profile expiration in epoch format. |
-| JAMF.Computer.mdm_profile_expiration_utc | String | The computer MDM profile expiration in UTC format. |
 | JAMF.Computer.distribution_point | String | The computer distribution point. |
 | JAMF.Computer.site.id | Number | The computer site ID. |
 | JAMF.Computer.site.name | String | The computer site name. |
@@ -638,27 +619,15 @@ Jamf Pro Server Objects → Computers → Read
             },
             "ibeacons": [],
             "id": "1",
-            "initial_entry_date": "2021-03-29T00:00:00",
-            "initial_entry_date_epoch": 1616976000000,
-            "initial_entry_date_utc": "2021-03-29T00:00:00Z",
             "ip_address": "123.123.123.123",
             "itunes_store_account_is_active": false,
             "jamf_version": "9.6.29507.c",
-            "last_cloud_backup_date_epoch": null,
-            "last_cloud_backup_date_utc": null,
-            "last_contact_time": "2014-10-24T10:26:55",
-            "last_contact_time_epoch": 1414146415335,
-            "last_contact_time_utc": "2014-10-24T10:26:55Z",
-            "last_enrolled_date_epoch": 1414146339607,
-            "last_enrolled_date_utc": "2014-10-24T10:25:39Z",
             "last_reported_ip": "123.123.123.123",
             "licensedSoftware": [],
             "localUserAccounts": [],
             "mac_address": "68:5B:35:CA:12:56",
             "mdm_capable": false,
             "mdm_capable_users": [],
-            "mdm_profile_expiration_epoch": null,
-            "mdm_profile_expiration_utc": null,
             "name": "Computer 95",
             "network_adapter_type": null,
             "operatingSystem": {
@@ -698,9 +667,6 @@ Jamf Pro Server Objects → Computers → Read
                 "managed": false,
                 "management_username": null
             },
-            "report_date": "2021-03-29T12:44:12",
-            "report_date_epoch": 1617021852595,
-            "report_date_utc": "2021-03-29T12:44:12Z",
             "security": {
                 "activationLockEnabled": null,
                 "attestationStatus": "PENDING",
@@ -1044,21 +1010,6 @@ Jamf Pro Server Objects → Computers → Read
 | JAMF.ComputerSubset.Computer.general.mdm_capable | Boolean | Whether the computer is MDM capable. |
 | JAMF.ComputerSubset.Computer.general.mdm_capable_users | Boolean | Whether the computer has MDM capable users. |
 | JAMF.ComputerSubset.Computer.general.management_status.user_approved_mdm | Boolean | Whether the MDM is user-approved. |
-| JAMF.ComputerSubset.Computer.general.report_date | Date | The computer report date. |
-| JAMF.ComputerSubset.Computer.general.report_date_epoch | Date | The computer report date in epoch format. |
-| JAMF.ComputerSubset.Computer.general.report_date_utc | Date | The computer report date in UTC format. |
-| JAMF.ComputerSubset.Computer.general.last_contact_time | Date | The computer last contact time. |
-| JAMF.ComputerSubset.Computer.general.last_contact_time_epoch | Date | The computer last contact time in epoch format. |
-| JAMF.ComputerSubset.Computer.general.last_contact_time_utc | Date | The computer last contact time in UTC format. |
-| JAMF.ComputerSubset.Computer.general.initial_entry_date | Date | The computer initial entry date. |
-| JAMF.ComputerSubset.Computer.general.initial_entry_date_epoch | Date | The computer initial entry date in epoch format. |
-| JAMF.ComputerSubset.Computer.general.initial_entry_date_utc | Date | The computer initial entry date in UTC format. |
-| JAMF.ComputerSubset.Computer.general.last_cloud_backup_date_epoch | Number | The computer last cloud backup date in epoch format. |
-| JAMF.ComputerSubset.Computer.general.last_cloud_backup_date_utc | String | The computer last cloud backup date in UTC format. |
-| JAMF.ComputerSubset.Computer.general.last_enrolled_date_epoch | Date | The computer last enrolled date in epoch format. |
-| JAMF.ComputerSubset.Computer.general.last_enrolled_date_utc | Date | The computer last enrolled date in UTC format. |
-| JAMF.ComputerSubset.Computer.general.mdm_profile_expiration_epoch | Number | The computer MDM profile expiration in epoch format. |
-| JAMF.ComputerSubset.Computer.general.mdm_profile_expiration_utc | String | The computer MDM profile expiration in UTC format. |
 | JAMF.ComputerSubset.Computer.general.distribution_point | String | The computer distribution point format. |
 | JAMF.ComputerSubset.Computer.general.site.id | Number | The computer site ID. |
 | JAMF.ComputerSubset.Computer.general.site.name | String | The computer site name. |
@@ -1111,9 +1062,6 @@ Jamf Pro Server Objects → Computers → Read
                     ],
                     "id": "1",
                     "initialEntryDate": "2021-03-29",
-                    "initial_entry_date": "2021-03-29T00:00:00",
-                    "initial_entry_date_epoch": 1616976000000,
-                    "initial_entry_date_utc": "2021-03-29T00:00:00Z",
                     "ip_address": "123.123.123.123",
                     "itunesStoreAccountActive": false,
                     "itunes_store_account_is_active": false,
@@ -1130,13 +1078,6 @@ Jamf Pro Server Objects → Computers → Read
                     "lastReportedIp": "123.123.123.123",
                     "lastReportedIpV4": "123.123.123.123",
                     "lastReportedIpV6": null,
-                    "last_cloud_backup_date_epoch": null,
-                    "last_cloud_backup_date_utc": null,
-                    "last_contact_time": "2014-10-24T10:26:55",
-                    "last_contact_time_epoch": 1414146415335,
-                    "last_contact_time_utc": "2014-10-24T10:26:55Z",
-                    "last_enrolled_date_epoch": 1414146339607,
-                    "last_enrolled_date_utc": "2014-10-24T10:25:39Z",
                     "last_reported_ip": "123.123.123.123",
                     "mac_address": "68:5B:35:CA:12:56",
                     "managementId": "45145f18-0762-4994-b7d8-467f02f5ee5a",
@@ -1151,8 +1092,6 @@ Jamf Pro Server Objects → Computers → Read
                     "mdmProfileExpiration": null,
                     "mdm_capable": false,
                     "mdm_capable_users": [],
-                    "mdm_profile_expiration_epoch": null,
-                    "mdm_profile_expiration_utc": null,
                     "name": "Computer 95",
                     "network_adapter_type": null,
                     "platform": "Mac",
@@ -1165,9 +1104,6 @@ Jamf Pro Server Objects → Computers → Read
                         "management_username": null
                     },
                     "reportDate": "2021-03-29T12:44:12.595Z",
-                    "report_date": "2021-03-29T12:44:12",
-                    "report_date_epoch": 1617021852595,
-                    "report_date_utc": "2021-03-29T12:44:12Z",
                     "serial_number": "CA40F81C60A3",
                     "site": {
                         "id": "-1",
@@ -1370,15 +1306,6 @@ Jamf Pro Server Objects → Computers → Read
 | JAMF.ComputerSubset.Computer.purchasing.applecare_id | String | The computer AppleCare ID. |
 | JAMF.ComputerSubset.Computer.purchasing.purchase_price | String | The computer purchase price. |
 | JAMF.ComputerSubset.Computer.purchasing.purchasing_account | String | The computer purchase account. |
-| JAMF.ComputerSubset.Computer.purchasing.po_date | String | The computer PO date. |
-| JAMF.ComputerSubset.Computer.purchasing.po_date_epoch | Number | The computer PO date in epoch format. |
-| JAMF.ComputerSubset.Computer.purchasing.po_date_utc | String | The computer PO date in UTC format. |
-| JAMF.ComputerSubset.Computer.purchasing.warranty_expires | String | The computer warranty expiration date. |
-| JAMF.ComputerSubset.Computer.purchasing.warranty_expires_epoch | Number | The computer warranty expiration date in epoch format. |
-| JAMF.ComputerSubset.Computer.purchasing.warranty_expires_utc | String | The computer warranty expiration date in UTC format. |
-| JAMF.ComputerSubset.Computer.purchasing.lease_expires | String | The computer warranty lease expiration date. |
-| JAMF.ComputerSubset.Computer.purchasing.lease_expires_epoch | Number | The computer warranty lease expiration date in epoch time. |
-| JAMF.ComputerSubset.Computer.purchasing.lease_expires_utc | String | The computer warranty lease expiration date in UTC format. |
 | JAMF.ComputerSubset.Computer.purchasing.life_expectancy | Number | The computer life expectancy. |
 | JAMF.ComputerSubset.Computer.purchasing.purchasing_contact | String | The computer purchasing contact. |
 | JAMF.ComputerSubset.Computer.id | Number | The computer ID. |
@@ -1416,17 +1343,11 @@ Jamf Pro Server Objects → Computers → Read
                     "is_leased": false,
                     "is_purchased": true,
                     "leaseDate": null,
-                    "lease_expires": null,
-                    "lease_expires_epoch": null,
-                    "lease_expires_utc": null,
                     "leased": false,
                     "lifeExpectancy": 0,
                     "life_expectancy": 0,
                     "poDate": null,
                     "poNumber": null,
-                    "po_date": null,
-                    "po_date_epoch": null,
-                    "po_date_utc": null,
                     "po_number": null,
                     "purchasePrice": null,
                     "purchase_price": null,
@@ -1436,10 +1357,7 @@ Jamf Pro Server Objects → Computers → Read
                     "purchasing_account": null,
                     "purchasing_contact": null,
                     "vendor": null,
-                    "warrantyDate": null,
-                    "warranty_expires": null,
-                    "warranty_expires_epoch": null,
-                    "warranty_expires_utc": null
+                    "warrantyDate": null
                 },
                 "security": null,
                 "services": null,

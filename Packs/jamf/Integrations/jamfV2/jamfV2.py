@@ -603,27 +603,6 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def format_date_fields(date_value: Any) -> dict[str, Any]:
-    """Formats a date value into multiple string and epoch representations.
-
-    Args:
-        date_value (Any): The date value to format. Can be a string, timestamp, or datetime object.
-
-    Returns:
-        dict[str, Any]: A dictionary containing the formatted date strings and epoch timestamp.
-            If formatting fails, returns a dictionary with None values.
-    """
-    try:
-        dt = arg_to_datetime(date_value, required=True)
-        return {
-            "date": dt.strftime("%Y-%m-%dT%H:%M:%S"),
-            "epoch": int(dt.timestamp() * 1000),
-            "utc": dt.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        }
-    except ValueError:
-        return {"date": None, "epoch": None, "utc": None}
-
-
 def pagination(response, limit, page):
     """
     Args:
@@ -936,33 +915,6 @@ def get_computer_subset_context_mapping(response, subset):
             }
         )
 
-        reportDate = format_date_fields(general.get("reportDate"))
-        lastContactTime = format_date_fields(general.get("lastContactTime"))
-        initialEntryDate = format_date_fields(general.get("initialEntryDate"))
-        lastCloudBackupDate = format_date_fields(general.get("lastCloudBackupDate"))
-        lastEnrolledDate = format_date_fields(general.get("lastEnrolledDate"))
-        mdmProfileExpiration = format_date_fields(general.get("mdmProfileExpiration"))
-
-        context["general"].update(
-            {
-                "report_date": reportDate.get("date"),
-                "report_date_epoch": reportDate.get("epoch"),
-                "report_date_utc": reportDate.get("utc"),
-                "last_contact_time": lastContactTime.get("date"),
-                "last_contact_time_epoch": lastContactTime.get("epoch"),
-                "last_contact_time_utc": lastContactTime.get("utc"),
-                "initial_entry_date": initialEntryDate.get("date"),
-                "initial_entry_date_epoch": initialEntryDate.get("epoch"),
-                "initial_entry_date_utc": initialEntryDate.get("utc"),
-                "last_cloud_backup_date_epoch": lastCloudBackupDate.get("epoch"),
-                "last_cloud_backup_date_utc": lastCloudBackupDate.get("utc"),
-                "last_enrolled_date_epoch": lastEnrolledDate.get("epoch"),
-                "last_enrolled_date_utc": lastEnrolledDate.get("utc"),
-                "mdm_profile_expiration_epoch": mdmProfileExpiration.get("epoch"),
-                "mdm_profile_expiration_utc": mdmProfileExpiration.get("utc"),
-            }
-        )
-
     elif subset == "Location":
         context["location"] = {
             "username": user_and_location.get("username"),
@@ -987,24 +939,6 @@ def get_computer_subset_context_mapping(response, subset):
                 "purchasing_account": purchasing.get("purchasingAccount"),
                 "life_expectancy": purchasing.get("lifeExpectancy"),
                 "purchasing_contact": purchasing.get("purchasingContact"),
-            }
-        )
-
-        po_date = format_date_fields(purchasing.get("poDate"))
-        warranty_expires = format_date_fields(purchasing.get("warrantyDate"))
-        lease_expires = format_date_fields(purchasing.get("leaseDate"))
-
-        context["purchasing"].update(
-            {
-                "po_date": po_date.get("date"),
-                "po_date_epoch": po_date.get("epoch"),
-                "po_date_utc": po_date.get("utc"),
-                "warranty_expires": warranty_expires.get("date"),
-                "warranty_expires_epoch": warranty_expires.get("epoch"),
-                "warranty_expires_utc": warranty_expires.get("utc"),
-                "lease_expires": lease_expires.get("date"),
-                "lease_expires_epoch": lease_expires.get("epoch"),
-                "lease_expires_utc": lease_expires.get("utc"),
             }
         )
 
@@ -1059,9 +993,6 @@ def get_computer_subset_context_mapping(response, subset):
     elif subset == "Certificates":
         for cert in context.get("certificates", []):
             cert["common_name"] = cert.get("commonName")
-            expiration_date = format_date_fields(cert.get("expirationDate"))
-            cert["expires_utc"] = expiration_date.get("utc")
-            cert["expires_epoch"] = expiration_date.get("epoch")
 
     elif subset == "Security":
         context["security"].update(
@@ -1574,8 +1505,6 @@ def get_computers_basic_subset_command(client: Client, args: dict[str, Any]) -> 
         userAndLocation = computer_context.get("userAndLocation", {})
         hardware = computer_context.get("hardware", {})
 
-        report_date = format_date_fields(general.get("reportDate"))
-
         computer_context.update(
             {
                 "name": general.get("name"),
@@ -1586,8 +1515,6 @@ def get_computers_basic_subset_command(client: Client, args: dict[str, Any]) -> 
                 "building": userAndLocation.get("buildingId"),
                 "mac_address": hardware.get("macAddress"),
                 "serial_number": hardware.get("serialNumber"),
-                "report_date_utc": report_date.get("utc"),
-                "report_date_epoch": report_date.get("epoch"),
             }
         )
 
@@ -1739,33 +1666,6 @@ def get_computer_by_id_command(client: Client, args: dict[str, Any]) -> CommandR
                 "name": site.get("name"),
             },
             "itunes_store_account_is_active": general.get("itunesStoreAccountActive"),
-        }
-    )
-
-    reportDate = format_date_fields(general.get("reportDate"))
-    lastContactTime = format_date_fields(general.get("lastContactTime"))
-    initialEntryDate = format_date_fields(general.get("initialEntryDate"))
-    lastCloudBackupDate = format_date_fields(general.get("lastCloudBackupDate"))
-    lastEnrolledDate = format_date_fields(general.get("lastEnrolledDate"))
-    mdmProfileExpiration = format_date_fields(general.get("mdmProfileExpiration"))
-
-    context_outputs.update(
-        {
-            "report_date": reportDate.get("date"),
-            "report_date_epoch": reportDate.get("epoch"),
-            "report_date_utc": reportDate.get("utc"),
-            "last_contact_time": lastContactTime.get("date"),
-            "last_contact_time_epoch": lastContactTime.get("epoch"),
-            "last_contact_time_utc": lastContactTime.get("utc"),
-            "initial_entry_date": initialEntryDate.get("date"),
-            "initial_entry_date_epoch": initialEntryDate.get("epoch"),
-            "initial_entry_date_utc": initialEntryDate.get("utc"),
-            "last_cloud_backup_date_epoch": lastCloudBackupDate.get("epoch"),
-            "last_cloud_backup_date_utc": lastCloudBackupDate.get("utc"),
-            "last_enrolled_date_epoch": lastEnrolledDate.get("epoch"),
-            "last_enrolled_date_utc": lastEnrolledDate.get("utc"),
-            "mdm_profile_expiration_epoch": mdmProfileExpiration.get("epoch"),
-            "mdm_profile_expiration_utc": mdmProfileExpiration.get("utc"),
         }
     )
 

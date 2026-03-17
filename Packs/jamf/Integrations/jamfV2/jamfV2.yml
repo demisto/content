@@ -90,12 +90,6 @@ script:
     - contextPath: JAMF.Computer.serial_number
       description: The computer serial number.
       type: String
-    - contextPath: JAMF.Computer.report_date_utc
-      description: The computer report date in UTC format.
-      type: Date
-    - contextPath: JAMF.Computer.report_date_epoch
-      description: The computer report date in epoch format.
-      type: Number
   - arguments:
     - description: |-
         The computer ID.
@@ -165,51 +159,6 @@ script:
     - contextPath: JAMF.Computer.mdm_capable_users
       description: The computer has MDM capable users.
       type: Boolean
-    - contextPath: JAMF.Computer.report_date
-      description: The computer report date.
-      type: Date
-    - contextPath: JAMF.Computer.report_date_epoch
-      description: The computer report date in epoch format.
-      type: Date
-    - contextPath: JAMF.Computer.report_date_utc
-      description: The computer report date in UTC format.
-      type: Date
-    - contextPath: JAMF.Computer.last_contact_time
-      description: The computer last contact time.
-      type: Date
-    - contextPath: JAMF.Computer.last_contact_time_epoch
-      description: The computer last contact time in epoch format.
-      type: Date
-    - contextPath: JAMF.Computer.last_contact_time_utc
-      description: The computer last contact time in UTC format.
-      type: Date
-    - contextPath: JAMF.Computer.initial_entry_date
-      description: The computer initial entry date.
-      type: Date
-    - contextPath: JAMF.Computer.initial_entry_date_epoch
-      description: The computer initial entry date in epoch format.
-      type: Date
-    - contextPath: JAMF.Computer.initial_entry_date_utc
-      description: The computer initial entry date in UTC format.
-      type: Date
-    - contextPath: JAMF.Computer.last_cloud_backup_date_epoch
-      description: The computer last cloud backup date in epoch format.
-      type: Number
-    - contextPath: JAMF.Computer.last_cloud_backup_date_utc
-      description: The computer last cloud backup date in UTC format.
-      type: String
-    - contextPath: JAMF.Computer.last_enrolled_date_epoch
-      description: The computer last enrolled date in epoch format.
-      type: Date
-    - contextPath: JAMF.Computer.last_enrolled_date_utc
-      description: The computer last enrolled date in UTC format.
-      type: Date
-    - contextPath: JAMF.Computer.mdm_profile_expiration_epoch
-      description: The computer MDM profile expiration in epoch format.
-      type: Number
-    - contextPath: JAMF.Computer.mdm_profile_expiration_utc
-      description: The computer MDM profile expiration in UTC format.
-      type: String
     - contextPath: JAMF.Computer.distribution_point
       description: The computer distribution point.
       type: String
@@ -369,51 +318,6 @@ script:
     - contextPath: JAMF.ComputerSubset.Computer.general.management_status.user_approved_mdm
       description: Whether the MDM is user-approved.
       type: Boolean
-    - contextPath: JAMF.ComputerSubset.Computer.general.report_date
-      description: The computer report date.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.Computer.general.report_date_epoch
-      description: The computer report date in epoch format.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.Computer.general.report_date_utc
-      description: The computer report date in UTC format.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.Computer.general.last_contact_time
-      description: The computer last contact time.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.Computer.general.last_contact_time_epoch
-      description: The computer last contact time in epoch format.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.Computer.general.last_contact_time_utc
-      description: The computer last contact time in UTC format.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.Computer.general.initial_entry_date
-      description: The computer initial entry date.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.Computer.general.initial_entry_date_epoch
-      description: The computer initial entry date in epoch format.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.Computer.general.initial_entry_date_utc
-      description: The computer initial entry date in UTC format.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.Computer.general.last_cloud_backup_date_epoch
-      description: The computer last cloud backup date in epoch format.
-      type: Number
-    - contextPath: JAMF.ComputerSubset.Computer.general.last_cloud_backup_date_utc
-      description: The computer last cloud backup date in UTC format.
-      type: String
-    - contextPath: JAMF.ComputerSubset.Computer.general.last_enrolled_date_epoch
-      description: The computer last enrolled date in epoch format.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.Computer.general.last_enrolled_date_utc
-      description: The computer last enrolled date in UTC format.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.Computer.general.mdm_profile_expiration_epoch
-      description: The computer MDM profile expiration in epoch format.
-      type: Number
-    - contextPath: JAMF.ComputerSubset.Computer.general.mdm_profile_expiration_utc
-      description: The computer MDM profile expiration in UTC format.
-      type: String
     - contextPath: JAMF.ComputerSubset.Computer.general.distribution_point
       description: The computer distribution point format.
       type: String
@@ -507,33 +411,6 @@ script:
       type: String
     - contextPath: JAMF.ComputerSubset.Computer.purchasing.purchasing_account
       description: The computer purchase account.
-      type: String
-    - contextPath: JAMF.ComputerSubset.Computer.purchasing.po_date
-      description: The computer PO date.
-      type: String
-    - contextPath: JAMF.ComputerSubset.Computer.purchasing.po_date_epoch
-      description: The computer PO date in epoch format.
-      type: Number
-    - contextPath: JAMF.ComputerSubset.Computer.purchasing.po_date_utc
-      description: The computer PO date in UTC format.
-      type: String
-    - contextPath: JAMF.ComputerSubset.Computer.purchasing.warranty_expires
-      description: The computer warranty expiration date.
-      type: String
-    - contextPath: JAMF.ComputerSubset.Computer.purchasing.warranty_expires_epoch
-      description: The computer warranty expiration date in epoch format.
-      type: Number
-    - contextPath: JAMF.ComputerSubset.Computer.purchasing.warranty_expires_utc
-      description: The computer warranty expiration date in UTC format.
-      type: String
-    - contextPath: JAMF.ComputerSubset.Computer.purchasing.lease_expires
-      description: The computer warranty lease expiration date.
-      type: String
-    - contextPath: JAMF.ComputerSubset.Computer.purchasing.lease_expires_epoch
-      description: The computer warranty lease expiration date in epoch time.
-      type: Number
-    - contextPath: JAMF.ComputerSubset.Computer.purchasing.lease_expires_utc
-      description: The computer warranty lease expiration date in UTC format.
       type: String
     - contextPath: JAMF.ComputerSubset.Computer.purchasing.life_expectancy
       description: The computer life expectancy.
