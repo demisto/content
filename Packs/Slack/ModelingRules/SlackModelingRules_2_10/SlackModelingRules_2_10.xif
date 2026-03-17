@@ -1,7 +1,103 @@
 [MODEL: dataset="slack_slack_raw"]
-
+filter action IN("user_login*", "user_logout_compromised", "user_logout_non_compliant_mobile_app_version", "cli_login") //Authentication events mapping
 // Extract actor and context fields
-alter
+| alter
+    get_actor_user_email = json_extract_scalar(actor, "$['user']['email']"),
+    get_actor_user_id = json_extract_scalar(actor, "$['user']['id']"),
+    get_actor_user_name = json_extract_scalar(actor, "$['user']['name']"),
+    get_actor_user_team = json_extract_scalar(actor, "$['user']['team']"),
+    get_context_ua = json_extract_scalar(context, "$['ua']"),
+    get_entity_app_scopes = json_extract_scalar_array(entity, "$.app.scopes"),
+    get_entity_type = json_extract_scalar(entity, "$['type']")
+
+// Parse email into username and domain
+| alter
+    array_actor_user_email = if(get_actor_user_email != NULL, split(get_actor_user_email, "@"))
+
+| alter //XDM Mapping
+    xdm.event.type = "authentication",
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
+    xdm.event.id = id,
+    xdm.event.outcome = if(
+        action IN("user_logout_compromised", "user_logout_non_compliant_mobile_app_version"), XDM_CONST.OUTCOME_FAILED,
+        action IN("user_login","cli_login") ,XDM_CONST.OUTCOME_SUCCESS
+        ),
+    xdm.event.outcome_reason = if(
+        action = "user_login_failed", "failed_login",
+        action IN("user_logout_non_compliant_mobile_app_version", "user_logout_compromised"), "auth_policy_access_violation",
+        "OTHER"
+        ),
+    xdm.event.original_event_type = action,
+    xdm.network.ip_protocol = XDM_CONST.IP_PROTOCOL_TCP,
+    xdm.auth.service = "SP",
+    xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_USER,
+    xdm.source.ipv4 = if(is_ipv4(json_extract_scalar(context, "$['ip_address']")), json_extract_scalar(context, "$['ip_address']")),
+    xdm.source.ipv6 = if(is_ipv6(json_extract_scalar(context, "$['ip_address']")), json_extract_scalar(context, "$['ip_address']")),
+    xdm.target.ipv4 = "",
+    xdm.source.port = to_integer(0),
+    xdm.target.port = to_integer(0),
+    xdm.network.session_id = json_extract_scalar(context, "$['session_id']"),
+
+    xdm.source.user.user_type = XDM_CONST.USER_TYPE_REGULAR,
+    xdm.source.user.scope = XDM_CONST.SCOPE_TYPE_SAAS,
+    xdm.source.user.upn = get_actor_user_email,
+    xdm.source.user.username = arrayindex(array_actor_user_email, 0),
+    xdm.source.user.identifier = get_actor_user_id,
+    xdm.source.user.identity_type = if(
+        get_actor_user_id IN("*USLACKBOT*","*USLACKSECURITY*"), XDM_CONST.IDENTITY_TYPE_APPLICATION,
+        arrayindex(array_actor_user_email, 1) CONTAINS "slack-bots.com", XDM_CONST.IDENTITY_TYPE_APPLICATION,
+        get_actor_user_id ~= "^A", XDM_CONST.IDENTITY_TYPE_APPLICATION,
+        get_actor_user_id CONTAINS "USLACKUSER", XDM_CONST.IDENTITY_TYPE_UNKNOWN,
+        XDM_CONST.IDENTITY_TYPE_USER
+    ),
+    xdm.source.user_agent = get_context_ua,
+    xdm.source.user.full_domain_name = arrayindex(array_actor_user_email, 1),
+    xdm.source.user.domain = arrayindex(array_actor_user_email, 1),
+    xdm.source.user.first_name = if(
+        get_actor_user_name IN("*slack*","*Slack*"), NULL,
+        get_actor_user_name = arrayindex(array_actor_user_email, 0), NULL,
+        arrayindex(regextract(get_actor_user_name, "(^\w+)\s+"),0)
+    ),
+    xdm.source.user.last_name = if(
+        get_actor_user_name IN("*@*","*slack*","*Slack*"), NULL,
+        get_actor_user_name = arrayindex(array_actor_user_email, 0), NULL,
+        arrayindex(regextract(get_actor_user_name, "\s+(\S+)$"),0)
+    ),
+    xdm.source.user.groups = if(get_actor_user_team != null, arraycreate(get_actor_user_team)),
+    xdm.source.host.os = arrayindex(regextract(get_context_ua, "\(([^;)]+)"),0),
+    xdm.source.host.os_family = if(
+        get_context_ua CONTAINS "Windows", XDM_CONST.OS_FAMILY_WINDOWS,
+        get_context_ua CONTAINS "Android", XDM_CONST.OS_FAMILY_ANDROID,
+        get_context_ua IN("*iPhone*", "*iPad*"), XDM_CONST.OS_FAMILY_IOS,
+        get_context_ua IN("*Macintosh*", "*Mac OS X*"), XDM_CONST.OS_FAMILY_MACOS,
+        get_context_ua IN("*Linux*", "*X11*"), XDM_CONST.OS_FAMILY_LINUX,
+        get_context_ua),
+    xdm.source.cloud.project = json_extract_scalar(context, "$['location']['domain']"),
+    xdm.source.cloud.project_id = json_extract_scalar(context, "$['location']['id']"),
+
+    xdm.logon.type = if(
+        json_extract_scalar(actor, "$['type']") ~= "[Uu]ser", XDM_CONST.LOGON_TYPE_INTERACTIVE,
+        XDM_CONST.LOGON_TYPE_SERVICE),
+
+    xdm.source.application.name = json_extract_scalar(entity, "$['app']['name']"),
+    xdm.source.application.bundle_id = json_extract_scalar(entity, "$['app']['id']"),
+
+    xdm.target.user.upn = json_extract_scalar(entity, "$['user']['email']"),
+    xdm.target.user.scope = if(get_entity_type = "user", XDM_CONST.SCOPE_TYPE_SAAS),
+    xdm.target.user.roles = get_entity_app_scopes,
+    xdm.target.user.identity_type = if(get_entity_type = "user", XDM_CONST.IDENTITY_TYPE_USER),
+    xdm.target.user.groups = arraycreate(json_extract_scalar(entity, "$['user']['team']")),
+    xdm.target.user.identifier = json_extract_scalar(entity, "$['user']['id']"),
+    xdm.target.user.username = json_extract_scalar(entity, "$['user']['name']"),
+    xdm.target.file.filename = json_extract_scalar(entity, "$['file']['name']"),
+    xdm.target.file.file_type = json_extract_scalar(entity, "$['file']['filetype']"),
+    xdm.target.file.extension = arrayindex(regextract(json_extract_scalar(entity, "$['file']['name']"), "\.(\w+)$"),0),
+    xdm.alert.source_url = json_extract_scalar(details, "$['url_private']");
+
+filter action NOT IN("user_login*", "user_logout_compromised", "user_logout_non_compliant_mobile_app_version", "cli_login") //SaaS Audit Mapping
+// Extract actor and context fields
+| alter
     get_actor_user_email = json_extract_scalar(actor, "$['user']['email']"),
     get_actor_user_id = json_extract_scalar(actor, "$['user']['id']"),
     get_context_app_id = json_extract_scalar(context, "$['app']['id']"),
@@ -29,7 +125,7 @@ alter
         action ~= "pref\.|_updated|_renamed|_converted|_changed|_reset|_resumed|_upgraded|_downgraded|_expanded", XDM_CONST.OPERATION_TYPE_UPDATE,
         action ~= "_searched|_export|_download|_preview|_opened", XDM_CONST.OPERATION_TYPE_READ,
         action ~= "_forwarded|_moved|_merged", XDM_CONST.OPERATION_TYPE_COPY,
-        action ~= "_login$", XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
+        action ~= "_login$|_logout", XDM_CONST.OPERATION_TYPE_AUTHENTICATION,
         action ~= "_paused|_expired", XDM_CONST.OPERATION_TYPE_STATUS_CHANGE,
         action ~= "_notification|_requested|_failed|_join|_leave", XDM_CONST.OPERATION_TYPE_AUDIT,
         "OTHER"
