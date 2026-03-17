@@ -14,6 +14,9 @@ from requests.exceptions import HTTPError
 urllib3.disable_warnings()
 
 
+DEFAULT_POLLING_TIMEOUT = 600
+DEFAULT_POLLING_INTERVAL = 10
+
 FIELD_NAMES_MAP = {
     "ScanType": "Type",
     "ScanStart": "StartTime",
@@ -1351,8 +1354,8 @@ def request_uuid_export_vulnerabilities(args: Dict[str, Any]) -> PollResult:
 
 @polling_function(
     name=demisto.command(),
-    timeout=arg_to_number(demisto.args().get("timeout", 720)),  # pylint: disable=W9017
-    interval=arg_to_number(demisto.args().get("intervalInSeconds", 15)),  # pylint: disable=W9017
+    timeout=arg_to_number(demisto.args().get("timeOut")) or DEFAULT_POLLING_TIMEOUT,
+    interval=arg_to_number(demisto.args().get("intervalInSeconds")) or DEFAULT_POLLING_INTERVAL,
     requires_polling_arg=False,
 )
 def export_assets_command(args: Dict[str, Any]) -> PollResult:
@@ -1497,8 +1500,8 @@ def validate_range(range: Optional[str]) -> tuple[Optional[float], Optional[floa
 
 @polling_function(
     name=demisto.command(),
-    timeout=arg_to_number(demisto.args().get("timeout", 600)),  # pylint: disable=W9017
-    interval=arg_to_number(demisto.args().get("intervalInSeconds", 10)),  # pylint: disable=W9017
+    timeout=arg_to_number(demisto.args().get("timeOut")) or DEFAULT_POLLING_TIMEOUT,
+    interval=arg_to_number(demisto.args().get("intervalInSeconds")) or DEFAULT_POLLING_INTERVAL,
     requires_polling_arg=False,
 )
 def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
