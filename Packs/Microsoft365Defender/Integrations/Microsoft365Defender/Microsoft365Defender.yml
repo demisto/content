@@ -536,7 +536,6 @@ script:
     description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     execution: false
     name: update-remote-system
-  # ---- Alert Management Commands ----
   - arguments:
     - defaultValue: '100'
       description: Maximum number of alerts to return. Maximum is 100.
@@ -580,6 +579,12 @@ script:
       type: String
     - contextPath: Microsoft365Defender.Alert.category
       description: The alert category.
+      type: String
+    - contextPath: Microsoft365Defender.Alert.createdDateTime
+      description: The date and time the alert was created.
+      type: Date
+    - contextPath: Microsoft365Defender.Alert.assignedTo
+      description: The user the alert is assigned to.
       type: String
   - arguments:
     - description: The alert ID to retrieve.
@@ -697,7 +702,6 @@ script:
     - contextPath: Microsoft365Defender.IncidentAlert.category
       description: The alert category.
       type: String
-  # ---- Device Response Action Commands ----
   - arguments:
     - description: The machine ID to isolate.
       name: machine_id
@@ -762,6 +766,9 @@ script:
       type: String
     - contextPath: Microsoft365Defender.MachineAction.machineId
       description: The ID of the machine the action was performed on.
+      type: String
+    - contextPath: Microsoft365Defender.MachineAction.requestor
+      description: The identity that executed the action.
       type: String
     - contextPath: Microsoft365Defender.MachineAction.creationDateTimeUtc
       description: The date and time the action was created.
@@ -887,7 +894,6 @@ script:
     - contextPath: Microsoft365Defender.MachineAction.creationDateTimeUtc
       description: The date and time the action was created.
       type: Date
-  # ---- Threat Indicator Commands ----
   - arguments:
     - description: The indicator value (IP, URL, domain, or file hash).
       name: indicator_value

@@ -58,6 +58,14 @@ def util_load_json(path):
 
 
 def test_convert_incident():
+    """
+    Given:
+        A raw incident and a None value as input.
+    When:
+        Converting incidents to a readable format using convert_incident_to_readable.
+    Then:
+        None returns the empty incident template and a raw incident returns the expected converted format.
+    """
     from Microsoft365Defender import convert_incident_to_readable
 
     empty_incident = util_load_json("./test_data/empty_incident.json")
@@ -85,6 +93,14 @@ def check_api_response(results, results_mock):
 
 
 def test_microsoft_365_defender_incidents_list_command(mocker):
+    """
+    Given:
+        A valid client with a mocked incidents list response.
+    When:
+        Calling the incidents list command with a limit of 10.
+    Then:
+        The command results match the expected outputs, prefix, key field, and readable output.
+    """
     from Microsoft365Defender import microsoft_365_defender_incidents_list_command
 
     client = mock_client(mocker, "incidents_list", util_load_json("./test_data/incidents_list_response.json"))
@@ -93,6 +109,14 @@ def test_microsoft_365_defender_incidents_list_command(mocker):
 
 
 def test_microsoft_365_defender_incident_update_command(mocker):
+    """
+    Given:
+        A valid client with a mocked incident update response.
+    When:
+        Updating incident 263 with tags, status, classification, and determination.
+    Then:
+        The command results match the expected outputs for the updated incident.
+    """
     from Microsoft365Defender import microsoft_365_defender_incident_update_command
 
     client = mock_client(mocker, "update_incident", util_load_json("./test_data/incident_update_response.json"))
@@ -109,6 +133,14 @@ def test_microsoft_365_defender_incident_update_command(mocker):
 
 
 def test_microsoft_365_defender_incident_get_command(mocker):
+    """
+    Given:
+        A valid client with a mocked incident get response.
+    When:
+        Fetching incident 263.
+    Then:
+        The command results match the expected outputs for the retrieved incident.
+    """
     from Microsoft365Defender import microsoft_365_defender_incident_get_command
 
     client = mock_client(mocker, "get_incident", util_load_json("./test_data/incident_get_response.json"))
@@ -118,6 +150,14 @@ def test_microsoft_365_defender_incident_get_command(mocker):
 
 
 def test_microsoft_365_defender_advanced_hunting_command(mocker):
+    """
+    Given:
+        A valid client with a mocked advanced hunting response.
+    When:
+        Running an advanced hunting query for 'AlertInfo'.
+    Then:
+        The command results match the expected outputs for the hunting query.
+    """
     from Microsoft365Defender import microsoft_365_defender_advanced_hunting_command
 
     client = mock_client(mocker, "advanced_hunting", util_load_json("./test_data/advanced_hunting_response.json"))
@@ -139,12 +179,13 @@ def fetch_check(mocker, client, last_run, first_fetch_time, fetch_limit, mock_re
 
 def test_fetch_incidents(mocker):
     """
-    This test check for 4 fetch cycles.
-        First - get all the incidents and fill the queue 127, returns 50
-        Second - get 50 incidents from the queue
-        Third - tries to fill the queue with new incidents but there are no new ones so returns all the remaining
-                incidents in the queue
-        Forth - tries to fill the queue with new incidents but there are no new ones so returns empty list
+    Given:
+        A mock client with paginated incident responses across four fetch cycles.
+    When:
+        Fetching incidents with a limit of 50 over four consecutive cycles.
+    Then:
+        Each cycle returns the expected incidents: first fills the queue (127 total, returns 50),
+        second returns 50 from queue, third returns remaining, fourth returns empty.
     """
     response_dict = util_load_json("./test_data/fetch_response.json")
     client = Client(app_id="app_id", verify=False, proxy=False, base_url="https://api.security.microsoft.com")
@@ -179,7 +220,14 @@ def test_fetch_incidents(mocker):
     ],
 )
 def test_query_set_limit(query: str, limit: int, expected_has_limit: bool):
-    """Test that _query_set_limit adds or replaces limit correctly."""
+    """
+    Given:
+        A KQL query string and a limit value.
+    When:
+        Calling _query_set_limit to add or replace the limit clause.
+    Then:
+        The result contains the expected limit and preserves original query components.
+    """
     result = _query_set_limit(query, limit)
 
     # Verify limit is in the result
@@ -236,13 +284,12 @@ def test_query_set_limit(query: str, limit: int, expected_has_limit: bool):
 )
 def test_query_set_limit_complex_queries(query: str, limit: int, expected_contains: list):
     """
-    Test _query_set_limit with complex queries containing parentheses, unions, and joins.
-    This test validates the fix for XSUP-61445.
-
-    Args:
-        query: The input KQL query
-        limit: The limit to apply
-        expected_contains: List of strings that should be present in the result
+    Given:
+        A complex KQL query with parentheses, unions, or joins (XSUP-61445 scenarios).
+    When:
+        Calling _query_set_limit with the specified limit.
+    Then:
+        The result contains all expected components, balanced parentheses, and the correct limit.
     """
     result = _query_set_limit(query, limit)
 
@@ -259,7 +306,12 @@ def test_query_set_limit_complex_queries(query: str, limit: int, expected_contai
 
 def test_query_set_limit_negative_limit():
     """
-    Test that negative limit returns the original query unchanged.
+    Given:
+        A valid KQL query and a negative limit value.
+    When:
+        Calling _query_set_limit with limit -1.
+    Then:
+        The original query is returned unchanged.
     """
     query = "DeviceEvents | where Timestamp > ago(1d)"
     result = _query_set_limit(query, -1)
@@ -268,8 +320,12 @@ def test_query_set_limit_negative_limit():
 
 def test_query_set_limit_jira_ticket_example():
     """
-    Test the exact query structure from JIRA ticket XSUP-61445.
-    This validates that complex queries with multiple nested joins work correctly.
+    Given:
+        The exact multi-join query structure from JIRA ticket XSUP-61445.
+    When:
+        Calling _query_set_limit with a limit of 50.
+    Then:
+        Inner subquery takes are preserved, parentheses are balanced, and top-level limit is applied.
     """
     # Simplified version of the JIRA ticket query
     query = """AADSignInEventsBeta
@@ -877,7 +933,12 @@ def test_handle_incident_close_out_or_reactivation_reopen(mocker):
 
 def test_handle_incident_close_out_or_reactivation_close_out_disabled(mocker):
     """
-    Test that the function exits early when 'close_out' is disabled.
+    Given:
+        The close_out parameter is disabled in the integration configuration.
+    When:
+        Calling handle_incident_close_out_or_reactivation with a close reason delta.
+    Then:
+        The delta remains unchanged because the function exits early.
     """
     params = {"close_out": False}
     mocker.patch.object(demisto, "params", return_value=params)
@@ -1095,8 +1156,12 @@ def test_update_remote_system_with_entries(mocker):
 
     def test_get_modified_incidents_custom_mapping_hit(mocker):
         """
-        Ensure that when custom_defender_to_xsoar_close_reason is enabled and the mapping contains
-        the incident classification, the custom mapping value is used as the closeReason.
+        Given:
+            Custom defender-to-XSOAR close reason mapping is enabled with a TruePositive mapping.
+        When:
+            Generating close entries for a resolved incident with TruePositive classification.
+        Then:
+            The custom mapping value 'CustomResolved' is used as the closeReason.
         """
         mocker.patch.object(
             demisto,
@@ -1117,8 +1182,12 @@ def test_update_remote_system_with_entries(mocker):
 
     def test_get_modified_incidents_custom_mapping_miss(mocker):
         """
-        Ensure that when custom_defender_to_xsoar_close_reason is enabled but the mapping does not contain
-        the incident classification, the default MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON mapping is used.
+        Given:
+            Custom defender-to-XSOAR close reason mapping is enabled but lacks TruePositive mapping.
+        When:
+            Generating close entries for a resolved incident with TruePositive classification.
+        Then:
+            The default mapping is used, resulting in 'Resolved' as the closeReason.
         """
         mocker.patch.object(
             demisto,
@@ -1344,7 +1413,7 @@ class TestAlertsListCommand:
             Two alerts are returned with correct IDs and readable output contains 'Alerts:'.
         """
         from Microsoft365Defender import microsoft_365_defender_alerts_list_command
-        client = mock_client(mocker, "alerts_list", self.MOCK_ALERTS_RESPONSE)
+        client = mock_client(mocker, "list_alerts", self.MOCK_ALERTS_RESPONSE)
         results = microsoft_365_defender_alerts_list_command(client, {"limit": "10"})
         assert len(results.outputs) == 2
         assert results.outputs[0]["id"] == "alert-1"
@@ -1360,7 +1429,7 @@ class TestAlertsListCommand:
             Readable output indicates no alerts were found.
         """
         from Microsoft365Defender import microsoft_365_defender_alerts_list_command
-        client = mock_client(mocker, "alerts_list", {"value": []})
+        client = mock_client(mocker, "list_alerts", {"value": []})
         results = microsoft_365_defender_alerts_list_command(client, {"limit": "10"})
         assert results.readable_output == "No alerts found"
 

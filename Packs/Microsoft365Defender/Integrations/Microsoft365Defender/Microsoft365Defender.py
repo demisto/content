@@ -259,7 +259,7 @@ class Client:
     # ---- Alert Management ----
 
     @logger
-    def alerts_list(
+    def list_alerts(
         self,
         timeout: int,
         limit: int = MAX_ENTRIES,
@@ -745,16 +745,21 @@ def microsoft_365_defender_incident_update_command(client: Client, args: dict) -
     timeout = arg_to_number(args.get("timeout", TIMEOUT))
     comment = args.get("comment")
 
-    updated_incident = client.update_incident(
-        incident_id=incident_id,
-        status=status,
-        assigned_to=assigned_to,
-        classification=classification,
-        determination=determination,
-        tags=tags,
-        timeout=timeout,
-        comment=comment,
-    )
+    try:
+        updated_incident = client.update_incident(
+            incident_id=incident_id,
+            status=status,
+            assigned_to=assigned_to,
+            classification=classification,
+            determination=determination,
+            tags=tags,
+            timeout=timeout,
+            comment=comment,
+        )
+    except DemistoException as e:
+        if "404" in str(e):
+            return CommandResults(readable_output=f"Incident {incident_id} was not found.")
+        raise
     if updated_incident.get("@odata.context"):
         del updated_incident["@odata.context"]
 
@@ -786,7 +791,12 @@ def microsoft_365_defender_incident_get_command(client: Client, args: dict) -> C
     incident_id = arg_to_number(args.get("id"))
     timeout = arg_to_number(args.get("timeout", TIMEOUT))
 
-    incident = client.get_incident(incident_id=incident_id, timeout=timeout)
+    try:
+        incident = client.get_incident(incident_id=incident_id, timeout=timeout)
+    except DemistoException as e:
+        if "404" in str(e):
+            return CommandResults(readable_output=f"Incident {incident_id} was not found.")
+        raise
     if incident.get("@odata.context"):
         del incident["@odata.context"]
 
@@ -1404,7 +1414,7 @@ def microsoft_365_defender_alerts_list_command(client: Client, args: dict) -> Co
     offset = arg_to_number(args.get("offset"))
     timeout = arg_to_number(args.get("timeout", TIMEOUT))
 
-    response = client.alerts_list(
+    response = client.list_alerts(
         timeout=timeout, limit=limit, severity=severity, status=status, category=category, skip=offset
     )
     raw_alerts = response.get("value", [])
@@ -1498,7 +1508,12 @@ def microsoft_365_defender_incident_alerts_list_command(client: Client, args: di
     incident_id = arg_to_number(args.get("incident_id"), arg_name="incident_id", required=True)
     timeout = arg_to_number(args.get("timeout", TIMEOUT))
 
-    response = client.get_incident_alerts(incident_id=incident_id, timeout=timeout)
+    try:
+        response = client.get_incident_alerts(incident_id=incident_id, timeout=timeout)
+    except DemistoException as e:
+        if "404" in str(e):
+            return CommandResults(readable_output=f"Incident {incident_id} was not found.")
+        raise
     raw_alerts = response.get("value", []) if isinstance(response, dict) else response
     if not isinstance(raw_alerts, list):
         raw_alerts = [raw_alerts] if raw_alerts else []
