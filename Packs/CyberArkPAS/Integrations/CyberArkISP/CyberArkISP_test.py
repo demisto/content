@@ -572,10 +572,10 @@ def test_create_stream_query_success(mocker, client, date_from, date_to, expecte
     assert call_args[1]["url_suffix"] == APIValues.CREATE_QUERY_ENDPOINT.value
 
     json_data = call_args[1]["json_data"]
-    assert APIKeys.FILTER_MODEL.value in json_data
-    assert APIKeys.SORT_MODEL.value in json_data
+    assert APIKeys.FILTER_MODEL.value in json_data["query"]
+    assert APIKeys.SORT_MODEL.value in json_data["query"]
 
-    filter_model = json_data[APIKeys.FILTER_MODEL.value]
+    filter_model = json_data["query"][APIKeys.FILTER_MODEL.value]["date"]
     for key in expected_filter_keys:
         assert key in filter_model
 
