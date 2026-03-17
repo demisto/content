@@ -22,7 +22,6 @@ DEFAULT_LIMIT = "50"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 STORAGE_DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
 API_VERSION = "2022-09-01"
-NSG_API_VERSION = "2025-05-01"
 NEW_API_VERSION_PARAMS = {"api-version": "2024-05-01"}
 GRANT_BY_CONNECTION = {
     "Device Code": DEVICE_CODE,
@@ -206,6 +205,12 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Consumption/budgets/read": ["azure-billing-budgets-list"],
     "Microsoft.CostManagement/forecast/read": ["azure-billing-forecast-list"],
     "Microsoft.Network/networkSecurityGroups/write": ["create_network_security_group"],
+    "Microsoft.Network/virtualNetworks/subnets/join/action": ["azure-vn-network-interface-update"],
+    "Microsoft.Network/publicIPAddresses/join/action": ["azure-vn-network-interface-update"],
+    "Microsoft.Network/networkSecurityGroups/join/action": ["azure-vn-network-interface-update"],
+    "Microsoft.Network/loadBalancers/backendAddressPools/join/action": [
+        "Microsoft.Network/loadBalancers/backendAddressPools/join/action"
+    ],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -258,7 +263,14 @@ API_FUNCTION_TO_PERMISSIONS = {
     "get_vm_request": ["Microsoft.Compute/virtualMachines/read"],
     "list_vm_request": ["Microsoft.Compute/virtualMachines/read"],
     "get_network_interface_request": ["Microsoft.Network/networkInterfaces/read"],
-    "update_network_interface_request": ["Microsoft.Network/networkInterfaces/read", "Microsoft.Network/networkInterfaces/write"],
+    "update_network_interface_request": [
+        "Microsoft.Network/networkInterfaces/read",
+        "Microsoft.Network/networkInterfaces/write",
+        "Microsoft.Network/virtualNetworks/subnets/join/action",
+        "Microsoft.Network/publicIPAddresses/join/action",
+        "Microsoft.Network/networkSecurityGroups/join/action",
+        "Microsoft.Network/loadBalancers/backendAddressPools/join/action",
+    ],
     "get_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"],
     "get_all_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"],
     "list_security_rules": ["Microsoft.Network/networkSecurityGroups/securityRules/read"],
@@ -1835,7 +1847,7 @@ class AzureClient:
         json_data = {
             "location": location,
         }
-        params = {"api-version": NSG_API_VERSION}
+        params = {"api-version": "2025-05-01"}
         try:
             return self.http_request(method="PUT", full_url=full_url, json_data=remove_empty_elements(json_data), params=params)
         except Exception as e:
@@ -2114,7 +2126,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def list_vm_request(self, subscription_id: str, resource_group_name: str, next_token: str, expand: str):
+    def list_vm_request(self, subscription_id: str, resource_group_name: str, next_token: str):
         """
         Lists all the virtual machines in the specified resource group.
 
@@ -2122,7 +2134,6 @@ class AzureClient:
             subscription_id (str): The ID of the Azure subscription.
             resource_group_name (str): The name of the resource group containing the virtual machine.
             next_token (str): The URI to fetch the next page of results.
-            expand (str): The expand expression to apply.
 
         Returns:
             The list of virtual machines.
@@ -2624,6 +2635,60 @@ def remove_query_param_from_url(url: str, param: str) -> str:
     qs.pop(param, None)
     new_query = urlencode(qs, doseq=True)
     return urlunparse(parsed._replace(query=new_query))
+
+
+def update_nic_properties(args: dict, params: dict, properties: dict):
+    """
+    Updates the properties dictionary of a Network Interface Card (NIC) based on the provided arguments.
+
+    Args:
+        args (dict): The arguments provided to the command.
+        params (dict): The integration parameters.
+        properties (dict): The current properties of the NIC to be updated.
+    """
+    subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
+    resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
+    remove_network_security_group = arg_to_bool_or_none(args.get("remove_network_security_group"))
+
+    properties["enableIPForwarding"] = (
+        argToBoolean(args.get("enable_ip_forwarding"))
+        if args.get("enable_ip_forwarding") is not None
+        else properties.get("enableIPForwarding")
+    )
+    properties["enableAcceleratedNetworking"] = (
+        argToBoolean(args.get("accelerate_networking"))
+        if args.get("accelerate_networking") is not None
+        else properties.get("enableAcceleratedNetworking")
+    )
+    properties["auxiliaryMode"] = args.get("auxiliary_mode") or properties.get("auxiliaryMode")
+    properties["auxiliarySku"] = args.get("auxiliary_sku") or properties.get("auxiliarySku")
+    properties["nicType"] = args.get("nic_type") or properties.get("nicType")
+    nsg_prefix = (
+        f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network"
+        f"/networkSecurityGroups/"
+    )
+    properties["networkSecurityGroup"] = {
+        "id": f'{nsg_prefix}{args.get("network_security_group_name")}'
+        if args.get("network_security_group_name")
+        else properties.get("networkSecurityGroup", {}).get("id")
+    }
+
+    internal_dns_name_label = args.get("internal_dns_name_label")
+    dns_servers = args.get("dns_servers")
+    dns_arr = [internal_dns_name_label, dns_servers]
+
+    if "dnsSettings" not in properties and any(x is not None for x in dns_arr):
+        properties["dnsSettings"] = {}
+
+    if internal_dns_name_label:
+        properties["dnsSettings"]["internalDnsNameLabel"] = internal_dns_name_label
+
+    if dns_servers:
+        properties["dnsSettings"]["dnsServers"] = argToList(dns_servers)
+
+    if remove_network_security_group:
+        demisto.debug(f"Removing the network security group {properties.get('networkSecurityGroup')}")
+        properties.pop("networkSecurityGroup", None)
 
 
 """ COMMAND FUNCTIONS """
@@ -4428,7 +4493,7 @@ def get_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str, 
     )
 
 
-def list_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]):
+def list_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
     """
     Lists all virtual machines in a resource group.
 
@@ -4443,17 +4508,16 @@ def list_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str,
     subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
     resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
     next_token = args.get("next_token", "")
-    expand = args.get("expand", "")
-    demisto.debug(f"[Azure] args being sent to list_vm_request {subscription_id=} {resource_group_name=} {expand=}")
+    demisto.debug(f"[Azure] args being sent to list_vm_request {subscription_id=} {resource_group_name=}")
 
-    response = client.list_vm_request(subscription_id, resource_group_name, next_token, expand)
+    response = client.list_vm_request(subscription_id, resource_group_name, next_token)
 
     demisto.debug(f"[Azure] list_vm_request response={response} end response.")
 
     vms_list = response.get("value", [])
 
     if not vms_list:
-        return CommandResults("No Virtual Machines found.")
+        return CommandResults(readable_output="No Virtual Machines found.")
 
     outputs = {
         "Azure.Compute.VirtualMachines(val.id && val.id == obj.id)": vms_list,
@@ -4545,7 +4609,7 @@ def get_network_interface_command(client: AzureClient, params: dict[str, Any], a
     )
 
 
-def network_interface_update_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]):
+def network_interface_update_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
     """
     Updates a specific Azure Network Interface (NIC).
     This function retrieves the current network interface configuration, updates the specified
@@ -4565,9 +4629,8 @@ def network_interface_update_command(client: AzureClient, params: dict[str, Any]
             - auxiliary_sku: Auxiliary sku of Network Interface resource.
             - dns_servers: Comma-separated list of DNS server IP addresses
             - internal_dns_name_label: Internal DNS name label for the network interface
-            - network_security_group_name: Full resource ID of the network security group to associate
-            - ip_config_name: The name of the resource that is unique within a resource group.
-            - subnet_name: The subnet name.
+            - network_security_group_name: The name of the network security group.
+            - remove_network_security_group: Whether to remove the property networkSecurityGroup from the network interface.
             - nic_type: Type of Network Interface resource.
 
     Returns:
@@ -4577,7 +4640,7 @@ def network_interface_update_command(client: AzureClient, params: dict[str, Any]
     resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
     network_interface_name = args.get("network_interface_name", "")
     location = args.get("location", "")
-    remove_network_security_group = argToBoolean(args.get("remove_network_security_group"))
+    remove_network_security_group = arg_to_bool_or_none(args.get("remove_network_security_group"))
 
     if args.get("network_security_group_name") and remove_network_security_group:
         raise DemistoException("The remove_network_security_group option cannot be used with network_security_group_name.")
@@ -4590,48 +4653,10 @@ def network_interface_update_command(client: AzureClient, params: dict[str, Any]
 
     # Update properties based on user arguments
     properties = current_nic.get("properties", {})
-    properties["enableIPForwarding"] = (
-        argToBoolean(args.get("enable_ip_forwarding"))
-        if args.get("enable_ip_forwarding") is not None
-        else properties.get("enableIPForwarding")
-    )
-    properties["enableAcceleratedNetworking"] = (
-        argToBoolean(args.get("accelerate_networking"))
-        if args.get("accelerate_networking") is not None
-        else properties.get("enableAcceleratedNetworking")
-    )
-    properties["auxiliaryMode"] = args.get("auxiliary_mode") or properties.get("auxiliaryMode")
-    properties["auxiliarySku"] = args.get("auxiliary_sku") or properties.get("auxiliarySku")
-    properties["nicType"] = args.get("nic_type") or properties.get("nicType")
-    nsg_prefix = (
-        f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network"
-        f"/networkSecurityGroups/"
-    )
-    properties["networkSecurityGroup"] = {
-        "id": f'{nsg_prefix}{args.get("network_security_group_name")}'
-        if args.get("network_security_group_name")
-        else properties.get("networkSecurityGroup", {}).get("id")
-    }
-
-    internal_dns_name_label = args.get("internal_dns_name_label")
-    dns_servers = args.get("dns_servers")
-    dns_arr = [internal_dns_name_label, dns_servers]
-
-    if "dnsSettings" not in properties and any(x is not None for x in dns_arr):
-        properties["dnsSettings"] = {}
-
-    if internal_dns_name_label:
-        properties["dnsSettings"]["internalDnsNameLabel"] = internal_dns_name_label
-
-    if dns_servers:
-        properties["dnsSettings"]["dnsServers"] = argToList(dns_servers)
-
-    if remove_network_security_group:
-        demisto.debug(f"Removing the network security group {properties.get('networkSecurityGroup')}")
-        properties.pop("networkSecurityGroup", None)
+    update_nic_properties(args, params, properties)
 
     updated_nic = current_nic
-    updated_nic["properties"] = properties
+    updated_nic["properties"] = remove_empty_elements(properties)
     updated_nic["location"] = location or updated_nic["location"]
 
     demisto.debug(f"[Azure] Updating the network interface {network_interface_name}: {updated_nic}")
