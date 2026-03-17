@@ -16,8 +16,8 @@ def test_diagnose_syslog_collector_healthy_status(mocker):
         {
             "Contents": [
                 {
-                    "DeviceName": "test-broker",
-                    "Apps": [{"display_name": "Syslog Collector", "status": "active"}],
+                    "DEVICE_NAME": "test-broker",
+                    "APPS": [{"display_name": "Syslog Collector", "status": "active"}],
                 }
             ]
         }
@@ -33,7 +33,7 @@ def test_diagnose_syslog_collector_healthy_status(mocker):
     result = diagnose_syslog_collector("test-broker", "24 hours")
 
     assert result.outputs["status"] == "HEALTHY"
-    assert "no errors" in result.outputs["diagnosis_report"]
+    assert any("no errors" in item for item in result.outputs["diagnosis_report"])
     assert mock_execute.call_count == 2
 
 
@@ -45,7 +45,7 @@ def test_diagnose_syslog_collector_collector_not_configured(mocker):
     """
     from DiagnoseSyslogCollector import diagnose_syslog_collector
 
-    broker_response = [{"Contents": [{"DeviceName": "test-broker", "Apps": []}]}]
+    broker_response = [{"Contents": [{"DEVICE_NAME": "test-broker", "APPS": []}]}]
 
     mock_execute = mocker.patch.object(demisto, "executeCommand", return_value=broker_response)
     mocker.patch("DiagnoseSyslogCollector.is_error", return_value=False)
@@ -53,7 +53,7 @@ def test_diagnose_syslog_collector_collector_not_configured(mocker):
     result = diagnose_syslog_collector("test-broker", "24 hours")
 
     assert result.outputs["status"] == "ERROR"
-    assert "not configured" in result.outputs["diagnosis_report"]
+    assert any("not configured" in item for item in result.outputs["diagnosis_report"])
     assert mock_execute.call_count == 1  # Only broker query, no XQL query
 
 
@@ -69,8 +69,8 @@ def test_diagnose_syslog_collector_inactive_with_errors(mocker):
         {
             "Contents": [
                 {
-                    "DeviceName": "test-broker",
-                    "Apps": [
+                    "DEVICE_NAME": "test-broker",
+                    "APPS": [
                         {
                             "display_name": "Syslog Collector",
                             "status": "inactive",
@@ -91,9 +91,9 @@ def test_diagnose_syslog_collector_inactive_with_errors(mocker):
     result = diagnose_syslog_collector("test-broker", "24 hours")
 
     assert result.outputs["status"] == "ERROR"
-    assert "[ERROR] Connection failed" in result.outputs["diagnosis_report"]
-    assert "[ERROR] Port unavailable" in result.outputs["diagnosis_report"]
-    assert "[WARNING] High latency" in result.outputs["diagnosis_report"]
+    assert any("[ERROR] Connection failed" in item for item in result.outputs["diagnosis_report"])
+    assert any("[ERROR] Port unavailable" in item for item in result.outputs["diagnosis_report"])
+    assert any("[WARNING] High latency" in item for item in result.outputs["diagnosis_report"])
 
 
 def test_diagnose_syslog_collector_active_with_warnings(mocker):
@@ -108,8 +108,8 @@ def test_diagnose_syslog_collector_active_with_warnings(mocker):
         {
             "Contents": [
                 {
-                    "DeviceName": "test-broker",
-                    "Apps": [{"display_name": "Syslog Collector", "status": "active"}],
+                    "DEVICE_NAME": "test-broker",
+                    "APPS": [{"display_name": "Syslog Collector", "status": "active"}],
                 }
             ]
         }
@@ -160,11 +160,11 @@ def test_diagnose_syslog_collector_active_with_warnings(mocker):
     assert result.outputs["status"] == "WARNING"
     diagnosis = result.outputs["diagnosis_report"]
     # Verify deduplication
-    assert diagnosis.count("Failed to process the packet due to a missing length header") == 1
-    assert "[WARNING] Log parsing failed due to an unexpected format." in diagnosis
-    assert "[ERROR] Unable to connect to the receptor for data transmission." in diagnosis
+    assert sum(1 for item in diagnosis if "Failed to process the packet due to a missing length header" in item) == 1
+    assert any("[WARNING] Log parsing failed due to an unexpected format." in item for item in diagnosis)
+    assert any("[ERROR] Unable to connect to the receptor for data transmission." in item for item in diagnosis)
     # Verify timestamps are included
-    assert "2026-03-01 11:06:42 UTC" in diagnosis or "2026-03-01 11:09:00 UTC" in diagnosis
+    assert any("2026-03-01 11:06:42 UTC" in item or "2026-03-01 11:09:00 UTC" in item for item in diagnosis)
 
 
 def test_diagnose_syslog_collector_broker_not_found(mocker):
@@ -196,8 +196,8 @@ def test_diagnose_syslog_collector_xql_query_failure(mocker):
         {
             "Contents": [
                 {
-                    "DeviceName": "test-broker",
-                    "Apps": [{"display_name": "Syslog Collector", "status": "active"}],
+                    "DEVICE_NAME": "test-broker",
+                    "APPS": [{"display_name": "Syslog Collector", "status": "active"}],
                 }
             ]
         }

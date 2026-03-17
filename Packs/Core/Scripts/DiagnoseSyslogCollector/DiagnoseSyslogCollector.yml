@@ -21,11 +21,11 @@ outputs:
   type: String
 - contextPath: Core.SyslogCollectorDiagnostics.diagnosis_report
   description: Detailed diagnosis report with errors and warnings.
-  type: String
+  type: Unknown
 scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.12.12.7090913
-fromversion: 8.13.0
+fromversion: 8.14.0
 isInternal: true
 tests:
 - No tests (auto formatted)
@@ -34,3 +34,4 @@ marketplaces:
 supportedModules:
 - cloud_runtime_security
 - xsiam
+- edr
