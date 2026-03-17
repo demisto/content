@@ -4266,23 +4266,6 @@ script:
         - contextPath: Core.DeletedEndpointPolicy.Deleted
           description: Confirmation flag that the policy was deleted (always true).
           type: Boolean
-    - arguments:
-        - description: Comma-separated list of broker VM names to filter by.
-          name: broker_vm_names
-          isArray: true
-        - description: Maximum number of brokers to return.
-          name: limit
-          defaultValue: "50"
-      name: core-list-brokers
-      description: Retrieves information about broker VMs configured on the system.
-      hidden: true
-      outputs:
-        - contextPath: Core.Broker.DeviceName
-          description: The name of the broker VM device.
-          type: String
-        - contextPath: Core.Broker.Apps
-          description: List of applications configured on the broker.
-          type: Array
     - name: core-fill-support-ticket
       hidden: true
 
