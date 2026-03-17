@@ -1,6 +1,6 @@
 {
  "id": "text-placeholder",
- "dataType": "incidents",
+ "dataType": "scripts",
  "name": "Text Widget",
  "dateRange": {
   "period": {

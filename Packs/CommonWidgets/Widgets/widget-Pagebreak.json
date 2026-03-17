@@ -3,7 +3,7 @@
   "version": -1,
   "modified": "2019-10-29T18:36:21.632663+02:00",
   "name": "Page Break Widget",
-  "dataType": "incidents",
+  "dataType": "scripts",
   "widgetType": "text",
   "query": "",
   "fromVersion": "5.0.0",
