@@ -3306,7 +3306,7 @@ class TestGetIssueByFilter:
 
         # Verify the request data was logged and contains the correct filter
         assert request_data_log.call_count > 0
-        logged_request = request_data_log.call_args[0][0]
+        logged_request = request_data_log.call_args_list[0][0][0]
         assert "SEARCH_FIELD': 'alert_action_status'" in logged_request
         assert "SEARCH_TYPE': 'EQ'" in logged_request
         assert "SEARCH_VALUE': 'SCANNED'" in logged_request
@@ -3336,7 +3336,7 @@ class TestGetIssueByFilter:
         assert response[0].outputs[0].get("internal_id", {}) == 33333
         # Verify the request data was logged and contains the correct filter
         assert request_data_log.call_count > 0
-        logged_request = request_data_log.call_args[0][0]
+        logged_request = request_data_log.call_args_list[0][0][0]
         assert "'SEARCH_FIELD': 'alert_source'" in logged_request
         assert "'SEARCH_TYPE': 'CONTAINS'" in logged_request
         assert "'SEARCH_VALUE': 'first'" in logged_request
@@ -3369,7 +3369,7 @@ class TestGetIssueByFilter:
 
         # Verify the request data was logged and contains the correct filter
         assert request_data_log.call_count > 0
-        logged_request = request_data_log.call_args[0][0]
+        logged_request = request_data_log.call_args_list[0][0][0]
 
         # Check for source filter
         assert "'SEARCH_FIELD': 'alert_source'" in logged_request
