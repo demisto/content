@@ -9695,9 +9695,7 @@ class TestValidateInterfaces:
             interfaces=["ethernet1/1", "ha1-a", "ha2-a"],
         )
 
-        result = FirewallCommand.validate_interfaces(
-            mock_firewall_topology, MOCK_FIREWALL_1_SERIAL, "ha1-a,ha2-a"
-        )
+        result = FirewallCommand.validate_interfaces(mock_firewall_topology, MOCK_FIREWALL_1_SERIAL, "ha1-a,ha2-a")
         assert result.all_valid is True
         assert result.missing_interfaces == []
 
@@ -9711,9 +9709,7 @@ class TestValidateInterfaces:
             interfaces=["ethernet1/1", "ha1-a"],
         )
 
-        result = FirewallCommand.validate_interfaces(
-            mock_firewall_topology, MOCK_FIREWALL_1_SERIAL, "ha1-a,ha3"
-        )
+        result = FirewallCommand.validate_interfaces(mock_firewall_topology, MOCK_FIREWALL_1_SERIAL, "ha1-a,ha3")
         assert result.all_valid is False
         assert "ha3" in result.missing_interfaces
 
@@ -9761,9 +9757,7 @@ class TestSetHAEnabledState:
         firewall.xapi = MagicMock()
         firewall.commit = MagicMock(return_value="Commit OK")
 
-        result = FirewallCommand.set_ha_enabled_state(
-            mock_firewall_topology, MOCK_FIREWALL_1_SERIAL, enabled=True, commit="true"
-        )
+        result = FirewallCommand.set_ha_enabled_state(mock_firewall_topology, MOCK_FIREWALL_1_SERIAL, enabled=True, commit="true")
         assert result.committed is True
         assert "commit" in result.message.lower()
         firewall.commit.assert_called_once_with(sync=True)

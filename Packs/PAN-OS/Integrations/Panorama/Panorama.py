@@ -12242,9 +12242,7 @@ class FirewallCommand:
         return HighAvailabilityStateStatus(hostid=resolve_host_id(firewall), state=state)
 
     @staticmethod
-    def sync_ha_to_remote(
-        topology: Topology, target: str, sync_type: str
-    ) -> HASyncResult:
+    def sync_ha_to_remote(topology: Topology, target: str, sync_type: str) -> HASyncResult:
         """
         Synchronizes configuration or state between HA peers.
         :param topology: `Topology` instance.
@@ -12266,9 +12264,7 @@ class FirewallCommand:
         return HASyncResult(hostid=resolve_host_id(firewall), sync_type=sync_type, message=message)
 
     @staticmethod
-    def get_ha_configuration(
-        topology: Topology, target: str
-    ) -> HAConfigResult:
+    def get_ha_configuration(topology: Topology, target: str) -> HAConfigResult:
         """
         Retrieves the detailed HA configuration from a firewall.
         :param topology: `Topology` instance.
@@ -12309,12 +12305,14 @@ class FirewallCommand:
                 failure_condition = _find_text(lg, "failure-condition", "any")
                 interfaces = lg.findall("interface/member")
                 interface_list = [iface.text for iface in interfaces if iface.text]
-                link_monitoring_data.append({
-                    "Name": group_name,
-                    "Enabled": enabled,
-                    "FailureCondition": failure_condition,
-                    "Interfaces": ", ".join(interface_list),
-                })
+                link_monitoring_data.append(
+                    {
+                        "Name": group_name,
+                        "Enabled": enabled,
+                        "FailureCondition": failure_condition,
+                        "Interfaces": ", ".join(interface_list),
+                    }
+                )
 
         return HAConfigResult(
             hostid=host_id,
@@ -12335,9 +12333,7 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_available_interfaces(
-        topology: Topology, target: str
-    ) -> HAInterfaceListResult:
+    def get_available_interfaces(topology: Topology, target: str) -> HAInterfaceListResult:
         """
         Lists all available network interfaces on the firewall.
         :param topology: `Topology` instance.
@@ -12386,9 +12382,7 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def validate_interfaces(
-        topology: Topology, target: str, interfaces: str
-    ) -> HAInterfaceValidationResult:
+    def validate_interfaces(topology: Topology, target: str, interfaces: str) -> HAInterfaceValidationResult:
         """
         Validates that specified interfaces exist on the firewall.
         :param topology: `Topology` instance.
@@ -12412,9 +12406,7 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def configure_ha(
-        topology: Topology, target: str, args: dict
-    ) -> HAConfigureResult:
+    def configure_ha(topology: Topology, target: str, args: dict) -> HAConfigureResult:
         """
         Configures HA setup on a firewall.
         :param topology: `Topology` instance.
@@ -12510,6 +12502,7 @@ class FirewallCommand:
 
         if device_priority is not None or heartbeat_backup:
             import xml.etree.ElementTree as ET
+
             root = ET.fromstring(xml_str)
             group_el = root.find(".//group")
             if group_el is not None:
@@ -12552,9 +12545,7 @@ class FirewallCommand:
         return HAConfigureResult(hostid=host_id, message=message, committed=committed)
 
     @staticmethod
-    def set_ha_enabled_state(
-        topology: Topology, target: str, enabled: bool, commit: str = "false"
-    ) -> HAEnabledStateResult:
+    def set_ha_enabled_state(topology: Topology, target: str, enabled: bool, commit: str = "false") -> HAEnabledStateResult:
         """
         Enables or disables HA on a firewall.
         :param topology: `Topology` instance.
@@ -12584,9 +12575,7 @@ class FirewallCommand:
         return HAEnabledStateResult(hostid=host_id, enabled=enabled, message=message, committed=committed)
 
     @staticmethod
-    def panorama_ha_reconfigure(
-        topology: Topology, target: Optional[str] = None
-    ) -> PanoramaHAReconfigureResult:
+    def panorama_ha_reconfigure(topology: Topology, target: Optional[str] = None) -> PanoramaHAReconfigureResult:
         """
         Issues a revert to running HA state command to Panorama.
         :param topology: `Topology` instance.
