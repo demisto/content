@@ -113,7 +113,11 @@ class Client(BaseClient):
         if cached_tenant_url:
             return cached_tenant_url
 
-        headers = {"Authentication": f"Bearer {access_token}", "Content-Type": "application/json"}
+        headers = {
+            "authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        }
 
         try:
             tenant_url_response = self._http_request(
@@ -144,9 +148,9 @@ class Client(BaseClient):
         access_token = self._get_access_token()
         tenant_url = self._get_tenant_url(access_token)
 
-        auth_headers = {"Authentication": f"Bearer {access_token}", "Content-Type": "application/json"}
+        auth_headers = {"authorization": f"Bearer {access_token}", "Content-Type": "application/json", "Accept": "application/json"}
         demisto.debug(f"[HTTP Call] {method} {url_suffix}")
-        full_url = f"{tenant_url}{url_suffix}"
+        full_url = f"{tenant_url}epm/api/{url_suffix}"
 
         try:
             http_response = self._http_request(
