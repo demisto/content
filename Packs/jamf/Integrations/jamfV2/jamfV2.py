@@ -91,7 +91,8 @@ class ComputersInventorySection(str, Enum):
             "location": [ComputersInventorySection.USER_AND_LOCATION.value],
             "purchasing": [ComputersInventorySection.PURCHASING.value],
             "hardware": [
-                # some elements were moved into other sections, this collection of sections should cover the old Hardware subset.
+                # some elements were moved into other sections,
+                #   this collection of sections should cover the old Hardware subset.
                 ComputersInventorySection.HARDWARE.value,
                 ComputersInventorySection.OPERATING_SYSTEM.value,
                 ComputersInventorySection.SECURITY.value,
@@ -101,7 +102,8 @@ class ComputersInventorySection(str, Enum):
             "certificates": [ComputersInventorySection.CERTIFICATES.value],
             "security": [ComputersInventorySection.SECURITY.value],
             "software": [
-                # does not have a one-to-one mapping, this collection of sections should cover the old Software subset.
+                # does not have a one-to-one mapping,
+                #   this collection of sections should cover the old Software subset.
                 ComputersInventorySection.LICENSED_SOFTWARE.value,
                 ComputersInventorySection.SOFTWARE_UPDATES.value,
                 ComputersInventorySection.PACKAGE_RECEIPTS.value,
@@ -110,7 +112,8 @@ class ComputersInventorySection(str, Enum):
             ],
             "extensionattributes": [ComputersInventorySection.EXTENSION_ATTRIBUTES.value],
             "groupsaccounts": [
-                # some elements were moved into other sections, this collection of sections should cover the old GroupsAccounts subset.
+                # some elements were moved into other sections,
+                #   this collection of sections should cover the old GroupsAccounts subset.
                 ComputersInventorySection.GROUP_MEMBERSHIPS.value,
                 ComputersInventorySection.LOCAL_USER_ACCOUNTS.value,
             ],
@@ -1344,11 +1347,11 @@ def get_full_identifier_from_mapping(identifier: str) -> str:
         "serialnumber": "hardware.serialNumber",
         "macaddress": "hardware.macAddress",
     }
-    
-    if not identifier in identifier_mapping:
+
+    if identifier not in identifier_mapping:
         demisto.debug("Identifier is a PREDEFINED value, and needs mapping for the Pro API.")
         raise DemistoException(f"The identifier '{identifier}' is not supported.")
-    
+
     return identifier_mapping[identifier]
 
 
@@ -1437,7 +1440,7 @@ def get_computers_command(client: Client, args: dict[str, Any]) -> list[CommandR
     page = arg_to_number(args.get("page", 0))
 
     sections = [ComputersInventorySection.GENERAL.value]
-    response = client.get_computers_inventory_request(sections=sections, limit=limit, page=page)
+    response = client.get_computers_inventory_request(sections=sections, limit=limit, page=page)  # type: ignore
     computers = response.get("results", [])
     total_results = response.get("totalCount", 0)
 
@@ -1490,7 +1493,7 @@ def get_computers_basic_subset_command(client: Client, args: dict[str, Any]) -> 
         ComputersInventorySection.HARDWARE.value,
         ComputersInventorySection.USER_AND_LOCATION.value,
     ]
-    response = client.get_computers_inventory_request(sections=sections, limit=limit, page=page)
+    response = client.get_computers_inventory_request(sections=sections, limit=limit, page=page)  # type: ignore
     computers = response.get("results", [])
     total_results = response.get("totalCount", 0)
 
@@ -1549,7 +1552,7 @@ def get_computer_by_match_command(client: Client, args: dict[str, Any]) -> list[
     page = arg_to_number(args.get("page", 0))
     filter_query = args.get("filter")
 
-    sections = get_sections_from_query(filter_query)
+    sections = get_sections_from_query(filter_query)  # type: ignore
 
     demisto.debug(f"Provided filter query: {filter_query}")
     demisto.debug(f"Extracted sections: {sections}")
@@ -1564,7 +1567,7 @@ def get_computer_by_match_command(client: Client, args: dict[str, Any]) -> list[
 
     demisto.debug(f"Extended sections: {sections}")
 
-    response = client.get_computers_inventory_request(sections=sections, limit=limit, page=page, filter_query=filter_query)
+    response = client.get_computers_inventory_request(sections=sections, limit=limit, page=page, filter_query=filter_query)  # type: ignore
     computers = response.get("results", [])
     total_results = response.get("totalCount", 0)
 
@@ -1625,7 +1628,7 @@ def get_computer_by_id_command(client: Client, args: dict[str, Any]) -> CommandR
     """
     computer_id = args.get("id")
 
-    response = client.get_computer_inventory_detail_request(computer_id)
+    response = client.get_computer_inventory_detail_request(computer_id)  # type: ignore
 
     readable_output = get_computer_by_id_readable_output(response)
 
@@ -1763,7 +1766,8 @@ def get_computer_section_command(client: Client, args: dict[str, Any]) -> Comman
     """
     Returns a specific section of a computer inventory record.
 
-    Implementes the `jamf-get-computer-subset` command, which is a generalization of the older `jamf-get-computer-*-subset` commands.
+    Implementes the `jamf-get-computer-subset` command, which is a generalization of the older
+    `jamf-get-computer-*-subset` commands.
 
     Args:
         client (Client): Jamf client.

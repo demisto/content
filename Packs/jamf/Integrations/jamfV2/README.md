@@ -419,7 +419,7 @@ Jamf Pro Server Objects → Computers → Read
 >|ID|Mac Address|Name|Serial Number|UDID|Username|
 >|---|---|---|---|---|---|
 >| 54 |  |  |  |  |  |
-| 70 | 3C:15:C2:DC:7D:1C | Computer 10 | CA40FA3860A3 | >CA40FA2E-60A3-11E4-90B8-12DF261F2C7E | user50 |
+>| 70 | 3C:15:C2:DC:7D:1C | Computer 10 | CA40FA3860A3 | CA40FA2E-60A3-11E4-90B8-12DF261F2C7E | user50 |
 >| 64 |  | Computer 100 | C02Q8KHTGFWF |  |  |
 
 ### jamf-get-computer-by-id
@@ -1273,7 +1273,7 @@ Jamf Pro Server Objects → Computers → Read
 >
 >|Email Address|Phone|Real Name|Room|Username|
 >|---|---|---|---|---|
->| User91@email.com | 612-605-6625 | User 91 | 100 Walker Street	 <br>Level 14, Suite 3 | user91 |
+>| User91@email.com | 612-605-6625 | User 91 | 100 Walker Street  <br>Level 14, Suite 3 | user91 |
 
 ### jamf-get-computer-purchasing-subset
 
