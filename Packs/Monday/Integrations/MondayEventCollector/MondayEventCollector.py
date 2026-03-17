@@ -972,8 +972,7 @@ def initiate_activity_log_last_run(last_run: dict, board_ids_list: list[str]) ->
 
     """
     for board_id in board_ids_list:
-        if board_id not in last_run:
-            last_run[board_id] = {}
+        last_run.setdefault(board_id, {})
     return last_run
 
 
