@@ -152,3 +152,90 @@ def test_deactivate_risk_plan_command(client, mocker):
     result = change_risk_plan_command(client, args)
     expected_outputs = {"EndpointIDs": "endpoint_id1", "RiskPlan": "risk_plan1", "Action": "remove"}
     assert result.outputs == expected_outputs
+
+
+def test_change_risk_plan_no_endpoints_found(client, mocker):
+    """Tests error when no endpoints are found."""
+    from CyberArkEPMSOCResponse import change_risk_plan_command
+    from CommonServerPython import DemistoException
+
+    mocker.patch(
+        "CyberArkEPMSOCResponse.get_integration_context",
+        return_value={"CyberArkEPMSOCResponse_Context": {"set_id": "id1"}},
+    )
+
+    mocker.patch.object(client, "http_request", return_value={"endpoints": []})
+
+    args = {"risk_plan": "risk_plan1", "action": "add", "endpoint_name": "nonexistent", "external_ip": "9.9.9.9"}
+
+    with pytest.raises(DemistoException, match=r"(?i)no endpoints found"):
+        change_risk_plan_command(client, args)
+
+
+def test_change_risk_plan_no_group_found(client, mocker):
+    """Tests error when no endpoint group is found."""
+    from CyberArkEPMSOCResponse import change_risk_plan_command
+    from CommonServerPython import DemistoException
+
+    mocker.patch(
+        "CyberArkEPMSOCResponse.get_integration_context",
+        return_value={"CyberArkEPMSOCResponse_Context": {"set_id": "id1"}},
+    )
+
+    mocker.patch.object(
+        client,
+        "http_request",
+        side_effect=[
+            {"endpoints": [{"id": "endpoint_id1"}]},  # search_endpoints
+            [],  # search_endpoint_group_id returns empty
+        ],
+    )
+
+    args = {"risk_plan": "nonexistent_plan", "action": "add", "endpoint_name": "endpoint1", "external_ip": "1.1.1.1"}
+
+    with pytest.raises(DemistoException, match=r"(?i)no endpoint group found"):
+        change_risk_plan_command(client, args)
+
+
+def test_change_risk_plan_invalid_action(client, mocker):
+    """Tests error when invalid action is provided."""
+    from CyberArkEPMSOCResponse import change_risk_plan_command
+    from CommonServerPython import DemistoException
+
+    mocker.patch(
+        "CyberArkEPMSOCResponse.get_integration_context",
+        return_value={"CyberArkEPMSOCResponse_Context": {"set_id": "id1"}},
+    )
+
+    mocker.patch.object(
+        client,
+        "http_request",
+        side_effect=[
+            {"endpoints": [{"id": "endpoint_id1"}]},
+            [{"id": "group_id1"}],
+        ],
+    )
+
+    args = {"risk_plan": "risk_plan1", "action": "invalid_action", "endpoint_name": "endpoint1", "external_ip": "1.1.1.1"}
+
+    with pytest.raises(DemistoException, match=r"(?i)invalid action"):
+        change_risk_plan_command(client, args)
+
+
+def test_search_endpoints_without_external_ip(client, mocker):
+    """Tests search_endpoints works without external_ip parameter."""
+    from CyberArkEPMSOCResponse import search_endpoints
+
+    mocker.patch(
+        "CyberArkEPMSOCResponse.get_integration_context",
+        return_value={"CyberArkEPMSOCResponse_Context": {"set_id": "id1"}},
+    )
+
+    mocker.patch.object(
+        client,
+        "http_request",
+        return_value={"endpoints": [{"id": "endpoint_id1"}]},
+    )
+
+    result = search_endpoints("endpoint1", "", client)
+    assert result == ["endpoint_id1"]
