@@ -1,6 +1,7 @@
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -117,7 +118,7 @@ class Client(BaseClient):
         try:
             tenant_url_response = self._http_request(
                 method="GET",
-                full_url=f"{self.base_tenant_url}/api/accounts/tenanturl",
+                full_url=f"{self.base_tenant_url}/epm/api/accounts/tenanturl",
                 headers=headers,
                 resp_type="json",
             )
@@ -271,7 +272,7 @@ def remove_endpoint_from_group(endpoint_ids: list[str], endpoint_group_id: str, 
 """ COMMAND FUNCTIONS """
 
 
-def change_risk_plan_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def change_risk_plan_command(client: Client, args: dict[str, Any]) -> CommandResults:
     risk_plan = args.get("risk_plan", "")
     endpoint_name = args.get("endpoint_name", "")
     external_ip = args.get("external_ip", "")
