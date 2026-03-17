@@ -3293,7 +3293,7 @@ class TestGetIssueByFilter:
 
         api_response = load_test_data("./test_data/get_issues_by_filter_results.json")
         requests_mock.post(f"{Core_URL}/api/webapp/get_data/", json=api_response)
-        request_data_log = mocker.patch.object(demisto, "info")
+        request_data_log = mocker.patch.object(demisto, "debug")
 
         client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
         args = {"issue_action_status": "detected (scanned)"}
@@ -3326,7 +3326,7 @@ class TestGetIssueByFilter:
 
         api_response = load_test_data("./test_data/get_issues_by_filter_results.json")
         requests_mock.post(f"{Core_URL}/api/webapp/get_data/", json=api_response)
-        request_data_log = mocker.patch.object(demisto, "info")
+        request_data_log = mocker.patch.object(demisto, "debug")
 
         client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
         args = {"issue_source": "first,second"}
@@ -3358,7 +3358,7 @@ class TestGetIssueByFilter:
 
         api_response = load_test_data("./test_data/get_issues_by_filter_results.json")
         requests_mock.post(f"{Core_URL}/api/webapp/get_data/", json=api_response)
-        request_data_log = mocker.patch.object(demisto, "info")
+        request_data_log = mocker.patch.object(demisto, "debug")
 
         client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
         args = {"issue_source": "first,second", "user_name": "N/A"}
