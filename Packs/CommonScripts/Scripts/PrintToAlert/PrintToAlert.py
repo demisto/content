@@ -9,7 +9,7 @@ def print_to_alert_command(current_alert_id: str, value: str, alert_id: str, mar
         current_alert_id (str): The alert ID running the script.
         value (str): The value to print.
         alert_id (str): The alert ID to print to.
-        mark_as_note (book): Whether to mark the printed war-room entry as a note.
+        mark_as_note (bool): Whether to mark the printed war-room entry as a note.
     """
     entry_note = json.dumps(
         [
