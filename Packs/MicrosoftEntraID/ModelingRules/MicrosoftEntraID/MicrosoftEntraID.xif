@@ -288,7 +288,7 @@ alter
   xdm.source.cloud.project_id = coalesce(homeTenantId, resourceTenantId),
   xdm.source.host.device_id = deviceDetail -> deviceId,
   xdm.source.host.device_category = deviceDetail -> trustType,
-  xdm.source.host.hostname = coalesce(homeTenantName, deviceDetail -> displayName),
+  xdm.source.host.hostname = coalesce(if(homeTenantName not in (null, """"""), homeTenantName, null), deviceDetail -> displayName),
   xdm.auth.mfa.method = authenticationMethodsUsed,
   xdm.auth.mfa.client_details = authenticationRequirement,
   xdm.auth.is_mfa_needed = if(authenticationRequirement = "multiFactorAuthentication", to_boolean("true"), to_boolean("false")),
