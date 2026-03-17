@@ -4,13 +4,13 @@ This integration was integrated and tested with the CyberArk EPM API.
 ## Configure CyberArk EPM SOC Response (Beta) in Cortex
 
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| EPM Region-based tenant URL | The tenant URL for EPM region \(e.g., https://api-na.epm.cyberark.cloud\). | True |
+| **Parameter** | **Description**                                                                                   | **Required** |
+| --- |---------------------------------------------------------------------------------------------------| --- |
+| EPM Region-based tenant URL | The tenant URL for EPM region \(e.g., https://api-na.epm.cyberark.cloud\).                        | True |
 | Identity URL | The CyberArk Identity FQDN for OAuth2 authentication \(e.g., https://abc1234.id.cyberark.cloud\). | True |
-| Web App ID | The Application ID of the OAuth2 Server web app configured in Identity Administration. | True |
-| Client ID | Service username without domain \(configured as OAuth confidential client\). | True |
-| Client Secret | Service user password for OAuth2 authentication. | True |
+| Web App ID | The Application ID of the OAuth2 Server web app configured in Identity Administration.            | True |
+| Client ID | Service username \(configured as OAuth confidential client\).                                     | True |
+| Client Secret | Service user password for OAuth2 authentication.                                                  | True |
 
 
 ## Commands

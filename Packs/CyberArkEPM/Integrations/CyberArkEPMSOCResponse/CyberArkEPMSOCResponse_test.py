@@ -11,7 +11,7 @@ def client(mocker):
     """
     client_instance = Client(
         base_tenant_url="https://base-tenant.cyberark.cloud",
-        token_url="https://identity.cyberark.cloud/OAuth2/Token/test-web-app-id",
+        identity_url="https://identity.cyberark.cloud/OAuth2/Token/test-web-app-id",
         client_id="test-client-id",
         client_secret="test-client-secret",
         web_app_id="test-web-app-id",

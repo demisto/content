@@ -29,7 +29,7 @@ configuration:
   required: true
   type: 0
   section: Connect
-  additionalinfo: Service username without domain (configured as OAuth confidential client).
+  additionalinfo: Service username (configured as OAuth confidential client).
 - name: credentials
   display: Client Secret (Service User Password)
   displaypassword: Client Secret

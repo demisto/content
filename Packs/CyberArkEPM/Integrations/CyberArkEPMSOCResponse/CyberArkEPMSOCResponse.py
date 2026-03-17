@@ -26,7 +26,7 @@ class Client(BaseClient):
     def __init__(
         self,
         base_tenant_url: str,
-        token_url: str,
+        identity_url: str,
         client_id: str,
         client_secret: str,
         web_app_id: str,
@@ -39,11 +39,12 @@ class Client(BaseClient):
             "Content-Type": "application/json",
             "x-cybr-telemetry": "aW49RVBNIFNPQyBSZXNwb25zZSZpdj0xLjAmdm49UGFsbyBBbHRvJml0PUVQTQ==",
         }
-        self.token_url = token_url
+        self.identity_url = identity_url
         self.client_id = client_id
         self.client_secret = client_secret
         self.web_app_id = web_app_id
         self.base_tenant_url = base_tenant_url
+        self.token_url = f"{self.identity_url}/oauth2/token/{self.web_app_id}"
 
     def _get_access_token(self) -> str:
         """Get or refresh OAuth2 access token with caching."""
@@ -336,7 +337,7 @@ def main():
         result: Any = None
         client = Client(
             base_tenant_url=base_url,
-            token_url=identity_url,
+            identity_url=identity_url,
             client_id=client_id,
             client_secret=client_secret,
             web_app_id=web_app_id,
