@@ -4268,7 +4268,6 @@ script:
           type: Boolean
     - name: core-fill-support-ticket
       hidden: true
-
       description: Returns fields for the completion of the support ticket
       arguments:
         - name: description
