@@ -859,7 +859,7 @@ class TestInitiateActivityLogLastRun:
         """
         Given:
             - A last_run dict that is non-empty (has data from a previous fetch for board "5092890815")
-            - Board IDs list includes "1808515822" which is NOT in last_run (the XSUP-65171 scenario)
+            - Board IDs list includes "1808515822" which is NOT in last_run (a previously observed missing-board-id scenario)
         When:
             initiate_activity_log_last_run is called
         Then:
