@@ -9169,16 +9169,6 @@ def is_xsoar_saas():
     """
     return demisto.demistoVersion().get("platform") == "xsoar" and is_xsiam_or_xsoar_saas()
 
-
-def is_xsiam():
-    """Determines whether or not the platform is XSIAM.
-
-    :return: True iff the platform is XSIAM.
-    :rtype: ``bool``
-    """
-    return demisto.demistoVersion().get("platform") == "x2"
-
-
 def is_platform():
     """Determines whether or not the platform is platform.
 
@@ -9186,6 +9176,20 @@ def is_platform():
     :rtype: ``bool``
     """
     return demisto.demistoVersion().get("platform") == "unified_platform"
+
+def is_xsiam():
+    """Determines whether or not the platform is XSIAM.
+
+    :return: True iff the platform is XSIAM.
+    :rtype: ``bool``
+    """
+    XSIAM_PLATFORM_CODES = {"x1", "x3", "x5"}
+    
+    version_info = demisto.demistoVersion()
+    is_xsiam_legacy = version_info.get("platform") == "x2"
+    is_xsiam_platform = is_platform() and (version_info.get("module") in XSIAM_PLATFORM_CODES)
+    return is_xsiam_legacy or is_xsiam_platform
+
 
 
 def is_using_engine():

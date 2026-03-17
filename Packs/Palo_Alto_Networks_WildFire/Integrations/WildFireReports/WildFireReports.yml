@@ -26,6 +26,22 @@ configuration:
   section: Connect
 
   required: false
+- display: Override Agent
+  additionalinfo: Override the agent header sent with WildFire API requests. auto = auto-detect based on platform (XSOAR/XSIAM), other = NGFW, pcc = Prisma Cloud Compute, prismaaccessapi = Prisma Access, xsoartim = XSOAR TIM API Key, xdr = Cortex XDR
+  name: override_agent
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+  defaultvalue: auto
+  options:
+  - auto
+  - xdr
+  - xsoartim
+  - prismaaccessapi
+  - pcc
+  - other
+
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
