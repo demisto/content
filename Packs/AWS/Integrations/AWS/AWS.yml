@@ -696,14 +696,14 @@ script:
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: bucket
-        description: The name of the Amazon S3 bucket for which to configure Ownership Controls.
+        description: The name of the S3 bucket to configure with Ownership Controls.
         prettyname: Bucket Name
         required: true
         defaultValue: Bucket Name
         prettypredefined:
           Bucket Name: ${asset.xdm.asset.name}
       - name: ownership_controls_rule
-        description: Ownership for a bucket's ownership controls.
+        description: Specifies the ownership setting for objects uploaded to the bucket.
         defaultValue: 'BucketOwnerEnforced'
         hidden: true
 
@@ -2326,7 +2326,7 @@ script:
         prettypredefined:
           RDS Instance: ${asset.xdm.asset.name}
       - name: enabled
-        description: Specifies whether to activate the subscription.
+        description: Whether to activate the subscription.
         defaultValue: 'true'
         hidden: true
     outputs:
@@ -2334,10 +2334,10 @@ script:
       description: The AWS customer account associated with the RDS event notification subscription.
       type: string
     - contextPath: AWS.RDS.EventSubscription.CustSubscriptionId
-      description: The RDS event notification subscription Id.
+      description: The RDS event notification subscription ID.
       type: string
     - contextPath: AWS.RDS.EventSubscription.Enabled
-      description: Specifies whether the subscription is enabled. True indicates the subscription is enabled.
+      description: Whether the subscription is enabled. If True, the subscription is enabled.
       type: boolean
     - contextPath: AWS.RDS.EventSubscription.EventCategoriesList
       description: A list of event categories for the RDS event notification subscription.

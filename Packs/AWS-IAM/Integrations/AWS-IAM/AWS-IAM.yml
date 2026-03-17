@@ -1328,7 +1328,7 @@ script:
         hidden: true
 
   - name: aws-iam-login-profile-delete-quick-action
-    description: Permanently deletes the IAM user's password (Login Profile). This prevents the user from signing into the AWS Management Console but does not deactivate their programmatic Access Keys or delete the IAM user itself.
+    description: Permanently deletes the IAM user's password (login profile). This prevents the user from signing into the AWS Management Console but does not deactivate their programmatic access keys or delete the IAM user itself.
     prettyname: Remove User Console Access
     hidden: true
     quickaction: true
@@ -1392,7 +1392,7 @@ script:
         hidden: true
 
   - name: aws-iam-access-key-update-quick-action
-    description: Instantly disables a specific IAM Access Key. This stops all CLI, SDK, and API-based communication for this key ID without deleting it, allowing for forensic recovery or reactive "re-enabling" if the key is found to be safe.
+    description: Immediately disables a specific IAM access key. This stops all CLI, SDK, and API-based communication for this key ID without deleting it, enabling forensic recovery or re-enabling if the key is found to be safe.
     prettyname: Deactivate User IAM Access Key
     hidden: true
     quickaction: true
@@ -1412,10 +1412,10 @@ script:
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: accessKeyId
-        description: The id of the access key you want to deactivate.
-        prettyname: Access Key Id
+        description: The ID of the access key you want to deactivate.
+        prettyname: Access Key ID
         required: true
-        defaultValue: Access Key Id
+        defaultValue: Access key ID
         prettypredefined:
           Access Key Id: ${asset.xdm.asset.name}
       - name: status
