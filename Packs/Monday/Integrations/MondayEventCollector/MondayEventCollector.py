@@ -952,6 +952,9 @@ def initiate_activity_log_last_run(last_run: dict, board_ids_list: list[str]) ->
     Initialize last_run structure for multi-board activity logs fetching.
 
     Activity logs are fetched per board, and each board maintains its own separate state.
+    Ensures all configured board IDs have an entry in last_run, even if last_run already
+    contains data from previous fetches. This handles both first-time initialization and
+    cases where new board IDs are added to the configuration.
 
     Args:
         last_run (dict): Current last_run state from previous fetch execution
@@ -964,9 +967,12 @@ def initiate_activity_log_last_run(last_run: dict, board_ids_list: list[str]) ->
         Input: last_run={}, board_ids_list=["123", "456"]
         Output: {"123": {}, "456": {}}
 
+        Input: last_run={"123": {"last_timestamp": "..."}}, board_ids_list=["123", "456"]
+        Output: {"123": {"last_timestamp": "..."}, "456": {}}
+
     """
-    if not last_run:
-        for board_id in board_ids_list:
+    for board_id in board_ids_list:
+        if board_id not in last_run:
             last_run[board_id] = {}
     return last_run
 

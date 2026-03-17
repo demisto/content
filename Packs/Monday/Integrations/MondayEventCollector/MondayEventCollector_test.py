@@ -7,6 +7,7 @@ from MondayEventCollector import (
     subtract_epsilon_from_timestamp,
     fetch_audit_logs,
     fetch_activity_logs,
+    initiate_activity_log_last_run,
     test_connection as monday_test_connection,
 )
 import demistomock as demisto  # noqa: F401
@@ -796,3 +797,78 @@ class TestConnectionAndUtilities:
         timestamp = "2024-06-03T14:00:00.000Z"
         result = subtract_epsilon_from_timestamp(timestamp)
         assert result == "2024-06-03T13:59:59.999000Z"
+
+
+class TestInitiateActivityLogLastRun:
+    """Tests for initiate_activity_log_last_run to verify board ID initialization."""
+
+    def test_empty_last_run_initializes_all_boards(self):
+        """
+        Given:
+            - An empty last_run dict
+            - A list of board IDs ["123", "456"]
+        When:
+            initiate_activity_log_last_run is called
+        Then:
+            All board IDs should be initialized with empty dicts
+        """
+        last_run: dict[str, dict] = {}
+        board_ids = ["123", "456"]
+        result = initiate_activity_log_last_run(last_run, board_ids)
+        assert "123" in result
+        assert "456" in result
+        assert result["123"] == {}
+        assert result["456"] == {}
+
+    def test_existing_last_run_preserves_data_and_adds_new_boards(self):
+        """
+        Given:
+            - A last_run dict with existing board "123" containing state data
+            - A board_ids_list with both "123" (existing) and "456" (new)
+        When:
+            initiate_activity_log_last_run is called
+        Then:
+            - Existing board "123" state should be preserved
+            - New board "456" should be initialized with empty dict
+        """
+        last_run: dict = {"123": {"last_timestamp": "2024-06-03T14:25:47.000Z", "lower_bound_log_id": ["id1"]}}
+        board_ids = ["123", "456"]
+        result = initiate_activity_log_last_run(last_run, board_ids)
+        assert result["123"] == {"last_timestamp": "2024-06-03T14:25:47.000Z", "lower_bound_log_id": ["id1"]}
+        assert result["456"] == {}
+
+    def test_non_empty_last_run_with_all_boards_present(self):
+        """
+        Given:
+            - A last_run dict with all configured board IDs already present
+        When:
+            initiate_activity_log_last_run is called
+        Then:
+            No changes should be made, existing state preserved for all boards
+        """
+        last_run: dict = {
+            "123": {"last_timestamp": "2024-06-03T14:25:47.000Z"},
+            "456": {"last_timestamp": "2024-06-04T10:00:00.000Z"},
+        }
+        board_ids = ["123", "456"]
+        result = initiate_activity_log_last_run(last_run, board_ids)
+        assert result["123"] == {"last_timestamp": "2024-06-03T14:25:47.000Z"}
+        assert result["456"] == {"last_timestamp": "2024-06-04T10:00:00.000Z"}
+
+    def test_board_id_from_error_scenario(self):
+        """
+        Given:
+            - A last_run dict that is non-empty (has data from a previous fetch for board "5092890815")
+            - Board IDs list includes "1808515822" which is NOT in last_run (the XSUP-65171 scenario)
+        When:
+            initiate_activity_log_last_run is called
+        Then:
+            - The missing board "1808515822" should be initialized
+            - The existing board "5092890815" state should be preserved
+        """
+        last_run: dict = {"5092890815": {"last_timestamp": "2024-06-03T14:25:47.000Z"}}
+        board_ids = ["5092890815", "1808515822"]
+        result = initiate_activity_log_last_run(last_run, board_ids)
+        assert "1808515822" in result
+        assert result["1808515822"] == {}
+        assert result["5092890815"] == {"last_timestamp": "2024-06-03T14:25:47.000Z"}
