@@ -10200,19 +10200,21 @@ def test_get_email_campaign_consolidated_forensic_enrichment_command_with_natura
 def test_get_email_campaign_consolidated_forensic_enrichment_command_invalid_days_timeframe(mocker: MockerFixture):
     """
     Given:
-        A mocked client and arguments with invalid from_time that cannot be parsed.
+        A mocked client and arguments with invalid timeframe that cannot be parsed.
     When:
         The get_email_campaign_consolidated_forensic_enrichment_command function is called.
     Then:
-        A ValueError is raised from arg_to_datetime indicating invalid date format.
+        A DemistoException is raised from timeframe_to_days indicating invalid date format.
     """
     from CortexPlatformCore import get_email_campaign_consolidated_forensic_enrichment_command, Client
+    from CommonServerPython import DemistoException
 
     mock_client = Client(base_url="", headers={})
+    mocker.patch("CortexPlatformCore.is_real_user_id", return_value=True)
 
-    # Test with invalid timeframe that can't be parsed by arg_to_datetime
-    args = {"internet_message_id": "<test@example.com>", "from_time": "invalid"}
-    with pytest.raises(ValueError, match=r'"invalid" is not a valid date'):
+    # Test with invalid timeframe that can't be parsed by timeframe_to_days
+    args = {"internet_message_id": "<test@example.com>", "timeframe": "invalid"}
+    with pytest.raises(DemistoException, match=r'Failed to parse timeframe "invalid"'):
         get_email_campaign_consolidated_forensic_enrichment_command(mock_client, args)
 
 
@@ -10381,31 +10383,27 @@ def test_get_email_investigation_summary_command_success(mocker: MockerFixture):
                     "internet_message_id": "<test1@example.com>",
                     "campaign_size": 5,
                     "severity": "high",
-                    "detection_method": "ANALYTICS_BIOC",
                 },
                 {
                     "internet_message_id": "<test2@example.com>",
                     "campaign_size": 3,
                     "severity": "medium",
-                    "detection_method": "USER_REPORTED",
                 },
             ]
         }
     }
     mocker.patch.object(mock_client, "get_email_investigation_summary", return_value=mock_response)
     mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Mock table")
-    mocker.patch("CortexPlatformCore.timeframe_to_days", return_value=7)
+    mocker.patch("CortexPlatformCore.is_real_user_id", return_value=True)
 
     args = {
         "timeframe": "7 days",
-        "detection_method": "ANALYTICS_BIOC",
-        "min_severity": "medium",
-        "page_size": "50",
-        "page_number": "0",
+        "page_number": "1",
     }
 
     result = get_email_investigation_summary_command(mock_client, args)
 
+    mock_client.get_email_investigation_summary.assert_called_once_with("7 days", "1")
     assert result.outputs_prefix == "Core.EmailInvestigationSummary"
     assert result.outputs_key_field == "internet_message_id"
     assert len(result.outputs) == 2
@@ -10414,24 +10412,21 @@ def test_get_email_investigation_summary_command_success(mocker: MockerFixture):
 
 
 @pytest.mark.parametrize(
-    "min_severity, expected_api_severity",
+    "timeframe, page_number",
     [
-        ("info", "SEV_010_INFO"),
-        ("low", "SEV_020_LOW"),
-        ("medium", "SEV_030_MEDIUM"),
-        ("high", "SEV_040_HIGH"),
-        ("critical", "SEV_050_CRITICAL"),
-        (None, None),  # no severity filter → not sent
+        ("7 days", "1"),
+        ("30 days", "2"),
+        ("1 day", "1"),
     ],
 )
-def test_get_email_investigation_summary_command_severity_mapping(mocker: MockerFixture, min_severity, expected_api_severity):
+def test_get_email_investigation_summary_command_pagination(mocker: MockerFixture, timeframe, page_number):
     """
     Given:
-        Various min_severity values (including None).
+        Various timeframe and page_number values.
     When:
         The get_email_investigation_summary_command function is called.
     Then:
-        The severity is correctly mapped to the API enum value (or omitted when None).
+        The client is called with the correct timeframe and page_number arguments.
     """
     from CortexPlatformCore import get_email_investigation_summary_command, Client
 
@@ -10439,19 +10434,13 @@ def test_get_email_investigation_summary_command_severity_mapping(mocker: Mocker
     mock_response = {"reply": {"data": []}}
     mock_get_summary = mocker.patch.object(mock_client, "get_email_investigation_summary", return_value=mock_response)
     mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
-    mocker.patch("CortexPlatformCore.timeframe_to_days", return_value=7)
+    mocker.patch("CortexPlatformCore.is_real_user_id", return_value=True)
 
-    args = {"timeframe": "7 days"}
-    if min_severity is not None:
-        args["min_severity"] = min_severity
+    args = {"timeframe": timeframe, "page_number": page_number}
 
     get_email_investigation_summary_command(mock_client, args)
 
-    call_params = mock_get_summary.call_args[0][0]
-    if expected_api_severity is None:
-        assert "min_severity" not in call_params
-    else:
-        assert call_params["min_severity"] == expected_api_severity
+    mock_get_summary.assert_called_once_with(timeframe, page_number)
 
 
 def test_get_email_investigation_summary_command_empty_response(mocker: MockerFixture):
@@ -10469,7 +10458,7 @@ def test_get_email_investigation_summary_command_empty_response(mocker: MockerFi
     mock_response = {"reply": {"data": []}}
     mocker.patch.object(mock_client, "get_email_investigation_summary", return_value=mock_response)
     mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
-    mocker.patch("CortexPlatformCore.timeframe_to_days", return_value=30)
+    mocker.patch("CortexPlatformCore.is_real_user_id", return_value=True)
 
     args = {"timeframe": "30 days"}
     result = get_email_investigation_summary_command(mock_client, args)
@@ -10502,7 +10491,7 @@ def test_timeframe_to_days(mocker: MockerFixture, timeframe_input, expected_days
 
     now = datetime(2026, 2, 18, 12, 0, 0, tzinfo=UTC)
     parsed = now - timedelta(days=expected_days)
-    mocker.patch("CortexPlatformCore.arg_to_datetime", return_value=parsed)
+    mocker.patch("CortexPlatformCore.dateparser.parse", return_value=parsed)
     mocker.patch("CortexPlatformCore.datetime")
     mocker.patch("CortexPlatformCore.datetime.now", return_value=now)
 
@@ -10521,7 +10510,7 @@ def test_timeframe_to_days_invalid_input(mocker: MockerFixture):
     """
     from CortexPlatformCore import timeframe_to_days, DemistoException
 
-    mocker.patch("CortexPlatformCore.arg_to_datetime", return_value=None)
+    mocker.patch("CortexPlatformCore.dateparser.parse", return_value=None)
 
     with pytest.raises(DemistoException, match="Failed to parse timeframe"):
         timeframe_to_days("invalid_timeframe")
@@ -10541,7 +10530,7 @@ def test_timeframe_to_days_minimum_one_day(mocker: MockerFixture):
 
     now = datetime(2026, 2, 18, 12, 0, 0, tzinfo=UTC)
     parsed = now - timedelta(hours=1)
-    mocker.patch("CortexPlatformCore.arg_to_datetime", return_value=parsed)
+    mocker.patch("CortexPlatformCore.dateparser.parse", return_value=parsed)
     mocker.patch("CortexPlatformCore.datetime")
     mocker.patch("CortexPlatformCore.datetime.now", return_value=now)
 

@@ -29,7 +29,7 @@ EXPLOIT_TYPE = "Exploit"
 WINDOWS_PLATFORM = "Windows"
 # Include USER_AGENT_HEADER to identify the request as originating from Agentix,
 # allowing the backend to apply specialized handling.
-EMAIL_SECURITY_USER_AGENT_HEADER = {"userAgent": "Agentix"}
+EMAIL_SECURITY_USER_AGENT_HEADER = {"User-Agent": "Agentix"}
 
 
 EMAIL_SECURITY_SEVERITY_MAPPING = {
@@ -802,21 +802,30 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
-    def get_email_investigation_summary(self, params: dict) -> dict:
+    def get_email_investigation_summary(self, timeframe: str, page_number: int) -> dict:
         """Retrieves phishing email investigation summary from the email security API.
 
         Args:
-            params (dict): Query parameters for the API call including days_timeframe,
-                          detection_method, min_severity, min_severity_phishing,
-                          page_size, and page_number.
+            timeframe (str): The time window to look back for issues. Supports relative
+                date strings (e.g. "1 day", "3 weeks ago", "30 days") or a plain integer
+                string representing a number of days.
+            page_number (int): The page number for pagination of results.
 
         Returns:
             dict: The API response containing email investigation campaign summaries.
         """
+
+        input_data = {
+            "input_data": {
+                "days_timeframe": timeframe_to_days(timeframe) if timeframe else 30,
+                "page_number": page_number,
+            }
+        }
+        remove_nulls_from_dictionary(input_data)
         return self._http_request(
             method="POST",
             url_suffix="/email-security/investigation/phishing-investigation/",
-            params=params,
+            data=input_data,
         )
 
     def decrypt_email_content(self, internet_message_id: str, issue_severity: str | None) -> dict:
@@ -5008,9 +5017,9 @@ def get_email_campaign_consolidated_forensic_enrichment_command(client: Client, 
     """
     if not is_real_user_id():
         raise DemistoException("This command is restricted to manual execution by a user and cannot be run via automation.")
-    
+
     internet_message_id = args.get("internet_message_id", "")
-    days_timeframe = timeframe_to_days(args.get("from_time", "last 30 days"))
+    days_timeframe = timeframe_to_days(args.get("timeframe", "30 days"))
     demisto.debug(f"Timeframe set to {days_timeframe} days.")
     response = client.get_email_campaign_consolidated_forensic_enrichment(internet_message_id, days_timeframe)
 
@@ -5095,7 +5104,7 @@ def execute_email_security_remediation_command(client: Client, args: dict[str, A
 def timeframe_to_days(timeframe: str) -> int:
     """Convert a relative timeframe string to an integer number of days.
 
-    Uses arg_to_datetime to parse relative date expressions (e.g. "1 day",
+    Uses dateparser.parse to parse relative date expressions (e.g. "1 day",
     "3 weeks ago", "30 days") and computes the number of whole days between
     the parsed date and now.
 
@@ -5108,15 +5117,18 @@ def timeframe_to_days(timeframe: str) -> int:
     Raises:
         DemistoException: If the timeframe string cannot be parsed.
     """
-    parsed_date = arg_to_datetime(timeframe)
+    if timeframe.isdigit():
+        return int(timeframe)
+
+    parsed_date = dateparser.parse(timeframe)
     if not parsed_date:
         raise DemistoException(
             f'Failed to parse timeframe "{timeframe}". '
             'Please use a valid relative date format (e.g. "1 day", "3 weeks ago", "30 days").'
         )
-    now = datetime.now(parsed_date.tzinfo)
+    now = datetime.now(tz=parsed_date.tzinfo)
     delta = now - parsed_date
-    return max(int(delta.total_seconds() / 86400), 1)
+    return max(round(delta.total_seconds() / 86400), 1)
 
 
 def get_email_investigation_summary_command(client: Client, args: dict) -> CommandResults:
@@ -5140,24 +5152,10 @@ def get_email_investigation_summary_command(client: Client, args: dict) -> Comma
     if not is_real_user_id():
         raise DemistoException("This command is restricted to manual execution by a user and cannot be run via automation.")
 
-    min_severity = args.get("min_severity")
-    min_severity_phishing = args.get("min_severity_phishing")
+    timeframe = args.get("timeframe", "30 days")
+    page_number = args.get("page_number", 1)
 
-    timeframe = args.get("timeframe")
-    days_timeframe = timeframe_to_days(timeframe) if timeframe else 30
-    detection_method = args.get("detection_method", "").replace(" ", "_").upper()
-    params = assign_params(
-        days_timeframe=days_timeframe,
-        detection_method=detection_method,
-        min_severity=EMAIL_SECURITY_SEVERITY_MAPPING.get(min_severity.lower(), min_severity) if min_severity else None,
-        min_severity_phishing=EMAIL_SECURITY_SEVERITY_MAPPING.get(min_severity_phishing.lower(), min_severity_phishing)
-        if min_severity_phishing
-        else None,
-        page_size=arg_to_number(args.get("page_size")),
-        page_number=arg_to_number(args.get("page_number")),
-    )
-
-    response = client.get_email_investigation_summary(params)
+    response = client.get_email_investigation_summary(timeframe, page_number)
     data = response if isinstance(response, list) else response.get("reply", response)
 
     if isinstance(data, dict):
