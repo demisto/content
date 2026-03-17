@@ -970,6 +970,51 @@ def test_edit_ip_destination_group(mocker):
     )
 
 
+def test_edit_ip_destination_group_override_false(mocker):
+    """zscaler-edit-ip-destination-group with override=False should pass override=false in the URL"""
+    import Zscaler
+
+    http_mock = mocker.patch("Zscaler.http_request", return_value={
+        "id": "2000359",
+        "name": "Test01",
+        "type": "DSTN_IP",
+        "addresses": ["127.0.0.2"],
+        "description": "Localhost v2",
+        "ipCategories": [],
+        "countries": [],
+    })
+
+    Zscaler.edit_ip_destination_group(
+        {"ip_group_id": "2000359", "name": "Test01", "addresses": ["127.0.0.2"], "description": "Localhost v2", "override": "False"}
+    )
+
+    # First call is the GET to fetch existing group, second is the PUT with override param
+    put_call = http_mock.call_args_list[1]
+    assert "override=false" in put_call.args[1]
+
+
+def test_edit_ip_destination_group_override_true_default(mocker):
+    """zscaler-edit-ip-destination-group defaults to override=true when override arg is not provided"""
+    import Zscaler
+
+    http_mock = mocker.patch("Zscaler.http_request", return_value={
+        "id": "2000359",
+        "name": "Test01",
+        "type": "DSTN_IP",
+        "addresses": ["127.0.0.2"],
+        "description": "Localhost v2",
+        "ipCategories": [],
+        "countries": [],
+    })
+
+    Zscaler.edit_ip_destination_group(
+        {"ip_group_id": "2000359", "name": "Test01", "addresses": ["127.0.0.2"], "description": "Localhost v2"}
+    )
+
+    put_call = http_mock.call_args_list[1]
+    assert "override=true" in put_call.args[1]
+
+
 def test_delete_ip_destination_groups(mocker):
     """zscaler-delete-ip-destination-group"""
     import Zscaler
