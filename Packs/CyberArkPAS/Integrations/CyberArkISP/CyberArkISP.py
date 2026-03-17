@@ -98,6 +98,7 @@ class DefaultValues(str, Enum):
 
     FROM_TIME = "1 minute ago"
     MAX_FETCH = "10000"
+    PAGE_SIZE = 1000
 
 
 def get_formatted_time(date_input: str | None) -> str:
@@ -408,13 +409,13 @@ class Client(BaseClient):
         """
         demisto.debug(f"[API Create Query] From: {date_from} | To: {date_to or 'Now'}")
 
-        filter_model: dict[str, Any] = {APIKeys.DATE_FROM.value: date_from}
+        filter_model: dict[str, Any] = {'date': {APIKeys.DATE_FROM.value: date_from}}
         if date_to:
             filter_model[APIKeys.DATE_TO.value] = date_to
 
         sort_model = [{APIKeys.FIELD_NAME.value: "timestamp", APIKeys.DIRECTION.value: "asc"}]
 
-        request_body = {APIKeys.FILTER_MODEL.value: filter_model, APIKeys.SORT_MODEL.value: sort_model}
+        request_body = {'query': {'pageSize': DefaultValues.PAGE_SIZE.value, APIKeys.FILTER_MODEL.value: filter_model, APIKeys.SORT_MODEL.value: sort_model}}
 
         response = self.http_request(method="POST", url_suffix=APIValues.CREATE_QUERY_ENDPOINT.value, json_data=request_body)
 
