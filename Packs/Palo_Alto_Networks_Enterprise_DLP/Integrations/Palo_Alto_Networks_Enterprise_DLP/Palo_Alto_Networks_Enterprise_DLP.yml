@@ -73,12 +73,6 @@ configuration:
   defaultvalue: Hi $user🔔, \n\n*We need your feedback:* \n\nYour activity on *$app_name* was blocked due to company policy. The data in this activity contains sensitive information which violates *$data_profile_name* policy.\n\nfilename - *$file_name* \n\n $snippets\n\n
   required: false
   section: Collect
-- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: first_fetch
-  type: 0
-  defaultvalue: 60 minutes
-  required: false
-  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
