@@ -17,19 +17,21 @@ requests.packages.urllib3.disable_warnings()  # type: ignore
 
 __version__ = "2.5.2"
 
+DEFAULT_THRESHOLD_BAD = 65
+DEFAULT_THRESHOLD_SUSPICIOUS = 25
+
 
 # === === === === === === === === === === === === === === ===
 # === === === === === === HELPERS === === === === === === ===
 # === === === === === === === === === === === === === === ===
 
 
-def translate_score(score: int, threshold: int) -> int:
+def translate_score(score: int, threshold_bad: int, threshold_suspicious: int) -> int:
     """Translate Recorded Future score to DBot score."""
-    RISK_SCORE_THRESHOLD = 25
     # See https://support.recordedfuture.com/hc/en-us/articles/115000894468-Vulnerability-Risk-Rules.  # noqa
-    if score >= threshold:
+    if score >= threshold_bad:
         return Common.DBotScore.BAD
-    elif score >= RISK_SCORE_THRESHOLD:
+    elif score >= threshold_suspicious:
         return Common.DBotScore.SUSPICIOUS
     else:
         return Common.DBotScore.NONE
@@ -65,15 +67,22 @@ def create_indicator(
     if location is None:
         location = {}
 
-    thresholds = {
-        "file": int(demisto_params.get("file_threshold", 65)),
-        "ip": int(demisto_params.get("ip_threshold", 65)),
-        "domain": int(demisto_params.get("domain_threshold", 65)),
-        "url": int(demisto_params.get("url_threshold", 65)),
-        "cve": int(demisto_params.get("cve_threshold", 65)),
+    thresholds_bad = {
+        "file": int(demisto_params.get("file_threshold", DEFAULT_THRESHOLD_BAD)),
+        "ip": int(demisto_params.get("ip_threshold", DEFAULT_THRESHOLD_BAD)),
+        "domain": int(demisto_params.get("domain_threshold", DEFAULT_THRESHOLD_BAD)),
+        "url": int(demisto_params.get("url_threshold", DEFAULT_THRESHOLD_BAD)),
+        "cve": int(demisto_params.get("cve_threshold", DEFAULT_THRESHOLD_BAD)),
     }
-    dbot_score = translate_score(score, thresholds[entity_type])
-    dbot_description = f"Score above {thresholds[entity_type]}" if dbot_score == Common.DBotScore.BAD else ""
+    thresholds_suspicious = {
+        "file": int(demisto_params.get("file_threshold_suspicious", DEFAULT_THRESHOLD_SUSPICIOUS)),
+        "ip": int(demisto_params.get("ip_threshold_suspicious", DEFAULT_THRESHOLD_SUSPICIOUS)),
+        "domain": int(demisto_params.get("domain_threshold_suspicious", DEFAULT_THRESHOLD_SUSPICIOUS)),
+        "url": int(demisto_params.get("url_threshold_suspicious", DEFAULT_THRESHOLD_SUSPICIOUS)),
+        "cve": int(demisto_params.get("cve_threshold_suspicious", DEFAULT_THRESHOLD_SUSPICIOUS)),
+    }
+    dbot_score = translate_score(score, thresholds_bad[entity_type], thresholds_suspicious[entity_type])
+    dbot_description = f"Score above {thresholds_bad[entity_type]}" if dbot_score == Common.DBotScore.BAD else ""
     dbot_vendor = "Recorded Future v2"
     if entity_type == "ip":
         return Common.IP(

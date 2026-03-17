@@ -19,20 +19,31 @@ class TestHelpers:
         from RecordedFuture import translate_score
         from CommonServerPython import Common
 
-        assert translate_score(score=10, threshold=0) == Common.DBotScore.BAD
-        assert translate_score(score=10, threshold=10) == Common.DBotScore.BAD
-        assert translate_score(score=10, threshold=11) == Common.DBotScore.NONE
-        assert translate_score(score=24, threshold=40) == Common.DBotScore.NONE
-        assert translate_score(score=25, threshold=40) == Common.DBotScore.SUSPICIOUS
-        assert translate_score(score=26, threshold=40) == Common.DBotScore.SUSPICIOUS
-        assert translate_score(score=40, threshold=40) == Common.DBotScore.BAD
-        assert translate_score(score=45, threshold=40) == Common.DBotScore.BAD
-        assert translate_score(score=10, threshold=-1) == Common.DBotScore.BAD
-        assert translate_score(score=10, threshold=0) == Common.DBotScore.BAD
-        assert translate_score(score=25, threshold=-1) == Common.DBotScore.BAD
-        assert translate_score(score=25, threshold=0) == Common.DBotScore.BAD
-        assert translate_score(score=26, threshold=-1) == Common.DBotScore.BAD
-        assert translate_score(score=26, threshold=0) == Common.DBotScore.BAD
+        test_cases = [
+            (10, 0, 25, Common.DBotScore.BAD),
+            (10, 10, 25, Common.DBotScore.BAD),
+            (40, 40, 25, Common.DBotScore.BAD),
+            (45, 40, 25, Common.DBotScore.BAD),
+            (10, -1, 25, Common.DBotScore.BAD),
+            (25, -1, 25, Common.DBotScore.BAD),
+            (26, -1, 25, Common.DBotScore.BAD),
+            (25, 40, 25, Common.DBotScore.SUSPICIOUS),
+            (26, 40, 25, Common.DBotScore.SUSPICIOUS),
+            (50, 65, 50, Common.DBotScore.SUSPICIOUS),
+            (10, 11, 25, Common.DBotScore.NONE),
+            (24, 40, 25, Common.DBotScore.NONE),
+            (45, 65, 50, Common.DBotScore.NONE),
+        ]
+
+        for score, threshold_bad, threshold_suspicious, expected_score in test_cases:
+            assert (
+                translate_score(
+                    score=score,
+                    threshold_bad=threshold_bad,
+                    threshold_suspicious=threshold_suspicious,
+                )
+                == expected_score
+            )
 
     def test_determine_hash(self):
         from RecordedFuture import determine_hash
