@@ -1,33 +1,47 @@
-import pytest
 from unittest.mock import patch
+from CommonServerPython import CommandResults
 from SetIndicatorAgentix import set_indicator_if_exist
 
 
 class TestSetIndicator:
     def test_no_arguments_provided(self):
-        """Test that function returns error when no valid arguments are provided"""
+        """Test that function returns CommandResults with error message when no valid arguments are provided"""
         args = {"value": "1.1.1.1"}
 
-        with pytest.raises(SystemExit):
-            set_indicator_if_exist(args)
+        result = set_indicator_if_exist(args)
+
+        assert isinstance(result, CommandResults)
+        assert isinstance(result.outputs, dict)
+        assert result.outputs_prefix == "SetIndicator"
+        assert result.outputs_key_field == "Value"
+        assert result.outputs["Value"] == "1.1.1.1"
+        assert "Please provide at least one argument" in result.outputs["Result"]
 
     def test_empty_arguments(self):
-        """Test that function returns error when completely empty arguments"""
-        args = {}
+        """Test that function returns CommandResults with error message when completely empty arguments"""
+        args: dict = {}
 
-        with pytest.raises(SystemExit):
-            set_indicator_if_exist(args)
+        result = set_indicator_if_exist(args)
+
+        assert isinstance(result, CommandResults)
+        assert isinstance(result.outputs, dict)
+        assert result.outputs_prefix == "SetIndicator"
+        assert result.outputs_key_field == "Value"
+        assert "Please provide at least one argument" in result.outputs["Result"]
 
     @patch("SetIndicatorAgentix.execute_command")
     def test_indicator_does_not_exist(self, mock_execute):
-        """Test that function returns error when indicator does not exist"""
+        """Test that function returns a CommandResults with 'does not exist' message when indicator is not found"""
         args = {"value": "nonexistent.com", "type": "Domain"}
         mock_execute.return_value = None
 
-        with pytest.raises(SystemExit):
-            set_indicator_if_exist(args)
+        result = set_indicator_if_exist(args)
 
         mock_execute.assert_called_once_with("findIndicators", {"value": "nonexistent.com"})
+        assert result.outputs["Value"] == "nonexistent.com"
+        assert result.outputs["Result"] == "Indicator does not exist."
+        assert result.outputs_prefix == "SetIndicator"
+        assert result.outputs_key_field == "Value"
 
     @patch("SetIndicatorAgentix.execute_command")
     def test_set_indicator_type_only(self, mock_execute):
