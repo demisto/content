@@ -1,5 +1,4 @@
 category: Cloud Services
-provider: Microsoft
 sectionorder:
 - Connect
 - Collect
@@ -537,328 +536,6 @@ script:
           - Blob
           - Container
           - None
-
-  - arguments:
-    - description: The name of the Container.
-      name: container_name
-      required: true
-    - description: "The subscription ID."
-      name: subscription_id
-      required: true
-    - description: "The resource group name."
-      name: resource_group_name
-      required: true
-    - description: The storage account name.
-      name: account_name
-      required: true
-    description: Retrieve properties for the specified Container.
-    name: azure-storage-container-property-get
-    outputs:
-    - contextPath: Azure.StorageContainer.Container.Property.last_modified
-      description: Last modified time of the container.
-      type: Date
-    - contextPath: Azure.StorageContainer.Container.Property.etag
-      description: The entity tag for the container.
-      type: String
-    - contextPath: Azure.StorageContainer.Container.Property.lease_status
-      description: The lease status of the container.
-      type: String
-    - contextPath: Azure.StorageContainer.Container.Property.lease_state
-      description: The lease state of the container.
-      type: String
-    - contextPath: Azure.StorageContainer.Container.Property.has_immutability_policy
-      description: Indicates whether the container has an immutability policy set on it.
-      type: String
-    - contextPath: Azure.StorageContainer.Container.Property.has_legal_hold
-      description: Indicates whether the container has a legal hold.
-      type: String
-    - contextPath: Azure.StorageContainer.Container.name
-      description: Container name.
-      type: String
-
-  - arguments:
-    - description: |
-        The name of the Container to create. Rules for naming containers can be found here:
-        https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata
-      name: container_name
-      required: true
-    - description: "The subscription ID."
-      name: subscription_id
-      required: true
-    - description: "The resource group name."
-      name: resource_group_name
-      required: true
-    - description: The storage account name.
-      name: account_name
-      required: true
-    description: Create a new Container under the specified account.
-    name: azure-storage-container-create
-
-  - arguments:
-    - description: The name of the Container to delete.
-      name: container_name
-      required: true
-    - description: "The subscription ID."
-      name: subscription_id
-      required: true
-    - description: "The resource group name."
-      name: resource_group_name
-      required: true
-    - description: The storage account name.
-      name: account_name
-      required: true
-    description: Marks the specified Container for deletion. The Container and any Blobs contained within it, will be deleted during garbage collection.
-    execution: true
-    name: azure-storage-container-delete
-
-  - arguments:
-    - description: The name of the Blob Container.
-      name: container_name
-      required: true
-    - description: The entry ID of the file to upload as a new blob. Available from the war room while the context data contains file output.
-      name: file_entry_id
-      required: true
-    - description: The name of the Blob to create. Default is the file name.
-      name: blob_name
-    - description: "The subscription ID."
-      name: subscription_id
-      required: true
-    - description: "The resource group name."
-      name: resource_group_name
-      required: true
-    - description: The storage account name.
-      name: account_name
-      required: true
-    description: Retrieve Blob from Container.
-    name: azure-storage-container-blob-create
-
-  - arguments:
-    - description: The name of the Blob Container.
-      name: container_name
-      required: true
-    - description: The name of the Blob to retrieve.
-      name: blob_name
-      required: true
-    - description: "The subscription ID."
-      name: subscription_id
-      required: true
-    - description: "The resource group name."
-      name: resource_group_name
-      required: true
-    - description: The storage account name.
-      name: account_name
-      required: true
-    description: Retrieve Blob from Container.
-    name: azure-storage-container-blob-get
-    outputs:
-    - contextPath: File.Size
-      description: The size of the file.
-      type: String
-    - contextPath: File.SHA1
-      description: The SHA1 hash of the file.
-      type: String
-    - contextPath: File.SHA256
-      description: The SHA256 hash of the file.
-      type: String
-    - contextPath: File.Name
-      description: The name of the file.
-      type: String
-    - contextPath: File.SSDeep
-      description: The SSDeep hash of the file.
-      type: String
-    - contextPath: File.EntryID
-      description: The entry ID of the file.
-      type: String
-    - contextPath: File.Info
-      description: File information.
-      type: String
-    - contextPath: File.Type
-      description: The file type.
-      type: String
-    - contextPath: File.MD5
-      description: The MD5 hash of the file.
-      type: Unknown
-    - contextPath: File.Extension
-      description: The file extension.
-      type: String
-
-  - arguments:
-    - description: The name of the Blob Container.
-      name: container_name
-      required: true
-    - description: The name of the blob.
-      name: blob_name
-      required: true
-    - description: "The subscription ID."
-      name: subscription_id
-      required: true
-    - description: "The resource group name."
-      name: resource_group_name
-      required: true
-    - description: The storage account name.
-      name: account_name
-      required: true
-    description: Retrieve the tags of the specified Blob.
-    name: azure-storage-container-blob-tag-get
-    outputs:
-    - contextPath: Azure.StorageContainer.Container.Blob.Tag.Key
-      description: Tag key.
-      type: String
-    - contextPath: Azure.StorageContainer.Container.Blob.Tag.Value
-      description: Tag value.
-      type: String
-    - contextPath: Azure.StorageContainer.Container.Blob.name
-      description: Blob name.
-      type: String
-    - contextPath: Azure.StorageContainer.Container.name
-      description: Container name.
-      type: String
-
-  - arguments:
-    - description: The name of the Blob Container.
-      name: container_name
-      required: true
-    - description: The name of the blob.
-      name: blob_name
-      required: true
-    - description: 'Tags fields in JSON format: {"tag-name-1": "tag-value-1", "tag-name-2": "tag-value-2"}. The tags fields may contain at most 10 tags.'
-      name: tags
-      required: true
-    - description: "The subscription ID."
-      name: subscription_id
-      required: true
-    - description: "The resource group name."
-      name: resource_group_name
-      required: true
-    - description: The storage account name.
-      name: account_name
-      required: true
-    - auto: PREDEFINED
-      description: Wether to append tags to the existing tags or not. Default is false.
-      name: append
-      defaultValue: False
-      predefined:
-      - 'true'
-      - 'false'
-    description: Updates the tags for the specified Blob. The command can replace the entire tags of the Blob and can be used to remove tags.
-    name: azure-storage-container-blob-tag-set
-
-  - arguments:
-    - description: The name of the Blob Container.
-      name: container_name
-      required: true
-    - description: The name of the blob.
-      name: blob_name
-      required: true
-    - description: "The subscription ID."
-      name: subscription_id
-      required: true
-    - description: "The resource group name."
-      name: resource_group_name
-      required: true
-    - description: The storage account name.
-      name: account_name
-      required: true
-    description: Retrieve Blob properties.
-    name: azure-storage-container-blob-property-get
-    outputs:
-    - contextPath: Azure.StorageContainer.Container.Blob.Property.last_modified
-      description: Last modified time of the blob.
-      type: Date
-    - contextPath: Azure.StorageContainer.Container.Blob.Property.etag
-      description: The entity tag for the blob.
-      type: String
-    - contextPath: Azure.StorageContainer.Container.Blob.Property.lease_status
-      description: The lease status of the blob.
-      type: String
-    - contextPath: Azure.StorageContainer.Container.Blob.Property.lease_state
-      description: The lease state of the blob.
-      type: String
-    - contextPath: Azure.StorageContainer.Container.Blob.Property.blob_type
-      description: The blob type.
-      type: String
-    - contextPath: Azure.StorageContainer.Container.Blob.Property.content_length
-      description: The size of the blob in bytes.
-      type: Number
-    - contextPath: Azure.StorageContainer.Container.Blob.Property.content_type
-      description: The content type specified for the blob. If no content type was specified, the default content type is application/octet-stream.
-      type: String
-    - contextPath: Azure.StorageContainer.Container.Blob.Property.content-md5
-      description: The MD5 hash of the blob content.
-      type: String
-    - contextPath: Azure.StorageContainer.Container.Blob.Property.creation_time
-      description: The date at which the blob was created.
-      type: Date
-    - contextPath: Azure.StorageContainer.Container.Blob.name
-      description: Blob name.
-      type: String
-
-  - arguments:
-    - description: The name of the Blob Container.
-      name: container_name
-      required: true
-    - description: The name of the blob.
-      name: blob_name
-      required: true
-    - description: "The subscription ID."
-      name: subscription_id
-      required: true
-    - description: "The resource group name."
-      name: resource_group_name
-      required: true
-    - description: The storage account name.
-      name: account_name
-      required: true
-    - description: Blob content type. Indicates the media type of the blob.
-      name: content_type
-    - description: Blob MD5 hash value. Can be used by the client to check for content integrity.
-      name: content_md5
-    - auto: PREDEFINED
-      description: Blob content encoding. Used to specify the compression algorithm of the blob content.
-      name: content_encoding
-      predefined:
-      - identity
-      - gzip
-      - deflate
-      - br
-      - compress
-      - zstd
-      - aes128gcm
-      - dcb
-      - dcz
-      - exi
-      - pack200-gzip
-      - x-compress
-      - x-gzip
-    - description: Blob content language. Describes the human languages of the blob content.
-      name: content_language
-    - description: Blob content disposition. Conveys additional information about how to process the response payload, and also can be used to attach additional metadata.
-      name: content_disposition
-    - description: Modifies the cache control string for the blob. Indicates directives for caching in both requests and responses.
-      name: cache_control
-    - description: Request ID generated by the client and recorded in the analytics logs when storage analytics logging is enabled.
-      name: request_id
-    - description: Required if the blob has an active lease.
-      name: lease_id
-    description: Set Blob properties.
-    name: azure-storage-container-blob-property-set
-
-  - arguments:
-    - description: Name of a container.
-      name: container_name
-      required: true
-    - description: "The subscription ID."
-      name: subscription_id
-      required: true
-    - description: "The resource group name."
-      name: resource_group_name
-      required: true
-    - description: The storage account name.
-      name: account_name
-      required: true
-    description: Block public access to a container.
-    name: azure-storage-container-public-access-block
-
   - arguments:
     - name: name
       required: true
@@ -1994,7 +1671,7 @@ script:
       name: resource_group_name
       required: true
     description: Updates a logical database's transparent data encryption configuration.
-    name: azure-sql-db-transparent-data-encryption-set
+    name: azure-sql-db-transparent-data-encryption-set-encryption-set
     outputs: [] # has no outputs for this command from response
   - arguments:
     - description: Cosmos DB database account name.
@@ -2259,55 +1936,6 @@ script:
       - description: The name of the rule to get.
         name: security_rule_name
         required: true
-  - name: azure-nsg-security-rules-list
-    description: Gets all security rules in a network security group.
-    arguments:
-      - description: The subscription ID.
-        name: subscription_id
-        type: String
-        required: true
-      - description: Resource group name.
-        name: resource_group_name
-        type: String
-        required: true
-      - description: The name of the network security group.
-        name: network_security_group_name
-        type: String
-        required: true
-    outputs:
-      - contextPath: Azure.NSGRule.name
-        description: The rule's name.
-        type: String
-      - contextPath: Azure.NSGRule.id
-        description: The rule's ID.
-        type: String
-      - contextPath: Azure.NSGRule.properties.provisioningState
-        description: The rule's provisioning state.
-        type: String
-      - contextPath: Azure.NSGRule.properties.protocol
-        description: The protocol, which can be "TCP", "UDP", "ICMP", or "*".
-        type: String
-      - contextPath: Azure.NSGRule.properties.sourcePortRange
-        description: For a single port, the source port or a range of ports.
-        type: String
-      - contextPath: Azure.NSGRule.properties.destinationPortRange
-        description: For a single port, the destination port or range of ports.
-        type: String
-      - contextPath: Azure.NSGRule.properties.sourceAddressPrefix
-        description: The source address.
-        type: String
-      - contextPath: Azure.NSGRule.properties.destinationAddressPrefix
-        description: The destination address.
-        type: String
-      - contextPath: Azure.NSGRule.properties.access
-        description: The rule's access. Can be "Allow" or "Deny".
-        type: String
-      - contextPath: Azure.NSGRule.properties.priority
-        description: The rule’s priority, ranging from 100 to 4096.
-        type: Number
-      - contextPath: Azure.NSGRule.properties.direction
-        description: The rule's direction, which can be "Inbound" or "Outbound".
-        type: String
   - name: azure-nsg-security-rule-create
     description: Create a security rule.
     outputs:
@@ -2865,7 +2493,6 @@ script:
       name: subscription_id
       type: String
       required: true
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
       prettyname: Subscription ID
@@ -2873,21 +2500,18 @@ script:
       name: resource_group_name
       type: String
       required: true
-      defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
-      prettyname: Resource Group
+      prettyname: Resource Group Name
     - description: The name of the security group.
       name: security_group_name
       required: true
-      defaultValue: Logic App Name
       prettyname: Logic App Name
       prettypredefined:
         Logic App Name: ${asset.xdm.asset.raw_fields.Platform Discovery.name}
     - description: The name of the rule to be deleted.
       name: security_rule_name
       required: true
-      defaultValue: NSG Rule
       prettyname: NSG Rule
       prettypredefined:
         NSG Rule: ${asset.xdm.asset.raw_fields.Platform Discovery.properties.securityRules.name}
@@ -2947,7 +2571,6 @@ script:
       name: subscription_id
       type: String
       required: true
-      defaultValue: Subscription ID
       prettyname: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
@@ -2956,13 +2579,9 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
-      prettypredefined:
-        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
-      defaultValue: Resource Group
     - name: name
       type: String
       required: true
-      defaultValue: AZ Web App
       description: Name of the Web App.
       prettyname: AZ Web App
       prettypredefined:
@@ -3185,21 +2804,18 @@ script:
       name: subscription_id
       type: String
       required: true
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
       prettyname: Subscription ID
     - description: The resource group name.
       name: resource_group_name
       required: true
-      defaultValue: Resource Group
       prettyname: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - description: The name of the storage account.
       name: account_name
       required: true
-      defaultValue: Storage Account
       prettyname: Storage Account
       prettypredefined:
         Storage Account: ${asset.xdm.asset.name}
@@ -3290,7 +2906,6 @@ script:
       type: string
       description: The subscription ID.
       required: true
-      defaultValue: Subscription ID
       prettyname: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
@@ -3299,15 +2914,11 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
-      prettypredefined:
-        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
-      defaultValue: Resource Group
     - name: name
       type: string
       required: true
-      defaultValue: AZ Web App
       description: Name of the Web App.
-      prettyname: AZ Web App
+      prettyname: AZ Webapp
       prettypredefined:
         AZ Web App: ${asset.xdm.asset.name}
     - auto: PREDEFINED
@@ -3416,7 +3027,6 @@ script:
       type: string
       description: The subscription ID.
       required: true
-      defaultValue: Subscription ID
       prettyname: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
@@ -3425,15 +3035,11 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
-      prettypredefined:
-        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
-      defaultValue: Resource Group
     - name: name
       type: string
       required: true
-      defaultValue: AZ Web App
       description: Name of the Web App.
-      prettyname: AZ Web App
+      prettyname: AZ Webapp
       prettypredefined:
         AZ Web App: ${asset.xdm.asset.name}
     - auto: PREDEFINED
@@ -3549,21 +3155,18 @@ script:
       type: string
       description: The subscription ID.
       required: true
-      defaultValue: Subscription ID
       prettyname: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - description: The resource group name.
       name: resource_group_name
       required: true
-      defaultValue: Resource Group
       prettyname: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - description: Name of the storage account.
       name: account_name
       required: true
-      defaultValue: Storage Account
       prettyname: Storage Account
       prettypredefined:
         Storage Account: ${asset.xdm.asset.name}
@@ -3653,7 +3256,6 @@ script:
       type: string
       description: The subscription ID.
       required: true
-      defaultValue: Subscription ID
       prettyname: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
@@ -3661,15 +3263,11 @@ script:
       type: string
       required: true
       description: The resource group name.
-      defaultValue: Resource Group
       prettyname: Resource Group
-      prettypredefined:
-        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: name
       type: string
       required: true
       description: Name of the Function App.
-      defaultValue: AZ Function Name
       prettyname: AZ Function Name
       prettypredefined:
         AZ Function Name: ${asset.xdm.asset.name}
@@ -3774,27 +3372,24 @@ script:
       type: String
     - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
       description: Azure API management integration ID.
-      type: String 
+      type: String
   - arguments:
     - name: subscription_id
       type: string
       description: The subscription ID.
       required: true
-      defaultValue: Subscription ID
       prettyname: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - description: The resource group name.
       name: resource_group_name
       required: true
-      defaultValue: Resource Group
       prettyname: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - description: Name of the storage account.
       name: account_name
       required: true
-      defaultValue: Storage Account
       prettyname: Storage Account
       prettypredefined:
         Storage Account: ${asset.xdm.asset.name}
@@ -3884,7 +3479,6 @@ script:
       type: string
       description: The subscription ID.
       required: true
-      defaultValue: Subscription ID
       prettyname: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
@@ -3893,17 +3487,13 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
-      defaultValue: Resource Group
-      prettypredefined:
-        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: name
       type: string
       required: true
-      defaultValue: AZ Web App
       description: Name of the Web App.
-      prettyname: AZ Web App
+      prettyname: AZ Webapp
       prettypredefined:
-        AZ Web App: ${asset.xdm.asset.name}
+        AZ Webapp: ${asset.xdm.asset.name}
     - auto: PREDEFINED
       name: remote_debugging_enabled
       type: bool
@@ -4372,14 +3962,13 @@ script:
       - contextPath: Azure.Billing.Budget.properties.forecastSpend.unit
         description: Currency unit for forecasted spend.
         type: String
-  
+
   - arguments:
     - name: subscription_id
       type: string
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -4387,17 +3976,13 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
-      prettypredefined:
-        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
-      defaultValue: Resource Group
     - name: name
       type: string
       required: true
       description: Name of the Web App.
-      prettyname: AZ Web App
-      defaultValue: AZ Web App
+      prettyname: AZ Webapp
       prettypredefined:
-        AZ Web App: ${asset.xdm.asset.name}
+        AZ Webapp: ${asset.xdm.asset.name}
     - name: min_tls_version
       type: str
       auto: PREDEFINED
@@ -4507,7 +4092,6 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -4515,15 +4099,11 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
-      defaultValue: Resource Group
-      prettypredefined:
-        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: name
       type: string
       required: true
       description: Name of the Web App.
       prettyname: AZ Function Name
-      defaultValue: AZ Function Name
       prettypredefined:
         AZ Function Name: ${asset.xdm.asset.name}
     - name: min_tls_version
@@ -4635,7 +4215,6 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -4643,7 +4222,6 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
-      defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: server_name
@@ -4651,7 +4229,6 @@ script:
       required: true
       description: Name of the MySQL flexible server.
       prettyname: MySQL Server
-      defaultValue: MySQL Server
       prettypredefined:
         MySQL Server: ${asset.xdm.asset.name}
     - name: configuration_name
@@ -4674,21 +4251,18 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - description: The resource group name.
       name: resource_group_name
       required: true
       prettyname: Resource Group
-      defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - description: Name of the storage account.
       name: account_name
       required: true
       prettyname: Storage Account
-      defaultValue: Storage Account
       prettypredefined:
         Storage Account: ${asset.xdm.asset.name}
     - auto: PREDEFINED
@@ -4778,7 +4352,6 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: log_profile_name
@@ -4786,7 +4359,6 @@ script:
       required: true
       type: String
       prettyname: Log Profile
-      defaultValue: Log Profile
       prettypredefined:
         Log Profile: ${asset.xdm.asset.name}
     - name: location
@@ -4839,14 +4411,13 @@ script:
       description: Specifies whether the retention policy is enabled.
     - contextPath: Azure.LogProfile.properties.retentionPolicy.days
       type: Number
-      description: The number of days for the retention policy.  
+      description: The number of days for the retention policy.
   - arguments:
     - name: subscription_id
       type: string
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -4854,14 +4425,12 @@ script:
       description: The resource group name.
       required: true
       prettyname: Resource Group
-      defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - description: Name of the storage account.
       name: account_name
       required: true
       prettyname: Storage Account
-      defaultValue: Storage Account
       prettypredefined:
         Storage Account: ${asset.xdm.asset.name}
     - auto: PREDEFINED
@@ -4951,7 +4520,6 @@ script:
       required: true
       description: The subscription ID.
       prettyname: Subscription ID
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -4959,15 +4527,11 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
-      defaultValue: Resource Group
-      prettypredefined:
-        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: name
       type: String
       required: true
       description: Name of the Function App.
       prettyname: AZ Function Name
-      defaultValue: AZ Function Name
       prettypredefined:
         AZ Function Name: ${asset.xdm.asset.name}
     - name: identity_type
@@ -5189,7 +4753,6 @@ script:
       required: true
       description: The subscription ID.
       prettyname: Subscription ID
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - description: The resource group name.
@@ -5197,7 +4760,6 @@ script:
       required: true
       prettyname: Resource Group
       type: String
-      defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - description: Name of the storage account.
@@ -5205,7 +4767,6 @@ script:
       required: true
       prettyname: Storage Account
       type: String
-      defaultValue: Storage Account
       prettypredefined:
         Storage Account: ${asset.xdm.asset.name}
     - auto: PREDEFINED
@@ -5238,7 +4799,7 @@ script:
       description: Specifies CORS rules for the Blob service.
       type: String
     - contextPath: Azure.StorageAccountBlobServiceProperties.properties.defaultServiceVersion
-      description: The default version for requests to the blob service if an incoming request's version is not specified. Possible values include version 2008-10-27 and and all later versions.  
+      description: The default version for requests to the blob service if an incoming request's version is not specified. Possible values include version 2008-10-27 and and all later versions.
       type: Date
     - contextPath: Azure.StorageAccountBlobServiceProperties.properties.deleteRetentionPolicy
       description: The service properties for soft delete.
@@ -5259,7 +4820,6 @@ script:
       required: true
       description: The subscription ID.
       prettyname: Subscription ID
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -5267,7 +4827,6 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
-      defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: disk_name
@@ -5275,7 +4834,6 @@ script:
       type: string
       required: true
       description: Name of the managed disk. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters.
-      defaultValue: VM Disk
       prettypredefined:
         VM Disk: ${asset.xdm.asset.name}
     - name: public_network_access
@@ -5396,13 +4954,889 @@ script:
     - contextPath: Azure.Disk.properties.lastOwnershipUpdateTime
       description: The last time ownership of the disk was updated.
       type: String
+
+  - name: azure-sql-db-threat-policy-update-quick-action
+    description: Enables email notifications to account administrators for SQL database threat detection alerts by running the az sql db threat-policy update command.
+    prettyname: Update Threat Policy for SQL Database
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: subscription_id
+        type: string
+        required: true
+        description: The subscription ID.
+        prettyname: Subscription ID
+        defaultValue: Subscription ID
+        prettypredefined:
+          Subscription ID: ${asset.xdm.asset.realm}
+      - name: resource_group_name
+        type: string
+        required: true
+        description: The resource group name.
+        prettyname: Resource Group
+        defaultValue: Resource Group
+        prettypredefined:
+          Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+      - name: email_account_admins_enabled
+        type: bool
+        required: false
+        defaultValue: true
+        description: Send the alert to the account administrators.
+        hidden: true
+    outputs:
+      - contextPath: Azure.SqlDBThreatPolicy.kind
+        description: Kind of threat policy.
+        type: String
+      - contextPath: Azure.SqlDBThreatPolicy.location
+        description: Threat policy location.
+        type: String
+      - contextPath: Azure.SqlDBThreatPolicy.id
+        description: Threat policy ID.
+        type: String
+      - contextPath: Azure.SqlDBThreatPolicy.name
+        description: Threat policy name.
+        type: String
+      - contextPath: Azure.SqlDBThreatPolicy.type
+        description: Threat policy type.
+        type: String
+      - contextPath: Azure.SqlDBThreatPolicy.state
+        description: Threat policy state.
+        type: String
+      - contextPath: Azure.SqlDBThreatPolicy.creationTime
+        description: Threat policy creation time.
+        type: String
+      - contextPath: Azure.SqlDBThreatPolicy.retentionDays
+        description: Number of days to keep in the Threat Detection audit logs.
+        type: Number
+      - contextPath: Azure.SqlDBThreatPolicy.storageAccountAccessKey
+        description: The identifier key of the Threat Detection audit storage account.
+        type: String
+      - contextPath: Azure.SqlDBThreatPolicy.storageEndpoint
+        description: Threat Detection audit storage account.
+        type: String
+      - contextPath: Azure.SqlDBThreatPolicy.emailAccountAdmins
+        description: Email accounts administrators who the alert is sent to.
+        type: Boolean
+      - contextPath: Azure.SqlDBThreatPolicy.emailAddresses
+        description: List of email addresses to which the alert is sent.
+        type: String
+      - contextPath: Azure.SqlDBThreatPolicy.disabledAlerts
+        description: List of alerts that are disabled, or an empty string if no alerts are disabled.
+        type: String
+      - contextPath: Azure.SqlDBThreatPolicy.useServerDefault
+        description: Whether to use the default server policy.
+      - contextPath: Azure.SqlDBThreatPolicy.databaseName
+        description: The name of the database that the threat policy is related to.
+        type: String
+      - contextPath: Azure.SqlDBThreatPolicy.serverName
+        description: The name of server that the threat policy is related to.
+        type: String
+
+  - name: azure-sql-db-transparent-data-encryption-enable-tde-quick-action
+    description: Enables Transparent Data Encryption (TDE) for the SQL database to encrypt data at rest by running the az sql db tde set command.
+    prettyname: Enable TDE on SQL
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: subscription_id
+        type: string
+        required: true
+        description: The subscription ID.
+        prettyname: Subscription ID
+        defaultValue: Subscription ID
+        prettypredefined:
+          Subscription ID: ${asset.xdm.asset.realm}
+      - name: resource_group_name
+        type: string
+        required: true
+        description: The resource group name.
+        prettyname: Resource Group
+        defaultValue: Resource Group
+        prettypredefined:
+          Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+      - name: server_name
+        type: String
+        required: true
+        description: Server name.
+        prettyname: Server name
+        defaultValue: Server name
+        prettypredefined:
+          Server name: ${asset.xdm.asset.name}
+      - name: db_name
+        type: String
+        required: true
+        description: DB name.
+        prettyname: DB name
+        defaultValue: DB name
+        prettypredefined:
+          DB name: ${asset.xdm.asset.name}
+      - name: state
+        required: false
+        defaultValue: Enabled
+        description: Enable the transparent data encryption.
+        hidden: true
+    outputs: []
+
+  - name: azure-key-vault-purge-and-soft-delete-enable-quick-action
+    description: Enables soft delete and purge protection for the Key Vault to prevent the permanent loss of keys and secrets by running the az keyvault update command.
+    prettyname: Enable KeyVault Purge & Soft-delete features
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: subscription_id
+        type: string
+        required: true
+        description: The subscription ID.
+        prettyname: Subscription ID
+        defaultValue: Subscription ID
+        prettypredefined:
+          Subscription ID: ${asset.xdm.asset.realm}
+      - name: vault_name
+        type: string
+        required: true
+        description: Key vault name.
+        prettyname: Key Vault Name
+        defaultValue: Key Vault Name
+        prettypredefined:
+          Key Vault Name: ${asset.xdm.asset.name}
+      - name: enable_purge_protection
+        type: bool
+        required: false
+        defaultValue: true
+        description: Enabled protection against purge for this vault.
+        hidden: true
+      - name: enable_soft_delete
+        type: bool
+        required: false
+        defaultValue: true
+        description: Enabled soft delete for this key vault.
+        hidden: true
+    outputs:
+      - contextPath: Azure.KeyVault.id
+        description: Resource ID.
+        type: String
+      - contextPath: Azure.KeyVault.name
+        description: Key Vault name.
+        type: String
+      - contextPath: Azure.KeyVault.type
+        description: Resource type in Azure.
+        type: String
+      - contextPath: Azure.KeyVault.location
+        description: Key Vault location.
+        type: String
+      - contextPath: Azure.KeyVault.tags
+        description: Resource tags.
+      - contextPath: Azure.KeyVault.properties.sku.family
+        description: SKU family name.
+        type: String
+      - contextPath: Azure.KeyVault.properties.sku.name
+        description: SKU name to specify whether the key vault is a standard vault or a premium vault.
+        type: String
+      - contextPath: Azure.KeyVault.properties.tenantId
+        description: The Entra ID tenant ID that should be used for authenticating requests to the key vault.
+        type: String
+      - contextPath: Azure.KeyVault.properties.accessPolicies
+        description: An array of 0 to 16 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID.
+      - contextPath: Azure.KeyVault.properties.accessPolicies.tenantId
+        description: The Entra ID tenant ID that should be used for authenticating requests to the key vault.
+        type: String
+      - contextPath: Azure.KeyVault.properties.accessPolicies.objectId
+        description: The object ID of a user, service principal or security group in the Entra ID tenant for the vault. The object ID must be unique for the list of access policies.
+        type: String
+      - contextPath: Azure.KeyVault.properties.accessPolicies.permissions
+        description: Permissions the identity has for keys, secrets and certificates.
+      - contextPath: Azure.KeyVault.properties.enabledForDeployment
+        description: Whether Azure Virtual Machines are allowed to retrieve certificates stored as secrets from the key vault.
+        type: Boolean
+      - contextPath: Azure.KeyVault.properties.enabledForDiskEncryption
+        description: Whether Azure Disk Encryption is allowed to retrieve secrets from the vault and unwrap keys.
+        type: Boolean
+      - contextPath: Azure.KeyVault.properties.enabledForTemplateDeployment
+        description: Whether Azure Resource Manager is allowed to retrieve secrets from the key vault.
+        type: Boolean
+      - contextPath: Azure.KeyVault.properties.enableSoftDelete
+        description: Whether soft delete is enabled for this key vault.
+        type: Boolean
+      - contextPath: Azure.KeyVault.properties.enablePurgeProtection
+        description: Whether purge protection is enabled for this key vault.
+        type: Boolean
+      - contextPath: Azure.KeyVault.properties.enableRbacAuthorization
+        description: Whether Azure Key Vault uses Role Based Access Control (RBAC) for authorization of data actions.
+        type: Boolean
+      - contextPath: Azure.KeyVault.properties.vaultUri
+        description: The URI of the vault for performing operations on keys and secrets.
+        type: String
+      - contextPath: Azure.KeyVault.properties.provisioningState
+        description: The current provisioning state.
+        type: String
+      - contextPath: Azure.KeyVault.properties.privateEndpointConnections
+        description: List of private endpoint connections associated with the key vault.
+      - contextPath: Azure.KeyVault.properties.networkAcls
+        description: Rules governing the accessibility of the key vault from specific network locations.
+      - contextPath: Azure.KeyVault.properties.networkAcls.bypass
+        description: What traffic can bypass network rules.
+        type: String
+      - contextPath: Azure.KeyVault.properties.networkAcls.defaultAction
+        description: The default action when no rules match from ipRules and virtualNetworkRules.
+        type: String
+      - contextPath: Azure.KeyVault.properties.networkAcls.ipRules
+        description: The list of IP address rules.
+      - contextPath: Azure.KeyVault.properties.networkAcls.virtualNetworkRules
+        description: The list of virtual network rules.
+
+  - name: azure-webapp-set-webapp-to-https-only-quick-action
+    description: Enforces HTTPS-only traffic for the WebApp by running the az webapp update command.
+    prettyname: Set Webapp to HTTPS only
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: subscription_id
+        type: string
+        required: true
+        description: The subscription ID.
+        prettyname: Subscription ID
+        defaultValue: Subscription ID
+        prettypredefined:
+          Subscription ID: ${asset.xdm.asset.realm}
+      - name: resource_group_name
+        type: string
+        required: true
+        description: The resource group name.
+        prettyname: Resource Group
+        defaultValue: Resource Group
+        prettypredefined:
+          Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+      - name: name
+        type: String
+        required: true
+        description: Name of the app.
+        prettyname: AZ Webapp
+        defaultValue: AZ Webapp
+        prettypredefined:
+          AZ Webapp: ${asset.xdm.asset.name}
+      - name: https_only
+        type: String
+        required: false
+        defaultValue: true
+        description: Configures the web site to accept only https requests.
+        hidden: true
+    outputs:
+      - contextPath: Azure.WebApp.id
+        description: Fully qualified resource ID for the web app.
+        type: String
+      - contextPath: Azure.WebApp.name
+        description: The name of the web app.
+        type: String
+      - contextPath: Azure.WebApp.type
+        description: The resource type, e.g., Microsoft.Web/sites.
+        type: String
+      - contextPath: Azure.WebApp.location
+        description: Geographic location of the web app.
+        type: String
+      - contextPath: Azure.WebApp.kind
+        description: The kind of the app, e.g., app, functionapp, etc.
+        type: String
+      - contextPath: Azure.WebApp.tags
+        description: Resource tags as key-value pairs.
+      - contextPath: Azure.WebApp.identity.type
+        description: The type of managed identity (SystemAssigned, UserAssigned, etc.).
+        type: String
+      - contextPath: Azure.WebApp.identity.principalId
+        description: The principal ID of the system-assigned identity.
+        type: String
+      - contextPath: Azure.WebApp.identity.tenantId
+        description: The tenant ID of the system-assigned identity.
+        type: String
+      - contextPath: Azure.WebApp.identity.userAssignedIdentities
+        description: The list of user-assigned identities associated with the web app.
+      - contextPath: Azure.WebApp.properties.state
+        description: Current state of the web app (Running, Stopped, etc.).
+        type: String
+      - contextPath: Azure.WebApp.properties.enabled
+        description: Whether the web app is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.defaultHostName
+        description: Default host name of the web app.
+        type: String
+      - contextPath: Azure.WebApp.properties.hostNames
+        description: List of host names associated with the web app.
+      - contextPath: Azure.WebApp.properties.repositorySiteName
+        description: Name of the repository site.
+        type: String
+      - contextPath: Azure.WebApp.properties.clientAffinityEnabled
+        description: Whether client affinity is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.clientCertEnabled
+        description: Whether client certificates are enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.clientCertExclusionPaths
+        description: Paths to exclude from client certificate authentication.
+        type: String
+      - contextPath: Azure.WebApp.properties.hostingEnvironment
+        description: App Service Environment to use for the web app.
+        type: String
+      - contextPath: Azure.WebApp.properties.serverFarmId
+        description: Resource ID of the associated App Service plan.
+        type: String
+      - contextPath: Azure.WebApp.properties.reserved
+        description: Whether the web app is on a Linux plan.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.isXenon
+        description: Whether the web app is hosted in Xenon.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.hyperV
+        description: Whether Hyper-V is enabled for the web app.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.appSettings
+        description: List of app settings.
+      - contextPath: Azure.WebApp.properties.siteConfig.metadata
+        description: List of metadata settings.
+      - contextPath: Azure.WebApp.properties.siteConfig.connectionStrings
+        description: List of connection strings.
+      - contextPath: Azure.WebApp.properties.siteConfig.localMySqlEnabled
+        description: Whether local MySQL is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.alwaysOn
+        description: Whether Always On is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.http20Enabled
+        description: Whether HTTP/2 is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.minTlsVersion
+        description: Minimum TLS version required.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.ftpsState
+        description: FTPS state (Disabled, AllAllowed, etc.).
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.linuxFxVersion
+        description: Runtime stack for Linux apps.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.windowsFxVersion
+        description: Runtime stack for Windows apps.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.numberOfWorkers
+        description: Number of workers allocated.
+        type: Number
+      - contextPath: Azure.WebApp.properties.siteConfig.webSocketsEnabled
+        description: Whether WebSockets are enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.preWarmedInstanceCount
+        description: Number of pre-warmed instances.
+        type: Number
+      - contextPath: Azure.WebApp.properties.siteConfig.acrUseManagedIdentityCreds
+        description: Whether ACR uses managed identity credentials.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.acrUserManagedIdentityID
+        description: User-assigned identity ID for ACR.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.scmType
+        description: Source control management type.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.use32BitWorkerProcess
+        description: Whether to use 32-bit worker process.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.autoHealEnabled
+        description: Whether auto-heal is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.autoHealRules
+        description: Auto-heal rules configuration.
+      - contextPath: Azure.WebApp.properties.siteConfig.tracingOptions
+        description: Tracing options.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled
+        description: Whether remote debugging is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingVersion
+        description: Remote debugging version.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.detailedErrorLoggingEnabled
+        description: Whether detailed error logging is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.httpLoggingEnabled
+        description: Whether HTTP logging is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.requestTracingEnabled
+        description: Whether request tracing is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.requestTracingExpirationTime
+        description: Request tracing expiration time.
+        type: DateTime
+      - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled
+        description: Whether remote debugging is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingVersion
+        description: Remote debugging version.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.defaultDocuments
+        description: List of default documents.
+      - contextPath: Azure.WebApp.properties.siteConfig.virtualApplications
+        description: List of virtual applications.
+      - contextPath: Azure.WebApp.properties.siteConfig.loadBalancing
+        description: Load balancing settings.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.experiments
+        description: Experiments configuration.
+      - contextPath: Azure.WebApp.properties.siteConfig.limits
+        description: Site limits configuration.
+      - contextPath: Azure.WebApp.properties.siteConfig.autoSwapSlotName
+        description: Auto-swap slot name.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.localMySqlEnabled
+        description: Whether local MySQL is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.ipSecurityRestrictions
+        description: IP security restrictions.
+      - contextPath: Azure.WebApp.properties.siteConfig.scmIpSecurityRestrictions
+        description: SCM IP security restrictions.
+      - contextPath: Azure.WebApp.properties.siteConfig.scmIpSecurityRestrictionsUseMain
+        description: Whether SCM IP restrictions use main settings.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.cors
+        description: CORS settings.
+      - contextPath: Azure.WebApp.properties.siteConfig.push
+        description: Push settings.
+      - contextPath: Azure.WebApp.properties.siteConfig.apiDefinition
+        description: API definition settings.
+      - contextPath: Azure.WebApp.properties.siteConfig.apiManagementConfig
+        description: API management configuration.
+      - contextPath: Azure.WebApp.properties.siteConfig.autoHealEnabled
+        description: Whether auto-heal is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.autoHealRules
+        description: Auto-heal rules configuration.
+      - contextPath: Azure.WebApp.properties.siteConfig.tracingOptions
+        description: Tracing options.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled
+        description: Whether remote debugging is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingVersion
+        description: Remote debugging version.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.detailedErrorLoggingEnabled
+        description: Whether detailed error logging is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.httpLoggingEnabled
+        description: Whether HTTP logging is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.requestTracingEnabled
+        description: Whether request tracing is enabled.
+        type: Boolean
+
+  - name: azure-cosmos-db-disable-key-quick-action
+    description: Disables key-based write access for Cosmos DB metadata to enhance security by running the az cosmosdb update command.
+    prettyname: Disable Key Based Metadata Write on CosmosDB
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: subscription_id
+        type: string
+        required: true
+        description: The subscription ID.
+        prettyname: Subscription ID
+        defaultValue: Subscription ID
+        prettypredefined:
+          Subscription ID: ${asset.xdm.asset.realm}
+      - name: resource_group_name
+        type: string
+        required: true
+        description: The resource group name.
+        prettyname: Resource Group
+        defaultValue: Resource Group
+        prettypredefined:
+          Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+      - name: account_name
+        type: String
+        required: true
+        description: Cosmos DB database account name.
+        prettyname: CosmosDB Name
+        defaultValue: CosmosDB Name
+        prettypredefined:
+          CosmosDB Name: ${asset.xdm.asset.name}
+      - name: disable_key_based_metadata_write_access
+        type: String
+        required: false
+        defaultValue: true
+        description: Disable write operations on metadata resources via account keys.
+        hidden: true
+    outputs:
+      - contextPath: Azure.CosmosDB.id
+        description: The unique resource identifier of the ARM resource.
+        type: String
+      - contextPath: Azure.CosmosDB.name
+        description: The name of the ARM resource.
+        type: String
+      - contextPath: Azure.CosmosDB.location
+        description: The location of the resource group to which the resource belongs.
+        type: String
+      - contextPath: Azure.CosmosDB.kind
+        description: The database account type.
+        type: String
+      - contextPath: Azure.CosmosDB.identity.type
+        description: The type of identity used for the resource.
+        type: String
+      - contextPath: Azure.CosmosDB.identity.userAssignedIdentities
+        description: The list of user identities associated with the resource.
+        type: Dictionary
+      - contextPath: Azure.CosmosDB.properties.analyticalStorageConfiguration.schemaType
+        description: The analytical storage schema types.
+        type: String
+      - contextPath: Azure.CosmosDB.properties.apiProperties
+        description: API specific properties.
+        type: Dictionary
+      - contextPath: Azure.CosmosDB.properties.backupPolicy
+        description: The policy for taking backups on an account.
+      - contextPath: Azure.CosmosDB.properties.capabilities
+        description: List of Cosmos DB capabilities for the account.
+        type: List
+      - contextPath: Azure.CosmosDB.properties.capacity
+        description: Properties related to capacity enforcement on an account.
+        type: Integer
+      - contextPath: Azure.CosmosDB.properties.connectorOffer
+        description: The Cassandra connector offer type for the Cosmos DB database account.
+        type: String
+      - contextPath: Azure.CosmosDB.properties.consistencyPolicy
+        description: The consistency policy for the Cosmos DB database account.
+        type: String
+      - contextPath: Azure.CosmosDB.properties.cors
+        description: The CORS policy for the Cosmos DB database account.
+        type: List
+      - contextPath: Azure.CosmosDB.properties.createMode
+        description: The mode of account creation.
+        type: String
+      - contextPath: Azure.CosmosDB.properties.customerManagedKeyStatus
+        description: Status of the Customer Managed Key feature on the account.
+        type: String
+      - contextPath: Azure.CosmosDB.properties.databaseAccountOfferType
+        description: The offer type for the Cosmos DB database account.
+        type: String
+      - contextPath: Azure.CosmosDB.properties.defaultIdentity
+        description: The default identity for accessing key vault used in features like customer managed keys.
+        type: String
+      - contextPath: Azure.CosmosDB.properties.disableKeyBasedMetadataWriteAccess
+        description: Whether write operations on metadata resources via account keys is disabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.properties.disableLocalAuth
+        description: Whether local authentication is disabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.properties.documentEndpoint
+        description: The connection endpoint for the Cosmos DB database account.
+        type: String
+      - contextPath: Azure.CosmosDB.properties.enableAnalyticalStorage
+        description: Whether storage analytics are enabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.properties.enableAutomaticFailover
+        description: Enables automatic failover of the write region.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.properties.enableBurstCapacity
+        description: Whether Burst Capacity is enabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.properties.enableCassandraConnector
+        description: Enables the Cassandra connector on the Cosmos DB account.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.properties.enableFreeTier
+        description: Whether Free Tier is enabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.properties.enableMultipleWriteLocations
+        description: Enables the account to write in multiple locations.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.properties.enablePartitionMerge
+        description: Whether Partition Merge is enabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.properties.enablePerRegionPerPartitionAutoscale
+        description: Whether PerRegionPerPartitionAutoscale is enabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.properties.failoverPolicies
+        description: An array that contains the regions ordered by their failover priorities.
+        type: List
+      - contextPath: Azure.CosmosDB.properties.instanceId
+        description: A unique identifier assigned to the database account.
+        type: String
+      - contextPath: Azure.CosmosDB.properties.ipRules
+        description: List of IP rules.
+        type: List
+      - contextPath: Azure.CosmosDB.properties.isVirtualNetworkFilterEnabled
+        description: Whether the Virtual Network ACL rules are enabled.
+        type: Boolean
+      - contextPath: Azure.CosmosDB.properties.keyVaultKeyUri
+        description: The URI of the key vault.
+        type: String
+      - contextPath: Azure.CosmosDB.properties.keysMetadata
+        description: Metadata related to each access key for the given Cosmos DB database account.
+        type: Dictionary
+      - contextPath: Azure.CosmosDB.properties.locations
+        description: An array that contains all of the locations enabled for the Cosmos DB account.
+        type: List
+      - contextPath: Azure.CosmosDB.properties.minimalTlsVersion
+        description: The minimum allowed TLS version.
+        type: String
+      - contextPath: Azure.CosmosDB.properties.networkAclBypass
+        description: Which services are allowed to bypass firewall checks.
+        type: String
+      - contextPath: Azure.CosmosDB.properties.networkAclBypassResourceIds
+        description: List of resource IDs that are allowed to bypass firewall checks.
+        type: List
+      - contextPath: Azure.CosmosDB.properties.privateEndpointConnections
+        description: List of private endpoint connections.
+        type: List
+      - contextPath: Azure.CosmosDB.properties.provisioningState
+        description: The status of the Cosmos DB account at the time the operation was called.
+        type: String
+      - contextPath: Azure.CosmosDB.properties.readLocations
+        description: An array that contains the read locations enabled for the Cosmos DB account.
+        type: List
+      - contextPath: Azure.CosmosDB.properties.virtualNetworkRules
+        description: List of Virtual Network ACL rules.
+        type: List
+      - contextPath: Azure.CosmosDB.properties.writeLocations
+        description: An array that contains the write locations enabled for the Cosmos DB account.
+        type: List
+
+  - name: azure-webapp-enable-client-cert-quick-action
+    description: Enables client certificate authentication for the Web App to secure incoming requests using the az webapp update command.
+    prettyname: Enable Client Certs on Azure App
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: subscription_id
+        type: string
+        required: true
+        description: The subscription ID.
+        prettyname: Subscription ID
+        defaultValue: Subscription ID
+        prettypredefined:
+          Subscription ID: ${asset.xdm.asset.realm}
+      - name: resource_group_name
+        type: string
+        required: true
+        description: The resource group name.
+        prettyname: Resource Group
+        defaultValue: Resource Group
+        prettypredefined:
+          Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+      - name: name
+        type: String
+        required: true
+        description: Name of the Function App.
+        prettyname: AZ Webapp
+        defaultValue: AZ Webapp
+        prettypredefined:
+          AZ Webapp: ${asset.xdm.asset.name}
+      - name: client_cert_enabled
+        type: bool
+        required: false
+        defaultValue: true
+        description: Enable client certificate authentication.
+        hidden: true
+    outputs:
+      - contextPath: Azure.WebApp.id
+        description: Fully qualified resource ID for the web app.
+        type: String
+      - contextPath: Azure.WebApp.name
+        description: The name of the web app.
+        type: String
+      - contextPath: Azure.WebApp.type
+        description: The resource type, e.g., Microsoft.Web/sites.
+        type: String
+      - contextPath: Azure.WebApp.location
+        description: Geographic location of the web app.
+        type: String
+      - contextPath: Azure.WebApp.kind
+        description: The kind of the app, e.g., app, functionapp, etc.
+        type: String
+      - contextPath: Azure.WebApp.tags
+        description: Resource tags as key-value pairs.
+      - contextPath: Azure.WebApp.identity.type
+        description: The type of managed identity (SystemAssigned, UserAssigned, etc.).
+        type: String
+      - contextPath: Azure.WebApp.identity.principalId
+        description: The principal ID of the system-assigned identity.
+        type: String
+      - contextPath: Azure.WebApp.identity.tenantId
+        description: The tenant ID of the system-assigned identity.
+        type: String
+      - contextPath: Azure.WebApp.identity.userAssignedIdentities
+        description: The list of user-assigned identities associated with the web app.
+      - contextPath: Azure.WebApp.properties.state
+        description: Current state of the web app (Running, Stopped, etc.).
+        type: String
+      - contextPath: Azure.WebApp.properties.enabled
+        description: Whether the web app is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.defaultHostName
+        description: Default host name of the web app.
+        type: String
+      - contextPath: Azure.WebApp.properties.hostNames
+        description: List of host names associated with the web app.
+      - contextPath: Azure.WebApp.properties.repositorySiteName
+        description: Name of the repository site.
+        type: String
+      - contextPath: Azure.WebApp.properties.clientAffinityEnabled
+        description: Whether client affinity is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.clientCertEnabled
+        description: Whether client certificates are enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.clientCertExclusionPaths
+        description: Paths to exclude from client certificate authentication.
+        type: String
+      - contextPath: Azure.WebApp.properties.hostingEnvironment
+        description: App Service Environment to use for the web app.
+        type: String
+      - contextPath: Azure.WebApp.properties.serverFarmId
+        description: Resource ID of the associated App Service plan.
+        type: String
+      - contextPath: Azure.WebApp.properties.reserved
+        description: Whether the web app is on a Linux plan.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.isXenon
+        description: Whether the web app is hosted in Xenon.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.hyperV
+        description: Whether Hyper-V is enabled for the web app.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.appSettings
+        description: List of app settings.
+      - contextPath: Azure.WebApp.properties.siteConfig.metadata
+        description: List of metadata settings.
+      - contextPath: Azure.WebApp.properties.siteConfig.connectionStrings
+        description: List of connection strings.
+      - contextPath: Azure.WebApp.properties.siteConfig.localMySqlEnabled
+        description: Whether local MySQL is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.alwaysOn
+        description: Whether Always On is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.http20Enabled
+        description: Whether HTTP/2 is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.minTlsVersion
+        description: Minimum TLS version required.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.ftpsState
+        description: FTPS state (Disabled, AllAllowed, etc.).
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.linuxFxVersion
+        description: Runtime stack for Linux apps.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.windowsFxVersion
+        description: Runtime stack for Windows apps.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.numberOfWorkers
+        description: Number of workers allocated.
+        type: Number
+      - contextPath: Azure.WebApp.properties.siteConfig.webSocketsEnabled
+        description: Whether WebSockets are enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.preWarmedInstanceCount
+        description: Number of pre-warmed instances.
+        type: Number
+      - contextPath: Azure.WebApp.properties.siteConfig.acrUseManagedIdentityCreds
+        description: Whether ACR uses managed identity credentials.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.acrUserManagedIdentityID
+        description: User-assigned identity ID for ACR.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.scmType
+        description: Source control management type.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.use32BitWorkerProcess
+        description: Whether to use 32-bit worker process.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.autoHealEnabled
+        description: Whether auto-heal is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.autoHealRules
+        description: Auto-heal rules configuration.
+      - contextPath: Azure.WebApp.properties.siteConfig.tracingOptions
+        description: Tracing options.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled
+        description: Whether remote debugging is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingVersion
+        description: Remote debugging version.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.detailedErrorLoggingEnabled
+        description: Whether detailed error logging is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.httpLoggingEnabled
+        description: Whether HTTP logging is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.requestTracingEnabled
+        description: Whether request tracing is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.requestTracingExpirationTime
+        description: Request tracing expiration time.
+        type: DateTime
+      - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled
+        description: Whether remote debugging is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingVersion
+        description: Remote debugging version.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.defaultDocuments
+        description: List of default documents.
+      - contextPath: Azure.WebApp.properties.siteConfig.virtualApplications
+        description: List of virtual applications.
+      - contextPath: Azure.WebApp.properties.siteConfig.loadBalancing
+        description: Load balancing settings.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.experiments
+        description: Experiments configuration.
+      - contextPath: Azure.WebApp.properties.siteConfig.limits
+        description: Site limits configuration.
+      - contextPath: Azure.WebApp.properties.siteConfig.autoSwapSlotName
+        description: Auto-swap slot name.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.localMySqlEnabled
+        description: Whether local MySQL is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.ipSecurityRestrictions
+        description: IP security restrictions.
+      - contextPath: Azure.WebApp.properties.siteConfig.scmIpSecurityRestrictions
+        description: SCM IP security restrictions.
+      - contextPath: Azure.WebApp.properties.siteConfig.scmIpSecurityRestrictionsUseMain
+        description: Whether SCM IP restrictions use main settings.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.cors
+        description: CORS settings.
+      - contextPath: Azure.WebApp.properties.siteConfig.push
+        description: Push settings.
+      - contextPath: Azure.WebApp.properties.siteConfig.apiDefinition
+        description: API definition settings.
+      - contextPath: Azure.WebApp.properties.siteConfig.apiManagementConfig
+        description: API management configuration.
+      - contextPath: Azure.WebApp.properties.siteConfig.autoHealEnabled
+        description: Whether auto-heal is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.autoHealRules
+        description: Auto-heal rules configuration.
+      - contextPath: Azure.WebApp.properties.siteConfig.tracingOptions
+        description: Tracing options.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled
+        description: Whether remote debugging is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingVersion
+        description: Remote debugging version.
+        type: String
+      - contextPath: Azure.WebApp.properties.siteConfig.detailedErrorLoggingEnabled
+        description: Whether detailed error logging is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.httpLoggingEnabled
+        description: Whether HTTP logging is enabled.
+        type: Boolean
+      - contextPath: Azure.WebApp.properties.siteConfig.requestTracingEnabled
+        description: Whether request tracing is enabled.
+        type: Boolean
+
   - arguments:
     - name: subscription_id
       type: string
       required: true
       description: The subscription ID.
       prettyname: Subscription ID
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -5410,7 +5844,6 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
-      defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: disk_name
@@ -5418,7 +5851,6 @@ script:
       type: string
       required: true
       description: Name of the managed disk. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters.
-      defaultValue: VM Disk
       prettypredefined:
         VM Disk: ${asset.xdm.asset.name}
     - name: data_access_auth_mode
@@ -5540,7 +5972,6 @@ script:
       required: true
       description: The subscription ID.
       prettyname: Subscription ID
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -5548,7 +5979,6 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
-      defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroupName}
     - name: registry_name
@@ -5556,7 +5986,6 @@ script:
       required: true
       description: Name of the container registry.
       prettyname: Azure Container Registry
-      defaultValue: Azure Container Registry
       prettypredefined:
         Azure Container Registry: ${asset.xdm.asset.name}
     - name: allow_exports
@@ -5649,7 +6078,6 @@ script:
       required: true
       description: The subscription ID.
       prettyname: Subscription ID
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -5657,7 +6085,6 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
-      defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroupName}
     - name: registry_name
@@ -5665,7 +6092,6 @@ script:
       required: true
       description: The name of the container registry.
       prettyname: Azure Container Registry
-      defaultValue: Azure Container Registry
       prettypredefined:
         Azure Container Registry: ${asset.xdm.asset.name}
     - name: authentication_as_arm_policy
@@ -5753,7 +6179,6 @@ script:
       required: true
       description: The subscription ID.
       prettyname: Subscription ID
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -5761,7 +6186,6 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
-      defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroupName}
     - name: registry_name
@@ -5769,7 +6193,6 @@ script:
       required: true
       description: The name of the container registry.
       prettyname: Azure Container Registry
-      defaultValue: Azure Container Registry
       prettypredefined:
         Azure Container Registry: ${asset.xdm.asset.name}
     - name: anonymous_pull_enabled
@@ -5858,7 +6281,6 @@ script:
       type: String
       required: true
       prettyname: Subscription ID
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: name
@@ -5870,7 +6292,6 @@ script:
       description: Scope for the policy assignment.
       required: true
       prettyname: Scope
-      defaultValue: Scope
       prettypredefined:
         Scope: ${asset.xdm.asset.raw_fields.Platform Discovery.properties.scope}
     - name: policy_definition_id
@@ -5893,7 +6314,7 @@ script:
       Applies Microsoft Defender for Cloud built-in recommendations by creating a policy assignment
       for the SecurityCenterBuiltIn initiative. This sets the following policies to 'AuditIfNotExists':
       disk encryption monitoring (Windows and Linux), system updates monitoring, and JIT network access monitoring.
-      Rules for adaptive application controls, endpoint protection, and security configuration are excluded.   
+      Rules for adaptive application controls, endpoint protection, and security configuration are excluded.
     prettyname: Apply MS Defender Policy
     quickaction: true
     hidden: true
@@ -5953,7 +6374,6 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -5961,15 +6381,11 @@ script:
       description: The resource group name.
       required: true
       prettyname: Resource Group
-      defaultValue: Resource Group
-      prettypredefined:
-        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: server_name
       type: string
       required: true
       description: Name of the PostgreSQL server.
       prettyname: Postgres Server Name
-      defaultValue: Postgres Server Name
       prettypredefined:
         Postgres Server Name: ${asset.xdm.asset.name}
     - name: configuration_name
@@ -5998,7 +6414,6 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -6006,15 +6421,11 @@ script:
       description: The resource group name.
       required: true
       prettyname: Resource Group
-      defaultValue: Resource Group
-      prettypredefined:
-        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: server_name
       type: string
       required: true
       description: Name of the PostgreSQL server.
       prettyname: Postgres Server Name
-      defaultValue: Postgres Server Name
       prettypredefined:
         Postgres Server Name: ${asset.xdm.asset.name}
     - name: configuration_name
@@ -6043,7 +6454,6 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -6051,15 +6461,11 @@ script:
       description: The resource group name.
       required: true
       prettyname: Resource Group
-      defaultValue: Resource Group
-      prettypredefined:
-        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: server_name
       type: string
       required: true
       description: Name of the PostgreSQL server.
       prettyname: Postgres Server Name
-      defaultValue: Postgres Server Name
       prettypredefined:
         Postgres Server Name: ${asset.xdm.asset.name}
     - name: configuration_name
@@ -6088,7 +6494,6 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -6096,15 +6501,11 @@ script:
       description: The resource group name.
       required: true
       prettyname: Resource Group
-      defaultValue: Resource Group
-      prettypredefined:
-        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: server_name
       type: string
       required: true
       description: Name of the PostgreSQL server.
       prettyname: Postgres Server Name
-      defaultValue: Postgres Server Name
       prettypredefined:
         Postgres Server Name: ${asset.xdm.asset.name}
     - name: configuration_name
@@ -6133,7 +6534,6 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -6141,15 +6541,11 @@ script:
       description: The resource group name.
       required: true
       prettyname: Resource Group
-      defaultValue: Resource Group
-      prettypredefined:
-        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: server_name
       type: string
       required: true
       description: Name of the PostgreSQL server.
       prettyname: Postgres Server Name
-      defaultValue: Postgres Server Name
       prettypredefined:
         Postgres Server Name: ${asset.xdm.asset.name}
     - name: configuration_name
@@ -6178,7 +6574,6 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -6186,15 +6581,11 @@ script:
       description: The resource group name.
       required: true
       prettyname: Resource Group
-      defaultValue: Resource Group
-      prettypredefined:
-        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: server_name
       type: string
       required: true
       description: Name of the PostgreSQL server.
       prettyname: Postgres Server Name
-      defaultValue: Postgres Server Name
       prettypredefined:
         Postgres Server Name: ${asset.xdm.asset.name}
     - name: configuration_name
@@ -6223,7 +6614,6 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
-      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -6231,15 +6621,11 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
-      defaultValue: Resource Group
-      prettypredefined:
-        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: server_name
       type: String
       required: true
       description: Name of the PostgreSQL server.
       prettyname: Postgres Server Name
-      defaultValue: Postgres Server Name
       prettypredefined:
         Postgres Server Name: ${asset.xdm.asset.name}
     - name: ssl_enforcement
@@ -6258,10 +6644,10 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.6932158
+  dockerimage: demisto/crypto:1.0.0.5490413
 fromversion: 8.11.0
 supportsquickactions: true
 isCloudProviderIntegration: true
 tests:
 - No tests (auto formatted)
-internal: true
+
