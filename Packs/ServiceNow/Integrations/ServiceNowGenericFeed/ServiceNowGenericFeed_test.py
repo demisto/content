@@ -1,6 +1,6 @@
 import pytest
 from ServiceNowGenericFeed import Client
-from ServiceNowGenericFeed import records_list_command, create_indicator_object, add_indicators_to_TIM
+from ServiceNowGenericFeed import list_records_from_url, create_indicator_object, add_indicators_to_tim
 
 CREATE_INDICATOR_PACK = [
     (
@@ -15,7 +15,7 @@ CREATE_INDICATOR_PACK = [
         [
             {
                 "value": "198.51.100.0",
-                "type": "IP",
+                "type": "ip_address",
                 "fields": {"tags": ["production", "network"]},
                 "rawJSON": {
                     "manufacturer.name": "Extreme Networks, Inc.",
@@ -40,7 +40,7 @@ CREATE_INDICATOR_PACK = [
         [
             {
                 "value": "192.0.2.1",
-                "type": "IP",
+                "type": "ip_address",
                 "fields": {"tags": ["test"]},
                 "rawJSON": {
                     "manufacturer.name": "some network 1",
@@ -49,7 +49,7 @@ CREATE_INDICATOR_PACK = [
             },
             {
                 "value": "some ip 2",
-                "type": "IP",
+                "type": "ip_address",
                 "fields": {"tags": ["test"]},
                 "rawJSON": {
                     "manufacturer.name": "some networks 2",
@@ -128,7 +128,7 @@ def test_add_indicators_to_TIM(indicators_objs, expected_result):
         Returns the output of the add_indicators_to_TIM function.
     """
 
-    result = add_indicators_to_TIM(indicators=indicators_objs)
+    result = add_indicators_to_tim(indicators=indicators_objs)
 
     assert result == expected_result
 
@@ -162,9 +162,6 @@ def test_records_list_command(requests_mock):
         proxy=False,
     )
 
-    params = {"query_url": query_url}
-    args = {"class": "cmdb_ci_ip_address"}
-
-    human_readable, response = records_list_command(client, args, params)
+    human_readable, response = list_records_from_url(client, query_url)
 
     assert response == mock_response

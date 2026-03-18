@@ -4,6 +4,21 @@ commonfields:
   id: ServiceNowGenericFeed
   version: -1
 configuration:
+- additionalinfo: The format should be https://company.service-now.com/
+  display: Server URL 
+  name: url
+  required: true
+  section: Connect
+  supportedModules: []
+  type: 0
+- display: ""
+  displaypassword: API Key
+  hiddenusername: true
+  name: credentials
+  required: true
+  section: Connect
+  supportedModules: []
+  type: 9
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -17,49 +32,6 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   required: false
-  section: Collect
-  supportedModules: []
-  type: 15
-- additionalinfo: The default value is https://company.service-now.com/
-  display: Server URL (e.g., https://api.xsoar-example.com)
-  name: url
-  required: true
-  section: Connect
-  supportedModules: []
-  type: 0
-- defaultvalue: "10"
-  display: Maximum number of alerts per fetch
-  name: max_fetch
-  required: false
-  section: Collect
-  supportedModules: []
-  type: 0
-- display: ""
-  displaypassword: API Key
-  hiddenusername: true
-  name: credentials
-  required: true
-  section: Connect
-  supportedModules: []
-  type: 9
-- additionalinfo: Set this to determine the HelloWorld score that will determine if an IP is malicious (0-100)
-  advanced: true
-  defaultvalue: "65"
-  display: Score threshold for IP reputation command
-  name: threshold_ip
-  required: false
-  section: Collect
-  supportedModules: []
-  type: 0
-- defaultvalue: low
-  display: Severity of alerts to fetch
-  name: severity
-  options:
-  - low
-  - medium
-  - high
-  - critical
-  required: true
   section: Collect
   supportedModules: []
   type: 15
@@ -111,7 +83,7 @@ configuration:
   supportedModules: []
   type: 15
 - defaultvalue: indicatorType
-  display: ""
+  display: "Feed Expiration Policy"
   name: feedExpirationPolicy
   options:
   - never
@@ -121,12 +93,6 @@ configuration:
   required: false
   supportedModules: []
   type: 17
-- defaultvalue: "20160"
-  display: ""
-  name: feedExpirationInterval
-  required: false
-  supportedModules: []
-  type: 1
 - defaultvalue: "240"
   display: Feed Fetch Interval
   name: feedFetchInterval
@@ -139,25 +105,25 @@ configuration:
   required: false
   supportedModules: []
   type: 8
-- additionalinfo: The applied to the indicator when being forwarded into the TIM
+- additionalinfo: The tag applied to the indicator when being forwarded into the TIM
   display: Tags
   name: feedTags
   required: false
   supportedModules: []
   type: 0
 - additionalinfo: The API route of the requested information in ServiceNow
-  display: query_url
+  display: Query URL
   name: query_url
-  required: false
+  required: true
   supportedModules: []
   type: 0
 - additionalinfo: This field would be used to create the indicator object before inserting the indicator into the TIM
   display: Indicator Field
   name: indicator_field
-  required: false
+  required: true
   supportedModules: []
   type: 0
-description: This is a test integration for feed integration for extracting networking gear from SNOW
+description: This is a feed integration for extracting indicators from ServiceNow
 display: ServiceNowGenericFeed
 name: ServiceNowGenericFeed
 script:
