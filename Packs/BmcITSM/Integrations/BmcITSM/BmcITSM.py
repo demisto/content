@@ -1758,7 +1758,7 @@ class Client(BaseClient):
 
         return response
 
-    def add_attachment_request(self, form_name: str, request_id: str, files: dict, entry_data: dict) -> None:
+    def add_attachment_request(self, form_name: str, request_id: str, files: dict, entry_data: dict):
         """
         Add attachment(s) to an existing entry using multipart/form-data PUT request.
 
@@ -1785,6 +1785,7 @@ class Client(BaseClient):
             resp_type="text",
         )
         return response
+
 
 def list_command(
     client: Client,
@@ -4448,8 +4449,8 @@ def add_attachment_command(client: Client, args: Dict[str, Any]) -> CommandResul
     prefix = "[add_attachment_command]"
     entry_ids_raw: List[str] = argToList(args.get("entry_ids", ""))
     field_names_raw: List[str] = argToList(args.get("field_names", ""))
-    entry_type: str = args.get("entry_type")
-    request_id: str = args.get("request_id")
+    entry_type: str = args["entry_type"]
+    request_id: str = args["request_id"]
     entry_json_str: str | None = args.get("entry")
 
     demisto.debug(f"{prefix} {args=}")
@@ -4501,7 +4502,7 @@ def add_attachment_command(client: Client, args: Dict[str, Any]) -> CommandResul
             files[f"attach-{field_name}"] = (file_name, f, "application/octet-stream")
 
         # Resolve form name from entry_type
-        form_name = TICKET_TYPE_TO_ATTACHMENT_FORM.get(entry_type)
+        form_name = TICKET_TYPE_TO_ATTACHMENT_FORM[entry_type]
 
         response = client.add_attachment_request(
             form_name=form_name,
@@ -4518,9 +4519,10 @@ def add_attachment_command(client: Client, args: Dict[str, Any]) -> CommandResul
     if response.status_code == 204:
         file_count = len(entry_ids_raw)
         attachment_word = "Attachment" if file_count == 1 else "Attachments"
-        return CommandResults(
-            readable_output=f"{attachment_word} {'was' if file_count == 1 else 'were'} successfully added to {entry_type} {request_id}."
+        readable_output = (
+            f"{attachment_word} {'was' if file_count == 1 else 'were'} successfully added to {entry_type} {request_id}."
         )
+        return CommandResults(readable_output=readable_output)
     else:
         message = f"Failed to add attachment(s) to {entry_type} {request_id}.\n{response.status_code}: {response.text}"
         demisto.debug(f"{prefix} {message}")
