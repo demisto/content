@@ -78,9 +78,9 @@ getRequestURL = function (uri) {
     if (isHosted()) {
         const isPublicApi = uri.startsWith('/public_api');
         const isPlatformApi = uri.startsWith('/platform');
-        const isXsoar = serverURL.endsWith('/xsoar');
+        const isXsoarApi = serverURL.endsWith('/xsoar');
 
-        if (!isXsoar && !isPublicApi && !isPlatformApi) {
+        if (!isXsoarApi && !isPublicApi && !isPlatformApi) {
             requestUrl += '/xsoar';
         }
     }
