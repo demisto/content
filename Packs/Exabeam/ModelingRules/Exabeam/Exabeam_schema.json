@@ -14,35 +14,35 @@
     },
     "useCases": {
       "type": "string",
-      "is_array": true
+      "is_array": false
     },
     "rules": {
       "type": "string",
-      "is_array": true
+      "is_array": false
     },
     "mitres": {
       "type": "string",
-      "is_array": true
+      "is_array": false
     },
     "srcIp": {
       "type": "string",
-      "is_array": true
+      "is_array": false
     },
     "srcHost": {
       "type": "string",
-      "is_array": true
+      "is_array": false
     },
     "user": {
       "type": "string",
-      "is_array": true
+      "is_array": false
     },
     "destIp": {
       "type": "string",
-      "is_array": true
+      "is_array": false
     },
     "destHost": {
       "type": "string",
-      "is_array": true
+      "is_array": false
     }
   }
 }
