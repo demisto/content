@@ -1,35 +1,34 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GIB Attacks Phishing Group"
+        "GIB SPD"
     ],
     "caseInsensitive": true,
-    "cliName": "gibphishingdateupdated",
-    "closeForm": true,
+    "cliName": "gibttl",
+    "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_gibphishingdateupdated",
+    "id": "incident_gibttl",
     "isReadOnly": false,
-    "itemVersion": "1.4.2",
     "locked": false,
-    "name": "GIB Phishing Date Updated",
+    "name": "GIB TTL",
     "neverSetAsRequired": false,
-    "openEnded": false,
     "ownerOnly": false,
     "required": false,
     "sla": 0,
     "system": false,
-    "systemAssociatedTypes": [
-        "GIB Attacks Phishing Group"
-    ],
     "threshold": 72,
-    "type": "date",
+    "type": "number",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.0.0",
-    "toVersion": "99.99.99"
+    "fromVersion": "6.0.0",
+    "itemVersion": "1.4.2",
+    "openEnded": false,
+    "systemAssociatedTypes": [
+        "GIB SPD"
+    ]
 }

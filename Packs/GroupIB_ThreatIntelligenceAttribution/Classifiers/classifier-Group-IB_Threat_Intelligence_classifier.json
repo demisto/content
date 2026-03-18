@@ -24,7 +24,8 @@
         "hi/threat_actor": "GIB Cybercriminal Threat Actor",
         "apt/threat_actor": "GIB Nation-State Cybercriminals Threat Actor",
         "apt/threat": "GIB Nation-State Cybercriminals Threat",
-        "osi/vulnerability": "GIB OSI Vulnerability"
+        "osi/vulnerability": "GIB OSI Vulnerability",
+        "compromised/spd": "GIB SPD"
     },
     "name": "Group-IB Threat Intelligence (classifier)",
     "transformer": {
