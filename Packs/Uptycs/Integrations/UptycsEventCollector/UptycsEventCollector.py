@@ -37,7 +37,7 @@ class Config:
     DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
     DEFAULT_LIMIT = 10000
-    DEFAULT_FROM_TIME = "1 minute ago"
+    DEFAULT_FROM_TIME = "now"
     MAX_PAGE_SIZE = 1000
     TOKEN_EXPIRY_SECONDS = 3600
 
@@ -543,6 +543,9 @@ def fetch_events_command(client: Client) -> None:
 
     if not events:
         demisto.debug("[Fetch] No events found.")
+        if not last_fetch_timestamp:
+            demisto.debug("[Fetch] First run with no events. Saving current time to avoid re-fetching from 'now'.")
+            demisto.setLastRun({"last_fetch": created_after, "last_fetched_ids": []})
         return
 
     # Deduplicate

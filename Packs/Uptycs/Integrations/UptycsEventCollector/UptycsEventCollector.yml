@@ -1,11 +1,11 @@
 commonfields:
   id: UptycsEventCollector
   version: -1
-name: #TODO
-display: #TODO
-category: #TODO
-provider: #TODO
-description: #TODO: Add description for Uptycs Event Colle v ctor integration.
+name: UptycsEventCollector
+display: Uptycs Event Collector
+category: Analytics & SIEM
+provider: Uptycs
+description: Uptycs Event Collector fetches security alerts from the Uptycs platform and ingests them into Cortex XSIAM. The integration uses JWT-based authentication to connect to the Uptycs alertsReporting API and supports incremental fetching with deduplication.
 sectionorder:
 - Connect
 - Collect
@@ -15,47 +15,100 @@ configuration:
   required: true
   type: 0
   section: Connect
-  additionalinfo: https://{{domain}}.uptycs.io where domain is customer domain. Possible value https://oxford.uptycs.io/
+  additionalinfo: 'The Uptycs API base URL. Format: https://<domain>.uptycs.io.'
 - name: api_key
   display: API Key
   required: true
-  type: 4
+  type: 9
   section: Connect
+  additionalinfo: The API Key from the Uptycs API Client Management page. Used for JWT authentication.
 - name: api_secret
   display: API Secret
   required: true
-  type: # TODO add type
+  type: 9
   section: Connect
+  additionalinfo: The API Secret from the Uptycs API Client Management page. Used for JWT signing.
 - name: customer_id
   display: Customer ID
   required: true
   type: 0
   section: Connect
-  additionalinfo: Possible value:f786af52-7ab7-4e13-91f1-98287c008efa
+  additionalinfo: The Uptycs Customer ID (UUID). Found in the API key JSON file or the Uptycs console URL.
 - name: role_id
   display: Role ID
   required: false
   type: 0
   section: Connect
-  additionalinfo: Possible value:69bd9774-789d-4b2a-95c1-33a5407ea2ca
+  additionalinfo: Optional Role ID to include in the JWT token for role-based access control.
 - name: security_zone_id
   display: Security Zone ID
   required: false
   type: 0
   section: Connect
-  additionalinfo: Possible value:e9552844-789d-45cb-9a39-6564b1287024
+  additionalinfo: Optional Security Zone ID to include in the JWT token for zone-scoped access.
 - name: max_fetch
   display: Maximum number of alerts per fetch
   required: false
   type: 0
   section: Collect
   advanced: true
-  defaultvalue: "10000" 
-  additionalinfo: Maximum number of alerts to fetch per cycle (default 10000).
+  defaultvalue: "10000"
+  additionalinfo: Maximum number of alerts to fetch per cycle (default is 10000).
 script:
   commands:
   - name: uptycs-get-events
-    #TODO add commands details
+    description: |-
+      Gets alerts from Uptycs. This command is intended for developing and debugging and should be used with caution, as it can create duplicate events and exceed API rate limits.
+    deprecated: false
+    arguments:
+    - name: start_time
+      description: >-
+        The start time to fetch alerts from.
+        Supports relative time (e.g., "3 days ago", "2 hours ago", "now")
+        or absolute dates (ISO 8601 format, e.g., "2024-12-01" or "2024-12-01T10:00:00Z").
+    - name: end_time
+      description: >-
+        The end time to fetch alerts until.
+        Supports relative time (e.g., "1 hour ago", "now")
+        or absolute dates (ISO 8601 format, e.g., "2024-12-01" or "2024-12-01T10:00:00Z").
+    - name: limit
+      description: Maximum number of alerts to retrieve.
+      defaultValue: '10000'
+    - name: should_push_events
+      description: Set to true to push events to XSIAM. Use with caution to avoid duplicates.
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Uptycs.Alert.id
+      description: Unique identifier of the alert.
+      type: String
+    - contextPath: Uptycs.Alert.alertRuleName
+      description: Name of the alert rule that triggered this alert.
+      type: String
+    - contextPath: Uptycs.Alert.alertTime
+      description: Timestamp when the alert was triggered.
+      type: Date
+    - contextPath: Uptycs.Alert.severity
+      description: Severity level of the alert (e.g., low, medium, high, critical).
+      type: String
+    - contextPath: Uptycs.Alert.status
+      description: Current status of the alert (e.g., open, closed).
+      type: String
+    - contextPath: Uptycs.Alert.description
+      description: Description of the alert.
+      type: String
+    - contextPath: Uptycs.Alert.assetHostName
+      description: Hostname of the asset associated with the alert.
+      type: String
+    - contextPath: Uptycs.Alert.createdAt
+      description: Timestamp when the alert was created.
+      type: Date
+    - contextPath: Uptycs.Alert.updatedAt
+      description: Timestamp when the alert was last updated.
+      type: Date
   isfetchevents: true
   runonce: false
   script: ''
@@ -63,10 +116,10 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 8.11.0
-triggers: #TODO
 marketplaces:
 - marketplacev2
 - platform
+supportlevelheader: xsoar
 supportedModules:
 - xsiam
 tests:
