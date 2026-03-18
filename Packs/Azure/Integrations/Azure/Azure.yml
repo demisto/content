@@ -6084,7 +6084,7 @@ script:
     outputs: [] # have no outputs for these command by response
 
   - name: azure-sql-db-threat-policy-update-quick-action
-    description: Enables email notifications to account administrators for SQL database threat detection alerts by running the az sql db threat-policy update command.
+    description: Enables email notifications to account administrators for SQL database threat detection alerts.
     prettyname: Update Threat Policy for SQL Database
     hidden: true
     quickaction: true
@@ -6161,7 +6161,7 @@ script:
         type: String
 
   - name: azure-sql-db-transparent-data-encryption-enable-tde-quick-action
-    description: Enables Transparent Data Encryption (TDE) for the SQL database to encrypt data at rest by running the az sql db tde set command.
+    description: Enables Transparent Data Encryption (TDE) for the SQL database to encrypt data at rest.
     prettyname: Enable TDE on SQL
     hidden: true
     quickaction: true
@@ -6203,10 +6203,10 @@ script:
         defaultValue: Enabled
         description: Enable the transparent data encryption.
         hidden: true
-    outputs: [ ]
+    outputs: []
 
   - name: azure-key-vault-purge-and-soft-delete-enable-quick-action
-    description: Enables soft delete and purge protection for the Key Vault to prevent the permanent loss of keys and secrets by running the az keyvault update command.
+    description: Enables soft delete and purge protection for the Key Vault to prevent the permanent loss of keys and secrets.
     prettyname: Enable KeyVault Purge & Soft-delete features
     hidden: true
     quickaction: true
@@ -6313,7 +6313,7 @@ script:
         description: The list of virtual network rules.
 
   - name: azure-webapp-set-webapp-to-https-only-quick-action
-    description: Enforces HTTPS-only traffic for the WebApp by running the az webapp update command.
+    description: Enforces HTTPS-only traffic for the WebApp.
     prettyname: Set Webapp to HTTPS only
     hidden: true
     quickaction: true
@@ -6552,7 +6552,7 @@ script:
         type: Boolean
 
   - name: azure-cosmos-db-disable-key-quick-action
-    description: Disables key-based write access for Cosmos DB metadata to enhance security by running the az cosmosdb update command.
+    description: Disables key-based write access for Cosmos DB metadata to enhance security.
     prettyname: Disable Key Based Metadata Write on CosmosDB
     hidden: true
     quickaction: true
@@ -6721,7 +6721,7 @@ script:
         type: List
 
   - name: azure-webapp-enable-client-cert-quick-action
-    description: Enables client certificate authentication for the Web App to secure incoming requests using the az webapp update command.
+    description: Enables client certificate authentication for the Web App to secure incoming requests.
     prettyname: Enable Client Certs on Azure App
     hidden: true
     quickaction: true
