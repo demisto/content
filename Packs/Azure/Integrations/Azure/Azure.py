@@ -141,14 +141,14 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-webapp-assign-managed-identity-quick-action",
         "azure-webapp-update-assign-managed-identity-quick-action",
         "azure-webapp-set-webapp-to-https-only-quick-action",
-        "azure-webapp-enable-client-cert-quick-action"
+        "azure-webapp-enable-client-cert-quick-action",
     ],
     "Microsoft.Web/sites/write": [
         "azure-webapp-update",
         "azure-webapp-assign-managed-identity-quick-action",
         "azure-webapp-update-assign-managed-identity-quick-action",
         "azure-webapp-set-webapp-to-https-only-quick-action",
-        "azure-webapp-enable-client-cert-quick-action"
+        "azure-webapp-enable-client-cert-quick-action",
     ],
     "Microsoft.DBforMySQL/flexibleServers/configurations/read": [
         "azure-mysql-flexible-server-param-set",
@@ -199,11 +199,11 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.DocumentDB/databaseAccounts/write": ["azure-cosmos-db-update", "azure-cosmos-db-disable-key-quick-action"],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/read": [
         "azure-sql-db-transparent-data-encryption-set",
-        "azure-sql-db-transparent-data-encryption-enable-tde-quick-action"
+        "azure-sql-db-transparent-data-encryption-enable-tde-quick-action",
     ],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write": [
         "azure-sql-db-transparent-data-encryption-set",
-        "azure-sql-db-transparent-data-encryption-enable-tde-quick-action"
+        "azure-sql-db-transparent-data-encryption-enable-tde-quick-action",
     ],
     "Microsoft.Resources/subscriptions/resourceGroups/read": ["azure-nsg-resource-group-list"],
     "Microsoft.Consumption/usageDetails/read": ["azure-billing-usage-list"],
