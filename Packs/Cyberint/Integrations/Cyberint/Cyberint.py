@@ -692,13 +692,12 @@ def update_remote_system(
                 updated_arguments["status"] = "closed"
                 updated_arguments["closure_reason"] = closure_reason_api
                 # Use description from XSOAR field, fallback to static text only if not provided
-                if closure_reason == "Other":
-                    closure_reason_description = (
-                        update_args.get("closure_reason_description")
-                        or update_args.get("cyberintclosurereasondescription")
-                        or "Closed from XSOAR"
-                    )
-                    updated_arguments["closure_reason_description"] = closure_reason_description
+                closure_reason_description = (
+                    update_args.get("closure_reason_description")
+                    or update_args.get("cyberintclosurereasondescription")
+                    or "Closed from XSOAR"
+                )
+                updated_arguments["closure_reason_description"] = closure_reason_description
             elif updated_status:
                 # Status change to non-closed state
                 updated_arguments["status"] = updated_status
