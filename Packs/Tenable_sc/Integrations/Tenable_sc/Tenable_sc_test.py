@@ -3,10 +3,6 @@ import time
 
 import pytest
 from Tenable_sc import (
-    ASSETS_PAGE_SIZE,
-    MIN_ASSETS_INTERVAL,
-    VULNS_PAGE_SIZE,
-    XSIAM_EVENT_CHUNK_SIZE_LIMIT,
     Client,
     convert_unix_to_iso,
     create_asset_command,

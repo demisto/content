@@ -895,9 +895,7 @@ class Client(BaseClient):
             "pagination": "true",
         }
         body = filters or {}
-        return self.send_request(
-            path="hosts/search", method="POST", body=body, params=params
-        )
+        return self.send_request(path="hosts/search", method="POST", body=body, params=params)
 
 
 """ HELPER FUNCTIONS """
@@ -3081,9 +3079,7 @@ def fetch_assets_page(client: Client, last_run: dict) -> list:
         results = response_data.get("results", [])
         total_records = int(response_data.get("totalRecords", 0))
 
-    demisto.info(
-        f"Received {len(results)} assets (offset {current_offset}, total {total_records})"
-    )
+    demisto.info(f"Received {len(results)} assets (offset {current_offset}, total {total_records})")
 
     # Update cumulative count
     cumulative = last_run.get("total_assets_fetched", 0) + len(results)
@@ -3096,16 +3092,12 @@ def fetch_assets_page(client: Client, last_run: dict) -> list:
         last_run["current_offset"] = next_offset
         last_run["total_records"] = total_records
         last_run["nextTrigger"] = "30"
-        demisto.debug(
-            f"More assets to fetch. Next offset: {next_offset}, total: {total_records}"
-        )
+        demisto.debug(f"More assets to fetch. Next offset: {next_offset}, total: {total_records}")
     else:
         # All pages fetched - clear pagination state
         last_run.pop("current_offset", None)
         last_run.pop("total_records", None)
-        demisto.info(
-            f"Asset fetch complete. Total assets fetched: {cumulative}"
-        )
+        demisto.info(f"Asset fetch complete. Total assets fetched: {cumulative}")
 
     # Convert unix timestamp fields to ISO 8601 format
     for record in results:
@@ -3147,11 +3139,13 @@ def run_assets_fetch(client: Client, last_run: dict) -> list:  # pragma: no cove
     if not is_assets_fetch_in_progress(last_run):
         snapshot_id = generate_snapshot_id()
         demisto.debug(f"Starting new asset fetch cycle with snapshot_id: {snapshot_id}")
-        last_run.update({
-            "current_offset": 0,
-            "total_assets_fetched": 0,
-            "snapshot_id": snapshot_id,
-        })
+        last_run.update(
+            {
+                "current_offset": 0,
+                "total_assets_fetched": 0,
+                "snapshot_id": snapshot_id,
+            }
+        )
 
     return fetch_assets_command(client, last_run)
 
@@ -3205,9 +3199,7 @@ def fetch_vulnerabilities_page(client: Client, last_run: dict) -> list:
     results = response_data.get("results", [])
     total_records = int(response_data.get("totalRecords", 0))
 
-    demisto.info(
-        f"Received {len(results)} vulnerabilities (offset {current_offset}, total {total_records})"
-    )
+    demisto.info(f"Received {len(results)} vulnerabilities (offset {current_offset}, total {total_records})")
 
     # Update cumulative count
     cumulative = last_run.get("total_vulns_fetched", 0) + len(results)
@@ -3219,15 +3211,11 @@ def fetch_vulnerabilities_page(client: Client, last_run: dict) -> list:
         # More pages to fetch
         last_run["vuln_current_offset"] = next_offset
         last_run["nextTrigger"] = "30"
-        demisto.debug(
-            f"More vulnerabilities to fetch. Next offset: {next_offset}, total: {total_records}"
-        )
+        demisto.debug(f"More vulnerabilities to fetch. Next offset: {next_offset}, total: {total_records}")
     else:
         # All pages fetched - clear vuln pagination state
         last_run.pop("vuln_current_offset", None)
-        demisto.info(
-            f"Vulnerability fetch complete. Total vulnerabilities fetched: {cumulative}"
-        )
+        demisto.info(f"Vulnerability fetch complete. Total vulnerabilities fetched: {cumulative}")
 
     return results
 
@@ -3291,10 +3279,12 @@ def run_vulns_fetch(client: Client, last_run: dict) -> list:  # pragma: no cover
     # Starting new vuln fetch cycle - initialize state
     if not is_vulns_fetch_in_progress(last_run):
         demisto.debug("Starting new vulnerability fetch cycle")
-        last_run.update({
-            "vuln_current_offset": 0,
-            "total_vulns_fetched": 0,
-        })
+        last_run.update(
+            {
+                "vuln_current_offset": 0,
+                "total_vulns_fetched": 0,
+            }
+        )
 
     return fetch_vulnerabilities_page(client, last_run)
 
@@ -3313,9 +3303,7 @@ def test_module(client: Client, args: dict[str, Any]):
         params = demisto.params()
         assets_fetch_interval = params.get("assetsFetchInterval") or MIN_ASSETS_INTERVAL
         if int(assets_fetch_interval) < MIN_ASSETS_INTERVAL:
-            raise DemistoException(
-                f"Assets fetch interval must be at least {MIN_ASSETS_INTERVAL} minutes (1 hour)."
-            )
+            raise DemistoException(f"Assets fetch interval must be at least {MIN_ASSETS_INTERVAL} minutes (1 hour).")
         client.get_users()
         return "ok"
     except DemistoException:
@@ -3471,7 +3459,11 @@ def main():  # pragma: no cover
                     )
 
                 # Update module health
-                if assets or vulnerabilities or (not assets_fetch_in_progress and not is_vulns_fetch_in_progress(assets_last_run)):
+                if (
+                    assets
+                    or vulnerabilities
+                    or (not assets_fetch_in_progress and not is_vulns_fetch_in_progress(assets_last_run))
+                ):
                     cumulative_total = assets_last_run.get("total_assets_fetched", 0)
                     demisto.updateModuleHealth({"assetsPulled": cumulative_total})
 
