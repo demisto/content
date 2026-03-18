@@ -2,6 +2,7 @@ import json
 import pytest
 from google.oauth2.credentials import Credentials
 from unittest.mock import MagicMock
+from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
@@ -5458,3 +5459,184 @@ class TestGCPComputeNetworksList:
 
         assert "limit=100" in result.readable_output
         assert "custom-token" in result.readable_output
+
+
+def test_bq_dataset_policy_update_command_missing_emails():
+    """
+    Given:
+        - Arguments missing both user_email and group_email.
+    When:
+        - Calling bq_dataset_policy_update_command.
+    Then:
+        - Ensure DemistoException is raised with the correct message.
+    """
+    from GCP import bq_dataset_policy_update_command
+
+    creds = MagicMock()
+    args = {"project_id": "test_project", "dataset_id": "test_dataset"}
+    with pytest.raises(DemistoException, match="Enter exactly one of user_email and group_email."):
+        bq_dataset_policy_update_command(creds, args)
+
+
+def test_bq_dataset_policy_update_command_both_emails():
+    """
+    Given:
+        - Arguments containing both user_email and group_email.
+    When:
+        - Calling bq_dataset_policy_update_command.
+    Then:
+        - Ensure DemistoException is raised with the correct message.
+    """
+    from GCP import bq_dataset_policy_update_command
+
+    creds = MagicMock()
+    args = {
+        "project_id": "test_project",
+        "dataset_id": "test_dataset",
+        "user_email": "test@test.com",
+        "group_email": "group@test.com",
+    }
+    with pytest.raises(DemistoException, match="Enter exactly one of user_email and group_email."):
+        bq_dataset_policy_update_command(creds, args)
+
+
+def test_bq_dataset_policy_update_command_add_missing_role(mocker):
+    """
+    Given:
+        - Arguments to add a user but missing the role.
+    When:
+        - Calling bq_dataset_policy_update_command.
+    Then:
+        - Ensure DemistoException is raised with the correct message.
+    """
+    from GCP import bq_dataset_policy_update_command
+
+    creds = MagicMock()
+    args = {"project_id": "test_project", "dataset_id": "test_dataset", "user_email": "test@test.com", "action": "add"}
+
+    mock_bigquery = MagicMock()
+    mock_datasets = MagicMock()
+    mock_get = MagicMock()
+    mock_get.execute.return_value = {"access": []}
+    mock_datasets.get.return_value = mock_get
+    mock_bigquery.datasets.return_value = mock_datasets
+
+    mocker.patch("GCP.GCPServices.BIGQUERY.build", return_value=mock_bigquery)
+
+    with pytest.raises(DemistoException, match="To add a new user or group to the policy, select the role you want to assign."):
+        bq_dataset_policy_update_command(creds, args)
+
+
+def test_bq_dataset_policy_update_command_add_user(mocker):
+    """
+    Given:
+        - Valid arguments to add a user with a role.
+    When:
+        - Calling bq_dataset_policy_update_command.
+    Then:
+        - Ensure the patch API is called with the correct body containing the new user.
+    """
+    from GCP import bq_dataset_policy_update_command
+
+    creds = MagicMock()
+    args = {
+        "project_id": "test_project",
+        "dataset_id": "test_dataset",
+        "user_email": "test@test.com",
+        "action": "add",
+        "role": "READER",
+    }
+
+    mock_bigquery = MagicMock()
+    mock_datasets = MagicMock()
+    mock_get = MagicMock()
+    mock_get.execute.return_value = {"access": []}
+    mock_datasets.get.return_value = mock_get
+
+    new_access_object = {"access": [{"role": "READER", "userByEmail": "test@test.com"}]}
+
+    mock_patch = MagicMock()
+    mock_patch.execute.return_value = {"id": "test_dataset", "datasetReference": {}, "access": new_access_object["access"]}
+    mock_datasets.patch.return_value = mock_patch
+
+    mock_bigquery.datasets.return_value = mock_datasets
+
+    mocker.patch("GCP.GCPServices.BIGQUERY.build", return_value=mock_bigquery)
+
+    result = bq_dataset_policy_update_command(creds, args)
+
+    mock_datasets.patch.assert_called_once_with(projectId="test_project", datasetId="test_dataset", body=new_access_object)
+    assert result.readable_output == "### BigQuery Dataset test_dataset Updated Successfully\n|Id|\n|---|\n| test_dataset |\n"
+
+
+def test_bq_dataset_policy_update_command_remove_user(mocker):
+    """
+    Given:
+        - Valid arguments to remove an existing user.
+    When:
+        - Calling bq_dataset_policy_update_command.
+    Then:
+        - Ensure the patch API is called with the correct body excluding the removed user.
+    """
+    from GCP import bq_dataset_policy_update_command
+
+    creds = MagicMock()
+    args = {"project_id": "test_project", "dataset_id": "test_dataset", "user_email": "test@test.com", "action": "remove"}
+
+    mock_bigquery = MagicMock()
+    mock_datasets = MagicMock()
+    mock_get = MagicMock()
+    mock_get.execute.return_value = {
+        "access": [{"role": "READER", "userByEmail": "test@test.com"}, {"role": "WRITER", "userByEmail": "other@test.com"}]
+    }
+    mock_datasets.get.return_value = mock_get
+
+    mock_patch = MagicMock()
+    mock_patch.execute.return_value = {
+        "id": "test_dataset",
+        "datasetReference": {},
+        "access": [{"role": "WRITER", "userByEmail": "other@test.com"}],
+    }
+    mock_datasets.patch.return_value = mock_patch
+
+    mock_bigquery.datasets.return_value = mock_datasets
+
+    mocker.patch("GCP.GCPServices.BIGQUERY.build", return_value=mock_bigquery)
+
+    bq_dataset_policy_update_command(creds, args)
+
+    mock_datasets.patch.assert_called_once_with(
+        projectId="test_project", datasetId="test_dataset", body={"access": [{"role": "WRITER", "userByEmail": "other@test.com"}]}
+    )
+
+
+def test_bq_dataset_policy_update_command_remove_user_not_found(mocker):
+    """
+    Given:
+        - Arguments to remove a user that does not exist in the access list.
+    When:
+        - Calling bq_dataset_policy_update_command.
+    Then:
+        - Ensure the patch API is not called and a 'No changes' message is returned.
+    """
+    from GCP import bq_dataset_policy_update_command
+
+    creds = MagicMock()
+    args = {"project_id": "test_project", "dataset_id": "test_dataset", "user_email": "test@test.com", "action": "remove"}
+
+    mock_bigquery = MagicMock()
+    mock_datasets = MagicMock()
+    mock_get = MagicMock()
+    mock_get.execute.return_value = {"access": [{"role": "WRITER", "userByEmail": "other@test.com"}]}
+    mock_datasets.get.return_value = mock_get
+
+    mock_bigquery.datasets.return_value = mock_datasets
+
+    mocker.patch("GCP.GCPServices.BIGQUERY.build", return_value=mock_bigquery)
+    mock_debug = mocker.patch("demistomock.debug")
+
+    result = bq_dataset_policy_update_command(creds, args)
+
+    assert result.readable_output == "No changes to apply for dataset test_dataset"
+    mock_datasets.patch.assert_not_called()
+    mock_debug.assert_called_with("[GCP] Email not found in access list for dataset test_dataset")
