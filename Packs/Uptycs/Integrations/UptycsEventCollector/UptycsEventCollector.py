@@ -1,0 +1,593 @@
+import base64
+import hashlib
+import hmac
+import json
+import math
+import traceback
+from datetime import datetime, timezone  # noqa: UP017
+from typing import Any
+
+import dateparser
+import demistomock as demisto  # noqa: F401
+import urllib3
+from ContentClientApiModule import *
+from CommonServerPython import *  # noqa: F401
+
+# Disable insecure warnings
+urllib3.disable_warnings()
+
+"""
+Uptycs Event Collector
+Integration for fetching Alerts via JWT authentication from the Uptycs platform.
+"""
+
+# region Constants and helpers
+# =================================
+# Constants and helpers
+# =================================
+INTEGRATION_NAME = "Uptycs Event Collector"
+
+
+class Config:
+    """Global static configuration."""
+
+    VENDOR = "Uptycs"
+    PRODUCT = "Uptycs"
+
+    DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
+
+    DEFAULT_LIMIT = 10000
+    DEFAULT_FROM_TIME = "1 minute ago"
+    MAX_PAGE_SIZE = 1000
+    TOKEN_EXPIRY_SECONDS = 3600
+
+    # Test module settings
+    TEST_MODULE_LOOKBACK_MINUTES = 5
+    TEST_MODULE_MAX_EVENTS = 1
+
+
+class APIKeys:
+    """API Parameter Keys."""
+
+    FILTERS = "filters"
+    SORT = "sort"
+    OFFSET = "offset"
+    LIMIT = "limit"
+
+
+class APIValues:
+    """API Endpoint paths and fixed Parameter Values."""
+
+    ALERTS_ENDPOINT = "/public/api/customers/{customer_id}/alertsReporting"
+    DEFAULT_SORT = "lastOccurredAt:desc"
+
+
+def get_formatted_utc_time(date_input: str | None) -> str:
+    """Helper to parse input and return the strictly formatted UTC string.
+
+    Args:
+        date_input: Date string to parse (e.g., '3 days ago', '2024-01-01')
+
+    Returns:
+        Formatted UTC time string (%Y-%m-%dT%H:%M:%S)
+    """
+    start_datetime = parse_date_or_use_current(date_input)
+    formatted_time = start_datetime.strftime(Config.DATE_FORMAT)
+    demisto.debug(f"[Date Helper] Input: '{date_input}' -> Output: '{formatted_time}' (UTC)")
+    return formatted_time
+
+
+def parse_date_or_use_current(date_string: str | None) -> datetime:
+    """Parse a date string or return current UTC datetime if parsing fails.
+
+    Ensures the result is always a timezone-aware UTC datetime object.
+    """
+    if not date_string:
+        current_time = datetime.now(timezone.utc)  # noqa: UP017
+        demisto.debug(f"[Date Helper] No input provided. Using current UTC: {current_time}")
+        return current_time
+
+    demisto.debug(f"[Date Helper] Attempting to parse date string: '{date_string}'")
+    parsed_datetime = dateparser.parse(
+        date_string, settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True, "TO_TIMEZONE": "UTC"}
+    )
+
+    if not parsed_datetime:
+        demisto.debug(f"[Date Helper] Failed to parse '{date_string}'. Fallback to current UTC.")
+        return datetime.now(timezone.utc)  # noqa: UP017
+
+    if parsed_datetime.tzinfo != timezone.utc:  # noqa: UP017
+        parsed_datetime = parsed_datetime.astimezone(timezone.utc)  # noqa: UP017
+
+    demisto.debug(f"[Date Helper] Final parsed date: {parsed_datetime.isoformat()}")
+    return parsed_datetime
+
+
+def _base64url_encode(data: bytes) -> str:
+    """Base64url encode without padding, as required by JWT spec."""
+    return base64.urlsafe_b64encode(data).rstrip(b"=").decode("utf-8")
+
+
+def generate_jwt_token(api_key: str, api_secret: str, role_id: str | None = None,
+                       security_zone_id: str | None = None) -> str:
+    """Generate a JWT token for Uptycs API authentication.
+
+    Creates an HS256-signed JWT with the API key as issuer and optional
+    role/security zone claims.
+
+    Args:
+        api_key: The Uptycs API key (used as JWT 'iss' claim).
+        api_secret: The Uptycs API secret (used as HMAC signing key).
+        role_id: Optional role ID to include in the token.
+        security_zone_id: Optional security zone ID to include in the token.
+
+    Returns:
+        Signed JWT token string.
+    """
+    demisto.debug("[JWT] Generating new JWT token")
+
+    now = math.floor(datetime.now(timezone.utc).timestamp())  # noqa: UP017
+
+    header = {"alg": "HS256", "typ": "JWT"}
+    payload: dict[str, Any] = {
+        "iss": api_key,
+        "iat": now,
+        "exp": now + Config.TOKEN_EXPIRY_SECONDS,
+    }
+
+    if role_id:
+        payload["roleId"] = role_id
+    if security_zone_id:
+        payload["securityZoneId"] = security_zone_id
+
+    header_b64 = _base64url_encode(json.dumps(header, separators=(",", ":")).encode("utf-8"))
+    payload_b64 = _base64url_encode(json.dumps(payload, separators=(",", ":")).encode("utf-8"))
+
+    unsigned_token = f"{header_b64}.{payload_b64}"
+
+    signature = hmac.new(
+        api_secret.encode("utf-8"),
+        unsigned_token.encode("utf-8"),
+        hashlib.sha256,
+    ).digest()
+    signature_b64 = _base64url_encode(signature)
+
+    token = f"{unsigned_token}.{signature_b64}"
+    demisto.debug("[JWT] Token generated successfully")
+    return token
+
+
+def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
+    """Parse and validate integration configuration parameters.
+
+    Args:
+        params: Raw parameters from demisto.params().
+
+    Returns:
+        Validated configuration dictionary.
+
+    Raises:
+        DemistoException: If required parameters are missing.
+    """
+    demisto.debug("[Config] Starting parameter validation")
+
+    base_url = (params.get("url", "")).strip().rstrip("/")
+    if not base_url:
+        raise DemistoException("Server URL is required.")
+
+    api_key = params.get("api_key", "").strip() or None
+    if not api_key:
+        raise DemistoException("API Key is required.")
+
+    api_secret = params.get("api_secret", "").strip() or None
+    if not api_secret:
+        raise DemistoException("API Secret is required.")
+
+    customer_id = params.get("customer_id", "").strip() or None
+    if not customer_id:
+        raise DemistoException("Customer ID is required.")
+
+    role_id = params.get("role_id", "").strip() or None
+    security_zone_id = params.get("security_zone_id", "").strip() or None
+
+    proxy = argToBoolean(params.get("proxy", False))
+    verify_certificate = not argToBoolean(params.get("insecure", False))
+
+    demisto.debug(f"[Config] URL: {base_url} | Customer ID: {customer_id}")
+
+    return {
+        "base_url": base_url,
+        "api_key": api_key,
+        "api_secret": api_secret,
+        "customer_id": customer_id,
+        "role_id": role_id,
+        "security_zone_id": security_zone_id,
+        "verify": verify_certificate,
+        "proxy": proxy,
+    }
+
+
+def add_time_to_events(events: list[dict[str, Any]]) -> None:
+    """Add _time field to events for XSIAM ingestion.
+
+    Maps the event's 'alertTime' field to '_time' for proper XSIAM indexing.
+    """
+    for event in events:
+        event_time = event.get("alertTime")
+        if event_time:
+            event["_time"] = event_time
+        else:
+            demisto.debug(f"[Event Time] WARNING: Event missing 'alertTime' field: {event.get('id', 'unknown')}")
+
+
+def deduplicate_events(events: list[dict[str, Any]], last_fetched_ids: list[str]) -> list[dict[str, Any]]:
+    """Remove already-processed events based on previously fetched alert IDs.
+
+    Args:
+        events: List of event dictionaries.
+        last_fetched_ids: List of alert IDs from the previous fetch cycle.
+
+    Returns:
+        Filtered list containing only new events.
+    """
+    if not events:
+        demisto.debug("[Dedup] No events to process")
+        return events
+
+    if not last_fetched_ids:
+        demisto.debug("[Dedup] No deduplication needed (first run - no previous IDs)")
+        return events
+
+    demisto.debug(f"[Dedup] Checking {len(events)} events against {len(last_fetched_ids)} previously fetched IDs")
+
+    fetched_ids_set = set(last_fetched_ids)
+    new_events = [event for event in events if event.get("id") not in fetched_ids_set]
+
+    skipped_count = len(events) - len(new_events)
+    if skipped_count > 0:
+        demisto.debug(f"[Dedup] Skipped {skipped_count} duplicates. {len(new_events)} new events remain.")
+    else:
+        demisto.debug("[Dedup] No duplicates found.")
+
+    return new_events
+
+
+# endregion
+
+# region Client
+# =================================
+# Client
+# =================================
+
+
+class Client(ContentClient):
+    """Uptycs API client for fetching alerts.
+
+    Extends ContentClient for built-in retry logic, rate-limit handling,
+    structured logging, and authentication via BearerTokenAuthHandler.
+    """
+
+    def __init__(
+        self,
+        base_url: str,
+        api_key: str,
+        api_secret: str,
+        customer_id: str,
+        verify: bool,
+        proxy: bool,
+        role_id: str | None = None,
+        security_zone_id: str | None = None,
+    ):
+        token = generate_jwt_token(
+            api_key=api_key,
+            api_secret=api_secret,
+            role_id=role_id,
+            security_zone_id=security_zone_id,
+        )
+        auth_handler = BearerTokenAuthHandler(token=token)
+        super().__init__(
+            base_url=base_url.rstrip("/") + "/",
+            verify=verify,
+            proxy=proxy,
+            auth_handler=auth_handler,
+            client_name="UptycsEventCollector",
+            ok_codes=(200, 201, 202, 204),
+        )
+        self.customer_id = customer_id
+
+    def get_alerts(
+        self,
+        created_after: str,
+        created_before: str | None = None,
+        offset: int = 0,
+        limit: int = Config.MAX_PAGE_SIZE,
+    ) -> tuple[list[dict[str, Any]], int]:
+        """Retrieve a page of alerts from Uptycs alertsReporting endpoint.
+
+        Args:
+            created_after: Start time string (UTC, format: %Y-%m-%dT%H:%M:%S).
+            created_before: End time string (UTC) or None for current time.
+            offset: Pagination offset (0-based).
+            limit: Number of results per page.
+
+        Returns:
+            Tuple of (list of alert events, total count from response).
+        """
+        url_suffix = APIValues.ALERTS_ENDPOINT.format(customer_id=self.customer_id)
+
+        # Build time filter
+        end_time = created_before or datetime.now(timezone.utc).strftime(Config.DATE_FORMAT)  # noqa: UP017
+        filters = json.dumps({"lastOccurredAt": {"between": [created_after, end_time]}})
+
+        request_params: dict[str, Any] = {
+            APIKeys.SORT: APIValues.DEFAULT_SORT,
+            APIKeys.FILTERS: filters,
+            APIKeys.OFFSET: offset,
+            APIKeys.LIMIT: limit,
+        }
+
+        demisto.debug(
+            f"[API Fetch] Fetching alerts | From: {created_after} | To: {end_time} | Offset: {offset} | Limit: {limit}"
+        )
+
+        response = self._http_request(method="GET", url_suffix=url_suffix, params=request_params)
+
+        items = response.get("items", [])
+
+        demisto.debug(f"[API Fetch] Page fetched. Count: {len(items)}.")
+
+        return items, len(items)
+
+
+# endregion
+
+# region Command implementations
+# =================================
+# Command implementations
+# =================================
+
+
+def test_module(client: Client) -> str:
+    """Test API connectivity by fetching a small number of recent alerts.
+
+    Args:
+        client: Configured Uptycs API client.
+
+    Returns:
+        'ok' on success, or an error message string.
+    """
+    demisto.debug("[Test Module] Starting...")
+    try:
+        utc_now = datetime.now(timezone.utc)  # noqa: UP017
+        test_time = (utc_now - timedelta(minutes=Config.TEST_MODULE_LOOKBACK_MINUTES)).strftime(Config.DATE_FORMAT)
+
+        demisto.debug(f"[Test Module] Fetching from: {test_time}")
+        fetch_events_with_pagination(client, created_after=test_time, max_events=Config.TEST_MODULE_MAX_EVENTS)
+
+        demisto.debug("[Test Module] Success")
+        return "ok"
+
+    except ContentClientAuthenticationError as error:
+        demisto.debug(f"[Test Module] Auth failed: {error}")
+        return "Authorization Error: Verify API Key, API Secret, and Customer ID."
+    except Exception as error:
+        demisto.debug(f"[Test Module] Failed: {error}")
+        raise
+
+
+def fetch_events_with_pagination(
+    client: Client,
+    created_after: str,
+    created_before: str | None = None,
+    max_events: int = Config.DEFAULT_LIMIT,
+) -> list[dict[str, Any]]:
+    """Fetch events with offset/limit pagination support.
+
+    Fetches pages until the limit is reached or no more results exist.
+
+    Args:
+        client: Configured Uptycs API client.
+        created_after: Start time (UTC formatted string).
+        created_before: End time (UTC formatted string) or None.
+        max_events: Maximum total events to retrieve.
+
+    Returns:
+        List of alert event dictionaries, sorted by alertTime (oldest first).
+    """
+    events: list[dict[str, Any]] = []
+    offset = 0
+    page_size = min(Config.MAX_PAGE_SIZE, max_events)
+
+    demisto.debug(f"[Pagination Loop] Start. Goal: {max_events}. Time: {created_after} -> {created_before or 'Now'}")
+
+    while len(events) < max_events:
+        page_events, page_count = client.get_alerts(
+            created_after=created_after,
+            created_before=created_before,
+            offset=offset,
+            limit=page_size,
+        )
+
+        if not page_events:
+            demisto.debug(f"[Pagination Loop] Offset {offset}: Empty page. Stopping.")
+            break
+
+        events.extend(page_events)
+        demisto.debug(f"[Pagination Loop] Offset {offset}: +{len(page_events)} events. Total: {len(events)}")
+
+        # If we got fewer results than the page size, there are no more pages
+        if page_count < page_size:
+            demisto.debug("[Pagination Loop] Last page reached (partial page). Stopping.")
+            break
+
+        offset += page_size
+
+        if len(events) >= max_events:
+            demisto.debug(f"[Pagination Loop] Threshold reached ({len(events)} >= {max_events}). Stopping.")
+            break
+
+    if not events:
+        demisto.debug("[Pagination Result] No events found.")
+        return []
+
+    # Sort events by alertTime (Oldest -> Newest)
+    demisto.debug(f"[Pagination Process] Sorting {len(events)} events by alertTime...")
+    events.sort(key=lambda x: x.get("alertTime", ""))
+
+    # Slice to limit
+    if len(events) > max_events:
+        demisto.debug(f"[Pagination Loop] Slicing {len(events)} events to limit {max_events}")
+        events = events[:max_events]
+
+    return events
+
+
+def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults | str:
+    """Manual command to get events (for debugging/development).
+
+    Args:
+        client: Configured Uptycs API client.
+        args: Command arguments from demisto.args().
+
+    Returns:
+        CommandResults with events data, or a string message if events were pushed.
+    """
+    demisto.debug("[Command] uptycs-get-events triggered")
+
+    start_time_input = args.get("start_time", Config.DEFAULT_FROM_TIME)
+    end_time_input = args.get("end_time")
+    limit = int(args.get("limit", Config.DEFAULT_LIMIT))
+    should_push_events = argToBoolean(args.get("should_push_events", False))
+
+    created_after = get_formatted_utc_time(start_time_input)
+    created_before = get_formatted_utc_time(end_time_input) if end_time_input else None
+
+    demisto.debug(f"[Command Params] From: {created_after}, To: {created_before}, Limit: {limit}, Push: {should_push_events}")
+
+    events = fetch_events_with_pagination(client, created_after, created_before, limit)
+
+    if should_push_events and events:
+        add_time_to_events(events)
+        send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
+        demisto.debug(f"[Command] Pushed {len(events)} events to XSIAM")
+        return f"Successfully retrieved and pushed {len(events)} events to XSIAM"
+
+    readable_output = tableToMarkdown(f"{INTEGRATION_NAME} Events", events, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Uptycs.Alert",
+        outputs_key_field="id",
+        outputs=events,
+    )
+
+
+def fetch_events_command(client: Client) -> None:
+    """Scheduled command to fetch events (called by XSIAM fetch-events mechanism).
+
+    Manages state via demisto.getLastRun()/setLastRun() for incremental fetching
+    with deduplication based on id.
+
+    Args:
+        client: Configured Uptycs API client.
+    """
+    params = demisto.params()
+    max_events_to_fetch = int(params.get("max_fetch", Config.DEFAULT_LIMIT))
+
+    last_run = demisto.getLastRun()
+    last_fetch_timestamp = last_run.get("last_fetch")
+    raw_ids = last_run.get("last_fetched_ids")
+    last_fetched_ids: list[str] = raw_ids if isinstance(raw_ids, list) else []
+
+    if last_fetch_timestamp:
+        time_input = last_fetch_timestamp
+        demisto.debug(
+            f"[Fetch] Continuing from Last Run. Fetching from: {time_input}. Prev ID count: {len(last_fetched_ids)}"
+        )
+    else:
+        time_input = Config.DEFAULT_FROM_TIME
+        demisto.debug("[Fetch] First Run - starting from default time")
+
+    created_after = get_formatted_utc_time(time_input)
+
+    # Fetch events
+    events = fetch_events_with_pagination(client, created_after, None, max_events_to_fetch)
+
+    if not events:
+        demisto.debug("[Fetch] No events found.")
+        return
+
+    # Deduplicate
+    new_events = deduplicate_events(events, last_fetched_ids)
+
+    if new_events:
+        add_time_to_events(new_events)
+        send_events_to_xsiam(events=new_events, vendor=Config.VENDOR, product=Config.PRODUCT)
+        demisto.debug(f"[Fetch] Pushed {len(new_events)} events to XSIAM")
+
+        # Update Last Run state
+        last_event = events[-1]
+        new_last_run_time = last_event.get("alertTime")
+
+        if new_last_run_time:
+            # Collect IDs at the high-water mark timestamp for deduplication
+            ids_at_last_timestamp = [
+                event.get("id") for event in events if event.get("alertTime") == new_last_run_time and event.get("id")
+            ]
+
+            demisto.setLastRun({"last_fetch": new_last_run_time, "last_fetched_ids": ids_at_last_timestamp})
+            demisto.debug(f"[Fetch] State updated. New HWM: {new_last_run_time}")
+        else:
+            demisto.debug("[Fetch] Warning: Last event missing alertTime. State not updated.")
+    else:
+        demisto.debug("[Fetch] All events were duplicates.")
+
+
+# endregion
+
+# region Main router
+# =================================
+# Main router
+# =================================
+
+
+def main() -> None:
+    """Main entry point for Uptycs Event Collector integration."""
+    demisto.debug(f"{INTEGRATION_NAME} integration started")
+    command = demisto.command()
+
+    try:
+        config = parse_integration_params(demisto.params())
+
+        client = Client(
+            base_url=config["base_url"],
+            api_key=config["api_key"],
+            api_secret=config["api_secret"],
+            customer_id=config["customer_id"],
+            verify=config["verify"],
+            proxy=config["proxy"],
+            role_id=config["role_id"],
+            security_zone_id=config["security_zone_id"],
+        )
+
+        if command == "test-module":
+            result = test_module(client)
+            return_results(result)
+        elif command == "fetch-events":
+            fetch_events_command(client)
+        elif command == "uptycs-get-events":
+            result = get_events_command(client, demisto.args())
+            return_results(result)
+        else:
+            raise DemistoException(f"Command '{command}' is not implemented")
+
+    except Exception as error:
+        error_msg = f"Failed to execute {command}. Error: {str(error)}"
+        demisto.error(f"{error_msg}\n{traceback.format_exc()}")
+        return_error(error_msg)
+
+    demisto.debug(f"{INTEGRATION_NAME} integration finished")
+
+
+if __name__ in ("__main__", "__builtin__", "builtins"):
+    main()
