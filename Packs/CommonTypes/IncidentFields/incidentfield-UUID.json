@@ -3,7 +3,9 @@
   "associatedTypes": [
     "FireEye NX IPS Event",
     "FireEye NX Alert",
-    "FireEye EX Alert"
+    "FireEye EX Alert",
+    "Trellix Incident",
+    "CrowdStrike Falcon NGSIEM Case"
   ],
   "breachScript": "",
   "caseInsensitive": true,

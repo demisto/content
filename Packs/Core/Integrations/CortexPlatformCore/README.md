@@ -394,7 +394,8 @@ Get case information based on the specified filters.
 | page | Page number (for pagination). The default is 0 (the first page). Default is 0. | Optional |
 | limit | Maximum number of cases to return per page. The default and maximum value is 60. Default is 60. | Optional |
 | case_domain | A comma-separated list of domains to filter cases by. | Optional |
-| status | A comma-separated list of case statuses to filter cases by. Possible values are: new, under_investigation, resolved. | Optional |
+| status | A comma-separated list of case statuses to filter cases by. Possible values are: new, in_progress, resolved. | Optional |
+| not_status | A comma-separated list of case statuses to exclude. Possible values are: new, in_progress, resolved. | Optional |
 | severity | A comma-separated list of severity levels to filter cases by. Possible values are: low, medium, high, critical. | Optional |
 | asset_ids | A comma-separated list of Asset IDs associated with the case by which to filter the cases. | Optional |
 | asset_groups | A comma-separated list of Asset Group IDs, where the case is filtered by the assets contained within those groups. | Optional |
@@ -454,6 +455,63 @@ Get case information based on the specified filters.
 | Core.Case.CaseExtraData.detection_time | Date | The timestamp when the first issue was detected in the case. |
 | Core.CasesMetadata.returned_count | String | The actual number of cases that match all filter criteria and returned in this specific response. |
 | Core.CasesMetadata.filtered_count | String | The total number of cases in the system that match all filter criteria. |
+
+### core-update-case
+
+***
+Updates the properties of a case.
+
+#### Base Command
+
+`core-update-case`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | A comma-separated list of case IDs to update. | Required |
+| case_name | The new name for the case. | Optional |
+| description | The new description for the case. | Optional |
+| assignee | The email address of the new assignee. Use "unassigned" to remove an existing assignee. | Optional |
+| status | The new status for the case. Possible values are: new, in_progress, resolved. | Optional |
+| notes | Additional notes for the case. | Optional |
+| starred | Whether the case should be starred. Possible values are: true, false. | Optional |
+| user_defined_severity | The user-defined severity for the case. Possible values are: low, medium, high, critical. | Optional |
+| resolve_reason | The reason for resolving the case. Only relevant when status is set to resolved. Possible values are: known_issue, duplicate, false_positive, true_positive, security_testing, other. | Optional |
+| resolved_comment | Comment when resolving the case. Only relevant when status is set to resolved. | Optional |
+| resolve_all_alerts | Whether to resolve all alerts associated with the case. Only relevant when status is set to resolved. Possible values are: true, false. | Optional |
+| custom_fields | A JSON encoded string representing a list of custom_field:value pairs to update. (e.g., `[{"field1": "value1"}, {"field2": "value2"}]`). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.Case.modifiedBy | String | User who last modified the case. |
+| Core.Case.notes | String | Notes associated with the case. |
+| Core.Case.userSeverity | String | User-defined severity for the case. |
+| Core.Case.name.isUser | Boolean | Whether the case name is user-defined. |
+| Core.Case.name.value | String | The name of the case. |
+| Core.Case.creationTime | Number | The creation time of the case in milliseconds. |
+| Core.Case.lastUpdateTime | Number | The last update time of the case in milliseconds. |
+| Core.Case.topCounters.HOSTS | Number | Number of hosts in the case. |
+| Core.Case.topCounters.MAL_ARTIFACTS | Number | Number of malicious artifacts in the case. |
+| Core.Case.topCounters.USERS | Number | Number of users in the case. |
+| Core.Case.assigned.mail | String | Email address of the assigned user. |
+| Core.Case.assigned.pretty | String | Display name of the assigned user. |
+| Core.Case.internalStatus | String | Internal status of the case. |
+| Core.Case.status.resolveComment | String | Comment when resolving the case. |
+| Core.Case.status.resolve_reason | String | Reason for resolving the case. |
+| Core.Case.status.value | String | Status value of the case. |
+| Core.Case.severityCounters.SEV_020_LOW | Number | Number of low severity alerts in the case. |
+| Core.Case.severityCounters.SEV_030_MEDIUM | Number | Number of medium severity alerts in the case. |
+| Core.Case.severityCounters.SEV_040_HIGH | Number | Number of high severity alerts in the case. |
+| Core.Case.severityCounters.SEV_050_CRITICAL | Number | Number of critical severity alerts in the case. |
+| Core.Case.caseDomain | String | Domain of the case. |
+| Core.Case.groupingStatus.pretty | String | Pretty display of grouping status. |
+| Core.Case.groupingStatus.raw | String | Raw grouping status value. |
+| Core.Case.groupingStatus.reason | String | Reason for the grouping status. |
+| Core.Case.tags.tag_id | String | Tag ID associated with the case. |
+| Core.Case.tags.tag_name | String | Tag name associated with the case. |
 
 ### core-search-asset-groups
 

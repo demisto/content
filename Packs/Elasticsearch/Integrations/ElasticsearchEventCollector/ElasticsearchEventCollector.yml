@@ -1,0 +1,188 @@
+category: Database
+provider: Elastic
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: ElasticsearchEventCollector
+  version: -1
+configuration:
+- name: url
+  display: Server URL
+  required: true
+  type: 0
+  additionalinfo: The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. The default port for Elasticsearch v7 and below is 9200. Use the Server URL for on-premises deployments.
+  section: Connect
+- name: auth_type
+  display: Authorization type
+  defaultvalue: Basic auth
+  additionalinfo: |-
+    Select the authentication type and enter the appropriate credentials:
+    - Basic Auth: Enter Username and Password.
+    - Bearer Auth: Enter Username and Password.
+    - API Key Auth: Enter the API Key ID and API Key.
+  options:
+  - Basic auth
+  - Bearer auth
+  - API key auth
+  type: 15
+  section: Connect
+  required: true
+- name: api_key_auth_credentials
+  additionalinfo: Use for API key auth
+  display: API key ID
+  displaypassword: API Key
+  type: 9
+  section: Connect
+  required: false
+- name: credentials
+  additionalinfo: Use for Basic auth. Optionally you can use Username as an API key ID and Password as an API key for API Key auth.
+  display: Username
+  type: 9
+  section: Connect
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- name: client_type
+  defaultvalue: Elasticsearch
+  additionalinfo: In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type.
+  display: Client type
+  options:
+  - Elasticsearch
+  - OpenSearch
+  - Elasticsearch_v8
+  - Elasticsearch_v9
+  type: 15
+  section: Connect
+  advanced: true
+  required: false
+- name: fetch_index
+  display: Index to fetch incidents from
+  type: 0
+  section: Collect
+  required: false
+  additionalinfo: CSV
+- name: fetch_query
+  display: Query String
+  type: 0
+  additionalinfo: |-
+    Query string uses the Lucene syntax.
+    For more information about the Lucene syntax, see the link in the help section.
+    The query will be used when fetching incidents. Index time field will be used as a filter in the query.
+  section: Collect
+  required: false
+- name: fetch_time_field
+  display: Index time field
+  type: 0
+  section: Collect
+  required: false
+  additionalinfo: The time field used for sorting and limiting results. If using a nested field, separate field names with dot notation.
+- name: raw_query
+  display: Raw Query
+  type: 12
+  additionalinfo: |-
+    Raw Query allows raw DSL queries and will override the 'Query String' Lucene syntax string.
+    Results will not be filtered or sorted. Use additional parameters in the raw query for these purposes.
+    For more information see the link in the help section.
+  section: Collect
+  advanced: true
+  required: false
+- name: time_method
+  display: Time field type
+  defaultvalue: 'Simple-Date'
+  type: 15
+  options:
+  - Simple-Date
+  - Timestamp-Seconds
+  - Timestamp-Milliseconds
+  section: Collect
+  advanced: true
+  required: false
+  additionalinfo: For more information see the explanation in the help section.
+- name: map_labels
+  defaultvalue: 'true'
+  display: Map JSON fields into labels
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+- name: fetch_size
+  defaultvalue: '5000'
+  display: The maximum number of results per fetch
+  type: 0
+  section: Collect
+  required: false
+- name: timeout
+  display: Request timeout (in seconds).
+  type: 0
+  defaultvalue: '60'
+  section: Connect
+  advanced: true
+  required: false
+- name: isFetchEvents
+  display: Fetch events
+  type: 8
+  section: Collect
+  required: false
+description: "Search for and analyze data in real time. \n Supports version 6 and later."
+display: Elasticsearch Event Collector
+name: ElasticsearchEventCollector
+script:
+  commands:
+  - arguments:
+    - name: start_time
+      description: Start time for fetching events. Supports ISO format ("2023-01-01T23:59:59") or natural language ("2 hours ago", "now").
+      required: true
+    - name: end_time
+      description: End time for fetching events. Supports ISO format ("2023-01-01T23:59:59") or natural language ("2 hours ago", "now").
+      required: false
+    - name: time_method 
+      auto: PREDEFINED
+      defaultValue: 'Simple-Date'
+      predefined:
+      - Simple-Date
+      - Timestamp-Seconds
+      - Timestamp-Milliseconds
+      required: true
+      description: For more information see the explanation in the help section.
+    - name: fetch_size
+      defaultValue: '10'
+      description: The maximum number of results per fetch.
+      required: false
+    - name: fetch_index
+      required: false
+      description: CSV.
+    - name: fetch_time_field      
+      required: true
+      description: The time field used for sorting and limiting results. If using a nested field, separate field names with dot notation.
+    - name: fetch_query
+      description: Query string uses the Lucene syntax.
+      required: false
+    - name: raw_query
+      type: 12
+      description: Raw Query allows raw DSL queries and will override the 'Query String' Lucene syntax string.
+      required: false
+    description: This command is used for developing/ debugging and is to be used with caution, as it can cause the API request limit to be exceeded.
+    name: es-get-events
+  dockerimage: demisto/elasticsearch:1.0.0.5954979
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+- platform
+fromversion: 8.4.0
+tests:
+- No tests (auto formatted)

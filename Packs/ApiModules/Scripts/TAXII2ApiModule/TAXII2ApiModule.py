@@ -90,6 +90,7 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {  # pragma: no cover
     "location": FeedIndicatorType.Location,
     "vulnerability": FeedIndicatorType.CVE,
     "x509-certificate": FeedIndicatorType.X509,
+    "software": FeedIndicatorType.Software,
 }
 STIX_SUPPORTED_TYPES = {
     "url": ("value",),
@@ -1924,6 +1925,15 @@ class STIX2XSOARParser(BaseClient):
         """
         return self.parse_general_sco_indicator(sco_object=mutex_obj, value_mapping="name")
 
+    def parse_sco_software_indicator(self, software_obj: dict[str, Any]) -> list[dict[str, Any]]:
+        """
+        Parses software indicator type to cortex format.
+
+        Args:
+            software_obj (dict): indicator as an observable object of software type.
+        """
+        return self.parse_general_sco_indicator(sco_object=software_obj, value_mapping="name")
+
     def parse_sco_account_indicator(self, account_obj: dict[str, Any]) -> list[dict[str, Any]]:
         """
         Parses account indicator type to cortex format.
@@ -2467,6 +2477,7 @@ class STIX2XSOARParser(BaseClient):
             "autonomous-system": self.parse_sco_autonomous_system_indicator,
             "file": self.parse_sco_file_indicator,
             "mutex": self.parse_sco_mutex_indicator,
+            "software": self.parse_sco_software_indicator,
             "user-account": self.parse_sco_account_indicator,
             "windows-registry-key": self.parse_sco_windows_registry_key_indicator,
             "identity": self.parse_identity,

@@ -76,7 +76,7 @@
                             "key": "xql",
                             "data": {
                                 "type": "Custom XQL",
-                                "title": "Command execution errors",
+                                "title": "Command execution errors breakdown",
                                 "width": 33.406232914160746,
                                 "height": 511,
                                 "phrase": "dataset = scripts_and_commands_metrics \n| filter is_error = true\n| filter name != null and name != \"\"\n| comp count() as error_count by name\n| sort desc error_count\n| view graph type = pie xaxis = name yaxis = error_count ",
@@ -116,27 +116,34 @@
                                 "title": "Command execution errors",
                                 "width": 25,
                                 "height": 511,
-                                "phrase": "dataset = scripts_and_commands_metrics \n| filter is_error = true\n| filter type = \"integration\"\n| comp count() as error_count\n| view graph type = single subtype = standard yaxis = error_count ",
+                                "phrase": "dataset = scripts_and_commands_metrics \n| filter is_error = true\n| bin _time span = 1d\n| comp count() as error_count by _time\n| view graph type = single subtype = trend xaxis = _time yaxis = error_count ",
                                 "time_frame": {
                                     "relativeTime": 604800000
                                 },
                                 "viewOptions": {
                                     "type": "single",
                                     "commands": [
-                                        {
-                                            "command": {
-                                                "op": "=",
-                                                "name": "subtype",
-                                                "value": "standard"
-                                            }
-                                        },
-                                        {
-                                            "command": {
-                                                "op": "=",
-                                                "name": "yaxis",
-                                                "value": "error_count"
-                                            }
+                                    {
+                                        "command": {
+                                        "op": "=",
+                                        "name": "subtype",
+                                        "value": "trend"
                                         }
+                                    },
+                                    {
+                                        "command": {
+                                        "op": "=",
+                                        "name": "xaxis",
+                                        "value": "_time"
+                                        }
+                                    },
+                                    {
+                                        "command": {
+                                        "op": "=",
+                                        "name": "yaxis",
+                                        "value": "error_count"
+                                        }
+                                    }
                                     ]
                                 }
                             }

@@ -89,6 +89,7 @@ PREDEFINED_FEEDS = {
 }
 
 THREAT_LEVELS_TO_ID = {"High": 1, "Medium": 2, "Low": 3, "Unknown": 4}
+BAD_THREAT_LEVEL_IDS = ["1", "2", "3"]
 
 MISP_ENTITIES_TO_CONTEXT_DATA = {
     "deleted": "Deleted",
@@ -487,8 +488,7 @@ def convert_timestamp_to_readable(attribute, event):
 
 
 def found_event_with_bad_threat_level_id(found_related_events):
-    bad_threat_level_ids = ["1", "2", "3"]
-    return any(event["Threat Level ID"] in bad_threat_level_ids for event in found_related_events.values())
+    return any(str(event["Threat Level ID"]) in BAD_THREAT_LEVEL_IDS for event in found_related_events.values())
 
 
 def get_score(
@@ -682,7 +682,7 @@ def add_attribute(
     attributes_args.update({"sharing_group_id": sharing_group_id}) if sharing_group_id else None
 
     if not new_event:
-        response = PYMISP.search(eventid=event_id, pythonify=True)
+        response = PYMISP.search(eventid=event_id, pythonify=True, metadata=True)
         if not response:
             raise DemistoException(
                 f"Error: An event with the given id: {event_id} was not found in MISP. please check it once again"

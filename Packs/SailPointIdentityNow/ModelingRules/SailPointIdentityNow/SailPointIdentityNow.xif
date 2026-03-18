@@ -20,7 +20,7 @@ alter
     xdm.event.type = type,
     xdm.target.resource.name = if(stack = "", null, stack),
     xdm.target.resource.type = "Stack",
-    xdm.target.ipv4 = if(incidr(ipAddress, "0.0.0.0/0"), ipAddress),
+    xdm.target.ipv4 = if(is_ipv4(ipAddress), if(incidr(ipAddress, "0.0.0.0/0"), ipAddress, null), null),
     xdm.target.ipv6  = arrayindex(regextract(ipAddress, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"), 0),
     xdm.source.user.username = if(
         set_src_email != null, arrayindex(regextract(set_src_email, "(\S+)\@"),0),
