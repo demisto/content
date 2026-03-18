@@ -7829,7 +7829,7 @@ class Lambda:
         )
 
     @staticmethod
-    def update_function_configuration_command(client: BotoClient, args: Dict[str, Any]):
+    def update_function_configuration_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Updates the configuration of a Lambda function.
 
