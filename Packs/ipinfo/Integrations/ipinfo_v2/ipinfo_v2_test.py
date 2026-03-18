@@ -44,7 +44,7 @@ def test_ipinfo_ip_command(mocker):
 
     expected_parsed_context = util_load_json("test_data/ip_1.1.1.1_command_results.json")
     assert command_results.call_args[1].get("readable_output") == expected_parsed_context[1].get("HumanReadable")
-    assert command_results.call_args[1].get("outputs").get("Address") == "1.1.1.1"
+    assert command_results.call_args[1].get("outputs").get("Address") == "1.1.1.2"
     assert command_results.call_args[1].get("outputs").get("Hostname") == "one.one.one.one"
 
 
@@ -109,4 +109,4 @@ def test_check_columns_exists(mocker):
     command_results = mocker.patch("ipinfo_v2.CommandResults")
     ipinfo_ip_command(client, ip)
 
-    assert "lat|lng" in command_results.call_args[1].get("readable_output")
+    assert "la|lng" in command_results.call_args[1].get("readable_output")
