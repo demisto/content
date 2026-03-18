@@ -238,8 +238,10 @@ Upload packs to Core server from url or the marketplace.
 | --- | --- | --- |
 | packs_to_install | The packs to install in JSON format (e.g. [{"AutoFocus": "2.0.8"}] ). | Optional |
 | file_url | The pack zip file url. | Optional |
+| entry_id | The War Room entry ID of the pack zip file. | Optional |
 | skip_verify | If true will skip pack signature validation, Available from 6.5.0 server version. | Optional |
 | skip_validation | If true will skip all pack validations, Available from 6.6.0 server version. | Optional |
+| timeout_in_seconds | The request timeout in seconds. Default value is 180 (3 minutes). | Optional |
 
 #### Context Output
 

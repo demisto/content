@@ -63,6 +63,9 @@ NUM_OF_WORKERS = 20
 HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
 JSON_SEPARATORS = (",", ":")  # To get the most compact JSON representation, we should specify (',', ':') to eliminate whitespace.
 DEFAULT_INSIGHT_CACHE_SIZE = 3072
+FETCH_COMMANDS = ('fetch-incidents', 'fetch-credentials', 'fetch-indicators', 'fetch-assets')
+LONG_RUNNING_COMMAND = 'long-running-execution'
+                                                
 
 def register_module_line(module_name, start_end, line, wrapper=0):
     global _MODULES_LINE_MAPPING
@@ -8025,10 +8028,7 @@ def return_error(message, error='', outputs=None):
     """
     is_command = hasattr(demisto, 'command')
     try:
-        is_server_handled = is_command and demisto.command() in ('fetch-incidents',
-                                                                 'fetch-credentials',
-                                                                 'long-running-execution',
-                                                                 'fetch-indicators')
+        is_server_handled = is_command and (demisto.command() in FETCH_COMMANDS or demisto.command() == LONG_RUNNING_COMMAND)
     except Exception:
         is_server_handled = False
     message = LOG(message)
@@ -9140,7 +9140,7 @@ def is_xsoar():
     :return: True iff the platform is XSOAR.
     :rtype: ``bool``
     """
-    return "xsoar" in demisto.demistoVersion().get("platform")
+    return "xsoar" in demisto.demistoVersion().get("platform", "")
 
 
 def is_xsoar_on_prem():
@@ -10516,7 +10516,9 @@ def get_integration_context(sync=True, with_version=False):
         if with_version:
             return integration_context
         else:
-            return integration_context.get('context', {})
+            if isinstance(integration_context, list):
+                demisto.error("The integration context is a list with {} items".format(len(integration_context)))
+            return integration_context.get("context", {})
     else:
         return demisto.getIntegrationContext()
 
@@ -11790,6 +11792,10 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
                 *arguments: any additional arguments to the command function.
                 **kwargs: additional keyword arguments to the command function.
             """
+            if not isinstance(args, dict):
+                demisto.debug("Detected args of type {args_type}. Casting to dict.".format(args_type=type(args)))
+                args = dict(args or {})
+
             if not requires_polling_arg or argToBoolean(args.get(polling_arg_name, False)):
                 ScheduledCommand.raise_error_if_not_supported()
                 poll_result = func(args, *arguments, **kwargs)
@@ -12547,7 +12553,7 @@ def split_data_to_chunks(data, target_chunk_size):
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                          chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
-                         add_proxy_to_request=False, multiple_threads=False):
+                         add_proxy_to_request=False, multiple_threads=False, client_class=None):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -12584,6 +12590,9 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type multiple_threads: ``bool``
     :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
 
+    :type client_class: ``BaseClient``
+    :param client_class: The client class to use for the request.
+
     :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
     In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
     for future in concurrent.futures.as_completed(futures):
@@ -12601,7 +12610,8 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         data_type="events",
         should_update_health_module=should_update_health_module,
         add_proxy_to_request=add_proxy_to_request,
-        multiple_threads=multiple_threads
+        multiple_threads=multiple_threads,
+        client_class=client_class if client_class else BaseClient
     )
 
 
@@ -12714,7 +12724,8 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                        chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
-                       add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False):
+                       add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False,
+                       client_class=None):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -12761,6 +12772,9 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :type multiple_threads: ``bool``
     :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
     Note that when set to True, the updateModuleHealth should be done from the itnegration itself.
+
+    :type client_class: ``BaseClient``
+    :param client_class: The client class to use for the request.
 
     :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
     In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
@@ -12854,8 +12868,9 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)
-
-    client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
+    if client_class is None:
+        client_class = BaseClient
+    client = client_class(base_url=xsiam_url, proxy=add_proxy_to_request)
     data_chunks = split_data_to_chunks(data, chunk_size)
 
     def send_events(data_chunk):

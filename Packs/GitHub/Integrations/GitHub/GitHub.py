@@ -1593,8 +1593,16 @@ def list_files_command():
 
     res = http_request(method="GET", url_suffix=suffix, params=params)
 
+    # We may get either a list of dicts or a single dict as a result from the API call above
+    # Modify object type to allow iteration below to work.
+    if isinstance(res, dict):
+        results = []
+        results.append(res)
+    else:
+        results = res
+
     ec_object = []
-    for file in res:
+    for file in results:
         ec_object.append(
             {
                 "Type": file.get("type"),

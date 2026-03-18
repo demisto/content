@@ -23,6 +23,7 @@ from utils import (
     get_support_level,
     get_content_roles,
     get_metadata,
+    post_ai_review_introduction,
 )
 from demisto_sdk.commands.common.tools import get_pack_name
 from urllib3.exceptions import InsecureRequestWarning
@@ -626,6 +627,8 @@ def main():
         )
     if XSOAR_SUPPORT_LEVEL_LABEL or COMMUNITY_SUPPORT_LEVEL_LABEL in labels_to_add and ver != "1.0.0":
         pr.create_issue_comment(contributors_body)
+
+    post_ai_review_introduction(pr, reviewers, t)
 
 
 if __name__ == "__main__":

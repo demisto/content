@@ -2,7 +2,8 @@
 // supported channels/providers 
 filter channel in ("System", "Application","Directory Service") or provider_name in("Microsoft-Windows-PowerShell", "Microsoft-Windows-TaskScheduler", "Microsoft-Windows-Windows Firewall With Advanced Security", "Microsoft-Windows-Windows Defender","Microsoft-Windows-ActiveDirectory_DomainService") or provider_name contains "Microsoft-Windows-Security-"
 | alter event_id_num = to_integer(event_id), // used for filtering by event id ranges
-        event_id_string = to_string(event_id)
+        event_id_string = to_string(event_id),
+        task_str = to_string(task)
 | alter // Extract fields 
         action = arrayindex(regextract(message, "Action:\s*(\S+)"), 0), 
         action_status = arrayindex(regextract(message, "Action Status:\s*(.+?)\s+(?:\w+\s+)?\w+:"), 0),
@@ -62,7 +63,8 @@ filter channel in ("System", "Application","Directory Service") or provider_name
         user_domain = coalesce(user -> domain, event_data -> Domain, if(event_data -> SubjectDomainName in ("-", " - "), null, event_data -> SubjectDomainName), if(user_data -> SubjectDomainName in ("-", " - "), null, user_data -> SubjectDomainName)),
         user_name = coalesce(user -> name, event_data -> User, event_data -> SubjectUserName, user_data -> SubjectUserName, arrayindex(regextract(message, "User:\s*(?:[^\\]+\\)*(\S+)"), 0), arrayindex(regextract(message, "User \"([^\"]+)\""), 0), if(channel="Application" and event_data -> param3 contains "*\\*", event_data -> param3),event_data -> ["Detection User"],event_data -> ["Requester"]), 
         user_sid = coalesce(event_data -> SID, event_data -> SubjectUserSid, user -> identifier, user -> SubjectUserSid, event_data -> UserSid, if(provider_name = "Microsoft-Windows-Windows Firewall With Advanced Security", arrayindex(regextract(message, "Modifying\s*User\:\s+(.*)\b\s+Modifying\s+Application:"), 0))),
-        user_type = user -> type
+        user_type = user -> type,
+        check_task_string = if(task_str ~= "\d+", null, task_str)
 | alter // post-extraction processing & validations
         check_rule_name1 = if(rule_name1 ~= "\S", rule_name1, null),
     	check_rule_name2 = if(rule_name2 ~= "\S", rule_name2, null),
@@ -91,7 +93,7 @@ filter channel in ("System", "Application","Directory Service") or provider_name
         xdm.event.log_level = if(LogLevel="information", XDM_CONST.LOG_LEVEL_INFORMATIONAL, LogLevel="error", XDM_CONST.LOG_LEVEL_ERROR, LogLevel="warning", XDM_CONST.LOG_LEVEL_WARNING, LogLevel="critical", XDM_CONST.LOG_LEVEL_CRITICAL, to_string(coalesce(to_string(opcode), log_level))),
         xdm.event.operation_sub_type = coalesce(check_message_action, detection_type, arrayindex(regextract(message, "(^.*?)\."), 0), if(channel="System", event_data_param2)),
         xdm.event.original_event_type = event_type,
-        xdm.event.outcome_reason = coalesce(if(channel="Application" and task="TM", event_data_param2), action_status, error_message, Failure_Reason),
+        xdm.event.outcome_reason = coalesce(if(channel="Application" and check_task_string = "TM", event_data_param2), action_status, error_message, Failure_Reason),
         xdm.event.outcome = if(event_result = "success", XDM_CONST.OUTCOME_SUCCESS, event_result="failure", XDM_CONST.OUTCOME_FAILED, coalesce(event_result, action, error_code, failure_code)),
         xdm.event.type = channel,
         xdm.event.tags = arraycreate(execution_name),
@@ -109,7 +111,7 @@ filter channel in ("System", "Application","Directory Service") or provider_name
         xdm.source.application.version = product_version,
         xdm.target.user.ou = if(event_id_string in ("4728","4729"), arrayindex(regextract(message, "Member:\n*.*?\n*\s*Account\s+Name:\s*(.*)"), 0)),
         xdm.source.host.fqdn = coalesce(event_data -> FQDN, event_data -> WorkstationName),
-        xdm.source.host.hostname = coalesce(host_name, computer_name, if(user_name contains "*$", user_name), if(channel="System", event_data -> HostName), if(channel="Application" and task="Devices", event_data_param1)),
+        xdm.source.host.hostname = coalesce(host_name, computer_name, if(user_name contains "*$", user_name), if(channel="System", event_data -> HostName), if(channel="Application" and check_task_string = "Devices", event_data_param1)),
         xdm.source.host.os = os_subtype,
         xdm.source.host.os_family = XDM_CONST.OS_FAMILY_WINDOWS,
         xdm.source.ipv4 = if(IpAddress ~= "(?:\d{1,3}\.){3}\d{1,3}", arrayindex(regextract(IpAddress, "((?:\d{1,3}\.){3}\d{1,3})"), 0)),

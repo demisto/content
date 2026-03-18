@@ -17,7 +17,7 @@ urllib3.disable_warnings()  # noqa # pylint: disable=no-member
 SOCRADAR_API_ENDPOINT = "https://platform.socradar.com/api"
 SOCRADAR_SEVERITIES = ["Unknown", "Info", "Low", "Medium", "High"]
 EXCLUDED_INCIDENT_FIELDS = ("extra_info", "alarm_notification_texts")
-MAX_INCIDENTS_TO_FETCH = 50
+MAX_INCIDENTS_TO_FETCH = 500
 
 MESSAGES: dict[str, str] = {
     "BAD_REQUEST_ERROR": "An error occurred while fetching the data.",

@@ -30,8 +30,8 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | File | File object of the file to analyze. The File is taken from the context. | File | Optional |
-| Interval | Duration for executing the pooling \(in minutes\) | 1 | Optional |
-| Timeout | The duration after which to stop pooling and to resume the playbook \(in minutes\) | 15 | Optional |
+| Interval | Frequency \(in minutes\) between polling attempts. | 1 | Optional |
+| Timeout | Maximum polling duration \(in minutes\) before the playbook resumes. | 15 | Optional |
 
 ## Playbook Outputs
 

@@ -4,8 +4,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
 import dateparser
-from enum import Enum
 import copy
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -18,11 +18,19 @@ SEARCH_ASSETS_DEFAULT_LIMIT = 100
 MAX_GET_CASES_LIMIT = 100
 MAX_SCRIPTS_LIMIT = 100
 MAX_GET_ENDPOINTS_LIMIT = 100
+MAX_COMPLIANCE_STANDARDS = 100
 AGENTS_TABLE = "AGENTS_TABLE"
+BROKER_CLUSTER_TABLE = "BROKER_CLUSTER_TABLE"
+AGENT_POLICY_TABLE = "AGENT_POLICY_TABLE"
+AGENT_PROFILES_TABLE = "AGENT_PROFILES_TABLE"
 SECONDS_IN_DAY = 86400  # Number of seconds in one day
 MIN_DIFF_SECONDS = 2 * 3600  # Minimum allowed difference = 2 hours
 MAX_GET_SYSTEM_USERS_LIMIT = 50
 MAX_GET_EXCEPTION_RULES_LIMIT = 100
+MALWARE_TYPE = "Malware"
+EXPLOIT_TYPE = "Exploit"
+WINDOWS_PLATFORM = "Windows"
+
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -48,6 +56,7 @@ APPSEC_SOURCES = [
     "CAS_CI_CD_RISK_SCANNER",
     "CAS_DRIFT_SCANNER",
 ]
+REMEDIATION_TECHNIQUES_SOURCES = ["CIEM_SCANNER", "DATA_POLICY", "AISPM_RULE_ENGINE"]
 WEBAPP_COMMANDS = [
     "core-get-vulnerabilities",
     "core-search-asset-groups",
@@ -63,14 +72,21 @@ WEBAPP_COMMANDS = [
     "core-run-script-agentix",
     "core-list-endpoints",
     "core-list-exception-rules",
-    "core-update-case",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
+    "core-get-ai-model-activity",
+    "core-update-windows-malware-profile",
+    "core-update-windows-exploit-profile",
+    "core-delete-profile",
+    "core-list-findings",
+    "core-list-brokers",
+    "core-create-endpoint-policy",
+    "core-delete-endpoint-policy",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
-ENDPOINT_COMMANDS = ["core-get-endpoint-support-file"]
-XSOAR_COMMANDS = ["core-run-playbook"]
+ENDPOINT_COMMANDS = ["core-get-endpoint-support-file", "core-send-endpoint-heartbeat"]
+XSOAR_COMMANDS = ["core-run-playbook", "core-get-case-resolution-statuses"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
@@ -78,6 +94,83 @@ ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 CASES_TABLE = "CASE_MANAGER_TABLE"
 SCRIPTS_TABLE = "SCRIPTS_TABLE"
+AI_MODEL_ACTIVITY_TABLE = "AISPM_MODEL_ACTIVITY"
+FINDINGS_TABLE = "FINDINGS"
+
+
+class Profile:
+    FIELDS = {
+        "examinePortableExecutables": "portable_executables_and_dll_examination",
+        "examineOfficeFiles": "office_files_with_macros_examination",
+        "examineJScriptFiles": "jscript_file_examination",
+        "aspFiles": "asp_aspx_files",
+        "powerShellScriptFiles": "powershell_script_files",
+        "scanEndpoints": "on_demand_file_examination",
+        "endUserInitiatedLocalScan": "end_user_initiated_local_scan",
+        "examineVBScriptFiles": "vb_scripts_examination",
+        "dynamicSecurityEngine": "global_behavioral_threat_protection_rules",
+        "passwordStealing": "credential_gathering_protection",
+        "webshellDroppers": "anti_webshell_protection",
+        "financialMalwareThreat": "financial_malware_threat_protection",
+        "cryptominers": "cryptominers_protection",
+        "inProcessShellcode": "in_process_shellcode_protection",
+        "maliciousDevice": "malicious_device_prevention",
+        "uacBypass": "uac_bypass_prevention",
+        "antiTampering": "anti_tampering_protection",
+        "iisProtection": "iis_protection",
+        "uefiProtection": "uefi_protection",
+        "ransomware": "ransomware_protection",
+        "legitimateProcesses": "malicious_child_process_protection",
+        "passwordTheftProtection": "password_theft_protection",
+        "maliciousCausalityChainsResponse": "respond_to_malicious_causality_chains",
+        "networkSignature": "network_packet_inspection_engine",
+        "dynamicKernelProtection": "dynamic_kernel_protection",
+        "dynamicDriverProtection": "dynamic_driver_protection",
+        "securityMeasuresBypass": "security_measures_bypass",
+        "basTools": "breach_attack_simulation_tools_settings",
+        "browserExploitKits": "browser_exploits_protection",
+        "logicalExploits": "logical_exploits_protection",
+        "vulnerableApps": "known_vulnerable_processes_protection",
+        "osKernelExploits": "operating_system_exploit_protection",
+        "additionalProcesses": "exploit_protection_for_additional_processes",
+        "manualScan": "end_user_initiated_local_scan",  # for update command
+    }
+
+    VALIDATION = {
+        "asp_aspx_files": ["block", "disabled", "report"],
+        "breach_attack_simulation_tools_settings": ["enabled", "disabled"],
+        "uac_bypass_prevention": ["block", "disabled", "report"],
+        "on_demand_file_examination": ["disabled", "enabled"],
+        "end_user_initiated_local_scan": ["disabled", "enabled"],
+        "ransomware_protection": ["block", "disabled", "report"],
+        "cryptominers_protection": ["block", "disabled", "report"],
+        "anti_tampering_protection": ["block", "disabled", "report"],
+        "iis_protection": ["block", "disabled", "report"],
+        "uefi_protection": ["block", "disabled", "report"],
+        "malicious_device_prevention": ["block", "disabled", "report"],
+        "network_packet_inspection_engine": ["terminateSession", "disabled", "report"],
+        "credential_gathering_protection": ["block", "disabled", "report"],
+        "anti_webshell_protection": ["block", "disabled", "report"],
+        "office_files_with_macros_examination": ["block", "disabled", "report"],
+        "in_process_shellcode_protection": ["block", "disabled", "report"],
+        "jscript_file_examination": ["block", "disabled", "report"],
+        "malicious_child_process_protection": ["block", "disabled", "report"],
+        "vb_scripts_examination": ["block", "disabled", "report"],
+        "global_behavioral_threat_protection_rules": ["block", "disabled", "report"],
+        "powershell_script_files": ["block", "disabled", "report"],
+        "financial_malware_threat_protection": ["block", "disabled", "report"],
+        "security_measures_bypass": ["block", "disabled", "report"],
+        "dynamic_driver_protection": ["block", "disabled", "report"],
+        "dynamic_kernel_protection": ["block", "disabled", "report"],
+        "password_theft_protection": ["disabled", "enabled"],
+        "portable_executables_and_dll_examination": ["block", "disabled", "report"],
+        "respond_to_malicious_causality_chains": ["disabled", "enabled"],
+        "browser_exploits_protection": ["block", "disabled", "report"],
+        "logical_exploits_protection": ["block", "disabled", "report"],
+        "known_vulnerable_processes_protection": ["block", "disabled", "report"],
+        "operating_system_exploit_protection": ["block", "disabled", "report"],
+        "exploit_protection_for_additional_processes": ["block", "disabled", "report"],
+    }
 
 
 class ScriptManagement:
@@ -105,8 +198,8 @@ class CaseManagement:
         "known_issue": "STATUS_040_RESOLVED_KNOWN_ISSUE",
         "duplicate": "STATUS_050_RESOLVED_DUPLICATE",
         "false_positive": "STATUS_060_RESOLVED_FALSE_POSITIVE",
-        "true_positive": "STATUS_090_RESOLVED_TRUE_POSITIVE",
-        "security_testing": "STATUS_100_RESOLVED_SECURITY_TESTING",
+        "true_positive": "STATUS_090_TRUE_POSITIVE",
+        "security_testing": "STATUS_100_SECURITY_TESTING",
         "other": "STATUS_070_RESOLVED_OTHER",
     }
 
@@ -133,6 +226,7 @@ class CaseManagement:
     STATUS = {
         "new": "STATUS_010_NEW",
         "under_investigation": "STATUS_020_UNDER_INVESTIGATION",
+        "in_progress": "STATUS_020_UNDER_INVESTIGATION",
         "resolved": "STATUS_025_RESOLVED",
     }
 
@@ -329,11 +423,6 @@ ALLOWED_SCANNERS = [
     "SECRETS",
 ]
 
-COVERAGE_API_FIELDS_MAPPING = {
-    "vendor_name": "asset_provider",
-    "asset_provider": "unified_provider",
-}
-
 EXCEPTION_RULES_TYPE_TO_TABLE_MAPPING = {
     "legacy_agent_exceptions": LEGACY_AGENT_EXCEPTIONS_TABLE,
     "disable_prevention_rules": DISABLE_PREVENTION_RULES_TABLE,
@@ -372,191 +461,6 @@ DAYS_MAPPING = {
     "friday": 6,
     "saturday": 7,
 }
-
-
-class FilterBuilder:
-    """
-    Filter class for creating filter dictionary objects.
-    """
-
-    class FilterType(str, Enum):
-        operator: str
-
-        """
-        Available type options for filter filtering.
-        Each member holds its string value and its logical operator for multi-value scenarios.
-        """
-
-        def __new__(cls, value, operator):
-            obj = str.__new__(cls, value)
-            obj._value_ = value
-            obj.operator = operator
-            return obj
-
-        EQ = ("EQ", "OR")
-        RANGE = ("RANGE", "OR")
-        CONTAINS = ("CONTAINS", "OR")
-        CASE_HOST_EQ = ("CASE_HOSTS_EQ", "OR")
-        CONTAINS_IN_LIST = ("CONTAINS_IN_LIST", "OR")
-        GTE = ("GTE", "OR")
-        ARRAY_CONTAINS = ("ARRAY_CONTAINS", "OR")
-        JSON_WILDCARD = ("JSON_WILDCARD", "OR")
-        IS_EMPTY = ("IS_EMPTY", "OR")
-        NIS_EMPTY = ("NIS_EMPTY", "AND")
-        ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
-        RELATIVE_TIMESTAMP = ("RELATIVE_TIMESTAMP", "OR")
-
-    AND = "AND"
-    OR = "OR"
-    FIELD = "SEARCH_FIELD"
-    TYPE = "SEARCH_TYPE"
-    VALUE = "SEARCH_VALUE"
-
-    class Field:
-        def __init__(self, field_name: str, filter_type: "FilterType", values: Any):
-            self.field_name = field_name
-            self.filter_type = filter_type
-            self.values = values
-
-    class MappedValuesField(Field):
-        def __init__(
-            self,
-            field_name: str,
-            filter_type: "FilterType",
-            values: Any,
-            mappings: dict[str, "FilterType"],
-        ):
-            super().__init__(field_name, filter_type, values)
-            self.mappings = mappings
-
-    def __init__(self, filter_fields: list[Field] | None = None):
-        self.filter_fields = filter_fields or []
-
-    def add_field(self, name: str, type: "FilterType", values: Any, mapper: dict | None = None):
-        """
-        Adds a new field to the filter.
-        Args:
-            name (str): The name of the field.
-            type (FilterType): The type to use for the field.
-            values (Any): The values to filter for.
-            mapper (dict | None): An optional dictionary to map values before filtering.
-        """
-        processed_values = values
-        if mapper:
-            if not isinstance(values, list):
-                values = [values]
-            processed_values = [mapper[v] for v in values if v in mapper]
-
-        self.filter_fields.append(FilterBuilder.Field(name, type, processed_values))
-
-    def add_field_with_mappings(
-        self,
-        name: str,
-        type: "FilterType",
-        values: Any,
-        mappings: dict[str, "FilterType"],
-    ):
-        """
-        Adds a new field to the filter with special value mappings.
-        Args:
-            name (str): The name of the field.
-            type (FilterType): The default filter type for non-mapped values.
-            values (Any): The values to filter for.
-            mappings (dict[str, FilterType]): A dictionary mapping special values to specific filter types.
-                Example:
-                    mappings = {
-                        "unassigned": FilterType.IS_EMPTY,
-                        "assigned": FilterType.NIS_EMPTY,
-                    }
-        """
-        self.filter_fields.append(FilterBuilder.MappedValuesField(name, type, values, mappings))
-
-    def add_time_range_field(self, name: str, start_time: str | None, end_time: str | None):
-        """
-        Adds a time range field to the filter.
-        Args:
-            name (str): The name of the field.
-            start_time (str | None): The start time of the range.
-            end_time (str | None): The end time of the range.
-        """
-        start, end = self._prepare_time_range(start_time, end_time)
-        if start is not None and end is not None:
-            self.add_field(name, FilterType.RANGE, {"from": start, "to": end})
-
-    def to_dict(self) -> dict[str, list]:
-        """
-        Creates a filter dict from a list of Field objects.
-        The filter will require each field to be one of the values provided.
-        Returns:
-            dict[str, list]: Filter object.
-        """
-        filter_structure: dict[str, list] = {FilterBuilder.AND: []}
-
-        for field in self.filter_fields:
-            if not isinstance(field.values, list):
-                field.values = [field.values]
-
-            search_values = []
-            for value in field.values:
-                if value is None:
-                    continue
-
-                current_filter_type = field.filter_type
-                current_value = value
-
-                if isinstance(field, FilterBuilder.MappedValuesField) and value in field.mappings:
-                    current_filter_type = field.mappings[value]
-                    if current_filter_type in [
-                        FilterType.IS_EMPTY,
-                        FilterType.NIS_EMPTY,
-                    ]:
-                        current_value = "<No Value>"
-
-                search_values.append(
-                    {
-                        FilterBuilder.FIELD: field.field_name,
-                        FilterBuilder.TYPE: current_filter_type.value,
-                        FilterBuilder.VALUE: current_value,
-                    }
-                )
-
-            if search_values:
-                search_obj = {field.filter_type.operator: search_values} if len(search_values) > 1 else search_values[0]
-                filter_structure[FilterBuilder.AND].append(search_obj)
-
-        if not filter_structure[FilterBuilder.AND]:
-            filter_structure = {}
-
-        return filter_structure
-
-    @staticmethod
-    def _prepare_time_range(start_time_str: str | None, end_time_str: str | None) -> tuple[int | None, int | None]:
-        """Prepare start and end time from args, parsing relative time strings."""
-        if end_time_str and not start_time_str:
-            raise DemistoException("When 'end_time' is provided, 'start_time' must be provided as well.")
-
-        start_time, end_time = None, None
-
-        if start_time_str:
-            if start_dt := dateparser.parse(str(start_time_str)):
-                start_time = int(start_dt.timestamp() * 1000)
-            else:
-                raise ValueError(f"Could not parse start_time: {start_time_str}")
-
-        if end_time_str:
-            if end_dt := dateparser.parse(str(end_time_str)):
-                end_time = int(end_dt.timestamp() * 1000)
-            else:
-                raise ValueError(f"Could not parse end_time: {end_time_str}")
-
-        if start_time and not end_time:
-            # Set end_time to the current time if only start_time is provided
-            end_time = int(datetime.now().timestamp() * 1000)
-
-        return start_time, end_time
-
-
-FilterType = FilterBuilder.FilterType
 
 
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
@@ -957,6 +861,20 @@ class Client(CoreClient):
             url_suffix="/retrieve_endpoint_tsf",
         )
 
+    def send_endpoint_heartbeat(self, json_data: dict) -> dict:
+        """
+        Perform endpoint heartbeat.
+        Args:
+            json_data (dict[str, Any]): The json data containing endpoint information.
+        Returns:
+            dict: The response from the API.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/call_home/",
+            json_data=json_data,
+        )
+
     def get_endpoint_update_version(self, request_data):
         reply = self._http_request(
             method="POST",
@@ -988,6 +906,19 @@ class Client(CoreClient):
         return self._http_request(
             method="POST",
             url_suffix="/case/set_data",
+            json_data=request_data,
+        )
+
+    def bulk_update_case(self, case_update_payload, case_ids):
+        request_data = {
+            "request_data": {
+                "filter_data": {"filter": {"OR": [{"SEARCH_FIELD": "CASE_ID", "SEARCH_TYPE": "IN", "SEARCH_VALUE": case_ids}]}},
+                "update_attrs": case_update_payload,
+            }
+        }
+        return self._http_request(
+            method="POST",
+            url_suffix="/case/bulk_update_cases",
             json_data=request_data,
         )
 
@@ -1034,6 +965,38 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
+    def add_assessment_profile(self, profile_payload: dict) -> dict:
+        """
+        Add a new assessment profile to Cortex XDR.
+
+        Args:
+            profile_payload (dict): The assessment profile configuration payload.
+
+        Returns:
+            dict: The response from the API for adding the assessment profile.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/compliance/add_assessment_profile",
+            json_data=profile_payload,
+        )
+
+    def list_compliance_standards_command(self, payload: dict) -> dict:
+        """
+        List compliance standards from Cortex XDR.
+
+        Args:
+            payload (dict): The request payload for listing compliance standards.
+
+        Returns:
+            dict: The response from the API containing compliance standards data.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/compliance/get_standards",
+            json_data=payload,
+        )
+
     def get_users(self):
         reply = self._http_request(
             method="POST",
@@ -1042,6 +1005,18 @@ class Client(CoreClient):
             url_suffix="/rbac/get_users",
         )
 
+        return reply
+
+    def get_case_resolution_statuses(self, case_id: str) -> dict:
+        reply = self._http_request(
+            method="GET",
+            json_data={},
+            headers={
+                **self._headers,
+                "Content-Type": "application/json",
+            },
+            url_suffix=f"case/{case_id}/resolution-plan/tasks",
+        )
         return reply
 
     def get_custom_fields_metadata(self) -> dict[str, Any]:
@@ -1072,6 +1047,82 @@ class Client(CoreClient):
         }
 
         return self.get_webapp_data(request_data)
+
+    def get_case_ai_summary(self, case_id: int) -> dict:
+        """
+        Retrieves AI-generated summary for a specific case ID.
+
+        Args:
+            case_id (int): The ID of the case to retrieve AI summary for.
+
+        Returns:
+            dict: API response containing case AI summary.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/cases/get_ai_case_details",
+            json_data={"case_id": case_id},
+        )
+
+    def create_profile(self, profile_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/profiles/prevention/add",
+            json_data=profile_data,
+        )
+
+    def get_profile(self, profile_id: str) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/profiles/get_profile_view_by_id",
+            json_data={"profile_id": profile_id},
+        )
+
+    def update_profile(self, update_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/profiles/edit_profile",
+            json_data=update_data,
+        )
+
+    def delete_profile(self, profile_ids: list) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/profiles/delete_profiles",
+            json_data={"profile_ids": profile_ids},
+        )
+
+    def get_agent_policy_table(self) -> dict:
+        """
+        Retrieves the current agent policy table with policy hash.
+
+        Returns:
+            dict: API response containing policy table data and hash.
+        """
+        request_data = {
+            "type": "grid",
+            "table_name": AGENT_POLICY_TABLE,
+            "filter_data": {"filter": {}},
+        }
+        return self.get_webapp_data(request_data)
+
+    def update_agent_policy(self, update_data: dict) -> dict:
+        """
+        Updates the agent policy table with new or modified policies.
+
+        Args:
+            update_data (dict): The update payload containing policy data and hash.
+
+        Returns:
+            dict: API response from the policy update.
+        """
+
+        demisto.debug({"update_data": update_data})
+        return self._http_request(
+            method="POST",
+            url_suffix="/agent/policy/update",
+            json_data={"update_data": update_data},
+        )
 
 
 def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
@@ -1110,6 +1161,29 @@ def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
     demisto.debug(f"{recommendation=} for {issue=}")
 
     return recommendation
+
+
+def get_remediation_techniques_suggestion(issue: dict, current_issue_id: str) -> list:
+    """
+    Get remediation techniques suggestions based on asset types.
+
+    Args:
+        issue (dict): The issue data.
+        current_issue_id (str): The current issue ID.
+
+    Returns:
+        list: A list of filtered remediation techniques.
+    """
+    asset_types: list = issue.get("asset_types", [])
+    normalized_asset_types = {t.upper().replace(" ", "_") for t in asset_types if t}
+    remediation_techniques_response = issue.get("extended_fields", {}).get("remediationTechniques") or []
+    filtered_techniques = [
+        t
+        for t in remediation_techniques_response
+        if t.get("techniqueAssetType") and t.get("techniqueAssetType").upper() in normalized_asset_types
+    ]
+    demisto.debug(f"Remediation recommendation of {current_issue_id=}: {filtered_techniques}")
+    return filtered_techniques
 
 
 def populate_playbook_and_quick_action_suggestions(
@@ -1333,6 +1407,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
 
     for issue in issue_data:
         current_issue_id = issue.get("internal_id")
+        alert_source = issue.get("alert_source")
 
         # Base recommendation
         recommendation = {
@@ -1353,6 +1428,11 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
         appsec_recommendation = get_appsec_suggestion(client, issue, current_issue_id)
         if appsec_recommendation:
             recommendation.update(appsec_recommendation)
+
+        # --- Remediation Techniques ---
+        elif alert_source in REMEDIATION_TECHNIQUES_SOURCES:
+            filtered_techniques = get_remediation_techniques_suggestion(issue, current_issue_id)
+            recommendation["remediation"] = filtered_techniques or recommendation.get("remediation")
 
         all_recommendations.append(recommendation)
 
@@ -1425,47 +1505,6 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
         outputs=data,
         raw_response=response,
     )
-
-
-def build_webapp_request_data(
-    table_name: str,
-    filter_dict: dict,
-    limit: int,
-    sort_field: str | None,
-    on_demand_fields: list | None = None,
-    sort_order: str | None = "DESC",
-    start_page: int = 0,
-) -> dict:
-    """
-    Builds the request data for the generic /api/webapp/get_data endpoint.
-    """
-    sort = (
-        [
-            {
-                "FIELD": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field),
-                "ORDER": sort_order,
-            }
-        ]
-        if sort_field
-        else []
-    )
-    filter_data = {
-        "sort": sort,
-        "paging": {"from": start_page, "to": limit},
-        "filter": filter_dict,
-    }
-    demisto.debug(f"{filter_data=}")
-
-    if on_demand_fields is None:
-        on_demand_fields = []
-
-    return {
-        "type": "grid",
-        "table_name": table_name,
-        "filter_data": filter_data,
-        "jsons": [],
-        "onDemandFields": on_demand_fields,
-    }
 
 
 def build_histogram_request_data(table_name: str, filter_dict: dict, max_values_per_column: int, columns: list) -> dict:
@@ -1655,17 +1694,19 @@ def get_case_extra_data(client, args):
     """
     demisto.debug(f"Calling core-get-case-extra-data, {args=}")
     # Set the base URL for this API call to use the public API v1 endpoint
-    client._base_url = "api/webapp/public_api/v1"
-    case_extra_data = get_extra_data_for_case_id_command(client, args).outputs
+    try:
+        case_extra_data = get_extra_data_for_case_id_command(init_client("public"), args).outputs
+    except Exception as e:
+        demisto.debug(f"Failed to retrieve extra data for case ID {args.get('case_id')}: {str(e)}")
+        return {}
     demisto.debug(f"After calling core-get-case-extra-data, {case_extra_data=}")
     issue_ids = extract_ids(case_extra_data)
     case_data = case_extra_data.get("case", {})
     notes = case_data.get("notes")
     xdr_url = case_data.get("xdr_url")
     starred_manually = case_data.get("starred_manually")
-    manual_description = case_data.get("manual_description")
     detection_time = case_data.get("detection_time")
-    manual_description = case_extra_data.get("manual_description")
+    manual_description = case_extra_data.get("manual_description") or case_data.get("manual_description")
     network_artifacts = case_extra_data.get("network_artifacts")
     file_artifacts = case_extra_data.get("file_artifacts")
     extra_data = {
@@ -1763,26 +1804,7 @@ def map_case_format(case_list):
     return mapped_cases
 
 
-def get_cases_command(client, args):
-    """
-    Retrieves cases from Cortex platform based on provided filtering criteria.
-
-    Args:
-        client: The Cortex platform client instance for making API requests.
-        args (dict): Dictionary containing filter parameters including page number,
-                    limits, time ranges, status, severity, and other case attributes.
-
-    Returns:
-        List of mapped case objects containing case details and metadata.
-    """
-    page = arg_to_number(args.get("page")) or 0
-    limit = arg_to_number(args.get("limit")) or MAX_GET_CASES_LIMIT
-
-    limit = page * MAX_GET_CASES_LIMIT + limit
-    page = page * MAX_GET_CASES_LIMIT
-
-    sort_by_modification_time = args.get("sort_by_modification_time")
-    sort_by_creation_time = args.get("sort_by_creation_time")
+def build_get_cases_filter(args: dict) -> FilterBuilder:
     since_creation_start_time = args.get("since_creation_time")
     since_creation_end_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") if since_creation_start_time else None
     since_modification_start_time = args.get("since_modification_time")
@@ -1792,10 +1814,9 @@ def get_cases_command(client, args):
     gte_modification_time = args.get("gte_modification_time")
     lte_modification_time = args.get("lte_modification_time")
 
-    sort_field, sort_order = get_cases_sort_order(sort_by_creation_time, sort_by_modification_time)
-
-    status_values = [CaseManagement.STATUS[status] for status in argToList(args.get("status"))]
-    severity_values = [CaseManagement.SEVERITY[severity] for severity in argToList(args.get("severity"))]
+    not_status_values = [CaseManagement.STATUS.get(status) for status in argToList(args.get("not_status"))]
+    status_values = [CaseManagement.STATUS.get(status) for status in argToList(args.get("status"))]
+    severity_values = [CaseManagement.SEVERITY.get(severity) for severity in argToList(args.get("severity"))]
     tag_values = [CaseManagement.TAGS.get(tag, tag) for tag in argToList(args.get("tag"))]
     filter_builder = FilterBuilder()
     filter_builder.add_time_range_field(CaseManagement.FIELDS["creation_time"], gte_creation_time, lte_creation_time)
@@ -1815,6 +1836,7 @@ def get_cases_command(client, args):
         since_modification_end_time,
     )
     filter_builder.add_field(CaseManagement.FIELDS["status"], FilterType.EQ, status_values)
+    filter_builder.add_field(CaseManagement.FIELDS["status"], FilterType.NEQ, not_status_values)
     filter_builder.add_field(CaseManagement.FIELDS["severity"], FilterType.EQ, severity_values)
     filter_builder.add_field(
         CaseManagement.FIELDS["case_id_list"],
@@ -1867,9 +1889,32 @@ def get_cases_command(client, args):
         },
     )
 
+    return filter_builder
+
+
+def get_cases_command(client, args):
+    """
+    Retrieves cases from Cortex platform based on provided filtering criteria.
+
+    Args:
+        client: The Cortex platform client instance for making API requests.
+        args (dict): Dictionary containing filter parameters including page number,
+                    limits, time ranges, status, severity, and other case attributes.
+
+    Returns:
+        List of mapped case objects containing case details and metadata.
+    """
+
+    page = arg_to_number(args.get("page")) or 0
+    limit = arg_to_number(args.get("limit")) or MAX_GET_CASES_LIMIT
+
+    limit = page * MAX_GET_CASES_LIMIT + limit
+    page = page * MAX_GET_CASES_LIMIT
+
+    sort_field, sort_order = get_cases_sort_order(args.get("sort_by_creation_time"), args.get("sort_by_modification_time"))
     request_data = build_webapp_request_data(
         table_name=CASES_TABLE,
-        filter_dict=filter_builder.to_dict(),
+        filter_dict=build_get_cases_filter(args).to_dict(),
         limit=limit,
         sort_field=sort_field,
         sort_order=sort_order,
@@ -1886,21 +1931,33 @@ def get_cases_command(client, args):
     filter_count = int(reply.get("FILTER_COUNT", "0"))
     returned_count = len(data)
 
-    command_results = []
-
-    command_results.append(
+    command_results = [
         CommandResults(
             outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CasesMetadata",
-            outputs={"filter_count": filter_count, "returned_count": returned_count},
+            outputs={"filtered_count": filter_count, "returned_count": returned_count},
         )
-    )
+    ]
+
+    if (
+        returned_count == 1 and int(data[0].get("issue_count") or 0) > 1
+    ):  # AI summary supported in cases of a single case query with more than one issue
+        case_id = data[0].get("case_id")
+        try:  # if functionality isn't supported exception is raised and should be handled
+            response = client.get_case_ai_summary(int(case_id))
+            if response:
+                reply = response.get("reply", {})
+                if case_description := reply.get("case_description"):
+                    data[0]["description"] = case_description
+                if case_name := reply.get("case_name"):
+                    data[0]["case_name"] = case_name
+        except Exception as e:
+            demisto.debug(f"Failed to retrieve case AI summary for case ID {case_id}: {str(e)}")
 
     get_enriched_case_data = argToBoolean(args.get("get_enriched_case_data", "false"))
     # In case enriched case data was requested
-    if get_enriched_case_data and len(data) <= 10:
-        if isinstance(data, dict):
-            data = [data]
-
+    if isinstance(data, dict):
+        data = [data] if data else []
+    if get_enriched_case_data and 0 < len(data) <= 10:
         case_extra_data = add_cases_extra_data(client, data)
 
         command_results.append(
@@ -1915,13 +1972,16 @@ def get_cases_command(client, args):
 
     else:
         if get_enriched_case_data:
+            demisto.info(
+                f"Enriched case data requested but {len(data)} cases were returned (limit is 10). "
+                "Falling back to standard case data."
+            )
             command_results.append(
                 CommandResults(
-                    readable_output="Cannot retrieve enriched case data for more than 10 cases. "
-                    "Only standard case data will be shown. "
+                    readable_output="Note: Cannot retrieve enriched case data for more than 10 cases. "
+                    "Returning standard case data instead. "
                     "Try using a more specific query, "
                     "for example specific case IDs you want to get enriched data for.",
-                    entry_type=4,
                 )
             )
 
@@ -2078,9 +2138,31 @@ def get_extra_data_for_case_id_command(client: CoreClient, args):
                         raw response, and outputs for integration context.
     """
     case_id = args.get("case_id")
+    if not case_id:
+        raise DemistoException("case_id is required. Please provide a valid numeric case ID.")
+    case_id = str(case_id).strip()
+    if not case_id.isdigit():
+        raise DemistoException(
+            f"Invalid case_id '{case_id}'. The case_id must be a valid numeric identifier. "
+            "Use the core-get-cases command to retrieve valid case IDs."
+        )
     issues_limit = min(int(args.get("issues_limit", 1000)), 1000)
     response = client.get_incident_data(case_id, issues_limit, full_alert_fields=True)
     mapped_response = preprocess_get_case_extra_data_outputs(response)
+    case = mapped_response.get("case")
+    if int(case.get("issue_count") or 0) > 1:
+        try:  # if functionality isn't supported exception is raised and should be handled
+            web_app_client = init_client("webapp")
+            ai_response = web_app_client.get_case_ai_summary(int(case_id))
+            if ai_response:
+                reply = ai_response.get("reply", {})
+                if case_description := reply.get("case_description"):
+                    case["description"] = case_description
+                if case_name := reply.get("case_name"):
+                    case["case_name"] = case_name
+        except Exception as e:
+            demisto.debug(f"Failed to retrieve case AI summary for case ID {case_id}: {str(e)}")
+
     return CommandResults(
         readable_output=tableToMarkdown("Case", mapped_response, headerTransform=string_to_table_header),
         outputs_prefix="Core.CaseExtraData",
@@ -2503,6 +2585,55 @@ def get_asset_coverage_histogram_command(client: Client, args: dict):
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Coverage.Histogram",
         outputs=outputs,
+        raw_response=response,
+    )
+
+
+def get_ai_model_activity_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves AI model activity information using the generic /api/webapp/get_data endpoint.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - asset_id (str): Comma-separated list of asset IDs to query.
+
+    Returns:
+        CommandResults: Object containing the formatted AI model activity data,
+                        raw response, and outputs for integration context.
+    """
+    demisto.debug(f"get_ai_model_activity_command called with args: {args}")
+    asset_ids = argToList(args.get("asset_id"))
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("asset_id", FilterType.EQ, asset_ids)
+    filter_dict = filter_builder.to_dict()
+    demisto.debug(f"Built filter_dict: {filter_dict}")
+
+    request_data = build_webapp_request_data(
+        table_name=AI_MODEL_ACTIVITY_TABLE,
+        filter_dict=filter_dict,
+        limit=len(asset_ids),
+        sort_field=None,
+    )
+    demisto.debug(f"Built request_data: {request_data}")
+
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+
+    readable_output = tableToMarkdown(
+        "AI Model Activity",
+        data,
+        headerTransform=string_to_table_header,
+        sort_headers=False,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AIModelActivity",
+        outputs_key_field="asset_id",
+        outputs=data,
         raw_response=response,
     )
 
@@ -3029,6 +3160,36 @@ def get_endpoint_support_file_command(client: Client, args: dict) -> CommandResu
     )
 
 
+def send_endpoint_heartbeat_command(client: Client, args: dict) -> CommandResults:
+    """
+    Perform endpoint heartbeat.
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - endpoint_id (str): The ID of the endpoint.
+    Returns:
+        CommandResults: Object containing the formatted output.
+    """
+    call_home_type_heartbeat = 6
+    endpoint_id = args.get("endpoint_id")
+    if not endpoint_id:
+        raise ValueError("endpoint_id is required")
+
+    json_data = {
+        "request_data": {
+            "endpoint_id": endpoint_id,
+            "call_home_type": call_home_type_heartbeat,
+        }
+    }
+
+    client.send_endpoint_heartbeat(json_data)
+
+    return CommandResults(
+        readable_output=f"Heartbeat sent successfully for endpoint {endpoint_id}",
+    )
+
+
 def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves application security issues based on specified filters across multiple issue types.
@@ -3100,10 +3261,6 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     resolved_comment = args.get("resolved_comment", "")
     resolve_all_alerts = args.get("resolve_all_alerts", "")
     custom_fields = parse_custom_fields(args.get("custom_fields", []))
-    if assignee == "unassigned":
-        for case_id in case_ids:
-            client.unassign_case(case_id)
-        assignee = ""
 
     if status == "resolved" and (not resolve_reason or not CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason, False)):
         raise ValueError("In order to set the case to resolved, you must provide a resolve reason.")
@@ -3111,7 +3268,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     if (resolve_reason or resolve_all_alerts or resolved_comment) and not status == "resolved":
         raise ValueError(
             "In order to use resolve_reason, resolve_all_alerts, or resolved_comment, the case status must be set to "
-            "'resolved.'"
+            "'resolved'."
         )
 
     if status and not CaseManagement.STATUS.get(status):
@@ -3131,7 +3288,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
         "description": description if description else None,
         "assignedUser": assignee if assignee else None,
         "notes": notes if notes else None,
-        "starred": starred if starred else None,
+        "starred": argToBoolean(starred) if starred else None,
         "status": CaseManagement.STATUS.get(status) if status else None,
         "userSeverity": CaseManagement.SEVERITY.get(user_defined_severity) if user_defined_severity else None,
         "resolve_reason": CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason) if resolve_reason else None,
@@ -3141,11 +3298,129 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     }
     remove_nulls_from_dictionary(case_update_payload)
 
-    if not case_update_payload and args.get("assignee", "").lower() != "unassigned":
+    if not case_update_payload:
         raise ValueError(f"No valid update parameters provided.\n{error_messages}")
 
-    responses = [client.update_case(case_update_payload, case_id) for case_id in case_ids]
-    replies = [process_case_response(resp) for resp in responses]
+    def is_bulk_update_allowed(case_update_payload: dict) -> bool:
+        # Bulk update supports only those fields
+        allowed_bulk_fields = {"userSeverity", "status", "starred", "assignedUser"}
+
+        for field_name, field_value in case_update_payload.items():
+            if (
+                field_name == "status"
+                and field_value == CaseManagement.STATUS["resolved"]
+                or field_name not in allowed_bulk_fields
+            ):
+                return False
+        return True
+
+    def repackage_to_update_case_format(case_list):
+        """
+        Maps raw API case data to the Update Case Format,
+        """
+        if not case_list or not isinstance(case_list, list):
+            return []
+
+        reverse_tags = {v: k for k, v in CaseManagement.TAGS.items()}
+        grouping_status_map = {"enabled": "GROUPING_STATUS_010_ENABLED", "disabled": "GROUPING_STATUS_020_DISABLED"}
+
+        target = []
+        for raw_case in case_list:
+            raw_status = str(raw_case.get("STATUS", raw_case.get("STATUS_PROGRESS", ""))).split("_")[-1].lower()
+            status_key = raw_status.replace("investigation", "under_investigation")
+            raw_severity = str(raw_case.get("SEVERITY", "")).split("_")[-1].lower()
+            raw_grouping = str(raw_case.get("CASE_GROUPING_STATUS", "")).split("_")[-1].lower()
+
+            target.append(
+                {
+                    "id": str(raw_case.get("CASE_ID")),
+                    "name": {"isUser": True, "value": raw_case.get("NAME")},
+                    "score": {
+                        "manual_score": raw_case.get("MANUAL_SCORE"),
+                        "score": raw_case.get("SCORE"),
+                        "score_source": raw_case.get("SCORE_SOURCE"),
+                        "scoring_rules": raw_case.get("CALCULATED_SCORE"),
+                        "scortex": raw_case.get("SCORTEX"),
+                    },
+                    "notes": None,
+                    "description": {"isUser": True, "value": raw_case.get("DESCRIPTION")},
+                    "caseDomain": raw_case.get("INCIDENT_DOMAIN"),
+                    "creationTime": raw_case.get("CREATION_TIME"),
+                    "lastUpdateTime": raw_case.get("LAST_UPDATE_TIME"),
+                    "modifiedBy": None,
+                    "starred": raw_case.get("CASE_STARRED"),
+                    "status": {
+                        "value": CaseManagement.STATUS.get(status_key),
+                        "resolveComment": raw_case.get("RESOLVED_COMMENT"),
+                        "resolve_reason": raw_case.get("RESOLVED_REASON"),
+                    },
+                    "severity": CaseManagement.SEVERITY.get(raw_severity),
+                    "userSeverity": raw_case.get("USER_SEVERITY"),
+                    "assigned": {"mail": raw_case.get("ASSIGNED_USER"), "pretty": raw_case.get("ASSIGNED_USER_PRETTY")},
+                    "severityCounters": {
+                        "SEV_020_LOW": raw_case.get("LOW_SEVERITY_ALERTS", 0),
+                        "SEV_030_MEDIUM": raw_case.get("MEDIUM_SEVERITY_ALERTS", 0),
+                        "SEV_040_HIGH": raw_case.get("HIGH_SEVERITY_ALERTS", 0),
+                        "SEV_050_CRITICAL": raw_case.get("CRITICAL_SEVERITY_ALERTS", 0),
+                    },
+                    "topCounters": {
+                        "HOSTS": len(raw_case.get("HOSTS", []) or []),
+                        "MAL_ARTIFACTS": raw_case.get("WF_HITS", 0),
+                        "USERS": len(raw_case.get("USERS", []) or []),
+                    },
+                    "tags": [
+                        {"tag_id": reverse_tags.get(tag.get("tag_name")), "tag_name": tag.get("tag_name")}
+                        for tag in (raw_case.get("CURRENT_TAGS", []) or [])
+                    ],
+                    "groupingStatus": {
+                        "pretty": raw_grouping.capitalize(),
+                        "raw": grouping_status_map.get(raw_grouping),
+                        "reason": None,
+                    },
+                    "hasAttachment": raw_case.get("HAS_ATTACHMENT", False),
+                    "internalStatus": raw_case.get("INTERNAL_STATUS", "STATUS_010_NONE"),
+                }
+            )
+
+        return target
+
+    demisto.info(f"Executing case update for cases {case_ids} with request data: {case_update_payload}")
+    replies = []
+    if is_bulk_update_allowed(case_update_payload):
+        demisto.debug("Performing bulk case update")
+        if case_update_payload.get("userSeverity"):
+            case_update_payload["severity"] = case_update_payload.pop("userSeverity")
+        if case_update_payload.get("assignedUser") == "unassigned":
+            case_update_payload["assignedUser"] = None
+
+        client.bulk_update_case(case_update_payload, case_ids)
+        filter_builder = FilterBuilder()
+        filter_builder.add_field(
+            CaseManagement.FIELDS["case_id_list"],
+            FilterType.EQ,
+            case_ids,
+        )
+        request_data = build_webapp_request_data(
+            table_name=CASES_TABLE,
+            filter_dict=filter_builder.to_dict(),
+            limit=len(case_ids),
+            sort_field="CREATION_TIME",
+        )
+        demisto.debug(f"request_data to retrieve cases that were updated via bulk: {request_data}")
+        response = client.get_webapp_data(request_data)
+        reply = response.get("reply", {})
+        data = reply.get("DATA", [])
+        replies = repackage_to_update_case_format(data)
+
+    else:
+        demisto.debug("Performing iterative case update")
+        if assignee == "unassigned":
+            for case_id in case_ids:
+                client.unassign_case(case_id)
+        responses = [client.update_case(case_update_payload, case_id) for case_id in case_ids]
+        replies = []
+        for resp in responses:
+            replies.append(process_case_response(resp))
 
     command_results = CommandResults(
         readable_output=tableToMarkdown("Cases", replies, headerTransform=string_to_table_header),
@@ -3539,6 +3814,284 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
         outputs=data,
         raw_response=data,
     )
+
+
+def parse_frequency(day: str | None, time: str | None) -> str:
+    """
+    Convert day and time to cron-style frequency string
+
+    Cron format: Minute Hour Day-of-Month Month Day-of-Week
+    Example: "0 12 * * 2" means:
+    - Minute: 0 (The task starts at the 0th minute of the hour)
+    - Hour: 12 (The task starts at the 12th hour - 12:00 PM in 24-hour time)
+    - Day of Month: * (Every day of the month)
+    - Month: * (Every month)
+    - Day of Week: 2 (Tuesday)
+
+    :param day: Day of month (optional)
+    :param time: Time in HH:MM format
+    :return: Cron-style frequency string
+    """
+    DAY_MAP = {"sunday": 0, "monday": 1, "tuesday": 2, "wednesday": 3, "thursday": 4, "friday": 5, "saturday": 6}
+
+    target_time = time if time else "12:00"
+    try:
+        hours, minutes = map(int, target_time.split(":"))
+        if not (0 <= hours < 24 and 0 <= minutes < 60):
+            raise ValueError("Invalid time format. Use HH:MM in 24-hour format.")
+    except ValueError:
+        raise ValueError("Invalid time format. Use HH:MM.")
+
+    if day is None:
+        # If no day is provided -> Daily (represented by * in cron)
+        cron_day = "*"
+    else:
+        # If day is provided -> Weekly (look up the day index)
+        day_key = day.lower()
+        if day_key not in DAY_MAP:
+            raise ValueError(f"Invalid day. Must be one of {list(DAY_MAP.keys())}.")
+        cron_day = str(DAY_MAP[day_key])
+
+    return f"{minutes} {hours} * * {cron_day}"
+
+
+def create_assessment_profile_payload(
+    name: str,
+    description: str,
+    standard_id: str,
+    asset_group_id: str,
+    day: str | None,
+    time: str | None,
+    report_type: str = "ALL",
+) -> Dict[str, Any]:
+    """
+    Prepare assessment profile payload
+
+    :param name: Name of the assessment profile
+    :param description: Description of the profile
+    :param standard_id: ID of the compliance standard
+    :param asset_group_id: ID of the asset group
+    :param day: Day of evaluation (optional)
+    :param time: Time of evaluation (optional)
+    :param report_type: Type of report (default: ALL)
+    :return: Assessment profile payload
+    """
+
+    report_frequency = parse_frequency(day, time)
+
+    payload = {
+        "request_data": {
+            "profile_name": name,
+            "asset_group_id": asset_group_id,
+            "standard_id": standard_id,
+            "description": description,
+            "report_targets": [],
+            "report_type": report_type,
+            "evaluation_frequency": report_frequency,
+        }
+    }
+
+    return payload
+
+
+def list_compliance_standards_payload(
+    name: str | None = None,
+    created_by: str | None = None,
+    labels: list[str] | None = None,
+    page=0,
+    page_size=MAX_COMPLIANCE_STANDARDS,
+) -> Dict[str, Any]:
+    """
+    Prepare assessment profile payload
+
+    :param name: Name of the assessment profile
+    :param description: Description of the profile
+    :param standard_id: ID of the compliance standard
+    :param asset_group_id: ID of the asset group
+    :param day: Day of evaluation (optional)
+    :param time: Time of evaluation (optional)
+    :param report_type: Type of report (default: ALL)
+    :return: Assessment profile payload
+    """
+
+    start_index = page * page_size
+    end_index = start_index + page_size
+    payload: dict = {"request_data": {"filters": []}}
+
+    if name:
+        payload["request_data"]["filters"].append({"field": "name", "operator": "contains", "value": name})
+
+    if created_by:
+        payload["request_data"]["filters"].append(
+            {"field": "IS_CUSTOM", "operator": "in", "value": ["yes" if created_by == "Custom" else "no"]}
+        )
+
+    if labels:
+        for label in labels:
+            payload["request_data"]["filters"].append({"field": "labels", "operator": "contains", "value": label})
+
+    payload["request_data"]["sort"] = {"field": "insertion_time", "keyword": "desc"}
+
+    payload["request_data"]["pagination"] = {
+        "search_from": start_index,
+        "search_to": end_index,
+    }
+
+    return payload
+
+
+def core_add_assessment_profile_command(client: Client, args: dict) -> CommandResults:
+    """
+    Adds a new assessment profile to the Cortex Platform.
+
+    Args:
+        client (Client): The integration client used to add the assessment profile.
+        args (dict): Command arguments containing profile details.
+
+    Returns:
+        CommandResults: Contains the result of adding the assessment profile.
+    """
+    profile_name = args.get("profile_name", "")
+    profile_description = args.get("profile_description", "")
+    standard_name = args.get("standard_name", "")
+    asset_group_name = args.get("asset_group_name", "")
+    day = args.get("day")
+    time = args.get("time", "12:00")
+
+    payload = list_compliance_standards_payload(
+        name=standard_name,
+    )
+    demisto.debug(f"Listing compliance standards with payload: {payload}")
+    response = client.list_compliance_standards_command(payload)
+    reply = response.get("reply", {})
+    standards = reply.get("standards")
+    demisto.debug(f"{standards=}")
+
+    if not standards:
+        return_error("No compliance standards found matching the provided name.")
+
+    if len(standards) > 1:
+        standard_names = [standard.get("name") for standard in standards]
+        new_line = "\n"
+        return_error(
+            f"The name you provided matches more than one standard:\n\n{new_line.join(standard_names)}\n\n"
+            "Please provide a more specific name."
+        )
+
+    standard_id = standards[0].get("id")
+
+    filter = FilterBuilder()
+    filter.add_field("XDM.ASSET_GROUP.NAME", FilterType.CONTAINS, asset_group_name)
+    filter_str = filter.to_dict()
+    groups = client.search_asset_groups(filter_str).get("reply", {}).get("data", [])
+    group_ids = [group.get("XDM.ASSET_GROUP.ID") for group in groups if group.get("XDM.ASSET_GROUP.ID")]
+    group_names = [group.get("XDM.ASSET_GROUP.NAME") for group in groups if group.get("XDM.ASSET_GROUP.NAME")]
+
+    if not group_ids:
+        return_error("No asset group found matching the provided name.")
+
+    if len(group_ids) > 1:
+        new_line = "\n"
+        return_error(
+            f"The name you provided matches more than one asset group:\n\n{new_line.join(group_names)}\n\n"
+            "Please provide a more specific name."
+        )
+    demisto.debug(f"{group_ids=}")
+    asset_group_id = group_ids[0]
+
+    payload = create_assessment_profile_payload(
+        name=profile_name,
+        description=profile_description,
+        standard_id=str(standard_id),
+        asset_group_id=asset_group_id,
+        day=day,
+        time=time,
+        report_type="ALL",
+    )
+    demisto.debug(f"Creating assessment profile with payload: {payload}")
+
+    reply = client.add_assessment_profile(payload)
+    assessment_profile_id = reply.get("assessment_profile_id")
+    return CommandResults(
+        readable_output=f"Assessment Profile {assessment_profile_id} successfully added",
+        outputs_prefix="Core.AssessmentProfile",
+        outputs_key_field="assessment_profile_id",
+        outputs=assessment_profile_id,
+        raw_response=reply,
+    )
+
+
+def core_list_compliance_standards_command(client: Client, args: dict) -> list[CommandResults]:
+    """
+    Lists compliance standards with optional filtering.
+
+    Args:
+        client (Client): The client instance for API communication.
+        args (dict): Command arguments containing optional filters:
+            - name (str): Filter by standard name
+            - created_by (str): Filter by creator
+            - labels (list): Filter by labels (converts "Alibaba Cloud" to "alibaba_cloud" and "On Prem" to "on_prem")
+            - page (int): Page number for pagination (default: 0)
+            - page_size (int): Number of results per page (default: MAX_COMPLIANCE_STANDARDS)
+
+    Returns:
+        list[CommandResults]: List containing:
+            - CommandResults with filtered compliance standards data and metadata
+            - CommandResults with pagination metadata (filtered_count, returned_count)
+    """
+    name = args.get("name", "")
+    created_by = args.get("created_by", "")
+    labels = argToList(args.get("labels", ""))
+    labels = ["alibaba_cloud" if label == "Alibaba Cloud" else "on_prem" if label == "On Prem" else label for label in labels]
+    page = arg_to_number(args.get("page", "0"))
+    page_size = arg_to_number(args.get("page_size", MAX_COMPLIANCE_STANDARDS))
+
+    payload = list_compliance_standards_payload(
+        name=name,
+        created_by=created_by,
+        labels=labels,
+        page=page,
+        page_size=page_size,
+    )
+
+    response = client.list_compliance_standards_command(payload)
+    reply = response.get("reply", {})
+    standards = reply.get("standards")
+    demisto.debug(f"{standards=}")
+    filtered_count = reply.get("result_count")
+    returned_count = len(standards)
+
+    filtered_standards = [
+        {
+            "id": s.get("id"),
+            "name": s.get("name"),
+            "description": s.get("description"),
+            "controls_count": len(s.get("controls_ids", [])),
+            "assessments_profiles_count": s.get("assessments_profiles_count", 0),
+            "labels": s.get("labels", []),
+        }
+        for s in standards
+    ]
+
+    demisto.debug(f"{filtered_standards=}")
+    command_results = []
+    command_results.append(
+        CommandResults(
+            readable_output=tableToMarkdown("Compliance Standards", filtered_standards),
+            outputs_prefix="Core.ComplianceStandards",
+            outputs_key_field="id",
+            outputs=filtered_standards,
+            raw_response=reply,
+        )
+    )
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ComplianceStandardsMetadata",
+            outputs={"filtered_count": filtered_count, "returned_count": returned_count},
+        )
+    )
+
+    return command_results
 
 
 def validate_start_end_times(start_time, end_time):
@@ -4024,6 +4577,61 @@ def get_xql_query_results_platform_polling(client: Client, execution_id: str, ti
     return outputs
 
 
+def handle_xql_limit(query: str, max_limit: int) -> str:
+    """Ensure the given query does not exceed the max limit.
+    Overrides the limit if it exceeds the maximum or if a limit clause isn't present.
+
+    Args:
+        query (str): The XQL query string to process.
+        max_limit (int): The max limit value.
+
+    Returns:
+        str: The original query if it already contains a valid limit clause, or the query
+            with a max limit clause appended or the limit value replaced if it exceeds max_limit.
+    """
+    if not query or not query.strip():
+        return query
+
+    # Pattern to match limit keyword with number, skipping over comments and quotes
+    # The pattern uses alternation: first try to match things to skip (comments/quotes),
+    # then try to match the actual limit clause. This ensures we don't match "limit"
+    # inside comments or quoted strings.
+    limit_pattern = re.compile(
+        r"""
+        (?P<skip>                           # Group for things to skip (not replace)
+            /\*.*?\*/                       # Block comments
+            |//[^\n]*                       # Line comments
+            |"(?:[^"\\]|\\.)*"              # Double-quoted strings
+            |'(?:[^'\\]|\\.)*'              # Single-quoted strings
+        )
+        |(?P<limit>limit\s+)(?P<num>\d+)    # Or match limit keyword with number
+        """,
+        re.IGNORECASE | re.DOTALL | re.VERBOSE,
+    )
+
+    limit_found = False
+
+    def replace_limit(match):
+        """Replace limit value if it exceeds max_limit, skip comments/quotes."""
+        nonlocal limit_found
+        # We matched a limit clause
+        if match.group("limit"):
+            limit_found = True
+            current_limit = int(match.group("num"))
+            if current_limit > max_limit:
+                return f"{match.group('limit')}{max_limit}"
+
+        return match.group(0)
+
+    result = limit_pattern.sub(replace_limit, query)
+
+    # Add a max limit clause if no limit was found anywhere in the query
+    if not limit_found:
+        result = f"{result}\n| limit {max_limit}"
+
+    return result
+
+
 def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str:
     """Execute an XQL query using Platform API.
 
@@ -4035,10 +4643,6 @@ def start_xql_query_platform(client: Client, query: str, timeframe: dict) -> str
     Returns:
         str: The query execution ID.
     """
-    DEFAULT_LIMIT = 1000
-    if "limit" not in query:  # Add default limit if no limit was provided
-        query = f"{query} | limit {DEFAULT_LIMIT!s}"
-
     data: Dict[str, Any] = {
         "query": query,
         "timeframe": timeframe,
@@ -4063,9 +4667,11 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
     if not query:
         raise ValueError("query is not specified")
 
+    MAX_QUERY_LIMIT = 1000
+    query_with_limit = handle_xql_limit(query, MAX_QUERY_LIMIT)
     timeframe = convert_timeframe_string_to_json(args.get("timeframe", "24 hours") or "24 hours")
 
-    execution_id = start_xql_query_platform(client, query, timeframe)
+    execution_id = start_xql_query_platform(client, query_with_limit, timeframe)
 
     if not execution_id:
         raise DemistoException("Failed to start query\n")
@@ -4075,6 +4681,10 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
         "execution_id": execution_id,
         "query_url": query_url,
     }
+    if query != query_with_limit:
+        outputs["query_limit_modified"] = (
+            f"Limit clauses larger than {MAX_QUERY_LIMIT} are currently not supported and have been reduced to {MAX_QUERY_LIMIT}"
+        )
 
     if argToBoolean(args.get("wait_for_results", True)):
         demisto.debug(f"Polling query execution with {execution_id=}")
@@ -4083,6 +4693,1323 @@ def xql_query_platform_command(client: Client, args: dict) -> CommandResults:
 
     return CommandResults(
         outputs_prefix="GenericXQLQuery", outputs_key_field="execution_id", outputs=outputs, raw_response=outputs
+    )
+
+
+def init_client(api_type: str) -> Client:
+    """
+    Initializes the Client for a specific API type.
+
+    Args:
+        api_type (str): The category of the API (e.g., 'public', 'webapp', 'data_platform', etc.)
+    """
+    params = demisto.params()
+
+    # Connection parameters
+    proxy = params.get("proxy", False)
+    verify_cert = not params.get("insecure", False)
+
+    try:
+        timeout = int(params.get("timeout", 120))
+    except (ValueError, TypeError):
+        timeout = 120
+
+    # Base URL Mapping logic based on api_type
+    webapp_root = "/api/webapp"
+
+    url_map = {
+        "webapp": webapp_root,
+        "public": f"{webapp_root}/public_api/v1",
+        "data_platform": f"{webapp_root}/data-platform",
+        "appsec": f"{webapp_root}/public_api/appsec",
+        "xsoar": "/xsoar",
+        "agents": f"{webapp_root}/agents",
+    }
+
+    # Fallback to public API if the type isn't recognized
+    client_url = url_map.get(api_type, url_map["public"])
+
+    headers: dict = {"Authorization": params.get("api_key"), "Content-Type": "application/json"}
+
+    return Client(
+        base_url=client_url,
+        proxy=proxy,
+        verify=verify_cert,
+        headers=headers,
+        timeout=timeout,
+    )
+
+
+def enhance_with_pb_details(pb_id_to_data: dict, playbook: dict):
+    related_pb = pb_id_to_data.get(playbook.get("id"))
+    if related_pb:
+        playbook["name"] = related_pb.get("name")
+        playbook["description"] = related_pb.get("comment")
+
+
+def postprocess_case_resolution_statuses(client, response: dict):
+    response = copy.deepcopy(response)
+    pbs_metadata = client.get_playbooks_metadata() or []
+    pb_id_to_data = map_pb_id_to_data(pbs_metadata)
+
+    all_items = []
+    categories = ["done", "inProgress", "pending", "recommended"]
+
+    for category in categories:
+        tasks = response.get(category, {}).get("caseTasks", [])
+        for task in tasks:
+            # Add category field to identify which list this came from
+            task["category"] = category
+            if category in ["done", "inProgress", "recommended"]:
+                task["itemType"] = "playbook"
+            else:
+                task["itemType"] = "playbookTask"
+
+            if category in ["done", "inProgress"]:
+                enhance_with_pb_details(pb_id_to_data, task)
+            elif category == "pending":
+                enhance_with_pb_details(pb_id_to_data, task.get("parentdetails"))
+                task["parentPlaybook"] = task.pop("parentdetails")
+
+            all_items.append(task)
+
+    return all_items
+
+
+def get_case_resolution_statuses(client, args):
+    case_ids = argToList(args.get("case_id"))
+    raw_responses = []
+    outputs = []
+    headers = ["category", "itemType", "id", "name", "description", "taskName"]
+    for case_id in case_ids:
+        response = client.get_case_resolution_statuses(case_id)
+        raw_responses.append(response)
+        outputs.append(postprocess_case_resolution_statuses(client, response))
+
+    readable_parts = []
+    for case_id, case_output in zip(case_ids, outputs):
+        readable_parts.append(
+            tableToMarkdown(
+                f"Case {case_id} Resolution Statuses",
+                case_output,
+                headers=headers,
+                headerTransform=pascalToSpace,
+            )
+        )
+    readable_output = "\n".join(readable_parts)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Core.CaseResolutionStatus",
+        outputs=outputs,
+        raw_response=raw_responses,
+    )
+
+
+def list_findings_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    """
+    Retrieves findings from the Cortex platform filtered by asset ID and asset name.
+
+    Args:
+        client: The client instance used to send the request.
+        args: Dictionary containing the arguments for the command.
+              Expected to include:
+                  - asset_id (str, optional): Filter by asset ID (supports comma-separated list).
+                  - asset_name (str, optional): Filter by asset name (supports comma-separated list).
+                  - page (int, optional): Page number for pagination. Default is 0.
+                  - page_size (int, optional): Number of findings to return per page. Default is 100.
+
+    Returns:
+        list[CommandResults]: List containing:
+            - CommandResults with findings data
+            - CommandResults with metadata (filtered_count, returned_count)
+    """
+    asset_ids = argToList(args.get("asset_id"))
+    asset_names = argToList(args.get("asset_name"))
+    asset_category = argToList(args.get("asset_category"))
+    asset_class = argToList(args.get("asset_class"))
+    category = [c.replace(" ", "_").upper() for c in argToList(args.get("category"))]
+    finding_source = [c.replace(" ", "_").upper() for c in argToList(args.get("finding_source"))]
+    page = arg_to_number(args.get("page")) or 0
+    page_size = arg_to_number(args.get("page_size")) or 100
+
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("XDM_FINDING_ASSET_ID", FilterType.WILDCARD, asset_ids)
+    filter_builder.add_field("XDM_FINDING_ASSET_NAME", FilterType.CONTAINS, asset_names)
+    filter_builder.add_field("XDM_FINDING_ASSET_CLASS", FilterType.EQ, asset_class)
+    filter_builder.add_field("XDM_FINDING_ASSET_CATEGORY", FilterType.EQ, asset_category)
+    filter_builder.add_field("XDM_FINDING_CATEGORY", FilterType.EQ, category)
+    filter_builder.add_field("xdm.finding_sources", FilterType.ARRAY_CONTAINS, finding_source)
+
+    start_index = page * page_size
+    end_index = start_index + page_size
+
+    request_data = build_webapp_request_data(
+        table_name=FINDINGS_TABLE,
+        filter_dict=filter_builder.to_dict(),
+        limit=end_index,
+        sort_field="XDM_FINDING_LAST_OBSERVED",
+        sort_order="DESC",
+        start_page=start_index,
+    )
+
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+
+    counts_request_data = build_webapp_counts_request_data(
+        table_name=FINDINGS_TABLE,
+        filter_dict=filter_builder.to_dict(),
+    )
+
+    counts_response = client.get_webapp_counts(counts_request_data)
+    counts_reply = counts_response.get("reply", {})
+    filtered_count = counts_reply.get("FILTER_COUNT", 0)
+
+    def map_findings(findings):
+        return [{k.replace("XDM_FINDING_", "").lower(): v for k, v in finding.items()} for finding in findings]
+
+    findings = map_findings(data)
+
+    metadata = {
+        "filtered_count": filtered_count,
+        "returned_count": len(findings),
+    }
+
+    command_results = []
+
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Finding",
+            outputs_key_field="id",
+            outputs=findings,
+            raw_response=response,
+        )
+    )
+
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.FindingMetadata",
+            outputs=metadata,
+        )
+    )
+
+    return command_results
+
+
+def build_target_filter_from_endpoint_ids(endpoint_ids: list[str]) -> dict:
+    """
+    Build a TARGET_FILTER object from endpoint names.
+
+    Args:
+        endpoint_names: List of endpoint names to target.
+
+    Returns:
+        dict: Filter object for targeting specific endpoints.
+    """
+    if len(endpoint_ids) == 1:
+        # Single endpoint
+        return {"filter": {"AND": [{"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": endpoint_ids[0]}]}}
+    else:
+        # Multiple endpoints - use OR logic
+        or_conditions = [
+            {"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": endpoint_id} for endpoint_id in endpoint_ids
+        ]
+        return {"filter": {"AND": [{"OR": or_conditions}]}}
+
+
+def validate_profile_platform_compatibility(platform: str, profile_args: dict[str, str | None]) -> None:
+    """
+    Validate that the provided profiles are supported by the specified platform.
+
+    Platform-specific profile restrictions:
+    - serverless: Only 'restrictions' profile allowed
+    - Android, iOS: Only 'malware' and 'agent_settings' profiles allowed
+    - Linux, macOS, Windows: All profiles allowed
+
+    Args:
+        platform: The platform type (e.g., AGENT_OS_WINDOWS, AGENT_OS_SERVERLESS).
+        profile_args: Dictionary of profile argument names to their values.
+                     Keys should be profile types (e.g., 'exploit_profile', 'malware_profile').
+
+    Raises:
+        DemistoException: If a profile is provided that is not supported by the platform.
+    """
+    # Define allowed profiles per platform
+    PLATFORM_ALLOWED_PROFILES: dict[str, list[str]] = {
+        "serverless": ["restrictions"],
+        "android": ["malware", "agent_settings"],
+        "ios": ["malware", "agent_settings"],
+        "linux": ["exploit", "malware", "agent_settings", "restrictions", "exceptions"],
+        "mac": ["exploit", "malware", "agent_settings", "restrictions", "exceptions"],
+        "windows": ["exploit", "malware", "agent_settings", "restrictions", "exceptions"],
+    }
+
+    allowed_profiles: list[str] = PLATFORM_ALLOWED_PROFILES.get(platform) or []
+
+    # Check each provided profile
+    unsupported_profiles = []
+    for profile_name, profile_value in profile_args.items():
+        # Skip if profile is not provided
+        if not profile_value:
+            continue
+
+        # profile_name is the key like 'exploit', 'malware', etc.
+        if profile_name not in allowed_profiles:
+            unsupported_profiles.append(f"{profile_name} (value: {profile_value})")
+
+    if unsupported_profiles:
+        allowed_list = ", ".join(sorted(allowed_profiles))
+        unsupported_list = ", ".join(unsupported_profiles)
+
+        raise DemistoException(
+            f"The following profiles are not supported for platform '{platform}': {unsupported_list}. "
+            f"Allowed profiles for this platform: {allowed_list}."
+        )
+
+
+def get_profile_ids(client: Client, platform: str, profile_args: dict[str, str | None]) -> dict[str, dict[str, Any]]:
+    """
+    Get profile IDs for multiple profiles from AGENT_PROFILES_TABLE using OR filters.
+
+    Args:
+        client: The Cortex Platform client instance.
+        platform: The platform type (e.g., AGENT_OS_WINDOWS, AGENT_OS_LINUX).
+        profile_args: Dictionary mapping profile type (lowercase) to profile name or ID.
+                     Example: {'exploit': 'Default', 'malware': 'Default'}
+
+    Returns:
+        dict: Dictionary mapping 'PROFILE_TYPE' (uppercase) to profile data.
+              Example: {'EXPLOIT': {'id': 11, 'name': 'Default'}, 'MALWARE': {'id': 10, 'name': 'Default'}}
+
+    Raises:
+        DemistoException: If multiple profiles with the same name exist for a profile type,
+                         or if a requested profile doesn't exist.
+    """
+    or_filters = []
+    for profile_type_lower, profile_name_or_id in profile_args.items():
+        if not profile_name_or_id:  # Skip profiles without values
+            continue
+
+        profile_type = profile_type_lower.upper()
+
+        # Create AND condition for each profile (name OR id + type)
+        and_condition = [
+            {
+                "OR": [
+                    {"SEARCH_FIELD": "PROFILE_NAME", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": profile_name_or_id},
+                    {"SEARCH_FIELD": "PROFILE_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": profile_name_or_id},
+                ]
+            },
+            {"SEARCH_FIELD": "PROFILE_TYPE", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": profile_type},
+        ]
+        or_filters.append({"AND": and_condition})
+
+    # Build the complete filter structure with platform at the top level
+    combined_filter = {
+        "AND": [
+            {"SEARCH_FIELD": "PROFILE_PLATFORM", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": Endpoints.ENDPOINT_PLATFORM[platform]},
+            {"OR": or_filters},
+        ]
+    }
+
+    request_data = {
+        "type": "grid",
+        "table_name": AGENT_PROFILES_TABLE,
+        "filter_data": {
+            "sort": [],
+            "filter": combined_filter,
+        },
+    }
+
+    demisto.debug(f"Querying profiles with filter: {combined_filter}")
+
+    response = client.get_webapp_data(request_data)
+    profiles_data = response.get("reply", {})
+
+    # Group profiles by type to detect duplicates
+    profiles_by_type: dict[str, list[dict]] = {}
+    for profile in profiles_data:
+        profile_type = profile.get("PROFILE_TYPE")
+        if profile_type:
+            if profile_type not in profiles_by_type:
+                profiles_by_type[profile_type] = []
+            profiles_by_type[profile_type].append(profile)
+
+    # Build mapping and check for duplicates
+    profile_map: dict[str, dict[str, Any]] = {}
+
+    for profile_type_lower, profile_name_or_id in profile_args.items():
+        if not profile_name_or_id:  # Skip profiles without values
+            continue
+
+        profile_type = profile_type_lower.upper()
+        matching_profiles = profiles_by_type.get(profile_type, [])
+
+        # Check if profile exists
+        if not matching_profiles:
+            raise DemistoException(
+                f"Profile '{profile_name_or_id}' of type '{profile_type}' not found for platform '{platform}'. "
+                f"Please verify the profile name or ID exists."
+            )
+
+        # Check for multiple profiles with the same name
+        if len(matching_profiles) > 1:
+            profile_details = "\n".join(
+                [f"  - Name: {p.get('PROFILE_NAME')}, ID: {p.get('PROFILE_ID')}" for p in matching_profiles]
+            )
+            raise DemistoException(
+                f"Multiple profiles found with name '{profile_name_or_id}' for type '{profile_type}':\n{profile_details}\n"
+                f"Please use the profile ID instead to specify which one you want."
+            )
+
+        # Single profile found - add to map
+        profile = matching_profiles[0]
+        profile_id = profile.get("PROFILE_ID")
+        profile_name = profile.get("PROFILE_NAME")
+        profile_map[profile_type] = {"id": profile_id, "name": profile_name}
+
+    demisto.debug(f"Retrieved profile IDs for platform {platform}: {profile_map}")
+    return profile_map
+
+
+def fetch_policy_table(client: Client) -> tuple[list[dict], str]:
+    """
+    Fetch the current agent policy table and hash.
+
+    Returns:
+        tuple: (policies_list, policy_hash)
+
+    Raises:
+        DemistoException: If policy hash cannot be retrieved.
+    """
+    demisto.debug("Fetching current agent policy table")
+    policy_response = client.get_agent_policy_table()
+    reply = policy_response.get("reply", {})
+    current_policies = reply.get("DATA", [])
+    policy_hash = reply.get("POLICY_HASH", "")
+
+    if not policy_hash:
+        raise DemistoException("Failed to retrieve policy hash from the current policy table.")
+
+    demisto.debug(f"Current policy hash: {policy_hash}")
+    demisto.debug(f"Current policies count: {len(current_policies)}")
+
+    return current_policies, policy_hash
+
+
+def resolve_platform_name(platform: str) -> str:
+    """
+    Resolve platform name.
+
+    Args:
+        platform: Platform name (e.g., 'windows', 'linux')
+
+    Returns:
+        str: Platform value (e.g., 'AGENT_OS_WINDOWS')
+
+    Raises:
+        DemistoException: If platform is invalid.
+    """
+    platform_value = Endpoints.ENDPOINT_PLATFORM.get(platform)
+    if not platform_value:
+        raise DemistoException(
+            f"Invalid platform '{platform}'. Valid platforms are: {', '.join(Endpoints.ENDPOINT_PLATFORM.keys())}"
+        )
+    return platform_value
+
+
+def resolve_endpoint_names_to_ids(client: Client, endpoint_names: list[str]) -> list[str]:
+    """
+    Resolve endpoint names to their corresponding endpoint IDs, validating that no duplicate names exist.
+
+    Args:
+        client (Client): The Cortex Platform client instance used to query the agents table.
+        endpoint_names (list[str]): List of endpoint names to resolve to IDs.
+
+    Returns:
+        list[str]: List of endpoint IDs corresponding to the provided endpoint names.
+
+    Raises:
+        DemistoException: If no endpoints are found with the specified names, or if multiple
+                          endpoints share the same name (ambiguous resolution).
+    """
+    demisto.debug(f"Resolving endpoint names to IDs: {endpoint_names}")
+
+    filter_builder = FilterBuilder()
+    filter_builder.add_field(Endpoints.ENDPOINT_FIELDS["endpoint_name"], FilterType.EQ, endpoint_names)
+
+    request_data = build_webapp_request_data(
+        table_name=AGENTS_TABLE,
+        filter_dict=filter_builder.to_dict(),
+        limit=MAX_GET_ENDPOINTS_LIMIT,
+        sort_field="AGENT_NAME",
+        sort_order="ASC",
+    )
+
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    raw_endpoints = reply.get("DATA", [])
+
+    if not raw_endpoints:
+        raise DemistoException(f'No endpoints found with the specified names: {", ".join(endpoint_names)}')
+
+    endpoints = map_endpoint_format(raw_endpoints)
+
+    # Check for duplicate endpoint names
+    endpoint_name_to_ids: dict[str, list[str]] = {}
+    for endpoint in endpoints:
+        endpoint_name = endpoint.get("endpoint_name")
+        endpoint_id = endpoint.get("endpoint_id")
+
+        if endpoint_name and endpoint_id:
+            if endpoint_name not in endpoint_name_to_ids:
+                endpoint_name_to_ids[endpoint_name] = []
+            endpoint_name_to_ids[endpoint_name].append(endpoint_id)
+
+    duplicates = {name: ids for name, ids in endpoint_name_to_ids.items() if len(ids) > 1}
+
+    if duplicates:
+        error_message = "Multiple endpoints found with the same name. Please use target_endpoint_ids instead:\n\n"
+        for endpoint_name, endpoint_ids in duplicates.items():
+            error_message += f'Endpoint Name: "{endpoint_name}"\n'
+            for endpoint_id in endpoint_ids:
+                error_message += f"  - ID: {endpoint_id}\n"
+            error_message += "\n"
+        raise DemistoException(error_message.strip())
+
+    endpoint_ids = [endpoint["endpoint_id"] for endpoint in endpoints if endpoint.get("endpoint_id")]
+    demisto.debug(f"Resolved endpoint IDs: {endpoint_ids}")
+    return endpoint_ids
+
+
+def calculate_policy_priority(current_policies: list[dict], platform_value: str, requested_priority: int | None) -> int:
+    """
+    Calculate and validate the policy priority for a new endpoint policy, handling auto-assignment.
+
+    If no priority is requested, assigns one higher than the current maximum for the platform.
+    If the requested priority exceeds the current maximum, it is clamped to max + 1.
+
+    Args:
+        current_policies (list[dict]): The full list of existing policies from the policy table.
+        platform_value (str): The platform identifier (e.g., 'AGENT_OS_WINDOWS', 'AGENT_OS_LINUX').
+        requested_priority (int | None): The desired priority, or None to auto-assign.
+
+    Returns:
+        int: The validated and calculated priority value for the new policy.
+
+    Raises:
+        DemistoException: If the calculated priority is below the minimum allowed user policy priority (1).
+    """
+    MIN_USER_POLICY_PRIORITY = 1
+    platform_policies = [p for p in current_policies if p.get("PLATFORM") == platform_value]
+
+    if not platform_policies:
+        priority = MIN_USER_POLICY_PRIORITY
+    else:
+        max_existing_priority = max(p.get("PRIORITY", 0) for p in platform_policies)
+
+        if requested_priority is None:
+            priority = max_existing_priority + 1
+        elif requested_priority > max_existing_priority:
+            demisto.debug(
+                f"Priority {requested_priority} is higher than max ({max_existing_priority}). "
+                f"Setting to {max_existing_priority + 1}."
+            )
+            priority = max_existing_priority + 1
+        else:
+            priority = requested_priority
+
+    if priority < MIN_USER_POLICY_PRIORITY:
+        raise DemistoException(f"Priority must be at least {MIN_USER_POLICY_PRIORITY}.")
+
+    return priority
+
+
+def shift_policy_priorities(current_policies: list[dict], platform_value: str, new_priority: int) -> None:
+    """
+    Shift existing policies with priority >= new_priority up by 1 to make room for a new policy.
+
+    Modifies the policy list in-place. If no policy currently holds the given priority for the
+    specified platform, no changes are made.
+
+    Args:
+        current_policies (list[dict]): The full list of existing policies from the policy table.
+                                       Modified in-place.
+        platform_value (str): The platform identifier (e.g., 'AGENT_OS_WINDOWS', 'AGENT_OS_LINUX').
+        new_priority (int): The priority value at which to insert the new policy; all existing
+                            policies at this priority or higher will be incremented by 1.
+
+    Returns:
+        None
+    """
+    existing_priority_policy = next(
+        (p for p in current_policies if p.get("PLATFORM") == platform_value and p.get("PRIORITY") == new_priority), None
+    )
+
+    if not existing_priority_policy:
+        return
+
+    demisto.debug(f"Priority {new_priority} exists. Shifting policies.")
+
+    policies_to_shift = sorted(
+        [p for p in current_policies if p.get("PLATFORM") == platform_value and p.get("PRIORITY", 0) >= new_priority],
+        key=lambda p: p.get("PRIORITY", 0),
+        reverse=True,
+    )
+
+    for policy in policies_to_shift:
+        current_priority = policy.get("PRIORITY", 0)
+        new_priority_value = current_priority + 1
+        policy["PRIORITY"] = new_priority_value
+        demisto.debug(f"Shifted '{policy.get('NAME')}' from {current_priority} to {new_priority_value}")
+
+
+def get_identity_and_web_api_profile_defaults(platform_value: str) -> dict[str, Any]:
+    """
+    Get platform-specific default profile IDs for identity and web_and_api profiles.
+
+    Note: identity and web_and_api profiles are currently not supported by the UI, but the API
+    requires them to be present in the policy creation request payload.
+
+    Args:
+        platform_value (str): The platform identifier (e.g., 'AGENT_OS_WINDOWS', 'AGENT_OS_LINUX').
+
+    Returns:
+        dict[str, Any]: A dictionary containing the identity and web_and_api profile names and IDs:
+            - identity (str | None): The identity profile name, or None if not applicable.
+            - identity_id (int | None): The identity profile ID, or None if not applicable.
+            - web_and_api (str | None): The web_and_api profile name, or None if not applicable.
+            - web_and_api_id (int | None): The web_and_api profile ID, or None if not applicable.
+    """
+    WINDOWS_IDENTITY_PROFILE_ID = 17
+    LINUX_WEB_AND_API_PROFILE_ID = 12
+    if platform_value == "AGENT_OS_WINDOWS":
+        return {
+            "identity": "Default",
+            "identity_id": WINDOWS_IDENTITY_PROFILE_ID,
+            "web_and_api": None,
+            "web_and_api_id": None,
+        }
+    elif platform_value == "AGENT_OS_LINUX":
+        return {
+            "identity": None,
+            "identity_id": None,
+            "web_and_api": "Default",
+            "web_and_api_id": LINUX_WEB_AND_API_PROFILE_ID,
+        }
+    else:
+        return {
+            "identity": None,
+            "identity_id": None,
+            "web_and_api": None,
+            "web_and_api_id": None,
+        }
+
+
+def get_platform_specific_profile_defaults(platform: str, args: dict) -> dict[str, str | None]:
+    """
+    Get platform-specific default profile values.
+
+    Platform-specific default values:
+    - serverless: restrictions = 'Default', all others = None
+    - android, ios: malware, agent_settings = 'Default', all others = None
+    - linux, mac, windows: exceptions = 'Default (No Exceptions)', all others = 'Default'
+
+    Args:
+        platform: The platform type (e.g., 'serverless', 'android', 'linux')
+        args: Command arguments containing user-provided profile values
+
+    Returns:
+        dict: Profile arguments with platform-specific defaults applied
+    """
+    # Get user-provided values (None if not provided)
+    user_exploit = args.get("exploit_profile")
+    user_malware = args.get("malware_profile")
+    user_agent_settings = args.get("agent_settings_profile")
+    user_restrictions = args.get("restrictions_profile")
+    user_exceptions = args.get("exceptions_profile")
+
+    # Set platform-specific defaults
+    if platform == "serverless":
+        return {
+            "exploit": user_exploit,
+            "malware": user_malware,
+            "agent_settings": user_agent_settings,
+            "restrictions": user_restrictions or "Default",
+            "exceptions": user_exceptions,
+        }
+    elif platform in ["android", "ios"]:
+        return {
+            "exploit": user_exploit,
+            "malware": user_malware or "Default",
+            "agent_settings": user_agent_settings or "Default",
+            "restrictions": user_restrictions,
+            "exceptions": user_exceptions,
+        }
+    else:  # linux, mac, windows
+        return {
+            "exploit": user_exploit or "Default",
+            "malware": user_malware or "Default",
+            "agent_settings": user_agent_settings or "Default",
+            "restrictions": user_restrictions or "Default",
+            "exceptions": user_exceptions or "Default (No Exceptions)",
+        }
+
+
+def build_policy_object(
+    policy_name: str,
+    platform_value: str,
+    priority: int,
+    target_endpoint_ids: list[str],
+    profile_map: dict[str, dict[str, Any]],
+    description: str,
+) -> dict[str, Any]:
+    """
+    Build the complete policy object with all required fields for the agent policy table.
+
+    Assembles the full policy dictionary including platform, priority, target filter,
+    profile assignments (exploit, malware, agent_settings, restrictions, exceptions),
+    and platform-specific identity/web_and_api profile defaults.
+
+    Args:
+        policy_name (str): The name for the new policy.
+        platform_value (str): The platform identifier (e.g., 'AGENT_OS_WINDOWS', 'AGENT_OS_LINUX').
+        priority (int): The priority level for the policy.
+        target_endpoint_ids (list[str]): List of endpoint IDs that this policy targets.
+        profile_map (dict[str, dict[str, Any]]): Mapping of profile type (uppercase) to profile data
+                                                  containing 'id' and 'name' keys.
+                                                  Example: {'EXPLOIT': {'id': 11, 'name': 'Default'}}
+        description (str): A human-readable description for the policy.
+
+    Returns:
+        dict[str, Any]: The complete policy object ready to be inserted into the agent policy table.
+    """
+    identity_and_web_api_profiles = get_identity_and_web_api_profile_defaults(platform_value)
+    target_filter = build_target_filter_from_endpoint_ids(target_endpoint_ids)
+
+    # Extract profile data
+    policy = {
+        "IS_ANY": False,
+        "PLATFORM": platform_value,
+        "NAME": policy_name,
+        "IS_ENABLED": True,
+        "TARGET_FILTER": target_filter,
+        "TARGET_GROUP_TYPE": "STATIC",
+        "EXPLOIT": profile_map.get("EXPLOIT", {}).get("name"),
+        "EXPLOIT_ID": profile_map.get("EXPLOIT", {}).get("id"),
+        "MALWARE": profile_map.get("MALWARE", {}).get("name"),
+        "MALWARE_ID": profile_map.get("MALWARE", {}).get("id"),
+        "AGENT_SETTINGS": profile_map.get("AGENT_SETTINGS", {}).get("name"),
+        "AGENT_SETTINGS_ID": profile_map.get("AGENT_SETTINGS", {}).get("id"),
+        "RESTRICTIONS": profile_map.get("RESTRICTIONS", {}).get("name"),
+        "RESTRICTIONS_ID": profile_map.get("RESTRICTIONS", {}).get("id"),
+        "EXCEPTIONS": profile_map.get("EXCEPTIONS", {}).get("name"),
+        "EXCEPTIONS_ID": profile_map.get("EXCEPTIONS", {}).get("id"),
+        "IDENTITY_ID": identity_and_web_api_profiles["identity_id"],
+        "IDENTITY": identity_and_web_api_profiles["identity"],
+        "WEB_AND_API_ID": identity_and_web_api_profiles["web_and_api_id"],
+        "WEB_AND_API": identity_and_web_api_profiles["web_and_api"],
+        "TARGET": [],
+        "PRIORITY": priority,
+        "DESCRIPTION": description,
+    }
+
+    return policy
+
+
+def create_endpoint_policy_command(client: Client, args: dict) -> CommandResults:
+    """
+    Creates a new endpoint policy and applies it to specified endpoints.
+
+    This command handles the complex logic of:
+    1. Fetching the current policy table and hash
+    2. Managing priority conflicts (shifting existing policies if needed)
+    3. Creating the new policy with proper schema (TARGET, TARGET_FILTER, profile IDs, etc.)
+    4. Updating the policy table with the complete data
+
+    Policy Priority Specifications:
+    - Default Policy: Fixed at priority 0 (system-level constant). This is a system-level constant
+    and cannot be assigned to user-defined policies.
+    - Priority Ranking: Higher numbers = higher precedence
+    - UI Display: Policies sorted descending (highest priority first)
+
+    Args:
+        client: The Cortex Platform client instance.
+        args: Dictionary containing policy configuration parameters:
+            - policy_name (required): Name for the new policy
+            - target_endpoint_names (optional): Comma-separated list of endpoint names
+            - target_endpoint_ids (optional): Comma-separated list of endpoint IDs
+            - platform (required): Platform type (AGENT_OS_WINDOWS, AGENT_OS_MAC, etc.)
+            - description (optional): Policy description
+            - priority (optional): Policy priority (default: auto-assigned)
+            - exploit_profile (optional): Exploit protection profile name
+            - malware_profile (optional): Malware protection profile name
+            - agent_settings_profile (optional): Agent settings profile name
+
+
+    Returns:
+        CommandResults: Results object with success message and created policy details.
+
+    Raises:
+        DemistoException: If required parameters are missing or policy creation fails.
+    """
+    policy_name = args.get("policy_name", "")
+    target_endpoint_names = argToList(args.get("target_endpoint_names", ""))
+    target_endpoint_ids = argToList(args.get("target_endpoint_ids", ""))
+    platform = args.get("platform", "")
+    description = args.get("description", "")
+    requested_priority = arg_to_number(args.get("priority"))
+
+    if target_endpoint_names and target_endpoint_ids:
+        raise DemistoException(
+            "Cannot provide both target_endpoint_names and target_endpoint_ids. " "Please use one or the other."
+        )
+
+    if not target_endpoint_names and not target_endpoint_ids:
+        raise DemistoException("Either target_endpoint_names or target_endpoint_ids must be provided.")
+
+    platform_value = resolve_platform_name(platform)
+
+    if target_endpoint_names:
+        target_endpoint_ids = resolve_endpoint_names_to_ids(client, target_endpoint_names)
+
+    current_policies, policy_hash = fetch_policy_table(client)
+
+    priority = calculate_policy_priority(current_policies, platform_value, requested_priority)
+    shift_policy_priorities(current_policies, platform_value, priority)
+
+    profile_args = get_platform_specific_profile_defaults(platform, args)
+
+    # Validate that user isn't trying to set profiles not allowed for the platform
+    # This will raise an error if incompatible profiles are provided
+    validate_profile_platform_compatibility(platform, profile_args)
+    profile_map = get_profile_ids(client, platform, profile_args)
+
+    new_policy = build_policy_object(
+        policy_name=policy_name,
+        platform_value=platform_value,
+        priority=priority,
+        target_endpoint_ids=target_endpoint_ids,
+        profile_map=profile_map,
+        description=description,
+    )
+
+    demisto.debug(f"New policy to be created: {new_policy}")
+
+    updated_policies = current_policies + [new_policy]
+    update_payload = {
+        "DATA": updated_policies,
+        "POLICY_HASH": policy_hash,
+    }
+
+    demisto.debug("Updating agent policy table")
+    response = client.update_agent_policy(update_payload)
+
+    readable_output = (
+        f"Successfully created endpoint policy '{policy_name}' with priority {priority} "
+        f"for platform {platform}.\n"
+        f"Target endpoints (by ID): {', '.join(target_endpoint_ids)}"
+    )
+
+    outputs = {
+        "PolicyName": policy_name,
+        "Platform": platform,
+        "Priority": priority,
+        "TargetEndpointIds": target_endpoint_ids,
+        "ExploitProfile": profile_args["exploit"],
+        "MalwareProfile": profile_args["malware"],
+        "AgentSettingsProfile": profile_args["agent_settings"],
+        "RestrictionsProfile": profile_args["restrictions"],
+        "ExceptionsProfile": profile_args["exceptions"],
+        "Description": description,
+    }
+    remove_nulls_from_dictionary(outputs)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.EndpointPolicy",
+        outputs_key_field="PolicyName",
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def find_policies_to_delete(
+    platform_policies: list[dict],
+    policy_names: list[str],
+    policy_ids: list[str],
+    platform: str,
+) -> list[dict]:
+    """
+    Find the policies to delete from the platform policy list based on names or IDs.
+
+    Searches by policy IDs if provided, otherwise searches by policy names. When searching
+    by name, raises an error if multiple policies share the same name to avoid ambiguous deletion.
+
+    Args:
+        platform_policies (list[dict]): List of existing policies filtered to the target platform.
+        policy_names (list[str]): List of policy names to search for. Used when policy_ids is empty.
+        policy_ids (list[str]): List of policy IDs to search for. Takes precedence over policy_names.
+        platform (str): The platform name (e.g., 'windows', 'linux') used in error messages.
+
+    Returns:
+        list[dict]: List of policy dictionaries that match the specified names or IDs.
+
+    Raises:
+        DemistoException: If a policy ID or name is not found, or if multiple policies share
+                          the same name (ambiguous match when searching by name).
+    """
+    policies_to_delete = []
+
+    if policy_ids:
+        # Delete by IDs
+        for policy_id in policy_ids:
+            matching_policies = [p for p in platform_policies if str(p.get("ID")) == str(policy_id)]
+
+            if not matching_policies:
+                raise DemistoException(f"No policy found with ID '{policy_id}' for platform '{platform}'.")
+
+            policies_to_delete.append(matching_policies[0])
+    else:
+        # Delete by names
+        for policy_name in policy_names:
+            matching_policies = [p for p in platform_policies if p.get("NAME") == policy_name]
+
+            if not matching_policies:
+                raise DemistoException(f"No policy found with name '{policy_name}' for platform '{platform}'.")
+
+            if len(matching_policies) > 1:
+                policy_details = "\n".join(
+                    [f"  - Name: {p.get('NAME')}, ID: {p.get('ID')}, Priority: {p.get('PRIORITY')}" for p in matching_policies]
+                )
+                raise DemistoException(
+                    f"Multiple policies found with name '{policy_name}' for platform '{platform}':\n{policy_details}\n"
+                    f"Please use policy_id to specify which one to delete."
+                )
+
+            policies_to_delete.append(matching_policies[0])
+
+    return policies_to_delete
+
+
+def validate_policy_deletable(policy: dict, platform: str) -> None:
+    """
+    Validate that a policy is eligible for deletion.
+
+    Default policies (priority 0) are system-level and cannot be deleted.
+
+    Args:
+        policy (dict): The policy dictionary to validate, expected to contain 'PRIORITY' and 'NAME' keys.
+        platform (str): The platform name (e.g., 'windows', 'linux') used in error messages.
+
+    Returns:
+        None
+
+    Raises:
+        DemistoException: If the policy has priority 0 (default system policy), which cannot be deleted.
+    """
+    DEFAULT_POLICY_PRIORITY = 0  # System default, cannot be deleted
+    priority = policy.get("PRIORITY")
+
+    if priority == DEFAULT_POLICY_PRIORITY:
+        policy_name = policy.get("NAME")
+        raise DemistoException(
+            f"Cannot delete the default policy '{policy_name}' "
+            f"(priority {DEFAULT_POLICY_PRIORITY}) for platform '{platform}'. "
+            f"Default policies are system-level and cannot be removed."
+        )
+
+
+def delete_endpoint_policy_command(client: Client, args: dict) -> CommandResults:
+    """
+    Delete one or more existing endpoint policies from the agent policy table.
+
+    This command:
+    1. Fetches the current policy table and hash
+    2. Identifies policies to delete by names or IDs
+    3. Validates that the policies can be deleted (not default system policies)
+    4. Removes the policies and updates the table with the new hash
+
+    Args:
+        client (Client): The Cortex Platform client instance.
+        args (dict): Dictionary containing policy identification parameters:
+            - policy_name (str, optional): Comma-separated list of policy names to delete.
+            - policy_id (str, optional): Comma-separated list of policy IDs to delete.
+            - platform (str): The platform type (e.g., 'windows', 'linux', 'mac').
+
+    Returns:
+        CommandResults: Results object containing a success message and the list of deleted
+                        policy details (PolicyName, PolicyID, Platform, Priority, Deleted).
+
+    Raises:
+        DemistoException: If neither policy_name nor policy_id is provided, if both are provided,
+                          if the platform is invalid, if no policies exist for the platform,
+                          if a specified policy is not found, or if a default policy deletion
+                          is attempted.
+    """
+    policy_names = argToList(args.get("policy_name"))
+    policy_ids = argToList(args.get("policy_id"))
+    platform = args.get("platform", "")
+
+    if not policy_names and not policy_ids:
+        raise DemistoException("Either policy_name or policy_id must be provided to identify the policy to delete.")
+
+    if policy_names and policy_ids:
+        raise DemistoException("Cannot provide both policy_name and policy_id. Please use one or the other.")
+
+    platform_value = resolve_platform_name(platform)
+
+    current_policies, policy_hash = fetch_policy_table(client)
+
+    platform_policies = [p for p in current_policies if p.get("PLATFORM") == platform_value]
+    demisto.debug(f"Found {len(platform_policies)} policies for platform '{platform}'")
+
+    if not platform_policies:
+        raise DemistoException(f"No policies found for platform '{platform}'.")
+
+    policies_to_delete = find_policies_to_delete(platform_policies, policy_names, policy_ids, platform)
+
+    for policy in policies_to_delete:
+        validate_policy_deletable(policy, platform)
+
+    deleted_policies_info = []
+    for policy in policies_to_delete:
+        policy_info = {
+            "PolicyName": policy.get("NAME"),
+            "PolicyID": policy.get("ID"),
+            "Platform": platform,
+            "Priority": policy.get("PRIORITY"),
+            "Deleted": True,
+        }
+        deleted_policies_info.append(policy_info)
+        demisto.debug(
+            f"Queuing policy for deletion: Name='{policy_info['PolicyName']}', "
+            f"ID={policy_info['PolicyID']}, Priority={policy_info['Priority']}"
+        )
+
+    policies_to_delete_set = {p.get("ID") for p in policies_to_delete}
+    updated_policies = [p for p in current_policies if p.get("ID") not in policies_to_delete_set]
+
+    update_payload = {
+        "DATA": updated_policies,
+        "POLICY_HASH": policy_hash,
+    }
+
+    demisto.debug("Updating agent policy table")
+    response = client.update_agent_policy(update_payload)
+
+    demisto.debug(
+        f"Update successful, policies count after deletion: {len(updated_policies)} (removed {len(policies_to_delete)})"
+    )
+    readable_output = "Successfully deleted the following endpoint policies:\n\n"
+    for policy_info in deleted_policies_info:
+        readable_output += (
+            f"- Name: {policy_info['PolicyName']}, ID: {policy_info['PolicyID']}, Priority: {policy_info['Priority']}\n"
+        )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.DeletedEndpointPolicy",
+        outputs_key_field="PolicyID",
+        outputs=deleted_policies_info,
+        raw_response=response,
+    )
+
+
+def verify_platform_version(version: str = "8.13.0"):
+    if not is_demisto_version_ge(version):
+        raise DemistoException("This command is not available for this platform version")
+
+
+def create_profile_modules_by_type(args: dict, profile_type: str):
+    """
+    Creates the modules configuration for a profile based on the profile type.
+
+    Args:
+        args (dict): The arguments containing the configuration for the profile modules.
+        profile_type (str): The type of the profile ("Malware" or "Exploit").
+
+    Returns:
+        dict: A dictionary containing the configured modules for the profile.
+    """
+    profile_modules = {}
+    if profile_type == MALWARE_TYPE:
+        # Configuration for periodic scan to be used when enabled
+        scan_endpoints_periodic_config = {"type": "weekly", "days": ["sun"], "hour": "00:00", "removableMedia": "disabled"}
+
+        scan_endpoints_arg = args.get(Profile.FIELDS.get("scanEndpoints"), "disabled")
+        if scan_endpoints_arg == "enabled":
+            periodic_scan_config = {"mode": "enabled", **scan_endpoints_periodic_config}
+        else:
+            periodic_scan_config = {"mode": "disabled"}
+
+        profile_modules = {
+            "aspFiles": {
+                "mode": args.get(Profile.FIELDS.get("aspFiles"), "disabled"),
+                "upload": "enabled",
+                "actionOnUnknown": "runLocalAnalysis",
+            },
+            "basTools": {"mode": args.get(Profile.FIELDS.get("basTools"), "disabled")},
+            "uacBypass": {"mode": args.get(Profile.FIELDS.get("uacBypass"), "block"), "quarantine": "enabled"},
+            "ransomware": {
+                "mode": args.get(Profile.FIELDS.get("ransomware"), "block"),
+                "quarantine": "disabled",
+                "smbEncryption": "enabled",
+                "protectionMode": "normal",
+            },
+            "cryptominers": {"mode": args.get(Profile.FIELDS.get("cryptominers"), "block"), "quarantine": "enabled"},
+            "antiTampering": {
+                "mode": args.get(Profile.FIELDS.get("antiTampering"), "block"),
+                "safeMode": args.get(Profile.FIELDS.get("antiTampering"), "block"),
+                "quarantine": "enabled",
+            },
+            "iisProtection": {"mode": args.get(Profile.FIELDS.get("iisProtection"), "block"), "quarantine": "enabled"},
+            "scanEndpoints": {
+                "periodicScan": periodic_scan_config,
+                "endUserInitiatedLocalScan": args.get(Profile.FIELDS.get("endUserInitiatedLocalScan"), "enabled"),
+            },
+            "uefiProtection": {"mode": args.get(Profile.FIELDS.get("uefiProtection"), "block"), "quarantine": "enabled"},
+            "maliciousDevice": {"mode": args.get(Profile.FIELDS.get("maliciousDevice"), "block"), "quarantine": "disabled"},
+            "networkSignature": {"mode": args.get(Profile.FIELDS.get("networkSignature"), "terminateSession")},
+            "passwordStealing": {"mode": args.get(Profile.FIELDS.get("passwordStealing"), "block"), "quarantine": "enabled"},
+            "webshellDroppers": {"mode": args.get(Profile.FIELDS.get("webshellDroppers"), "block"), "quarantine": "enabled"},
+            "onWriteProtection": {
+                "examinePortableExecutables": "disabled",
+                "examineOfficeFiles": "disabled",
+                "powerShellScriptFiles": "disabled",
+                "aspFiles": "disabled",
+                "examineVBScriptFiles": "disabled",
+                "examineJScriptFiles": "disabled",
+            },
+            "examineOfficeFiles": {
+                "mode": args.get(Profile.FIELDS.get("examineOfficeFiles"), "block"),
+                "upload": "enabled",
+                "networkDrives": "enabled",
+                "actionOnUnknown": "runLocalAnalysis",
+                "actionOnLowConfidence": "runLocalAnalysis",
+            },
+            "inProcessShellcode": {
+                "mode": args.get(Profile.FIELDS.get("inProcessShellcode"), "block"),
+                "quarantine": "enabled",
+                "processInjection32Bit": "enabled",
+                "aiPoweredShellcodeProtection": "enabled",
+            },
+            "examineJScriptFiles": {
+                "mode": args.get(Profile.FIELDS.get("examineJScriptFiles"), "block"),
+                "upload": "enabled",
+                "quarantine": "disabled",
+                "actionOnUnknown": "runLocalAnalysis",
+            },
+            "legitimateProcesses": {"mode": args.get(Profile.FIELDS.get("legitimateProcesses"), "block")},
+            "examineVBScriptFiles": {
+                "mode": args.get(Profile.FIELDS.get("examineVBScriptFiles"), "block"),
+                "upload": "enabled",
+                "quarantine": "disabled",
+                "actionOnUnknown": "runLocalAnalysis",
+            },
+            "dynamicSecurityEngine": {
+                "mode": args.get(Profile.FIELDS.get("dynamicSecurityEngine"), "block"),
+                "quarantine": "enabled",
+                "advancedApiMonitoring": "enabled",
+                "driversProtectionMode": "block",
+            },
+            "powerShellScriptFiles": {
+                "mode": args.get(Profile.FIELDS.get("powerShellScriptFiles"), "block"),
+                "upload": "enabled",
+                "quarantine": "disabled",
+                "actionOnUnknown": "runLocalAnalysis",
+            },
+            "financialMalwareThreat": {
+                "mode": args.get(Profile.FIELDS.get("financialMalwareThreat"), "block"),
+                "quarantine": "enabled",
+                "cryptoWalletProtection": "enabled",
+            },
+            "securityMeasuresBypass": {
+                "mode": args.get(Profile.FIELDS.get("securityMeasuresBypass"), "block"),
+                "quarantine": "enabled",
+            },
+            "dynamicDriverProtection": {
+                "mode": args.get(Profile.FIELDS.get("dynamicDriverProtection"), "block"),
+                "quarantine": "disabled",
+            },
+            "dynamicKernelProtection": {"mode": args.get(Profile.FIELDS.get("dynamicKernelProtection"), "block")},
+            "passwordTheftProtection": {"mode": args.get(Profile.FIELDS.get("passwordTheftProtection"), "enabled")},
+            "examinePortableExecutables": {
+                "mode": args.get(Profile.FIELDS.get("examinePortableExecutables"), "block"),
+                "upload": "enabled",
+                "grayware": "disabled",
+                "quarantine": "disabled",
+                "actionOnUnknown": "runLocalAnalysis",
+                "actionOnLowConfidence": "runLocalAnalysis",
+            },
+            "maliciousCausalityChainsResponse": {
+                "mode": args.get(Profile.FIELDS.get("maliciousCausalityChainsResponse"), "enabled")
+            },
+        }
+
+    elif profile_type == EXPLOIT_TYPE:
+        profile_modules = {
+            "vulnerableApps": {"mode": args.get(Profile.FIELDS.get("vulnerableApps"), "block"), "javaProtection": "enabled"},
+            "logicalExploits": {"mode": args.get(Profile.FIELDS.get("logicalExploits"), "block"), "forbidDllLoad": []},
+            "osKernelExploits": {"mode": args.get(Profile.FIELDS.get("osKernelExploits"), "block")},
+            "browserExploitKits": {"mode": args.get(Profile.FIELDS.get("browserExploitKits"), "block")},
+            "additionalProcesses": {"mode": args.get(Profile.FIELDS.get("additionalProcesses"), "disabled"), "processes": []},
+        }
+
+    return profile_modules
+
+
+def validate_profile_args(args: dict):
+    """
+    Validates that the arguments provided in args match the predefined values in Profile.VALIDATION.
+    """
+    invalid_args = []
+    for arg, value in args.items():
+        if arg in Profile.VALIDATION:
+            allowed_values = Profile.VALIDATION[arg]
+            if value not in allowed_values:
+                invalid_args.append(
+                    f"Invalid value '{value}' for argument '{arg}'. Allowed values are: {', '.join(allowed_values)}."
+                )
+
+    if invalid_args:
+        raise DemistoException("\n".join(invalid_args))
+
+
+def create_profile_command(
+    client: Client, args: dict, profile_type: str, profile_platform: str = WINDOWS_PLATFORM
+) -> CommandResults:
+    """
+    Creates a new profile in the Cortex Platform.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): The arguments containing the profile details.
+        profile_type (str): The type of the profile ("Malware" or "Exploit").
+
+    Returns:
+        CommandResults: The command results containing the ID of the created profile.
+    """
+    validate_profile_args(args)
+    profile_name = args.get("profile_name")
+    profile_description = args.get("profile_description", "")
+
+    profile_modules = create_profile_modules_by_type(args, profile_type)
+    payload = {
+        "request_data": {
+            "name": profile_name,
+            "profile_type": profile_type,
+            "platform": profile_platform,
+            "description": profile_description,
+            "modules": profile_modules,
+        }
+    }
+    response = client.create_profile(payload).get("reply", "")
+
+    return CommandResults(
+        readable_output=f"Profile {response} created successfully.",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Profile",
+        outputs={"profile_id": response},
+        raw_response={"profile_id": response},
+    )
+
+
+def update_profile_command(client, args):
+    """
+    Updates an existing profile in the Cortex Platform.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): The arguments containing the profile ID and fields to update.
+
+    Returns:
+        CommandResults: The command results indicating the success of the update.
+    """
+    validate_profile_args(args)
+    profile_id = args.get("profile_id")
+
+    current_profile = client.get_profile(profile_id)
+    if not current_profile or current_profile.get("reply") is None:
+        raise DemistoException(f"Profile {profile_id} doesn't exist.")
+
+    update_data = current_profile.get("reply", {})
+    current_profile_modules = update_data.get("PROFILE_MODULES", {})
+
+    for module_name, module_data in current_profile_modules.items():
+        arg_value = args.get(Profile.FIELDS.get(module_name))
+        if arg_value and "mode" in module_data:
+            module_data["mode"]["value"] = arg_value
+            if "safeMode" in module_data:
+                module_data["safeMode"]["value"] = arg_value
+
+    if profile_name := args.get("profile_name"):
+        update_data["PROFILE_NAME"] = profile_name
+
+    if profile_description := args.get("profile_description"):
+        update_data["PROFILE_DESCRIPTION"] = profile_description
+
+    update_data["PROFILE_MODULES"] = current_profile_modules
+    update_profile = {"profile_id": profile_id, "update_data": update_data}
+
+    client.update_profile(update_profile)
+
+    return CommandResults(readable_output=f"Profile {profile_id} updated successfully.")
+
+
+def delete_profile_command(client, args):
+    """
+    Deletes one or more profiles from the Cortex Platform.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): The arguments containing the profile IDs to delete.
+
+    Returns:
+        CommandResults: The command results indicating the success of the deletion.
+    """
+    profile_ids = argToList(args.get("profile_ids"))
+    client.delete_profile(profile_ids)
+    return CommandResults(readable_output="Your request was sent successfully.")
+
+
+def list_brokers_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves broker information from the BROKER_CLUSTER_TABLE.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - broker_vm_names (str, optional): Comma-separated list of broker VM names to filter by.
+                         - limit (int, optional): Maximum number of brokers to return (default: 50).
+
+    Returns:
+        CommandResults: Object containing the broker data.
+    """
+    broker_vm_names = argToList(args.get("broker_vm_names"))
+    limit = arg_to_number(args.get("limit")) or 50
+
+    filter_builder = FilterBuilder()
+    if broker_vm_names:
+        filter_builder.add_field("DEVICE_NAME", FilterType.EQ, broker_vm_names)
+
+    request_data = build_webapp_request_data(
+        table_name=BROKER_CLUSTER_TABLE,
+        filter_dict=filter_builder.to_dict(),
+        limit=limit,
+        sort_field="DEVICE_NAME",
+    )
+
+    demisto.debug(f"Querying BROKER_CLUSTER_TABLE with request: {request_data}")
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    brokers = reply.get("brokers", [])
+
+    return CommandResults(
+        readable_output=tableToMarkdown("Brokers", brokers, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Broker",
+        outputs_key_field="DEVICE_NAME",
+        outputs=brokers,
     )
 
 
@@ -4096,41 +6023,21 @@ def main():  # pragma: no cover
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
     remove_nulls_from_dictionary(args)
-    headers: dict = {}
-
-    webapp_api_url = "/api/webapp"
-    public_api_url = f"{webapp_api_url}/public_api/v1"
-    data_platform_api_url = f"{webapp_api_url}/data-platform"
-    appsec_api_url = f"{webapp_api_url}/public_api/appsec"
-    agents_api_url = f"{webapp_api_url}/agents"
-    xsoar_api_url = "/xsoar"
-    proxy = demisto.params().get("proxy", False)
-    verify_cert = not demisto.params().get("insecure", False)
-    try:
-        timeout = int(demisto.params().get("timeout", 120))
-    except ValueError as e:
-        demisto.debug(f"Failed casting timeout parameter to int, falling back to 120 - {e}")
-        timeout = 120
-
-    client_url = public_api_url
+    # Logic to determine which API type the current command belongs to
     if command in WEBAPP_COMMANDS:
-        client_url = webapp_api_url
+        api_type = "webapp"
     elif command in DATA_PLATFORM_COMMANDS:
-        client_url = data_platform_api_url
+        api_type = "data_platform"
     elif command in APPSEC_COMMANDS:
-        client_url = appsec_api_url
+        api_type = "appsec"
     elif command in ENDPOINT_COMMANDS:
-        client_url = agents_api_url
+        api_type = "agents"
     elif command in XSOAR_COMMANDS:
-        client_url = xsoar_api_url
+        api_type = "xsoar"
+    else:
+        api_type = "public"
 
-    client = Client(
-        base_url=client_url,
-        proxy=proxy,
-        verify=verify_cert,
-        headers=headers,
-        timeout=timeout,
-    )
+    client = init_client(api_type)
 
     try:
         if command == "test-module":
@@ -4215,12 +6122,19 @@ def main():  # pragma: no cover
         elif command == "core-get-endpoint-support-file":
             return_results(get_endpoint_support_file_command(client, args))
 
+        elif command == "core-send-endpoint-heartbeat":
+            return_results(send_endpoint_heartbeat_command(client, args))
+
         elif command == "core-list-exception-rules":
             return_results(list_exception_rules_command(client, args))
         elif command == "core-list-system-users":
             return_results(list_system_users_command(client, args))
         elif command == "core-list-endpoints":
             return_results(core_list_endpoints_command(client, args))
+        elif command == "core-add-assessment-profile":
+            return_results(core_add_assessment_profile_command(client, args))
+        elif command == "core-list-compliance-standards":
+            return_results(core_list_compliance_standards_command(client, args))
 
         elif command == "core-get-endpoint-update-version":
             return_results(get_endpoint_update_version_command(client, args))
@@ -4228,11 +6142,43 @@ def main():  # pragma: no cover
         elif command == "core-update-endpoint-version":
             return_results(update_endpoint_version_command(client, args))
 
-        elif command == "core-xql-generic-query-platform":
-            if not is_demisto_version_ge("8.13.0"):
-                raise DemistoException("This command is not available for this platform version")
+        elif command == "core-get-case-resolution-statuses":
+            verify_platform_version()
+            return_results(get_case_resolution_statuses(client, args))
 
+        elif command == "core-xql-generic-query-platform":
+            verify_platform_version()
             return_results(xql_query_platform_command(client, args))
+
+        elif command == "core-get-ai-model-activity":
+            return_results(get_ai_model_activity_command(client, args))
+
+        elif command == "core-create-windows-malware-profile":
+            return_results(create_profile_command(client, args, MALWARE_TYPE, WINDOWS_PLATFORM))
+
+        elif command == "core-create-windows-exploit-profile":
+            return_results(create_profile_command(client, args, EXPLOIT_TYPE, WINDOWS_PLATFORM))
+
+        elif command == "core-update-windows-malware-profile":
+            return_results(update_profile_command(client, args))
+
+        elif command == "core-update-windows-exploit-profile":
+            return_results(update_profile_command(client, args))
+
+        elif command == "core-delete-profile":
+            return_results(delete_profile_command(client, args))
+
+        elif command == "core-list-findings":
+            return_results(list_findings_command(client, args))
+
+        elif command == "core-list-brokers":
+            return_results(list_brokers_command(client, args))
+
+        elif command == "core-create-endpoint-policy":
+            return_results(create_endpoint_policy_command(client, args))
+
+        elif command == "core-delete-endpoint-policy":
+            return_results(delete_endpoint_policy_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
