@@ -888,9 +888,7 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
             # Persist the flag so subsequent cycles skip this endpoint for the rest of today (UTC).
             integration_context[MODIFIED_ENDPOINT_UNSUPPORTED_DATE_KEY] = today_utc
             set_to_integration_context_with_retries(context=integration_context)
-            demisto.debug(
-                f"get-modified-remote-data: stored unsupported-endpoint flag for {today_utc} in integration context."
-            )
+            demisto.debug(f"get-modified-remote-data: stored unsupported-endpoint flag for {today_utc} in integration context.")
             demisto.results(
                 {
                     "Type": EntryType.ERROR,
@@ -901,12 +899,14 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
             sys.exit(0)
         raise
 
-    # If the call succeeded and a stale unsupported-flag exists in the integration context 
+    # If the call succeeded and a stale unsupported-flag exists in the integration context
     # (meaning the remote machine was upgraded), clear it so the endpoint is no longer suppressed.
     if integration_context.get(MODIFIED_ENDPOINT_UNSUPPORTED_DATE_KEY):
         del integration_context[MODIFIED_ENDPOINT_UNSUPPORTED_DATE_KEY]
         set_to_integration_context_with_retries(context=integration_context)
-        demisto.debug("get-modified-remote-data: cleared unsupported-endpoint flag from integration context after successful call.")
+        demisto.debug(
+            "get-modified-remote-data: cleared unsupported-endpoint flag from integration context after successful call."
+        )
 
     demisto.debug(f"get-modified-remote-data: found {len(modified_incident_ids)} modified incident(s): {modified_incident_ids}")
     return GetModifiedRemoteDataResponse(modified_incident_ids)
