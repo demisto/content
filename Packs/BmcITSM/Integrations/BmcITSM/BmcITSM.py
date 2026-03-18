@@ -1,6 +1,6 @@
 from collections.abc import Callable
 from copy import deepcopy
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -537,7 +537,7 @@ class AuthClient(BaseClient):
             integration_context (dict): The current integration context.
             token_data (dict): The token response from the OAuth server.
         """
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         access_token_expiry = (now + timedelta(minutes=ACCESS_TOKEN_DEFAULT_TIMEOUT_MINUTES)).strftime("%Y-%m-%dT%H:%M:%SZ")
         refresh_token_expiry = (now + timedelta(days=REFRESH_TOKEN_DEFAULT_TIMEOUT_DAYS)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -4394,10 +4394,10 @@ def is_token_expired(expires_in: str) -> bool:
     if not expires_in:
         return True
     try:
-        expiration_time = datetime.strptime(expires_in, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+        expiration_time = datetime.strptime(expires_in, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=UTC)
 
         # Subtract 1 min to refresh slightly early and avoid expiration issues.
-        current_time_with_buffer = datetime.now(timezone.utc) + timedelta(minutes=1)
+        current_time_with_buffer = datetime.now(UTC) + timedelta(minutes=1)
 
         if expiration_time > current_time_with_buffer:
             demisto.debug(f"[is_token_expired] - Token still valid (expires at {expires_in}).")

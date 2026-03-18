@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -1693,7 +1693,7 @@ class TestIsTokenExpired:
         """
         from BmcITSM import is_token_expired
 
-        future_time = (datetime.now(timezone.utc) + timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        future_time = (datetime.now(UTC) + timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
         assert is_token_expired(future_time) is False
 
     def test_token_expired(self):
@@ -1707,7 +1707,7 @@ class TestIsTokenExpired:
         """
         from BmcITSM import is_token_expired
 
-        past_time = (datetime.now(timezone.utc) - timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        past_time = (datetime.now(UTC) - timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
         assert is_token_expired(past_time) is True
 
     def test_token_expires_within_buffer(self):
@@ -1721,7 +1721,7 @@ class TestIsTokenExpired:
         """
         from BmcITSM import is_token_expired
 
-        near_future = (datetime.now(timezone.utc) + timedelta(seconds=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        near_future = (datetime.now(UTC) + timedelta(seconds=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
         assert is_token_expired(near_future) is True
 
     def test_token_empty_string(self):
@@ -1777,7 +1777,7 @@ class test_getOAuthToken:
         Then:
             - Returns the cached access token without making API calls.
         """
-        future_time = (datetime.now(timezone.utc) + timedelta(minutes=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        future_time = (datetime.now(UTC) + timedelta(minutes=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
         mock_context = {
             "oauth_access_token": "cached-access-token",
             "oauth_access_token_expires_in": future_time,
@@ -1801,8 +1801,8 @@ class test_getOAuthToken:
         Then:
             - Uses the refresh token to get a new access token.
         """
-        past_time = (datetime.now(timezone.utc) - timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
-        future_time = (datetime.now(timezone.utc) + timedelta(hours=12)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        past_time = (datetime.now(UTC) - timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        future_time = (datetime.now(UTC) + timedelta(hours=12)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
         mock_context = {
             "oauth_access_token": "expired-access-token",
@@ -1922,7 +1922,7 @@ class TestClientOAuthInit:
         """
         from BmcITSM import AuthClient
 
-        future_time = (datetime.now(timezone.utc) + timedelta(minutes=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        future_time = (datetime.now(UTC) + timedelta(minutes=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
         mock_context = {
             "oauth_access_token": "my-oauth-token",
             "oauth_access_token_expires_in": future_time,
