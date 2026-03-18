@@ -1530,7 +1530,7 @@ def get_agent(api_key_source: str, platform: str, token: str) -> str:
         return ""
     if api_key_source in ["pcc", "prismaaccessapi", "xsoartim", "xdr"]:
         return api_key_source
-    if (platform == "x2" or is_demisto_version_ge("8")) and not api_key_source:
+    if (is_xsiam() or is_demisto_version_ge("8")) and not api_key_source:
         return "xdr"
     # we have an 'other' api key that requires no additional api key headers for agent
     return ""
