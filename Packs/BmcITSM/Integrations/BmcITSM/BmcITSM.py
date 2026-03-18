@@ -192,6 +192,16 @@ TICKET_TYPE_TO_STATUS_FIELD = {
     WORK_ORDER: "Status",
 }
 
+TICKET_TYPE_TO_ATTACHMENT_FORM = {
+    INCIDENT: "HPD:IncidentInterface",
+    CHANGE_REQUEST: "CHG:ChangeInterface",
+    SERVICE_REQUEST: "SRM:RequestInterface",
+    TASK: "TMS:TaskInterface",
+    PROBLEM_INVESTIGATION: "PBM:ProblemInterface",
+    KNOWN_ERROR: "PBM:KnownErrorInterface",
+    WORK_ORDER: "WOI:WorkOrder",
+}
+
 TICKET_TYPE_TO_CONTEXT_MAPPER = {
     SERVICE_REQUEST: SERVICE_REQUEST_CONTEXT_MAPPER,
     CHANGE_REQUEST: CHANGE_REQUEST_CONTEXT_MAPPER,
@@ -1748,6 +1758,33 @@ class Client(BaseClient):
 
         return response
 
+    def add_attachment_request(self, form_name: str, request_id: str, files: dict, entry_data: dict) -> None:
+        """
+        Add attachment(s) to an existing entry using multipart/form-data PUT request.
+
+        Args:
+            form_name (str): The BMC form name (e.g., HPD:IncidentInterface).
+            request_id (str): The entry/request ID to update.
+            files (dict): A dictionary of multipart file parts. Keys are like 'attach-{fieldName}',
+                          values are tuples of (filename, file_content, content_type).
+            entry_data (dict): A dictionary of multipart Field Mapping.
+                          Keys are '{fieldName}' and values are '{fileName}',
+                          The dictionary can also include optional other field values to update alongside the attachment.
+        """
+        demisto.debug(f"[add_attachment_request] {form_name=}, {request_id=}, {files=}, {entry_data=}")
+        data = {"values": entry_data}
+
+        # Add the entry JSON part
+        files["entry"] = (None, json.dumps(data), "application/json")
+
+        demisto.debug(f"[add_attachment_request] Sending request with {files=}")
+        response = self._http_request(
+            "PUT",
+            f"arsys/v1/entry/{form_name}/{request_id}",
+            files=files,
+            resp_type="text",
+        )
+        return response
 
 def list_command(
     client: Client,
@@ -4398,6 +4435,98 @@ def test_module(client: Client, auth_client: AuthClient) -> None:
     return_results("ok")
 
 
+def add_attachment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Add attachment(s) to an existing BMC ITSM entry.
+
+    Args:
+        client (Client): BmcITSM API client.
+        args (Dict[str, Any]): Command arguments.
+
+    Returns:
+        CommandResults: Command results with readable output.
+    """
+    prefix = "[add_attachment_command]"
+    entry_ids_raw: List[str] = argToList(args.get("entry_ids", ""))
+    field_names_raw: List[str] = argToList(args.get("field_names", ""))
+    entry_type: str = args.get("entry_type")
+    request_id: str = args.get("request_id")
+    entry_json_str: str | None = args.get("entry")
+
+    demisto.debug(f"{prefix} {args=}")
+    # Validation 1: entry_ids and field_names must have the same length
+    if len(entry_ids_raw) != len(field_names_raw):
+        message = f"Number of entry_ids ({len(entry_ids_raw)}) must match number of field_names ({len(field_names_raw)})."
+        demisto.debug(f"{prefix} {message}")
+        raise ValueError(message)
+
+    # Validation 2: Parse optional entry JSON
+    entry_data: dict = {}
+    if entry_json_str:
+        try:
+            entry_data = json.loads(entry_json_str)
+        except json.JSONDecodeError as e:
+            message = f"Invalid JSON format provided in the 'entry' argument: {e}"
+            demisto.debug(f"{prefix} {message}")
+            raise ValueError(message)
+
+    # Validation 3: Strip 'attach-' prefix if user accidentally included it
+    field_names = [fn.removeprefix("attach-") for fn in field_names_raw]
+    demisto.debug(f"{prefix} field_names after removing 'attach-' prefix: {field_names}")
+
+    # Validation 4: Verify all entry_ids exist and build the files dict
+    files: dict = {}
+    opened_files: list = []
+    try:
+        for entry_id, field_name in zip(entry_ids_raw, field_names):
+            try:
+                file_info = demisto.getFilePath(entry_id)
+            except Exception as e:
+                raise ValueError(
+                    f"Could not find file for entry ID '{entry_id}' in the War Room. "
+                    f"Please verify the entry ID is correct. Error: {e}"
+                ) from e
+
+            file_path = file_info.get("path")
+            file_name = file_info.get("name")
+            demisto.debug(f"{prefix} Processing file: {entry_id=}, {file_name=}, {field_name=}")
+
+            # Open the file in binary mode and keep it open until the API call is made
+            f = open(file_path, "rb")
+            opened_files.append(f)
+
+            # Add filename mapping to entry_data values
+            entry_data[field_name] = file_name
+
+            # Build the multipart file part with 'attach-' prefix
+            files[f"attach-{field_name}"] = (file_name, f, "application/octet-stream")
+
+        # Resolve form name from entry_type
+        form_name = TICKET_TYPE_TO_ATTACHMENT_FORM.get(entry_type)
+
+        response = client.add_attachment_request(
+            form_name=form_name,
+            request_id=request_id,
+            files=files,
+            entry_data=entry_data,
+        )
+        demisto.debug(f"{prefix} {response=}")
+    finally:
+        # IMPORTANT: Close all file handles regardless of success or failure
+        for f in opened_files:
+            f.close()
+
+    if response.status_code == 204:
+        file_count = len(entry_ids_raw)
+        attachment_word = "Attachment" if file_count == 1 else "Attachments"
+        return CommandResults(
+            readable_output=f"{attachment_word} {'was' if file_count == 1 else 'were'} successfully added to {entry_type} {request_id}."
+        )
+    else:
+        message = f"Failed to add attachment(s) to {entry_type} {request_id}.\n{response.status_code}: {response.text}"
+        demisto.debug(f"{prefix} {message}")
+        raise DemistoException(message)
+
+
 def main() -> None:
     """
     Main function
@@ -4499,6 +4628,7 @@ def main() -> None:
             "bmc-itsm-work-order-template-list": work_order_template_list_command,
             "bmc-itsm-work-order-create": work_order_create_command,
             "bmc-itsm-work-order-update": work_order_update_command,
+            "bmc-itsm-add-attachment": add_attachment_command,
         }
 
         if command == "test-module":

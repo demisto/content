@@ -2355,6 +2355,36 @@ script:
       type: String
       defaultValue: ""
     outputs: []
+  - name: bmc-itsm-add-attachment
+    description: Adds attachments to an existing BMC Helix ITSM ticket. Supports adding attachments to incident, change request, service request, task, problem investigation, known error, and work order forms.
+    arguments:
+    - name: entry_ids
+      description: A comma-separated list of XSOAR War Room entry IDs for the files to attach (e.g., "12@34,56@78").
+      required: true
+      isArray: true
+    - name: entry_type
+      description: The type of the BMC Helix ITSM ticket to add the attachment to.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - change request
+      - service request
+      - task
+      - problem investigation
+      - known error
+      - work order
+    - name: request_id
+      description: The request ID of the ticket to add the attachment to.
+      required: true
+    - name: field_names
+      description: A comma-separated list of BMC attachment field names corresponding to each entry ID (e.g., "z2AF_Attachment1,z2AF_Attachment2"). Must have the same number of items as entry_ids.
+      required: true
+      isArray: true
+    - name: entry
+      description: 'An optional JSON dictionary of additional field values to update on the entry (e.g., {"Status": "In Progress", "Description": "Evidence from XSOAR"}).'
+      defaultValue: ""
+    outputs: []
   - name: bmc-itsm-generate-login-url
     description: Generate the login URL used for the OAuth 2.0 Authorization Code flow. Follow the URL to obtain an authorization code, then paste it into the instance configuration 'Authorization Code' field.
     arguments: []
