@@ -51,6 +51,15 @@ CLOSURE_REASON_TO_API = {
 # Reverse mapping from API values to human-readable UI values
 CLOSURE_REASON_TO_DISPLAY = {v: k for k, v in CLOSURE_REASON_TO_API.items()}
 
+EXPECTED_CLOSURE_REASON_SELECT_VALUES = [
+    "None",
+    "Resolved",
+    "No Longer a Threat",
+    "Irrelevant Alert Subtype",
+    "False Positive",
+    "Other",
+]
+
 
 class Client(BaseClient):
     """
@@ -74,7 +83,7 @@ class Client(BaseClient):
             "X-Integration-Instance-Name": demisto.integrationInstance(),
             "X-Integration-Instance-Id": "",
             "X-Integration-Customer-Name": params.get("client_name", ""),
-            "X-Integration-Version": "1.2.0",
+            "X-Integration-Version": "1.3.1",
         }
         super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy, headers=self._headers)
 
@@ -676,13 +685,20 @@ def update_remote_system(
 
             if updated_status == "closed" or (not updated_status and xsoar_incident_closed):
                 # Closing the alert - need closure_reason and description
-                closure_reason = update_args.get("closure_reason", "Other")
+                closure_reason = update_args.get("closure_reason") or update_args.get("cyberintclosurereason") or "Other"
                 # Convert display value to API value
                 closure_reason_api = CLOSURE_REASON_TO_API.get(closure_reason, closure_reason)
-                closure_reason_description = update_args.get("closure_reason_description", "Closed from XSOAR")
+
                 updated_arguments["status"] = "closed"
                 updated_arguments["closure_reason"] = closure_reason_api
-                updated_arguments["closure_reason_description"] = closure_reason_description
+                # Use description from XSOAR field, fallback to static text only if not provided
+                if closure_reason == "Other":
+                    closure_reason_description = (
+                        update_args.get("closure_reason_description")
+                        or update_args.get("cyberintclosurereasondescription")
+                        or "Closed from XSOAR"
+                    )
+                    updated_arguments["closure_reason_description"] = closure_reason_description
             elif updated_status:
                 # Status change to non-closed state
                 updated_arguments["status"] = updated_status
@@ -750,7 +766,9 @@ def get_remote_data_command(
     mirrored_ticket["cyberintstatus"] = MIRRORING_FIELDS_MAPPER.get(mirrored_ticket["status"])
     # Convert API value to display value for closure_reason
     api_closure_reason = mirrored_ticket.get("closure_reason")
-    mirrored_ticket["cyberintclosurereason"] = CLOSURE_REASON_TO_DISPLAY.get(api_closure_reason, api_closure_reason)
+    mirrored_ticket["cyberintclosurereason"] = (
+        CLOSURE_REASON_TO_DISPLAY.get(api_closure_reason, api_closure_reason) if api_closure_reason else None
+    )
     mirrored_ticket["cyberintclosurereasondescription"] = mirrored_ticket.get("closure_reason_description")
 
     demisto.debug(f"******** Alert {incident_id} - {ticket_last_update=} {last_update=}")
@@ -786,6 +804,48 @@ def date_to_epoch_for_fetch(date: datetime | None) -> int:
     if date is None:
         return int(datetime.now().timestamp())
     return date_to_timestamp(date) // 1000
+
+
+def migrate_closure_fields_if_needed(last_run: dict[str, Any]) -> None:
+    """
+    One-time migration: ensures the closure reason incident fields have the correct
+    display names and user-friendly select values. Runs once and sets a flag in last_run
+    so it won't repeat.
+    """
+    if last_run.get("closure_fields_migrated"):
+        return
+
+    demisto.debug("******** Running one-time closure fields migration")
+
+    field_updates = {
+        "incident_cyberintclosurereason": {
+            "name": "Cyberint Alert Close Reason",
+            "selectValues": EXPECTED_CLOSURE_REASON_SELECT_VALUES,
+        },
+        "incident_cyberintclosurereasondescription": {
+            "name": "Cyberint Alert Close Reason Description",
+        },
+    }
+
+    for field_id, updates in field_updates.items():
+        try:
+            get_result = demisto.executeCommand("core-api-get", {"uri": f"/incidentfield/{field_id}"})
+            if is_error(get_result):
+                demisto.debug(f"******** Could not get field {field_id}: {get_error(get_result)}")
+                continue
+
+            current_field = get_result[0]["Contents"]["response"]
+            current_field.update(updates)
+
+            update_result = demisto.executeCommand("core-api-post", {"uri": f"/incidentfield/{field_id}", "body": current_field})
+            if is_error(update_result):
+                demisto.debug(f"******** Could not update field {field_id}: {get_error(update_result)}")
+            else:
+                demisto.debug(f"******** Successfully migrated field {field_id}")
+        except Exception as e:
+            demisto.debug(f"******** Error migrating field {field_id}: {e}")
+
+    last_run["closure_fields_migrated"] = True
 
 
 def fetch_incidents(
@@ -959,6 +1019,8 @@ def main():
             return_results(result)
 
         elif command == "fetch-incidents":
+            last_run = demisto.getLastRun()
+            migrate_closure_fields_if_needed(last_run)
             fetch_environment = argToList(params.get("fetch_environment", ""))
             fetch_status = params.get("fetch_status", [])
             fetch_type = params.get("fetch_type", [])
@@ -971,7 +1033,7 @@ def main():
             close_alert = params.get("close_alert", False)
             next_run, incidents = fetch_incidents(
                 client,
-                demisto.getLastRun(),
+                last_run,
                 first_fetch_time,
                 fetch_severity,
                 fetch_status,
@@ -982,6 +1044,7 @@ def main():
                 mirror_direction,
                 close_alert,
             )
+            next_run["closure_fields_migrated"] = last_run.get("closure_fields_migrated", False)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 

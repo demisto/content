@@ -802,6 +802,38 @@ def test_update_remote_system_status_closed_in_delta(requests_mock, client):
     assert result == "INT-124"
 
 
+def test_update_remote_system_no_description_uses_default(requests_mock, client):
+    """
+    Test update_remote_system falls back to 'Closed from XSOAR' when no description provided.
+    """
+    from Cyberint import update_remote_system
+
+    requests_mock.put(f"{BASE_URL}/api/v1/alerts/status", json={})
+
+    args = {
+        "remoteId": "INT-126",
+        "status": IncidentStatus.DONE,
+        "incidentChanged": True,
+        "delta": {"closure_reason": "False Positive"},  # No description provided
+        "data": {},
+    }
+
+    result = update_remote_system(client, args)
+    req = requests_mock.last_request
+
+    payload = req.json()
+    assert payload == {
+        "alert_ref_ids": ["INT-126"],
+        "data": {
+            "closure_reason": "false_positive",
+            "closure_reason_description": "Closed from XSOAR",  # Default fallback
+            "status": "closed",
+        },
+    }
+
+    assert result == "INT-126"
+
+
 def test_update_remote_system_cyberint_alert_already_closed(requests_mock, client):
     """
     Test update_remote_system when Cyberint alert is already closed.
