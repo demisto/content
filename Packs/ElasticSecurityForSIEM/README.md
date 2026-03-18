@@ -1,0 +1,1 @@
+This pack allows for using Elastic Security for SIEM for security operations management. It also allows for searching Elastic logs, managing cases and alerts, and much more.
