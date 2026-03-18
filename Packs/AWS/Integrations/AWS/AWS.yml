@@ -1762,7 +1762,7 @@ script:
         hidden: true
       - name: values_to_remove
         description: 'A CSV list of DB cluster snapshot attributes to remove from the attribute specified by AttributeName. The default value is all.'
-        defaultValue: 'all'
+        defaultValue: []
         hidden: true
 
   - name: aws-rds-db-cluster-enable-deletion-protection-quick-action
