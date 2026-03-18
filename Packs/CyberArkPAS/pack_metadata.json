@@ -13,7 +13,9 @@
     "defaultDataSource": "CyberArkPAS",
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "CyberArk"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
