@@ -401,6 +401,14 @@ def create_new_incident(
     service_key=SERVICE_KEY,
 ) -> dict:
     """Create a new incident in the PagerDuty instance."""
+    _msg = (
+        f"[BYOSI-XSUP] create_new_incident called with: source={source!r}, summary={summary!r}, "
+        f"severity={severity!r}, action={action!r}, description={description!r}, group={group!r}, "
+        f"event_class={event_class!r}, component={component!r}, incident_key={incident_key!r}, "
+        f"service_key={'<redacted>' if service_key else None}"
+    )
+    demisto.info(_msg)
+    print(_msg)  # noqa: T201
     payload = {
         "routing_key": service_key,
         "event_action": action,
@@ -417,8 +425,26 @@ def create_new_incident(
             "custom_details": {"description": description},
         },
     }
+    # Log payload with routing_key redacted for security
+    safe_payload = {**payload, "routing_key": "<redacted>"}
+    _msg = f"[BYOSI-XSUP] create_new_incident payload: {json.dumps(safe_payload)}"
+    demisto.info(_msg)
+    print(_msg)  # noqa: T201
+    _msg = f"[BYOSI-XSUP] create_new_incident POST to {CREATE_EVENT_URL}"
+    demisto.info(_msg)
+    print(_msg)  # noqa: T201
 
-    return http_request("POST", CREATE_EVENT_URL, data=json.dumps(payload))
+    try:
+        response = http_request("POST", CREATE_EVENT_URL, data=json.dumps(payload))
+        _msg = f"[BYOSI-XSUP] create_new_incident response: {response}"
+        demisto.info(_msg)
+        print(_msg)  # noqa: T201
+        return response
+    except Exception as e:
+        _msg = f"[BYOSI-XSUP] create_new_incident failed with exception: {type(e).__name__}: {e}"
+        demisto.info(_msg)
+        print(_msg)  # noqa: T201
+        raise
 
 
 def resolve_or_ack_incident(action, incident_key, service_key=SERVICE_KEY) -> dict:
@@ -683,13 +709,34 @@ def submit_event_command(
     serviceKey=SERVICE_KEY,
 ):
     """Create new event."""
+    _msg = (
+        f"[BYOSI-XSUP] submit_event_command called with: source={source!r}, summary={summary!r}, "
+        f"severity={severity!r}, action={action!r}, description={description!r}, group={group!r}, "
+        f"event_class={event_class!r}, component={component!r}, incident_key={incident_key!r}, "
+        f"serviceKey={'<redacted>' if serviceKey else None}"
+    )
+    demisto.info(_msg)
+    print(_msg)  # noqa: T201
     if serviceKey is None:
+        _msg = "[BYOSI-XSUP] serviceKey is None — raising exception"
+        demisto.info(_msg)
+        print(_msg)  # noqa: T201
         raise Exception("You must enter a ServiceKey at the integration parameters or in the command to process this action.")
 
+    _msg = f"[BYOSI-XSUP] serviceKey is set (length={len(serviceKey)}), proceeding to create_new_incident"
+    demisto.info(_msg)
+    print(_msg)  # noqa: T201
     res = create_new_incident(
         source, summary, severity, action, description, group, event_class, component, incident_key, serviceKey
     )
-    return extract_new_event_data(TRIGGER_EVENT, res)
+    _msg = f"[BYOSI-XSUP] create_new_incident returned: {res}"
+    demisto.info(_msg)
+    print(_msg)  # noqa: T201
+    result = extract_new_event_data(TRIGGER_EVENT, res)
+    _msg = f"[BYOSI-XSUP] extract_new_event_data result keys: {list(result.keys()) if isinstance(result, dict) else type(result).__name__}"
+    demisto.info(_msg)
+    print(_msg)  # noqa: T201
+    return result
 
 
 def get_all_schedules_command(query=None, limit=None) -> dict:
@@ -915,7 +962,17 @@ def main():
         elif command == "PagerDuty-incidents":
             demisto.results(get_incidents_command(args))
         elif command == "PagerDuty-submit-event":
-            demisto.results(submit_event_command(**args))
+            _msg = f"[BYOSI-XSUP] PagerDuty-submit-event invoked with raw args: {args}"
+            demisto.info(_msg)
+            print(_msg)  # noqa: T201
+            _msg = f"[BYOSI-XSUP] PagerDuty-submit-event args keys: {list(args.keys())}"
+            demisto.info(_msg)
+            print(_msg)  # noqa: T201
+            result = submit_event_command(**args)
+            _msg = f"[BYOSI-XSUP] PagerDuty-submit-event result type: {type(result).__name__}"
+            demisto.info(_msg)
+            print(_msg)  # noqa: T201
+            demisto.results(result)
         elif command == "PagerDuty-get-users-on-call":
             return_results(get_on_call_users_command(**args))
         elif command == "PagerDuty-get-all-schedules":
