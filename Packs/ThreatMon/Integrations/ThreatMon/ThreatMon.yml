@@ -47,6 +47,12 @@ configuration:
   type: 8
   required: false
   section: Collect
+- display: Fetch Interval (minutes)
+  name: fetchInterval
+  defaultvalue: "5"
+  type: 0
+  required: false
+  section: Collect
 script:
   script: ''
   type: python
@@ -68,8 +74,17 @@ script:
       - Resolved
       description: 'Incident Status.'
     description: Update Incident Status endpoint allows you to change/update status. of specified Threatmon incidents.
+  - name: threatmon_request_takedown
+    arguments:
+    - name: findingId
+      required: true
+      description: The ID of the finding (alarm row) to submit a takedown request for.
+    - name: finding
+      required: true
+      description: Description of the finding that justifies the takedown request.
+    description: Submits a takedown request for a specific Threatmon finding. Eligible finding types include Phishing Domain Detected, Rogue Mobile App Detected, Fake SM Account Detected, and similar alarm types.
   isfetch: true
-  dockerimage: demisto/python3:3.12.11.4417419
+  dockerimage: demisto/python3:3.12.13.7444307
 fromversion: 5.0.0
 tests:
 - No tests
