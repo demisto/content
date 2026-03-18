@@ -80,6 +80,10 @@ class APIKeys(str, Enum):
     DATA = "data"
     PAGING = "paging"
     CURSOR = "cursor"
+    PAGE_SIZE = "pageSize"
+    QUERY = "query"
+    DATE = "date"
+    TIMESTAMP = "timestamp"
 
 
 class APIValues(str, Enum):
@@ -409,15 +413,15 @@ class Client(BaseClient):
         """
         demisto.debug(f"[API Create Query] From: {date_from} | To: {date_to or 'Now'}")
 
-        filter_model: dict[str, Any] = {"date": {APIKeys.DATE_FROM.value: date_from}}
+        filter_model: dict[str, Any] = {APIKeys.DATE.value: {APIKeys.DATE_FROM.value: date_from}}
         if date_to:
-            filter_model["date"][APIKeys.DATE_TO.value] = date_to
+            filter_model[APIKeys.DATE.value][APIKeys.DATE_TO.value] = date_to
 
-        sort_model = [{APIKeys.FIELD_NAME.value: "timestamp", APIKeys.DIRECTION.value: "asc"}]
+        sort_model = [{APIKeys.FIELD_NAME.value: APIKeys.TIMESTAMP.value, APIKeys.DIRECTION.value: "asc"}]
 
         request_body = {
-            "query": {
-                "pageSize": DefaultValues.PAGE_SIZE.value,
+            APIKeys.QUERY.value: {
+                APIKeys.PAGE_SIZE.value: DefaultValues.PAGE_SIZE.value,
                 APIKeys.FILTER_MODEL.value: filter_model,
                 APIKeys.SORT_MODEL.value: sort_model,
             }

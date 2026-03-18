@@ -574,6 +574,7 @@ def test_create_stream_query_success(mocker, client, date_from, date_to, expecte
     json_data = call_args[1]["json_data"]
     assert APIKeys.FILTER_MODEL.value in json_data["query"]
     assert APIKeys.SORT_MODEL.value in json_data["query"]
+    assert APIKeys.PAGE_SIZE.value in json_data["query"]
 
     filter_model = json_data["query"][APIKeys.FILTER_MODEL.value]["date"]
     for key in expected_filter_keys:
