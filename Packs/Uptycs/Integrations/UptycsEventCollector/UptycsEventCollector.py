@@ -108,8 +108,7 @@ def _base64url_encode(data: bytes) -> str:
     return base64.urlsafe_b64encode(data).rstrip(b"=").decode("utf-8")
 
 
-def generate_jwt_token(api_key: str, api_secret: str, role_id: str | None = None,
-                       security_zone_id: str | None = None) -> str:
+def generate_jwt_token(api_key: str, api_secret: str, role_id: str | None = None, security_zone_id: str | None = None) -> str:
     """Generate a JWT token for Uptycs API authentication.
 
     Creates an HS256-signed JWT with the API key as issuer and optional
@@ -207,17 +206,50 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def add_time_to_events(events: list[dict[str, Any]]) -> None:
-    """Add _time field to events for XSIAM ingestion.
+def determine_entry_status(created_at: str, updated_at: str) -> str:
+    """Determine the entry status based on createdAt and updatedAt timestamps.
 
-    Maps the event's 'alertTime' field to '_time' for proper XSIAM indexing.
+    Args:
+        created_at: The event creation timestamp.
+        updated_at: The event last-update timestamp.
+
+    Returns:
+        'new' if createdAt == updatedAt, 'updated' if updatedAt > createdAt.
+    """
+    if updated_at > created_at:
+        return "updated"
+    return "new"
+
+
+def enrich_events_for_xsiam(events: list[dict[str, Any]]) -> None:
+    """Enrich events with _TIME and _ENTRY_STATUS fields for XSIAM ingestion.
+
+    Sets '_TIME' from 'createdAt' (falls back to 'updatedAt' if missing).
+    Sets '_ENTRY_STATUS' to 'new' or 'updated' based on createdAt vs updatedAt.
+
+    Args:
+        events: List of event dictionaries to enrich in-place.
     """
     for event in events:
-        event_time = event.get("alertTime")
-        if event_time:
-            event["_time"] = event_time
+        event_id = event.get("id", "unknown")
+        created_at = event.get("createdAt", "")
+        updated_at = event.get("updatedAt", "")
+
+        if created_at:
+            event["_TIME"] = created_at
+        elif updated_at:
+            event["_TIME"] = updated_at
+            demisto.debug(f"[Event Enrichment] Event {event_id}: 'createdAt' missing, using 'updatedAt' for _TIME")
         else:
-            demisto.debug(f"[Event Time] WARNING: Event missing 'alertTime' field: {event.get('id', 'unknown')}")
+            demisto.debug(f"[Event Enrichment] WARNING: Event {event_id} missing both 'createdAt' and 'updatedAt'")
+
+        if created_at and updated_at:
+            event["_ENTRY_STATUS"] = determine_entry_status(created_at, updated_at)
+        else:
+            demisto.debug(
+                f"[Event Enrichment] WARNING: Event {event_id} missing 'createdAt' or 'updatedAt',"
+                " cannot determine _ENTRY_STATUS"
+            )
 
 
 def deduplicate_events(events: list[dict[str, Any]], last_fetched_ids: list[str]) -> list[dict[str, Any]]:
@@ -326,9 +358,7 @@ class Client(ContentClient):
             APIKeys.LIMIT: limit,
         }
 
-        demisto.debug(
-            f"[API Fetch] Fetching alerts | From: {created_after} | To: {end_time} | Offset: {offset} | Limit: {limit}"
-        )
+        demisto.debug(f"[API Fetch] Fetching alerts | From: {created_after} | To: {end_time} | Offset: {offset} | Limit: {limit}")
 
         response = self._http_request(method="GET", url_suffix=url_suffix, params=request_params)
 
@@ -467,7 +497,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults |
     events = fetch_events_with_pagination(client, created_after, created_before, limit)
 
     if should_push_events and events:
-        add_time_to_events(events)
+        enrich_events_for_xsiam(events)
         send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
         demisto.debug(f"[Command] Pushed {len(events)} events to XSIAM")
         return f"Successfully retrieved and pushed {len(events)} events to XSIAM"
@@ -501,9 +531,7 @@ def fetch_events_command(client: Client) -> None:
 
     if last_fetch_timestamp:
         time_input = last_fetch_timestamp
-        demisto.debug(
-            f"[Fetch] Continuing from Last Run. Fetching from: {time_input}. Prev ID count: {len(last_fetched_ids)}"
-        )
+        demisto.debug(f"[Fetch] Continuing from Last Run. Fetching from: {time_input}. Prev ID count: {len(last_fetched_ids)}")
     else:
         time_input = Config.DEFAULT_FROM_TIME
         demisto.debug("[Fetch] First Run - starting from default time")
@@ -521,7 +549,7 @@ def fetch_events_command(client: Client) -> None:
     new_events = deduplicate_events(events, last_fetched_ids)
 
     if new_events:
-        add_time_to_events(new_events)
+        enrich_events_for_xsiam(new_events)
         send_events_to_xsiam(events=new_events, vendor=Config.VENDOR, product=Config.PRODUCT)
         demisto.debug(f"[Fetch] Pushed {len(new_events)} events to XSIAM")
 
@@ -571,13 +599,13 @@ def main() -> None:
         )
 
         if command == "test-module":
-            result = test_module(client)
-            return_results(result)
+            test_result = test_module(client)
+            return_results(test_result)
         elif command == "fetch-events":
             fetch_events_command(client)
         elif command == "uptycs-get-events":
-            result = get_events_command(client, demisto.args())
-            return_results(result)
+            command_result = get_events_command(client, demisto.args())
+            return_results(command_result)
         else:
             raise DemistoException(f"Command '{command}' is not implemented")
 
