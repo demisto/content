@@ -3175,6 +3175,7 @@ script:
       name: subscription_id
       type: String
       required: true
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
       prettyname: Subscription ID
@@ -3182,18 +3183,21 @@ script:
       name: resource_group_name
       type: String
       required: true
+      defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
-      prettyname: Resource Group Name
+      prettyname: Resource Group
     - description: The name of the security group.
       name: security_group_name
       required: true
+      defaultValue: Logic App Name
       prettyname: Logic App Name
       prettypredefined:
         Logic App Name: ${asset.xdm.asset.raw_fields.Platform Discovery.name}
     - description: The name of the rule to be deleted.
       name: security_rule_name
       required: true
+      defaultValue: NSG Rule
       prettyname: NSG Rule
       prettypredefined:
         NSG Rule: ${asset.xdm.asset.raw_fields.Platform Discovery.properties.securityRules.name}
@@ -3253,6 +3257,7 @@ script:
       name: subscription_id
       type: String
       required: true
+      defaultValue: Subscription ID
       prettyname: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
@@ -3261,9 +3266,13 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+      defaultValue: Resource Group
     - name: name
       type: String
       required: true
+      defaultValue: AZ Web App
       description: Name of the Web App.
       prettyname: AZ Web App
       prettypredefined:
@@ -3486,18 +3495,21 @@ script:
       name: subscription_id
       type: String
       required: true
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
       prettyname: Subscription ID
     - description: The resource group name.
       name: resource_group_name
       required: true
+      defaultValue: Resource Group
       prettyname: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - description: The name of the storage account.
       name: account_name
       required: true
+      defaultValue: Storage Account
       prettyname: Storage Account
       prettypredefined:
         Storage Account: ${asset.xdm.asset.name}
@@ -3588,6 +3600,7 @@ script:
       type: string
       description: The subscription ID.
       required: true
+      defaultValue: Subscription ID
       prettyname: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
@@ -3596,11 +3609,15 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+      defaultValue: Resource Group
     - name: name
       type: string
       required: true
+      defaultValue: AZ Web App
       description: Name of the Web App.
-      prettyname: AZ Webapp
+      prettyname: AZ Web App
       prettypredefined:
         AZ Web App: ${asset.xdm.asset.name}
     - auto: PREDEFINED
@@ -3709,6 +3726,7 @@ script:
       type: string
       description: The subscription ID.
       required: true
+      defaultValue: Subscription ID
       prettyname: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
@@ -3717,11 +3735,15 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+      defaultValue: Resource Group
     - name: name
       type: string
       required: true
+      defaultValue: AZ Web App
       description: Name of the Web App.
-      prettyname: AZ Webapp
+      prettyname: AZ Web App
       prettypredefined:
         AZ Web App: ${asset.xdm.asset.name}
     - auto: PREDEFINED
@@ -3837,18 +3859,21 @@ script:
       type: string
       description: The subscription ID.
       required: true
+      defaultValue: Subscription ID
       prettyname: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - description: The resource group name.
       name: resource_group_name
       required: true
+      defaultValue: Resource Group
       prettyname: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - description: Name of the storage account.
       name: account_name
       required: true
+      defaultValue: Storage Account
       prettyname: Storage Account
       prettypredefined:
         Storage Account: ${asset.xdm.asset.name}
@@ -3938,6 +3963,7 @@ script:
       type: string
       description: The subscription ID.
       required: true
+      defaultValue: Subscription ID
       prettyname: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
@@ -3945,11 +3971,15 @@ script:
       type: string
       required: true
       description: The resource group name.
+      defaultValue: Resource Group
       prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: name
       type: string
       required: true
       description: Name of the Function App.
+      defaultValue: AZ Function Name
       prettyname: AZ Function Name
       prettypredefined:
         AZ Function Name: ${asset.xdm.asset.name}
@@ -4060,18 +4090,21 @@ script:
       type: string
       description: The subscription ID.
       required: true
+      defaultValue: Subscription ID
       prettyname: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - description: The resource group name.
       name: resource_group_name
       required: true
+      defaultValue: Resource Group
       prettyname: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - description: Name of the storage account.
       name: account_name
       required: true
+      defaultValue: Storage Account
       prettyname: Storage Account
       prettypredefined:
         Storage Account: ${asset.xdm.asset.name}
@@ -4161,6 +4194,7 @@ script:
       type: string
       description: The subscription ID.
       required: true
+      defaultValue: Subscription ID
       prettyname: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
@@ -4169,13 +4203,17 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: name
       type: string
       required: true
+      defaultValue: AZ Web App
       description: Name of the Web App.
-      prettyname: AZ Webapp
+      prettyname: AZ Web App
       prettypredefined:
-        AZ Webapp: ${asset.xdm.asset.name}
+        AZ Web App: ${asset.xdm.asset.name}
     - auto: PREDEFINED
       name: remote_debugging_enabled
       type: bool
@@ -4651,6 +4689,7 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -4658,13 +4697,17 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+      defaultValue: Resource Group
     - name: name
       type: string
       required: true
       description: Name of the Web App.
-      prettyname: AZ Webapp
+      prettyname: AZ Web App
+      defaultValue: AZ Web App
       prettypredefined:
-        AZ Webapp: ${asset.xdm.asset.name}
+        AZ Web App: ${asset.xdm.asset.name}
     - name: min_tls_version
       type: str
       auto: PREDEFINED
@@ -4774,6 +4817,7 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -4781,11 +4825,15 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: name
       type: string
       required: true
       description: Name of the Web App.
       prettyname: AZ Function Name
+      defaultValue: AZ Function Name
       prettypredefined:
         AZ Function Name: ${asset.xdm.asset.name}
     - name: min_tls_version
@@ -4897,6 +4945,7 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -4904,6 +4953,7 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
+      defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: server_name
@@ -4911,6 +4961,7 @@ script:
       required: true
       description: Name of the MySQL flexible server.
       prettyname: MySQL Server
+      defaultValue: MySQL Server
       prettypredefined:
         MySQL Server: ${asset.xdm.asset.name}
     - name: configuration_name
@@ -4933,18 +4984,21 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - description: The resource group name.
       name: resource_group_name
       required: true
       prettyname: Resource Group
+      defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - description: Name of the storage account.
       name: account_name
       required: true
       prettyname: Storage Account
+      defaultValue: Storage Account
       prettypredefined:
         Storage Account: ${asset.xdm.asset.name}
     - auto: PREDEFINED
@@ -5034,6 +5088,7 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: log_profile_name
@@ -5041,6 +5096,7 @@ script:
       required: true
       type: String
       prettyname: Log Profile
+      defaultValue: Log Profile
       prettypredefined:
         Log Profile: ${asset.xdm.asset.name}
     - name: location
@@ -5100,6 +5156,7 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -5107,12 +5164,14 @@ script:
       description: The resource group name.
       required: true
       prettyname: Resource Group
+      defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - description: Name of the storage account.
       name: account_name
-      required: true 
+      required: true
       prettyname: Storage Account
+      defaultValue: Storage Account
       prettypredefined:
         Storage Account: ${asset.xdm.asset.name}
     - auto: PREDEFINED
@@ -5202,6 +5261,7 @@ script:
       required: true
       description: The subscription ID.
       prettyname: Subscription ID
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -5209,11 +5269,15 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: name
       type: String
       required: true
       description: Name of the Function App.
       prettyname: AZ Function Name
+      defaultValue: AZ Function Name
       prettypredefined:
         AZ Function Name: ${asset.xdm.asset.name}
     - name: identity_type
@@ -5435,6 +5499,7 @@ script:
       required: true
       description: The subscription ID.
       prettyname: Subscription ID
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - description: The resource group name.
@@ -5442,6 +5507,7 @@ script:
       required: true
       prettyname: Resource Group
       type: String
+      defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - description: Name of the storage account.
@@ -5449,6 +5515,7 @@ script:
       required: true
       prettyname: Storage Account
       type: String
+      defaultValue: Storage Account
       prettypredefined:
         Storage Account: ${asset.xdm.asset.name}
     - auto: PREDEFINED
@@ -5502,6 +5569,7 @@ script:
       required: true
       description: The subscription ID.
       prettyname: Subscription ID
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -5509,6 +5577,7 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
+      defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: disk_name
@@ -5516,6 +5585,7 @@ script:
       type: string
       required: true
       description: Name of the managed disk. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters.
+      defaultValue: VM Disk
       prettypredefined:
         VM Disk: ${asset.xdm.asset.name}
     - name: public_network_access
@@ -5642,6 +5712,7 @@ script:
       required: true
       description: The subscription ID.
       prettyname: Subscription ID
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -5649,6 +5720,7 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
+      defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: disk_name
@@ -5656,6 +5728,7 @@ script:
       type: string
       required: true
       description: Name of the managed disk. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters.
+      defaultValue: VM Disk
       prettypredefined:
         VM Disk: ${asset.xdm.asset.name}
     - name: data_access_auth_mode
@@ -5777,13 +5850,15 @@ script:
       required: true
       description: The subscription ID.
       prettyname: Subscription ID
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
-      type: String 
+      type: String
       required: true
       description: The resource group name.
       prettyname: Resource Group
+      defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroupName}
     - name: registry_name
@@ -5791,6 +5866,7 @@ script:
       required: true
       description: Name of the container registry.
       prettyname: Azure Container Registry
+      defaultValue: Azure Container Registry
       prettypredefined:
         Azure Container Registry: ${asset.xdm.asset.name}
     - name: allow_exports
@@ -5883,6 +5959,7 @@ script:
       required: true
       description: The subscription ID.
       prettyname: Subscription ID
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -5890,6 +5967,7 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
+      defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroupName}
     - name: registry_name
@@ -5897,6 +5975,7 @@ script:
       required: true
       description: The name of the container registry.
       prettyname: Azure Container Registry
+      defaultValue: Azure Container Registry
       prettypredefined:
         Azure Container Registry: ${asset.xdm.asset.name}
     - name: authentication_as_arm_policy
@@ -5984,13 +6063,15 @@ script:
       required: true
       description: The subscription ID.
       prettyname: Subscription ID
+      defaultValue: Subscription ID
       prettypredefined:
-        Subscription ID: ${asset.xdm.asset.realm}      
+        Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
       type: String
       required: true
       description: The resource group name.
       prettyname: Resource Group
+      defaultValue: Resource Group
       prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroupName}
     - name: registry_name
@@ -5998,6 +6079,7 @@ script:
       required: true
       description: The name of the container registry.
       prettyname: Azure Container Registry
+      defaultValue: Azure Container Registry
       prettypredefined:
         Azure Container Registry: ${asset.xdm.asset.name}
     - name: anonymous_pull_enabled
@@ -6086,6 +6168,7 @@ script:
       type: String
       required: true
       prettyname: Subscription ID
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: name
@@ -6097,6 +6180,7 @@ script:
       description: Scope for the policy assignment.
       required: true
       prettyname: Scope
+      defaultValue: Scope
       prettypredefined:
         Scope: ${asset.xdm.asset.raw_fields.Platform Discovery.properties.scope}
     - name: policy_definition_id
@@ -6179,6 +6263,7 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -6186,11 +6271,15 @@ script:
       description: The resource group name.
       required: true
       prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: server_name
       type: string
       required: true
       description: Name of the PostgreSQL server.
       prettyname: Postgres Server Name
+      defaultValue: Postgres Server Name
       prettypredefined:
         Postgres Server Name: ${asset.xdm.asset.name}
     - name: configuration_name
@@ -6219,6 +6308,7 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -6226,11 +6316,15 @@ script:
       description: The resource group name.
       required: true
       prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: server_name
       type: string
       required: true
       description: Name of the PostgreSQL server.
       prettyname: Postgres Server Name
+      defaultValue: Postgres Server Name
       prettypredefined:
         Postgres Server Name: ${asset.xdm.asset.name}
     - name: configuration_name
@@ -6259,6 +6353,7 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -6266,11 +6361,15 @@ script:
       description: The resource group name.
       required: true
       prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: server_name
       type: string
       required: true
       description: Name of the PostgreSQL server.
       prettyname: Postgres Server Name
+      defaultValue: Postgres Server Name
       prettypredefined:
         Postgres Server Name: ${asset.xdm.asset.name}
     - name: configuration_name
@@ -6299,6 +6398,7 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -6306,11 +6406,15 @@ script:
       description: The resource group name.
       required: true
       prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: server_name
       type: string
       required: true
       description: Name of the PostgreSQL server.
       prettyname: Postgres Server Name
+      defaultValue: Postgres Server Name
       prettypredefined:
         Postgres Server Name: ${asset.xdm.asset.name}
     - name: configuration_name
@@ -6339,6 +6443,7 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -6346,11 +6451,15 @@ script:
       description: The resource group name.
       required: true
       prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: server_name
       type: string
       required: true
       description: Name of the PostgreSQL server.
       prettyname: Postgres Server Name
+      defaultValue: Postgres Server Name
       prettypredefined:
         Postgres Server Name: ${asset.xdm.asset.name}
     - name: configuration_name
@@ -6379,6 +6488,7 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -6386,11 +6496,15 @@ script:
       description: The resource group name.
       required: true
       prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: server_name
       type: string
       required: true
       description: Name of the PostgreSQL server.
       prettyname: Postgres Server Name
+      defaultValue: Postgres Server Name
       prettypredefined:
         Postgres Server Name: ${asset.xdm.asset.name}
     - name: configuration_name
@@ -6419,6 +6533,7 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      defaultValue: Subscription ID
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
@@ -6426,11 +6541,15 @@ script:
       required: true
       description: The resource group name.
       prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: server_name
       type: String
       required: true
       description: Name of the PostgreSQL server.
       prettyname: Postgres Server Name
+      defaultValue: Postgres Server Name
       prettypredefined:
         Postgres Server Name: ${asset.xdm.asset.name}
     - name: ssl_enforcement
@@ -6614,4 +6733,4 @@ supportsquickactions: true
 isCloudProviderIntegration: true
 tests:
 - No tests (auto formatted)
-
+internal: true
