@@ -1,0 +1,73 @@
+commonfields:
+  id: UptycsEventCollector
+  version: -1
+name: #TODO
+display: #TODO
+category: #TODO
+provider: #TODO
+description: #TODO: Add description for Uptycs Event Colle v ctor integration.
+sectionorder:
+- Connect
+- Collect
+configuration:
+- name: url
+  display: Server URL
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: https://{{domain}}.uptycs.io where domain is customer domain. Possible value https://oxford.uptycs.io/
+- name: api_key
+  display: API Key
+  required: true
+  type: 4
+  section: Connect
+- name: api_secret
+  display: API Secret
+  required: true
+  type: # TODO add type
+  section: Connect
+- name: customer_id
+  display: Customer ID
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: Possible value:f786af52-7ab7-4e13-91f1-98287c008efa
+- name: role_id
+  display: Role ID
+  required: false
+  type: 0
+  section: Connect
+  additionalinfo: Possible value:69bd9774-789d-4b2a-95c1-33a5407ea2ca
+- name: security_zone_id
+  display: Security Zone ID
+  required: false
+  type: 0
+  section: Connect
+  additionalinfo: Possible value:e9552844-789d-45cb-9a39-6564b1287024
+- name: max_fetch
+  display: Maximum number of alerts per fetch
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
+  defaultvalue: "10000" 
+  additionalinfo: Maximum number of alerts to fetch per cycle (default 10000).
+script:
+  commands:
+  - name: uptycs-get-events
+    #TODO add commands details
+  isfetchevents: true
+  runonce: false
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.12.5490952
+fromversion: 8.11.0
+triggers: #TODO
+marketplaces:
+- marketplacev2
+- platform
+supportedModules:
+- xsiam
+tests:
+- No tests (auto formatted)
