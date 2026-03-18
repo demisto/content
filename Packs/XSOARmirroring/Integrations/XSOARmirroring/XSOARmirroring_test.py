@@ -798,6 +798,8 @@ def test_get_modified_remote_data_circuit_breaker_skips_call_when_flag_set(mocke
     )
     mock_get_modified = mocker.patch.object(Client, "get_modified_incidents")
     mock_results = mocker.patch("demistomock.results")
+    mocker.patch("demistomock.debug")
+    mocker.patch("demistomock.error")
     mock_exit = mocker.patch.object(sys, "exit", side_effect=SystemExit)
 
     client = Client(base_url="https://test.com")
