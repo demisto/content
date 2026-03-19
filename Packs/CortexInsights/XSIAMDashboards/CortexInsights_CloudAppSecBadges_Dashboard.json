@@ -1,20 +1,25 @@
 {
     "dashboards_data": [
         {
-            "name": "Cortex Cloud Runtime Badges (Text)",
-            "description": "This dashboard visualizes progress toward achieving key cloud runtime security milestones using a simple badge-based system. It provides \"Achieved\" or \"Not Passing\" statuses for critical metrics like vulnerability reduction, remediation of internet-exposed risks, and the rate of automated fixes.",
+            "name": "Cortex Cloud Appsec Badges (Text)",
+            "description": "This dashboard tracks the achievement of key milestones for implementing Cloud Application Security best practices. It visualizes whether essential configurations are in place, such as the creation of custom policies, the use of automated CI/CD actions, and recent scan activity.",
             "status": "ENABLED",
             "layout": [
                 {
-                    "id": "row-4017",
+                    "id": "row-3400",
                     "data": [
                         {
-                            "key": "xql_1766432608053",
+                            "key": "xql_1770931833379",
                             "data": {
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
-                                "height": 488.5,
-                                "phrase": "dataset = cloud_health_auditing | filter (capability contains \"\"\"Registry\"\"\") | dedup account | comp count_distinct(account ) as accounts_with_registry_scanning_enabled   | alter status = if(accounts_with_registry_scanning_enabled  \u003e 1, \"Achieved\", \"Not Currently Passing\")\n\n\n\n| view graph type = wordcloud header = \"Registry Scanned\" xaxis = status yaxis = accounts_with_registry_scanning_enabled word_color = \"#ea7207\" multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "height": 707.5,
+                                "phrase": "config timeframe = 30d\n| dataset = cas_policies\n| filter is_custom = true \n| comp count_distinct(policy_id ) as custom_cas_policy_count\n| alter status = if (custom_cas_policy_count \u003e=1, \"Achieved\", \"Not Currently Passing\")\n\n\n| view graph type = wordcloud header = \"Create AppSec Policy for any Finding Type\" xaxis = status yaxis = custom_cas_policy_count multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
                                 "time_frame": {
                                     "relativeTime": 86400000
                                 },
@@ -25,7 +30,7 @@
                                             "command": {
                                                 "op": "=",
                                                 "name": "header",
-                                                "value": "\"Registry Scanned\""
+                                                "value": "\"Create AppSec Policy for any Finding Type\""
                                             }
                                         },
                                         {
@@ -39,14 +44,7 @@
                                             "command": {
                                                 "op": "=",
                                                 "name": "yaxis",
-                                                "value": "accounts_with_registry_scanning_enabled"
-                                            }
-                                        },
-                                        {
-                                            "command": {
-                                                "op": "=",
-                                                "name": "word_color",
-                                                "value": "\"#ea7207\""
+                                                "value": "custom_cas_policy_count"
                                             }
                                         },
                                         {
@@ -75,12 +73,12 @@
                             }
                         },
                         {
-                            "key": "xql_1771533371707",
+                            "key": "xql_1770930118959",
                             "data": {
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
-                                "height": 488.5,
-                                "phrase": "config timeframe = 30d | dataset = uvm_findings | bin first_observed  span = 15d |  alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", first_observed   ) | filter asset_type contains \"registry\" | comp count(vulnerability_id ) as current_vulns by date | sort desc date | windowcomp lag(current_vulns ) sort asc date as previous_issues |  filter previous_issues != null | alter percent_burndown = round(multiply(divide(subtract(current_vulns, previous_issues  ), previous_issues),-100)) | alter issues_resolved = subtract( current_vulns , previous_issues ) | alter status = if(percent_burndown  \u003e20, \"Achieved\", \"Not Currently Passing\")  | limit 1\n\n\n| view graph type = wordcloud header = \"20% percent reduction in vulnerabilities in registries\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "height": 707.5,
+                                "phrase": "config timeframe = 30d | dataset = cas_policies  | filter is_custom = true  | filter actions = \"REPORT_CLI\" \n| comp count_distinct(policy_id   ) as policy_count\n| alter status = if (policy_count \u003e=1, \"Achieved\", \"Not Currently Passing\")\n\n\n\n| view graph type = wordcloud header = \"Create AppSec Policy with CI Comment\" xaxis = status yaxis = policy_count multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                                 "timeSpan": {
                                     "toTime": "now",
                                     "fromTime": "30d",
@@ -96,7 +94,7 @@
                                             "command": {
                                                 "op": "=",
                                                 "name": "header",
-                                                "value": "\"20% percent reduction in vulnerabilities in registries\""
+                                                "value": "\"Create AppSec Policy with CI Comment\""
                                             }
                                         },
                                         {
@@ -110,7 +108,7 @@
                                             "command": {
                                                 "op": "=",
                                                 "name": "yaxis",
-                                                "value": "percent_burndown"
+                                                "value": "policy_count"
                                             }
                                         },
                                         {
@@ -139,12 +137,12 @@
                             }
                         },
                         {
-                            "key": "xql_1770740829621",
+                            "key": "xql_1770926769532",
                             "data": {
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
-                                "height": 488.5,
-                                "phrase": "config timeframe = 30d | dataset = issues | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.severity in(ENUM.CRITICAL , ENUM.HIGH ) and xdm.issue.detection.method = \"CLOUD_NETWORK_ANALYZER\" and xdm.issue.status.progress = ENUM.NEW | comp count(xdm.issue.id) as num_of_issues by date | sort desc date | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues , previous_issues), previous_issues),100)) | alter issues_resolved = subtract(num_of_issues , previous_issues) | alter status = if(previous_issues = null , \"not enough data\", if (percent_burndown \u003c0 and percent_burndown \u003c -50, \"Achieved\", \"Not Currently Passing\") )\n\n\n\n\n| view graph type = wordcloud header = \"50% Reduction of Total Amount of Issues with High Severity Reachable from the Internet\" xaxis = status yaxis = num_of_issues multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "height": 707.5,
+                                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions in (\"REPORT_PR_COMMENTS\", \"BLOCK_PR\") \n| comp count_distinct(policy_id ) as custom_cas_policy_count\n| alter status = if (custom_cas_policy_count \u003e1, \"Achieved\", \"Not Currently Passing\")\n\n\n| view graph type = wordcloud header = \"Create AppSec Policy with PR Comment or Block\" xaxis = status yaxis = custom_cas_policy_count multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                                 "timeSpan": {
                                     "toTime": "now",
                                     "fromTime": "30d",
@@ -160,7 +158,7 @@
                                             "command": {
                                                 "op": "=",
                                                 "name": "header",
-                                                "value": "\"50% Reduction of Total Amount of Issues with High Severity Reachable from the Internet\""
+                                                "value": "\"Create AppSec Policy with PR Comment or Block\""
                                             }
                                         },
                                         {
@@ -174,14 +172,14 @@
                                             "command": {
                                                 "op": "=",
                                                 "name": "yaxis",
-                                                "value": "num_of_issues"
+                                                "value": "custom_cas_policy_count"
                                             }
                                         },
                                         {
                                             "command": {
                                                 "op": "=",
                                                 "name": "multi_color",
-                                                "value": "true"
+                                                "value": "`true`"
                                             }
                                         },
                                         {
@@ -205,18 +203,18 @@
                     ]
                 },
                 {
-                    "id": "row-1082",
+                    "id": "row-9265",
                     "data": [
                         {
-                            "key": "xql_1766435172803",
+                            "key": "xql_1770926375988",
                             "data": {
                                 "type": "Custom XQL",
                                 "width": 50,
-                                "height": 488.5,
-                                "phrase": "config timeframe = 30d |dataset = issues  | filter xdm.issue.detection.method in(\"COMPUTE_POLICY\",\"VULNERABILITY_POLICY\") | filter xdm.issue.status.progress = ENUM.RESOLVED | top xdm.issue.auto_resolve_findings | filter xdm.issue.auto_resolve_findings | alter number_of_auto_resolved_compute_issues = top_count , percentage_of_auto_resolved_compute_issues = round(top_percent) | alter status = if (percentage_of_auto_resolved_compute_issues \u003e50, \"Achieved\", \"Not Currently Passing\")\n\n\n\n\n| view graph type = wordcloud header = \"50 percent of alerts remediated automatically\" xaxis = status yaxis = percentage_of_auto_resolved_compute_issues multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "height": 707.5,
+                                "phrase": "config timeframe = 7d\n| dataset = scans_management \n| filter type = \"cicd\"\n| comp count_distinct(scan_id  ) as cicd_scan_count\n| alter status = if (cicd_scan_count \u003e=1, \"Achieved\", \"Not Currently Passing\")\n\n| view graph type = wordcloud header = \"At least one CI scan in past week\" xaxis = status yaxis = cicd_scan_count multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                                 "timeSpan": {
                                     "toTime": "now",
-                                    "fromTime": "30d",
+                                    "fromTime": "7d",
                                     "isRelative": true
                                 },
                                 "time_frame": {
@@ -229,7 +227,7 @@
                                             "command": {
                                                 "op": "=",
                                                 "name": "header",
-                                                "value": "\"50 percent of alerts remediated automatically\""
+                                                "value": "\"At least one CI scan in past week\""
                                             }
                                         },
                                         {
@@ -243,7 +241,7 @@
                                             "command": {
                                                 "op": "=",
                                                 "name": "yaxis",
-                                                "value": "percentage_of_auto_resolved_compute_issues"
+                                                "value": "cicd_scan_count"
                                             }
                                         },
                                         {
@@ -272,12 +270,12 @@
                             }
                         },
                         {
-                            "key": "xql_1771533220959",
+                            "key": "xql_1770928928880",
                             "data": {
                                 "type": "Custom XQL",
                                 "width": 50,
-                                "height": 488.5,
-                                "phrase": "config timeframe = 30d | dataset = uvm_findings | bin first_observed span = 15d |  alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", first_observed  ) | filter asset_type_class = \"External Surface\" and exploitable  and cvss_severity = \"Critical\" and vendor_package_details != null | comp count(vulnerability_id ) as vuln_count by date | sort desc date | windowcomp lag(vuln_count ) sort asc date as previous_issues | filter previous_issues != null | alter percent_burndown = round(multiply(divide(subtract(vuln_count,previous_issues  ), previous_issues),-100)) | alter issues_resolved = subtract(vuln_count, previous_issues  ) | alter status = if(percent_burndown \u003e10, \"Achieved\", \"Not Curently Passing\")  | limit 1\n\n\n\n\n\n\n\n\n| view graph type = wordcloud header = \"10% of reduction of critical, exploitable, external-facing, with fixes CVE Vulnerabilities\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                                "height": 707.5,
+                                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions = \"BLOCK_CLI\"\n| comp count_distinct(policy_id ) as custom_cas_policy_count\n| alter status = if (custom_cas_policy_count \u003e=1, \"Achieved\", \"Not Currently Passing\")\n\n\n| view graph type = wordcloud header = \"Create AppSec Policy with CI Block\" xaxis = status yaxis = custom_cas_policy_count multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                                 "timeSpan": {
                                     "toTime": "now",
                                     "fromTime": "30d",
@@ -293,7 +291,7 @@
                                             "command": {
                                                 "op": "=",
                                                 "name": "header",
-                                                "value": "\"10% of reduction of critical, exploitable, external-facing, with fixes CVE Vulnerabilities\""
+                                                "value": "\"Create AppSec Policy with CI Block\""
                                             }
                                         },
                                         {
@@ -307,7 +305,7 @@
                                             "command": {
                                                 "op": "=",
                                                 "name": "yaxis",
-                                                "value": "percent_burndown"
+                                                "value": "custom_cas_policy_count"
                                             }
                                         },
                                         {
@@ -339,7 +337,7 @@
                 }
             ],
             "default_dashboard_id": 1,
-            "global_id": "58c696f471c84096b15a68880e49ead7",
+            "global_id": "7ff8d94b7db547cead7690b864397fd0",
             "metadata": {
                 "params": []
             }
@@ -347,12 +345,83 @@
     ],
     "widgets_data": [
         {
-            "widget_key": "xql_1771533220959",
-            "title": "Protect Workloads in Runtime XDR - Gold",
-            "creation_time": 1771533220959,
-            "description": "This widget displays the burndown percentage of critical, exploitable vulnerabilities on external-facing assets over the last 15 days compared to the prior 15-day period. It provides a key performance indicator to measure the effectiveness of remediation efforts and track progress in reducing the organization's most critical attack surface.",
+            "widget_key": "xql_1770926375988",
+            "title": "Fixing issues earlier in the Application Lifecycle - Silver",
+            "creation_time": 1771946943625,
+            "description": "This widget confirms whether at least one CI/CD scan has been conducted in the past week. It provides a quick check to ensure that security practices are being consistently applied early in the application lifecycle.",
             "data": {
-                "phrase": "config timeframe = 30d | dataset = uvm_findings | bin first_observed span = 15d |  alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", first_observed  ) | filter asset_type_class = \"External Surface\" and exploitable  and cvss_severity = \"Critical\" and vendor_package_details != null | comp count(vulnerability_id ) as vuln_count by date | sort desc date | windowcomp lag(vuln_count ) sort asc date as previous_issues | filter previous_issues != null | alter percent_burndown = round(multiply(divide(subtract(vuln_count,previous_issues  ), previous_issues),-100)) | alter issues_resolved = subtract(vuln_count, previous_issues  ) | alter status = if(percent_burndown \u003e10, \"Achieved\", \"Not Curently Passing\")  | limit 1\n\n\n\n\n\n\n\n\n| view graph type = wordcloud header = \"10% of reduction of critical, exploitable, external-facing, with fixes CVE Vulnerabilities\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "phrase": "config timeframe = 7d\n| dataset = scans_management \n| filter type = \"cicd\"\n| comp count_distinct(scan_id  ) as cicd_scan_count\n| alter status = if (cicd_scan_count \u003e=1, \"Achieved\", \"Not Currently Passing\")\n\n| view graph type = wordcloud header = \"At least one CI scan in past week\" xaxis = status yaxis = cicd_scan_count multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "7d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "wordcloud",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"At least one CI scan in past week\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "cicd_scan_count"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "multi_color",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "scans_management"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1770930118959",
+            "title": "AppSec coverage - Silver",
+            "creation_time": 1771946943524,
+            "description": "This widget indicates whether a custom AppSec policy is active to report findings as comments within your CI/CD pipeline. Achieving this status provides developers with immediate security feedback in their workflow, enabling faster remediation of vulnerabilities.",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = cas_policies  | filter is_custom = true  | filter actions = \"REPORT_CLI\" \n| comp count_distinct(policy_id   ) as policy_count\n| alter status = if (policy_count \u003e=1, \"Achieved\", \"Not Currently Passing\")\n\n\n\n| view graph type = wordcloud header = \"Create AppSec Policy with CI Comment\" xaxis = status yaxis = policy_count multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                 "timeSpan": {
                     "toTime": "now",
                     "fromTime": "30d",
@@ -368,7 +437,7 @@
                             "command": {
                                 "op": "=",
                                 "name": "header",
-                                "value": "\"10% of reduction of critical, exploitable, external-facing, with fixes CVE Vulnerabilities\""
+                                "value": "\"Create AppSec Policy with CI Comment\""
                             }
                         },
                         {
@@ -382,7 +451,7 @@
                             "command": {
                                 "op": "=",
                                 "name": "yaxis",
-                                "value": "percent_burndown"
+                                "value": "policy_count"
                             }
                         },
                         {
@@ -412,89 +481,18 @@
             "support_time_range": true,
             "additional_info": {
                 "query_tables": [
-                    "uvm_findings"
+                    "cas_policies"
                 ],
                 "query_uses_library": false
             }
         },
         {
-            "widget_key": "xql_1771533371707",
-            "title": "Protect Managed Images - Gold",
-            "creation_time": 1771533371707,
-            "description": "This widget displays whether the goal of a 20% vulnerability reduction in managed image registries was achieved over the last 15-day period. It provides a key performance indicator to quickly assess the effectiveness of vulnerability remediation efforts for securing container images.",
+            "widget_key": "xql_1770928928880",
+            "title": "Fixing issues earlier in the Application Lifecycle - Gold",
+            "creation_time": 1771946943869,
+            "description": "This widget displays whether a custom policy is active to block vulnerable code submissions during the development process. This status confirms the adoption of a proactive security posture, reducing risk by preventing vulnerabilities from entering the codebase at the earliest stage.",
             "data": {
-                "phrase": "config timeframe = 30d | dataset = uvm_findings | bin first_observed  span = 15d |  alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", first_observed   ) | filter asset_type contains \"registry\" | comp count(vulnerability_id ) as current_vulns by date | sort desc date | windowcomp lag(current_vulns ) sort asc date as previous_issues |  filter previous_issues != null | alter percent_burndown = round(multiply(divide(subtract(current_vulns, previous_issues  ), previous_issues),-100)) | alter issues_resolved = subtract( current_vulns , previous_issues ) | alter status = if(percent_burndown  \u003e20, \"Achieved\", \"Not Currently Passing\")  | limit 1\n\n\n| view graph type = wordcloud header = \"20% percent reduction in vulnerabilities in registries\" xaxis = status yaxis = percent_burndown multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
-                "time_frame": {
-                    "relativeTime": 86400000
-                },
-                "viewOptions": {
-                    "type": "wordcloud",
-                    "commands": [
-                        {
-                            "command": {
-                                "op": "=",
-                                "name": "header",
-                                "value": "\"20% percent reduction in vulnerabilities in registries\""
-                            }
-                        },
-                        {
-                            "command": {
-                                "op": "=",
-                                "name": "xaxis",
-                                "value": "status"
-                            }
-                        },
-                        {
-                            "command": {
-                                "op": "=",
-                                "name": "yaxis",
-                                "value": "percent_burndown"
-                            }
-                        },
-                        {
-                            "command": {
-                                "op": "=",
-                                "name": "multi_color",
-                                "value": "true"
-                            }
-                        },
-                        {
-                            "command": {
-                                "op": "=",
-                                "name": "font",
-                                "value": "\"Arial Black\""
-                            }
-                        },
-                        {
-                            "command": {
-                                "op": "=",
-                                "name": "headerfontsize",
-                                "value": "20"
-                            }
-                        }
-                    ]
-                },
-                "timeSpan": {
-                    "toTime": "now",
-                    "fromTime": "30d",
-                    "isRelative": true
-                }
-            },
-            "support_time_range": true,
-            "additional_info": {
-                "query_tables": [
-                    "uvm_findings"
-                ],
-                "query_uses_library": false
-            }
-        },
-        {
-            "widget_key": "xql_1766435172803",
-            "title": "Protect Workloads in Runtime XSIAM - Gold",
-            "creation_time": 1771532839702,
-            "description": "This widget displays the percentage of resolved workload protection issues that were automatically remediated over the last 30 days. This metric helps gauge the effectiveness of your automated security policies in reducing the security team's manual workload.",
-            "data": {
-                "phrase": "config timeframe = 30d |dataset = issues  | filter xdm.issue.detection.method in(\"COMPUTE_POLICY\",\"VULNERABILITY_POLICY\") | filter xdm.issue.status.progress = ENUM.RESOLVED | top xdm.issue.auto_resolve_findings | filter xdm.issue.auto_resolve_findings | alter number_of_auto_resolved_compute_issues = top_count , percentage_of_auto_resolved_compute_issues = round(top_percent) | alter status = if (percentage_of_auto_resolved_compute_issues \u003e50, \"Achieved\", \"Not Currently Passing\")\n\n\n\n\n| view graph type = wordcloud header = \"50 percent of alerts remediated automatically\" xaxis = status yaxis = percentage_of_auto_resolved_compute_issues multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions = \"BLOCK_CLI\"\n| comp count_distinct(policy_id ) as custom_cas_policy_count\n| alter status = if (custom_cas_policy_count \u003e=1, \"Achieved\", \"Not Currently Passing\")\n\n\n| view graph type = wordcloud header = \"Create AppSec Policy with CI Block\" xaxis = status yaxis = custom_cas_policy_count multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                 "timeSpan": {
                     "toTime": "now",
                     "fromTime": "30d",
@@ -510,7 +508,7 @@
                             "command": {
                                 "op": "=",
                                 "name": "header",
-                                "value": "\"50 percent of alerts remediated automatically\""
+                                "value": "\"Create AppSec Policy with CI Block\""
                             }
                         },
                         {
@@ -524,7 +522,7 @@
                             "command": {
                                 "op": "=",
                                 "name": "yaxis",
-                                "value": "percentage_of_auto_resolved_compute_issues"
+                                "value": "custom_cas_policy_count"
                             }
                         },
                         {
@@ -554,91 +552,18 @@
             "support_time_range": true,
             "additional_info": {
                 "query_tables": [
-                    "issues"
+                    "cas_policies"
                 ],
                 "query_uses_library": false
             }
         },
         {
-            "widget_key": "xql_1766432608053",
-            "title": "Protect Managed Images - Bronze",
-            "creation_time": 1771532839329,
-            "description": "This widget displays whether the \"Bronze\" level requirement for enabling container registry scanning across cloud accounts has been achieved. It provides a quick, at-a-glance assessment of your security posture against the foundational benchmark for protecting managed container images.",
+            "widget_key": "xql_1770931833379",
+            "title": "AppSec Coverage - Bronze",
+            "creation_time": 1771946943726,
+            "description": "This widget verifies the existence of at least one custom Application Security (AppSec) policy created within the last 30 days. Achieving this bronze-level metric demonstrates that the organization has begun to actively tailor its cloud security monitoring beyond the default configuration.",
             "data": {
-                "phrase": "dataset = cloud_health_auditing | filter (capability contains \"\"\"Registry\"\"\") | dedup account | comp count_distinct(account ) as accounts_with_registry_scanning_enabled   | alter status = if(accounts_with_registry_scanning_enabled  \u003e 1, \"Achieved\", \"Not Currently Passing\")\n\n\n\n| view graph type = wordcloud header = \"Registry Scanned\" xaxis = status yaxis = accounts_with_registry_scanning_enabled word_color = \"#ea7207\" multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
-                "time_frame": {
-                    "relativeTime": 86400000
-                },
-                "viewOptions": {
-                    "type": "wordcloud",
-                    "commands": [
-                        {
-                            "command": {
-                                "op": "=",
-                                "name": "header",
-                                "value": "\"Registry Scanned\""
-                            }
-                        },
-                        {
-                            "command": {
-                                "op": "=",
-                                "name": "xaxis",
-                                "value": "status"
-                            }
-                        },
-                        {
-                            "command": {
-                                "op": "=",
-                                "name": "yaxis",
-                                "value": "accounts_with_registry_scanning_enabled"
-                            }
-                        },
-                        {
-                            "command": {
-                                "op": "=",
-                                "name": "word_color",
-                                "value": "\"#ea7207\""
-                            }
-                        },
-                        {
-                            "command": {
-                                "op": "=",
-                                "name": "multi_color",
-                                "value": "true"
-                            }
-                        },
-                        {
-                            "command": {
-                                "op": "=",
-                                "name": "font",
-                                "value": "\"Arial Black\""
-                            }
-                        },
-                        {
-                            "command": {
-                                "op": "=",
-                                "name": "headerfontsize",
-                                "value": "20"
-                            }
-                        }
-                    ]
-                }
-            },
-            "support_time_range": true,
-            "additional_info": {
-                "query_tables": [
-                    "cloud_health_auditing"
-                ],
-                "query_uses_library": false
-            }
-        },
-        {
-            "widget_key": "xql_1770740829621",
-            "title": "API Security - Gold",
-            "creation_time": 1771513973290,
-            "description": "This widget tracks the reduction rate of new, high and critical severity issues that are reachable from the internet. It provides a key performance indicator to measure the effectiveness of remediation efforts in reducing the organization's internet-facing attack surface.",
-            "data": {
-                "phrase": "config timeframe = 30d | dataset = issues | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.severity in(ENUM.CRITICAL , ENUM.HIGH ) and xdm.issue.detection.method = \"CLOUD_NETWORK_ANALYZER\" and xdm.issue.status.progress = ENUM.NEW | comp count(xdm.issue.id) as num_of_issues by date | sort desc date | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues , previous_issues), previous_issues),100)) | alter issues_resolved = subtract(num_of_issues , previous_issues) | alter status = if(previous_issues = null , \"not enough data\", if (percent_burndown \u003c0 and percent_burndown \u003c -50, \"Achieved\", \"Not Currently Passing\") )\n\n\n\n\n| view graph type = wordcloud header = \"50% Reduction of Total Amount of Issues with High Severity Reachable from the Internet\" xaxis = status yaxis = num_of_issues multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "phrase": "config timeframe = 30d\n| dataset = cas_policies\n| filter is_custom = true \n| comp count_distinct(policy_id ) as custom_cas_policy_count\n| alter status = if (custom_cas_policy_count \u003e=1, \"Achieved\", \"Not Currently Passing\")\n\n\n| view graph type = wordcloud header = \"Create AppSec Policy for any Finding Type\" xaxis = status yaxis = custom_cas_policy_count multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
                 "timeSpan": {
                     "toTime": "now",
                     "fromTime": "30d",
@@ -654,7 +579,7 @@
                             "command": {
                                 "op": "=",
                                 "name": "header",
-                                "value": "\"50% Reduction of Total Amount of Issues with High Severity Reachable from the Internet\""
+                                "value": "\"Create AppSec Policy for any Finding Type\""
                             }
                         },
                         {
@@ -668,7 +593,7 @@
                             "command": {
                                 "op": "=",
                                 "name": "yaxis",
-                                "value": "num_of_issues"
+                                "value": "custom_cas_policy_count"
                             }
                         },
                         {
@@ -698,7 +623,78 @@
             "support_time_range": true,
             "additional_info": {
                 "query_tables": [
-                    "issues"
+                    "cas_policies"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1770926769532",
+            "title": "AppSec Coverage - Gold",
+            "creation_time": 1771946944028,
+            "description": "This widget indicates whether the organization has active, custom AppSec policies designed to automatically block or comment on developer pull requests. This status serves as a key indicator of a mature 'shift-left' security posture, which proactively prevents vulnerabilities from being introduced into the codebase.",
+            "data": {
+                "phrase": "config timeframe = 30d\n| dataset = cas_policies \n| filter is_custom = true \n| filter actions in (\"REPORT_PR_COMMENTS\", \"BLOCK_PR\") \n| comp count_distinct(policy_id ) as custom_cas_policy_count\n| alter status = if (custom_cas_policy_count \u003e1, \"Achieved\", \"Not Currently Passing\")\n\n\n| view graph type = wordcloud header = \"Create AppSec Policy with PR Comment or Block\" xaxis = status yaxis = custom_cas_policy_count multi_color = `true` font = \"Arial Black\" headerfontsize = 20 ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "wordcloud",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Create AppSec Policy with PR Comment or Block\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "custom_cas_policy_count"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "multi_color",
+                                "value": "`true`"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cas_policies"
                 ],
                 "query_uses_library": false
             }
