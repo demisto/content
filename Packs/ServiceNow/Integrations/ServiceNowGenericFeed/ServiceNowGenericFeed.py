@@ -386,10 +386,12 @@ def main() -> None:
     client_id = client_secret = ""
     credentials = params.get("credentials", {})
     use_oauth = params.get("use_oauth", False)
-    use_jwt = params.get("use_jwt", False)
+    use_jwt = argToBoolean(params.get("use_jwt", False))
     feedtags = argToList(params.get("feedTags"))
     server_url = params.get("query_url")
     indicator_field = params.get("indicator_field")
+    if not isinstance(indicator_field, str):
+        return_error("indicator_field must be a non-empty string")
 
     if server_url is None:
         return_error("Query URL not provided")

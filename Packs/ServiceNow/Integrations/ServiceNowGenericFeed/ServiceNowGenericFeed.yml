@@ -117,7 +117,7 @@ configuration:
   required: true
   supportedModules: []
   type: 0
-- additionalinfo: This field would be used to create the indicator object before inserting the indicator into the TIM
+- additionalinfo: Acceptable values for this field include "File MD5", "File SHA-1", "File SHA-256", "Host", "IP"
   display: Indicator Field
   name: indicator_field
   required: true
