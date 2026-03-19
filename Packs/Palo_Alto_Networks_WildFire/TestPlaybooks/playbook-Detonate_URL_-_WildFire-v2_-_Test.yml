@@ -70,12 +70,12 @@ tasks:
     task:
       id: 7f491fe6-aa7f-450c-8bda-797c9b140a20
       version: -1
-      name: Detonate URL - WildFire-v2
+      name: Detonate URL - WildFire-v2.2
       description: |-
         Detonate a webpage or a remote file using the WildFire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
         The detonation supports the following file types -
         APK, JAR, DOC, DOCX, RTF, OOXLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z
-      playbookName: Detonate URL - WildFire-v2
+      playbookName: Detonate URL - WildFire v2.2
       type: playbook
       iscommand: false
       brand: ""
