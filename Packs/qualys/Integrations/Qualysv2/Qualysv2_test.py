@@ -1978,3 +1978,46 @@ def test_get_qid_for_cve_multiple_qids(mock_client):
     result = get_qid_for_cve(mock_client, "CVE-2024-9999")
 
     assert result.outputs == ["12345", "67890"]
+
+
+@freeze_time("2025-01-01 00:00:00 UTC")
+def test_fetch_assets_and_vulnerabilities_by_date_last_page_empty(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - Qualys client and last run dictionary with fetch stage, total assets count, and snapshot ID.
+        - The last page of assets returns 0 assets (empty list) but no next page (pagination complete).
+
+    When:
+        - Calling fetch_assets_and_vulnerabilities_by_date with the "assets" stage.
+
+    Then:
+        - Ensure a snapshot closing signal is sent to XSIAM with a placeholder [{}] and the correct items_count.
+        - Ensure the stage transitions to "vulnerabilities".
+    """
+    last_total_assets = 500
+    last_run = {"stage": "assets", "total_assets": last_total_assets, "snapshot_id": SNAPSHOT_ID}
+
+    # Last page returns 0 assets, no next page, no limit reduction needed
+    empty_assets, next_page, set_new_limit = [], "", False
+    mocker.patch("Qualysv2.get_host_list_detections_events", return_value=(empty_assets, next_page, set_new_limit))
+
+    mock_send_data_to_xsiam = mocker.patch("Qualysv2.send_data_to_xsiam")
+    mock_set_assets_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
+
+    fetch_assets_and_vulnerabilities_by_date(client, last_run)
+
+    send_data_to_xsiam_kwargs: dict = mock_send_data_to_xsiam.call_args.kwargs
+    next_run = mock_set_assets_last_run.call_args[0][0]
+
+    # Should send a placeholder [{}] to close the snapshot since assets is empty
+    assert send_data_to_xsiam_kwargs["data"] == [{}]
+    assert send_data_to_xsiam_kwargs["vendor"] == VENDOR
+    assert send_data_to_xsiam_kwargs["product"] == "assets"
+    assert send_data_to_xsiam_kwargs["snapshot_id"] == SNAPSHOT_ID
+    assert send_data_to_xsiam_kwargs["items_count"] == str(last_total_assets)  # total_assets, not 1
+    assert not send_data_to_xsiam_kwargs["should_update_health_module"]
+
+    assert next_run["next_page"] == ""
+    assert next_run["stage"] == "vulnerabilities"
+    assert next_run["total_assets"] == last_total_assets
+    assert next_run["snapshot_id"] == SNAPSHOT_ID
