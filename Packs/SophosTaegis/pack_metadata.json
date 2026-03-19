@@ -1,0 +1,37 @@
+{
+    "name": "Sophos Taegis",
+    "description": "Taegis SecOps platform: An enterprise-grade, highly interoperable security operations platform",
+    "support": "partner",
+    "currentVersion": "6.0.0",
+    "author": "Sophos",
+    "url": "https://www.sophos.com/en-us/products/taegis",
+    "email": "",
+    "categories": [
+        "Case Management",
+        "Forensics & Malware Analysis"
+    ],
+    "tags": [
+        "taegis",
+        "xdr",
+        "secops",
+        "soc",
+        "case",
+        "detection",
+        "management"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "firstCreated": "2026-01-22T16:22:10Z",
+    "devEmail": [
+        "micah.pegman@sophos.com"
+    ],
+    "githubUser": [
+        "mpegman-scwx",
+        "brandonchartersophos",
+        "scwxsljohnson"
+    ]
+}
