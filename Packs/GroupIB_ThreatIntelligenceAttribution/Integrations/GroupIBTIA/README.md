@@ -21,6 +21,22 @@ The integration supports multiple collections including compromised accounts, ba
 
 ## Important Notes
 
+### Recommended Instance Layout
+
+Run separate integration instances for the following groups:
+
+- Accounts unique
+- Accounts combolist
+- Cards (masked/unmasked)
+- Public leaks/Git Leaks
+- Breached
+- Vulnerabilities
+- Malware reports and threats including profiles
+- SPD
+- Suspicious IP
+- Malware CNC
+- DDoS/Deface/phishing/phishing_kit
+
 ### Limit Parameter
 
 The **Limit (items per request)** parameter specifies the number of records requested per API page. This limit applies to **all collections** configured in the integration instance.
@@ -100,6 +116,8 @@ Once the configuration is complete, the following collections become available i
 | Colletions to fetch            | Select the collections you want to fetch incidents from. Read more about collections [here](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FCollections%20Details%20-%20Feeds%2FThreats%20and%20Actors%20-%20APT%20Threat%20Actors%2FThreats%20and%20Actors%20-%20APT%20Threat%20Actors). | False |
 | Incidents first fetch          | Specify the date range for initial data fetch (default: "3 days"). | False |
 | Number of requests per collection | Number of API requests per collection in each fetch iteration (default: 3). If you face some runtime errors, lower the value. | False |
+| Skip updated incidents (prevent duplicates) | Disabled by default. Enable this only when you want the integration itself to suppress duplicate incidents because Pre-Processing Rules are not working reliably in your environment. When enabled, the integration skips Group-IB records that were already fetched and later re-sent after updates. | False |
+| Deduplication lookback (days) | Used only when **Skip updated incidents (prevent duplicates)** is enabled. Defines how long fetched Group-IB incident IDs are remembered in the built-in deduplication cache. Recommended value is `365` days. | False |
 | Limit (items per request) | Number of items requested per API page. This limit applies to all collections in the instance. The limit determines how many records are fetched in a single API request. For example, if "Number of requests per collection" is 2 and limit is 500, the integration will make 2 requests per collection, each requesting up to 500 records, resulting in up to 1000 records per collection per fetch cycle. We recommend following the [official API Limitations documentation](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FStarting%20Guide%2FAPI%20Limitations%2FAPI%20Limitations) for collection-specific limit recommendations. Best practice: create separate integration instances for different collections or groups of collections with similar optimal limit values. | False |
 | Enable reputation commands | Multi-select list of reputation commands to enable for this integration instance (supported: ip, domain, file). **Default: none enabled** (fail-safe). Only selected commands perform enrichment and return DBotScore. | False |
 | Include combolist type in data | Filter to include combolist data from the `compromised/account_group` collection. Works only for `compromised/account_group` collection. Filter logic: If only this filter is enabled, only combolist records are collected. If both combolist and unique filters are enabled, both types are collected. If both are disabled, both types are collected by default. | False |
@@ -110,6 +128,8 @@ Once the configuration is complete, the following collections become available i
 ## Note
 
 Requests to the following collections come with the Hunting Rules parameter by default - and turing it off or on won't make any changes: `osi/git_repository, osi/public_leak, compromised/breacheddb, compromised/messenger, compromised/discord`
+
+Built-in deduplication should be enabled only when Pre-Processing Rules are not working reliably in your environment. If you rely on Pre-Processing Rules to update existing incidents, keep **Skip updated incidents (prevent duplicates)** disabled.
 
 ## Additional Resources
 
@@ -1210,8 +1230,6 @@ Command performs Group-IB search in selected collection.
 | --- | --- | --- |
 | collection_name | Collection you want to search. Possible values are same as collection names in [Data Collections Overview](#data-collections-overview) . | Required |
 | query | Query you want to search.<br/>e.g.: 8.8.8.8. | Required |
-| date_from | Start date of search session. | Optional |
-| date_to | End date of search session. | Optional |
 
 #### Context Output
 

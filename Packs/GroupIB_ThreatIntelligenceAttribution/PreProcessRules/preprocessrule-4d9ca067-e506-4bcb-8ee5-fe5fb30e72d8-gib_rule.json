@@ -1,6 +1,6 @@
 {
     "action": "script",
-    "enabled": true,
+    "enabled": false,
     "id": "gib_rule",
     "index": 0,
     "itemVersion": "",

@@ -342,7 +342,6 @@ def test_get_available_collections(mocker, single_session_fixture):
 def mock_client():
     """Fixture to create a mock client."""
     client = MagicMock()
-    client.poller.create_search_generator.return_value = []
     client.poller.create_update_generator.return_value = []
     return client
 

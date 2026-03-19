@@ -18,7 +18,7 @@ from traceback import format_exc
 import re
 from enum import Enum
 from itertools import chain
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from typing import Any, TypeAlias, cast
 
 # Disable insecure warnings
@@ -27,6 +27,15 @@ urllib3_disable_warnings(InsecureRequestWarning)
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+MINUTES_IN_DAY = 1440
+DEFAULT_DEDUP_LOOKBACK_DAYS = 365
+# Keep the PA built-in storage key for compatibility with CommonServerPython helpers.
+LAST_RUN_SEEN_INCIDENT_IDS_KEY = "found_incident_ids"
+POLLER_PRODUCT_TYPE = "SOAR"
+POLLER_PRODUCT_NAME = "CortexSOAR"
+POLLER_PRODUCT_VERSION = "unknown"
+POLLER_INTEGRATION_NAME = "Group-IB Threat Intelligence"
+POLLER_INTEGRATION_VERSION = "3.0.0"
 
 INDICATORS_TYPES = {
     "compromised/account_group": {
@@ -463,6 +472,23 @@ class StringSeverity(Enum):
     LOW = "Low"
     MEDIUM = "Medium"
     HIGH = "High"
+
+
+COLLECTION_COMPROMISED_BREACHED_DB = "compromised/breacheddb"
+COLLECTION_COMPROMISED_SPD = "compromised/spd"
+UNKNOWN_SEVERITY = "Unknown"
+
+INCIDENT_SYSTEM_SEVERITY_MAP = {
+    "green": NumberedSeverity.LOW.value,
+    "orange": NumberedSeverity.MEDIUM.value,
+    "red": NumberedSeverity.HIGH.value,
+}
+
+INCIDENT_CUSTOM_SEVERITY_MAP = {
+    "green": StringSeverity.LOW.value,
+    "orange": StringSeverity.MEDIUM.value,
+    "red": StringSeverity.HIGH.value,
+}
 
 
 MAPPING = {
@@ -935,7 +961,6 @@ MAPPING = {
         },
         # END Group-IB DDOS Request
         "indicators": {  # GIB Related Indicators Data
-            "target_ipv4_ip": "target.ipv4.ip",
             "cnc_url": "cnc.url",
             "cnc_domain": "cnc.domain",
             "cnc_ipv4_ip": "cnc.ipv4.ip",
@@ -1537,11 +1562,11 @@ class Client(BaseClient):
         )
         self.limit = int(limit)
         self.poller.set_product(
-            product_type="SOAR",
-            product_name="CortexSOAR",
-            product_version="unknown",
-            integration_name="Group-IB Threat Intelligence",
-            integration_version="3.0.0",
+            product_type=POLLER_PRODUCT_TYPE,
+            product_name=POLLER_PRODUCT_NAME,
+            product_version=POLLER_PRODUCT_VERSION,
+            integration_name=POLLER_INTEGRATION_NAME,
+            integration_version=POLLER_INTEGRATION_VERSION,
         )
 
     @staticmethod
@@ -1963,13 +1988,8 @@ class IncidentBuilder:
         self.mapping = mapping
 
     def get_system_severity(self) -> int:
-        severity_map = {
-            "green": NumberedSeverity.LOW.value,
-            "orange": NumberedSeverity.MEDIUM.value,
-            "red": NumberedSeverity.HIGH.value,
-        }
         severity = self.incident.get("evaluation", {}).get("severity")
-        return severity_map.get(severity, 0)
+        return INCIDENT_SYSTEM_SEVERITY_MAP.get(severity, 0)
 
     def get_incident_created_time(self) -> str:
         last_exception = None
@@ -2011,12 +2031,12 @@ class IncidentBuilder:
     def get_incident_name(self) -> str:
         name = ""
         prefix = PREFIXES.get(self.collection_name, "")
-        if self.collection_name == "compromised/breacheddb":
+        if self.collection_name == COLLECTION_COMPROMISED_BREACHED_DB:
             names = self.incident["name"]
             if not isinstance(names, list):
                 names = [names]
             name = f"{prefix}: " + ", ".join(names)
-        elif self.collection_name == "compromised/spd":
+        elif self.collection_name == COLLECTION_COMPROMISED_SPD:
             # name = type + value
             ptype = self.incident.get("type") or "Payment data"
             value_str = self.incident.get("value")
@@ -2027,14 +2047,9 @@ class IncidentBuilder:
         return name
 
     def set_custom_severity(self):
-        severity_map = {
-            "green": StringSeverity.LOW.value,
-            "orange": StringSeverity.MEDIUM.value,
-            "red": StringSeverity.HIGH.value,
-        }
         severity = self.incident.get("evaluation", {}).get("severity")
         if severity:
-            self.incident["evaluation"]["severity"] = severity_map.get(severity, "Unknown")
+            self.incident["evaluation"]["severity"] = INCIDENT_CUSTOM_SEVERITY_MAP.get(severity, UNKNOWN_SEVERITY)
 
     @staticmethod
     def date_conversion(date: str):
@@ -2091,8 +2106,8 @@ class IncidentBuilder:
                         clean_data = CommonHelpers.remove_underscore_and_lowercase_keys(
                             transformed_and_replaced_empty_values_data  # type: ignore
                         )
-                        # SPD events: show malware/threatActor id and name as strings (e.g. "Lockbit" not ["Lockbit"])
-                        if self.collection_name == "compromised/spd" and field == "events":
+                        # SPD events: show malware/threatActor id and name as strings (e.g. "MalwareName" not ["MalwareName"])
+                        if self.collection_name == COLLECTION_COMPROMISED_SPD and field == "events":
                             clean_data = CommonHelpers.transform_list_to_str(clean_data)
 
                         self.incident[field] = clean_data
@@ -2124,7 +2139,7 @@ class IncidentBuilder:
 
 
 class BuilderCommandResponses:
-    dont_need_transformations = ["compromised/breacheddb"]
+    dont_need_transformations = [COLLECTION_COMPROMISED_BREACHED_DB]
 
     def __init__(self, client: Client, collection_name: str, args: dict) -> None:
         self.client = client
@@ -2236,6 +2251,103 @@ def _serialize_seq_update(value: int) -> str:
     return str(value)
 
 
+def _convert_dedup_lookback_days_to_minutes(dedup_lookback_days: int) -> int:
+    return dedup_lookback_days * MINUTES_IN_DAY
+
+
+def _get_dedup_lookback_days_from_params(params: dict) -> int:
+    dedup_lookback_days = params.get("dedup_lookback_days")
+    if dedup_lookback_days in (None, ""):
+        return DEFAULT_DEDUP_LOOKBACK_DAYS
+
+    if isinstance(dedup_lookback_days, bool):
+        raise ValueError("dedup_lookback_days must be an integer number of days.")
+
+    if isinstance(dedup_lookback_days, int):
+        return dedup_lookback_days
+
+    if isinstance(dedup_lookback_days, str):
+        return int(dedup_lookback_days)
+
+    raise ValueError("dedup_lookback_days must be a string or integer value.")
+
+
+def _is_fetch_dedup_enabled(skip_updated_incidents: bool, dedup_lookback_days: int) -> bool:
+    if dedup_lookback_days < 0:
+        raise ValueError("dedup_lookback_days must be greater than or equal to 0.")
+
+    return skip_updated_incidents and dedup_lookback_days > 0
+
+
+def _call_without_common_server_python_lb_debug_logs(func: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
+    demisto_module = cast(Any, demisto)
+    original_debug: Callable[..., Any] = demisto.debug
+
+    def _filtered_debug(*debug_args: Any, **debug_kwargs: Any) -> Any:
+        first_arg = debug_args[0] if debug_args else None
+        if isinstance(first_arg, str) and first_arg.startswith("lb:"):
+            return None
+        return original_debug(*debug_args, **debug_kwargs)
+
+    demisto_module.debug = _filtered_debug
+    try:
+        return func(*args, **kwargs)
+    finally:
+        demisto_module.debug = original_debug
+
+
+def _filter_duplicate_fetch_incidents(raw_incidents: list[dict], last_run_state: dict) -> list[dict]:
+    if not raw_incidents:
+        return raw_incidents
+
+    return cast(
+        list[dict],
+        _call_without_common_server_python_lb_debug_logs(
+            filter_incidents_by_duplicates_and_limit,
+            incidents_res=raw_incidents,
+            last_run=last_run_state,
+            fetch_limit=len(raw_incidents),
+            id_field="id",
+        ),
+    )
+
+
+def _update_fetch_seen_incident_ids_cache(
+    last_run_state: dict,
+    incidents: list[dict],
+    dedup_lookback_days: int,
+) -> None:
+    if not incidents:
+        return
+
+    last_run_state[LAST_RUN_SEEN_INCIDENT_IDS_KEY] = _call_without_common_server_python_lb_debug_logs(
+        get_found_incident_ids,
+        last_run=last_run_state,
+        incidents=incidents,
+        look_back=_convert_dedup_lookback_days_to_minutes(dedup_lookback_days),
+        id_field="id",
+        remove_incident_ids=True,
+    )
+
+
+def _summarize_fetch_last_run_state(last_run_state: dict | None) -> dict[str, Any]:
+    if not isinstance(last_run_state, dict):
+        return {"last_fetch": {}, "seen_incident_ids_cache_size": 0}
+
+    last_fetch = last_run_state.get("last_fetch", {})
+    if not isinstance(last_fetch, dict):
+        last_fetch = {}
+
+    seen_incident_ids_cache = last_run_state.get(LAST_RUN_SEEN_INCIDENT_IDS_KEY, {})
+    if not isinstance(seen_incident_ids_cache, dict):
+        seen_incident_ids_cache = {}
+
+    return {
+        "last_fetch": last_fetch,
+        "seen_incident_ids_cache_size": len(seen_incident_ids_cache),
+    }
+
+
 def test_module(client: Client) -> str:
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
@@ -2267,6 +2379,8 @@ def fetch_incidents_command(
     combolist: bool = False,
     unique: bool = False,
     enable_probable_corporate_access: bool = False,
+    skip_updated_incidents: bool = False,
+    dedup_lookback_days: int = DEFAULT_DEDUP_LOOKBACK_DAYS,
 ) -> tuple[dict, list]:
     """
     This function will execute each interval (default is 1 minute).
@@ -2285,20 +2399,27 @@ def fetch_incidents_command(
         f"collections={incident_collections}, max_requests={max_requests}, "
         f"hunting_rules={hunting_rules}, combolist={combolist}, unique={unique}, "
         f"enable_probable_corporate_access={enable_probable_corporate_access}, "
-        f"first_fetch_time={first_fetch_time}"
+        f"first_fetch_time={first_fetch_time}, skip_updated_incidents={skip_updated_incidents}, "
+        f"dedup_lookback_days={dedup_lookback_days}"
+    )
+    dedup_enabled = _is_fetch_dedup_enabled(
+        skip_updated_incidents=skip_updated_incidents,
+        dedup_lookback_days=dedup_lookback_days,
     )
     incidents: list[dict] = []
+    last_run_state = last_run.copy() if isinstance(last_run, dict) else {}
+    demisto.debug(f"[fetch-incidents] Initial last_run summary: {_summarize_fetch_last_run_state(last_run_state)}")
     next_run: dict[str, dict[str, int | Any]] = {"last_fetch": {}}
     for collection_name in incident_collections:  # noqa: B007
         collection_availability_check(client=client, collection_name=collection_name)
         CommonHelpers.validate_collections(collection_name)
         last_fetch_raw = None
-        if isinstance(last_run, dict):
-            embedded = last_run.get("last_fetch")
+        if isinstance(last_run_state, dict):
+            embedded = last_run_state.get("last_fetch")
             if isinstance(embedded, dict):
                 last_fetch_raw = embedded.get(collection_name)
             else:
-                last_fetch_raw = last_run.get(collection_name)
+                last_fetch_raw = last_run_state.get(collection_name)
         demisto.debug(f"[fetch-incidents] Collection={collection_name} previous_last_fetch={last_fetch_raw}")
         requests_count = 0
         sequpdate = 0
@@ -2351,13 +2472,25 @@ def fetch_incidents_command(
             else:
                 iterable = cast(Iterable[dict], new_parsed_json)
 
-            iterable = [item for item in iterable if isinstance(item, dict) and item.get("id")]
-            if not iterable:
+            raw_incidents = [item for item in iterable if isinstance(item, dict) and item.get("id")]
+            if not raw_incidents:
                 demisto.debug(
                     f"[fetch-incidents] Portion contains no incidents with ids; skipping addition. "
                     f"collection={collection_name}, seqUpdate={sequpdate}"
                 )
                 continue
+
+            filtered_incidents = (
+                _filter_duplicate_fetch_incidents(raw_incidents=raw_incidents, last_run_state=last_run_state)
+                if dedup_enabled
+                else raw_incidents
+            )
+            skipped_duplicates = len(raw_incidents) - len(filtered_incidents)
+            if skipped_duplicates > 0:
+                demisto.debug(
+                    f"[fetch-incidents] Dedup skipped {skipped_duplicates} already-seen incidents "
+                    f"for collection={collection_name}, seqUpdate={sequpdate}"
+                )
 
             before_count = len(incidents)
             incidents.extend(
@@ -2366,10 +2499,16 @@ def fetch_incidents_command(
                     incident=incident,
                     mapping=mapping,
                 ).build_incident()
-                for incident in iterable
+                for incident in filtered_incidents
             )
             added = len(incidents) - before_count
             demisto.debug(f"[fetch-incidents] Built incidents for portion: added={added}, total={len(incidents)}")
+            if dedup_enabled and filtered_incidents:
+                _update_fetch_seen_incident_ids_cache(
+                    last_run_state=last_run_state,
+                    incidents=filtered_incidents,
+                    dedup_lookback_days=dedup_lookback_days,
+                )
 
             if isinstance(portion_seq_int, int) and portion_seq_int > 0:
                 max_seen_seq_update = (
@@ -2396,6 +2535,8 @@ def fetch_incidents_command(
             f"[fetch-incidents] Updated next_run for collection={collection_name}: " f"{next_run['last_fetch'][collection_name]}"
         )
 
+    next_run[LAST_RUN_SEEN_INCIDENT_IDS_KEY] = last_run_state.get(LAST_RUN_SEEN_INCIDENT_IDS_KEY, {})
+    demisto.debug(f"[fetch-incidents] Final next_run summary: {_summarize_fetch_last_run_state(next_run)}")
     return next_run, incidents
 
 
@@ -2514,8 +2655,6 @@ def local_search_command(client: Client, args: dict) -> CommandResults:
         raise DemistoException(f"Invalid '{arg_name}' type: expected int/str, got {type(value).__name__}")
 
     query = args.get("query")
-    date_from = args.get("date_from")
-    date_to = args.get("date_to")
     collection_name = str(args.get("collection_name"))
     include_raw_feed = argToBoolean(args.get("include_raw_feed", False))
 
@@ -2527,32 +2666,20 @@ def local_search_command(client: Client, args: dict) -> CommandResults:
 
     demisto.debug(
         "[local_search] Params: "
-        f"collection={collection_name}, query={query!r}, date_from={date_from!r}, date_to={date_to!r}, "
+        f"collection={collection_name}, query={query!r}, "
         f"seq_update={filter_seq_update!r}, requests_limit={requests_limit}, page_size_limit={page_size_limit}, "
         f"include_raw_feed={include_raw_feed}"
     )
 
-    date_from_parsed = CommonHelpers.date_parse(date=str(date_from), arg_name="date_from") if date_from is not None else None
-    date_to_parsed = CommonHelpers.date_parse(date=str(date_to), arg_name="date_to") if date_to is not None else None
+    update_kwargs: dict[str, Any] = {
+        "collection_name": collection_name,
+        "query": query,
+        "limit": page_size_limit,
+    }
+    if filter_seq_update is not None:
+        update_kwargs["sequpdate"] = filter_seq_update
 
-    if collection_name == "compromised/breacheddb":
-        portions = client.poller.create_search_generator(
-            collection_name=collection_name,
-            query=query,
-            date_from=date_from_parsed,
-            date_to=date_to_parsed,
-            limit=page_size_limit,
-        )
-    else:
-        update_kwargs: dict[str, Any] = {
-            "collection_name": collection_name,
-            "query": query,
-            "limit": page_size_limit,
-        }
-        if filter_seq_update is not None:
-            update_kwargs["sequpdate"] = filter_seq_update
-
-        portions = client.poller.create_update_generator(**update_kwargs)
+    portions = client.poller.create_update_generator(**update_kwargs)
 
     mapping = MAPPING.get(collection_name, {})
 
@@ -3087,6 +3214,8 @@ def main():
         incident_collections = params.get("incident_collections", [])
         incidents_first_fetch = params.get("first_fetch", "3 days").strip()
         requests_count = int(params.get("max_fetch", 3))
+        skip_updated_incidents = argToBoolean(params.get("skip_updated_incidents", False))
+        dedup_lookback_days = _get_dedup_lookback_days_from_params(params)
 
         combolist = params.get("combolist", False)
         unique = params.get("unique", False)
@@ -3221,9 +3350,12 @@ def main():
                 combolist=combolist,
                 unique=unique,
                 enable_probable_corporate_access=enable_probable_corporate_access,
+                skip_updated_incidents=skip_updated_incidents,
+                dedup_lookback_days=dedup_lookback_days,
             )
             demisto.debug(f"[fetch-incidents] Incidents created this run: count={len(incidents)}")
-            demisto.debug(f"next_run: {next_run}, last_run: {last_run}")
+            demisto.debug(f"[fetch-incidents] last_run summary before persist: {_summarize_fetch_last_run_state(last_run)}")
+            demisto.debug(f"[fetch-incidents] next_run summary before persist: {_summarize_fetch_last_run_state(next_run)}")
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         else:

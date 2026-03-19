@@ -30,6 +30,8 @@ This section provides step-by-step instructions for configuring the Group-IB Thr
    - **Collections to fetch**: Select the collections you want to fetch incidents from. See the [Collections Overview documentation](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FCollections%20Overview%2FCollections%20Overview).
    - **Incidents first fetch**: Specify the date range for initial data fetch (default: "3 days")
    - **Number of requests per collection**: Number of API requests per collection in each fetch iteration (default: 3)
+   - **Skip updated incidents (prevent duplicates)**: Disabled by default. Enable this only when the integration itself should suppress duplicate incidents because Pre-Processing Rules do not work reliably or cannot be used operationally in your environment
+   - **Deduplication lookback (days)**: How many days fetched incident IDs are remembered in the built-in deduplication cache while **Skip updated incidents (prevent duplicates)** is enabled. Recommended value is `365` days
    - **Limit (items per request)**: Specifies the number of records fetched per API request
      - This limit applies to **all collections** configured in the integration instance
      - For optimal performance, check the [official API Limitations documentation](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FStarting%20Guide%2FAPI%20Limitations%2FAPI%20Limitations) for recommended limit values per collection
@@ -57,16 +59,40 @@ This section provides step-by-step instructions for configuring the Group-IB Thr
 3. **Configure Classifier and Mapper**
    - Set up the classifier and mapper using the 'Group-IB Threat Intelligence' classifier and mapper, or configure your own custom classifier and mapper as needed
 
-4. **Configure Pre-Processing Rules**
-   - Navigate to **Settings** → **Integrations** → **Pre-Processing Rules**
-   - Create a new pre-processing rule with the following configuration:
-     - **Conditions**:
-       - `gibid Is not empty (General)`
-       - `Type Doesn't equal(String) GIB Data Breach`
-     - **Action**: Run a script
-     - **Script**: Select one of the following:
-       - `GIBIncidentUpdate`: Recreates closed incidents if they receive updates; otherwise updates existing incidents
-       - `GIBIncidentUpdateIncludingClosed`: Updates incidents only (does not recreate closed incidents)
+4. **Built-In Deduplication and Optional Pre-Processing Rules**
+   - The integration now includes an optional built-in fetch-time deduplication layer
+   - This built-in deduplication layer is primarily intended for environments where Pre-Processing Rules are unreliable, unavailable, or operationally difficult to maintain
+   - Recommended production configuration:
+     - Keep **Skip updated incidents (prevent duplicates)** disabled unless Pre-Processing Rules are not working reliably in your environment
+     - Set **Deduplication lookback (days)** to `365` so the integration remembers incident IDs for a long enough period
+     - If you rely on Pre-Processing Rule based update propagation, enable the appropriate rule/script combination explicitly
+   - Optional fallback workflow:
+     - Disable **Skip updated incidents (prevent duplicates)** if you want updated Group-IB records to be re-ingested
+     - Navigate to **Settings** → **Integrations** → **Pre-Processing Rules**
+     - Enable or create a rule with the following configuration:
+       - **Conditions**:
+         - `gibid Is not empty (General)`
+       - **Action**: Run a script
+       - **Script**: Select `GIBIncidentUpdateAllTypes`
+   - Behavior summary:
+     - If **Skip updated incidents (prevent duplicates)** is enabled and **Deduplication lookback (days)** is greater than `0`, the integration stores fetched Group-IB incident IDs in fetch state and skips future re-sends of the same IDs during that retention window
+     - If **Skip updated incidents (prevent duplicates)** is disabled, the lookback setting is ignored and the integration allows re-ingestion of updated incidents, so a Pre-Processing Rule can update an existing incident instead
+
+## Recommended Instance Layout
+
+Use separate integration instances for the following groups:
+
+- Accounts unique
+- Accounts combolist
+- Cards (masked/unmasked)
+- Public leaks/Git Leaks
+- Breached
+- Vulnerabilities
+- Malware reports and threats including profiles
+- SPD
+- Suspicious IP
+- Malware CNC
+- DDoS/Deface/phishing/phishing_kit
 
 ## Reputation Commands (ip / domain / file)
 

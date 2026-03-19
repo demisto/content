@@ -14,6 +14,11 @@ urllib3_disable_warnings(InsecureRequestWarning)
 
 """ CONSTANTS """
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+POLLER_PRODUCT_TYPE = "SOAR"
+POLLER_PRODUCT_NAME = "CortexSOAR"
+POLLER_PRODUCT_VERSION = "unknown"
+POLLER_INTEGRATION_NAME = "Group-IB Threat Intelligence"
+POLLER_INTEGRATION_VERSION = "3.0.0"
 
 
 COMMON_MAPPING = {
@@ -879,11 +884,11 @@ class Client(BaseClient):
             api_url=base_url,
         )
         self.poller.set_product(
-            product_type="SOAR",
-            product_name="CortexSOAR",
-            product_version="unknown",
-            integration_name="Group-IB Threat Intelligence",
-            integration_version="3.0.0",
+            product_type=POLLER_PRODUCT_TYPE,
+            product_name=POLLER_PRODUCT_NAME,
+            product_version=POLLER_PRODUCT_VERSION,
+            integration_name=POLLER_INTEGRATION_NAME,
+            integration_version=POLLER_INTEGRATION_VERSION,
         )
         demisto.info(f"[Client.__init__] TI Feed client initialized: url={base_url}, verify={verify}, proxy={proxy}")
 
