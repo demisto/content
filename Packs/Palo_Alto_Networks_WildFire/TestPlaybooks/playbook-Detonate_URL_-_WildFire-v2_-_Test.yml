@@ -1,10 +1,10 @@
-id: Detonate URL - WildFire v2.2 - Test
+id: Detonate URL - WildFire-v2 - Test
 version: -1
-name: Detonate URL - WildFire v2.2 - Test
+name: Detonate URL - WildFire-v2 - Test
 fromversion: 5.0.0
 description: |-
   test pb of:
-  Detonate URL - WildFire-v2.2
+  Detonate URL - WildFire v2.2
 starttaskid: "0"
 tasks:
   "0":
