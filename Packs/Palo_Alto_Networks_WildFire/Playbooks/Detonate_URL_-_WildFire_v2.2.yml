@@ -424,7 +424,7 @@ outputs:
   description: The extracted verdict.
   type: number
 tests:
-- No tests (auto formatted)
+- Detonate URL - WildFire v2.2 - Test
 fromversion: 6.10.0
 supportedModules:
 - X1
