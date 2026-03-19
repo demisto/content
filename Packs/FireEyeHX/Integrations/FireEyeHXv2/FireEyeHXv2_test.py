@@ -176,7 +176,7 @@ def test_list_host_set_policy_command(mocker, demisto_args, call_count, call_arg
 
 
 UPSERT_COMMAND_DATA_CASES_DELETE_POLICY = [
-    ({"hostSetId": 11, "policyId": "test"}, Exception("404"), "polisy ID - test or Host Set ID - 11 Not Found"),
+    ({"hostSetId": 11, "policyId": "test"}, Exception("404"), "policy ID - test or Host Set ID - 11 Not Found"),
     ({"hostSetId": 11, "policyId": "test"}, "test", "Success"),
 ]
 
@@ -378,7 +378,7 @@ def test_host_containment(mocker, demisto_args, call_count, return_mocker, expec
     client = Client(base_url="base_url", verify=False, proxy=True, auth=("userName", "password"))
 
     get_agentId = mocker.patch("FireEyeHXv2.get_agent_id_by_host_name", return_value="")
-    mocker.patch.object(client, "host_containmet_request", return_value=None)
+    mocker.patch.object(client, "host_containment_request", return_value=None)
     mocker.patch.object(client, "approve_containment_request", side_effect=return_mocker)
     mocker.patch.object(client, "get_hosts_by_agentId_request", return_value={"data": {}})
     result = host_containment_command(client, demisto_args)
@@ -947,7 +947,7 @@ def test_get_data_acquisition_command(mocker, demisto_args, state, call_count):
 
 
 """TRIAGES"""
-UPSERT_COMMAND_DATA_BAD_CASES = [
+GET_HOSTS_ACQS_COMMAND_BAD_CASES = [
     (
         # No arguments given
         {},
@@ -956,7 +956,7 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
 ]
 
 
-@pytest.mark.parametrize("demisto_args, expected_results", UPSERT_COMMAND_DATA_BAD_CASES)
+@pytest.mark.parametrize("demisto_args, expected_results", GET_HOSTS_ACQS_COMMAND_BAD_CASES)
 def test_get_host_acqs_failed(demisto_args, expected_results):
     from FireEyeHXv2 import get_host_acqs
 
@@ -967,7 +967,7 @@ def test_get_host_acqs_failed(demisto_args, expected_results):
     assert str(e.value) == expected_results
 
 
-UPSERT_COMMAND_DATA_BAD_CASES = [
+GET_TRIAGE_COMMAND_BAD_DATA = [
     (
         # No arguments given
         {},
@@ -976,7 +976,7 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
 ]
 
 
-@pytest.mark.parametrize("demisto_args, expected_results", UPSERT_COMMAND_DATA_BAD_CASES)
+@pytest.mark.parametrize("demisto_args, expected_results", GET_TRIAGE_COMMAND_BAD_DATA)
 def test_get_triage_acquisition_information_failed(demisto_args, expected_results):
     from FireEyeHXv2 import get_triage_acquisition_information
 
@@ -987,7 +987,7 @@ def test_get_triage_acquisition_information_failed(demisto_args, expected_result
     assert str(e.value) == expected_results
 
 
-UPSERT_COMMAND_DATA_BAD_CASES = [
+DELETE_TRIAGE_BAD_DATA_CASES = [
     (
         # No arguments given
         {},
@@ -996,7 +996,7 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
 ]
 
 
-@pytest.mark.parametrize("demisto_args, expected_results", UPSERT_COMMAND_DATA_BAD_CASES)
+@pytest.mark.parametrize("demisto_args, expected_results", DELETE_TRIAGE_BAD_DATA_CASES)
 def test_delete_triage_acquisition_command_failed(demisto_args, expected_results):
     from FireEyeHXv2 import delete_triage_acquisition_command
 
@@ -1007,7 +1007,7 @@ def test_delete_triage_acquisition_command_failed(demisto_args, expected_results
     assert str(e.value) == expected_results
 
 
-UPSERT_COMMAND_DATA_BAD_CASES = [
+GET_TRIAGE_PACKAGE_BAD_CASES = [
     (
         # No arguments given
         {},
@@ -1016,7 +1016,7 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
 ]
 
 
-@pytest.mark.parametrize("demisto_args, expected_results", UPSERT_COMMAND_DATA_BAD_CASES)
+@pytest.mark.parametrize("demisto_args, expected_results", GET_TRIAGE_PACKAGE_BAD_CASES)
 def test_get_triage_acquisition_package_failed(demisto_args, expected_results):
     from FireEyeHXv2 import get_triage_acquisition_package
 
@@ -1027,13 +1027,13 @@ def test_get_triage_acquisition_package_failed(demisto_args, expected_results):
     assert str(e.value) == expected_results
 
 
-UPSERT_COMMAND_DATA_TRIAGE_ACQUISITION = [
+START_TRIAGE_ACQUISITION_COMMAND_CASES = [
     ({"hostName": "test"}, 1, {"readable": "Triage Acquisition ID: 12345 on Instance:"}),
     ({"agentId": "test"}, 0, {"readable": "Triage Acquisition ID: 12345 on Instance:"}),
 ]
 
 
-@pytest.mark.parametrize("demisto_args, call_count, results", UPSERT_COMMAND_DATA_TRIAGE_ACQUISITION)
+@pytest.mark.parametrize("demisto_args, call_count, results", START_TRIAGE_ACQUISITION_COMMAND_CASES)
 def test_initiate_triage_acquisition_command(mocker, demisto_args, call_count, results):
     from FireEyeHXv2 import Client, initiate_triage_acquisition_command
 
@@ -1558,7 +1558,7 @@ def test_create_dynamic_host_set_command(mocker):
             {"host_set_name": "host_set_name", "query": "query", "query_key": "query_key"},
             "Cannot use free text query with other query operators, Please use one.",
         ),
-        ({"host_set_name": "host_set_name"}, "Please provide a free text query, or add all of the query operators toghether."),
+        ({"host_set_name": "host_set_name"}, "Please provide a free text query, or add all of the query operators together."),
     ],
 )
 def test_create_dynamic_host_set_command_failed(args, expected_results):
@@ -1649,7 +1649,7 @@ def test_update_dynamic_host_set_command(mocker):
             {"host_set_name": "host_set_name", "query": "query", "query_key": "query_key"},
             "Cannot use free text query with other query operators, Please use one.",
         ),
-        ({"host_set_name": "host_set_name"}, "Please provide a free text query, or add all of the query operators toghether."),
+        ({"host_set_name": "host_set_name"}, "Please provide a free text query, or add all of the query operators together."),
     ],
 )
 def test_update_dynamic_host_set_command_failed(args, expected_results):
@@ -1735,7 +1735,7 @@ def test_create_static_host_request_body(mocker):
 def test_informative_error_in_get_token(mocker):
     """
     Given:
-        - 401 error occured in get_token
+        - 401 error occurred in get_token
 
     When:
         - init the client and the get token was called

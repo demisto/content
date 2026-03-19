@@ -1668,7 +1668,7 @@ There is no context output for this command.
 
 #### Command example
 
-```!fireeye-hx-append-conditions category=Custom name=YYYXXXYYY condition=exsmple.com```
+```!fireeye-hx-append-conditions category=Custom name=YYYXXXYYY condition=example.com```
 
 #### Context Example
 
@@ -1690,7 +1690,7 @@ There is no context output for this command.
 >
 >|Category|Conditions|Name|
 >|---|---|---|
->| Custom | exsmple.com | YYYXXXYYY |
+>| Custom | example.com | YYYXXXYYY |
 
 ### fireeye-hx-search-delete
 
@@ -2660,14 +2660,14 @@ Deletes a host set.
 
 >Host set 1001 was deleted successfully.
 
-### fireeye-hx-delete-triage-acquistion
+### fireeye-hx-delete-triage-acquisition
 
 ***
 Deletes a specified triage request.
 
 #### Base Command
 
-`fireeye-hx-delete-triage-acquistion`
+`fireeye-hx-delete-triage-acquisition`
 
 #### Input
 
@@ -2681,20 +2681,20 @@ There is no context output for this command.
 
 #### Command example
 
-```!fireeye-hx-delete-triage-acquistion acquisitionId=12345```
+```!fireeye-hx-delete-triage-acquisition acquisitionId=12345```
 
 #### Human Readable Output
 
 >Triage acquisition 12345 deleted successfully
 
-### fireeye-hx-get-triage-acquistition-package
+### fireeye-hx-get-triage-acquisition-package
 
 ***
-a
+Collects triage package for the given acquisition ID (the data is fetched as a MANS file).
 
 #### Base Command
 
-`fireeye-hx-get-triage-acquistition-package`
+`fireeye-hx-get-triage-acquisition-package`
 
 #### Input
 
@@ -2709,25 +2709,25 @@ a
 | FireEyeHX.Acquisitions.Triage._id | String | The triage ID. |
 | FireEyeHX.Acquisitions.Triage.host._id | String | The host ID. |
 | FireEyeHX.Acquisitions.Triage.host.hostname | String | The hostname. |
-| FireEyeHX.Acquisitions.Triage.state | String | The acquistion state. |
+| FireEyeHX.Acquisitions.Triage.state | String | The acquisition state. |
 
 #### Command example
 
-```!fireeye-hx-get-triage-acquistition-package acquisitionId=12345```
+```!fireeye-hx-get-triage-acquisition-package acquisitionId=12345```
 
 #### Human Readable Output
 
->The triage completed with issues.</br>
+>The triage completed with issues.<br />
 >Triage acquisition ID: 12345
 
-### fireeye-hx-get-triage-acquistition
+### fireeye-hx-get-triage-acquisition
 
 ***
 Gets information about a specified triage acquisition.
 
 #### Base Command
 
-`fireeye-hx-get-triage-acquistition`
+`fireeye-hx-get-triage-acquisition`
 
 #### Input
 
@@ -2742,11 +2742,11 @@ Gets information about a specified triage acquisition.
 | FireEyeHX.Acquisitions.Triage._id | String | The triage ID. |
 | FireEyeHX.Acquisitions.Triage.host._id | String | The host ID. |
 | FireEyeHX.Acquisitions.Triage.host.hostname | String | The hostname. |
-| FireEyeHX.Acquisitions.Triage.state | String | The acquistion state. |
+| FireEyeHX.Acquisitions.Triage.state | String | The acquisition state. |
 
 #### Command example
 
-```!fireeye-hx-get-triage-acquistition acquisitionId=12345```
+```!fireeye-hx-get-triage-acquisition acquisitionId=12345```
 
 #### Human Readable Output
 
@@ -2759,14 +2759,14 @@ Gets information about a specified triage acquisition.
 >|finish_time| 2026-03-09T15:37:32.836Z|
 >|instance| FireEyeHX v2_instance_1|
 
-### fireeye-hx-triage-acquistition
+### fireeye-hx-triage-acquisition
 
 ***
 Starts a new triage request for a host.
 
 #### Base Command
 
-`fireeye-hx-triage-acquistition`
+`fireeye-hx-triage-acquisition`
 
 #### Input
 
@@ -2782,11 +2782,11 @@ Starts a new triage request for a host.
 | FireEyeHX.Acquisitions.Triage._id | String | The triage ID. |
 | FireEyeHX.Acquisitions.Triage.host._id | String | The host ID. |
 | FireEyeHX.Acquisitions.Triage.host.hostname | String | The hostname. |
-| FireEyeHX.Acquisitions.Triage.state | String | The acquistion state. |
+| FireEyeHX.Acquisitions.Triage.state | String | The acquisition state. |
 
 #### Command example
 
-```!fireeye-hx-triage-acquistition agentId=SomeAgentID```
+```!fireeye-hx-triage-acquisition agentId=SomeAgentID```
 
 #### Human Readable Output
 
