@@ -1,4 +1,4 @@
-This Playbook handles outreach for the approval of a requested Issue exception.
+This playbook manages communication for the approval of a requested issue exception.
 
 ## Dependencies
 
