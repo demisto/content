@@ -279,8 +279,6 @@ table_name = {
     GET_ENDPOINT_ACTIVITY_DATA_COUNT_COMMAND: TABLE_GET_ENDPOINT_ACTIVITY_DATA_COUNT,
     DOWNLOAD_COLLECTED_FILE_COMMAND: TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION,
 }
-# disable insecure warnings
-urllib3.disable_warnings()
 
 _T = TypeVar("_T")
 
@@ -3101,6 +3099,10 @@ def main():  # pragma: no cover
 
         base_url: str = params.get(URL, "")
         api_key: str = params.get(API_TOKEN, {}).get("password")
+
+        handle_proxy()
+        if params.get("insecure", False):
+            urllib3.disable_warnings()
 
         if base_url == "":
             raise RuntimeError("The base_url cannot be empty, please provide a valid value.")
