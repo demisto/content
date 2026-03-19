@@ -4512,11 +4512,9 @@ def get_xql_query_results_platform(client: Client, execution_id: str) -> dict:
     Returns:
         dict: The query results including status, execution_id, and results if completed.
     """
-    args = demisto.args()
-    force_stream = argToBoolean(args.get("force_stream", True))
     data: dict[str, Any] = {
         "query_id": execution_id,
-        "force_stream": force_stream,
+        "force_stream": False,
     }
 
     demisto.debug(f"Calling get_query_results with {data=}")
@@ -4527,25 +4525,12 @@ def get_xql_query_results_platform(client: Client, execution_id: str) -> dict:
     response["execution_id"] = execution_id
 
     if response.get("status") != "PENDING" and response.get("status") != "FAIL":
-        stream_id = response.get("stream_id")
         rows = response.get("rows")
         if rows is not None:
             # If rows are present in the response, use them directly
             demisto.debug("Query results received directly in response without streaming.")
             response["results"] = rows
             response.pop("rows", None)
-        elif stream_id:
-            # Fallback: fetch results via stream if stream_id is present
-            stream_data: dict[str, str] = {"stream_id": stream_id}
-            demisto.debug(f"Requesting query results using stream_id={stream_id}")
-            query_data = client.platform_http_request(
-                method="POST", json_data=stream_data, url_suffix="/xql_queries/results/", ok_codes=[200]
-            )
-            demisto.debug(f"Query results received via stream: type={type(query_data).__name__}")
-            if isinstance(query_data, str):
-                response["results"] = [json.loads(line) for line in query_data.split("\n") if line.strip()]
-            else:
-                response["results"] = query_data
 
     if response.get("status") == "FAIL":
         # Get full error details using PAPI
@@ -4574,7 +4559,7 @@ def get_xql_query_results_platform_polling(client: Client, execution_id: str, ti
     Returns:
         dict: The query results after polling completes or timeout is reached.
     """
-    interval_in_secs = 4
+    interval_in_secs = 2  # Polling interval in seconds
 
     # Block execution until the execution status isn't pending or we time out
     polling_start_time = datetime.now()

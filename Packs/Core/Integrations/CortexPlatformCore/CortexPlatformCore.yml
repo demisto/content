@@ -3270,13 +3270,6 @@ script:
           type: String
     - name: core-xql-generic-query-platform
       arguments:
-      - description: Whether to force streaming of results.
-        name: force_stream
-        auto: PREDEFINED
-        predefined:
-        - "true"
-        - "false"
-        defaultValue: "true"
       - description: XQL query string. By default up to 1000 results are returned. To retrieve more results, enter a custom limit in the query.
         name: query
         required: true
