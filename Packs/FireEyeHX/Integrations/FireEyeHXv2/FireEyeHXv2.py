@@ -2821,11 +2821,11 @@ def main() -> None:
         "fireeye-hx-update-host-set-static": update_static_host_set_command,
         "fireeye-hx-create-host-set-dynamic": create_dynamic_host_set_command,
         "fireeye-hx-update-host-set-dynamic": update_dynamic_host_set_command,
-        "fireeye-hx-delete-triage-acquisition": delete_triage_acquisition_command,
-        "fireeye-hx-get-triage-acquisition-package": get_triage_acquisition_package,
-        "fireeye-hx-get-triage-acquisition": get_triage_acquisition_information,
-        "fireeye-hx-triage-acquisition": initiate_triage_acquisition_command,
-        "fireeye-hx-host-get-acquisitions": get_host_acqs,
+        "fireeye-hx-triage-acquisition-delete": delete_triage_acquisition_command,
+        "fireeye-hx-triage-acquisition-package-get": get_triage_acquisition_package,
+        "fireeye-hx-triage-acquisition-get": get_triage_acquisition_information,
+        "fireeye-hx-triage-acquisition-start": initiate_triage_acquisition_command,
+        "fireeye-hx-host-acquisitions-get": get_host_acqs,
     }
 
     params = demisto.params()

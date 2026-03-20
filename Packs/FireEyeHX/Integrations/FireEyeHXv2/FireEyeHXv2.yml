@@ -1800,32 +1800,43 @@ script:
     - contextPath: FireEyeHX.HostSets.deleted
       description: Was the host set deleted.
       type: Boolean
-  - name: fireeye-hx-get-triage-acquisition-package
+  - name: fireeye-hx-triage-acquisition-package-get
+    description: Gets the triage acquisition package for the given acquisition ID.
     arguments:
     - name: acquisitionId
+      description: The acquisition ID.
       required: true
     outputs:
     - contextPath: FireEyeHX.Acquisitions.Triage
-  - name: fireeye-hx-get-triage-acquisition
+      description: A json object with triage acquisition details and MANS file.
+      type: Unknown
+  - name: fireeye-hx-triage-acquisition-get
     arguments:
     - name: acquisitionId
       required: true
       description: the acquisition Id
     outputs:
     - contextPath: FireEyeHX.Acquisitions.Triage
-  - name: fireeye-hx-delete-triage-acquisition
+      type: Unknown
+      description: A json object with triage acquisition details.
+  - name: fireeye-hx-triage-acquisition-delete
+    description: Deletes a triage acquisition.
     arguments:
     - name: acquisitionId
       required: true
       description: acquisitionId
-  - name: fireeye-hx-triage-acquisition
+  - name: fireeye-hx-triage-acquisition-start
     arguments:
     - name: hostName
+      description: The host name. If the host name is not specified, the agent ID must be specified.
     - name: agentId
+      description: The agent ID. If the agent ID is not specified, the host name must be specified.
     outputs:
     - contextPath: FireEyeHX.Acquisitions.Triage
+      type: Unknown
+      description: A json object with triage acquisition details.
     description: Starts a triage acquisition
-  - name: fireeye-hx-host-get-acquisitions
+  - name: fireeye-hx-host-acquisitions-get
     description: Gets all acquisitions for a host
     arguments:
     - name: hostName
@@ -1834,7 +1845,8 @@ script:
       description: The agent ID. If the agent ID is not specified, the host name must be specified.
     outputs:
     - contextPath: FireEyeHX.Host.Acquisitions.All
-      type: string
+      description: A json object with all acquisitions for a host.
+      type: Unknown
   isfetch: true
   script: '-'
   type: python

@@ -2660,14 +2660,14 @@ Deletes a host set.
 
 >Host set 1001 was deleted successfully.
 
-### fireeye-hx-delete-triage-acquisition
+### fireeye-hx-triage-acquisition-delete
 
 ***
 Deletes a specified triage request.
 
 #### Base Command
 
-`fireeye-hx-delete-triage-acquisition`
+`fireeye-hx-triage-acquisition-delete`
 
 #### Input
 
@@ -2681,20 +2681,20 @@ There is no context output for this command.
 
 #### Command example
 
-```!fireeye-hx-delete-triage-acquisition acquisitionId=12345```
+```!fireeye-hx-triage-acquisition-delete acquisitionId=12345```
 
 #### Human Readable Output
 
 >Triage acquisition 12345 deleted successfully
 
-### fireeye-hx-get-triage-acquisition-package
+### fireeye-hx-triage-acquisition-package-get
 
 ***
 Collects triage package for the given acquisition ID (the data is fetched as a MANS file).
 
 #### Base Command
 
-`fireeye-hx-get-triage-acquisition-package`
+`fireeye-hx-triage-acquisition-package-get`
 
 #### Input
 
@@ -2713,21 +2713,21 @@ Collects triage package for the given acquisition ID (the data is fetched as a M
 
 #### Command example
 
-```!fireeye-hx-get-triage-acquisition-package acquisitionId=12345```
+```!fireeye-hx-triage-acquisition-package-get acquisitionId=12345```
 
 #### Human Readable Output
 
 >The triage completed with issues.<br />
 >Triage acquisition ID: 12345
 
-### fireeye-hx-get-triage-acquisition
+### fireeye-hx-triage-acquisition-get
 
 ***
 Gets information about a specified triage acquisition.
 
 #### Base Command
 
-`fireeye-hx-get-triage-acquisition`
+`fireeye-hx-triage-acquisition-get`
 
 #### Input
 
@@ -2746,7 +2746,7 @@ Gets information about a specified triage acquisition.
 
 #### Command example
 
-```!fireeye-hx-get-triage-acquisition acquisitionId=12345```
+```!fireeye-hx-triage-acquisition-get acquisitionId=12345```
 
 #### Human Readable Output
 
@@ -2759,14 +2759,14 @@ Gets information about a specified triage acquisition.
 >|finish_time| 2026-03-09T15:37:32.836Z|
 >|instance| FireEyeHX v2_instance_1|
 
-### fireeye-hx-triage-acquisition
+### fireeye-hx-triage-acquisition-start
 
 ***
 Starts a new triage request for a host.
 
 #### Base Command
 
-`fireeye-hx-triage-acquisition`
+`fireeye-hx-triage-acquisition-start`
 
 #### Input
 
@@ -2786,20 +2786,20 @@ Starts a new triage request for a host.
 
 #### Command example
 
-```!fireeye-hx-triage-acquisition agentId=SomeAgentID```
+```!fireeye-hx-triage-acquisition-start agentId=SomeAgentID```
 
 #### Human Readable Output
 
 >Triage Acquisition ID: 31032 on Instance: FireEyeHX v2_instance_1 created.
 
-### fireeye-hx-host-get-acquisitions
+### fireeye-hx-host-acquisitions-get
 
 ***
 Gets a list of all acquisitions for a host.
 
 #### Base Command
 
-`fireeye-hx-host-get-acquisitions`
+`fireeye-hx-host-acquisitions-get`
 
 #### Input
 
@@ -2819,7 +2819,7 @@ Gets a list of all acquisitions for a host.
 
 #### Command example
 
-```!fireeye-hx-host-get-acquisitions agentId=SomeAgentID```
+```!fireeye-hx-host-acquisitions-get agentId=SomeAgentID```
 
 #### Human Readable Output
 
