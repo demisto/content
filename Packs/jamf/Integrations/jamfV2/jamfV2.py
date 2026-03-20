@@ -150,10 +150,7 @@ class ComputersInventorySection(str, Enum):
             AttributeError: If the provided section is not a valid
                 ComputersInventorySection member.
         """
-        parts = section.value.lower().split("_")
-
-        # Keep the first part lowercase, capitalize the first letter of subsequent parts
-        return parts[0] + "".join(word.capitalize() for word in parts[1:])
+        return camelize_string(section.value, delim="_", upper_camel=False)
 
 
 """ CLIENT CLASS """
