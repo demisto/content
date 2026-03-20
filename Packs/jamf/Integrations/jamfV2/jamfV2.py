@@ -2084,36 +2084,34 @@ def endpoint_command(client: Client, args: dict[str, Any]) -> list[CommandResult
     Returns:
         list[CommandResults]: A list of CommandResults objects.
     """
-    endpoint_id_list = argToList(args.get("id"))
-    endpoint_ip_list = argToList(args.get("ip"))
-    endpoint_hostname_list = argToList(args.get("hostname"))
+    arg_values = {
+        "id": argToList(args.get("id")),
+        "ip": argToList(args.get("ip")),
+        "hostname": argToList(args.get("hostname")),
+    }
 
-    if not endpoint_id_list and not endpoint_ip_list and not endpoint_hostname_list:
+    if not any(arg_values):
         raise Exception(f"{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname")
+
+    field_map = {
+        "id": "id",
+        "ip": "general.lastIpAddress",
+        "hostname": "general.name",
+    }
+
+    filters = [
+        f'{field_map[key]}=="{val}"'
+        for key, values in arg_values.items()
+        for val in values
+    ]
 
     outputs = []
     raw_outputs = []
 
-    if endpoint_id_list:
-        for endpoint_id in endpoint_id_list:
-            filter_query = f'id=="{endpoint_id}"'
-            mapped, raw = computers_endpoint_request(client, filter_query)
-            outputs.extend(mapped)
-            raw_outputs.extend(raw)
-
-    if endpoint_ip_list:
-        for endpoint_ip in endpoint_ip_list:
-            filter_query = f'general.lastIpAddress=="{endpoint_ip}"'
-            mapped, raw = computers_endpoint_request(client, filter_query)
-            outputs.extend(mapped)
-            raw_outputs.extend(raw)
-
-    if endpoint_hostname_list:
-        for endpoint_hostname in endpoint_hostname_list:
-            filter_query = f'general.name=="{endpoint_hostname}"'
-            mapped, raw = computers_endpoint_request(client, filter_query)
-            outputs.extend(mapped)
-            raw_outputs.extend(raw)
+    for filter_query in filters:
+        mapped, raw = computers_endpoint_request(client, filter_query)
+        outputs.extend(mapped)
+        raw_outputs.extend(raw)
 
     # Remove duplicates by taking entries with unique `uuid`:
     if outputs:
