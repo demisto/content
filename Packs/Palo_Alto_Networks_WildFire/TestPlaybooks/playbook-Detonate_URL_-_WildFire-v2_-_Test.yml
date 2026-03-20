@@ -57,7 +57,7 @@ tasks:
         simple: URL.Data
       stringify: {}
       value:
-        simple: https://www.demisto.com, https://www.paloaltonetworks.com
+        simple: http://www.pdf995.com/samples/pdf.pdf
     separatecontext: false
     view: |-
       {
