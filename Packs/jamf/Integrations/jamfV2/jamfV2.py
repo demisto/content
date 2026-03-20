@@ -1505,8 +1505,6 @@ def get_computers_basic_subset_command(client: Client, args: dict[str, Any]) -> 
                 "managed": remoteManagement.get("managed"),
                 "username": userAndLocation.get("username"),
                 "model": hardware.get("model"),
-                "department": userAndLocation.get("departmentId"),
-                "building": userAndLocation.get("buildingId"),
                 "mac_address": hardware.get("macAddress"),
                 "serial_number": hardware.get("serialNumber"),
             }
