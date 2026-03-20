@@ -1720,10 +1720,10 @@ def get_computer_subset_command(client: Client, args: dict[str, Any], subset_nam
 
     sections = ComputersInventorySection.subset_to_sections(subset_name)
 
-    if identifier and identifier_value:
-        filter_query = f'{get_full_identifier_from_mapping(identifier)}=="{identifier_value}"'
-    else:
-        filter_query = None
+    if not (identifier and identifier_value):
+        raise DemistoException("Both 'identifier' and 'identifier_value' are required arguments.")
+    
+    filter_query = f'{get_full_identifier_from_mapping(identifier)}=="{identifier_value}"'
 
     response = client.get_computers_inventory_request(filter_query=filter_query, sections=sections)
 
@@ -1766,16 +1766,16 @@ def get_computer_section_command(client: Client, args: dict[str, Any]) -> Comman
         CommandResults: Command results containing the requested computer section data.
     """
 
-    identifier = args.get("identifier")
-    identifier_value = args.get("identifier_value")
+    identifier = args["identifier"]
+    identifier_value = args["identifier_value"]
     section_arg = args.get("section")
 
     section_as_enum = ComputersInventorySection(section_arg) if section_arg else ComputersInventorySection.GENERAL
 
-    if identifier and identifier_value:
-        filter_query = f'{get_full_identifier_from_mapping(identifier)}=="{identifier_value}"'
-    else:
-        filter_query = None
+    if not (identifier and identifier_value):
+        raise DemistoException("Both 'identifier' and 'identifier_value' are required arguments.")
+    
+    filter_query = f'{get_full_identifier_from_mapping(identifier)}=="{identifier_value}"'
 
     response = client.get_computers_inventory_request(filter_query=filter_query, sections=[section_as_enum.value])
 
