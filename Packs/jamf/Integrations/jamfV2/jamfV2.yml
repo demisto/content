@@ -825,10 +825,10 @@ script:
     description: Returns the requested section for a specific computer according to the given arguments.
     name: jamf-get-computer-subset
     outputs:
-    - contextPath: JAMF.ComputerSubset.id
+    - contextPath: JAMF.Computer.id
       description: The computer's ID.
       type: Number
-    - contextPath: JAMF.ComputerSubset.udid
+    - contextPath: JAMF.Computer.udid
       description: The computer's UDID.
       type: String
   - arguments:
