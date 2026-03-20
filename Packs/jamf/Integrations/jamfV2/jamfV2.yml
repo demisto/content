@@ -178,10 +178,10 @@ script:
     - defaultValue: '0'
       description: The number of the requested page.
       name: page
-    - description: 'Filter query for the Pro API (supports RSQL). e.g.: general.name=="Computer 1*", userAndLocation.email=="user@email.com".'
+    - description: 'The filter query for the Pro API (supports RSQL). For example, general.name=="Computer 1*", userAndLocation.email=="user@email.com".'
       name: filter
       required: true
-    description: Matches computers by specific characteristics using a filter query and returns general data on each of the computers.
+    description: Returns general data for computers that match specific characteristics defined by a filter query.
     name: jamf-get-computer-by-match
     outputs:
     - contextPath: JAMF.Computer.id
@@ -791,7 +791,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer's MAC address should be passed, etc.
+    - description: The value of the specified identifier. For example, if "id" is selected as the identifier, provide the computer ID. If "macaddress" is selected, provide the computer's MAC address.
       name: identifier_value
       required: true
     - auto: PREDEFINED
