@@ -2070,7 +2070,7 @@ def mobile_device_erase_command(client: Client, args: dict[str, Any]) -> Command
     )
 
 
-def endpoint_command(client, args):
+def endpoint_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """
     Implements the 'endpoint' command to search for computers.
 
