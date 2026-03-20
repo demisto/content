@@ -1,0 +1,39 @@
+{
+  "total": 5,
+  "next": "https://api.flashpoint.io/vulnerability-intelligence/v1/products?from=2&size=2",
+  "previous": null,
+  "size": 2,
+  "from": 0,
+  "results": [
+    {
+      "id": 10001,
+      "name": "dummy product1",
+      "vendor": {
+        "id": 1,
+        "name": "dummy vendor1"
+      },
+      "versions": [
+        {
+          "id": 1641849,
+          "vulndb_version_id": 11704,
+          "name": "1.1.4"
+        }
+      ]
+    },
+    {
+      "id": 10002,
+      "name": "dummy product2",
+      "vendor": {
+        "id": 2,
+        "name": "dummy vendor2"
+      },
+      "versions": [
+        {
+          "id": 1824886,
+          "vulndb_version_id": 11921,
+          "name": "1.6.6"
+        }
+      ]
+    }
+  ]
+}
