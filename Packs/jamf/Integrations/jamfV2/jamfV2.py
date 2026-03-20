@@ -1722,7 +1722,7 @@ def get_computer_subset_command(client: Client, args: dict[str, Any], subset_nam
 
     if not (identifier and identifier_value):
         raise DemistoException("Both 'identifier' and 'identifier_value' are required arguments.")
-    
+
     filter_query = f'{get_full_identifier_from_mapping(identifier)}=="{identifier_value}"'
 
     response = client.get_computers_inventory_request(filter_query=filter_query, sections=sections)
@@ -1774,7 +1774,7 @@ def get_computer_section_command(client: Client, args: dict[str, Any]) -> Comman
 
     if not (identifier and identifier_value):
         raise DemistoException("Both 'identifier' and 'identifier_value' are required arguments.")
-    
+
     filter_query = f'{get_full_identifier_from_mapping(identifier)}=="{identifier_value}"'
 
     response = client.get_computers_inventory_request(filter_query=filter_query, sections=[section_as_enum.value])
@@ -2099,11 +2099,7 @@ def endpoint_command(client: Client, args: dict[str, Any]) -> list[CommandResult
         "hostname": "general.name",
     }
 
-    filters = [
-        f'{field_map[key]}=="{val}"'
-        for key, values in arg_values.items()
-        for val in values
-    ]
+    filters = [f'{field_map[key]}=="{val}"' for key, values in arg_values.items() for val in values]
 
     outputs = []
     raw_outputs = []
