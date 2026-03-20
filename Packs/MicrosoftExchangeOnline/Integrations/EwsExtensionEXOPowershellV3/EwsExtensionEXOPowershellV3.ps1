@@ -3172,6 +3172,352 @@ function CheckConnectionCommand($client)
     $raw_response = @{ "results" = $results }
     Write-Output $human_readable, $entry_context, $raw_response
 }
+
+function RestTestCommand($client)
+{
+    <#
+        .DESCRIPTION
+        Standalone command that acquires an OAuth2 token using the configured certificate
+        and calls Get-Mailbox via the Exchange Online REST API directly, bypassing
+        Connect-ExchangeOnline entirely. Returns the actual response or error from each step.
+
+        .PARAMETER client
+        ExchangeOnlinePowershellV3Client instance with certificate, app_id, and organization.
+    #>
+    $results = @()
+    $results += "=== EWS REST API Direct Test ==="
+    $results += "Timestamp: $((Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ'))"
+    $results += "Organization: $($client.organization)"
+    $results += "AppID: $($client.app_id)"
+    $results += "Certificate Thumbprint: $($client.certificate.Thumbprint)"
+
+    # --- Build JWT client assertion ---
+    $tokenEndpoint = "https://login.microsoftonline.com/$($client.organization)/oauth2/v2.0/token"
+
+    $thumbprint = $client.certificate.Thumbprint
+    $thumbprintBytes = for ($i = 0; $i -lt $thumbprint.Length; $i += 2) {
+        [Convert]::ToByte($thumbprint.Substring($i, 2), 16)
+    }
+    $x5t = [System.Convert]::ToBase64String([byte[]]$thumbprintBytes).TrimEnd('=').Replace('+', '-').Replace('/', '_')
+
+    $jwtHeader = @{ alg = "RS256"; typ = "JWT"; x5t = $x5t } | ConvertTo-Json -Compress
+    $headerB64 = [System.Convert]::ToBase64String(
+        [System.Text.Encoding]::UTF8.GetBytes($jwtHeader)
+    ).TrimEnd('=').Replace('+', '-').Replace('/', '_')
+
+    $now = [int][double]::Parse((Get-Date -Date ((Get-Date).ToUniversalTime()) -UFormat %s))
+    $jwtPayload = @{
+        aud = $tokenEndpoint
+        exp = $now + 600
+        iss = $client.app_id
+        jti = [guid]::NewGuid().ToString()
+        nbf = $now
+        sub = $client.app_id
+    } | ConvertTo-Json -Compress
+    $payloadB64 = [System.Convert]::ToBase64String(
+        [System.Text.Encoding]::UTF8.GetBytes($jwtPayload)
+    ).TrimEnd('=').Replace('+', '-').Replace('/', '_')
+
+    $dataToSign = "$headerB64.$payloadB64"
+    $rsaKey = [System.Security.Cryptography.X509Certificates.RSACertificateExtensions]::GetRSAPrivateKey($client.certificate)
+    $sigBytes = $rsaKey.SignData(
+        [System.Text.Encoding]::UTF8.GetBytes($dataToSign),
+        [System.Security.Cryptography.HashAlgorithmName]::SHA256,
+        [System.Security.Cryptography.RSASignaturePadding]::Pkcs1
+    )
+    $sigB64 = [System.Convert]::ToBase64String($sigBytes).TrimEnd('=').Replace('+', '-').Replace('/', '_')
+
+    $tokenRequestBody = @{
+        client_id             = $client.app_id
+        scope                 = "https://outlook.office365.com/.default"
+        client_assertion_type = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+        client_assertion      = "$dataToSign.$sigB64"
+        grant_type            = "client_credentials"
+    }
+
+    # --- Step 1: Acquire token ---
+    $results += ""
+    $results += "=== Step 1: Token Acquisition ==="
+    $results += "Token endpoint: $tokenEndpoint"
+    $token = $null
+    $tokenSuccess = $false
+    try {
+        $tokenResponse = Invoke-RestMethod -Uri $tokenEndpoint -Method POST -Body $tokenRequestBody `
+            -ContentType "application/x-www-form-urlencoded" -ErrorAction Stop
+        $token = $tokenResponse.access_token
+        $tokenSuccess = $true
+        $results += "Result: SUCCESS"
+        $results += "Token type: $($tokenResponse.token_type)"
+        $results += "Expires in: $($tokenResponse.expires_in) seconds"
+
+        # Show roles from token
+        try {
+            $tokenParts = $token.Split('.')
+            if ($tokenParts.Count -ge 2) {
+                $claimsB64 = $tokenParts[1]
+                switch ($claimsB64.Length % 4) {
+                    2 { $claimsB64 += "==" }
+                    3 { $claimsB64 += "=" }
+                }
+                $claimsB64 = $claimsB64.Replace('-', '+').Replace('_', '/')
+                $claimsJson = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($claimsB64))
+                $claims = $claimsJson | ConvertFrom-Json
+                if ($claims.roles) {
+                    $results += "Roles: $($claims.roles -join ', ')"
+                } else {
+                    $results += "Roles: NONE"
+                }
+            }
+        } catch {
+            $results += "Token inspection: Unable to decode"
+        }
+    }
+    catch {
+        $realError = $_.ErrorDetails.Message
+        $results += "Result: FAILED"
+        if ($realError) {
+            try {
+                $parsed = $realError | ConvertFrom-Json
+                $results += "Error: $($parsed.error)"
+                $results += "Description: $($parsed.error_description)"
+                if ($parsed.error_codes) {
+                    $results += "Error Codes: $($parsed.error_codes -join ', ')"
+                }
+            } catch {
+                $results += "Raw error: $realError"
+            }
+        } else {
+            $results += "Exception: $($_.Exception.Message)"
+        }
+    }
+
+    # --- Step 2: Call Exchange Online REST API ---
+    $results += ""
+    $results += "=== Step 2: Exchange Online REST API (Get-Mailbox) ==="
+    if ($tokenSuccess -and $token) {
+        $exoEndpoint = "https://outlook.office365.com/adminapi/beta/$($client.organization)/InvokeCommand"
+        $results += "Endpoint: $exoEndpoint"
+        try {
+            $exoHeaders = @{ "Authorization" = "Bearer $token" }
+            $exoBody = '{"CmdletInput":{"CmdletName":"Get-Mailbox","Parameters":{"ResultSize":"1"}}}'
+            $exoResponse = Invoke-WebRequest -Uri $exoEndpoint `
+                -Method POST -Headers $exoHeaders `
+                -ContentType "application/json" `
+                -Body $exoBody `
+                -UseBasicParsing `
+                -ErrorAction Stop
+            $statusCode = $exoResponse.StatusCode
+            $responseBody = $exoResponse.Content
+            $results += "HTTP Status: $statusCode"
+            $results += "Result: SUCCESS"
+
+            # Try to parse and show a summary of the response
+            try {
+                $parsed = $responseBody | ConvertFrom-Json
+                if ($parsed.value) {
+                    $results += "Mailboxes returned: $($parsed.value.Count)"
+                    foreach ($mbx in $parsed.value) {
+                        if ($mbx.DisplayName) {
+                            $results += "  - $($mbx.DisplayName) ($($mbx.PrimarySmtpAddress))"
+                        }
+                    }
+                } else {
+                    $results += "Response preview: $($responseBody.Substring(0, [Math]::Min(500, $responseBody.Length)))"
+                }
+            } catch {
+                $results += "Response preview: $($responseBody.Substring(0, [Math]::Min(500, $responseBody.Length)))"
+            }
+        }
+        catch {
+            $statusCode = $null
+            $responseBody = $null
+            if ($_.Exception.Response) {
+                $statusCode = [int]$_.Exception.Response.StatusCode
+                try {
+                    $responseStream = $_.Exception.Response.GetResponseStream()
+                    $reader = [System.IO.StreamReader]::new($responseStream)
+                    $responseBody = $reader.ReadToEnd()
+                    $reader.Close()
+                } catch {
+                    # Fall back to ErrorDetails
+                }
+            }
+            if (-not $responseBody) {
+                $responseBody = $_.ErrorDetails.Message
+            }
+
+            $results += "Result: FAILED"
+            $results += "HTTP Status: $statusCode"
+
+            if ($responseBody) {
+                # Check for null bytes (proxy corruption indicator)
+                $nullByteCount = ($responseBody.ToCharArray() | Where-Object { $_ -eq [char]0 }).Count
+                if ($nullByteCount -gt 0) {
+                    $results += "WARNING: Response contains $nullByteCount null bytes — this indicates a proxy is corrupting the response"
+                    $results += "Response length: $($responseBody.Length) bytes"
+                    # Show hex dump of first 64 bytes
+                    $hexBytes = [System.Text.Encoding]::UTF8.GetBytes($responseBody.Substring(0, [Math]::Min(64, $responseBody.Length)))
+                    $hexDump = ($hexBytes | ForEach-Object { $_.ToString("X2") }) -join " "
+                    $results += "Hex dump (first 64 bytes): $hexDump"
+                } else {
+                    $results += "Error response: $($responseBody.Substring(0, [Math]::Min(1000, $responseBody.Length)))"
+                }
+            } else {
+                $results += "Exception: $($_.Exception.Message)"
+            }
+        }
+    } else {
+        $results += "SKIPPED — Token acquisition failed in Step 1"
+    }
+
+    $results += ""
+    $results += "=== REST Test Complete ==="
+
+    $human_readable = $results -join "`n"
+    $entry_context = @{}
+    $raw_response = @{ "results" = $results }
+    Write-Output $human_readable, $entry_context, $raw_response
+}
+
+function GetTokenCommand($client)
+{
+    <#
+        .DESCRIPTION
+        Acquires an OAuth2 access token from Azure AD using the configured certificate
+        and returns it. This allows testing token acquisition independently and using
+        the token for manual REST API calls outside of XSOAR.
+
+        .PARAMETER client
+        ExchangeOnlinePowershellV3Client instance with certificate, app_id, and organization.
+    #>
+
+    # Build JWT client assertion
+    $tokenEndpoint = "https://login.microsoftonline.com/$($client.organization)/oauth2/v2.0/token"
+
+    $thumbprint = $client.certificate.Thumbprint
+    $thumbprintBytes = for ($i = 0; $i -lt $thumbprint.Length; $i += 2) {
+        [Convert]::ToByte($thumbprint.Substring($i, 2), 16)
+    }
+    $x5t = [System.Convert]::ToBase64String([byte[]]$thumbprintBytes).TrimEnd('=').Replace('+', '-').Replace('/', '_')
+
+    $jwtHeader = @{ alg = "RS256"; typ = "JWT"; x5t = $x5t } | ConvertTo-Json -Compress
+    $headerB64 = [System.Convert]::ToBase64String(
+        [System.Text.Encoding]::UTF8.GetBytes($jwtHeader)
+    ).TrimEnd('=').Replace('+', '-').Replace('/', '_')
+
+    $now = [int][double]::Parse((Get-Date -Date ((Get-Date).ToUniversalTime()) -UFormat %s))
+    $jwtPayload = @{
+        aud = $tokenEndpoint
+        exp = $now + 600
+        iss = $client.app_id
+        jti = [guid]::NewGuid().ToString()
+        nbf = $now
+        sub = $client.app_id
+    } | ConvertTo-Json -Compress
+    $payloadB64 = [System.Convert]::ToBase64String(
+        [System.Text.Encoding]::UTF8.GetBytes($jwtPayload)
+    ).TrimEnd('=').Replace('+', '-').Replace('/', '_')
+
+    $dataToSign = "$headerB64.$payloadB64"
+    $rsaKey = [System.Security.Cryptography.X509Certificates.RSACertificateExtensions]::GetRSAPrivateKey($client.certificate)
+    $sigBytes = $rsaKey.SignData(
+        [System.Text.Encoding]::UTF8.GetBytes($dataToSign),
+        [System.Security.Cryptography.HashAlgorithmName]::SHA256,
+        [System.Security.Cryptography.RSASignaturePadding]::Pkcs1
+    )
+    $sigB64 = [System.Convert]::ToBase64String($sigBytes).TrimEnd('=').Replace('+', '-').Replace('/', '_')
+
+    $tokenRequestBody = @{
+        client_id             = $client.app_id
+        scope                 = "https://outlook.office365.com/.default"
+        client_assertion_type = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+        client_assertion      = "$dataToSign.$sigB64"
+        grant_type            = "client_credentials"
+    }
+
+    try {
+        $tokenResponse = Invoke-RestMethod -Uri $tokenEndpoint -Method POST -Body $tokenRequestBody `
+            -ContentType "application/x-www-form-urlencoded" -ErrorAction Stop
+        $token = $tokenResponse.access_token
+
+        # Decode token claims
+        $claimsInfo = @{}
+        try {
+            $tokenParts = $token.Split('.')
+            if ($tokenParts.Count -ge 2) {
+                $claimsB64 = $tokenParts[1]
+                switch ($claimsB64.Length % 4) {
+                    2 { $claimsB64 += "==" }
+                    3 { $claimsB64 += "=" }
+                }
+                $claimsB64 = $claimsB64.Replace('-', '+').Replace('_', '/')
+                $claimsJson = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($claimsB64))
+                $claims = $claimsJson | ConvertFrom-Json
+                $claimsInfo = @{
+                    audience  = $claims.aud
+                    issuer    = $claims.iss
+                    app_id    = $claims.appid
+                    tenant_id = $claims.tid
+                    roles     = if ($claims.roles) { $claims.roles -join ", " } else { "NONE" }
+                    expiry    = [DateTimeOffset]::FromUnixTimeSeconds($claims.exp).UtcDateTime.ToString('yyyy-MM-ddTHH:mm:ssZ')
+                }
+            }
+        } catch {
+            # Token claims decoding is best-effort
+        }
+
+        $results = @(
+            "Token acquired successfully.",
+            "",
+            "Token type: $($tokenResponse.token_type)",
+            "Expires in: $($tokenResponse.expires_in) seconds",
+            "Audience: $($claimsInfo.audience)",
+            "App ID: $($claimsInfo.app_id)",
+            "Tenant ID: $($claimsInfo.tenant_id)",
+            "Roles: $($claimsInfo.roles)",
+            "Expiry: $($claimsInfo.expiry)",
+            "",
+            "Access Token:",
+            $token
+        )
+        $human_readable = $results -join "`n"
+        $entry_context = @{
+            "EWS.Token(true)" = @{
+                access_token = $token
+                token_type   = $tokenResponse.token_type
+                expires_in   = $tokenResponse.expires_in
+                audience     = $claimsInfo.audience
+                app_id       = $claimsInfo.app_id
+                tenant_id    = $claimsInfo.tenant_id
+                roles        = $claimsInfo.roles
+            }
+        }
+        $raw_response = @{
+            access_token = $token
+            token_type   = $tokenResponse.token_type
+            expires_in   = $tokenResponse.expires_in
+            claims       = $claimsInfo
+        }
+    }
+    catch {
+        $realError = $_.ErrorDetails.Message
+        $errorMsg = ""
+        if ($realError) {
+            try {
+                $parsed = $realError | ConvertFrom-Json
+                $errorMsg = "Token acquisition failed: $($parsed.error) - $($parsed.error_description)"
+            } catch {
+                $errorMsg = "Token acquisition failed: $realError"
+            }
+        } else {
+            $errorMsg = "Token acquisition failed: $($_.Exception.Message)"
+        }
+        throw $errorMsg
+    }
+
+    Write-Output $human_readable, $entry_context, $raw_response
+}
+
 function Main
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
@@ -3311,6 +3657,12 @@ function Main
             }
             "$script:COMMAND_PREFIX-check-connection" {
                 ($human_readable, $entry_context, $raw_response) = CheckConnectionCommand $exo_client
+            }
+            "$script:COMMAND_PREFIX-rest-test" {
+                ($human_readable, $entry_context, $raw_response) = RestTestCommand $exo_client
+            }
+            "$script:COMMAND_PREFIX-get-token" {
+                ($human_readable, $entry_context, $raw_response) = GetTokenCommand $exo_client
             }
             default {
                 ReturnError "Could not recognize $command"
