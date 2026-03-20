@@ -1447,12 +1447,7 @@ def get_computers_command(client: Client, args: dict[str, Any]) -> list[CommandR
     context_outputs = copy.deepcopy(computers)
     for computer_context in context_outputs:
         general = computer_context.get("general", {})
-
-        computer_context.update(
-            {
-                "name": general.get("name"),
-            }
-        )
+        computer_context["name"] = general.get("name")
 
     return [
         CommandResults(
