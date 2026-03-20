@@ -302,7 +302,6 @@ class Client(BaseClient):
             headers=get_headers,
             params=params,
             error_handler=error_handler,
-            auth=self.auth,
         )
 
     def get_computers_inventory_request(
