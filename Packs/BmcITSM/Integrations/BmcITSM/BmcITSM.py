@@ -4482,9 +4482,9 @@ def add_attachment_command(client: Client, args: Dict[str, Any]) -> CommandResul
             try:
                 file_info = demisto.getFilePath(entry_id)
             except Exception as e:
-                raise ValueError(
+                raise DemistoException(
                     f"Could not find file for entry ID '{entry_id}' in the War Room. "
-                    f"Please verify the entry ID is correct. Error: {e}"
+                    f"Please verify the entry ID is correct.\nError: {e}"
                 ) from e
 
             file_path = file_info.get("path")
@@ -4511,22 +4511,20 @@ def add_attachment_command(client: Client, args: Dict[str, Any]) -> CommandResul
             entry_data=entry_data,
         )
         demisto.debug(f"{prefix} {response=}")
+
+    except Exception as e:
+        message = f"Failed to add attachment(s) to {entry_type} {request_id}.\n{e}"
+        demisto.debug(f"{prefix} {message}")
+        raise DemistoException(message)
+
     finally:
         # IMPORTANT: Close all file handles regardless of success or failure
         for f in opened_files:
             f.close()
-
-    if response.status_code == 204:
-        file_count = len(entry_ids_raw)
-        attachment_word = "Attachment" if file_count == 1 else "Attachments"
-        readable_output = (
-            f"{attachment_word} {'was' if file_count == 1 else 'were'} successfully added to {entry_type} {request_id}."
-        )
-        return CommandResults(readable_output=readable_output)
-    else:
-        message = f"Failed to add attachment(s) to {entry_type} {request_id}.\n{response.status_code}: {response.text}"
-        demisto.debug(f"{prefix} {message}")
-        raise DemistoException(message)
+    file_count = len(entry_ids_raw)
+    attachment_word = "Attachment" if file_count == 1 else "Attachments"
+    readable_output = f"{attachment_word} {'was' if file_count == 1 else 'were'} successfully added to {entry_type} {request_id}."
+    return CommandResults(readable_output=readable_output)
 
 
 def main() -> None:

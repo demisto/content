@@ -1984,7 +1984,7 @@ class TestAddAttachmentCommand:
             "work order",
         ],
     )
-    def test_add_single_attachment_success(self, entry_type, requests_mock, mock_client, tmp_path):
+    def test_add_single_attachment_success(self, entry_type, requests_mock, mock_client, tmp_path, mocker):
         """
         Given:
             - A valid entry_id pointing to a file in the War Room.
@@ -2007,22 +2007,21 @@ class TestAddAttachmentCommand:
         url = f"{BASE_URL}/api/arsys/v1/entry/{form_name}/{request_id}"
         requests_mock.put(url=url, status_code=204)
 
-        with patch("demisto.getFilePath") as mock_get_file:
-            mock_get_file.return_value = {"path": str(test_file), "name": "test_report.txt"}
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(test_file), "name": "test_report.txt"})
 
-            result = add_attachment_command(
-                mock_client,
-                {
-                    "entry_ids": "12@34",
-                    "field_names": "z2AF_Attachment1",
-                    "entry_type": entry_type,
-                    "request_id": request_id,
-                },
-            )
+        result = add_attachment_command(
+            mock_client,
+            {
+                "entry_ids": "12@34",
+                "field_names": "z2AF_Attachment1",
+                "entry_type": entry_type,
+                "request_id": request_id,
+            },
+        )
 
         assert result.readable_output == f"Attachment was successfully added to {entry_type} {request_id}."
 
-    def test_add_multiple_attachments_success(self, requests_mock, mock_client, tmp_path):
+    def test_add_multiple_attachments_success(self, requests_mock, mock_client, tmp_path, mocker):
         """
         Given:
             - Two valid entry_ids pointing to files in the War Room.
@@ -2045,25 +2044,28 @@ class TestAddAttachmentCommand:
         url = f"{BASE_URL}/api/arsys/v1/entry/HPD:IncidentInterface/{request_id}"
         requests_mock.put(url=url, status_code=204)
 
-        with patch("demisto.getFilePath") as mock_get_file:
-            mock_get_file.side_effect = [
+        mocker.patch.object(
+            demisto,
+            "getFilePath",
+            side_effect=[
                 {"path": str(file1), "name": "report.pdf"},
                 {"path": str(file2), "name": "screenshot.png"},
-            ]
+            ],
+        )
 
-            result = add_attachment_command(
-                mock_client,
-                {
-                    "entry_ids": "12@34,56@78",
-                    "field_names": "z2AF_Attachment1,z2AF_Attachment2",
-                    "entry_type": "incident",
-                    "request_id": request_id,
-                },
-            )
+        result = add_attachment_command(
+            mock_client,
+            {
+                "entry_ids": "12@34,56@78",
+                "field_names": "z2AF_Attachment1,z2AF_Attachment2",
+                "entry_type": "incident",
+                "request_id": request_id,
+            },
+        )
 
         assert result.readable_output == f"Attachments were successfully added to incident {request_id}."
 
-    def test_add_attachment_with_entry_json(self, requests_mock, mock_client, tmp_path):
+    def test_add_attachment_with_entry_json(self, requests_mock, mock_client, tmp_path, mocker):
         """
         Given:
             - A valid attachment and an optional entry JSON with additional field values.
@@ -2081,19 +2083,18 @@ class TestAddAttachmentCommand:
         url = f"{BASE_URL}/api/arsys/v1/entry/HPD:IncidentInterface/{request_id}"
         requests_mock.put(url=url, status_code=204)
 
-        with patch("demisto.getFilePath") as mock_get_file:
-            mock_get_file.return_value = {"path": str(test_file), "name": "evidence.txt"}
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(test_file), "name": "evidence.txt"})
 
-            result = add_attachment_command(
-                mock_client,
-                {
-                    "entry_ids": "12@34",
-                    "field_names": "z2AF_Attachment1",
-                    "entry_type": "incident",
-                    "request_id": request_id,
-                    "entry": '{"Status": "In Progress", "Description": "Evidence from XSOAR"}',
-                },
-            )
+        result = add_attachment_command(
+            mock_client,
+            {
+                "entry_ids": "12@34",
+                "field_names": "z2AF_Attachment1",
+                "entry_type": "incident",
+                "request_id": request_id,
+                "entry": '{"Status": "In Progress", "Description": "Evidence from XSOAR"}',
+            },
+        )
 
         assert result.readable_output == f"Attachment was successfully added to incident {request_id}."
         # Verify the request body contains the entry JSON with both additional fields and attachment mapping
@@ -2146,7 +2147,7 @@ class TestAddAttachmentCommand:
                 },
             )
 
-    def test_add_attachment_strips_attach_prefix(self, requests_mock, mock_client, tmp_path):
+    def test_add_attachment_strips_attach_prefix(self, requests_mock, mock_client, tmp_path, mocker):
         """
         Given:
             - The user accidentally includes the 'attach-' prefix in field_names.
@@ -2165,18 +2166,17 @@ class TestAddAttachmentCommand:
         url = f"{BASE_URL}/api/arsys/v1/entry/HPD:IncidentInterface/{request_id}"
         requests_mock.put(url=url, status_code=204)
 
-        with patch("demisto.getFilePath") as mock_get_file:
-            mock_get_file.return_value = {"path": str(test_file), "name": "log.txt"}
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(test_file), "name": "log.txt"})
 
-            result = add_attachment_command(
-                mock_client,
-                {
-                    "entry_ids": "12@34",
-                    "field_names": "attach-z2AF_Attachment1",
-                    "entry_type": "incident",
-                    "request_id": request_id,
-                },
-            )
+        result = add_attachment_command(
+            mock_client,
+            {
+                "entry_ids": "12@34",
+                "field_names": "attach-z2AF_Attachment1",
+                "entry_type": "incident",
+                "request_id": request_id,
+            },
+        )
 
         assert result.readable_output == f"Attachment was successfully added to incident {request_id}."
         # Verify the multipart body uses 'attach-z2AF_Attachment1' (not 'attach-attach-z2AF_Attachment1')
@@ -2184,32 +2184,31 @@ class TestAddAttachmentCommand:
         assert b"attach-z2AF_Attachment1" in request_body
         assert b"attach-attach-" not in request_body
 
-    def test_add_attachment_invalid_entry_id(self, mock_client):
+    def test_add_attachment_invalid_entry_id(self, mock_client, mocker):
         """
         Given:
             - An entry_id that does not exist in the War Room.
         When:
             - add_attachment_command is called.
         Then:
-            - A ValueError is raised indicating the file was not found.
+            - A DemistoException is raised indicating the failure.
         """
         from BmcITSM import add_attachment_command
 
-        with patch("demisto.getFilePath") as mock_get_file:
-            mock_get_file.side_effect = Exception("Entry not found")
+        mocker.patch.object(demisto, "getFilePath", side_effect=Exception("Entry not found"))
 
-            with pytest.raises(ValueError, match="Could not find file for entry ID"):
-                add_attachment_command(
-                    mock_client,
-                    {
-                        "entry_ids": "invalid@id",
-                        "field_names": "z2AF_Attachment1",
-                        "entry_type": "incident",
-                        "request_id": "INC000000000123",
-                    },
-                )
+        with pytest.raises(DemistoException, match="Could not find file for entry ID"):
+            add_attachment_command(
+                mock_client,
+                {
+                    "entry_ids": "invalid@id",
+                    "field_names": "z2AF_Attachment1",
+                    "entry_type": "incident",
+                    "request_id": "INC000000000123",
+                },
+            )
 
-    def test_add_attachment_api_failure(self, requests_mock, mock_client, tmp_path):
+    def test_add_attachment_api_failure(self, requests_mock, mock_client, tmp_path, mocker):
         """
         Given:
             - A valid attachment but the API returns a non-204 status code.
@@ -2227,21 +2226,20 @@ class TestAddAttachmentCommand:
         url = f"{BASE_URL}/api/arsys/v1/entry/HPD:IncidentInterface/{request_id}"
         requests_mock.put(url=url, status_code=400, text="Bad Request: Invalid field name")
 
-        with patch("demisto.getFilePath") as mock_get_file:
-            mock_get_file.return_value = {"path": str(test_file), "name": "data.csv"}
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(test_file), "name": "data.csv"})
 
-            with pytest.raises(DemistoException, match="Failed to add attachment"):
-                add_attachment_command(
-                    mock_client,
-                    {
-                        "entry_ids": "12@34",
-                        "field_names": "z2AF_Attachment1",
-                        "entry_type": "incident",
-                        "request_id": request_id,
-                    },
-                )
+        with pytest.raises(DemistoException, match="Failed to add attachment"):
+            add_attachment_command(
+                mock_client,
+                {
+                    "entry_ids": "12@34",
+                    "field_names": "z2AF_Attachment1",
+                    "entry_type": "incident",
+                    "request_id": request_id,
+                },
+            )
 
-    def test_add_attachment_files_closed_on_success(self, requests_mock, mock_client, tmp_path):
+    def test_add_attachment_files_closed_on_success(self, requests_mock, mock_client, tmp_path, mocker):
         """
         Given:
             - A valid attachment file.
@@ -2262,22 +2260,22 @@ class TestAddAttachmentCommand:
         mock_file = MagicMock()
         mock_file.read.return_value = b"file content"
 
-        with patch("demisto.getFilePath") as mock_get_file, patch("builtins.open", return_value=mock_file):
-            mock_get_file.return_value = {"path": str(test_file), "name": "cleanup_test.txt"}
+        mocker.patch.object(demisto, "getFilePath", return_value={"path": str(test_file), "name": "cleanup_test.txt"})
+        mocker.patch("builtins.open", return_value=mock_file)
 
-            add_attachment_command(
-                mock_client,
-                {
-                    "entry_ids": "12@34",
-                    "field_names": "z2AF_Attachment1",
-                    "entry_type": "incident",
-                    "request_id": request_id,
-                },
-            )
+        add_attachment_command(
+            mock_client,
+            {
+                "entry_ids": "12@34",
+                "field_names": "z2AF_Attachment1",
+                "entry_type": "incident",
+                "request_id": request_id,
+            },
+        )
 
         mock_file.close.assert_called_once()
 
-    def test_add_attachment_files_closed_on_failure(self, mock_client, tmp_path):
+    def test_add_attachment_files_closed_on_failure(self, mock_client, tmp_path, mocker):
         """
         Given:
             - Two entry_ids where the second one is invalid.
@@ -2293,22 +2291,26 @@ class TestAddAttachmentCommand:
 
         mock_file = MagicMock()
 
-        with patch("demisto.getFilePath") as mock_get_file, patch("builtins.open", return_value=mock_file):
-            mock_get_file.side_effect = [
+        mocker.patch.object(
+            demisto,
+            "getFilePath",
+            side_effect=[
                 {"path": str(test_file), "name": "valid_file.txt"},
                 Exception("Second file not found"),
-            ]
+            ],
+        )
+        mocker.patch("builtins.open", return_value=mock_file)
 
-            with pytest.raises(ValueError, match="Could not find file for entry ID"):
-                add_attachment_command(
-                    mock_client,
-                    {
-                        "entry_ids": "12@34,56@78",
-                        "field_names": "z2AF_Attachment1,z2AF_Attachment2",
-                        "entry_type": "incident",
-                        "request_id": "INC000000000123",
-                    },
-                )
+        with pytest.raises(DemistoException, match="Could not find file for entry ID"):
+            add_attachment_command(
+                mock_client,
+                {
+                    "entry_ids": "12@34,56@78",
+                    "field_names": "z2AF_Attachment1,z2AF_Attachment2",
+                    "entry_type": "incident",
+                    "request_id": "INC000000000123",
+                },
+            )
 
         # The first file was opened and should be closed even though the second failed
         mock_file.close.assert_called_once()
