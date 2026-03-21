@@ -1697,3 +1697,50 @@ Retrieves a list of service request definitions. The records are retrieved by th
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | BmcITSM.Attachment.ID | String | The Work Log ID. |
+
+### bmc-itsm-add-attachment
+
+***
+Adds attachments to an existing BMC Helix ITSM ticket. Supports adding attachments to incident, change request, service request, task, problem investigation, known error, and work order forms.
+
+#### Base Command
+
+`bmc-itsm-add-attachment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entry_ids | A comma-separated list of XSOAR War Room entry IDs for the files to attach (e.g., "12@34,56@78"). | Required |
+| entry_type | The type of the BMC Helix ITSM ticket to add the attachment to. Possible values are: incident, change request, service request, task, problem investigation, known error, work order. | Required |
+| request_id | The request ID of the ticket to add the attachment to. | Required |
+| field_names | A comma-separated list of BMC attachment field names corresponding to each entry ID (e.g., "z2AF_Attachment1,z2AF_Attachment2"). Must have the same number of items as entry_ids. | Required |
+| entry | An optional JSON dictionary of additional field values to update on the entry (e.g., {"Status": "In Progress", "Description": "Evidence from XSOAR"}). | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example  (single attachments)
+
+```!bmc-itsm-add-attachment entry_ids="12@34" field_names="z2AF_Attachment1" entry_type="incident" request_id="INC000000000123"```
+
+#### Human Readable Output
+
+>Attachment was successfully added to incident INC000000000123.
+
+#### Command example (multiple attachments)
+
+```!bmc-itsm-add-attachment entry_ids="12@34,56@78" field_names="z2AF_Attachment1,z2AF_Attachment2" entry_type="change request" request_id="CRQ000000000456"```
+
+#### Human Readable Output
+
+>Attachments were successfully added to change request CRQ000000000456.
+
+#### Command example (with additional field updates)
+
+```!bmc-itsm-add-attachment entry_ids="12@34" field_names="z2AF_Attachment1" entry_type="incident" request_id="INC000000000789" entry="{\"Status\": \"In Progress\", \"Description\": \"Evidence from XSOAR\"}"```
+
+#### Human Readable Output
+
+>Attachment was successfully added to incident INC000000000789.
