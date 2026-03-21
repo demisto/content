@@ -1782,7 +1782,7 @@ class Client(BaseClient):
             "PUT",
             f"arsys/v1/entry/{form_name}/{request_id}",
             files=files,
-            resp_type="text",
+            resp_type="response",
         )
         return response
 
