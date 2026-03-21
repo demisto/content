@@ -1405,8 +1405,8 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.ComputerSubset.peripherals | Number | The computer peripherals. |
-| JAMF.ComputerSubset.id | Number | The computer ID. |
+| JAMF.ComputerSubset.Computer.peripherals | Number | The computer peripherals. |
+| JAMF.ComputerSubset.Computer.id | Number | The computer ID. |
 
 #### Command Example
 
@@ -2296,8 +2296,8 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.ComputerSubset.iphones | String | The commputer related iPhones. |
-| JAMF.ComputerSubset.id | Number | The computer ID. |
+| JAMF.ComputerSubset.Computer.iphones | String | The commputer related iPhones. |
+| JAMF.ComputerSubset.Computer.id | Number | The computer ID. |
 
 #### Command Example
 
