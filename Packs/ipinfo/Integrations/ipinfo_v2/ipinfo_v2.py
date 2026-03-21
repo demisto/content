@@ -135,16 +135,19 @@ def parse_results(ip: str, raw_result: dict[str, Any], reliability: str) -> List
         coordinates = loc.split(",")
         lat, lon = float(coordinates[0]), float(coordinates[1])
 
-    entry_context = {
-        "Address": raw_result.get("ip"),
-        "Hostname": hostname,  # type: ignore
-        "ASN": asn,
-        "ASOwner": as_owner,
-        "Tags": tags,  # type: ignore
-        "Organization": organization,
-        "Geo": {"Location": loc, "Country": country, "Description": description},  # type: ignore
-        "Registrar": {"Abuse": abuse} if abuse else None,
-    }
+    entry_context = raw_result.copy()
+    entry_context.update(
+        {
+            "Address": raw_result.get("ip"),
+            "Hostname": hostname,  # type: ignore
+            "ASN": asn,
+            "ASOwner": as_owner,
+            "Tags": tags,  # type: ignore
+            "Organization": organization,
+            "Geo": {"Location": loc, "Country": country, "Description": description},  # type: ignore
+            "Registrar": {"Abuse": abuse} if abuse else None,
+        }
+    )
 
     outputs_key_field = "Address"  # marks the ip address
 
