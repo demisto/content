@@ -1,6 +1,6 @@
 import secrets
 import tempfile
-from datetime import UTC
+from datetime import UTC, timedelta
 from math import ceil
 
 import demistomock as demisto
@@ -276,9 +276,15 @@ def create_last_iocs_query(from_date, to_date):
 
 
 def get_last_iocs(batch_size=200) -> list:
-    current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
+    time_now: datetime = datetime.utcnow()
     last_run: dict = get_integration_context()
-    query = create_last_iocs_query(from_date=last_run["time"], to_date=current_run)
+    if "time" not in last_run:
+        from_date = (time_now - timedelta(days=1)).strftime(DEMISTO_TIME_FORMAT)
+        demisto.info(f"Could not find 'time' field in integration context, will use {from_date=}")
+    else:
+        from_date = last_run["time"]
+    current_run = time_now.strftime(DEMISTO_TIME_FORMAT)
+    query = create_last_iocs_query(from_date=from_date, to_date=current_run)
     total_size = get_iocs_size(query)
     iocs: list = []
     for i in range(ceil(total_size / batch_size)):

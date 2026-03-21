@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from unittest.mock import AsyncMock
 
 import copy
 import pytest
@@ -2999,152 +3000,49 @@ async def test_stream_report_success(mocker):
 
 
 @pytest.mark.asyncio
-async def test_fetch_assets_long_running_command(mocker):
-    """
-    Given:
-      - Parameters for the fetch_assets_long_running_command function
-      - A token for authentication
+async def test_fetch_assets_command(mocker):
+    """Test that fetch_assets_command creates InsightVMClient and calls run_all_collectors."""
+    mock_run_all = mocker.patch("Rapid7_Nexpose.run_all_collectors", new_callable=AsyncMock)
+    mock_client_cls = mocker.patch("Rapid7_Nexpose.InsightVMClient")
 
-    When:
-      - Calling the fetch_assets_long_running_command function
+    # Setup async context manager mock
+    mock_client_instance = AsyncMock()
+    mock_client_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client_instance)
+    mock_client_cls.return_value.__aexit__ = AsyncMock(return_value=False)
 
-    Then:
-      - Ensure the InsightVMClient is created with the correct parameters
-      - Ensure run_all_collectors is called with the correct parameters
-      - Ensure the function sleeps for the correct interval
-      - Ensure the function continues running in a loop
-    """
-    # Mock the parameters and token
     params = {
-        "server": "https://test-server.com",
-        "credentials": {"identifier": "test-user", "password": "test-password"},
+        "server": "https://nexpose.example.com",
+        "credentials": {"identifier": "user", "password": "pass"},
         "unsecure": False,
     }
     token = "test-token"
 
-    # Mock the InsightVMClient
-    mock_client_instance = mocker.AsyncMock()
-    mock_client_class = mocker.patch("Rapid7_Nexpose.InsightVMClient", return_value=mock_client_instance)
-    mock_client_instance.__aenter__.return_value = mock_client_instance
+    await fetch_assets_command(params, token)
 
-    # Mock run_all_collectors
-    mock_run_all_collectors = mocker.patch("Rapid7_Nexpose.run_all_collectors")
+    mock_run_all.assert_called_once()
 
-    # Mock asyncio.sleep to avoid waiting in the test
-    mock_sleep = mocker.patch("Rapid7_Nexpose.asyncio.sleep")
 
-    # Mock time.time to control the execution time
-    mock_time = mocker.patch("Rapid7_Nexpose.time.time")
-    # First call is at the start, second call is at the end of the first iteration
-    mock_time.side_effect = [100, 200, 300, 400]
-
-    # Mock INTERVAL_SECONDS constant
-    mocker.patch("Rapid7_Nexpose.TWENTYFOUR_HOURS_AS_SECONDS", 3600)  # 1 hour
-
-    # Mock demisto.debug to avoid debug output during tests
-    mocker.patch("Rapid7_Nexpose.demisto.debug")
-
-    # Create a function to stop the infinite loop after 2 iterations
-    iteration_count = 0
-    original_sleep = asyncio.sleep
-
-    async def mock_sleep_with_exit(seconds):
-        nonlocal iteration_count
-        iteration_count += 1
-        if iteration_count >= 2:
-            raise Exception("Test complete")
-        return await original_sleep(0)  # Return immediately for testing
-
-    mock_sleep.side_effect = mock_sleep_with_exit
-
-    # Call the function under test and expect it to exit after 2 iterations
-    with pytest.raises(Exception, match="Test complete"):
-        await fetch_assets_long_running_command(params, token)
-
-    # Verify InsightVMClient was created with the correct parameters
-    mock_client_class.assert_called_with(
-        base_url="https://test-server.com", username="test-user", password="test-password", token="test-token", verify=True
+def test_main_fetch_assets_dispatch(mocker):
+    """Test that main() dispatches fetch-assets command correctly."""
+    mocker.patch.object(demisto, "command", return_value="fetch-assets")
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "server": "https://nexpose.example.com",
+            "credentials": {"identifier": "user", "password": "pass"},
+            "unsecure": False,
+        },
     )
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch("Rapid7_Nexpose.handle_proxy")
+    mock_asyncio_run = mocker.patch("Rapid7_Nexpose.asyncio.run")
 
-    # Verify run_all_collectors was called at least once
-    assert mock_run_all_collectors.call_count >= 1
-    mock_run_all_collectors.assert_called_with(mock_client_instance, batch_size=3000)
+    from Rapid7_Nexpose import main
 
-    # Verify sleep was called
-    assert mock_sleep.call_count >= 1
+    main()
 
-
-@pytest.mark.asyncio
-async def test_fetch_assets_long_running_command_error_handling(mocker):
-    """
-    Given:
-      - Parameters for the fetch_assets_long_running_command function
-      - A token for authentication
-      - run_all_collectors raises an exception
-
-    When:
-      - Calling the fetch_assets_long_running_command function
-
-    Then:
-      - Ensure the exception is caught and logged
-      - Ensure the function continues running in a loop despite the error
-    """
-    # Mock the parameters and token
-    params = {
-        "server": "https://test-server.com",
-        "credentials": {"identifier": "test-user", "password": "test-password"},
-        "unsecure": False,
-    }
-    token = "test-token"
-
-    # Mock the InsightVMClient
-    mock_client_instance = mocker.AsyncMock()
-    mocker.patch("Rapid7_Nexpose.InsightVMClient", return_value=mock_client_instance)
-    mock_client_instance.__aenter__.return_value = mock_client_instance
-
-    # Mock run_all_collectors to raise an exception
-    mock_run_all_collectors = mocker.patch("Rapid7_Nexpose.run_all_collectors")
-    mock_run_all_collectors.side_effect = Exception("Test error")
-
-    # Mock asyncio.sleep to avoid waiting in the test
-    mock_sleep = mocker.patch("Rapid7_Nexpose.asyncio.sleep")
-
-    # Mock time.time to control the execution time
-    mock_time = mocker.patch("Rapid7_Nexpose.time.time")
-    # First call is at the start, second call is at the end of the first iteration
-    mock_time.side_effect = [100, 200, 300, 400]
-
-    # Mock TWENTYFOUR_HOURS_AS_SECONDS constant
-    mocker.patch("Rapid7_Nexpose.TWENTYFOUR_HOURS_AS_SECONDS", 3600)  # 1 hour
-
-    # Mock demisto.debug to check error logging
-    mock_debug = mocker.patch("Rapid7_Nexpose.demisto.debug")
-
-    # Create a function to stop the infinite loop after 2 iterations
-    iteration_count = 0
-    original_sleep = asyncio.sleep
-
-    async def mock_sleep_with_exit(seconds):
-        nonlocal iteration_count
-        iteration_count += 1
-        if iteration_count >= 2:
-            raise Exception("Test complete")
-        return await original_sleep(0)  # Return immediately for testing
-
-    mock_sleep.side_effect = mock_sleep_with_exit
-
-    # Call the function under test and expect it to exit after 2 iterations
-    with pytest.raises(Exception, match="Test complete"):
-        await fetch_assets_long_running_command(params, token)
-
-    # Verify run_all_collectors was called at least once
-    assert mock_run_all_collectors.call_count >= 1
-
-    # Verify the error was logged
-    mock_debug.assert_any_call("Got the following error while trying to stream events: Test error")
-
-    # Verify sleep was called
-    assert mock_sleep.call_count >= 1
+    mock_asyncio_run.assert_called_once()
 
 
 @pytest.mark.asyncio
@@ -3200,3 +3098,95 @@ async def test_stream_report_error_handling(mocker):
 
     # Verify the response was still released despite the error
     mock_response.release.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_xsiam_api_call_async_with_retries_cimultidictproxy_headers(mocker, capfd):
+    """
+    Given:
+      - An aiohttp.ClientResponseError whose `.headers` attribute is a
+        CIMultiDictProxy (the real type returned by aiohttp), which is
+        NOT natively JSON-serializable.
+
+    When:
+      - xsiam_api_call_async_with_retries handles a non-retryable HTTP error
+        and tries to log the response headers via json.dumps.
+
+    Then:
+      - Ensure the headers are converted to a plain dict before serialization
+        so that no "Object of type CIMultiDictProxy is not JSON serializable"
+        TypeError is raised.
+      - Ensure demisto.error is called with the formatted API call info
+        (confirming the error-handling path executed successfully).
+    """
+    from multidict import CIMultiDict, CIMultiDictProxy
+    from yarl import URL
+
+    # Build a realistic CIMultiDictProxy (the type aiohttp uses for response headers)
+    raw_headers = CIMultiDict({"Content-Type": "application/json", "X-Request-Id": "abc123"})
+    ci_headers = CIMultiDictProxy(raw_headers)
+
+    # Construct a realistic ClientResponseError with CIMultiDictProxy headers
+    request_info = aiohttp.RequestInfo(
+        url=URL("https://example.com/logs/v1/xsiam"),
+        method="POST",
+        headers=CIMultiDictProxy(CIMultiDict()),
+        real_url=URL("https://example.com/logs/v1/xsiam"),
+    )
+
+    error = aiohttp.ClientResponseError(
+        request_info=request_info,
+        history=(),
+        status=403,
+        message="Forbidden",
+        headers=ci_headers,
+    )
+
+    # Mock the aiohttp.ClientSession context manager and its post method
+    mock_response = mocker.AsyncMock()
+    mock_response.status = 403
+    mock_response.raise_for_status = mocker.MagicMock(side_effect=error)
+
+    mock_post_cm = mocker.AsyncMock()
+    mock_post_cm.__aenter__ = mocker.AsyncMock(return_value=mock_response)
+    mock_post_cm.__aexit__ = mocker.AsyncMock(return_value=False)
+
+    mock_session = mocker.AsyncMock()
+    mock_session.post = mocker.MagicMock(return_value=mock_post_cm)
+
+    mock_session_cm = mocker.AsyncMock()
+    mock_session_cm.__aenter__ = mocker.AsyncMock(return_value=mock_session)
+    mock_session_cm.__aexit__ = mocker.AsyncMock(return_value=False)
+
+    mocker.patch("aiohttp.ClientSession", return_value=mock_session_cm)
+
+    # Mock demisto functions to capture calls
+    mock_demisto_error = mocker.patch("Rapid7_Nexpose.demisto.error")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+    mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
+
+    # Call the function under test — should NOT raise TypeError
+    # It will return after the error handling path (num_of_attempts=1 means only 1 try)
+    with capfd.disabled():
+        await xsiam_api_call_async_with_retries(
+            xsiam_url="https://example.com",
+            zipped_data=b"test-data",
+            headers={"authorization": "test-token"},
+            num_of_attempts=1,
+            data_type="assets",
+        )
+
+    # Verify demisto.error was called (meaning the error-handling path completed
+    # without crashing on json.dumps of CIMultiDictProxy headers)
+    assert mock_demisto_error.called, (
+        "demisto.error should have been called with the API call info, "
+        "but it was not — the CIMultiDictProxy headers likely caused a "
+        "TypeError during json.dumps serialization."
+    )
+
+    # Verify the error message contains the serialized headers
+    error_call_args = mock_demisto_error.call_args[0][0]
+    assert "Content-Type" in error_call_args
+    assert "application/json" in error_call_args
+    assert "X-Request-Id" in error_call_args
+    assert "abc123" in error_call_args
