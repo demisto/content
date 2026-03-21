@@ -4,6 +4,8 @@ from PingOne import (
     deactivate_user_command,
     activate_user_command,
     set_password_command,
+    force_password_change_command,
+    read_password_state_command,
     add_user_to_group_command,
     remove_from_group_command,
     get_groups_for_user_command,
@@ -224,6 +226,30 @@ def test_set_password(mocker, args, expected_context, expected_readable):
     mocker.patch.object(client, "set_password", return_value=user_data_by_id)
 
     readable, outputs, _ = set_password_command(client, args)
+    assert outputs == expected_context
+    assert expected_readable in readable
+
+
+@pytest.mark.parametrize("args, expected_context, expected_readable", [({"username": "emma.sharp"}, {}, "emma.sharp")])
+def test_force_password_change(mocker, args, expected_context, expected_readable):
+    client = ClientTestPing(mocker).client
+
+    mocker.patch.object(client, "get_user_id", return_value=TEST_USER_ID)
+    mocker.patch.object(client, "force_password_change", return_value=None)
+
+    readable, outputs, _ = force_password_change_command(client, args)
+    assert outputs == expected_context
+    assert expected_readable in readable
+
+
+@pytest.mark.parametrize("args, expected_context, expected_readable", [({"username": "emma.sharp"}, {}, "Password state")])
+def test_read_password_state(mocker, args, expected_context, expected_readable):
+    client = ClientTestPing(mocker).client
+
+    mocker.patch.object(client, "get_user_id", return_value=TEST_USER_ID)
+    mocker.patch.object(client, "read_password_state", return_value={"status": "MUST_CHANGE_PASSWORD"})
+
+    readable, outputs, _ = read_password_state_command(client, args)
     assert outputs == expected_context
     assert expected_readable in readable
 

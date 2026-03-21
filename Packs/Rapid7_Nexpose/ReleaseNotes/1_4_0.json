@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Replaced the `long-running-execution` command with the `fetch-assets` command for asset and vulnerability collection. The integration now uses the platform's built-in fetch-assets scheduling mechanism"
+}
