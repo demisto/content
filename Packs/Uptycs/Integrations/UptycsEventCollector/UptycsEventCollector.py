@@ -422,7 +422,7 @@ def fetch_events_with_pagination(
         max_events: Maximum total events to retrieve.
 
     Returns:
-        List of alert event dictionaries, sorted by alertTime (oldest first).
+        List of alert event dictionaries, sorted by createdAt (oldest first).
     """
     events: list[dict[str, Any]] = []
     offset = 0
@@ -460,9 +460,9 @@ def fetch_events_with_pagination(
         demisto.debug("[Pagination Result] No events found.")
         return []
 
-    # Sort events by alertTime (Oldest -> Newest)
-    demisto.debug(f"[Pagination Process] Sorting {len(events)} events by alertTime...")
-    events.sort(key=lambda x: x.get("alertTime", ""))
+    # Sort events by createdAt (Oldest -> Newest)
+    demisto.debug(f"[Pagination Process] Sorting {len(events)} events by createdAt...")
+    events.sort(key=lambda x: x.get("createdAt", ""))
 
     # Slice to limit
     if len(events) > max_events:
@@ -558,18 +558,18 @@ def fetch_events_command(client: Client) -> None:
 
         # Update Last Run state
         last_event = events[-1]
-        new_last_run_time = last_event.get("alertTime")
+        new_last_run_time = last_event.get("createdAt")
 
         if new_last_run_time:
             # Collect IDs at the high-water mark timestamp for deduplication
             ids_at_last_timestamp = [
-                event.get("id") for event in events if event.get("alertTime") == new_last_run_time and event.get("id")
+                event.get("id") for event in events if event.get("createdAt") == new_last_run_time and event.get("id")
             ]
 
             demisto.setLastRun({"last_fetch": new_last_run_time, "last_fetched_ids": ids_at_last_timestamp})
             demisto.debug(f"[Fetch] State updated. New HWM: {new_last_run_time}")
         else:
-            demisto.debug("[Fetch] Warning: Last event missing alertTime. State not updated.")
+            demisto.debug("[Fetch] Warning: Last event missing createdAt. State not updated.")
     else:
         demisto.debug("[Fetch] All events were duplicates.")
 
