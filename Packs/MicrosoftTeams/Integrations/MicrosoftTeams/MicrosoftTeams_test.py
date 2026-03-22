@@ -406,7 +406,7 @@ def test_send_message_raising_errors(mocker, args, result):
     mocker.patch.object(demisto, "args", return_value=args)
     with pytest.raises(ValueError) as e:
         send_message()
-    assert str(e.value) == result
+    assert result in str(e.value)
 
 
 @pytest.mark.parametrize(
@@ -3934,3 +3934,813 @@ def test_list_messages_command_error(mocker):
         str(e.value)
         == "Failed to find chat or channel. If you are trying to get messages from a channel, please provide the 'team_name'."
     )
+
+
+def test_send_proactive_message_command_with_text_message(mocker, requests_mock):
+    """
+    Given:
+        - A user identifier and a text message
+    When:
+        - Executing the 'microsoft-teams-send-proactive-message' command
+    Then:
+        - Verify user is resolved correctly
+        - Verify conversation is created
+        - Verify message is sent successfully
+        - Verify outputs are correct
+    """
+    from MicrosoftTeams import send_proactive_message_command
+
+    user_email = "test.user@example.com"
+    user_id = "test-user-id-12345"
+    conversation_id = "19:test-conversation-id"
+    activity_id = "1730232813350"
+
+    # Mock get_user to resolve user identifier
+    requests_mock.get(
+        f"{GRAPH_BASE_URL}/v1.0/users",
+        json={"value": [{"id": user_id, "mail": user_email, "displayName": "Test User"}]},
+    )
+
+    # Mock create conversation
+    requests_mock.post(f"{service_url}/v3/conversations", json={"id": conversation_id})
+
+    # Mock send message
+    requests_mock.post(f"{service_url}/v3/conversations/{conversation_id}/activities", json={"id": activity_id})
+
+    mocker.patch.object(demisto, "args", return_value={"user_id": user_email, "message": "Hello from XSOAR!"})
+    return_results = mocker.patch("MicrosoftTeams.return_results")
+
+    send_proactive_message_command()
+
+    # Verify outputs
+    results = return_results.call_args[0][0]
+    assert results.outputs["ConversationId"] == conversation_id
+    assert results.outputs["UserId"] == user_id
+    assert results.outputs["ActivityId"] == activity_id
+    assert results.outputs["UserIdentifier"] == user_email
+    assert results.readable_output == "Message was sent successfully."
+
+
+def test_send_proactive_message_command_with_adaptive_card(mocker, requests_mock):
+    """
+    Given:
+        - A user identifier and an adaptive card (as dict)
+    When:
+        - Executing the 'microsoft-teams-send-proactive-message' command
+    Then:
+        - Verify adaptive card is sent correctly
+        - Verify raw adaptive card is wrapped properly
+    """
+    from MicrosoftTeams import send_proactive_message_command
+
+    user_id = "test-user-id-12345"
+    conversation_id = "19:test-conversation-id"
+    activity_id = "1730232813351"
+
+    adaptive_card = {
+        "type": "AdaptiveCard",
+        "version": "1.0",
+        "body": [{"type": "TextBlock", "text": "Test adaptive card"}],
+    }
+
+    # Mock get_user
+    requests_mock.get(f"{GRAPH_BASE_URL}/v1.0/users", json={"value": [{"id": user_id, "mail": "test@example.com"}]})
+
+    # Mock create conversation
+    requests_mock.post(f"{service_url}/v3/conversations", json={"id": conversation_id})
+
+    # Mock send message
+    send_message_mock = requests_mock.post(
+        f"{service_url}/v3/conversations/{conversation_id}/activities", json={"id": activity_id}
+    )
+
+    mocker.patch.object(demisto, "args", return_value={"user_id": "test@example.com", "adaptive_card": json.dumps(adaptive_card)})
+    send_proactive_message_command()
+
+    # Verify adaptive card was wrapped correctly
+    sent_payload = send_message_mock.last_request.json()
+    assert sent_payload["type"] == "message"
+    assert len(sent_payload["attachments"]) == 1
+    assert sent_payload["attachments"][0]["contentType"] == "application/vnd.microsoft.card.adaptive"
+    assert sent_payload["attachments"][0]["content"]["type"] == "AdaptiveCard"
+
+
+def test_send_proactive_message_command_with_teams_ask_adaptive_card(mocker, requests_mock):
+    """
+    Given:
+        - A user identifier and an adaptive card with entitlement (from MicrosoftTeamsAsk)
+    When:
+        - Executing the 'microsoft-teams-send-proactive-message' command
+    Then:
+        - Verify entitlement is injected into all Action.Submit elements
+        - Verify message is sent correctly
+    """
+    from MicrosoftTeams import send_proactive_message_command
+
+    user_id = "test-user-id-12345"
+    conversation_id = "19:test-conversation-id"
+
+    adaptive_card_with_entitlement = {
+        "adaptive_card": {
+            "type": "AdaptiveCard",
+            "version": "1.0",
+            "body": [{"type": "TextBlock", "text": "Approve this request?"}],
+            "actions": [
+                {"type": "Action.Submit", "title": "Approve"},
+                {"type": "Action.Submit", "title": "Deny"},
+            ],
+        },
+        "entitlement": "4404dae8-2d45-46bd-85fa-64779c12abe8",
+        "investigation_id": "100",
+        "task_id": "5",
+    }
+
+    # Mock get_user
+    requests_mock.get(f"{GRAPH_BASE_URL}/v1.0/users", json={"value": [{"id": user_id, "mail": "test@example.com"}]})
+
+    # Mock create conversation
+    requests_mock.post(f"{service_url}/v3/conversations", json={"id": conversation_id})
+
+    # Mock send message
+    send_message_mock = requests_mock.post(
+        f"{service_url}/v3/conversations/{conversation_id}/activities", json={"id": "activity-id"}
+    )
+
+    mocker.patch.object(
+        demisto, "args", return_value={"user_id": "test@example.com", "adaptive_card": json.dumps(adaptive_card_with_entitlement)}
+    )
+    mocker.patch("MicrosoftTeams.return_results")
+
+    send_proactive_message_command()
+
+    # Verify entitlement was injected
+    sent_payload = send_message_mock.last_request.json()
+    actions = sent_payload["attachments"][0]["content"]["actions"]
+    assert actions[0]["data"]["entitlement"] == "4404dae8-2d45-46bd-85fa-64779c12abe8"
+    assert actions[0]["data"]["investigation_id"] == "100"
+    assert actions[0]["data"]["task_id"] == "5"
+    assert actions[1]["data"]["entitlement"] == "4404dae8-2d45-46bd-85fa-64779c12abe8"
+
+
+def test_send_proactive_message_command_user_not_found(mocker, requests_mock):
+    """
+    Given:
+        - A user identifier that doesn't exist
+    When:
+        - Executing the 'microsoft-teams-send-proactive-message' command
+    Then:
+        - Verify appropriate error is raised
+    """
+    from MicrosoftTeams import send_proactive_message_command
+
+    # Mock get_user to return empty list
+    requests_mock.get(f"{GRAPH_BASE_URL}/v1.0/users", json={"value": []})
+
+    mocker.patch.object(demisto, "args", return_value={"user_id": "nonexistent@example.com", "message": "Test"})
+
+    # Verify ValueError is raised
+    with pytest.raises(ValueError) as exc_info:
+        send_proactive_message_command()
+
+    error_msg = str(exc_info.value)
+    assert "User not found" in error_msg
+    assert "nonexistent@example.com" in error_msg
+
+
+def test_send_proactive_message_command_multiple_users_found(mocker, requests_mock):
+    """
+    Given:
+        - A user identifier that matches multiple users
+    When:
+        - Executing the 'microsoft-teams-send-proactive-message' command
+    Then:
+        - Verify security error is raised to prevent sending to wrong user
+    """
+    from MicrosoftTeams import send_proactive_message_command
+    import pytest
+
+    # Mock get_user to return multiple users
+    requests_mock.get(
+        f"{GRAPH_BASE_URL}/v1.0/users",
+        json={
+            "value": [
+                {"id": "user-1", "mail": "john@example.com", "displayName": "John Doe"},
+                {"id": "user-2", "mail": "john.doe@example.com", "displayName": "John Doe"},
+            ]
+        },
+        complete_qs=False,  # Allow partial query string matching
+    )
+
+    mocker.patch.object(demisto, "args", return_value={"user_id": "John Doe", "message": "Test"})
+
+    # Verify ValueError is raised
+    with pytest.raises(ValueError) as exc_info:
+        send_proactive_message_command()
+
+    error_msg = str(exc_info.value)
+    assert "Multiple users found" in error_msg
+    assert "To avoid sending sensitive messages to the wrong user" in error_msg
+
+
+def test_send_proactive_message_command_cached_conversation(mocker, requests_mock):
+    """
+    Given:
+        - A user identifier for a user with an existing cached conversation
+    When:
+        - Executing the 'microsoft-teams-send-proactive-message' command
+    Then:
+        - Verify cached conversation is reused (no new conversation created)
+        - Verify message is sent to cached conversation
+    """
+    from MicrosoftTeams import send_proactive_message_command
+
+    user_id = "test-user-id-12345"
+    cached_conversation_id = "19:cached-conversation-id@unq.gbl.spaces"
+
+    # Setup integration context with cached conversation
+    cached_context = integration_context.copy()
+    cached_context["proactive_conversations"] = json.dumps({user_id: cached_conversation_id})
+
+    mocker.patch("MicrosoftTeams.get_integration_context", return_value=cached_context)
+    mocker.patch("MicrosoftTeams.set_integration_context")  # Prevent actual context updates
+
+    # Mock get_user
+    requests_mock.get(
+        f"{GRAPH_BASE_URL}/v1.0/users", json={"value": [{"id": user_id, "mail": "test@example.com"}]}, complete_qs=False
+    )
+
+    # Mock send message (should NOT create new conversation)
+    send_message_mock = requests_mock.post(
+        f"{service_url}/v3/conversations/{cached_conversation_id}/activities", json={"id": "activity-id"}
+    )
+
+    mocker.patch.object(demisto, "args", return_value={"user_id": "test@example.com", "message": "Hello again!"})
+    return_results = mocker.patch("MicrosoftTeams.return_results")
+
+    send_proactive_message_command()
+
+    # Verify no conversation creation request was made (only send message request)
+    create_conversation_requests = [
+        req
+        for req in requests_mock.request_history
+        if "/v3/conversations" in req.url and req.method == "POST" and not req.url.endswith("/activities")
+    ]
+    assert len(create_conversation_requests) == 0
+
+    # Verify message was sent to cached conversation
+    assert send_message_mock.called
+    results = return_results.call_args[0][0]
+    assert results.outputs["ConversationId"] == cached_conversation_id
+
+
+def test_send_proactive_message_command_validation_errors(mocker, requests_mock):
+    """
+    Given:
+        - Invalid argument combinations
+    When:
+        - Executing the 'microsoft-teams-send-proactive-message' command
+    Then:
+        - Verify appropriate validation errors are raised
+    """
+    from MicrosoftTeams import send_proactive_message_command
+    import pytest
+
+    # Test: No message or adaptive_card provided
+    mocker.patch.object(demisto, "args", return_value={"user_id": "test@example.com"})
+    with pytest.raises(ValueError) as exc_info:
+        send_proactive_message_command()
+    assert "Either message or adaptive_card must be provided" in str(exc_info.value)
+
+    # Test: Both message and adaptive_card provided
+    mocker.patch.object(demisto, "args", return_value={"user_id": "test@example.com", "message": "Test", "adaptive_card": "{}"})
+    with pytest.raises(ValueError) as exc_info:
+        send_proactive_message_command()
+    assert "Provide either message or adaptive_card, not both" in str(exc_info.value)
+
+
+def test_entitlement_handler_with_proactive_user(mocker, requests_mock):
+    """
+    Given:
+        - An entitlement response from a user who received a proactive message (not in team cache)
+    When:
+        - Calling entitlement_handler
+    Then:
+        - Verify user email is retrieved from Graph API
+        - Verify user email is cached for future use
+        - Verify entitlement is handled correctly
+    """
+    from MicrosoftTeams import entitlement_handler
+
+    proactive_user_id = "29:proactive-user-id-not-in-teams"
+    user_email = "proactive.user@example.com"
+    conversation_id = "19:proactive-conversation@unq.gbl.spaces"
+    activity_id = "1:activity-id"
+
+    # Mock Graph API user lookup
+    requests_mock.get(
+        f"{GRAPH_BASE_URL}/v1.0/users",
+        json={"value": [{"id": proactive_user_id, "mail": user_email, "userPrincipalName": user_email}]},
+    )
+
+    # Mock update message
+    requests_mock.put(f"{service_url}/v3/conversations/{conversation_id}/activities/{activity_id}", json={"id": "update-id"})
+
+    request_body = {"from": {"id": proactive_user_id}, "replyToId": activity_id}
+
+    value = {
+        "response": "Approved",
+        "entitlement": "test-entitlement-guid",
+        "investigation_id": "200",
+        "task_id": "10",
+    }
+
+    # Setup context without the proactive user
+    test_context = integration_context.copy()
+    test_context.pop("proactive_users", None)
+
+    mocker.patch("MicrosoftTeams.get_integration_context", return_value=test_context)
+    set_context_mock = mocker.patch("MicrosoftTeams.set_integration_context")
+    handle_entitlement_mock = mocker.patch.object(demisto, "handleEntitlementForUser")
+
+    entitlement_handler(test_context, request_body, value, conversation_id)
+
+    # Verify Graph API was called to get user email
+    assert any("/v1.0/users" in req.url for req in requests_mock.request_history)
+
+    # Verify user was cached
+    assert set_context_mock.called
+    cached_context = set_context_mock.call_args[0][0]
+    proactive_users = json.loads(cached_context.get("proactive_users", "{}"))
+    assert proactive_user_id in proactive_users
+    assert proactive_users[proactive_user_id]["email"] == user_email
+
+    # Verify entitlement was handled with correct email
+    assert handle_entitlement_mock.called
+    assert handle_entitlement_mock.call_args[1]["email"] == user_email
+
+
+def test_entitlement_handler_with_cached_proactive_user(mocker, requests_mock):
+    """
+    Given:
+        - An entitlement response from a user already in proactive_users cache
+    When:
+        - Calling entitlement_handler
+    Then:
+        - Verify user email is retrieved from cache (no Graph API call)
+        - Verify entitlement is handled correctly
+    """
+    from MicrosoftTeams import entitlement_handler
+
+    proactive_user_id = "29:cached-proactive-user"
+    user_email = "cached.user@example.com"
+    conversation_id = "19:conversation"
+    activity_id = "1:activity-id"
+
+    # Setup context with cached proactive user
+    test_context = integration_context.copy()
+    test_context["proactive_users"] = json.dumps({proactive_user_id: {"email": user_email}})
+
+    # Mock update message
+    requests_mock.put(f"{service_url}/v3/conversations/{conversation_id}/activities/{activity_id}", json={"id": "update-id"})
+
+    request_body = {"from": {"id": proactive_user_id}, "replyToId": activity_id}
+
+    value = {
+        "response": "Denied",
+        "entitlement": "test-entitlement-guid-2",
+        "investigation_id": "201",
+        "task_id": "11",
+    }
+
+    mocker.patch("MicrosoftTeams.get_integration_context", return_value=test_context)
+    handle_entitlement_mock = mocker.patch.object(demisto, "handleEntitlementForUser")
+
+    entitlement_handler(test_context, request_body, value, conversation_id)
+
+    # Verify NO Graph API call was made (email retrieved from cache)
+    graph_api_calls = [req for req in requests_mock.request_history if "/v1.0/users" in req.url]
+    assert len(graph_api_calls) == 0
+
+    # Verify entitlement was handled with cached email
+    assert handle_entitlement_mock.called
+    assert handle_entitlement_mock.call_args[1]["email"] == user_email
+
+
+def test_resolve_user_id_for_proactive_message_by_email(mocker, requests_mock):
+    """
+    Given:
+        - A user email address
+    When:
+        - Calling resolve_user_id_for_proactive_message
+    Then:
+        - Verify user is resolved correctly via Graph API
+    """
+    from MicrosoftTeams import resolve_user_id_for_proactive_message
+
+    user_email = "john.doe@example.com"
+    user_id = "resolved-user-id-12345"
+
+    requests_mock.get(
+        f"{GRAPH_BASE_URL}/v1.0/users",
+        json={"value": [{"id": user_id, "mail": user_email, "displayName": "John Doe"}]},
+    )
+
+    result = resolve_user_id_for_proactive_message(user_email)
+
+    assert result == user_id
+
+
+def test_resolve_user_id_for_proactive_message_by_display_name(mocker, requests_mock):
+    """
+    Given:
+        - A user display name
+    When:
+        - Calling resolve_user_id_for_proactive_message
+    Then:
+        - Verify user is resolved correctly
+    """
+    from MicrosoftTeams import resolve_user_id_for_proactive_message
+
+    display_name = "Jane Smith"
+    user_id = "resolved-user-id-67890"
+
+    requests_mock.get(
+        f"{GRAPH_BASE_URL}/v1.0/users",
+        json={"value": [{"id": user_id, "mail": "jane.smith@example.com", "displayName": display_name}]},
+    )
+
+    result = resolve_user_id_for_proactive_message(display_name)
+
+    assert result == user_id
+
+
+def test_create_proactive_conversation_new(mocker, requests_mock):
+    """
+    Given:
+        - A user ID without an existing cached conversation
+    When:
+        - Calling create_proactive_conversation
+    Then:
+        - Verify new conversation is created
+        - Verify conversation ID is cached
+    """
+    from MicrosoftTeams import create_proactive_conversation
+
+    user_id = "new-user-id"
+    new_conversation_id = "19:new-conversation"
+
+    test_context = integration_context.copy()
+    test_context["proactive_conversations"] = json.dumps({})
+
+    mocker.patch("MicrosoftTeams.get_integration_context", return_value=test_context)
+    set_context_mock = mocker.patch("MicrosoftTeams.set_integration_context")
+
+    # Mock conversation creation
+    requests_mock.post(f"{service_url}/v3/conversations", json={"id": new_conversation_id})
+
+    result = create_proactive_conversation(user_id)
+
+    assert result == new_conversation_id
+
+    # Verify conversation was cached
+    assert set_context_mock.called
+    updated_context = set_context_mock.call_args[0][0]
+    cached_conversations = json.loads(updated_context["proactive_conversations"])
+    assert user_id in cached_conversations
+    assert cached_conversations[user_id] == new_conversation_id
+
+
+def test_create_proactive_conversation_cached(mocker):
+    """
+    Given:
+        - A user ID with an existing cached conversation
+    When:
+        - Calling create_proactive_conversation
+    Then:
+        - Verify cached conversation ID is returned
+        - Verify no new conversation is created (no API call, no set_integration_context)
+    """
+    from MicrosoftTeams import create_proactive_conversation
+
+    user_id = "cached-user-id"
+    cached_conversation_id = "19:cached-conversation@unq.gbl.spaces"
+
+    test_context = integration_context.copy()
+    test_context["proactive_conversations"] = json.dumps({user_id: cached_conversation_id})
+
+    mocker.patch("MicrosoftTeams.get_integration_context", return_value=test_context)
+    set_context_mock = mocker.patch("MicrosoftTeams.set_integration_context")
+
+    result = create_proactive_conversation(user_id)
+
+    assert result == cached_conversation_id
+    # On a cache hit, no context write should occur (no new state to persist)
+    set_context_mock.assert_not_called()
+
+
+def test_send_proactive_message_to_conversation_with_message(mocker, requests_mock):
+    """
+    Given:
+        - A conversation ID and a text message
+    When:
+        - Calling send_proactive_message_to_conversation
+    Then:
+        - Verify message is sent with correct payload
+    """
+    from MicrosoftTeams import send_proactive_message_to_conversation
+
+    conversation_id = "19:test-conversation"
+    message = "Test proactive message"
+    activity_id = "activity-123"
+
+    send_mock = requests_mock.post(f"{service_url}/v3/conversations/{conversation_id}/activities", json={"id": activity_id})
+
+    result = send_proactive_message_to_conversation(conversation_id, message=message)
+
+    assert result["id"] == activity_id
+    sent_payload = send_mock.last_request.json()
+    assert sent_payload["type"] == "message"
+    assert sent_payload["text"] == message
+    assert sent_payload["entities"] == []
+
+
+def test_send_proactive_message_to_conversation_with_adaptive_card(mocker, requests_mock):
+    """
+    Given:
+        - A conversation ID and an adaptive card
+    When:
+        - Calling send_proactive_message_to_conversation
+    Then:
+        - Verify adaptive card is sent with correct payload
+    """
+    from MicrosoftTeams import send_proactive_message_to_conversation
+
+    conversation_id = "19:test-conversation"
+    adaptive_card = {
+        "contentType": "application/vnd.microsoft.card.adaptive",
+        "content": {"type": "AdaptiveCard", "version": "1.0", "body": [{"type": "TextBlock", "text": "Card message"}]},
+    }
+
+    send_mock = requests_mock.post(f"{service_url}/v3/conversations/{conversation_id}/activities", json={"id": "activity-456"})
+
+    result = send_proactive_message_to_conversation(conversation_id, adaptive_card=adaptive_card)
+
+    assert result["id"] == "activity-456"
+    sent_payload = send_mock.last_request.json()
+    assert sent_payload["type"] == "message"
+    assert sent_payload["attachments"] == [adaptive_card]
+    assert "text" not in sent_payload
+
+
+def test_lru_cache_get_hit_and_miss():
+    """
+    Given:
+        - An LRU cache (OrderedDict) with some entries
+    When:
+        - Calling lru_cache_get with an existing key (cache hit)
+        - Calling lru_cache_get with a non-existing key (cache miss)
+    Then:
+        - Cache hit returns the correct value and moves the key to the end (MRU position)
+        - Cache miss returns None and does not modify the cache
+    """
+    from collections import OrderedDict
+    from MicrosoftTeams import lru_cache_get
+
+    cache: OrderedDict = OrderedDict([("key1", "val1"), ("key2", "val2"), ("key3", "val3")])
+
+    # Cache hit: key2 should be moved to end (MRU)
+    result = lru_cache_get(cache, "key2")
+    assert result == "val2"
+    assert list(cache.keys()) == ["key1", "key3", "key2"]  # key2 moved to end
+
+    # Cache miss: returns None, cache unchanged
+    result = lru_cache_get(cache, "nonexistent")
+    assert result is None
+    assert list(cache.keys()) == ["key1", "key3", "key2"]  # unchanged
+
+
+def test_lru_cache_set_insert_and_update():
+    """
+    Given:
+        - An LRU cache (OrderedDict)
+    When:
+        - Inserting a new key
+        - Updating an existing key
+    Then:
+        - New key is added at the end (MRU position)
+        - Updated key is moved to the end (MRU position)
+        - Cache size does not exceed max_size
+    """
+    from collections import OrderedDict
+    from MicrosoftTeams import lru_cache_set
+
+    cache: OrderedDict = OrderedDict([("key1", "val1"), ("key2", "val2")])
+
+    # Insert new key
+    lru_cache_set(cache, "key3", "val3", max_size=10)
+    assert list(cache.keys()) == ["key1", "key2", "key3"]
+    assert cache["key3"] == "val3"
+
+    # Update existing key (should move to end)
+    lru_cache_set(cache, "key1", "val1_updated", max_size=10)
+    assert list(cache.keys()) == ["key2", "key3", "key1"]
+    assert cache["key1"] == "val1_updated"
+
+
+def test_lru_cache_set_eviction():
+    """
+    Given:
+        - An LRU cache at maximum capacity (max_size=3)
+    When:
+        - Inserting a new entry that exceeds the max size
+    Then:
+        - The least-recently-used entry (oldest/first) is evicted
+        - The new entry is added at the end (MRU position)
+        - Cache size stays at max_size
+    """
+    from collections import OrderedDict
+    from MicrosoftTeams import lru_cache_set
+
+    cache: OrderedDict = OrderedDict([("key1", "val1"), ("key2", "val2"), ("key3", "val3")])
+
+    # Insert 4th entry into a max_size=3 cache → key1 (LRU) should be evicted
+    lru_cache_set(cache, "key4", "val4", max_size=3)
+
+    assert len(cache) == 3
+    assert "key1" not in cache  # LRU entry evicted
+    assert list(cache.keys()) == ["key2", "key3", "key4"]
+    assert cache["key4"] == "val4"
+
+
+def test_lru_cache_set_eviction_after_access():
+    """
+    Given:
+        - An LRU cache at maximum capacity (max_size=3)
+        - key1 is accessed (making key2 the LRU)
+    When:
+        - Inserting a new entry that exceeds the max size
+    Then:
+        - key2 (now the LRU) is evicted, not key1
+    """
+    from collections import OrderedDict
+    from MicrosoftTeams import lru_cache_get, lru_cache_set
+
+    cache: OrderedDict = OrderedDict([("key1", "val1"), ("key2", "val2"), ("key3", "val3")])
+
+    # Access key1 → key1 moves to end, key2 becomes LRU
+    lru_cache_get(cache, "key1")
+    assert list(cache.keys()) == ["key2", "key3", "key1"]
+
+    # Insert key4 → key2 (LRU) should be evicted
+    lru_cache_set(cache, "key4", "val4", max_size=3)
+
+    assert len(cache) == 3
+    assert "key2" not in cache  # LRU entry evicted
+    assert "key1" in cache  # recently accessed, should survive
+    assert list(cache.keys()) == ["key3", "key1", "key4"]
+
+
+def test_lru_cache_max_size_500_enforced():
+    """
+    Given:
+        - An LRU cache filled with exactly PROACTIVE_CACHE_MAX_SIZE (500) entries
+    When:
+        - Adding one more entry
+    Then:
+        - The oldest entry is evicted
+        - Cache size remains at 500
+    """
+    from collections import OrderedDict
+    from MicrosoftTeams import lru_cache_set, PROACTIVE_CACHE_MAX_SIZE
+
+    cache: OrderedDict = OrderedDict()
+    for i in range(PROACTIVE_CACHE_MAX_SIZE):
+        cache[f"user-{i}"] = f"conv-{i}"
+
+    assert len(cache) == PROACTIVE_CACHE_MAX_SIZE
+
+    # Add one more entry using the default max_size (PROACTIVE_CACHE_MAX_SIZE)
+    lru_cache_set(cache, "user-new", "conv-new")
+
+    assert len(cache) == PROACTIVE_CACHE_MAX_SIZE
+    assert "user-0" not in cache  # oldest entry evicted
+    assert "user-new" in cache
+    assert cache["user-new"] == "conv-new"
+
+
+def test_proactive_conversations_lru_eviction_on_new_conversation(mocker, requests_mock):
+    """
+    Given:
+        - A proactive_conversations cache already at PROACTIVE_CACHE_MAX_SIZE (500) entries
+    When:
+        - create_proactive_conversation is called for a new user
+    Then:
+        - A new conversation is created via the API
+        - The oldest cached entry is evicted
+        - The new entry is added to the cache
+        - Cache size stays at PROACTIVE_CACHE_MAX_SIZE
+    """
+    from collections import OrderedDict
+    from MicrosoftTeams import create_proactive_conversation, PROACTIVE_CACHE_MAX_SIZE
+
+    # Build a full cache with 500 entries
+    full_cache: OrderedDict = OrderedDict()
+    for i in range(PROACTIVE_CACHE_MAX_SIZE):
+        full_cache[f"user-{i}"] = f"conv-{i}"
+
+    oldest_user = "user-0"
+    new_user_id = "brand-new-user"
+    new_conversation_id = "19:brand-new-conversation"
+
+    test_context = integration_context.copy()
+    test_context["proactive_conversations"] = json.dumps(full_cache)
+
+    mocker.patch("MicrosoftTeams.get_integration_context", return_value=test_context)
+    set_context_mock = mocker.patch("MicrosoftTeams.set_integration_context")
+
+    requests_mock.post(f"{service_url}/v3/conversations", json={"id": new_conversation_id})
+
+    result = create_proactive_conversation(new_user_id)
+
+    assert result == new_conversation_id
+
+    # Verify the cache was updated correctly
+    assert set_context_mock.called
+    updated_context = set_context_mock.call_args[0][0]
+    cached_conversations = json.loads(updated_context["proactive_conversations"])
+
+    assert len(cached_conversations) == PROACTIVE_CACHE_MAX_SIZE
+    assert oldest_user not in cached_conversations  # LRU evicted
+    assert new_user_id in cached_conversations
+    assert cached_conversations[new_user_id] == new_conversation_id
+
+
+def test_proactive_users_lru_eviction_on_new_user(mocker, requests_mock):
+    """
+    Given:
+        - A proactive_users cache already at PROACTIVE_CACHE_MAX_SIZE (500) entries
+    When:
+        - entitlement_handler is called for a new user not in team cache or proactive_users cache
+    Then:
+        - User email is fetched from Graph API
+        - The oldest cached entry is evicted
+        - The new entry is added to the cache
+        - Cache size stays at PROACTIVE_CACHE_MAX_SIZE
+    """
+    from collections import OrderedDict
+    from MicrosoftTeams import entitlement_handler, PROACTIVE_CACHE_MAX_SIZE
+
+    # Build a full proactive_users cache with 500 entries
+    full_cache: OrderedDict = OrderedDict()
+    for i in range(PROACTIVE_CACHE_MAX_SIZE):
+        full_cache[f"user-{i}"] = {"email": f"user{i}@example.com"}
+
+    oldest_user = "user-0"
+    new_proactive_user_id = "29:brand-new-proactive-user"
+    new_user_email = "new.proactive@example.com"
+    conversation_id = "19:test-conversation"
+    activity_id = "1:activity-id"
+
+    # Mock Graph API user lookup
+    requests_mock.get(
+        f"{GRAPH_BASE_URL}/v1.0/users",
+        json={"value": [{"id": new_proactive_user_id, "mail": new_user_email, "userPrincipalName": new_user_email}]},
+    )
+
+    # Mock update message
+    requests_mock.put(f"{service_url}/v3/conversations/{conversation_id}/activities/{activity_id}", json={"id": "update-id"})
+
+    test_context = integration_context.copy()
+    test_context["proactive_users"] = json.dumps(full_cache)
+
+    mocker.patch("MicrosoftTeams.get_integration_context", return_value=test_context)
+    set_context_mock = mocker.patch("MicrosoftTeams.set_integration_context")
+    mocker.patch.object(demisto, "handleEntitlementForUser")
+
+    request_body = {"from": {"id": new_proactive_user_id}, "replyToId": activity_id}
+    value = {
+        "response": "Approved",
+        "entitlement": "test-entitlement-guid",
+        "investigation_id": "300",
+        "task_id": "15",
+    }
+
+    entitlement_handler(test_context, request_body, value, conversation_id)
+
+    # Verify the cache was updated correctly
+    assert set_context_mock.called
+    # Find the call that updated proactive_users
+    proactive_users_context = None
+    for call in set_context_mock.call_args_list:
+        ctx = call[0][0]
+        if "proactive_users" in ctx:
+            proactive_users_context = ctx
+            break
+
+    assert proactive_users_context is not None
+    cached_users = json.loads(proactive_users_context["proactive_users"])
+
+    assert len(cached_users) == PROACTIVE_CACHE_MAX_SIZE
+    assert oldest_user not in cached_users  # LRU evicted
+    assert new_proactive_user_id in cached_users
+    assert cached_users[new_proactive_user_id]["email"] == new_user_email

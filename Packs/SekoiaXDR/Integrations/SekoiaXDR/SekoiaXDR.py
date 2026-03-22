@@ -719,27 +719,34 @@ def fetch_incidents(
     latest_created_time = cast(int, last_fetch)
 
     # Track IDs of alerts with the latest timestamp for next run
-    current_processed_ids: list[str] = []
+    # Carry forward previously processed IDs to prevent re-processing when no new alerts arrive
+    current_processed_ids: list[str] = list(processed_alert_ids)
+
+    # Increase the API limit to account for already-processed alerts at the boundary timestamp.
+    # Without this, when all returned alerts are already processed, the fetch gets stuck
+    # because there's no room in the API response for newer alerts.
+    num_processed = len(processed_alert_ids)
+    fetch_limit = max_results + num_processed if max_results else max_results
 
     alerts = fetch_alerts_asc_mode(
         client,
         alert_status,
         alert_urgency,
         alert_type,
-        max_results,
+        fetch_limit,
         alerts_created_at,
         None,
         "created_at",
     )
 
     # Initiate an empty list to store cached incidents
-    cached_incidents = []
+    cached_incidents: list[dict[str, Any]] = []
 
     for alert in alerts:
         # If no created_time set is as epoch (0). We use time in ms so we must
         # convert it from the Sekoia XDR API response
-        incident_created_time = int(alert.get("created_at", "0"))
-        incident_created_time_ms = incident_created_time * 1000
+        alert_created_time = int(alert.get("created_at", "0"))
+        alert_created_time_ms = alert_created_time * 1000
         alert_id = alert.get("short_id")
 
         # Skip alerts without a valid ID
@@ -748,16 +755,20 @@ def fetch_incidents(
             continue
 
         # Skip if this alert was already processed (same timestamp as last_fetch and in processed list)
-        if incident_created_time == last_fetch and alert_id in processed_alert_ids:
-            demisto.debug(f"Skipping already processed alert {alert_id} with timestamp {incident_created_time}")
+        if alert_created_time == last_fetch and alert_id in processed_alert_ids:
+            demisto.debug(f"Skipping already processed alert {alert_id} with timestamp {alert_created_time}")
             continue
 
         # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
-        if last_fetch and incident_created_time < last_fetch:
+        if last_fetch and alert_created_time < last_fetch:
             continue
 
+        # Stop processing if we've reached the max_results limit for new incidents
+        if max_results and (len(incidents) + len(cached_incidents)) >= max_results:
+            break
+
         # If no name is present it will throw an exception
-        incident_name = alert["title"]
+        alert_name = alert["title"]
         urgency = alert["urgency"]
 
         # Add assets information to the alert, if fetch_with_assets is set to True
@@ -790,8 +801,8 @@ def fetch_incidents(
 
         # Start building the incident
         incident = {
-            "name": incident_name,
-            "occurred": timestamp_to_datestring(incident_created_time_ms),
+            "name": alert_name,
+            "occurred": timestamp_to_datestring(alert_created_time_ms),
             "severity": convert_to_demisto_severity(urgency.get("display", "Low")),
         }
         # If the integration parameter is set to mirror add the appropriate fields to the incident
@@ -808,23 +819,19 @@ def fetch_incidents(
             # Events are ready or not requested - create incident immediately
             incident["rawJSON"] = json.dumps(alert)
             incidents.append(incident)
-        elif alert.get("job_uuid"):
+        else:
             # Events still pending - cache the incident for next fetch cycle
             # Keep rawJSON as dict (not dumped) for easier manipulation in cache
             incident["rawJSON"] = alert
             cached_incidents.append(incident)
             demisto.debug(f"Alert {alert_id} cached pending event search {alert.get('job_uuid')}")
-        else:
-            # No job_uuid and not ready should not happen, but handle gracefully
-            incident["rawJSON"] = json.dumps(alert)
-            incidents.append(incident)
 
         # Update latest_created_time and track processed IDs
         # If timestamp is newer than last_fetch, reset the processed_ids list
-        if incident_created_time > latest_created_time:
-            latest_created_time = incident_created_time
+        if alert_created_time > latest_created_time:
+            latest_created_time = alert_created_time
             current_processed_ids = [alert_id]  # Reset for new timestamp
-        elif incident_created_time == latest_created_time:
+        elif alert_created_time == latest_created_time:
             # Same timestamp, add to list if not already there
             if alert_id not in current_processed_ids:
                 current_processed_ids.append(alert_id)
@@ -1516,7 +1523,7 @@ def http_request_command(client: Client, args: dict[str, Any]) -> CommandResults
     http_response = client.http_request(method=method, params=params, url_suffix=url_suffix, data=data)
 
     # Extract response items if available
-    response = http_response.get("items", http_response)
+    response = http_response.get("items", http_response) if isinstance(http_response, dict) else http_response
 
     # Build output text based on what parameters were provided
     output_parts = [f"### HTTP {method} request to {url_suffix}"]

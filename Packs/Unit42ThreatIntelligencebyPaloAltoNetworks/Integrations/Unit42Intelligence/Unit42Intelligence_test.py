@@ -2216,6 +2216,102 @@ def test_encode_url_indicator_strips_fragment_with_scheme():
     assert result == expected
 
 
+def test_create_relationships_malicious_tool():
+    """
+    Given:
+        - Threat objects with malicious_tool threat class
+    When:
+        - create_relationships is called with create_relationships enabled
+    Then:
+        - Creates relationship with ThreatIntel.ObjectsNames.TOOL
+        - Sets proper entity types and relationship name
+    """
+    threat_objects = [{"name": "ScreenConnect", "threat_object_class": "malicious_tool"}]
+
+    relationships = create_relationships("hash123", FeedIndicatorType.File, threat_objects, True)
+
+    assert len(relationships) == 1
+    assert relationships[0]._entity_b == "ScreenConnect"
+    assert relationships[0]._entity_b_type == ThreatIntel.ObjectsNames.TOOL
+    assert relationships[0]._name == EntityRelationship.Relationships.RELATED_TO
+
+
+def test_create_relationships_attack_pattern_underscore():
+    """
+    Given:
+        - Threat objects with attack_pattern (underscore) threat class
+    When:
+        - create_relationships is called with create_relationships enabled
+    Then:
+        - Creates relationship with ThreatIntel.ObjectsNames.ATTACK_PATTERN
+    """
+    threat_objects = [{"name": "T1059 - Command and Scripting Interpreter", "threat_object_class": "attack_pattern"}]
+
+    relationships = create_relationships("1.2.3.4", FeedIndicatorType.IP, threat_objects, True)
+
+    assert len(relationships) == 1
+    assert relationships[0]._entity_b_type == ThreatIntel.ObjectsNames.ATTACK_PATTERN
+
+
+def test_create_relationships_vulnerability():
+    """
+    Given:
+        - Threat objects with vulnerability threat class
+    When:
+        - create_relationships is called with create_relationships enabled
+    Then:
+        - Creates relationship with FeedIndicatorType.CVE
+    """
+    threat_objects = [{"name": "CVE-2024-9999", "threat_object_class": "vulnerability"}]
+
+    relationships = create_relationships("1.2.3.4", FeedIndicatorType.IP, threat_objects, True)
+
+    assert len(relationships) == 1
+    assert relationships[0]._entity_b == "CVE-2024-9999"
+    assert relationships[0]._entity_b_type == FeedIndicatorType.CVE
+
+
+def test_create_relationships_grayware():
+    """
+    Given:
+        - Threat objects with grayware threat class
+    When:
+        - create_relationships is called with create_relationships enabled
+    Then:
+        - Creates relationship with ThreatIntel.ObjectsNames.MALWARE
+    """
+    threat_objects = [{"name": "PUP.Optional.Adware", "threat_object_class": "grayware"}]
+
+    relationships = create_relationships("1.2.3.4", FeedIndicatorType.IP, threat_objects, True)
+
+    assert len(relationships) == 1
+    assert relationships[0]._entity_b == "PUP.Optional.Adware"
+    assert relationships[0]._entity_b_type == ThreatIntel.ObjectsNames.MALWARE
+
+
+def test_create_relationships_unknown_threat_class_skipped():
+    """
+    Given:
+        - Threat objects where one has an unknown threat_object_class (e.g. 'generic')
+          and one has a known class
+    When:
+        - create_relationships is called with create_relationships enabled
+    Then:
+        - The unknown class is skipped gracefully (no KeyError)
+        - Only the known class produces a relationship
+    """
+    threat_objects = [
+        {"name": "SomeUnknownThing", "threat_object_class": "generic"},
+        {"name": "APT29", "threat_object_class": "actor"},
+    ]
+
+    relationships = create_relationships("1.2.3.4", FeedIndicatorType.IP, threat_objects, True)
+
+    assert len(relationships) == 1
+    assert relationships[0]._entity_b == "APT29"
+    assert relationships[0]._entity_b_type == ThreatIntel.ObjectsNames.THREAT_ACTOR
+
+
 def test_encode_url_indicator_no_fragment_unchanged():
     """
     Given:

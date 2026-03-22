@@ -1,5 +1,20 @@
+import time
+from unittest.mock import MagicMock, patch
+
 import pytest
-from AtlassianConfluenceCloud import DEFAULT_GET_EVENTS_LIMIT, MESSAGES, URL_SUFFIX, Client, fetch_events, get_events
+from AtlassianConfluenceCloud import (
+    DEFAULT_GET_EVENTS_LIMIT,
+    MESSAGES,
+    URL_SUFFIX,
+    Client,
+    create_client,
+    create_oauth_client,
+    fetch_events,
+    get_events,
+    oauth_complete_command,
+    oauth_start_command,
+    oauth_test_command,
+)
 from CommonServerPython import *
 from pytest_mock import MockerFixture
 from test_data import input_data
@@ -1161,3 +1176,214 @@ def test_confluence_cloud_content_get_command_when_valid_response_is_returned(re
     assert response.outputs_key_field == "id"
     assert response.outputs == expected_context_output
     assert response.readable_output == expected_readable_output
+
+
+class TestOAuthFunctions:
+    """Tests for OAuth-related functions in AtlassianConfluenceCloud."""
+
+    def test_create_oauth_client_basic_auth(self):
+        """Test that create_oauth_client returns None for Basic auth."""
+        params = {"auth_method": "Basic"}
+        result = create_oauth_client(params)
+        assert result is None
+
+    def test_create_oauth_client_default_auth(self):
+        """Test that create_oauth_client returns None when auth_method is not set (defaults to Basic)."""
+        params = {}
+        result = create_oauth_client(params)
+        assert result is None
+
+    @patch("AtlassianApiModule.get_integration_context", return_value={})
+    @patch("AtlassianApiModule.set_integration_context")
+    def test_create_oauth_client_oauth(self, mock_set_ctx, mock_get_ctx):
+        """Test that create_oauth_client creates a client for OAuth 2.0."""
+        params = {
+            "auth_method": "OAuth 2.0",
+            "client_credentials": {"identifier": "test-id", "password": "test-secret"},
+            "cloud_id": "test-cloud-id",
+            "callback_url": "https://localhost/callback",
+            "url": "https://mysite.atlassian.net",
+            "insecure": False,
+            "proxy": False,
+        }
+        result = create_oauth_client(params)
+        assert result is not None
+        assert result.client_id == "test-id"
+        assert result.cloud_id == "test-cloud-id"
+
+    def test_create_oauth_client_missing_credentials(self):
+        """Test that create_oauth_client raises error when credentials are missing."""
+        params = {
+            "auth_method": "OAuth 2.0",
+            "client_credentials": {"identifier": "", "password": ""},
+            "callback_url": "https://localhost/callback",
+        }
+        with pytest.raises(DemistoException, match="Client ID and Client Secret are required"):
+            create_oauth_client(params)
+
+    def test_create_oauth_client_missing_callback(self):
+        """Test that create_oauth_client raises error when callback URL is missing."""
+        params = {
+            "auth_method": "OAuth 2.0",
+            "client_credentials": {"identifier": "test-id", "password": "test-secret"},
+            "callback_url": "",
+        }
+        with pytest.raises(DemistoException, match="Callback URL is required"):
+            create_oauth_client(params)
+
+    def test_create_client_basic_auth(self):
+        """Test create_client with Basic authentication."""
+        params = {
+            "url": "https://mysite.atlassian.net",
+            "auth_method": "Basic",
+            "username": {"identifier": "user@example.com", "password": "api-token"},
+            "insecure": False,
+            "proxy": False,
+        }
+        result = create_client(params)
+        assert isinstance(result, Client)
+
+    def test_create_client_basic_auth_missing_credentials(self):
+        """Test create_client raises error when Basic auth credentials are missing."""
+        params = {
+            "url": "https://mysite.atlassian.net",
+            "auth_method": "Basic",
+            "username": {"identifier": "", "password": ""},
+            "insecure": False,
+            "proxy": False,
+        }
+        with pytest.raises(ValueError, match="Basic authentication requires Email and API Token"):
+            create_client(params)
+
+    @patch("AtlassianApiModule.get_integration_context")
+    def test_create_client_oauth(self, mock_get_ctx):
+        """Test create_client with OAuth 2.0 authentication."""
+        mock_get_ctx.return_value = {
+            "token": "test-access-token",
+            "valid_until": time.time() + 3600,
+            "refresh_token": "test-refresh-token",
+        }
+        mock_oauth_client = MagicMock()
+        mock_oauth_client.get_access_token.return_value = "test-access-token"
+        mock_oauth_client.verify = True
+
+        params = {
+            "url": "https://mysite.atlassian.net",
+            "auth_method": "OAuth 2.0",
+            "insecure": False,
+            "proxy": False,
+        }
+        result = create_client(params, oauth_client=mock_oauth_client)
+        assert isinstance(result, Client)
+
+    @patch("AtlassianApiModule.get_integration_context", return_value={})
+    @patch("AtlassianApiModule.set_integration_context")
+    def test_oauth_start_command(self, mock_set_ctx, mock_get_ctx):
+        """Test oauth_start_command returns authorization URL."""
+        from AtlassianApiModule import ConfluenceCloudOAuthClient
+
+        oauth_client = ConfluenceCloudOAuthClient(
+            client_id="test-id",
+            client_secret="test-secret",
+            callback_url="https://localhost/callback",
+            cloud_id="test-cloud-id",
+        )
+        result = oauth_start_command(oauth_client)
+        assert "Authorization Instructions" in result.readable_output
+        assert "https://auth.atlassian.com/authorize" in result.readable_output
+
+    @patch("AtlassianApiModule.get_integration_context", return_value={})
+    @patch("AtlassianApiModule.set_integration_context")
+    @patch("requests.post")
+    def test_oauth_complete_command(self, mock_post, mock_set_ctx, mock_get_ctx):
+        """Test oauth_complete_command exchanges code for tokens."""
+        from AtlassianApiModule import ConfluenceCloudOAuthClient
+
+        mock_response = MagicMock()
+        mock_response.json.return_value = {
+            "access_token": "new-token",
+            "refresh_token": "new-refresh",
+            "expires_in": 3600,
+            "scope": "read:audit-log:confluence",
+        }
+        mock_post.return_value = mock_response
+
+        oauth_client = ConfluenceCloudOAuthClient(
+            client_id="test-id",
+            client_secret="test-secret",
+            callback_url="https://localhost/callback",
+            cloud_id="test-cloud-id",
+        )
+        result = oauth_complete_command(oauth_client, code="test-code")
+        assert "Successfully authenticated" in result.readable_output
+
+    @patch("AtlassianApiModule.get_integration_context")
+    @patch("requests.get")
+    def test_oauth_test_command_success(self, mock_get, mock_get_ctx):
+        """Test oauth_test_command with valid token."""
+        mock_get_ctx.return_value = {
+            "token": "valid-token",
+            "valid_until": time.time() + 3600,
+            "refresh_token": "refresh-token",
+        }
+        mock_response = MagicMock()
+        mock_response.json.return_value = [
+            {
+                "id": "cloud-123",
+                "name": "My Site",
+                "url": "https://mysite.atlassian.net",
+                "scopes": ["read:confluence-content.all"],
+            }
+        ]
+        mock_get.return_value = mock_response
+
+        from AtlassianApiModule import ConfluenceCloudOAuthClient
+
+        oauth_client = ConfluenceCloudOAuthClient(
+            client_id="test-id",
+            client_secret="test-secret",
+            callback_url="https://localhost/callback",
+            cloud_id="test-cloud-id",
+        )
+        result = oauth_test_command(oauth_client)
+        assert "Authentication successful" in result.readable_output
+
+    @patch("AtlassianApiModule.get_integration_context")
+    def test_oauth_test_command_failure(self, mock_get_ctx):
+        """Test oauth_test_command with no token."""
+        mock_get_ctx.return_value = {}
+
+        from AtlassianApiModule import ConfluenceCloudOAuthClient
+
+        oauth_client = ConfluenceCloudOAuthClient(
+            client_id="test-id",
+            client_secret="test-secret",
+            callback_url="https://localhost/callback",
+            cloud_id="test-cloud-id",
+        )
+        with pytest.raises(DemistoException, match="Authentication failed"):
+            oauth_test_command(oauth_client)
+
+    def test_create_client_url_normalization(self):
+        """Test that create_client normalizes various URL formats."""
+        params = {
+            "url": "https://mysite.atlassian.net/wiki/",
+            "auth_method": "Basic",
+            "username": {"identifier": "user@example.com", "password": "api-token"},
+            "insecure": False,
+            "proxy": False,
+        }
+        result = create_client(params)
+        assert isinstance(result, Client)
+
+    def test_create_client_site_name_only(self):
+        """Test that create_client handles site name without full URL."""
+        params = {
+            "url": "mysite",
+            "auth_method": "Basic",
+            "username": {"identifier": "user@example.com", "password": "api-token"},
+            "insecure": False,
+            "proxy": False,
+        }
+        result = create_client(params)
+        assert isinstance(result, Client)

@@ -57,4 +57,4 @@ To fetch Vectra XDR Entity follow the next steps:
   - mirror_tags: This field determines what would be the tag needed to mirror the XSOAR entry out to Vectra XDR. It is a required field for XSOAR to enable mirroring support.
   - mirror_instance: This field determines from which instance the XSOAR incident was created. It is a required field for XSOAR to enable mirroring support.
 
-For more information about this integration, visit [Vectra's knwoledge base](https://support.vectra.ai/s/article/KB-VS-1692).
+For more information about this integration, visit [Vectra's knowledge base](https://support.vectra.ai/s/article/KB-VS-1692).

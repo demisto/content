@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Removed 5 deprecated incident-based commands along with the Endpoint Incident fetch. Use the corresponding case-based commands (***cs-falcon-list-case-summaries***, ***cs-falcon-resolve-case***, ***cs-falcon-get-evidence-for-case***) instead."
+}

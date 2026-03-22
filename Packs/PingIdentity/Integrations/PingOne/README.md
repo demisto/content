@@ -125,6 +125,62 @@ There is no context output for this command.
 
 >emma.sharp password was updated.
 
+### pingone-password-force-change
+
+***
+Force a user's password change on next login.
+
+#### Base Command
+
+`pingone-password-force-change`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username to force a password change for. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!pingone-password-force-change username=emma.sharp```
+
+#### Human Readable Output
+
+>emma.sharp password was set to force change.
+
+### pingone-read-password-state
+
+***
+Read a user's password state.
+
+#### Base Command
+
+`pingone-read-password-state`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username to read password state for. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!pingone-read-password-state username=emma.sharp```
+
+#### Human Readable Output
+
+>| Password state for emma.sharp |
+>| --- |
+>| status | MUST_CHANGE_PASSWORD |
+
 ### pingone-add-to-group
 
 ***

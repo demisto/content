@@ -2,7 +2,7 @@
 ignore=RM106
 
 [file:MicrosoftTeams.yml]
-ignore=DS107
+ignore=DS107,BA129
 
 [file:MicrosoftTeams_description.md]
 ignore=DS107

@@ -587,12 +587,14 @@ script:
         required: true
         description: GCP project ID.
         prettyname: GCP Project ID
+        defaultValue: GCP Project ID
         prettypredefined:
           GCP Project ID: ${asset.xdm.asset.realm}
       - name: resource_name
         required: true
         description: Name of the firewall rule to disable.
         prettyname: GCP Firewall Rule Name
+        defaultValue: GCP Firewall Rule Name
         prettypredefined:
           GCP Firewall Rule Name: ${asset.xdm.asset.name}
       - description: Denotes whether the firewall rule is disabled, i.e not applied to the network it is associated with. When set to true, the firewall rule is not enforced and the network behaves as if it did not exist. If this is unspecified, the firewall rule will be enabled.
@@ -693,12 +695,14 @@ script:
         required: true
         description: GCP project ID.
         prettyname: GCP Project ID
+        defaultValue: GCP Project ID
         prettypredefined:
           GCP Project ID: ${asset.xdm.asset.realm}
       - name: resource_name
         required: true
         description: Name of the GCS bucket.
         prettyname: GCP Storage Bucket Name
+        defaultValue: GCP Storage Bucket Name
         prettypredefined:
           GCP Storage Bucket Name: ${asset.xdm.asset.name}
       - name: entity
@@ -719,12 +723,14 @@ script:
         required: true
         description: GCP project ID.
         prettyname: GCP Project ID
+        defaultValue: GCP Project ID
         prettypredefined:
           GCP Project ID: ${asset.xdm.asset.realm}
       - name: resource_name
         required: true
         description: Name of the GCS bucket.
         prettyname: Bucket Name
+        defaultValue: Bucket Name
         prettypredefined:
           Bucket Name: ${asset.xdm.asset.name}
       - name: entity
@@ -745,12 +751,14 @@ script:
         required: true
         description: GCP project ID.
         prettyname: GCP Project ID
+        defaultValue: GCP Project ID
         prettypredefined:
           GCP Project ID: ${asset.xdm.asset.realm}
       - name: resource_name
         required: true
         description: Name of the GCP bucket.
         prettyname: Bucket Name
+        defaultValue: Bucket Name
         prettypredefined:
           Bucket Name: ${asset.xdm.asset.name}
       - name: entity
@@ -833,18 +841,21 @@ script:
         required: true
         description: GCP project ID.
         prettyname: GCP Project ID
+        defaultValue: GCP Project ID
         prettypredefined:
           GCP Project ID: ${asset.xdm.asset.realm}
       - name: region
         required: true
         description: GCP region.
         prettyname: Region
+        defaultValue: Region
         prettypredefined:
          Region: ${asset.xdm.asset.cloud.region}
       - name: resource_name
         required: true
         description: Subnet name.
         prettyname: GCP Subnet Name
+        defaultValue: GCP Subnet Name
         prettypredefined:
           GCP Subnet Name: ${asset.xdm.asset.name}
       - name: enable_flow_logs
@@ -901,18 +912,21 @@ script:
         required: true
         description: GCP project ID.
         prettyname: GCP Project ID
+        defaultValue: GCP Project ID
         prettypredefined:
           GCP Project ID: ${asset.xdm.asset.realm}
       - name: region
         required: true
         description: GCP region.
         prettyname: Region
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: resource_name
         required: true
         description: Subnet name.
         prettyname: GCP Subnet Name
+        defaultValue: GCP Subnet Name
         prettypredefined:
           GCP Subnet Name: ${asset.xdm.asset.name}
       - name: enable_private_ip_google_access
@@ -1074,18 +1088,21 @@ script:
         required: true
         description: GCP project ID.
         prettyname: GCP Project ID
+        defaultValue: GCP Project ID
         prettypredefined:
           GCP Project ID: ${asset.xdm.asset.realm}
       - name: region
         required: true
         description: GCP region.
         prettyname: Region
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: resource_name
         required: true
         description: Name of the GKE cluster.
         prettyname: Cluster Name
+        defaultValue: Cluster Name
         prettypredefined:
           Cluster Name: ${asset.xdm.asset.name}
       - name: enable_intra_node_visibility
@@ -1181,18 +1198,21 @@ script:
         required: true
         description: GCP project ID.
         prettyname: GCP Project ID
+        defaultValue: GCP Project ID
         prettypredefined:
-          GCP project ID: ${asset.xdm.asset.realm}
+          GCP Project ID: ${asset.xdm.asset.realm}
       - name: region
         required: true
         description: GCP region.
         prettyname: Region
+        defaultValue: Region
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: resource_name
         required: true
         description: Name of the GKE cluster.
         prettyname: Cluster Name
+        defaultValue: Cluster Name
         prettypredefined:
           Cluster Name: ${asset.xdm.asset.name}
       - name: enable_master_authorized_networks
@@ -1381,12 +1401,14 @@ script:
         required: true
         description: GCP project ID.
         prettyname: GCP Project ID
+        defaultValue: GCP Project ID
         prettypredefined:
-          GCP project ID: ${asset.xdm.asset.realm}
+          GCP Project ID: ${asset.xdm.asset.realm}
       - name: resource_name
         required: true
         description: Name of the bucket.
         prettyname: Bucket Name
+        defaultValue: Bucket Name
         prettypredefined:
           Bucket Name: ${asset.xdm.asset.name}
       - name: enable_versioning
@@ -1482,12 +1504,14 @@ script:
         required: true
         description: GCP project ID.
         prettyname: GCP Project ID
+        defaultValue: GCP Project ID
         prettypredefined:
           GCP Project ID: ${asset.xdm.asset.realm}
       - name: resource_name
         required: true
         description: Name of the bucket.
         prettyname: Bucket Name
+        defaultValue: Bucket Name
         prettypredefined:
           Bucket Name: ${asset.xdm.asset.name}
       - name: enable_uniform_access
@@ -4039,9 +4063,10 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/googleapi-python3:1.0.0.5476125
+  dockerimage: demisto/googleapi-python3:1.0.0.6911241
 fromversion: 8.11.0
 supportsquickactions: true
 isCloudProviderIntegration: true
 tests:
 - No tests (auto formatted)
+internal: true

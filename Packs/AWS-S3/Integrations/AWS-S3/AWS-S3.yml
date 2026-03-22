@@ -103,6 +103,13 @@ configuration:
   type: 15
   section: Connect
   required: false
+- display: Bucket
+  name: bucket
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+  additionalinfo: Bucket used for network connectivity testing.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -398,7 +405,7 @@ script:
       required: true
     description: Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
     name: aws-s3-put-public-access-block
-  dockerimage: demisto/boto3py3:1.0.0.3575453
+  dockerimage: demisto/boto3py3:1.0.0.7464646
   runonce: false
   script: ''
   type: python

@@ -1,0 +1,994 @@
+{
+    "dashboards_data": [
+        {
+            "name": "Cortex Cloud Runtime Badges (Graph)",
+            "description": "This dashboard provides a visual representation of your organization's progress in achieving key cloud runtime security badges. It measures performance indicators such as the reduction rate of critical vulnerabilities, adoption of registry scanning, and the automation of issue resolution.",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-3258",
+                    "data": [
+                        {
+                            "key": "xql_1771617764992",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 0,
+                                "phrase": "dataset = cloud_health_auditing | filter (capability contains \"\"\"Registry\"\"\") | dedup account | comp count_distinct(account ) as accounts_with_registry_scanning_enabled\n\n\n| view graph type = gauge subtype = radial header = \"Registry Scanned\" yaxis = accounts_with_registry_scanning_enabled maxscalerange = 100 scale_threshold(\"#e91240\",\"#00ff5b\",\"1\") dataunit = \"Account\" default_limit = `false` font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"accounts_with_registry_scanning_enabled\",\"\u003e1 implies Bronze is Achieved\") ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Registry Scanned\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "accounts_with_registry_scanning_enabled"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#e91240",
+                                                    "#00ff5b",
+                                                    1
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"Account\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "default_limit",
+                                                "value": "false"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "accounts_with_registry_scanning_enabled",
+                                                    "\u003e1 implies Bronze is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1771624040493",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 0,
+                                "phrase": "config timeframe = 30d | dataset = issues | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.severity in(ENUM.CRITICAL , ENUM.HIGH ) and xdm.issue.detection.method = \"CLOUD_NETWORK_ANALYZER\" and xdm.issue.status.progress = ENUM.NEW | comp count(xdm.issue.id) as num_of_issues by date | sort desc date  | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues , previous_issues), previous_issues),-100)) | alter issues_resolved = subtract(num_of_issues , previous_issues) | alter status = if(previous_issues  = null, \"0\", \"percent_burndown\") | limit 1\n\n| view graph type = gauge subtype = radial header = \"50% Reduction of Total Amount of Issues with High Severity Reachable from the Internet\" yaxis = status maxscalerange = 100 scale_threshold(\"#f90d0d\",\"#00ff61\",\"50\") dataunit = \"%\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"status\",\"\u003e50% implies Gold is Achieved\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"50% Reduction of Total Amount of Issues with High Severity Reachable from the Internet\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#f90d0d",
+                                                    "#00ff61",
+                                                    50
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"%\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "status",
+                                                    "\u003e50% implies Gold is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1771619895472",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 0,
+                                "phrase": "config timeframe = 30d | dataset = uvm_findings | bin first_observed  span = 15d |  alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", first_observed   ) | filter asset_type contains \"registry\" | comp count(vulnerability_id ) as current_vulns by date | sort desc date | windowcomp lag(current_vulns ) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(current_vulns, previous_issues  ), previous_issues),-100)) |  filter previous_issues != null | alter issues_resolved = subtract( current_vulns , previous_issues ) | limit 1\n\n\n| view graph type = gauge subtype = radial header = \"20% percent reduction in vulnerabilities in registries\" yaxis = percent_burndown maxscalerange = 100 scale_threshold(\"#d80f0f\",\"#00ff14\",\"20\") dataunit = \"%\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"percent_burndown\",\"\u003e20% implies Gold is Achieved\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"20% percent reduction in vulnerabilities in registries\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "percent_burndown"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#d80f0f",
+                                                    "#00ff14",
+                                                    20
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"%\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "percent_burndown",
+                                                    "\u003e20% implies Gold is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-9420",
+                    "data": [
+                        {
+                            "key": "xql_1771624541230",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 0,
+                                "phrase": "config timeframe = 30d | dataset = uvm_findings | bin first_observed span = 16d |  alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", first_observed  ) | filter asset_type_class = \"External Surface\" and exploitable  and cvss_severity = \"Critical\" and vendor_package_details != null | comp count(vulnerability_id ) as vuln_count by date | sort desc date | windowcomp lag(vuln_count ) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(vuln_count,previous_issues  ), previous_issues),-100)) | alter issues_resolved = subtract(vuln_count, previous_issues  ) | alter status = if(previous_issues =null, \"0\", \"percent_burndown\" )  | limit 1\n\n\n| view graph type = gauge subtype = radial header = \"10% of reduction of critical, exploitable, external-facing, with fixes CVE Vulnerabilities\" yaxis = status maxscalerange = 100 scale_threshold(\"#f90808\",\"#00ff2a\",\"10\") font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"status\",\"\u003e10% implies Gold is Achieved\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"10% of reduction of critical, exploitable, external-facing, with fixes CVE Vulnerabilities\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "status"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#f90808",
+                                                    "#00ff2a",
+                                                    10
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "headerfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "14"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "status",
+                                                    "\u003e10% implies Gold is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1771619627448",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 0,
+                                "phrase": "config timeframe = 30d |dataset = issues  | filter xdm.issue.detection.method in(\"COMPUTE_POLICY\",\"VULNERABILITY_POLICY\") | filter xdm.issue.status.progress = ENUM.RESOLVED | top xdm.issue.auto_resolve_findings | filter xdm.issue.auto_resolve_findings | alter number_of_auto_resolved_compute_issues = top_count , percentage_of_auto_resolved_compute_issues = round(top_percent) | alter status = if (percentage_of_auto_resolved_compute_issues \u003e50, \"Achieved\", \"Not Currently Passing\")\n\n\n\n\n| view graph type = gauge subtype = radial yaxis = percentage_of_auto_resolved_compute_issues maxscalerange = 100 scale_threshold(\"#c30c3f\",\"#00ff1f\",\"50\") dataunit = \"%\" default_limit = `false` seriestitle(\"percentage_of_auto_resolved_compute_issues\",\"100% implies Gold is Achieved\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "percentage_of_auto_resolved_compute_issues"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "#c30c3f",
+                                                    "#00ff1f",
+                                                    50
+                                                ],
+                                                "name": "scale_threshold"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"%\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "default_limit",
+                                                "value": "false"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "percentage_of_auto_resolved_compute_issues",
+                                                    "100% implies Gold is Achieved"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "e974addb3dc743bc93fbde0f5433cd27",
+            "metadata": {
+                "params": []
+            }
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1771619895472",
+            "title": "Protect Managed Images - Gold",
+            "creation_time": 1771619895472,
+            "description": "This widget displays the percentage reduction of vulnerabilities in managed container registries, comparing the last 15 days to the previous 15-day period. It quantifies the effectiveness of recent remediation efforts, indicating whether the \"Gold\" standard of a 20% vulnerability reduction has been achieved.",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = uvm_findings | bin first_observed  span = 15d |  alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", first_observed   ) | filter asset_type contains \"registry\" | comp count(vulnerability_id ) as current_vulns by date | sort desc date | windowcomp lag(current_vulns ) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(current_vulns, previous_issues  ), previous_issues),-100)) |  filter previous_issues != null | alter issues_resolved = subtract( current_vulns , previous_issues ) | limit 1\n\n\n| view graph type = gauge subtype = radial header = \"20% percent reduction in vulnerabilities in registries\" yaxis = percent_burndown maxscalerange = 100 scale_threshold(\"#d80f0f\",\"#00ff14\",\"20\") dataunit = \"%\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"percent_burndown\",\"\u003e20% implies Gold is Achieved\") ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"20% percent reduction in vulnerabilities in registries\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "percent_burndown"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#d80f0f",
+                                    "#00ff14",
+                                    20
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"%\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "14"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "percent_burndown",
+                                    "\u003e20% implies Gold is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "uvm_findings"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1771619627448",
+            "title": "Protect Workloads in Runtime XSIAM -Gold",
+            "creation_time": 1771619627448,
+            "description": "This gauge displays the percentage of resolved compute and vulnerability issues that were automatically remediated over the last 30 days. This metric provides a key performance indicator for security automation effectiveness, directly showing the reduction in manual remediation efforts for runtime workloads.",
+            "data": {
+                "phrase": "config timeframe = 30d |dataset = issues  | filter xdm.issue.detection.method in(\"COMPUTE_POLICY\",\"VULNERABILITY_POLICY\") | filter xdm.issue.status.progress = ENUM.RESOLVED | top xdm.issue.auto_resolve_findings | filter xdm.issue.auto_resolve_findings | alter number_of_auto_resolved_compute_issues = top_count , percentage_of_auto_resolved_compute_issues = round(top_percent) | alter status = if (percentage_of_auto_resolved_compute_issues \u003e50, \"Achieved\", \"Not Currently Passing\")\n\n\n\n\n| view graph type = gauge subtype = radial yaxis = percentage_of_auto_resolved_compute_issues maxscalerange = 100 scale_threshold(\"#c30c3f\",\"#00ff1f\",\"50\") dataunit = \"%\" default_limit = `false` seriestitle(\"percentage_of_auto_resolved_compute_issues\",\"100% implies Gold is Achieved\") ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "percentage_of_auto_resolved_compute_issues"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#c30c3f",
+                                    "#00ff1f",
+                                    50
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"%\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "default_limit",
+                                "value": "false"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "percentage_of_auto_resolved_compute_issues",
+                                    "100% implies Gold is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "issues"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1771624040493",
+            "title": "API Security - Gold",
+            "creation_time": 1771624040493,
+            "description": "This widget displays the percentage reduction of new, critical and high-severity security issues that are reachable from the internet. It provides a key performance indicator for reducing the external attack surface, with a burndown rate over 50% signifying the achievement of the \"Gold\" security standard.",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = issues | bin xdm.issue.observation_time  span = 16d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", xdm.issue.observation_time ) | filter xdm.issue.severity in(ENUM.CRITICAL , ENUM.HIGH ) and xdm.issue.detection.method = \"CLOUD_NETWORK_ANALYZER\" and xdm.issue.status.progress = ENUM.NEW | comp count(xdm.issue.id) as num_of_issues by date | sort desc date  | windowcomp lag(num_of_issues) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(num_of_issues , previous_issues), previous_issues),-100)) | alter issues_resolved = subtract(num_of_issues , previous_issues) | alter status = if(previous_issues  = null, \"0\", \"percent_burndown\") | limit 1\n\n| view graph type = gauge subtype = radial header = \"50% Reduction of Total Amount of Issues with High Severity Reachable from the Internet\" yaxis = status maxscalerange = 100 scale_threshold(\"#f90d0d\",\"#00ff61\",\"50\") dataunit = \"%\" font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"status\",\"\u003e50% implies Gold is Achieved\") ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"50% Reduction of Total Amount of Issues with High Severity Reachable from the Internet\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#f90d0d",
+                                    "#00ff61",
+                                    50
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"%\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "14"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "status",
+                                    "\u003e50% implies Gold is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "issues"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1771624541230",
+            "title": "Protect Workloads in Runtime XDR - Gold",
+            "creation_time": 1771624541230,
+            "description": "This widget displays the percentage reduction of critical, exploitable vulnerabilities that have available fixes on external-facing assets. This metric quantifies the effectiveness of remediation efforts against your most severe security risks to validate progress toward organizational goals.",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = uvm_findings | bin first_observed span = 16d |  alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", first_observed  ) | filter asset_type_class = \"External Surface\" and exploitable  and cvss_severity = \"Critical\" and vendor_package_details != null | comp count(vulnerability_id ) as vuln_count by date | sort desc date | windowcomp lag(vuln_count ) sort asc date as previous_issues | alter percent_burndown = round(multiply(divide(subtract(vuln_count,previous_issues  ), previous_issues),-100)) | alter issues_resolved = subtract(vuln_count, previous_issues  ) | alter status = if(previous_issues =null, \"0\", \"percent_burndown\" )  | limit 1\n\n\n| view graph type = gauge subtype = radial header = \"10% of reduction of critical, exploitable, external-facing, with fixes CVE Vulnerabilities\" yaxis = status maxscalerange = 100 scale_threshold(\"#f90808\",\"#00ff2a\",\"10\") font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"status\",\"\u003e10% implies Gold is Achieved\") ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"10% of reduction of critical, exploitable, external-facing, with fixes CVE Vulnerabilities\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "status"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#f90808",
+                                    "#00ff2a",
+                                    10
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "14"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "status",
+                                    "\u003e10% implies Gold is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "uvm_findings"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1771617764992",
+            "title": "Protect Managed Images - Bronze",
+            "creation_time": 1771617764992,
+            "description": "This widget displays the total number of cloud accounts with an active container registry scanning capability. Activating this capability on at least one account achieves the Bronze security standard, providing foundational visibility into container image vulnerabilities.",
+            "data": {
+                "phrase": "dataset = cloud_health_auditing | filter (capability contains \"\"\"Registry\"\"\") | dedup account | comp count_distinct(account ) as accounts_with_registry_scanning_enabled\n\n\n| view graph type = gauge subtype = radial header = \"Registry Scanned\" yaxis = accounts_with_registry_scanning_enabled maxscalerange = 100 scale_threshold(\"#e91240\",\"#00ff5b\",\"1\") dataunit = \"Account\" default_limit = `false` font = \"Arial Black\" headerfontsize = 20 legendfontsize = 14 seriestitle(\"accounts_with_registry_scanning_enabled\",\"\u003e1 implies Bronze is Achieved\") ",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Registry Scanned\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "accounts_with_registry_scanning_enabled"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "#e91240",
+                                    "#00ff5b",
+                                    1
+                                ],
+                                "name": "scale_threshold"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"Account\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "default_limit",
+                                "value": "false"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "headerfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "14"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "accounts_with_registry_scanning_enabled",
+                                    "\u003e1 implies Bronze is Achieved"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cloud_health_auditing"
+                ],
+                "query_uses_library": false
+            }
+        }
+    ],
+    "fromVersion": "6.10.0"
+}

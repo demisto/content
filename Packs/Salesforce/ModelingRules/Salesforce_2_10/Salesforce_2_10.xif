@@ -5,7 +5,7 @@ alter
     xdm.target.resource.type = api_object_type,
     xdm.source.cloud.project_id = salesforce_domain,
     xdm.source.user.identifier = UserId,
-    xdm.observer.type = "SalesForce CRM",
+    xdm.observer.type = "SalesForce",
     xdm.observer.sub_type = "Real Time Event Monitoring",
     xdm.source.user.user_type = XDM_CONST.USER_TYPE_REGULAR,
     xdm.source.user.scope = XDM_CONST.SCOPE_TYPE_SAAS;

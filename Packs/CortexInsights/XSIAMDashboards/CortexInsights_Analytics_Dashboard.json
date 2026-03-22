@@ -1,0 +1,639 @@
+{
+    "dashboards_data": [
+        {
+            "name": "Cortex Insights [Analytics]",
+            "description": "The Cortex Insights dashboard provides a comprehensive overview of your security operations performance and efficiency. It visualizes key performance indicators such as case resolution trends, mean time to acknowledge (MTTA) and resolve (MTTR), and automation effectiveness.",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-4285",
+                    "data": [
+                        {
+                            "key": "xql_1770867941003",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 511,
+                                "phrase": "config timeframe = 30d | dataset = cases | bin _time span = 1d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", _time) |comp sum(if(xdm.case.status_progress = \"Resolved\", 1, 0)) as Resolved_Cases by date | sort desc date\n\n| view graph type = line xaxis = date yaxis = Resolved_Cases font = \"Arial Black\" legendfontsize = 20 xaxistitle = \"Date\" yaxistitle = \"Cases closed\" ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "line",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "date"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Resolved_Cases"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "font",
+                                                "value": "\"Arial Black\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legendfontsize",
+                                                "value": "20"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxistitle",
+                                                "value": "\"Date\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxistitle",
+                                                "value": "\"Cases closed\""
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-2463",
+                    "data": [
+                        {
+                            "key": "xql_1770873129786",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 511,
+                                "phrase": "config timeframe = 30d | dataset = cases | filter ((`xdm.case.status_progress` not contains \"\"\"new\"\"\" )) | alter ack_time_in_days = timestamp_diff(_time, _insert_time  , \"DAY\") | comp avg(ceil(ack_time_in_days)) as MTTA_in_days by xdm.case.platform_severity | alter MTTA_in_days = round(MTTA_in_days) | sort asc xdm.case.platform_severity\n\n| view graph type = pie subtype = full xaxis = xdm.case.platform_severity yaxis = MTTA_in_days ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "full"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.case.platform_severity"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "MTTA_in_days"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770869120502",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 511,
+                                "phrase": "config timeframe = 30d | dataset = cases | comp count() as number_of_cases by xdm.case.status.resolution_reason\n\n| view graph type = pie subtype = full show_callouts = `true` xaxis = xdm.case.status.resolution_reason yaxis = number_of_cases ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "full"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.case.status.resolution_reason"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "number_of_cases"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770873261978",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 511,
+                                "phrase": "config timeframe = 30d  | dataset = cases   | filter resolution_time != null and _insert_time  != null   | alter time_to_resolve_in_hours = timestamp_diff(to_timestamp(resolution_time , \"MILLIS\"),_insert_time,\"DAY\")   | comp avg(ceil(time_to_resolve_in_hours)) as MTTR_in_days by xdm.case.platform_severity   | alter MTTR_in_days = round(MTTR_in_days)    | sort asc xdm.case.platform_severity\n| view graph type = pie subtype = full xaxis = xdm.case.platform_severity yaxis = MTTR_in_days ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "full"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.case.platform_severity"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "MTTR_in_days"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-3582",
+                    "data": [
+                        {
+                            "key": "xql_1770872440302",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 511,
+                                "phrase": "config timeframe = 30d |dataset = scripts_and_commands_metrics | filter type = \"automation\" and not is_manual | top is_error | alter number_of_failed_scripts = top_count , percentage_of_failed_scripts = round(top_percent) | filter is_error\n\n| view graph type = gauge subtype = radial yaxis = percentage_of_failed_scripts maxscalerange = 100 dataunit = \"% failed scripts\" ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "gauge",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "radial"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "percentage_of_failed_scripts"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "maxscalerange",
+                                                "value": "100"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "dataunit",
+                                                "value": "\"% failed scripts\""
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770872849220",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 511,
+                                "phrase": "dataset = issues  | filter xdm.issue.status.progress = \"RESOLVED\" and timestamp_diff(current_time(),xdm.issue.resolution_status_modified_ts,\"DAY\") \u003c 30 | join type = left (dataset = playbook_runs | filter playbook_status = \"completed\" ) as perm perm.entity_id = to_string(xdm.issue.id ) | bin  xdm.issue.resolution_status_modified_ts span = 1d  | comp sum (if(xdm.issue.status.progress  = \"RESOLVED\", 1, 0 )) as total_issues_resolved_manually by xdm.issue.resolution_status_modified_ts  | alter date = format_timestamp(\"%Y/%m/%d\",xdm.issue.resolution_status_modified_ts )  | sort desc date | fields date , total_issues_resolved_manually\n\n| view graph type = line xaxis = date yaxis = total_issues_resolved_manually ",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "line",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "date"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "total_issues_resolved_manually"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "38a737b1e0934c368d384fb7af36fdb2",
+            "metadata": {
+                "params": []
+            }
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1770873261978",
+            "title": "Average MTTR",
+            "creation_time": 1771947008237,
+            "description": "This widget displays the average Mean Time to Resolve (MTTR) in days for security cases over the past 30 days, broken down by severity level. Use this data to measure response efficiency and identify which incident severities may require process improvements or additional resources.",
+            "data": {
+                "phrase": "config timeframe = 30d  | dataset = cases   | filter resolution_time != null and _insert_time  != null   | alter time_to_resolve_in_hours = timestamp_diff(to_timestamp(resolution_time , \"MILLIS\"),_insert_time,\"DAY\")   | comp avg(ceil(time_to_resolve_in_hours)) as MTTR_in_days by xdm.case.platform_severity   | alter MTTR_in_days = round(MTTR_in_days)    | sort asc xdm.case.platform_severity\n| view graph type = pie subtype = full xaxis = xdm.case.platform_severity yaxis = MTTR_in_days ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "full"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.case.platform_severity"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "MTTR_in_days"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cases"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1770872440302",
+            "title": "Scripts error metrics",
+            "creation_time": 1771947010711,
+            "description": "This widget displays the failure rate for automated scripts executed over the past 30 days. Monitoring this metric helps you gauge the overall health of your security orchestration and identify failing playbooks that require investigation.",
+            "data": {
+                "phrase": "config timeframe = 30d |dataset = scripts_and_commands_metrics | filter type = \"automation\" and not is_manual | top is_error | alter number_of_failed_scripts = top_count , percentage_of_failed_scripts = round(top_percent) | filter is_error\n\n| view graph type = gauge subtype = radial yaxis = percentage_of_failed_scripts maxscalerange = 100 dataunit = \"% failed scripts\" ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "gauge",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "radial"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "percentage_of_failed_scripts"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "maxscalerange",
+                                "value": "100"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "dataunit",
+                                "value": "\"% failed scripts\""
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "scripts_and_commands_metrics"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1770872849220",
+            "title": "Manual investigations per day",
+            "creation_time": 1771947007876,
+            "description": "This widget displays the daily count of security investigations that were resolved manually over the last 30 days. Tracking this metric helps gauge analyst workload and highlights potential opportunities for new automation playbooks.",
+            "data": {
+                "phrase": "dataset = issues  | filter xdm.issue.status.progress = \"RESOLVED\" and timestamp_diff(current_time(),xdm.issue.resolution_status_modified_ts,\"DAY\") \u003c 30 | join type = left (dataset = playbook_runs | filter playbook_status = \"completed\" ) as perm perm.entity_id = to_string(xdm.issue.id ) | bin  xdm.issue.resolution_status_modified_ts span = 1d  | comp sum (if(xdm.issue.status.progress  = \"RESOLVED\", 1, 0 )) as total_issues_resolved_manually by xdm.issue.resolution_status_modified_ts  | alter date = format_timestamp(\"%Y/%m/%d\",xdm.issue.resolution_status_modified_ts )  | sort desc date | fields date , total_issues_resolved_manually\n\n| view graph type = line xaxis = date yaxis = total_issues_resolved_manually ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "line",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "date"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "total_issues_resolved_manually"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "issues",
+                    "playbook_runs"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1770867941003",
+            "title": "Case closure rate",
+            "creation_time": 1771947009928,
+            "description": "This widget displays the daily trend of cases closed over the past 30 days. Monitoring this metric helps gauge team efficiency and identify potential backlogs in incident resolution.",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = cases | bin _time span = 1d | alter date = format_timestamp(\"%Y/%m/%d %H:%M:%S\", _time) |comp sum(if(xdm.case.status_progress = \"Resolved\", 1, 0)) as Resolved_Cases by date | sort desc date\n\n| view graph type = line xaxis = date yaxis = Resolved_Cases font = \"Arial Black\" legendfontsize = 20 xaxistitle = \"Date\" yaxistitle = \"Cases closed\" ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "line",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "date"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Resolved_Cases"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "font",
+                                "value": "\"Arial Black\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legendfontsize",
+                                "value": "20"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxistitle",
+                                "value": "\"Date\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxistitle",
+                                "value": "\"Cases closed\""
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cases"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1770873129786",
+            "title": "Average MTTA",
+            "creation_time": 1771947008448,
+            "description": "This widget displays the average Mean Time to Acknowledge (MTTA) for security cases over the past 30 days, broken down by severity. This insight helps measure the security team's initial response efficiency and ensures critical alerts are being addressed promptly.",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = cases | filter ((`xdm.case.status_progress` not contains \"\"\"new\"\"\" )) | alter ack_time_in_days = timestamp_diff(_time, _insert_time  , \"DAY\") | comp avg(ceil(ack_time_in_days)) as MTTA_in_days by xdm.case.platform_severity | alter MTTA_in_days = round(MTTA_in_days) | sort asc xdm.case.platform_severity\n\n\n| view graph type = pie subtype = full xaxis = xdm.case.platform_severity yaxis = MTTA_in_days ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "full"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.case.platform_severity"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "MTTA_in_days"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cases"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1770869120502",
+            "title": "Analytics -Case resolution percentages",
+            "creation_time": 1771947010447,
+            "description": "This widget displays the percentage breakdown of case resolution reasons over the last 30 days. This data helps identify trends in alert outcomes, such as a high rate of false positives, to help teams optimize detection rules and improve SOC efficiency.",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = cases | comp count() as number_of_cases by xdm.case.status.resolution_reason\n\n| view graph type = pie subtype = full show_callouts = `true` xaxis = xdm.case.status.resolution_reason yaxis = number_of_cases ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "full"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.case.status.resolution_reason"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "number_of_cases"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cases"
+                ],
+                "query_uses_library": false
+            }
+        }
+    ],
+    "fromVersion": "6.10.0"
+}
