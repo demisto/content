@@ -29,6 +29,7 @@ BASE_URL: str = "https://services.nvd.nist.gov"  # disable-secrets-detection
 MAX_INDICATORS_WITHOUT_API_KEY = 40000
 MAX_INDICATORS_WITH_API_KEY = 200000
 DEFAULT_MANUAL_LIMIT = 50
+DEFAULT_MANUAL_HISTORY = "7 days"
 
 
 class Client(BaseClient):
@@ -872,7 +873,7 @@ def manual_get_indicators_command(client: Client) -> CommandResults:
     No state is persisted.
     """
     # --- Read command arguments ---
-    history_arg = demisto.getArg("history") or "7 days"
+    history_arg = demisto.getArg("history") or DEFAULT_MANUAL_HISTORY
     keyword = demisto.getArg("keyword") or ""
     limit = arg_to_number(demisto.getArg("limit")) or DEFAULT_MANUAL_LIMIT
 
