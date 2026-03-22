@@ -6122,9 +6122,9 @@ script:
         prettypredefined:
           Server Name: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
       - name: email_account_admins_enabled
-        type: bool
+        type: Boolean
         required: false
-        defaultValue: true
+        defaultValue: 'true'
         description: Send the alert to the account administrators.
         hidden: true
     outputs:
@@ -6215,6 +6215,7 @@ script:
         prettypredefined:
           DB Name: ${asset.xdm.asset.name}
       - name: state
+        type: String
         required: false
         defaultValue: Enabled
         description: Enable the transparent data encryption.
@@ -6252,15 +6253,15 @@ script:
         prettypredefined:
         Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
       - name: enable_purge_protection
-        type: bool
+        type: Boolean
         required: false
-        defaultValue: true
+        defaultValue: 'true'
         description: Enabled protection against purge for this vault.
         hidden: true
       - name: enable_soft_delete
-        type: bool
+        type: Boolean
         required: false
-        defaultValue: true
+        defaultValue: 'true'
         description: Enabled soft delete for this key vault.
         hidden: true
     outputs:
@@ -6367,9 +6368,9 @@ script:
         prettypredefined:
           AZ Webapp: ${asset.xdm.asset.name}
       - name: https_only
-        type: String
+        type: Boolean
         required: false
-        defaultValue: true
+        defaultValue: 'true'
         description: Configures the web site to accept only https requests.
         hidden: true
     outputs:
@@ -6513,12 +6514,6 @@ script:
       - contextPath: Azure.WebApp.properties.siteConfig.requestTracingExpirationTime
         description: Request tracing expiration time.
         type: DateTime
-      - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled
-        description: Whether remote debugging is enabled.
-        type: Boolean
-      - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingVersion
-        description: Remote debugging version.
-        type: String
       - contextPath: Azure.WebApp.properties.siteConfig.defaultDocuments
         description: List of default documents.
       - contextPath: Azure.WebApp.properties.siteConfig.virtualApplications
@@ -6533,9 +6528,6 @@ script:
       - contextPath: Azure.WebApp.properties.siteConfig.autoSwapSlotName
         description: Auto-swap slot name.
         type: String
-      - contextPath: Azure.WebApp.properties.siteConfig.localMySqlEnabled
-        description: Whether local MySQL is enabled.
-        type: Boolean
       - contextPath: Azure.WebApp.properties.siteConfig.ipSecurityRestrictions
         description: IP security restrictions.
       - contextPath: Azure.WebApp.properties.siteConfig.scmIpSecurityRestrictions
@@ -6551,29 +6543,6 @@ script:
         description: API definition settings.
       - contextPath: Azure.WebApp.properties.siteConfig.apiManagementConfig
         description: API management configuration.
-      - contextPath: Azure.WebApp.properties.siteConfig.autoHealEnabled
-        description: Whether auto-heal is enabled.
-        type: Boolean
-      - contextPath: Azure.WebApp.properties.siteConfig.autoHealRules
-        description: Auto-heal rules configuration.
-      - contextPath: Azure.WebApp.properties.siteConfig.tracingOptions
-        description: Tracing options.
-        type: String
-      - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled
-        description: Whether remote debugging is enabled.
-        type: Boolean
-      - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingVersion
-        description: Remote debugging version.
-        type: String
-      - contextPath: Azure.WebApp.properties.siteConfig.detailedErrorLoggingEnabled
-        description: Whether detailed error logging is enabled.
-        type: Boolean
-      - contextPath: Azure.WebApp.properties.siteConfig.httpLoggingEnabled
-        description: Whether HTTP logging is enabled.
-        type: Boolean
-      - contextPath: Azure.WebApp.properties.siteConfig.requestTracingEnabled
-        description: Whether request tracing is enabled.
-        type: Boolean
 
   - name: azure-cosmos-db-disable-key-quick-action
     description: Disables key-based write access for Cosmos DB metadata to enhance security.
@@ -6606,9 +6575,9 @@ script:
         prettypredefined:
           CosmosDB Name: ${asset.xdm.asset.name}
       - name: disable_key_based_metadata_write_access
-        type: String
+        type: Boolean
         required: false
-        defaultValue: true
+        defaultValue: 'true'
         description: Disable write operations on metadata resources via account keys.
         hidden: true
     outputs:
@@ -6775,9 +6744,9 @@ script:
         prettypredefined:
           AZ Webapp: ${asset.xdm.asset.name}
       - name: client_cert_enabled
-        type: bool
+        type: Boolean
         required: false
-        defaultValue: true
+        defaultValue: 'true'
         description: Enable client certificate authentication.
         hidden: true
     outputs:
@@ -6921,12 +6890,6 @@ script:
       - contextPath: Azure.WebApp.properties.siteConfig.requestTracingExpirationTime
         description: Request tracing expiration time.
         type: DateTime
-      - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled
-        description: Whether remote debugging is enabled.
-        type: Boolean
-      - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingVersion
-        description: Remote debugging version.
-        type: String
       - contextPath: Azure.WebApp.properties.siteConfig.defaultDocuments
         description: List of default documents.
       - contextPath: Azure.WebApp.properties.siteConfig.virtualApplications
@@ -6941,9 +6904,6 @@ script:
       - contextPath: Azure.WebApp.properties.siteConfig.autoSwapSlotName
         description: Auto-swap slot name.
         type: String
-      - contextPath: Azure.WebApp.properties.siteConfig.localMySqlEnabled
-        description: Whether local MySQL is enabled.
-        type: Boolean
       - contextPath: Azure.WebApp.properties.siteConfig.ipSecurityRestrictions
         description: IP security restrictions.
       - contextPath: Azure.WebApp.properties.siteConfig.scmIpSecurityRestrictions
@@ -6959,29 +6919,6 @@ script:
         description: API definition settings.
       - contextPath: Azure.WebApp.properties.siteConfig.apiManagementConfig
         description: API management configuration.
-      - contextPath: Azure.WebApp.properties.siteConfig.autoHealEnabled
-        description: Whether auto-heal is enabled.
-        type: Boolean
-      - contextPath: Azure.WebApp.properties.siteConfig.autoHealRules
-        description: Auto-heal rules configuration.
-      - contextPath: Azure.WebApp.properties.siteConfig.tracingOptions
-        description: Tracing options.
-        type: String
-      - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled
-        description: Whether remote debugging is enabled.
-        type: Boolean
-      - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingVersion
-        description: Remote debugging version.
-        type: String
-      - contextPath: Azure.WebApp.properties.siteConfig.detailedErrorLoggingEnabled
-        description: Whether detailed error logging is enabled.
-        type: Boolean
-      - contextPath: Azure.WebApp.properties.siteConfig.httpLoggingEnabled
-        description: Whether HTTP logging is enabled.
-        type: Boolean
-      - contextPath: Azure.WebApp.properties.siteConfig.requestTracingEnabled
-        description: Whether request tracing is enabled.
-        type: Boolean
 
   - arguments:
     - name: subscription_id
