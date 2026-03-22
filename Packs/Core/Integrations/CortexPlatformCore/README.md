@@ -102,7 +102,7 @@ Multiple filter arguments will be concatenated using the AND operator, while arg
 | severity | The severity of the issue. Accepts a comma-separated list. Possible values are: low, medium, high, critical. | Optional |
 | custom_filter | A custom filter. When using this argument, other filter arguments are not relevant. example: <br/>`{<br/>                "OR": [<br/>                    {<br/>                        "SEARCH_FIELD": "actor_process_command_line",<br/>                        "SEARCH_TYPE": "EQ",<br/>                        "SEARCH_VALUE": "path_to_file"<br/>                    }<br/>                ]<br/>            }`. | Optional |
 | Identity_type | Account type. Accepts a comma-separated list. Possible values are: ANONYMOUS, APPLICATION, COMPUTE, FEDERATED_IDENTITY, SERVICE, SERVICE_ACCOUNT, TEMPORARY_CREDENTIALS, TOKEN, UNKNOWN, USER. | Optional |
-| agent_id | A unique identifier per agent. Accepts a comma-separated list. | Optional |
+| endpoint_id | A unique identifier per endpoint. Accepts a comma-separated list. | Optional |
 | action_external_hostname | The hostname to connect to. In case of a proxy connection, this value will differ from action_remote_ip. Accepts a comma-separated list. | Optional |
 | rule_id | A string identifying the user rule. Accepts a comma-separated list. | Optional |
 | rule_name | The name of the user rule. Accepts a comma-separated list. | Optional |
@@ -158,7 +158,7 @@ Multiple filter arguments will be concatenated using the AND operator, while arg
 | Core.Issue.issue_name | String | The name of the issue. |
 | Core.Issue.issue_category | String | The category of the issue. |
 | Core.Issue.issue_description | String | The issue description. |
-| Core.Issue.agent_id | List | The agent \(endpoint\) IDs associated with the issue. |
+| Core.Issue.endpoint_id | List | The endpoint IDs associated with the issue. |
 | Core.Issue.asset_ids | List | The asset IDs related to the issue. |
 | Core.Issue.severity | String | The severity of the issue. |
 | Core.Issue.issue_domain | String | The domain of the issue. |

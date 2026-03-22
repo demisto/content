@@ -10,7 +10,7 @@ OUTPUT_KEYS = [
     "issue_name",
     "issue_source",
     "case_ids",
-    "agent_id",
+    "endpoint_id",
     "actor_process_image_sha256",
     "causality_actor_process_image_sha256",
     "action_process_image_sha256",

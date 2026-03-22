@@ -446,9 +446,9 @@ script:
             - TOKEN
             - UNKNOWN
             - USER
-        - description: A unique identifier per agent. Accepts a comma-separated list.
+        - description: A unique identifier per endpoint. Accepts a comma-separated list.
           isArray: true
-          name: agent_id
+          name: endpoint_id
         - description: The hostname to connect to. In case of a proxy connection, this value will differ from action_remote_ip. Accepts a comma-separated list.
           isArray: true
           name: action_external_hostname
@@ -716,8 +716,8 @@ script:
         - contextPath: Core.Issue.issue_description
           description: The issue description.
           type: String
-        - contextPath: Core.Issue.agent_id
-          description: The agent (endpoint) ID associated with the issue.
+        - contextPath: Core.Issue.endpoint_id
+          description: The endpoint ID associated with the issue.
           type: List
         - contextPath: Core.Issue.asset_ids
           description: The asset IDs related to the issue.

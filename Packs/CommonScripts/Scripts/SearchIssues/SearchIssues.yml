@@ -180,8 +180,8 @@ outputs:
   - contextPath: Core.Issue.issue_source
     description: The source of the issue.
     type: String
-  - contextPath: Core.Issue.agent_id
-    description: The agent (endpoint) ID associated with the issue.
+  - contextPath: Core.Issue.endpoint_id
+    description: The endpoint ID associated with the issue.
     type: List
   - contextPath: Core.Issue.status.progress
     description: The progress status of the issue.
