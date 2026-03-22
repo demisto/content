@@ -29,7 +29,7 @@ configuration:
   defaultvalue: false
   type: 8
   section: Connect
-  additionalinfo: "Select this option to use OAuth 2.0 Authorization Code flow for authentication instead of username/password."
+  additionalinfo: "Select this option to use an OAuth 2.0 'Authorization Code' instead of username/password."
 - name: credentials
   display: User Name
   required: false
@@ -2359,11 +2359,11 @@ script:
     description: Adds attachments to an existing BMC Helix ITSM ticket. Supports adding attachments to incident, change request, service request, task, problem investigation, known error, and work order forms.
     arguments:
     - name: entry_ids
-      description: A comma-separated list of XSOAR War Room entry IDs for the files to attach (e.g., "12@34,56@78").
+      description: A comma-separated list of Cortex XSOAR War Room entry IDs for the files to attach (for example, "12@34,56@78").
       required: true
       isArray: true
     - name: entry_type
-      description: The type of the BMC Helix ITSM ticket to add the attachment to.
+      description: The type of BMC Helix ITSM ticket to add the attachment to.
       required: true
       auto: PREDEFINED
       predefined:
@@ -2386,7 +2386,7 @@ script:
       defaultValue: ""
     outputs: []
   - name: bmc-itsm-generate-login-url
-    description: Generate the login URL used for the OAuth 2.0 Authorization Code flow. Follow the URL to obtain an authorization code, then paste it into the instance configuration 'Authorization Code' field.
+    description: Generates the login URL used for the OAuth 2.0 authorization code. Follow the URL to obtain an authorization code, then paste it into the integration instance settings 'Authorization Code' field.
     arguments: []
     outputs: []
   isfetch: true
