@@ -64,7 +64,7 @@ configuration:
   section: Collect
 - name: max_indicators
   display: Max Indicators Per Fetch
-  additionalinfo: The maximum number of indicators to fetch per interval. A lower value prevents timeouts during initial syncs with large lookback windows. The fetch will automatically resume from where it left off in the next interval. Without an API key, the recommended maximum is 40000. With an API key, the recommended maximum is 200000.
+  additionalinfo: The maximum number of indicators to fetch in a single interval. While not a strict limit, a lower value helps prevent timeouts during initial syncs with large lookback windows. The fetch will automatically resume from where it left off in the next interval. If you experience timeouts, reduce this value. Recommended maximum 40,000 (without API key) or 200,000 (with API key).
   defaultvalue: '10000'
   required: true
   type: 0
@@ -80,6 +80,13 @@ configuration:
   defaultvalue: "false"
   display: Return Known Exploited Vulnerabilities (KEV) only.
   name: hasKev
+  required: false
+  type: 8
+  section: Collect
+- additionalinfo: When enabled, CVEs with a REJECTED status are included in the feed. By default, rejected CVEs are excluded because they have no CVSS scores or useful threat intelligence data.
+  defaultvalue: "false"
+  display: Include Rejected CVEs
+  name: include_rejected
   required: false
   type: 8
   section: Collect
@@ -173,7 +180,7 @@ configuration:
   type: 15
   required: false
   section: Connect
-description: "This feed pulls CVE information from the NIST National Vulnerability Database using v2.0 of the API.\n\nRejected CVEs are not ingested as part of this integration.\n\nThis integration/feed deprecates the original National Vulnerability Database Feed integraiton as v1.0 of the API is being sunsetted in 2023."
+description: "This feed pulls CVE information from the NIST National Vulnerability Database using v2.0 of the API.\n\nBy default, CVEs with a REJECTED status are excluded. Enable 'Include Rejected CVEs' to ingest them.\n\nThis integration/feed deprecates the original National Vulnerability Database Feed integraiton as v1.0 of the API is being sunsetted in 2023."
 display: National Vulnerability Database Feed v2
 image: ''
 name: FeedNVDv2
@@ -204,7 +211,7 @@ script:
       - LOW
     - auto: PREDEFINED
       name: cvss_versions
-      description: Override the instance-level CVSS Versions for this command. Comma-separated list.
+      description: Override the instance-level CVSS Versions for this command. Comma-separated list. Note that the CVSS SeverityFilter only filters on Primary scores.
       isArray: true
       predefined:
       - CVSS v4

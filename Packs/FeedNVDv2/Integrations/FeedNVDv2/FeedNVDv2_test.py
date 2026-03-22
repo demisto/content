@@ -10,6 +10,7 @@ from FeedNVDv2 import (
     _fetch_cves_in_windows,
     _ingest_batch,
     _resolve_auto_fetch_window,
+    _retrieve_cves_single_query,
     _select_primary_cvss_entry,
     build_indicators,
     calculate_dbotscore,
@@ -19,6 +20,7 @@ from FeedNVDv2 import (
     parse_cpe_command,
     retrieve_cves,
 )
+from datetime import UTC
 
 BASE_URL = "https://services.nvd.nist.gov"  # disable-secrets-detection
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
@@ -321,40 +323,22 @@ def test_resolve_auto_fetch_window_resume(client):
         assert use_pub_date is True
 
 
-def test_ingest_batch_within_limit(client):
+def test_ingest_batch_creates_indicators(client):
     """
     Given:
-        A batch of raw CVEs within the per-fetch indicator limit.
+        A batch of raw CVEs.
 
     When:
         _ingest_batch is called.
 
     Then:
-        All indicators are created and fetch_limit_reached is False.
+        All indicators are created and the count is returned.
     """
     raw_cves = open_json("./test_data/nist_response.json")["vulnerabilities"]
     with patch("FeedNVDv2.demisto") as demisto_mock:
-        created, exhausted = _ingest_batch(client, raw_cves, total_so_far=0, max_indicators=10000)
+        created = _ingest_batch(client, raw_cves)
         assert created == len(raw_cves)
-        assert exhausted is False
         assert demisto_mock.createIndicators.called
-
-
-def test_ingest_batch_exceeds_limit(client):
-    """
-    Given:
-        A batch of raw CVEs and 0 remaining capacity.
-
-    When:
-        _ingest_batch is called with total_so_far >= max_indicators.
-
-    Then:
-        No indicators are created and fetch_limit_reached is True.
-    """
-    raw_cves = open_json("./test_data/nist_response.json")["vulnerabilities"]
-    created, exhausted = _ingest_batch(client, raw_cves, total_so_far=10000, max_indicators=10000)
-    assert created == 0
-    assert exhausted is True
 
 
 def test_ingest_batch_empty(client):
@@ -366,11 +350,10 @@ def test_ingest_batch_empty(client):
         _ingest_batch is called.
 
     Then:
-        Returns 0 created and fetch_limit_reached=False.
+        Returns 0 created.
     """
-    created, exhausted = _ingest_batch(client, [], total_so_far=0, max_indicators=10000)
+    created = _ingest_batch(client, [])
     assert created == 0
-    assert exhausted is False
 
 
 def test_fetch_cves_in_windows_caps_results(client):
@@ -690,3 +673,59 @@ def test_cves_to_war_room_falls_back_without_matched_version():
     assert len(outputs) == 1
     assert outputs[0]["CVSS"] == 9.8, "Expected v3 score (9.8) as fallback"
     assert outputs[0]["CVSSVersion"] == "3.1"
+
+
+def test_include_rejected_false_adds_no_rejected_param(client):
+    """
+    Given:
+        A Client with include_rejected=False (the default).
+
+    When:
+        _retrieve_cves_single_query is called.
+
+    Then:
+        The NVD API is called with the noRejected flag in the query string.
+    """
+    from datetime import datetime
+    from unittest.mock import patch
+
+    client.include_rejected = False
+    start = datetime(2024, 1, 1, tzinfo=UTC)
+    end = datetime(2024, 1, 2, tzinfo=UTC)
+
+    with patch("FeedNVDv2.Client.get_cves") as mock_get_cves:
+        mock_get_cves.return_value = {"vulnerabilities": [], "totalResults": 0, "resultsPerPage": 2000, "startIndex": 0}
+        _retrieve_cves_single_query(client, start, end, use_pub_date=True)
+
+    # get_cves signature: get_cves(path, params, severity_param="", severity_value="")
+    # params is the second positional argument → call_args.args[1]
+    params: dict = mock_get_cves.call_args.args[1]
+    assert "noRejected" in params, "noRejected should be present when include_rejected=False"
+
+
+def test_include_rejected_true_omits_no_rejected_param(client):
+    """
+    Given:
+        A Client with include_rejected=True.
+
+    When:
+        _retrieve_cves_single_query is called.
+
+    Then:
+        The NVD API is called WITHOUT the noRejected flag so rejected CVEs are returned.
+    """
+    from datetime import datetime
+    from unittest.mock import patch
+
+    client.include_rejected = True
+    start = datetime(2024, 1, 1, tzinfo=UTC)
+    end = datetime(2024, 1, 2, tzinfo=UTC)
+
+    with patch("FeedNVDv2.Client.get_cves") as mock_get_cves:
+        mock_get_cves.return_value = {"vulnerabilities": [], "totalResults": 0, "resultsPerPage": 2000, "startIndex": 0}
+        _retrieve_cves_single_query(client, start, end, use_pub_date=True)
+
+    # get_cves signature: get_cves(path, params, severity_param="", severity_value="")
+    # params is the second positional argument → call_args.args[1]
+    params: dict = mock_get_cves.call_args.args[1]
+    assert "noRejected" not in params, "noRejected should be absent when include_rejected=True"
