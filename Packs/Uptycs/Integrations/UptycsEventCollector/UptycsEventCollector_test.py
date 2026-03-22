@@ -12,6 +12,7 @@ from typing import Any
 
 import pytest
 from CommonServerPython import *
+from ContentClientApiModule import ContentClientAuthenticationError
 
 import UptycsEventCollector  # noqa: E402
 from UptycsEventCollector import (  # noqa: E402
@@ -620,6 +621,7 @@ def test_fetch_events_with_pagination_single_page(mocker, client: Client):
 
 def test_fetch_events_with_pagination_multiple_pages(mocker, client: Client):
     """Tests fetch_events_with_pagination handles multiple pages."""
+    mocker.patch.object(Config, "MAX_PAGE_SIZE", 3)
     page1 = [{"id": f"event{i}", "createdAt": f"2024-01-0{i}T00:00:00Z"} for i in range(1, 4)]
     page2 = [{"id": f"event{i}", "createdAt": f"2024-01-0{i}T00:00:00Z"} for i in range(4, 6)]
 
@@ -640,6 +642,7 @@ def test_fetch_events_with_pagination_multiple_pages(mocker, client: Client):
 
 def test_fetch_events_with_pagination_stops_at_max(mocker, client: Client):
     """Tests fetch_events_with_pagination stops at max_events."""
+    mocker.patch.object(Config, "MAX_PAGE_SIZE", 5)
     page1 = [{"id": f"event{i}", "createdAt": f"2024-01-{i:02d}T00:00:00Z"} for i in range(1, 6)]
     page2 = [{"id": f"event{i}", "createdAt": f"2024-01-{i:02d}T00:00:00Z"} for i in range(6, 9)]
 
@@ -685,6 +688,7 @@ def test_fetch_events_with_pagination_sorts_by_created_at(mocker, client: Client
 
 def test_fetch_events_with_pagination_slices_excess_events(mocker, client: Client):
     """Tests fetch_events_with_pagination slices excess events."""
+    mocker.patch.object(Config, "MAX_PAGE_SIZE", 10)
     page1 = [{"id": f"event{i}", "createdAt": f"2024-01-{i:02d}T00:00:00Z"} for i in range(1, 11)]
     page2 = [{"id": f"event{i}", "createdAt": f"2024-01-{i:02d}T00:00:00Z"} for i in range(11, 16)]
 

@@ -176,10 +176,3 @@ Gets alerts from Uptycs. This command is intended for developing and debugging a
 ```
 !uptycs-get-events start_time="1 hour ago" limit=10 should_push_events=false
 ```
-
-## Additional Resources
-
-For more information about the Uptycs platform, refer to the official Uptycs documentation:
-
-- [Uptycs Documentation](https://docs.uptycs.io/)
-- [Uptycs API Reference](https://docs.uptycs.io/api/)
