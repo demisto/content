@@ -4414,6 +4414,7 @@ def check_auth_params(auth_client: AuthClient):
     if auth_client._use_oauth:
         if not auth_client._rsso_url or not auth_client._client_id or not auth_client._redirect_uri or not auth_client._auth_code:
             return_error(
+                "OAuth is enabled but some required parameters are missing"
                 "Please provide Client ID, OpenID Issuer URL, Redirect URI and Authorization code."
                 "Retrieve Authorization code by running bmc-itsm-generate-login-url"
             )
@@ -4538,11 +4539,11 @@ def main() -> None:
     proxy = params.get("proxy", False)
 
     # OAuth parameters
-    use_oauth = params.get("use_oauth", False)
+    use_oauth = argToBoolean(params.get("use_oauth", False))
     oauth_credentials = params.get("credentials_oauth2", {})
     client_id = oauth_credentials.get("identifier", "")
     redirect_uri = params.get("redirect_uri", "")
-    auth_code = params.get("auth_code", "")
+    auth_code = params.get("auth_code", {}).get("password", "")
     rsso_url = params.get("rsso_url", "")
 
     # Basic auth credentials

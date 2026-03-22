@@ -26,7 +26,7 @@ configuration:
 - name: use_oauth
   display: Use OAuth
   required: false
-  defaultvalue: false
+  defaultvalue: "false"
   type: 8
   section: Connect
   additionalinfo: "Select this option to use an OAuth 2.0 'Authorization Code' instead of username/password."
@@ -41,7 +41,7 @@ configuration:
 - display: Client ID
   name: credentials_oauth2
   type: 9
-  displaypassword: Client Secret
+  hiddenpassword: true
   section: Connect
   required: false
   additionalinfo: "Required when 'Use OAuth' is selected."
@@ -52,9 +52,10 @@ configuration:
   section: Connect
   additionalinfo: "Required when 'Use OAuth' is selected."
 - name: auth_code
-  display: Authorization Code
+  displaypassword: Authorization Code
+  hiddenusername: true
   required: false
-  type: 4
+  type: 9
   section: Connect
   additionalinfo: "Obtained by running the !bmc-itsm-generate-login-url command and following the URL. Required when 'Use OAuth' is selected."
 - name: max_fetch
@@ -224,7 +225,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.12.6204436
+  dockerimage: demisto/python3:3.12.13.7444307
   commands:
   - name: bmc-itsm-user-list
     description: Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one performs a `LIKE` operation, and multiple filters are combined using the `AND` operator. To view the full JSON response, add raw_response=true to the end of the command.
