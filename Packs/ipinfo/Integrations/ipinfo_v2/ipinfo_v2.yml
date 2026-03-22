@@ -47,7 +47,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: 'Use the IPinfo.io API to get data about an IP address. We support all plan types: Lite, Plus, Core, Enterprise. The response from the API will match your plan type.'
+description: 'Use the IPinfo.io API to get data about an IP address. We support all plan types: Lite, Core, Plus, Max, Enterprise. The response from the API will match your plan type.'
 display: IPinfo v2
 name: ipinfo_v2
 script:
