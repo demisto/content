@@ -58,7 +58,7 @@ Manually retrieve CVEs from NVD using the history parameter for the duration bac
 
 #### Base Command
 
-`nvd-get-indicators`
+`!nvd-get-indicators history="7 days"`
 
 #### Input
 
