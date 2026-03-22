@@ -4405,7 +4405,7 @@ def test_nsg_security_group_create_command(mocker, client, mock_params):
 
     result = nsg_security_group_create_command(client=client, params=mock_params, args=args)
 
-    assert result.outputs_prefix == "Azure.NSGSecurityGroup"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.SecurityGroups"
     assert result.outputs_key_field == "id"
     assert result.outputs == {
         "name": "test-nsg",
