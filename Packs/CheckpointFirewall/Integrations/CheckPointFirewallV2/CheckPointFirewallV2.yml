@@ -2424,7 +2424,6 @@ script:
       name: session_id
     - description: The number of the port used to provide this service. To specify a port range, place a hyphen between the lowest and highest port numbers (for example, 44-55).
       name: port
-      required: true
     - description: Comments string.
       name: comments
     - auto: PREDEFINED
@@ -2513,8 +2512,6 @@ script:
     - defaultValue: None
       description: Executes the command with the specified session ID.
       name: session_id
-    - description: The number of the port used to provide this service.
-      name: port
     - description: ICMP type as listed in RFC 792.
       name: icmp_type
       required: true
@@ -2563,8 +2560,6 @@ script:
       - red
       - sienna
       - yellow
-    - description: Time (in seconds) before the session times out.
-      name: session_timeout
     - description: Collection of tag identifiers.
       isArray: true
       name: tags
@@ -2796,8 +2791,6 @@ script:
       name: session_id
     - description: New name of the object.
       name: new_identifier
-    - description: The number of the port used to provide this service.
-      name: port
     - description: ICMP type as listed in RFC 792.
       name: icmp_type
     - description: ICMP code as listed in RFC 792.
@@ -3021,9 +3014,13 @@ script:
     - description: Name of the package.
       name: package
       required: true
-    - description: 'Position in the rulebase. Can be a number or one of: top, bottom.'
+    - description: Position in the rulebase.
       name: position
       required: true
+      auto: PREDEFINED
+      predefined:
+      - 'top'
+      - 'bottom'
     - description: Rule name.
       name: name
     - description: Original source object.
@@ -3199,12 +3196,6 @@ script:
     - defaultValue: None
       description: Executes the command with the specified session ID.
       name: session_id
-    - auto: PREDEFINED
-      description: Whether to ignore warnings when deleting the NAT rule.
-      name: ignore_warnings
-      predefined:
-      - 'true'
-      - 'false'
     description: Delete a NAT rule.
     name: checkpoint-nat-rule-delete
     outputs: []

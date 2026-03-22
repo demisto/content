@@ -520,24 +520,18 @@ class Client(BaseClient):
         self,
         identifier: str,
         icmp_type: int,
-        port: Optional[str] = None,
         icmp_code: Optional[int] = None,
         comments: Optional[str] = None,
         color: Optional[str] = None,
-        session_timeout: Optional[int] = None,
         tags: Optional[list] = None,
     ):
         body: dict = {"name": identifier, "icmp-type": icmp_type}
-        if port:
-            body["port"] = port
         if icmp_code is not None:
             body["icmp-code"] = icmp_code
         if comments:
             body["comments"] = comments
         if color:
             body["color"] = color
-        if session_timeout is not None:
-            body["session-timeout"] = session_timeout
         if tags:
             body["tags"] = tags
         return self._http_request(method="POST", url_suffix="add-service-icmp", headers=self.headers, json_data=body)
@@ -590,7 +584,6 @@ class Client(BaseClient):
         self,
         identifier: str,
         new_identifier: Optional[str] = None,
-        port: Optional[str] = None,
         icmp_type: Optional[int] = None,
         icmp_code: Optional[int] = None,
         comments: Optional[str] = None,
@@ -600,8 +593,6 @@ class Client(BaseClient):
         body: dict = {"name": identifier}
         if new_identifier:
             body["new-name"] = new_identifier
-        if port:
-            body["port"] = port
         if icmp_type is not None:
             body["icmp-type"] = icmp_type
         if icmp_code is not None:
@@ -718,10 +709,8 @@ class Client(BaseClient):
             body["tags"] = tags
         return self._http_request(method="POST", url_suffix="set-nat-rule", headers=self.headers, json_data=body)
 
-    def delete_nat_rule(self, identifier: int, package: str, ignore_warnings: Optional[bool] = None):
+    def delete_nat_rule(self, identifier: int, package: str):
         body: dict = {"rule-number": identifier, "package": package}
-        if ignore_warnings is not None:
-            body["ignore-warnings"] = ignore_warnings
         return self._http_request(method="POST", url_suffix="delete-nat-rule", headers=self.headers, json_data=body)
 
     def show_task(self, task_id):
@@ -3024,11 +3013,9 @@ def checkpoint_icmp_service_add_command(
     client: Client,
     identifier: str,
     icmp_type: str,
-    port: str = None,
     icmp_code: str = None,
     comments: str = None,
     color: str = None,
-    session_timeout: str = None,
     tags=None,
 ) -> CommandResults:
     """
@@ -3038,11 +3025,9 @@ def checkpoint_icmp_service_add_command(
         client (Client): CheckPoint client.
         identifier (str): Object name. Must be unique in the domain.
         icmp_type (str): ICMP type as listed in RFC 792.
-        port (str): The number of the port used to provide this service.
         icmp_code (str): ICMP code as listed in RFC 792.
         comments (str): Comments string.
         color (str): Color of the object.
-        session_timeout (str): Time (in seconds) before the session times out.
         tags: Collection of tag identifiers.
     """
     tags = argToList(tags)
@@ -3050,11 +3035,9 @@ def checkpoint_icmp_service_add_command(
     result = client.add_service_icmp(
         identifier=identifier,
         icmp_type=arg_to_number(icmp_type),
-        port=port,
         icmp_code=arg_to_number(icmp_code),
         comments=comments,
         color=color,
-        session_timeout=arg_to_number(session_timeout),
         tags=tags or None,
     )
 
@@ -3207,7 +3190,6 @@ def checkpoint_icmp_service_update_command(
     client: Client,
     identifier: str,
     new_identifier: str = None,
-    port: str = None,
     icmp_type: str = None,
     icmp_code: str = None,
     comments: str = None,
@@ -3233,7 +3215,6 @@ def checkpoint_icmp_service_update_command(
     result = client.update_service_icmp(
         identifier=identifier,
         new_identifier=new_identifier,
-        port=port,
         icmp_type=arg_to_number(icmp_type),
         icmp_code=arg_to_number(icmp_code),
         comments=comments,
@@ -3384,7 +3365,7 @@ def checkpoint_nat_rule_add_command(
     Args:
         client (Client): CheckPoint client.
         package (str): Name of the package.
-        position (str): Position in the rulebase. Can be a number or 'top'/'bottom'.
+        position (str): Position in the rulebase. Can be 'top'/'bottom'.
         name (str): Rule name.
         original_source (str): Original source.
         original_destination (str): Original destination.
@@ -3401,17 +3382,9 @@ def checkpoint_nat_rule_add_command(
     install_on = argToList(install_on)
     tags = argToList(tags)
 
-    # Convert position to int if it's numeric, otherwise keep as string (top/bottom)
-    position_value: Union[int, str]
-    numeric_position = arg_to_number(position, required=False)
-    if numeric_position is not None:
-        position_value = numeric_position
-    else:
-        position_value = position
-
     result = client.add_nat_rule(
         package=package,
-        position=position_value,
+        position=position,
         name=name,
         original_source=original_source,
         original_destination=original_destination,
@@ -3500,8 +3473,7 @@ def checkpoint_nat_rule_update_command(
 
 
 def checkpoint_nat_rule_delete_command(
-    client: Client, identifier: str, package: str, ignore_warnings: Union[bool, str] = None
-) -> CommandResults:
+    client: Client, identifier: str, package: str) -> CommandResults:
     """
     Delete a NAT rule.
 
@@ -3516,7 +3488,6 @@ def checkpoint_nat_rule_delete_command(
     client.delete_nat_rule(
         identifier=rule_number,
         package=package,
-        ignore_warnings=argToBoolean(ignore_warnings) if ignore_warnings else None,
     )
 
     return CommandResults(
