@@ -57,7 +57,7 @@ tasks:
         simple: URL.Data
       stringify: {}
       value:
-        simple: http://www.pdf995.com/samples/pdf.pdf
+        simple: http://www.pdf995.com/samples/pdf.pdf,https://wildfire.paloaltonetworks.com/publicapi/test/pe
     separatecontext: false
     view: |-
       {
