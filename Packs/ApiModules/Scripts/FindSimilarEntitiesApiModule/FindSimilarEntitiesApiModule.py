@@ -312,6 +312,7 @@ class Transformer:
         demisto.debug(f"Calculating similarity of field {self.field} with function {scoring_function.__name__}")
         dist = scoring_function(X_vect, entity_vect)
         self.entities_df[f"similarity {self.field}"] = np.round(dist, 2)
+        demisto.debug(f"Similarity scores for field '{self.field}': {self.entities_df[f'similarity {self.field}'].tolist()}")
         return self.entities_df
 
 
@@ -458,6 +459,7 @@ class Model:
             ],
         ]
         self.entities_df[f"similarity {self.entity_name}"] = np.round(col.mean(axis=1), 2)
+        demisto.debug(f"Final similarity scores for {self.entity_name}: {self.entities_df[f'similarity {self.entity_name}'].tolist()}")
 
     def prepare_for_display(self):
         """
@@ -1557,6 +1559,7 @@ class SimilarIssueFinder(BaseSimilarEntityFinder):
         if not issue:
             return None, entity_id
 
+        demisto.debug(f"Extracted fields for current issue {entity_id}: {issue}")
         return issue, entity_id
 
     def get_all_entities(
@@ -1588,7 +1591,7 @@ class SimilarIssueFinder(BaseSimilarEntityFinder):
         base_args = {
             "start_time": from_date,
             "end_time": to_date,
-            "time_frame": "custom",
+            "time_frame": "custom"
         }
 
         custom_filter = self.custom_filter
@@ -1647,7 +1650,7 @@ class SimilarIssueFinder(BaseSimilarEntityFinder):
                 if len(batch_issues) < page_size:
                     break
 
-        demisto.debug(f"Total issues fetched: {len(all_issues)}")
+        demisto.debug(f"Total issues fetched for comparison: {len(all_issues)} using query: {base_args}")
         if not all_issues:
             msg += f"- 0 {self.entity_name}s fetched with these exact match for the given dates. \n"
             return None, msg
