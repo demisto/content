@@ -2281,34 +2281,34 @@ script:
         - usgovtexas
         - usgovvirginia
     outputs:
-      - contextPath: Azure.NSGSecurityGroup.name
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.name
         description: The security group's name.
         type: String
-      - contextPath: Azure.NSGSecurityGroup.id
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.id
         description: The security group's ID.
         type: String
-      - contextPath: Azure.NSGSecurityGroup.etag
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.etag
         description: The security group's ETag.
         type: String
-      - contextPath: Azure.NSGSecurityGroup.type
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.type
         description: Resource type.
         type: String
-      - contextPath: Azure.NSGSecurityGroup.location
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.location
         description: Resource location.
         type: String
-      - contextPath: Azure.NSGSecurityGroup.properties.provisioningState
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.provisioningState
         description: The provisioning state of the network security group resource.
         type: String
-      - contextPath: Azure.NSGSecurityGroup.properties.resourceGuid
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.resourceGuid
         description: The resource GUID property of the network security group resource.
         type: String
-      - contextPath: Azure.NSGSecurityGroup.properties.flushConnection
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.flushConnection
         description: When enabled, flows created from Network Security Group connections will be re-evaluated when rules are updates. Initial enablement will trigger re-evaluation.
         type: Boolean
-      - contextPath: Azure.NSGSecurityGroup.properties.securityRules
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.securityRules
         description: A collection of security rules of the network security group.
         type: Unknown
-      - contextPath: Azure.NSGSecurityGroup.properties.defaultSecurityRules
+      - contextPath: Azure.VirtualNetworks.SecurityGroups.properties.defaultSecurityRules
         description: A collection of the default security rules of the network security group.
         type: String
       

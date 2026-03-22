@@ -3955,7 +3955,7 @@ def nsg_security_group_create_command(client: AzureClient, params: dict[str, Any
     )
 
     return CommandResults(
-        outputs_prefix="Azure.NSGSecurityGroup",
+        outputs_prefix="Azure.VirtualNetworks.SecurityGroups",
         outputs_key_field="id",
         outputs=response,
         readable_output=hr,
