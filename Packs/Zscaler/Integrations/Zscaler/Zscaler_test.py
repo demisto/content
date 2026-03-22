@@ -64,6 +64,14 @@ def init_tests(mocker):
 
 
 def test_validate_urls_invalid(mocker):
+    """
+    Given:
+        - A list of URLs where two are invalid (non-FQDN / trailing dot) and one is valid
+    When:
+        - validate_urls is called with the list
+    Then:
+        - return_error is called exactly twice (once per invalid URL)
+    """
     return_error_mock = mocker.patch.object(CommonServerPython, "return_error")
     import Zscaler
 
@@ -73,7 +81,15 @@ def test_validate_urls_invalid(mocker):
 
 
 def test_url_command(mocker):
-    """url"""
+    """
+    Given:
+        - Two valid URLs to look up
+    When:
+        - url_lookup is called with a comma-separated URL string
+    Then:
+        - Two CommandResults objects are returned
+        - Each result has a URL indicator, a DBot score, urlClassifications output, and outputs_prefix 'Zscaler.URL'
+    """
     import Zscaler
 
     def validator(res):
@@ -99,7 +115,14 @@ def test_url_command(mocker):
 
 
 def test_url_fails_unknown_error_code(mocker, requests_mock):
-    """url"""
+    """
+    Given:
+        - The Zscaler urlLookup API returns HTTP 501
+    When:
+        - url_lookup is called
+    Then:
+        - An exception is raised containing the status code 501
+    """
     import Zscaler
 
     Zscaler.BASE_URL = "http://cloud/api/v1"
@@ -114,7 +137,16 @@ def test_url_fails_unknown_error_code(mocker, requests_mock):
 
 
 def test_url_command_with_urlClassificationsWithSecurityAlert(mocker):
-    """url"""
+    """
+    Given:
+        - A URL whose API response contains both urlClassifications and urlClassificationsWithSecurityAlert
+    When:
+        - url_lookup is called
+    Then:
+        - One CommandResults object is returned
+        - urlClassifications is 'MISCELLANEOUS_OR_UNKNOWN'
+        - urlClassificationsWithSecurityAlert is 'MALWARE_SITE'
+    """
     import Zscaler
 
     def validator(res):
@@ -136,7 +168,15 @@ def test_url_command_with_urlClassificationsWithSecurityAlert(mocker):
 
 
 def test_ip_command(mocker):
-    """ip"""
+    """
+    Given:
+        - An IP address to look up
+    When:
+        - ip_lookup is called
+    Then:
+        - Two CommandResults objects are returned
+        - Each result has an IP indicator, a DBot score, ipClassifications output, no urlClassifications, and outputs_prefix 'Zscaler.IP'
+    """
     import Zscaler
 
     def validator(res):
@@ -394,7 +434,14 @@ def test_domain_lookup_empty_classifications(mocker):
 
 
 def test_undo_blacklist_url_command(mocker):
-    """zscaler-undo-blacklist-url"""
+    """
+    Given:
+        - Two URLs currently on the blacklist
+    When:
+        - unblacklist_url is called with those URLs
+    Then:
+        - The command succeeds and returns the expected result
+    """
     import Zscaler
 
     run_command_test(
@@ -408,7 +455,14 @@ def test_undo_blacklist_url_command(mocker):
 
 
 def test_blacklist_url_command(mocker):
-    """zscaler-blacklist-url"""
+    """
+    Given:
+        - Two URLs to add to the blacklist
+    When:
+        - blacklist_url is called with those URLs
+    Then:
+        - The command succeeds and returns the expected result
+    """
     import Zscaler
 
     run_command_test(
@@ -421,7 +475,14 @@ def test_blacklist_url_command(mocker):
 
 
 def test_category_remove_url(mocker):
-    """zscaler-category-remove-url"""
+    """
+    Given:
+        - A category ID and a list of URLs to remove from it
+    When:
+        - category_remove is called with data_type='url'
+    Then:
+        - The command succeeds and returns the expected result
+    """
     import Zscaler
 
     run_command_test(
@@ -439,7 +500,14 @@ def test_category_remove_url(mocker):
 
 
 def test_category_remove_ip(mocker):
-    """zscaler-category-remove-ip"""
+    """
+    Given:
+        - A category ID and a list of IP addresses to remove from it
+    When:
+        - category_remove is called with data_type='ip'
+    Then:
+        - The command succeeds and returns the expected result
+    """
     import Zscaler
 
     run_command_test(
@@ -452,7 +520,14 @@ def test_category_remove_ip(mocker):
 
 
 def test_get_categories(mocker):
-    # zscaler-get-categories
+    """
+    Given:
+        - displayURL is set to 'true'
+    When:
+        - get_categories_command is called
+    Then:
+        - The command succeeds and returns the expected categories result
+    """
     import Zscaler
 
     run_command_test(
@@ -465,7 +540,14 @@ def test_get_categories(mocker):
 
 
 def test_get_categories_custom_only(mocker):
-    # zscaler-get-categories
+    """
+    Given:
+        - displayURL is set to 'true' and custom_only is True
+    When:
+        - get_categories_command is called
+    Then:
+        - The command succeeds and returns only custom categories
+    """
     import Zscaler
 
     run_command_test(
@@ -479,7 +561,16 @@ def test_get_categories_custom_only(mocker):
 
 @pytest.mark.parametrize("display_url, get_ids_and_names_only", [(False, True), (True, True)])
 def test_get_categories_ids_and_names_only(mocker, display_url, get_ids_and_names_only):
-    # zscaler-get-categories retrieve only categories IDs and names (without urls)
+    """
+    Given:
+        - get_ids_and_names_only is True
+        - Case A: displayURL is False
+        - Case B: displayURL is True
+    When:
+        - get_categories_command is called
+    Then:
+        - Only category IDs and names are returned (no URL lists)
+    """
     import Zscaler
 
     run_command_test(
@@ -492,7 +583,14 @@ def test_get_categories_ids_and_names_only(mocker, display_url, get_ids_and_name
 
 
 def test_url_quota_command(mocker):
-    # zscaler-url-quota
+    """
+    Given:
+        - No arguments
+    When:
+        - url_quota_command is called
+    Then:
+        - The command succeeds and returns the expected URL quota result
+    """
     import Zscaler
 
     run_command_test(
@@ -505,7 +603,14 @@ def test_url_quota_command(mocker):
 
 
 def test_get_blacklist(mocker):
-    # zscaler-get-blacklist
+    """
+    Given:
+        - No filter or query arguments
+    When:
+        - get_blacklist is called
+    Then:
+        - The full blacklist is returned as expected
+    """
     import Zscaler
 
     run_command_test(
@@ -614,7 +719,14 @@ def test_get_blacklist_query_and_filter(requests_mock):
 
 
 def test_get_whitelist(mocker):
-    # zscaler-get-whitelist
+    """
+    Given:
+        - No arguments
+    When:
+        - get_whitelist is called
+    Then:
+        - The full whitelist is returned as expected
+    """
     import Zscaler
 
     run_command_test(
@@ -832,7 +944,14 @@ def test_logout_command__context_expired(mocker):
 
 
 def test_get_users_command(mocker):
-    """zscaler-get-users"""
+    """
+    Given:
+        - pageSize is set to '100'
+    When:
+        - get_users_command is called
+    Then:
+        - The command succeeds and returns the expected list of users
+    """
     import Zscaler
 
     run_command_test(
@@ -845,7 +964,14 @@ def test_get_users_command(mocker):
 
 
 def test_set_user_command(mocker):
-    """zscaler-update-user"""
+    """
+    Given:
+        - A user ID and a JSON payload with updated user fields
+    When:
+        - set_user_command is called
+    Then:
+        - The command succeeds and returns the expected updated user result
+    """
     import Zscaler
 
     user_json = """{
@@ -867,7 +993,14 @@ def test_set_user_command(mocker):
 
 
 def test_get_departments_command(mocker):
-    """zscaler-get-departments"""
+    """
+    Given:
+        - pageSize is set to '1'
+    When:
+        - get_departments_command is called
+    Then:
+        - The command succeeds and returns the expected departments result
+    """
     import Zscaler
 
     run_command_test(
@@ -880,7 +1013,14 @@ def test_get_departments_command(mocker):
 
 
 def test_get_usergroups_command(mocker):
-    """zscaler-get-usergroups"""
+    """
+    Given:
+        - pageSize is set to '100'
+    When:
+        - get_usergroups_command is called
+    Then:
+        - The command succeeds and returns the expected user groups result
+    """
     import Zscaler
 
     run_command_test(
@@ -893,7 +1033,14 @@ def test_get_usergroups_command(mocker):
 
 
 def test_list_ip_destination_groups__command_no_argument(mocker):
-    """zscaler-list-ip-destination-groups"""
+    """
+    Given:
+        - No arguments (list all IP destination groups)
+    When:
+        - list_ip_destination_groups is called
+    Then:
+        - The command succeeds and returns all IP destination groups
+    """
     import Zscaler
 
     run_command_test(
@@ -906,7 +1053,14 @@ def test_list_ip_destination_groups__command_no_argument(mocker):
 
 
 def test_list_ip_destination_groups__command_with_id_argument(mocker):
-    """zscaler-list-ip-destination-groups"""
+    """
+    Given:
+        - An ip_group_id argument is provided
+    When:
+        - list_ip_destination_groups is called
+    Then:
+        - Only the IP destination group matching the given ID is returned
+    """
     import Zscaler
 
     run_command_test(
@@ -919,7 +1073,14 @@ def test_list_ip_destination_groups__command_with_id_argument(mocker):
 
 
 def test_list_ip_destination_groups__command_with_exclude_argument(mocker):
-    """zscaler-list-ip-destination-groups"""
+    """
+    Given:
+        - An exclude_type argument of 'DSTN_OTHER' is provided
+    When:
+        - list_ip_destination_groups is called
+    Then:
+        - IP destination groups of type 'DSTN_OTHER' are excluded from the result
+    """
     import Zscaler
 
     run_command_test(
@@ -932,7 +1093,14 @@ def test_list_ip_destination_groups__command_with_exclude_argument(mocker):
 
 
 def test_list_ip_destination_groups_command_with_lite_argument(mocker):
-    """zscaler-list-ip-destination-groups-lite"""
+    """
+    Given:
+        - The lite argument is set to 'True'
+    When:
+        - list_ip_destination_groups is called
+    Then:
+        - A lightweight list of IP destination groups (IDs and names only) is returned
+    """
     import Zscaler
 
     run_command_test(
@@ -945,7 +1113,14 @@ def test_list_ip_destination_groups_command_with_lite_argument(mocker):
 
 
 def test_create_ip_destination_group(mocker):
-    """zscaler-create-ip-destination-group"""
+    """
+    Given:
+        - A name, type, list of addresses, and description for a new IP destination group
+    When:
+        - create_ip_destination_group is called
+    Then:
+        - The command succeeds and returns the newly created IP destination group
+    """
     import Zscaler
 
     run_command_test(
@@ -958,7 +1133,14 @@ def test_create_ip_destination_group(mocker):
 
 
 def test_edit_ip_destination_group(mocker):
-    """zscaler-edit-ip-destination-group"""
+    """
+    Given:
+        - An existing IP destination group ID with updated name, addresses, and description
+    When:
+        - edit_ip_destination_group is called
+    Then:
+        - The command succeeds and returns the updated IP destination group
+    """
     import Zscaler
 
     run_command_test(
@@ -971,7 +1153,14 @@ def test_edit_ip_destination_group(mocker):
 
 
 def test_edit_ip_destination_group_override_false(mocker):
-    """zscaler-edit-ip-destination-group with override=False should pass override=false in the URL"""
+    """
+    Given:
+        - An existing IP destination group ID and override='False'
+    When:
+        - edit_ip_destination_group is called
+    Then:
+        - The PUT request URL contains 'override=false'
+    """
     import Zscaler
 
     http_mock = mocker.patch("Zscaler.http_request", return_value={
@@ -994,7 +1183,14 @@ def test_edit_ip_destination_group_override_false(mocker):
 
 
 def test_edit_ip_destination_group_override_true_default(mocker):
-    """zscaler-edit-ip-destination-group defaults to override=true when override arg is not provided"""
+    """
+    Given:
+        - An existing IP destination group ID with no override argument provided
+    When:
+        - edit_ip_destination_group is called
+    Then:
+        - The PUT request URL contains 'override=true' (the default)
+    """
     import Zscaler
 
     http_mock = mocker.patch("Zscaler.http_request", return_value={
@@ -1016,7 +1212,14 @@ def test_edit_ip_destination_group_override_true_default(mocker):
 
 
 def test_delete_ip_destination_groups(mocker):
-    """zscaler-delete-ip-destination-group"""
+    """
+    Given:
+        - An IP destination group ID to delete
+    When:
+        - delete_ip_destination_groups is called
+    Then:
+        - The command succeeds and returns the expected deletion result
+    """
     import Zscaler
 
     run_command_test(
