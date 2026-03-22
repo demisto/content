@@ -477,9 +477,9 @@ def handle_fetched_events(events: list[dict[str, Any]], last_event_time: str):
         events (list[dict[str, Any]]): Fetched events.
         last_event_time (str): Last event time.
     """
-    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-    demisto.info(f"OCI: {len(events)} events were sent to XSIAM at {datetime.now()}.")
     if events:
+        send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+        demisto.info(f"OCI: {len(events)} events were sent to XSIAM at {datetime.now()}.")
         last_run = demisto.getLastRun()
         last_run["lastRun"] = last_event_time
         demisto.setLastRun(last_run)
@@ -497,9 +497,9 @@ def handle_searchlog_fetched_events(searchlog_events: list[dict[str, Any]], sear
         searchlog_events (list[dict[str, Any]]): Fetched events.
         searchlog_last_run (dict[str, Any]): searchlogs last run.
     """
-    send_events_to_xsiam(searchlog_events, vendor=VENDOR, product=PRODUCT)
-    demisto.info(f"OCI: {len(searchlog_events)} searchlog events were sent to XSIAM at {datetime.now()}.")
     if searchlog_events:
+        send_events_to_xsiam(searchlog_events, vendor=VENDOR, product=PRODUCT)
+        demisto.info(f"OCI: {len(searchlog_events)} searchlog events were sent to XSIAM at {datetime.now()}.")
         last_run = demisto.getLastRun()
         last_run["SearchLog"] = searchlog_last_run
         demisto.setLastRun(last_run)
@@ -511,7 +511,7 @@ def handle_searchlog_fetched_events(searchlog_events: list[dict[str, Any]], sear
 """ Test module """
 
 
-def test_module(client: Client, search_log_query: str, event_types_to_fetch: List) -> str:
+def test_module(client: Client, search_log_query: str, event_types_to_fetch: list) -> str:
     """Tests API connectivity and authentication.
 
     Args:
