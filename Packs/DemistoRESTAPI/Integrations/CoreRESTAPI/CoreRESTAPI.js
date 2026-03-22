@@ -631,11 +631,17 @@ switch (command) {
         var filename = res.Path;
         if (args.filename) {
             filename = args.filename;
-        } else {
+            logDebug('core-api-download: Using user-provided filename: ' + filename);
+        } else if (res.Headers && res.Headers['Content-Disposition'] && res.Headers['Content-Disposition'][0]) {
             var disposition = res.Headers['Content-Disposition'][0].split('=');
             if (disposition.length === 2) {
                 filename = disposition[1];
+                logDebug('core-api-download: Extracted filename from Content-Disposition header: ' + filename);
+            } else {
+                logDebug('core-api-download: Content-Disposition header exists but could not parse filename. Using fallback: ' + filename);
             }
+        } else {
+            logDebug('core-api-download: No Content-Disposition header found. Using fallback filename: ' + filename);
         }
         var desc = args.description || '';
         return ({Type: entryTypes.file, FileID: res.Path, File: filename, Contents: desc});
