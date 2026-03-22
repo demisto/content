@@ -782,7 +782,10 @@ class XSOAR2STIXParser:
         else:
             pattern = f"[{object_type}:value = '{indicator_pattern_value}']"
 
-        labels = self.get_labels_for_indicator(xsoar_indicator.get("score"))
+        score_labels = self.get_labels_for_indicator(xsoar_indicator.get("score")) or []
+        custom_tags = (xsoar_indicator.get("CustomFields") or {}).get("tags", [])
+        merged_labels = list({*score_labels, *[t.lower().replace(" ", "-") for t in custom_tags]})
+        labels = merged_labels if merged_labels else score_labels
 
         stix_domain_object: Dict[str, Any] = assign_params(
             type=stix_type,
@@ -975,12 +978,15 @@ class XSOAR2STIXParser:
             Stix object entry for given indicator
         """
         if self.server_version == TAXII_VER_2_1:
-            custom_fields = xsoar_indicator.get("CustomFields", {})
+            custom_fields = xsoar_indicator.get("CustomFields", {}) or {}
             stix_type = stix_object["type"]
             if stix_type == "malware":
                 stix_object["is_family"] = custom_fields.get("ismalwarefamily", False)
             elif stix_type == "report" and (published := custom_fields.get("published")):
                 stix_object["published"] = published
+            if stix_type in {"indicator", "malware", "report", "threat-actor", "tool"}:
+                tags = custom_fields.get("tags", []) if custom_fields.get("tags", []) != [] else [stix_object["type"]]
+                stix_object["labels"] = [x.lower().replace(" ", "-") for x in tags]
         return stix_object
 
     def add_sdo_required_field_2_0(self, stix_object: Dict[str, Any], xsoar_indicator: Dict[str, Any]) -> Dict[str, Any]:
