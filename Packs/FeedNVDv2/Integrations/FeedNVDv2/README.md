@@ -75,7 +75,7 @@ Manually retrieve CVEs from NVD using the history parameter for the duration bac
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CVE.ID | String | The ID of the CVE. |
-| CVE.CVSS | number | The CVSS score of the CVE. |
+| CVE.CVSS | Number | The CVSS score of the CVE. |
 | CVE.Published | Date | The date the CVE was published. |
 | CVE.Modified | Date | The date that the CVE was last modified. |
 | CVE.Description | String | The description of the CVE. |
