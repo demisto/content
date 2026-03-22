@@ -37,4 +37,4 @@ There are no outputs for this playbook.
 
 ---
 
-![SpecterOpsBHE](doc_files/SpecterOpsBHE.png)
+![SpecterOpsBHE](../doc_files/SpecterOpsBHE.png)
