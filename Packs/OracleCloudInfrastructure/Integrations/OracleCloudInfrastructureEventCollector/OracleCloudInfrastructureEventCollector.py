@@ -372,9 +372,7 @@ def get_searchlogs_events(
         else:
             searchlogs_time_start = datetime.now().strftime(SEARCHLOG_DATE_FORMAT)
 
-        searchlogs_time_end = (arg_to_datetime(searchlogs_time_start) + timedelta(days=14)).strftime(
-            SEARCHLOG_DATE_FORMAT
-        )
+        searchlogs_time_end = (arg_to_datetime(searchlogs_time_start) + timedelta(days=14)).strftime(SEARCHLOG_DATE_FORMAT)  # type: ignore
 
         searchlogs_res = searchlogs_api_request(
             client=client, time_start=searchlogs_time_start, time_end=searchlogs_time_end, search_query=search_log_query

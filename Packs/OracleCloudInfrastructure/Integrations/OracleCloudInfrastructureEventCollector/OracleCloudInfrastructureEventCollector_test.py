@@ -478,14 +478,18 @@ class TestEventRelatedFunctions:
         from OracleCloudInfrastructureEventCollector import handle_fetched_events
 
         mocked_send_events_to_xsiam = mocker.patch("OracleCloudInfrastructureEventCollector.send_events_to_xsiam")
+        mocker.patch("OracleCloudInfrastructureEventCollector.demisto.getLastRun", return_value={})
         mocked_demisto_set_last_run = mocker.patch("OracleCloudInfrastructureEventCollector.demisto.setLastRun")
         handle_fetched_events(events=events, last_event_time="2023-01-01T10:10:10.000Z")
-        assert mocked_send_events_to_xsiam.called
-        assert mocked_send_events_to_xsiam.call_args.args[0] == events
-        assert mocked_send_events_to_xsiam.call_args[1] == {"vendor": "oracle", "product": "cloud_infrastructure"}
         if events:
+            assert mocked_send_events_to_xsiam.called
+            assert mocked_send_events_to_xsiam.call_args.args[0] == events
+            assert mocked_send_events_to_xsiam.call_args[1] == {"vendor": "oracle", "product": "cloud_infrastructure"}
             assert mocked_demisto_set_last_run.called
             assert mocked_demisto_set_last_run.call_args.args[0] == {"lastRun": "2023-01-01T10:10:10.000Z"}
+        else:
+            assert not mocked_send_events_to_xsiam.called
+            assert not mocked_demisto_set_last_run.called
 
     def test_handle_fetched_events_preserves_searchlog_last_run(self, mocker):
         """
@@ -702,16 +706,14 @@ class TestFetchEventsFlows:
             "search_log_query": "search query",
         }
 
-        # Track last_run state across handler calls
-        last_run_state: dict = {}
+        # Track last_run state across handler calls using a list to capture the final value
+        set_last_run_calls: list[dict] = []
 
         def mock_set_last_run(new_last_run):
-            last_run_state.clear()
-            last_run_state.update(new_last_run)
+            set_last_run_calls.append(dict(new_last_run))
 
         mock_demisto(mocker, mock_params=combined_params, mock_args={}, command="fetch-events", mock_last_run={})
-        mocker.patch.object(demisto, "getLastRun", return_value=last_run_state)
-        mocker.patch.object(demisto, "setLastRun", side_effect=mock_set_last_run)
+        mocker.patch("OracleCloudInfrastructureEventCollector.demisto.setLastRun", side_effect=mock_set_last_run)
         mocker.patch("OracleCloudInfrastructureEventCollector.send_events_to_xsiam")
 
         audit_events = [
@@ -735,9 +737,13 @@ class TestFetchEventsFlows:
 
         main()
 
-        # After both handlers run, last_run should contain both keys
-        assert last_run_state["lastRun"] == audit_last_event_time
-        assert last_run_state["SearchLog"] == searchlog_last_run_result
+        # handle_searchlog_fetched_events is called first, then handle_fetched_events
+        assert len(set_last_run_calls) == 2
+        # First call: SearchLog key is set
+        assert set_last_run_calls[0]["SearchLog"] == searchlog_last_run_result
+        # Second call: lastRun key is set, and SearchLog is preserved
+        assert set_last_run_calls[1]["lastRun"] == audit_last_event_time
+        assert set_last_run_calls[1]["SearchLog"] == searchlog_last_run_result
 
 
 class TestBuildSearchlogUrl:
@@ -1013,7 +1019,7 @@ class TestHandleSearchlogFetchedEvents:
 
         handle_searchlog_fetched_events([], {"lastRun": "", "LastFetchedIds": []})
 
-        assert mocked_send_events.called
+        assert not mocked_send_events.called
         assert not mocked_set_last_run.called
 
     def test_handle_searchlog_fetched_events_preserves_existing_last_run(self, mocker):
