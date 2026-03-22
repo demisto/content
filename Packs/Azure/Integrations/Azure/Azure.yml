@@ -6105,6 +6105,22 @@ script:
         defaultValue: Resource Group
         prettypredefined:
           Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+      - name: db_name
+        type: string
+        required: true
+        description: Database name.
+        prettyname: DB Name
+        defaultValue: DB Name
+        prettypredefined:
+          DB Name: ${asset.xdm.asset.raw_fields.Platform Discovery.sqlDatabase.name}
+      - name: server_name
+        type: string
+        required: true
+        description: Server name.
+        prettyname: Server Name
+        defaultValue: Server Name
+        prettypredefined:
+          Server Name: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
       - name: email_account_admins_enabled
         type: bool
         required: false
@@ -6186,18 +6202,18 @@ script:
         type: String
         required: true
         description: Server name.
-        prettyname: Server name
-        defaultValue: Server name
+        prettyname: Server Name
+        defaultValue: Server Name
         prettypredefined:
-          Server name: ${asset.xdm.asset.name}
+          Server Name: ${asset.xdm.asset.name}
       - name: db_name
         type: String
         required: true
         description: DB name.
-        prettyname: DB name
-        defaultValue: DB name
+        prettyname: DB Name
+        defaultValue: DB Name
         prettypredefined:
-          DB name: ${asset.xdm.asset.name}
+          DB Name: ${asset.xdm.asset.name}
       - name: state
         required: false
         defaultValue: Enabled
@@ -6227,6 +6243,14 @@ script:
         defaultValue: Key Vault Name
         prettypredefined:
           Key Vault Name: ${asset.xdm.asset.name}
+      - name: resource_group_name
+        type: string
+        required: true
+        description: The name of the resource group.
+        prettyname: Resource Group
+        defaultValue: Resource Group
+        prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
       - name: enable_purge_protection
         type: bool
         required: false
