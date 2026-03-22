@@ -2282,8 +2282,6 @@ def main():
     try:
         if cmd in COMMANDS:
             COMMANDS[cmd]()
-        else:
-            raise NotImplementedError(f'Command "{cmd}" is not implemented.')
     except Exception as e:
         return_error(str(e))
 
