@@ -79,5 +79,5 @@ Manually retrieve CVEs from NVD using the history parameter for the duration bac
 | CVE.Published | Date | The date the CVE was published. |
 | CVE.Modified | Date | The date that the CVE was last modified. |
 | CVE.Description | String | The description of the CVE. |
-| CVE.CVSSVersion | String | The CVSS version used for scoring \(e.g. 4.0, 3.1, 2.0\). |
+| CVE.CVSSVersion | String | The CVSS version used for scoring (e.g. 4.0, 3.1, 2.0). |
 | CVE.Severity | String | The CVSS severity level \(e.g. CRITICAL, HIGH, MEDIUM, LOW\). |
