@@ -17,7 +17,7 @@ This integration supports the latest CVSS - Common Vulnerability Scoring System 
 | CVSS Versions | CVSS versions to query when the severity filter is set. By default, covers most modern CVEs. | False |
 | Max Indicators Per Fetch | The maximum number of indicators to fetch per interval. A lower value prevents timeouts during initial syncs with large lookback windows. The fetch will automatically resume from where it left off in the next interval. Without an API key, the recommended maximum is 40000. With an API key, the recommended maximum is 200000. | True |
 | First fetch time | How far back should the integration fetch in its first run \(1 day, 2 weeks, 3 months, etc.\) | False |
-| Return Known Exploited Vulnerabilities (KEV) only. | See the following for more information: https://nvd.nist.gov/developers/vulnerabilities\#cves-hasKev' \# disable-secrets-detection. | False |
+| Return Known Exploited Vulnerabilities (KEV) only. | See the following for more information: https://nvd.nist.gov/developers/vulnerabilities#cves-hasKev | False |
 | Source Reliability | Reliability of the source providing the intelligence data | True |
 | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
 |  |  | False |
