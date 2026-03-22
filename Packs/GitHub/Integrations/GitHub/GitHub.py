@@ -2128,6 +2128,53 @@ def github_list_workflows_command():
 COMMANDS = {
     "test-module": test_module,
     "fetch-incidents": fetch_incidents_command,
+    # Deprecated commands (kept for backward compatibility)
+    "GitHub-create-issue": create_command,
+    "GitHub-close-issue": close_command,
+    "GitHub-update-issue": update_command,
+    "GitHub-list-all-issues": list_all_command,
+    "GitHub-list-all-projects": list_all_projects_command,
+    "GitHub-search-issues": search_command,
+    "GitHub-get-download-count": get_download_count,
+    "GitHub-get-stale-prs": get_stale_prs_command,
+    "GitHub-get-branch": get_branch_command,
+    "GitHub-create-branch": create_branch_command,
+    "GitHub-get-team-membership": get_team_membership_command,
+    "GitHub-request-review": request_review_command,
+    "GitHub-create-comment": create_comment_command,
+    "GitHub-list-issue-comments": list_issue_comments_command,
+    "GitHub-list-pr-files": list_pr_files_command,
+    "GitHub-list-pr-reviews": list_pr_reviews_command,
+    "GitHub-get-commit": get_commit_command,
+    "GitHub-add-label": add_label_command,
+    "GitHub-get-pull-request": get_pull_request_command,
+    "GitHub-list-teams": list_teams_command,
+    "GitHub-delete-branch": delete_branch_command,
+    "GitHub-list-pr-review-comments": list_pr_review_comments_command,
+    "GitHub-update-pull-request": update_pull_request_command,
+    "GitHub-is-pr-merged": is_pr_merged_command,
+    "GitHub-create-pull-request": create_pull_request_command,
+    "Github-get-github-actions-usage": get_github_actions_usage,
+    "Github-list-files": list_files_command,
+    "GitHub-get-file-content": get_file_content_from_repo,
+    "GitHub-search-code": search_code_command,
+    "GitHub-list-team-members": list_team_members_command,
+    "GitHub-list-branch-pull-requests": list_branch_pull_requests_command,
+    "Github-get-check-run": get_github_get_check_run,
+    "Github-commit-file": commit_file_command,
+    "GitHub-create-release": create_release_command,
+    "Github-list-issue-events": get_issue_events_command,
+    "GitHub-add-issue-to-project-board": add_issue_to_project_board_command,
+    "GitHub-get-path-data": get_path_data,
+    "GitHub-releases-list": github_releases_list_command,
+    "GitHub-update-comment": github_update_comment_command,
+    "GitHub-delete-comment": github_delete_comment_command,
+    "GitHub-add-assignee": github_add_assignee_command,
+    "GitHub-trigger-workflow": github_trigger_workflow_command,
+    "GitHub-cancel-workflow": github_cancel_workflow_command,
+    "GitHub-list-workflows": github_list_workflows_command,
+    "GitHub-delete-file": github_delete_file_command,
+    # New lowercase kebab-case commands (canonical names)
     "github-create-issue": create_command,
     "github-close-issue": close_command,
     "github-update-issue": update_command,
@@ -2233,8 +2280,10 @@ def main():
     cmd = demisto.command()
     LOG(f"command is {cmd}")
     try:
-        if cmd.lower() in COMMANDS:
-            COMMANDS[cmd.lower()]()
+        if cmd in COMMANDS:
+            COMMANDS[cmd]()
+        else:
+            raise NotImplementedError(f'Command "{cmd}" is not implemented.')
     except Exception as e:
         return_error(str(e))
 
