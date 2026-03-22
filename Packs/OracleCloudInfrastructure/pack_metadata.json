@@ -6,12 +6,13 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
+    "created": "2023-04-17T00:00:00Z",
     "categories": [
         "Identity and Access Management"
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["Oracle", "oci"],
     "marketplaces": [
         "marketplacev2",
         "platform"

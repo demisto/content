@@ -10,7 +10,7 @@ from oci.signer import Signer
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"  # ISO8601 format with UTC, default in XSOAR
 VENDOR = "oracle"
 PRODUCT = "cloud_infrastructure"
-MAX_EVENTS_TO_FETCH = 100
+MAX_EVENTS_TO_FETCH = 1000
 FETCH_DEFAULT_TIME = "3 days"
 PORT = 20190901
 SEARCHLOG_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
@@ -92,8 +92,8 @@ class Client(BaseClient):
         """
         if not is_region(region):
             raise DemistoException(
-                "Could not create a valid OCI configuration dictionary due to invalid region parameter. \
-                Please check your OCI-related instance configuration parameters."
+                "Could not create a valid OCI configuration dictionary due to invalid region parameter. "
+                "Please check your OCI-related instance configuration parameters."
             )
 
         return f"https://audit.{region}.oraclecloud.com/{PORT}/auditEvents"
@@ -112,8 +112,8 @@ class Client(BaseClient):
         """
         if not is_region(region):
             raise DemistoException(
-                "Could not create a valid OCI configuration dictionary due to invalid region parameter. \
-                Please check your OCI-related instance configuration parameters."
+                "Could not create a valid OCI configuration dictionary due to invalid region parameter. "
+                "Please check your OCI-related instance configuration parameters."
             )
 
         return f"https://logging.{region}.oci.oraclecloud.com/20190909/search"
@@ -291,7 +291,7 @@ def searchlogs_api_request(
     if next_page:
         params["page"] = next_page
 
-    demisto.info(f"Sending http request to get search log events with {body=} {params=}")
+    demisto.debug(f"Sending http request to get search log events with {body=} {params=}")
     return client._http_request(method="POST", full_url=url, params=params, json_data=body, resp_type="response")
 
 
@@ -372,7 +372,7 @@ def get_searchlogs_events(
         else:
             searchlogs_time_start = datetime.now().strftime(SEARCHLOG_DATE_FORMAT)
 
-        searchlogs_time_end = (datetime.strptime(searchlogs_time_start, DATE_FORMAT) + timedelta(days=14)).strftime(
+        searchlogs_time_end = (arg_to_datetime(searchlogs_time_start) + timedelta(days=14)).strftime(
             SEARCHLOG_DATE_FORMAT
         )
 
@@ -539,10 +539,9 @@ def test_module(client: Client, search_log_query: str, event_types_to_fetch: Lis
 
     if "Search Logs" in event_types_to_fetch:
         try:
-            searchlogs_time_start = datetime.now().strftime(SEARCHLOG_DATE_FORMAT)
-            searchlogs_time_end = (datetime.strptime(searchlogs_time_start, DATE_FORMAT) + timedelta(days=14)).strftime(
-                SEARCHLOG_DATE_FORMAT
-            )
+            now = datetime.now()
+            searchlogs_time_start = now.strftime(SEARCHLOG_DATE_FORMAT)
+            searchlogs_time_end = (now + timedelta(days=14)).strftime(SEARCHLOG_DATE_FORMAT)
 
             searchlogs_api_request(
                 client=client, time_start=searchlogs_time_start, time_end=searchlogs_time_end, search_query=search_log_query
