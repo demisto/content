@@ -52,8 +52,6 @@ tasks:
     scriptarguments:
       object_names:
         simple: ${incident.labels.ObjectNames}
-      using:
-        simple: ${incident.labels.Instance}
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -119,8 +117,6 @@ tasks:
     scriptarguments:
       object_ids:
         simple: ${incident.labels.ObjectIds}
-      using:
-        simple: ${incident.labels.Instance}
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -159,8 +155,6 @@ tasks:
         simple: ${incident.labels.NonTierZeroPrincipalObjectId}
       to_principal:
         simple: ${incident.labels.ImpactedPrincipalObjectId}
-      using:
-        simple: ${incident.labels.Instance}
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""

@@ -1,6 +1,9 @@
+sectionorder:
+- Connect
 commonfields:
   id: SpecterOpsBHE
   version: -1
+provider: SpecterOps
 name: SpecterOpsBHE
 display: SpecterOpsBHE
 category: Network Security
@@ -63,6 +66,7 @@ configuration:
   type: 13
   required: false
 script:
+  script: ''
   commands:
   - name: bhe-object-id-get
     arguments:
@@ -128,7 +132,7 @@ script:
       type: Boolean
     description: Checks if a path exists between the two nodes.
   type: python
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.13.7444307
   subtype: python3
   isfetch: true
   runonce: false
