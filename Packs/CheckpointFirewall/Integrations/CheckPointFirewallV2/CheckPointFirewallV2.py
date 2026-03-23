@@ -613,12 +613,12 @@ class Client(BaseClient):
             method="POST", url_suffix=f"delete-service-{service_type}", headers=self.headers, json_data=body
         )
 
-    def show_nat_rule(self, identifier: int, package: str):
+    def show_nat_rule(self, identifier: str, package: str):
         return self._http_request(
             method="POST",
             url_suffix="show-nat-rule",
             headers=self.headers,
-            json_data={"rule-number": identifier, "package": package},
+            json_data={"name": identifier, "package": package},
         )
 
     def list_nat_rulebase(self, package: str, limit: int, offset: int, filter_str: Optional[str] = None):
@@ -673,7 +673,7 @@ class Client(BaseClient):
 
     def update_nat_rule(
         self,
-        identifier: int,
+        identifier: str,
         package: str,
         original_source: Optional[str] = None,
         original_destination: Optional[str] = None,
@@ -686,7 +686,7 @@ class Client(BaseClient):
         method: Optional[str] = None,
         tags: Optional[list] = None,
     ):
-        body: dict = {"rule-number": identifier, "package": package}
+        body: dict = {"name": identifier, "package": package}
         if original_source:
             body["original-source"] = original_source
         if original_destination:
@@ -709,8 +709,8 @@ class Client(BaseClient):
             body["tags"] = tags
         return self._http_request(method="POST", url_suffix="set-nat-rule", headers=self.headers, json_data=body)
 
-    def delete_nat_rule(self, identifier: int, package: str):
-        body: dict = {"rule-number": identifier, "package": package}
+    def delete_nat_rule(self, identifier: str, package: str):
+        body: dict = {"name": identifier, "package": package}
         return self._http_request(method="POST", url_suffix="delete-nat-rule", headers=self.headers, json_data=body)
 
     def show_task(self, task_id):
@@ -3272,15 +3272,14 @@ def checkpoint_service_delete_command(
 
 def checkpoint_nat_rule_get_command(client: Client, identifier: str, package: str) -> CommandResults:
     """
-    Show existing NAT rule using rule number.
+    Show existing NAT rule using object unique identifier or name.
 
     Args:
         client (Client): CheckPoint client.
-        identifier (str): Rule number.
+        identifier (str): Object unique identifier or name.
         package (str): Name of the package.
     """
-    rule_number = arg_to_number(identifier)
-    result = client.show_nat_rule(rule_number, package)
+    result = client.show_nat_rule(identifier, package)
 
     readable_output = tableToMarkdown(f"CheckPoint data for NAT rule {identifier}:", result, removeNull=True)
 
@@ -3430,7 +3429,7 @@ def checkpoint_nat_rule_update_command(
 
     Args:
         client (Client): CheckPoint client.
-        identifier (str): Rule number.
+        identifier (str): Object unique identifier or name.
         package (str): Name of the package.
         original_source (str): Original source.
         original_destination (str): Original destination.
@@ -3444,10 +3443,9 @@ def checkpoint_nat_rule_update_command(
         tags: Collection of tag identifiers.
     """
     tags = argToList(tags)
-    rule_number = arg_to_number(identifier)
 
     result = client.update_nat_rule(
-        identifier=rule_number,
+        identifier=identifier,
         package=package,
         original_source=original_source,
         original_destination=original_destination,
@@ -3479,14 +3477,12 @@ def checkpoint_nat_rule_delete_command(
 
     Args:
         client (Client): CheckPoint client.
-        identifier (str): Rule number.
+        identifier (str): Object unique identifier or name.
         package (str): Name of the package.
         ignore_warnings (bool): Whether to ignore warnings when deleting the NAT rule.
     """
-    rule_number = arg_to_number(identifier)
-
     client.delete_nat_rule(
-        identifier=rule_number,
+        identifier=identifier,
         package=package,
     )
 

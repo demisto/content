@@ -2903,8 +2903,9 @@ script:
     name: checkpoint-service-delete
     outputs: []
   - arguments:
-    - description: Rule number of the NAT rule to retrieve.
+    - description: Object unique identifier or name.
       name: identifier
+      required: true
     - description: Name of the package.
       name: package
       required: true
@@ -3104,8 +3105,9 @@ script:
       description: Rule number.
       type: Number
   - arguments:
-    - description: Rule number of the NAT rule to update.
+    - description: Object unique identifier or name.
       name: identifier
+      required: true
     - description: Name of the package.
       name: package
       required: true
@@ -3187,7 +3189,7 @@ script:
       description: Rule number.
       type: Number
   - arguments:
-    - description: Rule number of the NAT rule to delete.
+    - description: Object unique identifier or name.
       name: identifier
       required: true
     - description: Name of the package.
