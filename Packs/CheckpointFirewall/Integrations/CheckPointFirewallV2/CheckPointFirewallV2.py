@@ -614,11 +614,12 @@ class Client(BaseClient):
         )
 
     def show_nat_rule(self, identifier: str, package: str):
+        identifier_key = "rule-number" if str(identifier).isdigit() else "name"
         return self._http_request(
             method="POST",
             url_suffix="show-nat-rule",
             headers=self.headers,
-            json_data={"name": identifier, "package": package},
+            json_data={identifier_key: identifier, "package": package},
         )
 
     def list_nat_rulebase(self, package: str, limit: int, offset: int, filter_str: Optional[str] = None):
@@ -630,7 +631,7 @@ class Client(BaseClient):
     def add_nat_rule(
         self,
         package: str,
-        position,
+        position: str,
         name: Optional[str] = None,
         original_source: Optional[str] = None,
         original_destination: Optional[str] = None,
@@ -686,7 +687,8 @@ class Client(BaseClient):
         method: Optional[str] = None,
         tags: Optional[list] = None,
     ):
-        body: dict = {"name": identifier, "package": package}
+        identifier_key = "rule-number" if str(identifier).isdigit() else "name"
+        body: dict = {identifier_key: identifier, "package": package}
         if original_source:
             body["original-source"] = original_source
         if original_destination:
@@ -710,7 +712,8 @@ class Client(BaseClient):
         return self._http_request(method="POST", url_suffix="set-nat-rule", headers=self.headers, json_data=body)
 
     def delete_nat_rule(self, identifier: str, package: str):
-        body: dict = {"name": identifier, "package": package}
+        identifier_key = "rule-number" if str(identifier).isdigit() else "name"
+        body: dict = {identifier_key: identifier, "package": package}
         return self._http_request(method="POST", url_suffix="delete-nat-rule", headers=self.headers, json_data=body)
 
     def show_task(self, task_id):

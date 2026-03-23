@@ -2903,7 +2903,7 @@ script:
     name: checkpoint-service-delete
     outputs: []
   - arguments:
-    - description: Object unique identifier or name.
+    - description: Rule name or Rule number.
       name: identifier
       required: true
     - description: Name of the package.
@@ -3105,7 +3105,7 @@ script:
       description: Rule number.
       type: Number
   - arguments:
-    - description: Object unique identifier or name.
+    - description: Rule name or Rule number.
       name: identifier
       required: true
     - description: Name of the package.
@@ -3189,7 +3189,7 @@ script:
       description: Rule number.
       type: Number
   - arguments:
-    - description: Object unique identifier or name.
+    - description: Rule name or Rule number.
       name: identifier
       required: true
     - description: Name of the package.
