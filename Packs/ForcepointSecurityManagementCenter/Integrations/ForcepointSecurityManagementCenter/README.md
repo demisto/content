@@ -994,3 +994,24 @@ Lists the engines in the system.
 >|Name|Comment|
 >|---|---|
 >| Forcepoint Engine | Forcepoint Engine element pre-populated by installer |
+
+### forcepoint-smc-engine-refresh
+
+***
+Refreshes the specified engines. Use `forcepoint-smc-engine-list` command to list the engines in the system.
+
+#### Base Command
+
+`forcepoint-smc-engine-refresh`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| engine_name | List of engine names to refresh. | Required | 
+| interval_in_seconds | Interval between polling attempts in seconds. To prevent search timeouts, set this value within the 60-90 second range. Default is 30. | Optional | 
+| timeout_in_seconds | Timeout for polling in seconds. Default is 600. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
