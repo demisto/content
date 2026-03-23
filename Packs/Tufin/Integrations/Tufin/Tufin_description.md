@@ -1,1 +1,0 @@
-Learn more about Tufin at https://www.tufin.com/

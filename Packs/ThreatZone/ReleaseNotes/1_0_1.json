@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "Updated the ***tz-get-sanitized*** command to get sanitized file, and ***tz-get-result*** command to check the status."
-}

@@ -1,1 +1,0 @@
-##### The detections (1933, 1934) of the provided entity ID have been successfully marked as fixed.
