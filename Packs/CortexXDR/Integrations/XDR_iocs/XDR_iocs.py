@@ -133,13 +133,24 @@ def get_headers(params: dict) -> dict:
 
 
 def get_requests_kwargs(_json=None, file_path: str | None = None, validate: bool = False) -> dict:
+    """Build keyword arguments for the HTTP request.
+
+    Args:
+        _json: JSON payload to send as request data.
+        file_path: Path to a file to upload.
+        validate: Whether to include a validation flag in the request.
+
+    Returns:
+        dict: keyword arguments suitable for ``requests.post``.
+    """
     if _json is not None:
-        data = {"request_data": _json}
+        data: dict = {"request_data": _json}
         if validate:
             data["validate"] = True
         return {"data": json.dumps(data)}
     elif file_path is not None:
-        return {"files": [("file", ("iocs.json", open(file_path, "rb"), "application/json"))]}
+        file_handle = open(file_path, "rb")  # noqa: SIM115
+        return {"files": [("file", ("iocs.json", file_handle, "application/json"))]}
     else:
         return {}
 
@@ -252,10 +263,17 @@ def demisto_expiration_to_xdr(expiration) -> int:
 
 
 def demisto_reliability_to_xdr(reliability: str) -> str:
-    if reliability:
+    """Convert a XSOAR reliability string to its XDR single-character representation.
+
+    Args:
+        reliability: The XSOAR reliability string (e.g. ``"A - Completely reliable"``).
+
+    Returns:
+        The first character of the reliability string, or ``"F"`` when empty.
+    """
+    if reliability and isinstance(reliability, str):
         return reliability[0]
-    else:
-        return "F"
+    return "F"
 
 
 def demisto_vendors_to_xdr(demisto_vendors) -> list[dict]:
@@ -270,16 +288,25 @@ def demisto_vendors_to_xdr(demisto_vendors) -> list[dict]:
     return xdr_vendors
 
 
+_DEMISTO_TYPE_TO_XDR: dict[str, str] = {
+    "DOMAIN": "DOMAIN_NAME",
+    "URL": "PATH",
+}
+
+
 def demisto_types_to_xdr(_type: str) -> str:
+    """Convert a XSOAR indicator type to its XDR equivalent.
+
+    Args:
+        _type: The XSOAR indicator type (e.g. ``"File SHA-256"``, ``"Domain"``, ``"IP"``).
+
+    Returns:
+        The corresponding XDR type string.
+    """
     xdr_type = _type.upper()
     if xdr_type.startswith("FILE"):
         return "HASH"
-    elif xdr_type == "DOMAIN":
-        return "DOMAIN_NAME"
-    elif xdr_type == "URL":
-        return "PATH"
-    else:
-        return xdr_type
+    return _DEMISTO_TYPE_TO_XDR.get(xdr_type, xdr_type)
 
 
 def create_an_indicator_link(ioc: dict) -> list[str]:
@@ -501,24 +528,35 @@ def create_query_with_end_time(to_date: str):
 
 
 def get_indicators(indicators: str) -> list:
+    """Search for indicators in XSOAR by value.
+
+    Args:
+        indicators: A comma-separated string of indicator values to look up.
+
+    Returns:
+        A list of IOC dicts found in XSOAR. Indicators not found are logged as warnings.
+    """
     demisto.debug("searching for IOCs in XSOAR")
-    if indicators:
-        iocs: list = []
-        not_found = []
-        for indicator in argToList(indicators):
-            search_indicators = IndicatorsSearcher()
-            data = search_indicators.search_indicators_by_version(value=indicator).get("iocs")
-            if data:
-                iocs.extend(data)
-            else:
-                not_found.append(indicator)
-        if not_found:
-            warning_message = f'{len(not_found)} indicators were not found: {",".join(not_found)}'
-            demisto.info(warning_message)
-            return_warning(warning_message)
-        if iocs:
-            demisto.info(f"get_indicators found {len(iocs)} IOCs")
-            return iocs
+    if not indicators:
+        demisto.debug("get_indicators found 0 IOCs")
+        return []
+
+    iocs: list = []
+    not_found: list[str] = []
+    for indicator in argToList(indicators):
+        search_indicators = IndicatorsSearcher()
+        data = search_indicators.search_indicators_by_version(value=indicator).get("iocs")
+        if data:
+            iocs.extend(data)
+        else:
+            not_found.append(indicator)
+    if not_found:
+        warning_message = f'{len(not_found)} indicators were not found: {",".join(not_found)}'
+        demisto.info(warning_message)
+        return_warning(warning_message)
+    if iocs:
+        demisto.info(f"get_indicators found {len(iocs)} IOCs")
+        return iocs
     demisto.debug("get_indicators found 0 IOCs")
     return []
 
@@ -563,7 +601,7 @@ def tim_insert_jsons(client: Client):
         # If tim_insert_jsons is called from fetch_indicators
         else:
             demisto.info("pushing IOCs to XDR: did not get indicators, will use recently-modified IOCs")
-            current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
+            current_run: str = datetime.now(UTC).strftime(DEMISTO_TIME_FORMAT)
             while True:
                 last_run: dict = get_integration_context()
                 query = (
@@ -610,10 +648,18 @@ def xdr_ioc_to_timeline(iocs: list) -> dict:
 
 
 def xdr_expiration_to_demisto(expiration) -> str | None:
+    """Convert an XDR expiration timestamp to a XSOAR-formatted date string.
+
+    Args:
+        expiration: Epoch timestamp in milliseconds, ``-1`` for never, or falsy for ``None``.
+
+    Returns:
+        A formatted date string, ``"Never"``, or ``None``.
+    """
     if expiration:
         if expiration == -1:
             return "Never"
-        return datetime.utcfromtimestamp(expiration / 1000).strftime(DEMISTO_TIME_FORMAT)
+        return datetime.fromtimestamp(expiration / 1000, tz=UTC).strftime(DEMISTO_TIME_FORMAT)
 
     return None
 
@@ -747,30 +793,41 @@ def is_xdr_data(ioc):
     return ioc.get("sourceBrand") == "Cortex XDR - IOC"
 
 
-def get_indicator_xdr_score(indicator: str, xdr_server: int):
+def get_indicator_xdr_score(indicator: str, xdr_server: int) -> int:
+    """Determine the effective score for an indicator coming from XDR.
+
+    The goal is to avoid unintended reliability changes.  For example, if a feed
+    with reliability ``C`` provides indicator ``88.88.88.88`` with score 1 (good),
+    we don't want XDR to also return score 1 with reliability ``A`` — that would
+    reset the score to 0 (unknown).  We only update when someone has genuinely
+    changed the indicator in XDR.
+
+    Args:
+        indicator: The indicator value (e.g. ``"88.88.88.88"``).
+        xdr_server: The numeric score from XDR (0–3).
+
+    Returns:
+        The effective score to use (0–3).
     """
-    the goal is to avoid reliability changes.
-    for example if some feed with reliability 'C' give as the indicator 88.88.88.88 with score 1 (good)
-    we dont wont that xdr will also return with 1 and reliability 'A' so the score will be 0 (unknown).
-    and we will update only on a case that someone really changed th indicator in xdr.
-    :param indicator: the indicator (e.g. 88.88.88.88)
-    :param xdr_server: the score in xdr (e.g. GOOD, BAD ...)
-    :return: the current score (0 - 3)
-    """
-    xdr_local: int = 0
-    score = 0
-    if indicator:
-        search_indicators = IndicatorsSearcher()
-        ioc = search_indicators.search_indicators_by_version(value=indicator).get("iocs")
-        if ioc:
-            ioc = ioc[0]
-            score = ioc.get("score", 0)
-            temp: dict = next(filter(is_xdr_data, ioc.get("moduleToFeedMap", {}).values()), {})
-            xdr_local = temp.get("score", 0)
-    if xdr_server != score:
+    if not indicator:
         return xdr_server
-    else:
-        return xdr_local
+
+    xdr_local: int = 0
+    current_score: int = 0
+
+    search_indicators = IndicatorsSearcher()
+    ioc_results = search_indicators.search_indicators_by_version(value=indicator).get("iocs")
+    if ioc_results:
+        first_ioc = ioc_results[0]
+        current_score = first_ioc.get("score", 0)
+        xdr_feed_data: dict = next(
+            filter(is_xdr_data, first_ioc.get("moduleToFeedMap", {}).values()), {}
+        )
+        xdr_local = xdr_feed_data.get("score", 0)
+
+    if xdr_server != current_score:
+        return xdr_server
+    return xdr_local
 
 
 def get_sync_file(set_time: bool = False, zip: bool = False) -> None:
