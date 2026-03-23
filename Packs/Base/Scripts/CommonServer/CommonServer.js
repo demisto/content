@@ -2156,8 +2156,7 @@ function getUcpConnectorInfo() {
  *   For api_key: {type: 'api_key', key: '...'}
  *   For plain:   {type: 'plain', username: '...', password: '...'}
  */
-function getUcpCredentials(profileInstanceId) {
-    console.log('UCP: getUcpCredentials() called with profileInstanceId: ' + profileInstanceId);
+function getUcpCredentials() {
     var info = getUcpConnectorInfo();
     if (!info) {
         console.log('UCP: getUcpCredentials() — not in UCP mode, returning null');
@@ -2165,13 +2164,13 @@ function getUcpCredentials(profileInstanceId) {
     }
 
     try {
-        console.log('UCP: Calling getUCPCredentials(1579fa42c03cec3e751e8b5d7da3c6fe)...');
-        var creds = getUCPCredentials("1579fa42c03cec3e751e8b5d7da3c6fe");
-        console.log('UCP: getUCPCredentials() returned: ' + JSON.stringify(creds));
+        console.log('UCP: Calling getUCPCredentials(<method_unique_id>)...');
+        method_unique_id = info["connectionProfiles"][0]["method_unique_id"];
+        var creds = getUCPCredentials(method_unique_id);
         console.log('UCP: getUCPCredentials() returned credentials of type: ' + (creds ? creds.type : 'null'));
         return creds;
     } catch (e) {
-        console.log('UCP: getUCPCredentials() FAILED for profile 1579fa42c03cec3e751e8b5d7da3c6fe: ' + e);
-        throw 'UCP: Failed to get credentials for profile 1579fa42c03cec3e751e8b5d7da3c6fe: ' + e;
+        console.log('UCP: getUCPCredentials() FAILED for profile ' + method_unique_id + ': ' + e);
+        throw 'UCP: Failed to get credentials for profile ' + method_unique_id + ': ' + e;
     }
 }

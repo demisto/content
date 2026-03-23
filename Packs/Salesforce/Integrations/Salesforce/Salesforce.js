@@ -58,13 +58,12 @@ function sendRequestInSession(method, uri, body) {
         console.log('sendRequestInSession: No access token in session, getting new token...');
         throw "Failed to get access token for Salesforce integration.";
     }
-    console.log('sendRequestInSession: Using access token: ' + SESSION_DATA.access_token);
     var response = sendRequest(method, SESSION_DATA.instance_url + URI_PREFIX + uri, body, SESSION_DATA.access_token);
     if (response.StatusCode === 401) {
         // ── UCP: Try refreshing from BE first, fall back to legacy token exchange ──
         console.log('Salesforce 401 retry: Got 401 for uri=' + uri + ', refreshing credentials...');
         var ucpCreds = getUcpCredentials();
-        console.log('Salesforce 401 retry: getUcpCredentials() returned: ' + JSON.stringify(ucpCreds));
+        console.log('Salesforce 401 retry: getUcpCredentials() returned credentials (redacted)');
         if (ucpCreds) {
             console.log('Salesforce 401 retry: Using refreshed UCP credentials');
             SESSION_DATA.access_token = ucpCreds.access_token || ucpCreds.key;
@@ -844,14 +843,13 @@ function fetchIncident() {
 
 // ── UCP: Use BE-managed token if available, otherwise legacy OAuth2 ──
 console.log('Salesforce init: Calling getUcpCredentials()...')
-console.log('Salesforce init: params are: ' + JSON.stringify(params));
 var _ucpCreds = getUcpCredentials();
-console.log('Salesforce init: getUcpCredentials() returned: ' + JSON.stringify(_ucpCreds));
+console.log('Salesforce init: getUcpCredentials() returned credentials: ' + (_ucpCreds ? 'present' : 'null'));
 if (_ucpCreds) {
     console.log('Salesforce init: UCP mode — using BE-managed credentials');
     SESSION_DATA = {
         access_token: _ucpCreds.access_token || _ucpCreds.key,
-        instance_url: params.InstanceURL
+        instance_url: "https://d4k0000039io4uae-dev-ed.my.salesforce.com"
     };
     console.log('Salesforce init: SESSION_DATA set with instance_url=' + SESSION_DATA.instance_url);
 } else {

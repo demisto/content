@@ -130,7 +130,7 @@ def test_module(client):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    demisto.debug("Testing connection to Salesforce IAM with provided parameters.")
+    demisto.info("Testing connection to Salesforce IAM with provided parameters.")
     client.get_user_id_and_activity_by_mail("test@test.com")
     return "ok"
 
@@ -338,18 +338,16 @@ def get_mapping_fields_command(client):
 def main():
     import time
     params = demisto.params()
-    demisto.log("Starting Salesforce IAM integration")
-    demisto.log(f"Params: {params}")
+    demisto.info("Starting Salesforce IAM integration")
     metadata = demisto.unifiedConnectorMetadata()
-    demisto.log(f"UCP Metadata: {metadata}")
-    demisto.log("Attempting to retrieve UCP credentials...")
-    demisto.log(f"Credentials: {demisto.getUCPCredentials('81dbc913e1afd5c68bf6488fe866f537')}")
+    demisto.info(f"UCP Metadata: {metadata}")
+    demisto.info("Attempting to retrieve UCP credentials...")
     
     args = demisto.args()
     command = demisto.command()
 
     # get the service API url
-    base_url = "https://login.salesforce.com"
+    base_url = "https://d4k0000039io4uae-dev-ed.my.salesforce.com"
     # checks for '/' at the end url, if it is not available add it
     if base_url[-1] != "/":
         base_url += "/"
@@ -381,7 +379,7 @@ def main():
         # In UCP mode, BaseClient handles auth transparently —
         # skip credential extraction entirely.
         if not client._ucp_enabled:
-            demisto.log("Running in legacy auth mode. Non UCP")
+            demisto.info("Running in legacy auth mode. Non UCP")
             username = params.get("credentials").get("identifier")
             password = params.get("credentials").get("password")
             client_id = (
@@ -401,7 +399,7 @@ def main():
             )
 
         if command == "test-module":
-            demisto.log("Running test-module command.")
+            demisto.info("Running test-module command.")
             return_results(test_module(client))
 
         elif command == "iam-get-user":

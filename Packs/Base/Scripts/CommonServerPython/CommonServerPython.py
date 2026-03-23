@@ -9760,18 +9760,20 @@ if 'requests' in sys.modules:
 
             # ── UCP: Detection + Profile Resolution (once) ──
             self._ucp_enabled = False
-            self._ucp_profile_id = "81dbc913e1afd5c68bf6488fe866f537"
+            self._ucp_method_unique_id = None
             self._ucp_creds_cache = None       # cached credentials dict
             self._ucp_creds_expiry = 0         # epoch timestamp
 
             try:
-                connector_info = demisto.unifiedConnectorInfo()
+                connector_info = demisto.unifiedConnectorMetadata()
+                
                 if connector_info:
+                    demisto.debug('BaseClient: Unified Connector detected with info: {}'.format(connector_info))
                     self._ucp_enabled = True
                     self._ucp_info = connector_info
-                    self._ucp_profile_id = "81dbc913e1afd5c68bf6488fe866f537"
+                    self._ucp_method_unique_id = connector_info.get("connectionProfiles", [{}])[0].get("method_unique_id")
                     demisto.debug(
-                        'BaseClient: UCP enabled, profile={}'.format(self._ucp_profile_id)
+                        'BaseClient: UCP enabled, profile={}'.format(self._ucp_method_unique_id)
                     )
             except Exception as e:
                 demisto.debug('UCP detection skipped: {}'.format(e))
@@ -9873,7 +9875,7 @@ if 'requests' in sys.modules:
                     return self._ucp_creds_cache
 
             # Fetch fresh credentials from BE
-            creds = demisto.getUCPCredentials("81dbc913e1afd5c68bf6488fe866f537")
+            creds = demisto.getUCPCredentials(self._ucp_method_unique_id)
 
             # Determine cache expiry
             expires_at = creds.get('expires_at')
@@ -10185,10 +10187,6 @@ if 'requests' in sys.modules:
 
                 # ── UCP: Inject credentials ──
                 if self._ucp_enabled:
-                    metadata = demisto.unifiedConnectorMetadata()
-                    demisto.log('UCP Metadata: {}'.format(metadata))
-                    demisto.log(f"Params: {demisto.params()}")
-                    demisto.log(f"Credentials: {demisto.getUCPCredentials('81dbc913e1afd5c68bf6488fe866f537')}")
                     ucp_creds = self._get_ucp_credentials()
                     ctx = UcpRequestContext(
                         headers=dict(headers) if headers else {},

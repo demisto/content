@@ -5,6 +5,7 @@ commonfields:
   id: Salesforce
   version: -1
 name: Salesforce
+display:platform: Salesforce (Legacy)
 display: Salesforce
 category: Case Management
 provider: Salesforce
