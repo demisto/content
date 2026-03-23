@@ -1708,7 +1708,7 @@ script:
       description: The date and time the access entry was last modified.
       type: String
     - contextPath: AWS.EKS.AccessEntry.kubernetesGroups
-      description: The Kubernetes groups that the access entry is associated with.
+      description: A comma-separated list of Kubernetes groups the access entry is associated with.
       type: Array
     - contextPath: AWS.EKS.AccessEntry.tags
       description: Metadata tags associated with the access entry.
