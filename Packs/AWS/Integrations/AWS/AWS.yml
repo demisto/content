@@ -1800,7 +1800,7 @@ script:
       description: The Kubernetes user name for the access entry.
       type: String
     - contextPath: AWS.EKS.AccessEntry.type
-      description: The type of the access entry.
+      description: The access entry type.
       type: String
     - contextPath: AWS.EKS.AccessEntry.createdAt
       description: The date and time the access entry was created.
