@@ -479,13 +479,15 @@ class Client(BaseClient):
     def add_service_tcp(
         self,
         identifier: str,
-        port: str,
+        port: Optional[str] = None,
         comments: Optional[str] = None,
         color: Optional[str] = None,
         session_timeout: Optional[int] = None,
         tags: Optional[list] = None,
     ):
-        body: dict = {"name": identifier, "port": port}
+        body: dict = {"name": identifier}
+        if port:
+            body["port"] = port
         if comments:
             body["comments"] = comments
         if color:
@@ -519,7 +521,7 @@ class Client(BaseClient):
     def add_service_icmp(
         self,
         identifier: str,
-        icmp_type: int,
+        icmp_type: Optional[int] = None,
         icmp_code: Optional[int] = None,
         comments: Optional[str] = None,
         color: Optional[str] = None,
@@ -2897,7 +2899,7 @@ def checkpoint_service_list_command(
 def checkpoint_tcp_service_add_command(
     client: Client,
     identifier: str,
-    port: str,
+    port:  str = None,
     comments: str = None,
     color: str = None,
     session_timeout: str = None,
@@ -3015,7 +3017,7 @@ def checkpoint_udp_service_add_command(
 def checkpoint_icmp_service_add_command(
     client: Client,
     identifier: str,
-    icmp_type: str,
+    icmp_type: str = None,
     icmp_code: str = None,
     comments: str = None,
     color: str = None,

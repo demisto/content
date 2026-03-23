@@ -2333,7 +2333,6 @@ script:
       name: session_id
     - description: The number of the port used to provide this service. To specify a port range, place a hyphen between the lowest and highest port numbers (for example, 44-55).
       name: port
-      required: true
     - description: Comments string.
       name: comments
     - auto: PREDEFINED
@@ -2512,10 +2511,9 @@ script:
     - defaultValue: None
       description: Executes the command with the specified session ID.
       name: session_id
-    - description: ICMP type as listed in RFC 792.
+    - description: ICMP type as listed in RFC 792. (default is 0)
       name: icmp_type
-      required: true
-    - description: ICMP code as listed in RFC 792.
+    - description: ICMP code as listed in RFC 792. (default is 0)
       name: icmp_code
     - description: Comments string.
       name: comments
