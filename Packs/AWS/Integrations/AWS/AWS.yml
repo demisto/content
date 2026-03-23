@@ -1870,7 +1870,7 @@ script:
       description: The nextToken value returned from a previous paginated ListClusters request. Use the value from AWS.EKS.ClustersNextToken.
       required: false
     - name: include
-      description: Indicates whether external clusters are included in the returned list. Set to 'all' to include connected clusters.
+      description: Whether external clusters are included in the returned list. Set to 'all' to include connected clusters.
       required: false
       isArray: true
     outputs:
