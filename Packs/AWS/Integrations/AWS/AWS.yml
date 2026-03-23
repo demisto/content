@@ -1772,7 +1772,7 @@ script:
       required: false
       isArray: true
     - name: client_request_token
-      description: Unique identifier for idempotency.
+      description: The unique string used to ensure the request is processed only once.
       required: false
     - name: type
       description: The type of access entry to create. Default is Standard.
