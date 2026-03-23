@@ -342,7 +342,7 @@ def deduplicate_events(events: list[dict[str, Any]], last_fetched_ids: list[str]
 
 
 def get_searchlogs_events(
-    client: Client, search_log_query: str, max_fetch: int, searchlog_last_run: dict
+    client: Client, search_log_query: str, max_fetch: int, last_searchlogs_ids: list[str], first_fetch_time: str
 ) -> tuple[list[dict[str, Any]], dict]:
     """Fetch search log events from the OCI Search Logs API.
 
@@ -353,9 +353,8 @@ def get_searchlogs_events(
         client (Client): Client object for API requests.
         search_log_query (str): The search log query string from the instance configuration.
         max_fetch (int): The maximum number of events to fetch.
-        searchlog_last_run (dict): The searchlog last run dictionary containing:
-            - 'lastRun' (str): The timestamp from the previous fetch cycle.
-            - 'LastFetchedIds' (list[str]): List of event IDs from the previous fetch for deduplication.
+        last_searchlogs_ids (list[str]): The last fetched events IDs.
+        first_fetch_time (str): The start time to fetch events from.
 
     Returns:
         tuple[list[dict[str, Any]], dict]: A tuple containing:
@@ -363,36 +362,36 @@ def get_searchlogs_events(
             - last run dict with keys 'lastRun' (str) and 'LastFetchedIds' (list[str]).
     """
     searchlogs_events: list[dict[str, Any]] = []
-    last_searchlogs_ids: list[str] = searchlog_last_run.get("LastFetchedIds", [])
-    last_run = searchlog_last_run.get("lastRun", "")
-
+    last_run = first_fetch_time
     try:
-        if last_run:
-            searchlogs_time_start = searchlog_last_run["lastRun"]
-        else:
-            searchlogs_time_start = datetime.now().strftime(SEARCHLOG_DATE_FORMAT)
-
-        searchlogs_time_end = (arg_to_datetime(searchlogs_time_start) + timedelta(days=14)).strftime(SEARCHLOG_DATE_FORMAT)  # type: ignore
+        searchlogs_time_end = (arg_to_datetime(first_fetch_time) + timedelta(days=14)).strftime(SEARCHLOG_DATE_FORMAT)  # type: ignore
 
         searchlogs_res = searchlogs_api_request(
-            client=client, time_start=searchlogs_time_start, time_end=searchlogs_time_end, search_query=search_log_query
+            client=client, time_start=first_fetch_time, time_end=searchlogs_time_end, search_query=search_log_query
         )
 
         for result in json.loads(searchlogs_res.content).get("results", []):
             event_data = result.get("data", {}).get("logContent", {})
-            event_data["_time"] = event_data.get("time")
+            searchlog_time = event_data.get("time")
+            event_data["_time"] = searchlog_time
+            if not searchlog_time:
+                demisto.debug(f"Search log event with Id {event_data.get('id')} has no time field.")
             searchlogs_events.append(event_data)
 
         while len(searchlogs_events) < max_fetch and (next_page := searchlogs_res.headers._store.get("opc-next-page")):  # type: ignore[attr-defined]
             searchlogs_res = searchlogs_api_request(
                 client=client,
-                time_start=searchlogs_time_start,
+                time_start=first_fetch_time,
                 time_end=searchlogs_time_end,
                 search_query=search_log_query,
                 next_page=next_page[1],
             )
 
-            for result in json.loads(searchlogs_res.content).get("results", []):
+            results = json.loads(searchlogs_res.content).get("results", [])
+            if not results:
+                break
+
+            for result in results:
                 event_data = result.get("data", {}).get("logContent", {})
                 event_data["_time"] = event_data.get("time")
                 searchlogs_events.append(event_data)
@@ -410,7 +409,7 @@ def get_searchlogs_events(
 
     except Exception as e:
         demisto.error(f"Error while fetching search log events: {e}")
-        return [], searchlog_last_run
+        return [],  {"lastRun": last_run, "LastFetchedIds": last_searchlogs_ids}
 
     return searchlogs_events, {"lastRun": last_run, "LastFetchedIds": last_searchlogs_ids}
 
@@ -484,26 +483,6 @@ def handle_fetched_events(events: list[dict[str, Any]], last_event_time: str):
         demisto.info(f"OCI: Set last run to {last_event_time}")
     else:
         demisto.info("OCI: No new events fetched, Last run was not updated.")
-
-
-def handle_searchlog_fetched_events(searchlog_events: list[dict[str, Any]], searchlog_last_run: dict[str, Any]):
-    """Handles searchlog fetched events.
-    - Sends the events to XSIAM.
-    - Sets the last run for next fetch cycle.
-
-    Args:
-        searchlog_events (list[dict[str, Any]]): Fetched events.
-        searchlog_last_run (dict[str, Any]): searchlogs last run.
-    """
-    if searchlog_events:
-        send_events_to_xsiam(searchlog_events, vendor=VENDOR, product=PRODUCT)
-        demisto.info(f"OCI: {len(searchlog_events)} searchlog events were sent to XSIAM at {datetime.now()}.")
-        last_run = demisto.getLastRun()
-        last_run["SearchLog"] = searchlog_last_run
-        demisto.setLastRun(last_run)
-        demisto.info(f"OCI: Set last run to {last_run}")
-    else:
-        demisto.info("OCI: No new searchlog events fetched, Last run was not updated.")
 
 
 """ Test module """
@@ -606,9 +585,13 @@ def main():
             last_audit_event_time = ""
 
             if "Search Logs" in event_types_to_fetch:
+                if searchlog_last_run.get("lastRun"):
+                    first_fetch_time_search_logs = searchlog_last_run["lastRun"]
+                else:
+                    first_fetch_time_search_logs = (datetime.now() -timedelta(minutes=10)).strftime(SEARCHLOG_DATE_FORMAT)
+                
                 searchlog_events, searchlog_last_run = get_searchlogs_events(
-                    client, searchlogs_query, max_fetch, searchlog_last_run
-                )
+                    client, searchlogs_query, max_fetch,searchlog_last_run.get('LastFetchedIds',[]),first_fetch_time_search_logs)
 
             if "Audit" in event_types_to_fetch:
                 audit_events, last_audit_event_time = get_events(
@@ -616,8 +599,22 @@ def main():
                 )
 
             if push_events:
-                handle_searchlog_fetched_events(searchlog_events, searchlog_last_run)
-                handle_fetched_events(audit_events, last_audit_event_time)
+                if searchlog_events:
+                    send_events_to_xsiam(searchlog_events, vendor=VENDOR, product=PRODUCT)
+                    demisto.info(f"OCI: {len(searchlog_events)} searchlog events were sent to XSIAM at {datetime.now()}.")
+                    last_run["SearchLog"] = searchlog_last_run
+                else:
+                    demisto.info("OCI: No new searchlog events fetched, Last run was not updated.")
+
+                if audit_events:
+                    send_events_to_xsiam(audit_events, vendor=VENDOR, product=PRODUCT)
+                    demisto.info(f"OCI: {len(audit_events)} events were sent to XSIAM at {datetime.now()}.")
+                    last_run["lastRun"] = last_audit_event_time
+                else:
+                    demisto.info("OCI: No new events fetched, Last run was not updated.")
+
+                demisto.setLastRun(last_run)
+                demisto.info(f"OCI: Set last run to {last_run}")
 
             elif command == "oracle-cloud-infrastructure-get-events":
                 if "Audit" in event_types_to_fetch:
