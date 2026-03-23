@@ -35,14 +35,18 @@ INDICATOR_TYPE_MAPPING = {
     "file": FeedIndicatorType.File,
     "filehash_sha256": FeedIndicatorType.File,
     "exploit": FeedIndicatorType.CVE,
+    "vulnerability": FeedIndicatorType.CVE,
     "malware_family": ThreatIntel.ObjectsNames.MALWARE,
+    "grayware": ThreatIntel.ObjectsNames.MALWARE,
     "actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
     "threat_actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
     "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
     "attack pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    "attack_pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "technique": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "malicious_behavior": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "malicious behavior": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    "malicious_tool": ThreatIntel.ObjectsNames.TOOL,
 }
 
 # Define valid regions enum
@@ -327,13 +331,13 @@ def create_relationships(
         threat_name = threat_obj.get("name", "")
         threat_class = threat_obj.get("threat_object_class", "").lower()
 
-        # Remove MITRE technique ID prefix for attack patterns
-        if INDICATOR_TYPE_MAPPING[threat_class] == ThreatIntel.ObjectsNames.ATTACK_PATTERN:
-            threat_name = remove_mitre_technique_id_prefix(threat_name)
-
         if not threat_name or threat_class not in INDICATOR_TYPE_MAPPING:
             demisto.debug(f"Skipping create_relationships for threat_name {threat_name} and threat_class {threat_class}")
             continue
+
+        # Remove MITRE technique ID prefix for attack patterns
+        if INDICATOR_TYPE_MAPPING[threat_class] == ThreatIntel.ObjectsNames.ATTACK_PATTERN:
+            threat_name = remove_mitre_technique_id_prefix(threat_name)
 
         relationship = EntityRelationship(
             name=EntityRelationship.Relationships.RELATED_TO,
