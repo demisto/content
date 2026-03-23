@@ -1863,7 +1863,7 @@ script:
       - us-gov-east-1
       - us-gov-west-1
     - name: limit
-      description: The maximum number of clusters returned in response. The possible values are between 1 and 100. Default is 50.
+      description: The maximum number of clusters returned in response. Possible values are between 1 and 100.
       required: false
       defaultValue: 50
     - name: next_token
