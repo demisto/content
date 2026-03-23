@@ -937,10 +937,8 @@ class Client(BaseClient):
         filter_field = "updatedAt" if filter_by_updated_at else "createdAt"
         sort_field = "updatedAt" if filter_by_updated_at else "createdAt"
         use_case = "mirroring (updatedAt)" if filter_by_updated_at else "polling (createdAt)"
-        
-        demisto.debug(
-            f"Fetching UAM alerts for {use_case}, timestamp: {timestamp}"
-        )
+
+        demisto.debug(f"Fetching UAM alerts for {use_case}, timestamp: {timestamp}")
 
         query = f"""
             query Alerts {{
@@ -1157,11 +1155,11 @@ class Client(BaseClient):
     def update_uam_alert_status_request(self, alert_id: str, status: str) -> dict:
         """
         Update UAM alert status via GraphQL mutation
-        
+
         Args:
             alert_id: The UAM alert ID
             status: The status value (NEW, IN_PROGRESS, RESOLVED)
-        
+
         Returns:
             Dictionary containing the mutation response
         """
@@ -1195,18 +1193,10 @@ class Client(BaseClient):
         }
         """
 
-        variables = {
-            "id": alert_id,
-            "status": status
-        }
+        variables = {"id": alert_id, "status": status}
 
         response = self._http_request(
-            method="POST",
-            url_suffix=graphql_endpoint,
-            json_data={
-                "query": query,
-                "variables": variables
-            }
+            method="POST", url_suffix=graphql_endpoint, json_data={"query": query, "variables": variables}
         )
         demisto.debug(f"UAM GraphQL Mutation - Update status response: {response}")
         return (response or {}).get("data", {})
@@ -1214,11 +1204,11 @@ class Client(BaseClient):
     def update_uam_alert_analyst_verdict_request(self, alert_id: str, analyst_verdict: str) -> dict:
         """
         Update UAM alert analyst verdict via GraphQL mutation
-        
+
         Args:
             alert_id: The UAM alert ID
             analyst_verdict: The analyst verdict value (e.g., TRUE_POSITIVE_MALWARE)
-        
+
         Returns:
             Dictionary containing the mutation response
         """
@@ -1251,22 +1241,14 @@ class Client(BaseClient):
             }
         }
         """
-        
+
         # 2. Map values into the variables dictionary
-        variables = {
-            "id": alert_id,
-            "verdict": analyst_verdict
-        }
+        variables = {"id": alert_id, "verdict": analyst_verdict}
 
         # 3. Send the request with query and variables separated
         demisto.debug(f"S1 UAM GraphQL Mutation - Update Analyst Verdict for ID: {alert_id}")
         response = self._http_request(
-            method="POST",
-            url_suffix=graphql_endpoint,
-            json_data={
-                "query": query,
-                "variables": variables
-            }
+            method="POST", url_suffix=graphql_endpoint, json_data={"query": query, "variables": variables}
         )
         return (response or {}).get("data", {})
 
@@ -2019,14 +2001,14 @@ def update_uam_alert_status(client: Client, args: dict) -> CommandResults:
     """
     alert_ids = argToList(args.get("alert_ids"))
     status = args.get("status")
-    
+
     if status not in UAM_ALERT_STATUS:
         raise DemistoException(f"Invalid status. Choose from: {', '.join(UAM_ALERT_STATUS.keys())}")
-    
+
     status_value = UAM_ALERT_STATUS[status]
     context_entries = []
     affected_count = 0
-    
+
     for alert_id in alert_ids:
         response = client.update_uam_alert_status_request(alert_id, status_value)
         demisto.debug(f"UAM alert status mutation response for [{alert_id}]: {response}")
@@ -2034,25 +2016,28 @@ def update_uam_alert_status(client: Client, args: dict) -> CommandResults:
         actions = response.get("alertTriggerActions", {}).get("actions", [])
         demisto.debug(f"UAM alert status mutation actions for [{alert_id}]: {actions}")
         success = any(action.get("success") for action in actions)
-        
+
         if success:
             affected_count += 1
-            
-        context_entries.append({
-            "ID": alert_id,
-            "Status": status,
-            "Updated": success
-        })
 
-    meta = f"Total of {affected_count} UAM alerts status were updated successfully." if affected_count > 0 else "No alerts were updated."
+        context_entries.append({"ID": alert_id, "Status": status, "Updated": success})
+
+    meta = (
+        f"Total of {affected_count} UAM alerts status were updated successfully."
+        if affected_count > 0
+        else "No alerts were updated."
+    )
 
     return CommandResults(
-        readable_output=tableToMarkdown("Sentinel One - Update UAM Alerts Status", context_entries, metadata=meta, removeNull=True),
+        readable_output=tableToMarkdown(
+            "Sentinel One - Update UAM Alerts Status", context_entries, metadata=meta, removeNull=True
+        ),
         outputs_prefix="SentinelOne.UAMAlert",
         outputs_key_field="ID",
         outputs=context_entries,
-        raw_response=context_entries
+        raw_response=context_entries,
     )
+
 
 def update_uam_alert_analyst_verdict(client: Client, args: dict) -> CommandResults:
     """
@@ -2060,36 +2045,38 @@ def update_uam_alert_analyst_verdict(client: Client, args: dict) -> CommandResul
     """
     alert_ids = argToList(args.get("alert_ids"))
     verdict = args.get("analyst_verdict")
-    
+
     if verdict not in UAM_ANALYST_VERDICT:
         raise DemistoException(f"Invalid verdict. Choose from: {', '.join(UAM_ANALYST_VERDICT.keys())}")
-    
+
     verdict_value = UAM_ANALYST_VERDICT[verdict]
     context_entries = []
     affected_count = 0
-    
+
     for alert_id in alert_ids:
         response = client.update_uam_alert_analyst_verdict_request(alert_id, verdict_value)
         actions = response.get("alertTriggerActions", {}).get("actions", [])
         success = any(action.get("success") for action in actions)
-        
+
         if success:
             affected_count += 1
-            
-        context_entries.append({
-            "ID": alert_id,
-            "AnalystVerdict": verdict,
-            "Updated": success
-        })
 
-    meta = f"Total of {affected_count} UAM alerts analyst verdicts were updated successfully." if affected_count > 0 else "No alerts were updated."
+        context_entries.append({"ID": alert_id, "AnalystVerdict": verdict, "Updated": success})
+
+    meta = (
+        f"Total of {affected_count} UAM alerts analyst verdicts were updated successfully."
+        if affected_count > 0
+        else "No alerts were updated."
+    )
 
     return CommandResults(
-        readable_output=tableToMarkdown("Sentinel One - Update UAM Alerts Analyst Verdict", context_entries, metadata=meta, removeNull=True),
+        readable_output=tableToMarkdown(
+            "Sentinel One - Update UAM Alerts Analyst Verdict", context_entries, metadata=meta, removeNull=True
+        ),
         outputs_prefix="SentinelOne.UAMAlert",
         outputs_key_field="ID",
         outputs=context_entries,
-        raw_response=context_entries
+        raw_response=context_entries,
     )
 
 
@@ -4826,7 +4813,9 @@ def _is_uam_alert(mirrored_object: dict) -> bool:
 
 def set_xsoar_incident_entries(mirrored_object: dict, entries: list, remote_incident_id: str, close_xsoar_incident: bool):
     incident_type = "UAM_ALERT" if _is_uam_alert(mirrored_object) else "THREAT"
-    demisto.debug(f"set_xsoar_incident_entries: id={remote_incident_id}, type={incident_type}, close_enabled={close_xsoar_incident}")
+    demisto.debug(
+        f"set_xsoar_incident_entries: id={remote_incident_id}, type={incident_type}, close_enabled={close_xsoar_incident}"
+    )
 
     if not _is_uam_alert(mirrored_object):
         # THREAT logic
@@ -4845,10 +4834,7 @@ def set_xsoar_incident_entries(mirrored_object: dict, entries: list, remote_inci
                 }
             )
             return entries
-        elif (
-            threat_status in (set(INCIDENT_STATUS) - {"resolved"})
-            and close_xsoar_incident
-        ):
+        elif threat_status in (set(INCIDENT_STATUS) - {"resolved"}) and close_xsoar_incident:
             demisto.debug(f"THREAT incident is reopened (status={threat_status}), reopening XSOAR incident: {remote_incident_id}")
             entries.append(
                 {
@@ -4859,7 +4845,9 @@ def set_xsoar_incident_entries(mirrored_object: dict, entries: list, remote_inci
             )
             return entries
         else:
-            demisto.debug(f"THREAT incident no close/reopen action needed (status={threat_status}, close_enabled={close_xsoar_incident})")
+            demisto.debug(
+                f"THREAT incident no close/reopen action needed (status={threat_status}, close_enabled={close_xsoar_incident})"
+            )
             return []
 
     else:
@@ -4895,6 +4883,25 @@ def set_xsoar_incident_entries(mirrored_object: dict, entries: list, remote_inci
             return []
 
 
+def _process_uam_actions(actions_data: list, incident_id: str, operation: str) -> None:
+    """Process UAM GraphQL mutation action results and log outcomes."""
+    for uam_action in actions_data:
+        if not isinstance(uam_action, dict):
+            continue
+        success_items = uam_action.get("success", [])
+        if success_items:
+            demisto.debug(f"UAM_ALERT {operation} updated successfully for [{incident_id}], " f"affected IDs: {success_items}")
+        else:
+            failures = uam_action.get("failure", [])
+            if failures:
+                failure_msg = (
+                    failures[0].get("errorMessage", "Unknown error") if isinstance(failures[0], dict) else str(failures[0])
+                )
+                demisto.debug(f"UAM_ALERT {operation} update failed for [{incident_id}]: {failure_msg}")
+            else:
+                demisto.debug(f"UAM_ALERT {operation} update for [{incident_id}]: no success or failure items returned")
+
+
 def update_remote_incident(
     client: Client,
     incident_id: str,
@@ -4907,7 +4914,7 @@ def update_remote_incident(
 ):
     """
     Update remote incident in SentinelOne based on incident type
-    
+
     Args:
         client: SentinelOne API client
         incident_id: The remote incident ID (threat ID or UAM alert ID)
@@ -4932,14 +4939,15 @@ def update_remote_incident(
                     client.write_threat_note_request(threat_ids=argToList(incident_id), note=note)
                 else:
                     demisto.debug(f"Unable to update the analyst verdict of incident with remote ID [{incident_id}]")
-        
+
         if sentinelone_threat_status:
             action = THREAT_STATUS.get(sentinelone_threat_status, None)
             if action == "resolved":
                 response = client.update_threat_status_request(threat_ids=argToList(incident_id), status=action)
                 if response.get("affected") and int(response.get("affected")) > 0:
                     demisto.debug(
-                        f"Successfully updated the threat status of incident with remote ID [{incident_id}] and marked as resolved"
+                        f"Successfully updated the threat status of incident with remote ID "
+                        f"[{incident_id}] and marked as resolved"
                     )
                     note = "XSOAR - Marked as resolved \n" + closing_notes
                     client.write_threat_note_request(threat_ids=argToList(incident_id), note=note)
@@ -4948,14 +4956,19 @@ def update_remote_incident(
             if action != "resolved" and action is not None:
                 response = client.update_threat_status_request(threat_ids=argToList(incident_id), status=action)
                 if response.get("affected") and int(response.get("affected")) > 0:
-                    demisto.debug(f"Successfully updated the threat status of incident with remote ID [{incident_id}] to {action}")
+                    demisto.debug(
+                        f"Successfully updated the threat status of incident with remote ID [{incident_id}] to {action}"
+                    )
                     note = f"XSOAR - Updated the threat status to {sentinelone_threat_status}"
                     client.write_threat_note_request(threat_ids=argToList(incident_id), note=note)
                 else:
                     demisto.debug(f"Unable to update the threat status of incident with remote ID [{incident_id}]")
-    
+
     elif incident_type == "UAM_ALERT":
-        demisto.debug(f"update_remote_incident: UAM_ALERT id={incident_id}, uam_status={sentinelone_uam_status}, uam_verdict={sentinelone_uam_analyst_verdict}")
+        demisto.debug(
+            f"update_remote_incident: UAM_ALERT id={incident_id}, "
+            f"uam_status={sentinelone_uam_status}, uam_verdict={sentinelone_uam_analyst_verdict}"
+        )
         if sentinelone_uam_status:
             status_action = UAM_ALERT_STATUS.get(sentinelone_uam_status, None)
             demisto.debug(f"UAM_ALERT status mapping: '{sentinelone_uam_status}' -> '{status_action}'")
@@ -4963,21 +4976,11 @@ def update_remote_incident(
                 try:
                     response = client.update_uam_alert_status_request(incident_id, status_action)
                     demisto.debug(f"UAM_ALERT status update raw response for [{incident_id}]: {response}")
-                    actions_triggered = response.get("alertTriggerActions", {})
-                    actions = actions_triggered.get("actions", [])
-                    demisto.debug(f"UAM_ALERT status update actions for [{incident_id}]: {actions}")
-                    if actions:
-                        for action in actions:
-                            success_items = action.get("success", [])
-                            if success_items:
-                                demisto.debug(f"UAM_ALERT status updated successfully for [{incident_id}] to '{status_action}', affected IDs: {success_items}")
-                            else:
-                                failures = action.get("failure", [])
-                                if failures:
-                                    failure_msg = failures[0].get("errorMessage", "Unknown error")
-                                    demisto.debug(f"UAM_ALERT status update failed for [{incident_id}]: {failure_msg}")
-                                else:
-                                    demisto.debug(f"UAM_ALERT status update for [{incident_id}]: no success or failure items returned")
+                    actions_triggered = (response or {}).get("alertTriggerActions") or {}
+                    raw_actions = actions_triggered.get("actions", []) if isinstance(actions_triggered, dict) else []
+                    demisto.debug(f"UAM_ALERT status update actions for [{incident_id}]: {raw_actions}")
+                    if raw_actions:
+                        _process_uam_actions(raw_actions, incident_id, "status")
                     else:
                         demisto.debug(f"UAM_ALERT status update for [{incident_id}]: empty actions list in response")
                 except Exception as e:
@@ -4992,27 +4995,19 @@ def update_remote_incident(
                 try:
                     response = client.update_uam_alert_analyst_verdict_request(incident_id, verdict_action)
                     demisto.debug(f"UAM_ALERT verdict update raw response for [{incident_id}]: {response}")
-                    actions_triggered = response.get("alertTriggerActions", {})
-                    actions = actions_triggered.get("actions", [])
-                    demisto.debug(f"UAM_ALERT verdict update actions for [{incident_id}]: {actions}")
-                    if actions:
-                        for action in actions:
-                            success_items = action.get("success", [])
-                            if success_items:
-                                demisto.debug(f"UAM_ALERT verdict updated successfully for [{incident_id}] to '{verdict_action}', affected IDs: {success_items}")
-                            else:
-                                failures = action.get("failure", [])
-                                if failures:
-                                    failure_msg = failures[0].get("errorMessage", "Unknown error")
-                                    demisto.debug(f"UAM_ALERT verdict update failed for [{incident_id}]: {failure_msg}")
-                                else:
-                                    demisto.debug(f"UAM_ALERT verdict update for [{incident_id}]: no success or failure items returned")
+                    actions_triggered = (response or {}).get("alertTriggerActions") or {}
+                    raw_actions = actions_triggered.get("actions", []) if isinstance(actions_triggered, dict) else []
+                    demisto.debug(f"UAM_ALERT verdict update actions for [{incident_id}]: {raw_actions}")
+                    if raw_actions:
+                        _process_uam_actions(raw_actions, incident_id, "verdict")
                     else:
                         demisto.debug(f"UAM_ALERT verdict update for [{incident_id}]: empty actions list in response")
                 except Exception as e:
                     demisto.debug(f"UAM_ALERT verdict update exception for [{incident_id}]: {str(e)}")
             else:
-                demisto.debug(f"UAM_ALERT verdict '{sentinelone_uam_analyst_verdict}' not found in UAM_ANALYST_VERDICT mapping, skipping")
+                demisto.debug(
+                    f"UAM_ALERT verdict '{sentinelone_uam_analyst_verdict}' not found in UAM_ANALYST_VERDICT mapping, skipping"
+                )
 
         if not sentinelone_uam_status and not sentinelone_uam_analyst_verdict:
             demisto.debug(f"UAM_ALERT no updates to apply for incident [{incident_id}]: both status and verdict are empty")
@@ -5042,20 +5037,26 @@ def update_remote_system_command(client: Client, args: dict) -> str:
     parsed_args = UpdateRemoteSystemArgs(args)
     delta = parsed_args.delta
     remote_incident_id = parsed_args.remote_incident_id
-    demisto.debug(f"update_remote_system_command: remote_id={remote_incident_id}, incident_changed={parsed_args.incident_changed}, delta={delta}")
+    demisto.debug(
+        f"update_remote_system_command: remote_id={remote_incident_id}, "
+        f"incident_changed={parsed_args.incident_changed}, delta={delta}"
+    )
     try:
         if parsed_args.incident_changed:
             is_uam = bool(
                 delta.get("sentineloneuamalertstatus")
                 or delta.get("sentineloneuamalertanalystverdict")
-                or parsed_args.data.get("sentineloneuamalertid")
+                or (parsed_args.data or {}).get("sentineloneuamalertid")
             )
             demisto.debug(f"update_remote_system_command: is_uam={is_uam} for remote_id={remote_incident_id}")
             if is_uam:
                 # For UAM alerts, use sentineloneuamalertid from incident data as the authoritative ID.
                 # remote_incident_id (dbotMirrorId) can get corrupted; the custom field is reliable.
-                uam_alert_id = parsed_args.data.get("sentineloneuamalertid") or remote_incident_id
-                demisto.debug(f"update_remote_system_command: UAM alert ID resolved to [{uam_alert_id}] (remote_id was [{remote_incident_id}])")
+                uam_alert_id = (parsed_args.data or {}).get("sentineloneuamalertid") or remote_incident_id
+                demisto.debug(
+                    f"update_remote_system_command: UAM alert ID resolved to [{uam_alert_id}] "
+                    f"(remote_id was [{remote_incident_id}])"
+                )
                 sentinelone_uam_status = delta.get("sentineloneuamalertstatus", None)
                 sentinelone_uam_analyst_verdict = delta.get("sentineloneuamalertanalystverdict", None)
                 closing_notes = delta.get("closeNotes", "")
@@ -5161,14 +5162,14 @@ def get_remote_data_command(client: Client, args: dict, params: dict):
             f"Performing get-remote-data command with incident id: {remote_incident_id} "
             f"and last_update: {remote_args.last_update}"
         )
-        
+
         # Fetch incident data (tries THREAT first, then UAM_ALERT)
         mirrored_data = get_remote_incident_data(client, remote_incident_id)
-        
+
         if mirrored_data:
             incident_type = "UAM_ALERT" if _is_uam_alert(mirrored_data) else "THREAT"
             demisto.debug(f"Successfully fetched remote incident data: {incident_type} ({remote_incident_id})")
-            
+
             # Process entries for incident close/reopen based on status changes
             close_xsoar_incident = demisto.params().get("close_incident", False)
             entries = set_xsoar_incident_entries(mirrored_data, entries, remote_incident_id, close_xsoar_incident)
@@ -5207,18 +5208,20 @@ def get_modified_remote_data_command(client: Client, args: dict):
     modified_ids_to_mirror = []
     last_update_utc_str = last_update_utc.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     updated_at_timestamp = int(last_update_utc.timestamp() * 1000)
-    
+
     # Fetch modified THREAT incidents using updatedAt
     raw_threats = client.get_threats_request(updated_from=last_update_utc_str, limit=1000, include_resolved_param=False)
     for threat in raw_threats:
         modified_ids_to_mirror.append(threat.get("id"))
         demisto.debug(f"THREAT modified: {threat.get('id')} (updatedAt: {threat.get('updatedAt', 'N/A')})")
-    
+
     # Fetch modified UAM_ALERT incidents if configured
     fetch_uam_alert_type = demisto.params().get("fetch_uam_alert_type", "")
     if fetch_uam_alert_type:
         # Fetch UAM alerts for change detection using updatedAt timestamp
-        uam_alerts, _ = client.get_uam_alerts_graphql_req(updated_at_timestamp, fetch_uam_alert_type, 1000, filter_by_updated_at=True)
+        uam_alerts, _ = client.get_uam_alerts_graphql_req(
+            updated_at_timestamp, fetch_uam_alert_type, 1000, filter_by_updated_at=True
+        )
         for alert in uam_alerts:
             alert_id = alert.get("node", {}).get("id")
             alert_updated_at = alert.get("node", {}).get("updatedAt", "N/A")
@@ -5403,7 +5406,6 @@ def to_incident(type, data):
             "rawJSON": json.dumps(data),
             "name": f'Sentinel One {type}: {incident_info.get("classification", "Not classified")}',
             "occurred": incident_info.get("createdAt"),
-            "CustomFields": {},
         }
 
     elif type == "Alert":
@@ -5411,7 +5413,6 @@ def to_incident(type, data):
             "rawJSON": json.dumps(data),
             "name": f'Sentinel One {type}: {data.get("ruleInfo").get("name")}',
             "occurred": data.get("alertInfo").get("createdAt"),
-            "CustomFields": {},
         }
 
     elif type == "UAM Alert":
