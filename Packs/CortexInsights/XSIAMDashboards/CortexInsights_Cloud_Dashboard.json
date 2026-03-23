@@ -1,0 +1,911 @@
+{
+    "dashboards_data": [
+        {
+            "name": "Cortex Insights [Cloud]",
+            "description": "This dashboard provides a comprehensive overview of your organization's cloud security posture by consolidating findings from multiple sources. It highlights key metrics on critical vulnerabilities, posture misconfigurations, malware detections, and the health of your cloud data connectors.",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-5153",
+                    "data": [
+                        {
+                            "key": "xql_1770961717183",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 511,
+                                "phrase": "config timeframe=30d | dataset = findings \n  | filter xdm.finding.is_active = True\n  | filter xdm.finding.category = \"VULNERABILITY\"\n  | filter xdm.finding.asset_class != \"External Surface\"\n  | filter xdm.vulnerability.has_a_fix = true\n  | filter xdm.vulnerability.cvss_score \u003e= 8.0\n  | fields _time, xdm.finding.asset_name, xdm.finding.asset_id, xdm.vulnerability.cve_id, xdm.vulnerability.has_a_fix, xdm.vulnerability.fix_versions, xdm.vulnerability.exploitable, xdm.vulnerability.cve_risk_factors\n  | alter risks = arraymap(json_extract_array(to_json_string(xdm.vulnerability.cve_risk_factors), \"$.\"), json_extract_scalar(\"@element\", \"$.\"))\n  | arrayexpand risks\n  | filter risks in (\"Attack vector: network\", \"Critical severity\", \"Remote execution\", \"Exploit exists - POC\", \"Recent vulnerability\")\n  | comp count() as totals by risks\n  | sort desc totals\n\n| view graph type = pie subtype = full xaxis = risks yaxis = totals ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "full"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "risks"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "totals"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770961604649",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 511,
+                                "phrase": "config timeframe=30d | dataset = findings \n  | filter xdm.finding.category = \"POSTURE\"\n  | filter xdm.finding.is_active = True\n  | fields xdm.finding.asset_name as AssetName\n  | comp count() as findings by AssetName\n  | sort desc findings\n  | limit 10\n\n| view graph type = funnel show_callouts = `true` show_percentage = `false` xaxis = AssetName yaxis = findings ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "funnel",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_percentage",
+                                                "value": "false"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "AssetName"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "findings"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770921346085",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 511,
+                                "phrase": "config timeframe = 30d\n  | dataset = cloud_health_auditing\n  | alter time = format_timestamp(\"%Y-%m-%d\",_time)\n  | fields  time, account, connector, name, resource_id, region, classification, message, error, type, scope\n  | bin _time span = 1d\n  | filter classification not in (\"Success\", \"Scanned\", \"Informational\")\n  | comp count() as total by classification,time\n  | sort desc time\n\n| view graph type = line show_callouts = `true` xaxis = time yaxis = total series = classification default_limit = `false` seriestitle(\"Error\",\"Error\") seriestitle(\"Unsupported\",\"Unsupported\") seriestitle(\"Failed\",\"Failed\") seriestitle(\"Warning\",\"Warning\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "line",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "time"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "total"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "series",
+                                                "value": "classification"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "default_limit",
+                                                "value": "false"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "Error",
+                                                    "Error"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "Unsupported",
+                                                    "Unsupported"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "Failed",
+                                                    "Failed"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "Warning",
+                                                    "Warning"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-8835",
+                    "data": [
+                        {
+                            "key": "xql_1770960866153",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 511,
+                                "phrase": "config timeframe=30d | dataset = findings \n  | filter xdm.finding.is_active = true\n  | fields xdm.finding.category as Category\n  | comp count() as findings by Category\n\n| view graph type = column subtype = stacked layout = horizontal show_callouts = `true` xaxis = Category yaxis = findings ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "stacked"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "layout",
+                                                "value": "horizontal"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "Category"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "findings"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770921680915",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 511,
+                                "phrase": "config timeframe = 30d case_sensitive = false | dataset = findings\n  | filter xdm.finding.category = \"VULNERABILITY\"\n  | filter xdm.finding.asset_class = \"code\"\n  | filter xdm.finding.is_active = true\n  | fields xdm.software_package.language as Language\n  | comp count() as totals by Language\n  | sort desc totals\n\n| view graph type = pie subtype = full show_callouts = `true` xaxis = Language yaxis = totals ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "full"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "Language"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "totals"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1770960722459",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 511,
+                                "phrase": "config timeframe = 30d case_sensitive = false | dataset = findings\n  | filter xdm.finding.category = \"VULNERABILITY\"\n  | filter xdm.finding.asset_class = \"code\"\n  | filter xdm.finding.is_active = true\n  | fields _time, xdm.vulnerability.fix_versions, xdm.code.git.provider as Provider, xdm.repository.name as RepoName, xdm.repository.organization as Organization, xdm.vulnerability.cve_id, xdm.vulnerability.cve_id, xdm.vulnerability.cve_risk_factors, xdm.software_package.language, xdm.software_package.dependency_type\n  | comp count() as totals by RepoName, Organization, Provider\n  | sort desc totals\n\n| view graph type = bubble subtype = packed xaxis = RepoName yaxis = totals series = RepoName bubblerad = totals default_limit = `false` ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "bubble",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "packed"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "RepoName"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "totals"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "series",
+                                                "value": "RepoName"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "bubblerad",
+                                                "value": "totals"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "default_limit",
+                                                "value": "false"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-5692",
+                    "data": [
+                        {
+                            "key": "xql_1770962136792",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 400,
+                                "phrase": "config timeframe = 30d | dataset = findings \n  | filter xdm.finding.category = \"MALWARE\"\n  | filter xdm.finding.description != \"Automatically closed\"\n  | fields xdm.finding.asset_name as Name, xdm.finding.asset_category as Category\n  | comp count() as Events by Name, Category\n  | sort desc Events\n  | limit 10\n\n| view graph type = column subtype = stacked layout = horizontal xaxis = Name yaxis = Events series = Category ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "stacked"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "layout",
+                                                "value": "horizontal"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "Name"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Events"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "series",
+                                                "value": "Category"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "a3235f192fb047ccb56f51cbc6ee10e8",
+            "metadata": {
+                "params": []
+            }
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1770960722459",
+            "title": "Code Vulnerabilities per Repository",
+            "creation_time": 1771947010797,
+            "description": "This widget displays the total count of active code vulnerabilities detected within each repository over the last 30 days. It allows security teams to quickly identify the most vulnerable repositories and prioritize remediation efforts accordingly.",
+            "data": {
+                "phrase": "config timeframe = 30d case_sensitive = false | dataset = findings\n  | filter xdm.finding.category = \"VULNERABILITY\"\n  | filter xdm.finding.asset_class = \"code\"\n  | filter xdm.finding.is_active = true\n  | fields _time, xdm.vulnerability.fix_versions, xdm.code.git.provider as Provider, xdm.repository.name as RepoName, xdm.repository.organization as Organization, xdm.vulnerability.cve_id, xdm.vulnerability.cve_id, xdm.vulnerability.cve_risk_factors, xdm.software_package.language, xdm.software_package.dependency_type\n  | comp count() as totals by RepoName, Organization, Provider\n  | sort desc totals\n\n| view graph type = bubble subtype = packed xaxis = RepoName yaxis = totals series = RepoName bubblerad = totals default_limit = `false` ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "bubble",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "packed"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "RepoName"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "totals"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "series",
+                                "value": "RepoName"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "bubblerad",
+                                "value": "totals"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "default_limit",
+                                "value": "false"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "findings"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1770961604649",
+            "title": "Top 10 assets with posture issues",
+            "creation_time": 1771947010925,
+            "description": "This widget identifies the top 10 assets with the highest number of active posture issues over the past 30 days. This allows security teams to prioritize remediation on the most vulnerable assets to efficiently reduce the organization's attack surface.",
+            "data": {
+                "phrase": "config timeframe=30d | dataset = findings \n  | filter xdm.finding.category = \"POSTURE\"\n  | filter xdm.finding.is_active = True\n  | fields xdm.finding.asset_name as AssetName\n  | comp count() as findings by AssetName\n  | sort desc findings\n  | limit 10\n\n| view graph type = funnel show_callouts = `true` show_percentage = `false` xaxis = AssetName yaxis = findings ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "funnel",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_percentage",
+                                "value": "false"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "AssetName"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "findings"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "findings"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1770921346085",
+            "title": "Cloud Health Statistics",
+            "creation_time": 1771947009523,
+            "description": "This widget charts the daily volume of cloud health issues over the past 30 days, broken down by classification. Tracking these trends allows you to identify widespread misconfigurations and measure the effectiveness of your remediation efforts.",
+            "data": {
+                "phrase": "config timeframe = 30d\n  | dataset = cloud_health_auditing\n  | alter time = format_timestamp(\"%Y-%m-%d\",_time)\n  | fields  time, account, connector, name, resource_id, region, classification, message, error, type, scope\n  | bin _time span = 1d\n  | filter classification not in (\"Success\", \"Scanned\", \"Informational\")\n  | comp count() as total by classification,time\n  | sort desc time\n\n| view graph type = line show_callouts = `true` xaxis = time yaxis = total series = classification default_limit = `false` seriestitle(\"Error\",\"Error\") seriestitle(\"Unsupported\",\"Unsupported\") seriestitle(\"Failed\",\"Failed\") seriestitle(\"Warning\",\"Warning\") ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "line",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "time"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "total"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "series",
+                                "value": "classification"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "default_limit",
+                                "value": "false"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "Error",
+                                    "Error"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "Unsupported",
+                                    "Unsupported"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "Failed",
+                                    "Failed"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "Warning",
+                                    "Warning"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "cloud_health_auditing"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1770921680915",
+            "title": "Code Vulnerabilities Summary by language",
+            "creation_time": 1771947009997,
+            "description": "This widget presents a breakdown of active code vulnerabilities by programming language detected within the last 30 days. This insight helps prioritize security resources and training toward the languages that represent the highest risk to the organization.",
+            "data": {
+                "phrase": "config timeframe = 30d case_sensitive = false | dataset = findings\n  | filter xdm.finding.category = \"VULNERABILITY\"\n  | filter xdm.finding.asset_class = \"code\"\n  | filter xdm.finding.is_active = true\n  | fields xdm.software_package.language as Language\n  | comp count() as totals by Language\n  | sort desc totals\n\n| view graph type = pie subtype = full show_callouts = `true` xaxis = Language yaxis = totals ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "full"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "Language"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "totals"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "findings"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1770960866153",
+            "title": "Not resolved findings",
+            "creation_time": 1771947010858,
+            "description": "This widget displays the total number of unresolved findings from the past 30 days, broken down by category. This view helps security teams identify which finding categories represent the largest backlog, enabling them to prioritize investigation and remediation efforts.",
+            "data": {
+                "phrase": "config timeframe=30d | dataset = findings \n  | filter xdm.finding.is_active = true\n  | fields xdm.finding.category as Category\n  | comp count() as findings by Category\n\n| view graph type = column subtype = stacked layout = horizontal show_callouts = `true` xaxis = Category yaxis = findings ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "stacked"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "layout",
+                                "value": "horizontal"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "Category"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "findings"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "findings"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1770961717183",
+            "title": "Critical Attack Vectors",
+            "creation_time": 1771947011152,
+            "description": "This widget displays the distribution of key risk factors across active, high-severity, and fixable vulnerabilities on your internal assets. This insight allows security teams to prioritize remediation efforts on the vulnerabilities that pose the most immediate and significant threat.",
+            "data": {
+                "phrase": "config timeframe=30d | dataset = findings \n  | filter xdm.finding.is_active = True\n  | filter xdm.finding.category = \"VULNERABILITY\"\n  | filter xdm.finding.asset_class != \"External Surface\"\n  | filter xdm.vulnerability.has_a_fix = true\n  | filter xdm.vulnerability.cvss_score \u003e= 8.0\n  | fields _time, xdm.finding.asset_name, xdm.finding.asset_id, xdm.vulnerability.cve_id, xdm.vulnerability.has_a_fix, xdm.vulnerability.fix_versions, xdm.vulnerability.exploitable, xdm.vulnerability.cve_risk_factors\n  | alter risks = arraymap(json_extract_array(to_json_string(xdm.vulnerability.cve_risk_factors), \"$.\"), json_extract_scalar(\"@element\", \"$.\"))\n  | arrayexpand risks\n  | filter risks in (\"Attack vector: network\", \"Critical severity\", \"Remote execution\", \"Exploit exists - POC\", \"Recent vulnerability\")\n  | comp count() as totals by risks\n  | sort desc totals\n\n| view graph type = pie subtype = full xaxis = risks yaxis = totals ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "full"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "risks"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "totals"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "findings"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1770962136792",
+            "title": "Top 10 malware offenders",
+            "creation_time": 1771947011239,
+            "description": "This widget displays the top 10 assets with the highest number of malware findings over the past 30 days, broken down by asset category. This insight helps prioritize remediation efforts by highlighting the assets most frequently compromised by malware.",
+            "data": {
+                "phrase": "config timeframe = 30d | dataset = findings \n  | filter xdm.finding.category = \"MALWARE\"\n  | filter xdm.finding.description != \"Automatically closed\"\n  | fields xdm.finding.asset_name as Name, xdm.finding.asset_category as Category\n  | comp count() as Events by Name, Category\n  | sort desc Events\n  | limit 10\n\n| view graph type = column subtype = stacked layout = horizontal xaxis = Name yaxis = Events series = Category ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "stacked"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "layout",
+                                "value": "horizontal"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "Name"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Events"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "series",
+                                "value": "Category"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "findings"
+                ],
+                "query_uses_library": false
+            }
+        }
+    ],
+    "fromVersion": "6.10.0"
+}
