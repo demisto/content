@@ -1238,7 +1238,7 @@ class Client(BaseClient):
         """
         body: dict = {"sysparm_quantity": quantity, "variables": variables}
         if no_validation:
-            body["sysparm_no_validation"] = True
+            body["sysparm_no_validation"] = "true"
         return self.send_request(f"servicecatalog/items/{id_}/order_now", "POST", body=body, sc_api=True)
 
     def document_route_to_table_request(self, queue_id: str, document_table: str, document_id: str) -> dict:
