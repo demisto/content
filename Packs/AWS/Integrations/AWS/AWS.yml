@@ -1686,7 +1686,7 @@ script:
       description: The unique string used to ensure the request is processed only once.
       required: false
     - name: user_name
-      description: Username for Kubernetes authentication.
+      description: The username for Kubernetes authentication.
       required: false
     outputs:
     - contextPath: AWS.EKS.AccessEntry.clusterName
