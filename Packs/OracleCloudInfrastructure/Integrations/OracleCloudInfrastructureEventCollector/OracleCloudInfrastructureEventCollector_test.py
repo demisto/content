@@ -1020,7 +1020,8 @@ class TestGetSearchlogsEvents:
             client=dummy_client,
             search_log_query="search query",
             max_fetch=10,
-            searchlog_last_run={},
+            last_searchlogs_ids=[],
+            first_fetch_time="2023-01-01T08:00:00.000Z",
         )
 
         assert len(events) == 2
@@ -1071,7 +1072,8 @@ class TestGetSearchlogsEvents:
             client=dummy_client,
             search_log_query="search query",
             max_fetch=10,
-            searchlog_last_run=searchlog_last_run,
+            last_searchlogs_ids=searchlog_last_run["LastFetchedIds"],
+            first_fetch_time=searchlog_last_run["lastRun"],
         )
 
         assert len(events) == 1
@@ -1128,7 +1130,8 @@ class TestGetSearchlogsEvents:
             client=dummy_client,
             search_log_query="search query",
             max_fetch=10,
-            searchlog_last_run=searchlog_last_run,
+            last_searchlogs_ids=searchlog_last_run["LastFetchedIds"],
+            first_fetch_time=searchlog_last_run["lastRun"],
         )
 
         assert len(events) == 1
@@ -1163,7 +1166,8 @@ class TestGetSearchlogsEvents:
             client=dummy_client,
             search_log_query="search query",
             max_fetch=10,
-            searchlog_last_run=searchlog_last_run,
+            last_searchlogs_ids=searchlog_last_run["LastFetchedIds"],
+            first_fetch_time=searchlog_last_run["lastRun"],
         )
 
         assert events == []
@@ -1205,7 +1209,8 @@ class TestGetSearchlogsEvents:
             client=dummy_client,
             search_log_query="search query",
             max_fetch=2,
-            searchlog_last_run={},
+            last_searchlogs_ids=[],
+            first_fetch_time="2023-01-01T08:00:00.000Z",
         )
 
         assert len(events) == 2
@@ -1237,7 +1242,8 @@ class TestGetSearchlogsEvents:
             client=dummy_client,
             search_log_query="search query",
             max_fetch=10,
-            searchlog_last_run=searchlog_last_run,
+            last_searchlogs_ids=searchlog_last_run["LastFetchedIds"],
+            first_fetch_time=searchlog_last_run["lastRun"],
         )
 
         assert events == []
@@ -1296,7 +1302,8 @@ class TestGetSearchlogsEvents:
             client=dummy_client,
             search_log_query="search query",
             max_fetch=10,
-            searchlog_last_run={},
+            last_searchlogs_ids=[],
+            first_fetch_time="2023-01-01T08:00:00.000Z",
         )
 
         assert len(events) == 3
@@ -1308,11 +1315,13 @@ class TestGetSearchlogsEvents:
         Given:
             - The first API response contains an opc-next-page header with a page token.
             - The second API response has no opc-next-page header.
+            - The second page includes an event with an empty time field.
         When:
             - get_searchlogs_events is called with max_fetch large enough to trigger pagination.
         Then:
             - searchlogs_api_request is called twice.
             - Events from both pages are combined in the result.
+            - The event with an empty time field is included with _time set to None.
         """
         from OracleCloudInfrastructureEventCollector import get_searchlogs_events
 
@@ -1325,6 +1334,7 @@ class TestGetSearchlogsEvents:
         page2_content = {
             "results": [
                 {"data": {"logContent": {"id": "event-p2-1", "time": "2023-01-01T09:00:00.000Z"}}},
+                {"data": {"logContent": {"id": "event-p2-2", "message": "event with no time field"}}},
             ]
         }
 
@@ -1344,16 +1354,20 @@ class TestGetSearchlogsEvents:
             client=dummy_client,
             search_log_query="search query",
             max_fetch=10,
-            searchlog_last_run={"lastRun": "2023-01-01T07:00:00.000Z", "LastFetchedIds": []},
+            last_searchlogs_ids=[],
+            first_fetch_time="2023-01-01T07:00:00.000Z",
         )
 
         assert mocked_api_request.call_count == 2
-        assert len(events) == 3
+        assert len(events) == 4
         assert events[0]["id"] == "event-p1-1"
         assert events[1]["id"] == "event-p1-2"
         assert events[2]["id"] == "event-p2-1"
-        assert last_run["lastRun"] == "2023-01-01T09:00:00.000Z"
-        assert last_run["LastFetchedIds"] == ["event-p2-1"]
+        assert events[3]["id"] == "event-p2-2"
+        assert events[3].get("time") is None
+        assert events[3]["_time"] is None
+        assert last_run["lastRun"] is None
+        assert last_run["LastFetchedIds"] == ["event-p2-2"]
 
 
 class TestTestModule:

@@ -409,7 +409,7 @@ def get_searchlogs_events(
 
     except Exception as e:
         demisto.error(f"Error while fetching search log events: {e}")
-        return [],  {"lastRun": last_run, "LastFetchedIds": last_searchlogs_ids}
+        return [], {"lastRun": last_run, "LastFetchedIds": last_searchlogs_ids}
 
     return searchlogs_events, {"lastRun": last_run, "LastFetchedIds": last_searchlogs_ids}
 
@@ -588,10 +588,15 @@ def main():
                 if searchlog_last_run.get("lastRun"):
                     first_fetch_time_search_logs = searchlog_last_run["lastRun"]
                 else:
-                    first_fetch_time_search_logs = (datetime.now() -timedelta(minutes=10)).strftime(SEARCHLOG_DATE_FORMAT)
-                
+                    first_fetch_time_search_logs = (datetime.now() - timedelta(minutes=10)).strftime(SEARCHLOG_DATE_FORMAT)
+
                 searchlog_events, searchlog_last_run = get_searchlogs_events(
-                    client, searchlogs_query, max_fetch,searchlog_last_run.get('LastFetchedIds',[]),first_fetch_time_search_logs)
+                    client,
+                    searchlogs_query,
+                    max_fetch,
+                    searchlog_last_run.get("LastFetchedIds", []),
+                    first_fetch_time_search_logs,
+                )
 
             if "Audit" in event_types_to_fetch:
                 audit_events, last_audit_event_time = get_events(
