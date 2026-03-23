@@ -1775,7 +1775,7 @@ script:
       description: The unique string used to ensure the request is processed only once.
       required: false
     - name: type
-      description: The type of access entry to create. Default is Standard.
+      description: The type of access entry to create.
       required: false
       auto: PREDEFINED
       predefined:
