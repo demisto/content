@@ -1,4 +1,4 @@
-# Check Point Exposure Management
+# Check Point Exposure Management (formally Cyberint)
 
 Check Point Exposure Management provides intelligence-driven digital risk protection.
 Check Point Exposure Management helps you identify emerging threats, verifies your security posture, and responds effectively to reduce their impact.
