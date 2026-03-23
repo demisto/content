@@ -16,16 +16,11 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
         "platform"
     ],
     "itemPrefix": [
         "ZeroFox"
     ],
     "dependencies": {},
-    "displayedImages": [],
-    "supportedModules": [
-        "agentix",
-        "xsiam"
-    ]
+    "displayedImages": []
 }

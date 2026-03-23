@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Removed XSIAM marketplace tag, as it was not completely supported."
+}
