@@ -1812,7 +1812,7 @@ script:
       description: The Kubernetes groups that the access entry is associated with.
       type: Array
     - contextPath: AWS.EKS.AccessEntry.tags
-      description: Metadata tags associated with the access entry.
+      description: The metadata tags associated with the access entry.
       type: Object
     - contextPath: AWS.EKS.AccessEntry.accessEntryArn
       description: The ARN of the access entry.
