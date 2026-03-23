@@ -1783,6 +1783,9 @@ script:
       - FARGATE_LINUX
       - EC2_LINUX
       - EC2_WINDOWS
+      - EC2
+      - HYBRID_LINUX
+      - HYPERPOD_LINUX  
     - name: user_name
       description: Username for Kubernetes authentication.
       required: false
@@ -1866,6 +1869,10 @@ script:
     - name: next_token
       description: The nextToken value returned from a previous paginated ListClusters request. Use the value from AWS.EKS.ClustersNextToken.
       required: false
+    - name: include
+      description: Indicates whether external clusters are included in the returned list. Set to 'all' to include connected clusters.
+      required: false
+      isArray: true
     outputs:
     - contextPath: AWS.EKS.Cluster
       description: A list of all of the clusters for your account in the specified Region.

@@ -14299,8 +14299,8 @@ def test_eks_list_clusters_command_empty_result(mocker):
     result = EKS.list_clusters_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert "AWS EKS Clusters" in result.readable_output
-    assert "AWS.EKS(true)" not in result.outputs
+    assert "There aren't any clusters." in result.readable_output
+    assert result.outputs is None
 
 
 def test_eks_list_clusters_command_with_pagination(mocker):
@@ -14349,6 +14349,31 @@ def test_eks_list_clusters_command_with_limit(mocker):
     assert isinstance(result, CommandResults)
     call_kwargs = mock_client.list_clusters.call_args[1]
     assert call_kwargs["maxResults"] == 10
+
+
+def test_eks_list_clusters_command_with_include(mocker):
+    """
+    Given: A mocked boto3 EKS client and an include argument set to 'all'.
+    When: list_clusters_command is called with include='all'.
+    Then: It should pass the include list to the API call to return connected clusters.
+    """
+    from AWS import EKS
+
+    mock_client = mocker.Mock()
+    mock_client.list_clusters.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "clusters": ["cluster-1", "connected-cluster-1"],
+    }
+
+    args = {"account_id": "123456789012", "region": "us-east-1", "include": "all"}
+
+    result = EKS.list_clusters_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.list_clusters.call_args[1]
+    assert call_kwargs["include"] == ["all"]
+    assert "cluster-1" in result.readable_output
+    assert "connected-cluster-1" in result.readable_output
 
 
 def test_create_traffic_mirror_session_command_failure(mocker):

@@ -302,6 +302,7 @@ Returns a list of EKS clusters.
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
 | limit | The maximum number of clusters returned in response. The possible values are between 1 and 100. Default is 50. | Optional |
 | next_token | The nextToken value returned from a previous paginated ListClusters request. Use the value from AWS.EKS.ClustersNextToken. | Optional |
+| include | Indicates whether external clusters are included in the returned list. Set to 'all' to include connected clusters. Supports comma-separated values. | Optional |
 
 #### Context Output
 

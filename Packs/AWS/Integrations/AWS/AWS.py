@@ -5752,16 +5752,10 @@ class EKS:
         kwargs: Dict[str, Any] = {
             "clusterName": cluster_name,
             "principalArn": principal_arn,
+            "kubernetesGroups": argToList(args.get("kubernetes_groups")),
+            "clientRequestToken": args.get("client_request_token"),
+            "username": args.get("user_name")
         }
-
-        if kubernetes_groups := args.get("kubernetes_groups"):
-            kwargs["kubernetesGroups"] = argToList(kubernetes_groups)
-
-        if client_request_token := args.get("client_request_token"):
-            kwargs["clientRequestToken"] = client_request_token
-
-        if user_name := args.get("user_name"):
-            kwargs["username"] = user_name
 
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(
@@ -5773,13 +5767,11 @@ class EKS:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        access_entry = response.get("accessEntry", {})
-        access_entry["createdAt"] = datetime_to_string(access_entry.get("createdAt"))
-        access_entry["modifiedAt"] = datetime_to_string(access_entry.get("modifiedAt"))
+        access_entry = serialize_response_with_datetime_encoding(response.get("accessEntry", {}))
 
         headers = ["clusterName", "principalArn", "username", "type", "createdAt"]
         readable_output = tableToMarkdown(
-            name="AWS EKS Access Entry",
+            name="The AWS EKS Access Entry was updated successfully",
             t=access_entry,
             headers=headers,
             removeNull=True,
@@ -5802,7 +5794,7 @@ class EKS:
         Args:
             client (BotoClient): The boto3 client for EKS service
             args (Dict[str, Any]): Command arguments including cluster_name, principal_arn,
-                kubernetes_groups, tags, client_request_token, and type
+                kubernetes_groups, client_request_token, and type
 
         Returns:
             CommandResults: Results containing the created access entry details
@@ -5813,35 +5805,25 @@ class EKS:
         kwargs: Dict[str, Any] = {
             "clusterName": cluster_name,
             "principalArn": principal_arn,
+            "kubernetesGroups": argToList(args.get("kubernetes_groups")),
+            "clientRequestToken": args.get("client_request_token"),
+            "username": args.get("user_name"),
+            "type": args.get("type")
         }
 
-        if kubernetes_groups := args.get("kubernetes_groups"):
-            kwargs["kubernetesGroups"] = argToList(kubernetes_groups)
-
-        if client_request_token := args.get("client_request_token"):
-            kwargs["clientRequestToken"] = client_request_token
-
-        if entry_type := args.get("type"):
-            kwargs["type"] = entry_type
-
-        if user_name := args.get("user_name"):
-            kwargs["username"] = user_name
-
         remove_nulls_from_dictionary(kwargs)
-        print_debug_logs(client, f"Creating EKS access entry for cluster: {cluster_name}, principal: {principal_arn}")
+        print_debug_logs(client, f"Creating EKS access entry for cluster: {cluster_name}, principal: {principal_arn}, {kwargs=}")
 
         response = client.create_access_entry(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        access_entry = response.get("accessEntry", {})
-        access_entry["createdAt"] = datetime_to_string(access_entry.get("createdAt"))
-        access_entry["modifiedAt"] = datetime_to_string(access_entry.get("modifiedAt"))
+        access_entry = serialize_response_with_datetime_encoding(response.get("accessEntry", {}))  
 
         headers = ["clusterName", "principalArn", "username", "type", "createdAt"]
         readable_output = tableToMarkdown(
-            name="AWS EKS Access Entry",
+            name="The AWS EKS Access Entry was created successfully",
             t=access_entry,
             headers=headers,
             removeNull=True,
@@ -5863,12 +5845,16 @@ class EKS:
 
         Args:
             client (BotoClient): The boto3 client for EKS service
-            args (Dict[str, Any]): Command arguments including account_id, region, limit, next_token
+            args (Dict[str, Any]): Command arguments including account_id, region, limit, next_token, include
 
         Returns:
             CommandResults: Results containing the list of EKS cluster names
         """
         kwargs = build_pagination_kwargs(args, max_limit=100, limit_name="maxResults", next_token_name="nextToken")
+
+        if include := argToList(args.get("include")):
+            kwargs["include"] = include
+
         remove_nulls_from_dictionary(kwargs)
 
         print_debug_logs(client, f"Listing EKS clusters with parameters: {kwargs}")
@@ -5879,6 +5865,9 @@ class EKS:
 
         clusters = response.get("clusters", [])
         next_token = response.get("nextToken")
+
+        if not clusters:
+            return CommandResults(readable_output="There aren't any clusters.")
 
         clusters_data = [{"ClusterName": cluster} for cluster in clusters]
 
@@ -5891,10 +5880,9 @@ class EKS:
         )
 
         outputs: Dict[str, Any] = {
-            "AWS.EKS.Cluster(val.name && val.name == obj.name)": clusters,
+            "AWS.EKS.Clusters": clusters,
+            "AWS.EKS(true)": {"ClustersNextToken": next_token}
         }
-        if next_token:
-            outputs["AWS.EKS(true)"] = {"ClustersNextToken": next_token}
 
         return CommandResults(
             readable_output=readable_output,
