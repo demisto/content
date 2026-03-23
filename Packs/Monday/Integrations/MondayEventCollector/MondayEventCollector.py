@@ -14,6 +14,9 @@ urllib3.disable_warnings()
 VENDOR = "Monday"
 PRODUCT = "Monday"
 
+# Monday.com API version to pin requests to, preventing breaking changes from API deprecation.
+MONDAY_API_VERSION = "2024-10"
+
 # Event type string as appears in the yml file
 AUDIT_LOGS_TYPE = "Audit Logs"
 ACTIVITY_LOGS_TYPE = "Activity Logs"
@@ -106,7 +109,11 @@ class ActivityLogsClient(BaseClient):
         """
         demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}Requesting activity logs\nQuery: {query}")
 
-        headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+            "API-Version": MONDAY_API_VERSION,
+        }
 
         response = self._http_request(
             method="POST",
@@ -131,7 +138,10 @@ class ActivityLogsClient(BaseClient):
         """
         try:
             response = self.get_activity_logs_request(query, access_token)
-            logs = response["data"]["boards"][0].get("activity_logs", [])
+            boards = response.get("data", {}).get("boards", [])
+            if not boards:
+                return True
+            logs = boards[0].get("activity_logs", [])
             return not logs
         except Exception as e:
             demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}Error checking empty page: {str(e)}")
@@ -634,7 +644,11 @@ def get_activity_logs(last_run: dict, now_ms: int, limit: int, board_id: str, cl
         raise DemistoException(f"Exception during get activity logs. Exception is {e!s}")
 
     # Extract board logs from response
-    board_logs = response.get("data", {}).get("boards", [{}])[0].get("activity_logs", [])
+    boards = response.get("data", {}).get("boards", [])
+    if not boards:
+        demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}No boards returned in API response for board_id: {board_id}")
+        return [], last_run
+    board_logs = boards[0].get("activity_logs", [])
     fetched_logs = extract_activity_log_data(board_logs)
     demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}Successfully fetched {len(fetched_logs)} activity logs from board: {board_id}")
 
@@ -965,8 +979,8 @@ def initiate_activity_log_last_run(last_run: dict, board_ids_list: list[str]) ->
         Output: {"123": {}, "456": {}}
 
     """
-    if not last_run:
-        for board_id in board_ids_list:
+    for board_id in board_ids_list:
+        if board_id not in last_run:
             last_run[board_id] = {}
     return last_run
 

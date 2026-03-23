@@ -7,6 +7,8 @@ from MondayEventCollector import (
     subtract_epsilon_from_timestamp,
     fetch_audit_logs,
     fetch_activity_logs,
+    get_activity_logs,
+    initiate_activity_log_last_run,
     test_connection as monday_test_connection,
 )
 import demistomock as demisto  # noqa: F401
@@ -796,3 +798,150 @@ class TestConnectionAndUtilities:
         timestamp = "2024-06-03T14:00:00.000Z"
         result = subtract_epsilon_from_timestamp(timestamp)
         assert result == "2024-06-03T13:59:59.999000Z"
+
+
+class TestInitiateActivityLogLastRun:
+    """Test class for the initiate_activity_log_last_run function fix (XSUP-65171)."""
+
+    def test_empty_last_run_initializes_all_boards(self):
+        """
+        Given:
+            - An empty last_run dict
+            - A list of board IDs ["123", "456"]
+        When:
+            initiate_activity_log_last_run is called
+        Then:
+            All board IDs should be initialized in last_run
+        """
+        last_run: dict = {}
+        board_ids = ["123", "456"]
+        result = initiate_activity_log_last_run(last_run, board_ids)
+        assert "123" in result
+        assert "456" in result
+        assert result["123"] == {}
+        assert result["456"] == {}
+
+    def test_existing_last_run_adds_new_boards(self):
+        """
+        Given:
+            - A last_run dict with existing board "123" data
+            - A list of board IDs ["123", "456", "789"]
+        When:
+            initiate_activity_log_last_run is called
+        Then:
+            New board IDs should be added without overwriting existing data
+        """
+        last_run = {"123": {"last_timestamp": "2024-06-03T14:25:47.000Z"}}
+        board_ids = ["123", "456", "789"]
+        result = initiate_activity_log_last_run(last_run, board_ids)
+        # Existing board data should be preserved
+        assert result["123"] == {"last_timestamp": "2024-06-03T14:25:47.000Z"}
+        # New boards should be initialized
+        assert result["456"] == {}
+        assert result["789"] == {}
+
+    def test_all_boards_already_exist(self):
+        """
+        Given:
+            - A last_run dict with all board IDs already present
+        When:
+            initiate_activity_log_last_run is called
+        Then:
+            No changes should be made to last_run
+        """
+        last_run = {
+            "123": {"last_timestamp": "2024-06-03T14:25:47.000Z"},
+            "456": {"last_timestamp": "2024-06-03T14:00:00.000Z"},
+        }
+        board_ids = ["123", "456"]
+        result = initiate_activity_log_last_run(last_run, board_ids)
+        assert result["123"] == {"last_timestamp": "2024-06-03T14:25:47.000Z"}
+        assert result["456"] == {"last_timestamp": "2024-06-03T14:00:00.000Z"}
+
+    def test_non_empty_last_run_with_new_board_id(self):
+        """
+        Given:
+            - A non-empty last_run dict (the bug scenario from XSUP-65171)
+            - A new board ID not present in last_run
+        When:
+            initiate_activity_log_last_run is called
+        Then:
+            The new board ID should be added (previously this caused KeyError)
+        """
+        last_run = {"123": {"last_timestamp": "2024-06-03T14:25:47.000Z", "lower_bound_log_id": ["log1"]}}
+        board_ids = ["123", "1808515822"]  # 1808515822 is the board ID from the bug report
+        result = initiate_activity_log_last_run(last_run, board_ids)
+        assert "1808515822" in result
+        assert result["1808515822"] == {}
+        # Existing data preserved
+        assert result["123"]["last_timestamp"] == "2024-06-03T14:25:47.000Z"
+
+
+class TestGetActivityLogsEmptyBoards:
+    """Test class for the empty boards response fix (XSUP-65887)."""
+
+    def test_get_activity_logs_empty_boards_response(self, mocker):
+        """
+        Given:
+            - API returns empty boards list: {"data": {"boards": []}}
+        When:
+            get_activity_logs is called
+        Then:
+            It should return empty list and unchanged last_run instead of IndexError
+        """
+        mock_params = {
+            "credentials": {"identifier": "test_id", "password": "test_secret"},
+            "auth_code": {"password": "test_code"},
+            "activity_logs_url": "https://api.monday.com",
+            "board_ids": "999",
+        }
+        mocker.patch.object(demisto, "params", return_value=mock_params)
+        mocker.patch.object(demisto, "debug")
+
+        mock_client = mocker.MagicMock()
+        mock_client.get_activity_logs_request.return_value = {"data": {"boards": []}}
+
+        mocker.patch("MondayEventCollector.get_access_token", return_value="test_token")
+
+        now_ms = int(time.time() * 1000)
+        last_run: dict = {}
+
+        logs, updated_last_run = get_activity_logs(
+            last_run=last_run, now_ms=now_ms, limit=10, board_id="999", client=mock_client
+        )
+
+        assert logs == []
+        assert updated_last_run == last_run
+
+    def test_get_activity_logs_missing_data_key(self, mocker):
+        """
+        Given:
+            - API returns response without 'data' key: {}
+        When:
+            get_activity_logs is called
+        Then:
+            It should return empty list and unchanged last_run instead of IndexError
+        """
+        mock_params = {
+            "credentials": {"identifier": "test_id", "password": "test_secret"},
+            "auth_code": {"password": "test_code"},
+            "activity_logs_url": "https://api.monday.com",
+            "board_ids": "999",
+        }
+        mocker.patch.object(demisto, "params", return_value=mock_params)
+        mocker.patch.object(demisto, "debug")
+
+        mock_client = mocker.MagicMock()
+        mock_client.get_activity_logs_request.return_value = {}
+
+        mocker.patch("MondayEventCollector.get_access_token", return_value="test_token")
+
+        now_ms = int(time.time() * 1000)
+        last_run: dict = {}
+
+        logs, updated_last_run = get_activity_logs(
+            last_run=last_run, now_ms=now_ms, limit=10, board_id="999", client=mock_client
+        )
+
+        assert logs == []
+        assert updated_last_run == last_run
