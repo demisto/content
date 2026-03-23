@@ -1,3 +1,0 @@
-[{"continuationTime": "2024-03-21T05:31:06Z","heartbeat": true},
-{},
-{"continuationTime": "2024-03-21T07:31:06Z","heartbeat": true},

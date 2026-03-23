@@ -1,7 +1,0 @@
-{
-    "error": {
-        "code": 400,
-        "message": "invalid name",
-        "status": "INVALID_ARGUMENT"
-    }
-}

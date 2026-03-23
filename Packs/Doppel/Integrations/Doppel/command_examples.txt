@@ -1,5 +1,0 @@
-doppel-create-alert entity="http://example-entity-url.com"
-doppel-get-alert id="entity-id" entity="http://example-entity-url.com"
-doppel-update-alert id="entity-id" 
-doppel-get-alerts
-doppel-create-abuse-alert entity="http://example-entity-url.com"

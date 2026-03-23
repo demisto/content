@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "The *query* argument is now required when using the command ***export-indicators-list-update***"
-}

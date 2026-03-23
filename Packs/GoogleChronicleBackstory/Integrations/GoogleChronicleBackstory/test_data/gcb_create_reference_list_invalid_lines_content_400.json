@@ -1,7 +1,0 @@
-{
-    "error": {
-        "code": 400,
-        "message": "generic::invalid_argument: validating parsed content: invalid cidr pattern dummy_lines",
-        "status": "INVALID_ARGUMENT"
-    }
-}
