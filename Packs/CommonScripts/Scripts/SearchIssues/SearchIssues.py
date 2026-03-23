@@ -10,7 +10,7 @@ OUTPUT_KEYS = [
     "issue_name",
     "issue_source",
     "case_ids",
-    "endpoint_id",
+    "agent_id",
     "actor_process_image_sha256",
     "causality_actor_process_image_sha256",
     "action_process_image_sha256",
@@ -143,6 +143,10 @@ def main():  # pragma: no cover
 
         context = results.get("EntryContext", {}).get("Core.Issue(val.internal_id && val.internal_id == obj.internal_id)")
         human_readable: str = results.get("HumanReadable", "")
+
+        for item in context or []:
+            if "agent_id" in item:
+                item["endpoint_id"] = item.pop("agent_id")
 
         return_results(
             CommandResults(

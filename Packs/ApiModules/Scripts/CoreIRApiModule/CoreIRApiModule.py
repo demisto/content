@@ -4100,7 +4100,7 @@ ISSUE_FIELDS = {
     "actor_process_image_name": "actor_process_image_name",
     "dst_action_external_hostname": "dst_action_external_hostname",
     "os_actor_process_image_sha256": "os_actor_process_image_sha256",
-    "endpoint_id": "agent_id",
+    "agent_id": "agent_id",
     "Identity_type": "identity_type",
     "action_external_hostname": "action_external_hostname",
     "host_ip": "agent_ip_addresses",
@@ -4338,8 +4338,6 @@ def get_issues_by_filter_command(client: CoreClient, args: Dict):
     returned_count = len(data)
 
     for issue in data:
-        if "agent_id" in issue:
-            issue["endpoint_id"] = issue.pop("agent_id")
         if "alert_action_status" in issue:
             action_status = issue.get("alert_action_status")
             issue["alert_action_status_readable"] = ALERT_STATUS_TYPES.get(action_status, action_status)
