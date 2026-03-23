@@ -4181,7 +4181,7 @@ def create_issues_filter(args) -> dict:
         FilterType.CONTAINS,
         argToList(args.get("actor_process_image_command_line")),
     )
-    filter_builder.add_field(ISSUE_FIELDS["endpoint_id"], FilterType.EQ, argToList(args.get("endpoint_id")))
+    filter_builder.add_field(ISSUE_FIELDS["agent_id"], FilterType.EQ, argToList(args.get("endpoint_id")))
     filter_builder.add_field(ISSUE_FIELDS["Identity_type"], FilterType.EQ, argToList(args.get("Identity_type")))
     filter_builder.add_field(
         ISSUE_FIELDS["action_process_image_command_line"],
