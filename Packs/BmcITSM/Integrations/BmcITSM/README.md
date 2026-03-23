@@ -31,7 +31,9 @@ This integration was integrated and tested with version 22.1.05 of BmcITSM
 ## Prerequisites: Register the Client
 
 ### Register Non-Native (Standard) Clients
+
 For an official BMC registration demo, watch this [video](https://www.youtube.com/watch?v=9DVAvO-Zs_w&list=PLLwZptFDIb_texh1fnPprXOB5-pq3ZiO5&index=13) between minutes 28:30 and 31:10.
+
 1. Log in to the RSSO Administration Console and navigate to the **OAuth2** section.  
 2. Ensure general settings such as access token timeout, refresh token timeout, and the RSSO server URL are correctly configured.  
 3. From the **OAuth2** section, navigate to **Clients** > **Register Client**.
@@ -61,6 +63,7 @@ If you lose a secret or need a specific secret length (36–256 ASCII characters
 
 1. From the **OAuth2** section, navigate to **Clients** > **Register Client**.
 2. Configure the following fields.  
+
     | Field | Description |
     | :--- | :--- |
     | **Native (Public) Client** | **Must be selected** for native applications. |
