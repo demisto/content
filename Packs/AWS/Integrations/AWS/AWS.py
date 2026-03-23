@@ -5754,7 +5754,7 @@ class EKS:
             "principalArn": principal_arn,
             "kubernetesGroups": argToList(args.get("kubernetes_groups")),
             "clientRequestToken": args.get("client_request_token"),
-            "username": args.get("user_name")
+            "username": args.get("user_name"),
         }
 
         remove_nulls_from_dictionary(kwargs)
@@ -5808,7 +5808,7 @@ class EKS:
             "kubernetesGroups": argToList(args.get("kubernetes_groups")),
             "clientRequestToken": args.get("client_request_token"),
             "username": args.get("user_name"),
-            "type": args.get("type")
+            "type": args.get("type"),
         }
 
         remove_nulls_from_dictionary(kwargs)
@@ -5819,7 +5819,7 @@ class EKS:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        access_entry = serialize_response_with_datetime_encoding(response.get("accessEntry", {}))  
+        access_entry = serialize_response_with_datetime_encoding(response.get("accessEntry", {}))
 
         headers = ["clusterName", "principalArn", "username", "type", "createdAt"]
         readable_output = tableToMarkdown(
@@ -5879,10 +5879,7 @@ class EKS:
             headerTransform=pascalToSpace,
         )
 
-        outputs: Dict[str, Any] = {
-            "AWS.EKS.Clusters": clusters,
-            "AWS.EKS(true)": {"ClustersNextToken": next_token}
-        }
+        outputs: Dict[str, Any] = {"AWS.EKS.Clusters": clusters, "AWS.EKS(true)": {"ClustersNextToken": next_token}}
 
         return CommandResults(
             readable_output=readable_output,
