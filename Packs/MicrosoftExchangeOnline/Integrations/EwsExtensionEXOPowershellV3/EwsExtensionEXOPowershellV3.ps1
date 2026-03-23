@@ -2685,6 +2685,21 @@ function CheckConnectionCommand($client)
     $results += "Organization: $($client.organization)"
     $results += "AppID: $($client.app_id)"
 
+    # --- Egress IP ---
+    $results += ""
+    $results += "=== Egress IP ==="
+    try {
+        $egressIP = Invoke-RestMethod -Uri "https://api.ipify.org" -TimeoutSec 5 -ErrorAction Stop
+        $results += "Public IP: $egressIP"
+    } catch {
+        try {
+            $egressIP = Invoke-RestMethod -Uri "https://checkip.amazonaws.com" -TimeoutSec 5 -ErrorAction Stop
+            $results += "Public IP: $($egressIP.Trim())"
+        } catch {
+            $results += "Public IP: Unable to determine ($($_.Exception.Message))"
+        }
+    }
+
     # --- Environment Info ---
     $results += ""
     $results += "=== Environment ==="
@@ -3081,27 +3096,104 @@ function CheckConnectionCommand($client)
     $results += "=== Step 2: Exchange Online REST Endpoint ==="
     if ($tokenSuccess -and $token) {
         $exoEndpoint = "https://outlook.office365.com/adminapi/beta/$($client.organization)/InvokeCommand"
-        $results += "Endpoint: $exoEndpoint"
+        $exoHeaders = @{ "Authorization" = "Bearer $token" }
+        $exoBody = '{"CmdletInput":{"CmdletName":"Get-Mailbox","Parameters":{"ResultSize":"1"}}}'
+
+        # Log request details
+        $results += ""
+        $results += "--- Request ---"
+        $results += "  Method: POST"
+        $results += "  URL: $exoEndpoint"
+        $results += "  Headers:"
+        $results += "    Authorization: Bearer $($token.Substring(0, [Math]::Min(20, $token.Length)))...[truncated]"
+        $results += "    Content-Type: application/json"
+        $results += "  Body: $exoBody"
+
         try {
-            $exoHeaders = @{ "Authorization" = "Bearer $token" }
-            $exoBody = '{"CmdletInput":{"CmdletName":"Get-Mailbox","Parameters":{"ResultSize":"1"}}}'
-            $exoResponse = Invoke-RestMethod -Uri $exoEndpoint `
+            $exoResponse = Invoke-WebRequest -Uri $exoEndpoint `
                 -Method POST -Headers $exoHeaders `
                 -ContentType "application/json" `
                 -Body $exoBody `
+                -UseBasicParsing `
                 -ErrorAction Stop
             $results += "Result: SUCCESS - Exchange Online endpoint responded"
+            $results += "HTTP Status Code: $($exoResponse.StatusCode)"
+            $results += "Content Length: $($exoResponse.Content.Length) bytes"
+
+            # Show response headers
+            $results += ""
+            $results += "--- Response Headers ---"
+            foreach ($headerName in $exoResponse.Headers.Keys) {
+                $headerValue = $exoResponse.Headers[$headerName]
+                if ($headerValue -is [System.Collections.IEnumerable] -and $headerValue -isnot [string]) {
+                    $headerValue = $headerValue -join ", "
+                }
+                $results += "  ${headerName}: $headerValue"
+            }
+
+            # Show response body preview
+            $responseBody = $exoResponse.Content
+            if ($responseBody.Length -gt 0) {
+                $results += ""
+                $results += "--- Response Body (first 500 chars) ---"
+                $results += $responseBody.Substring(0, [Math]::Min(500, $responseBody.Length))
+            }
         }
         catch {
             $realError = $_.ErrorDetails.Message
             $statusCode = $null
+            $responseHeaders = $null
             if ($_.Exception.Response) {
                 $statusCode = $_.Exception.Response.StatusCode.value__
+                # Capture response headers from the error response
+                try {
+                    $responseHeaders = $_.Exception.Response.Headers
+                } catch {
+                    # Headers may not be available
+                }
+                # Try to read the response body from the stream
+                try {
+                    $responseStream = $_.Exception.Response.GetResponseStream()
+                    if ($responseStream) {
+                        $reader = [System.IO.StreamReader]::new($responseStream)
+                        $streamBody = $reader.ReadToEnd()
+                        $reader.Close()
+                        if ($streamBody -and -not $realError) {
+                            $realError = $streamBody
+                        }
+                    }
+                } catch {
+                    # Stream may not be available
+                }
             }
             $results += "Result: FAILED"
             $results += "HTTP Status Code: $statusCode"
+
+            # Show response headers from error response
+            if ($responseHeaders) {
+                $results += ""
+                $results += "--- Response Headers ---"
+                foreach ($headerName in $responseHeaders.AllKeys) {
+                    $headerValue = $responseHeaders[$headerName]
+                    $results += "  ${headerName}: $headerValue"
+                }
+            }
+
             if ($realError) {
-                $results += "Error response: $realError"
+                # Check for null bytes (proxy corruption indicator)
+                $nullByteCount = ($realError.ToCharArray() | Where-Object { $_ -eq [char]0 }).Count
+                if ($nullByteCount -gt 0) {
+                    $results += ""
+                    $results += "WARNING: Response contains $nullByteCount null bytes - proxy is corrupting the response"
+                    $results += "Response length: $($realError.Length) characters"
+                    $hexBytes = [System.Text.Encoding]::UTF8.GetBytes($realError.Substring(0, [Math]::Min(64, $realError.Length)))
+                    $hexDump = ($hexBytes | ForEach-Object { $_.ToString("X2") }) -join " "
+                    $results += "Hex dump (first 64 bytes): $hexDump"
+                } else {
+                    $results += ""
+                    $results += "--- Error Response Body ---"
+                    $results += $realError.Substring(0, [Math]::Min(1000, $realError.Length))
+                }
             } else {
                 $results += "Exception: $($_.Exception.Message)"
             }
@@ -3110,31 +3202,106 @@ function CheckConnectionCommand($client)
         $results += "SKIPPED - Token acquisition failed in Step 1"
     }
 
-    # Step 3: Test Connect-ExchangeOnline
+    # Step 3: Test Connect-ExchangeOnline (with verbose/debug output)
     $results += ""
     $results += "=== Step 3: Connect-ExchangeOnline ==="
     try {
-        # Call Connect-ExchangeOnline directly with -ErrorAction Stop
-        # Note: We don't use -ErrorVariable because Connect-ExchangeOnline generates
-        # benign internal non-terminating errors (e.g., 'EnableSearchOnlySession' variable not found)
-        # that are not real connection failures. Instead, we verify the session works with Get-Mailbox.
         $cmd_params = @{
             "AppID" = $client.app_id
             "Organization" = $client.organization
             "Certificate" = $client.certificate
         }
-        Connect-ExchangeOnline @cmd_params -ShowBanner:$false `
-            -CommandName Get-Mailbox `
-            -WarningAction:SilentlyContinue `
-            -ErrorAction Stop | Out-Null
+
+        # Enable verbose and debug preferences to capture internal module output
+        $previousVerbose = $VerbosePreference
+        $previousDebug = $DebugPreference
+        $VerbosePreference = "Continue"
+        $DebugPreference = "Continue"
+
+        # Capture all output streams: 1=stdout, 2=stderr, 3=warning, 4=verbose, 5=debug, 6=information
+        $allOutput = $null
+        try {
+            $allOutput = Connect-ExchangeOnline @cmd_params -ShowBanner:$false `
+                -CommandName Get-Mailbox `
+                -Verbose `
+                -ErrorAction Stop *>&1
+        } finally {
+            # Restore preferences regardless of success/failure
+            $VerbosePreference = $previousVerbose
+            $DebugPreference = $previousDebug
+        }
 
         $results += "Result: SUCCESS - Connect-ExchangeOnline completed"
+
+        # Parse and display captured output by stream type
+        if ($allOutput) {
+            $verboseMessages = @()
+            $debugMessages = @()
+            $warningMessages = @()
+            $errorMessages = @()
+            $infoMessages = @()
+
+            foreach ($msg in $allOutput) {
+                switch ($msg.GetType().Name) {
+                    "VerboseRecord" { $verboseMessages += $msg.Message }
+                    "DebugRecord" { $debugMessages += $msg.Message }
+                    "WarningRecord" { $warningMessages += $msg.Message }
+                    "ErrorRecord" { $errorMessages += $msg.Exception.Message }
+                    "InformationRecord" { $infoMessages += $msg.MessageData.ToString() }
+                    default { $infoMessages += $msg.ToString() }
+                }
+            }
+
+            if ($verboseMessages.Count -gt 0) {
+                $results += ""
+                $results += "--- Verbose Output ($($verboseMessages.Count) messages) ---"
+                foreach ($msg in $verboseMessages) {
+                    $results += "  VERBOSE: $msg"
+                }
+            }
+
+            if ($debugMessages.Count -gt 0) {
+                $results += ""
+                $results += "--- Debug Output ($($debugMessages.Count) messages) ---"
+                foreach ($msg in $debugMessages) {
+                    $results += "  DEBUG: $msg"
+                }
+            }
+
+            if ($warningMessages.Count -gt 0) {
+                $results += ""
+                $results += "--- Warnings ($($warningMessages.Count) messages) ---"
+                foreach ($msg in $warningMessages) {
+                    $results += "  WARNING: $msg"
+                }
+            }
+
+            if ($errorMessages.Count -gt 0) {
+                $results += ""
+                $results += "--- Non-Terminating Errors ($($errorMessages.Count) messages) ---"
+                foreach ($msg in $errorMessages) {
+                    $results += "  ERROR: $msg"
+                }
+            }
+
+            if ($infoMessages.Count -gt 0) {
+                $results += ""
+                $results += "--- Information ($($infoMessages.Count) messages) ---"
+                foreach ($msg in $infoMessages) {
+                    $results += "  INFO: $msg"
+                }
+            }
+        } else {
+            $results += "No verbose/debug output captured"
+        }
 
         # Verify the session is actually working by running a command
         try {
             $testMailbox = Get-Mailbox -ResultSize 1 -ErrorAction Stop
+            $results += ""
             $results += "Verification: Get-Mailbox executed successfully"
         } catch {
+            $results += ""
             $results += "Verification: Get-Mailbox FAILED - $($_.Exception.Message)"
             $results += "The session was established but commands may not work"
         }
@@ -3143,6 +3310,10 @@ function CheckConnectionCommand($client)
         $results += "Session disconnected."
     }
     catch {
+        # Restore preferences on failure
+        $VerbosePreference = $previousVerbose
+        $DebugPreference = $previousDebug
+
         $results += "Result: FAILED"
         $results += "Exception Type: $($_.Exception.GetType().FullName)"
         $results += "Exception Message: $($_.Exception.Message)"
@@ -3154,6 +3325,23 @@ function CheckConnectionCommand($client)
             $results += "Inner Exception ($depth): [$($inner.GetType().FullName)] $($inner.Message)"
             $inner = $inner.InnerException
             $depth++
+        }
+
+        # Check if the captured output has any useful info before the failure
+        if ($allOutput) {
+            $results += ""
+            $results += "--- Output captured before failure ---"
+            foreach ($msg in $allOutput) {
+                $msgType = $msg.GetType().Name
+                switch ($msgType) {
+                    "VerboseRecord" { $results += "  VERBOSE: $($msg.Message)" }
+                    "DebugRecord" { $results += "  DEBUG: $($msg.Message)" }
+                    "WarningRecord" { $results += "  WARNING: $($msg.Message)" }
+                    "ErrorRecord" { $results += "  ERROR: $($msg.Exception.Message)" }
+                    "InformationRecord" { $results += "  INFO: $($msg.MessageData.ToString())" }
+                    default { $results += "  OUTPUT: $($msg.ToString())" }
+                }
+            }
         }
 
         # Try to disconnect even on failure
