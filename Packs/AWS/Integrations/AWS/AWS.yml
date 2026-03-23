@@ -1765,7 +1765,7 @@ script:
       description: The name of the cluster for which to create an access entry.
       required: true
     - name: principal_arn
-      description: ARN of the IAM principal for the AccessEntry.
+      description: The ARN of the IAM principal to associate with the access entry.
       required: true
     - name: kubernetes_groups
       description: A comma-separated list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings.
