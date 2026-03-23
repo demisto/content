@@ -35,17 +35,12 @@ class Client(BaseClient):
         proxy: bool = False,
     ):
         super().__init__(base_url="", verify=verify, proxy=proxy)
-        self._headers = {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "x-cybr-telemetry": "aW49RVBNIFNPQyBSZXNwb25zZSZpdj0xLjAmdm49UGFsbyBBbHRvJml0PUVQTQ==",
-        }
         self.identity_url = identity_url
         self.client_id = client_id
         self.client_secret = client_secret
         self.web_app_id = web_app_id
         self.base_tenant_url = base_tenant_url
-        self.token_url = f"{self.identity_url}/oauth2/token/{self.web_app_id}"
+        self.token_url = f"{self.identity_url.rstrip('/')}/oauth2/token/{self.web_app_id}"
 
     def _get_access_token(self) -> str:
         """Get or refresh OAuth2 access token with caching."""
@@ -122,18 +117,24 @@ class Client(BaseClient):
         try:
             tenant_url_response = self._http_request(
                 method="GET",
-                full_url=f"{self.base_tenant_url}/epm/api/accounts/tenanturl",
+                full_url=f"{self.base_tenant_url.rstrip('/')}/epm/api/accounts/tenanturl",
                 headers=headers,
                 resp_type="json",
             )
         except DemistoException as error:
             error_msg = str(error)
             demisto.error(f"[Tenant URL Request] Failed: {error_msg}")
-            raise DemistoException(f"Failed to tenant URL: {error_msg}")
+            raise DemistoException(f"Failed to obtain tenant URL: {error_msg}")
 
         tenant_url = tenant_url_response.get(TENANT_URL)
+        if not tenant_url:
+            raise DemistoException("Failed to obtain tenant URL. Response missing tenant URL.")
+
+        tenant_url = tenant_url_response.get(TENANT_URL).rstrip('/')
         demisto.debug(f"[Tenant URL Request] Success. tenant URL: {tenant_url}.")
-        update_integration_context({TENANT_URL: tenant_url})
+        cached_context = get_integration_context()
+        cached_context.update({TENANT_URL: tenant_url})
+        update_integration_context(cached_context)
 
         return tenant_url
 
@@ -148,9 +149,14 @@ class Client(BaseClient):
         access_token = self._get_access_token()
         tenant_url = self._get_tenant_url(access_token)
 
-        auth_headers = {"authorization": f"Bearer {access_token}", "Content-Type": "application/json", "Accept": "application/json"}
+        auth_headers = {
+            "authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "x-cybr-telemetry": "aW49RVBNIFNPQyBSZXNwb25zZSZpdj0xLjAmdm49UGFsbyBBbHRvJml0PUVQTQ==",
+        }
         demisto.debug(f"[HTTP Call] {method} {url_suffix}")
-        full_url = f"{tenant_url}epm/api/{url_suffix}"
+        full_url = f"{tenant_url}/epm/api/{url_suffix}"
 
         try:
             http_response = self._http_request(
@@ -216,7 +222,9 @@ def search_endpoints(endpoint_name: str, external_ip: str, client: Client) -> li
         result = client.http_request("POST", url_suffix=url_suffix, json_data=data)
         if result.get("endpoints"):
             endpoint_ids = [endpoint.get("id") for endpoint in result.get("endpoints")]
-            set_integration_context({CONTEXT_KEY: {"set_id": set_id}})
+            cached_context = get_integration_context()
+            cached_context.update({"set_id": set_id})
+            update_integration_context(cached_context)
             return endpoint_ids
     return []
 
@@ -337,6 +345,8 @@ def main():
     web_app_id = params.get("web_app_id")
     client_id = params.get("client_id")
     client_secret = params.get("credentials").get("password")
+    proxy = argToBoolean(params.get("proxy", False))
+    verify_certificate = not argToBoolean(params.get("insecure", False))
 
     try:
         result: Any = None
@@ -346,6 +356,8 @@ def main():
             client_id=client_id,
             client_secret=client_secret,
             web_app_id=web_app_id,
+            verify=verify_certificate,
+            proxy=proxy,
         )
         if command == "test-module":
             return_results(test_module(client))
