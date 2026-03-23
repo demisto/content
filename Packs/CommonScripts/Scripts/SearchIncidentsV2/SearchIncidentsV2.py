@@ -1,3 +1,4 @@
+import re
 from enum import Enum
 
 import demistomock as demisto  # noqa: F401
@@ -135,12 +136,39 @@ def transform_to_alert_data(incidents: List):
     return incidents
 
 
+def strip_query_wrapping_quotes(query: str) -> str:
+    """Strip wrapping backticks or single quotes from the query argument.
+
+    The XSOAR war room may include wrapping quotes in the argument value, producing
+    an invalid Lucene query. For single-quote wrapped queries, inner double quotes
+    are also escaped to match the platform's backtick escaping behavior.
+    """
+    if not query:
+        return ""
+
+    quoting_characters = {"'", "`"}
+
+    if len(query) > 1 and query[0] == query[-1] and query[0] in quoting_characters:
+        stripped = query[1:-1]
+        # When single quotes are used, double quotes are not escaped by the platform.
+        # Escape only unescaped double quotes to match the backtick behavior expected by getIncidents.
+        if query[0] == "'":
+            stripped = re.sub(r'(?<!\\)"', r'\\"', stripped)
+        demisto.debug(f"Stripped wrapping quotes from query argument: [{query}] -> [{stripped}]")
+        return stripped
+
+    return query
+
+
 def search_incidents(args: Dict):  # pragma: no cover
     hr_prefix = ""
     is_summarized_version = argToBoolean(args.get("summarizedversion", False))
     platform = get_demisto_version().get("platform", "xsoar")
     if not is_valid_args(args):
         return None
+
+    if query := args.get("query"):
+        args["query"] = strip_query_wrapping_quotes(query)
 
     if fromdate := arg_to_datetime(args.get("fromdate", "30 days ago" if is_summarized_version else None)):
         from_date = fromdate.isoformat()

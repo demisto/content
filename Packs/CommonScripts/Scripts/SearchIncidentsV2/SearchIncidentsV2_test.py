@@ -407,6 +407,52 @@ def test_main_flow_with_limit(mocker, amount_of_mocked_incidents, args, expected
     assert len(return_results_mocker.call_args[0][0].outputs) == expected_incidents_length
 
 
+@pytest.mark.parametrize(
+    "query_input, expected_query",
+    [
+        # Backtick wrapping - strips backticks, preserves content as-is
+        ('`-issueoverview:""`', '-issueoverview:""'),
+        ("`issueoverview:*`", "issueoverview:*"),
+        ("`(username:'user') and (name:'name_1')`", "(username:'user') and (name:'name_1')"),
+        # Single-quote wrapping - strips quotes AND escapes unescaped inner double quotes
+        ("'-issueoverview:\"\"'", '-issueoverview:\\"\\"'),
+        ("'issueoverview:*'", "issueoverview:*"),
+        ("'-barytest:\"value\"'", '-barytest:\\"value\\"'),
+        # Single-quote wrapping with already-escaped double quotes - should not double-escape
+        ("'-barytest:\\\"value\\\"'", '-barytest:\\"value\\"'),
+        # No wrapping - should remain unchanged
+        ('-issueoverview:""', '-issueoverview:""'),
+        ("issueoverview:*", "issueoverview:*"),
+        ("no_quotes_here", "no_quotes_here"),
+        # One-sided - should remain unchanged
+        ("`only_leading", "`only_leading"),
+        ("only_trailing`", "only_trailing`"),
+        ("'only_leading", "'only_leading"),
+        ("only_trailing'", "only_trailing'"),
+        # Mismatched wrapping - should remain unchanged
+        ("`mismatched'", "`mismatched'"),
+        ("'mismatched`", "'mismatched`"),
+        # Empty string
+        ("", ""),
+    ],
+)
+def test_strip_query_wrapping_quotes(query_input, expected_query):
+    """
+    Given:
+        - A query string that may or may not be wrapped in backticks or single quotes.
+
+    When:
+        - Running strip_query_wrapping_quotes to sanitize the query.
+
+    Then:
+        - Matching wrapping characters (backticks or single quotes) are stripped.
+        - For single-quote wrapped queries, inner double quotes are escaped to match
+          the platform's backtick behavior expected by getIncidents.
+        - Queries without wrapping or with mismatched/one-sided quotes are left unchanged.
+    """
+    assert strip_query_wrapping_quotes(query_input) == expected_query
+
+
 def test_query_argument_with_unicode_escape(mocker):
     """
     Given:
