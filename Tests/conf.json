@@ -5903,7 +5903,7 @@
             "instance_names": [
                 "virus_total_v3"
             ],
-            "fromversion": "8.0.0"
+            "marketplaces": "xsoar_saas"
         },
         {
             "playbookID": "DomainEnrichment-Test",
