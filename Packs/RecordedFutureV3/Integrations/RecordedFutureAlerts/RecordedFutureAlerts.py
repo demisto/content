@@ -342,9 +342,7 @@ class Actions:
         if not isinstance(files, list):
             files = [files]
 
-        existing_file_names = {
-            f.get("Name") for f in files if isinstance(f, dict)
-        }
+        existing_file_names = {f.get("Name") for f in files if isinstance(f, dict)}
 
         # Determine missing image IDs.
         missing_image_ids: set = set()
