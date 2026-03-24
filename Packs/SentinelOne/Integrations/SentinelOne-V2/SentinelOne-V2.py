@@ -5171,7 +5171,7 @@ def get_remote_data_command(client: Client, args: dict, params: dict):
             demisto.debug(f"Successfully fetched remote incident data: {incident_type} ({remote_incident_id})")
 
             # Process entries for incident close/reopen based on status changes
-            close_xsoar_incident = demisto.params().get("close_incident", False)
+            close_xsoar_incident = demisto.params().get("close_xsoar_incident", False)
             entries = set_xsoar_incident_entries(mirrored_data, entries, remote_incident_id, close_xsoar_incident)
         else:
             demisto.debug(f"No incident found for incident {remote_incident_id}.")
