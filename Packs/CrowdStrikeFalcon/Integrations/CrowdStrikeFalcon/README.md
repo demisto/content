@@ -5237,6 +5237,7 @@ Create an ODS scan and wait for the results.
 | timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional |
 | cloud_pup_adware_level_detection | Potentially unwanted programs (PUPs) adware detection level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
 | cloud_pup_adware_level_prevention | Potentially unwanted programs (PUPs) adware prevention level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
+| polling | Whether to poll for scan results. Default is True. | Optional |
 
 #### Context Output
 
