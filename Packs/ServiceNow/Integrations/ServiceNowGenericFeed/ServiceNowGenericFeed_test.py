@@ -11,7 +11,7 @@ CREATE_INDICATOR_PACK = [
             },
         ],
         ["production", "network"],
-        "IP",
+        "ip_address",
         [
             {
                 "value": "198.51.100.0",
@@ -32,11 +32,11 @@ CREATE_INDICATOR_PACK = [
             },
             {
                 "manufacturer.name": "some networks 2",
-                "ip_address": "some ip 2",
+                "ip_address": "192.0.2.2",
             },
         ],
         ["test"],
-        "IP",
+        "ip_address",
         [
             {
                 "value": "192.0.2.1",
@@ -48,12 +48,12 @@ CREATE_INDICATOR_PACK = [
                 },
             },
             {
-                "value": "some ip 2",
+                "value": "192.0.2.2",
                 "type": "IP",
                 "fields": {"tags": ["test"]},
                 "rawJSON": {
                     "manufacturer.name": "some networks 2",
-                    "ip_address": "some ip 2",
+                    "ip_address": "192.0.2.2",
                 },
             },
         ],
@@ -61,7 +61,7 @@ CREATE_INDICATOR_PACK = [
     (
         [],
         ["empty"],
-        "IP",
+        "ip_address",
         [],
     ),
 ]

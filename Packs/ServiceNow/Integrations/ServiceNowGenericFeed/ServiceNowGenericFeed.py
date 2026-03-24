@@ -359,10 +359,12 @@ def add_indicators_to_tim(indicators: list):
 def create_indicator_object(indicator_list: list, feedtags: list, indicator_field: str) -> list:
     # create a for loop  which will iterate through the indicators input in list and output a list of dict
     indicator_objs = []
+
     for ind in indicator_list:
+        indicator_type = auto_detect_indicator_type(ind.get(indicator_field))
         indicator_obj = {
             "value": ind.get(indicator_field),
-            "type": indicator_field,
+            "type": indicator_type,
             "fields": {"tags": feedtags},
             "rawJSON": ind,
         }

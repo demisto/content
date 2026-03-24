@@ -117,7 +117,7 @@ configuration:
   required: true
   supportedModules: []
   type: 0
-- additionalinfo: Acceptable values for this field include "File MD5", "File SHA-1", "File SHA-256", "Host", "IP"
+- additionalinfo: The field needed from the ServiceNow response which contains the indicator value
   display: Indicator Field
   name: indicator_field
   required: true
