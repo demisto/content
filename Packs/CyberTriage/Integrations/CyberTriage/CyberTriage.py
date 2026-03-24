@@ -74,7 +74,7 @@ def test_connection_command(client: CyberTriageClient) -> str:
     return "ok"
 
 
-def triage_host_name_command(client: CyberTriageClient, args: dict[str, Any]) -> CommandResults:
+def triage_endpoint_command(client: CyberTriageClient, args: dict[str, Any]) -> CommandResults:
     def is_true(x: str) -> bool:
         return x == "yes"
 
