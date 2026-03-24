@@ -1,9 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-
 """ IMPORTS """
-
+import requests
 import json
 import urllib3
 
@@ -136,7 +134,7 @@ def remove_prefix(prefix, full_str):
     :return: full_str without the provided prefix
     """
     if full_str.startswith(prefix):
-        return full_str[len(prefix) :]
+        return full_str[len(prefix):]
     return full_str
 
 
@@ -2054,6 +2052,52 @@ def resolve_approval_request_command():
     return_outputs(hr, {"CBP.ApprovalRequest(val.ID === obj.ID)": approval_request}, raw_res)
 
 
+def retrieve_user_data():
+    """
+    Sends request to get user information
+    :param user_email: user email address
+    :return: Result of the request
+    """
+    args = demisto.args()
+    user_email = args.get("user_email")
+    query = f"name:{user_email}"
+    params = {'q': query}
+    url = BASE_URL + f"/user"
+    try:
+        response = requests.get(url, headers=HEADERS, params=params, verify=USE_SSL)
+        if response.status_code == 200:
+            user_data = tableToMarkdown("CarbonBlack Protect User Data", response.json())
+            json_data = response.json()
+            return_outputs(json_data)
+        else:
+            return_outputs(f"Failed with status code {response.status_code}")
+    except requests.exceptions.RequestException as e:
+        return_outputs(f"Error: {e}")
+
+
+def disable_user_command():
+    """
+    Sends request to disable user account
+    :param user_id: ID of user to disable - retrieved from cbp-retrieve-user-data
+    :return: Result of the request
+    """
+    args = demisto.args()
+    user_id = args.get("user_id")
+    url = BASE_URL + f"/user/{user_id}"
+    payload = {
+        "enabled": False
+    }
+    try:
+        response = requests.put(url, headers=HEADERS, data=json.dumps(payload), verify=USE_SSL)
+        if response.status_code == 200:
+            user_email = response.json()["name"]
+            return_outputs(f"User {user_email} successfully disabled.")
+        else:
+            return_outputs(f"Failed to disable {user_email}. Status code: {response.status_code}")
+    except requests.exceptions.RequestException as e:
+        return_outputs(f"Error: {e}")
+
+
 @logger
 def resolve_approval_request(id, resolution, requestor_email=None, res_comments=None, status=None):
     """
@@ -2176,6 +2220,10 @@ def main():
                 search_connector_command()
             elif command == "cbp-approvalRequest-resolve":
                 resolve_approval_request_command()
+            elif command == "cbp-disable-user":
+                disable_user_command()
+            elif command == "cbp-retrieve-user-data":
+                retrieve_user_data()
             else:
                 return_error(f"Command {command} is not supported.")
         # Log exceptions
