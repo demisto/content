@@ -12,6 +12,8 @@ from typing import Any, TypeVar
 
 import pytmv1
 import urllib3
+from pytmv1.client import Client
+from pytmv1.core import Core
 from pytmv1 import (  # noqa: E402
     AccountRequest,
     AlertStatus,
@@ -524,7 +526,11 @@ def incident_severity_to_dbot_score(severity: str) -> int:
 
 # returns initialized pytmv1 client used to make rest calls
 def _get_client(name: str, api_key: str, base_url: str) -> pytmv1.Client:
-    return pytmv1.init(name, api_key, base_url)
+    return Client(Core(
+        appname=name, token=api_key, url=base_url,
+        pool_connections=1, pool_maxsize=1,
+        connect_timeout=10, read_timeout=30,
+    ))
 
 
 # Checks the api response for error
@@ -609,9 +615,12 @@ def test_module(v1_client: pytmv1.Client) -> str:
     """
 
     # Make rest call
+    demisto.debug("test_module: checking connectivity")
     resp = v1_client.system.check_connectivity()
     if _is_pytmv1_error(resp.result_code):
+        demisto.debug(f"test_module: connectivity check failed, error={resp.error}")
         return FAILED_CONNECTIVITY
+    demisto.debug("test_module: connectivity check passed")
     return "ok"
 
 
@@ -1205,6 +1214,7 @@ def fetch_incidents(v1_client: pytmv1.Client):
     else:
         start = end + timedelta(days=-days)
     # Fetch alerts
+    demisto.debug(f"fetch_incidents: querying alerts from {start.isoformat()} to {end.isoformat()}")
     alerts: list[Any] = get_workbench_histories(v1_client, start, end)
     # list to store incidents that will be sent to the UI
     incidents: list[dict[str, Any]] = []
@@ -1223,6 +1233,7 @@ def fetch_incidents(v1_client: pytmv1.Client):
                 "rawJSON": json.dumps(alert_data),
             }
             incidents.append(incident)
+    demisto.debug(f"fetch_incidents: fetched {len(incidents)} incidents")
     demisto.setLastRun({"start_time": end.isoformat()})
     demisto.incidents(incidents)
     return incidents
@@ -3104,12 +3115,18 @@ def main():  # pragma: no cover
         if params.get("insecure", False):
             urllib3.disable_warnings()
 
+        proxy_enabled = params.get("proxy", False)
+        demisto.debug(f"Initializing client: base_url={base_url}, proxy_enabled={proxy_enabled}, "
+                      f"insecure={params.get('insecure', False)}")
+
         if base_url == "":
             raise RuntimeError("The base_url cannot be empty, please provide a valid value.")
         v1_client = _get_client(VENDOR_NAME, api_key, base_url)
+        demisto.debug(f"Client initialized: proxies={v1_client._core._proxies}")
 
         command = demisto.command()
         args = demisto.args()
+        demisto.debug(f"Executing command: {command}")
 
         if command == TEST_MODULE:
             return_results(test_module(v1_client))
