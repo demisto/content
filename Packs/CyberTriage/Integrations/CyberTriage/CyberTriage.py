@@ -36,7 +36,7 @@ class CyberTriageClient(BaseClient):
         super().__init__(base_url=base_url, verify=verify_server_cert, headers=req_headers)
 
     def test_connection(self):
-        response = self._http_request("GET", url_suffix="users/me", resp_type="json")
+        response = self._http_request("GET", url_suffix="users/me", resp_type="response")
         return response
 
     def triage_endpoint(
@@ -64,7 +64,7 @@ class CyberTriageClient(BaseClient):
             "sendContent": is_file_upload_on,
             "sendIpAddress": False
         }
-        response = self._http_request("POST", url_suffix="v2/livesessions", json_data=api_data, resp_type="json")
+        response = self._http_request("POST", url_suffix="v2/livesessions", json_data=api_data, resp_type="response")
         return response
 
 
@@ -74,7 +74,7 @@ def test_connection_command(client: CyberTriageClient) -> str:
     return "ok"
 
 
-def triage_endpoint_command(client: CyberTriageClient, args: dict[str, Any]) -> CommandResults:
+def triage_host_name_command(client: CyberTriageClient, args: dict[str, Any]) -> CommandResults:
     def is_true(x: str) -> bool:
         return x == "yes"
 
