@@ -1331,8 +1331,7 @@ def wildfire_get_url_report(url: str) -> tuple:
 
     finally:
         command_results = CommandResults(
-            outputs_prefix="WildFire.Report",
-            outputs_key_field="url",
+            outputs_prefix=WILDFIRE_REPORT_DT_FILE,
             outputs=report,
             readable_output=human_readable,
             raw_response=report,
