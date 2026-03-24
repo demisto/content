@@ -1,13 +1,67 @@
-from typing import Optional
-from enum import Enum
+from typing import ClassVar, Optional
+from enum import Enum, IntEnum
 from dataclasses import dataclass
+from datetime import datetime, UTC
 import demistomock as demisto
 from CommonServerPython import *
 
 
 # ============================================================================
+# Constants
+# ============================================================================
+
+THINKING_MESSAGE_ID_KEY = "thinking_message_id"
+
+# ============================================================================
 # Enums - Status, Message Types, Action IDs, and Backend Error Types
 # ============================================================================
+
+
+class BackendCommand(str, Enum):
+    """
+    Backend command names passed to ``demisto.agentixCommands()``.
+    """
+
+    SEND_TO_CONVERSATION = "sendToConversation"
+    RESET_CONVERSATION = "resetConversation"
+    RATE_MESSAGE = "rateMessage"
+
+
+class BackendErrorCode(IntEnum):
+    """
+    Numeric error codes returned by the backend API.
+    """
+
+    # Configuration errors
+    LLM_NOT_ENABLED = 103000
+
+    # Permission errors
+    USER_NOT_FOUND = 103102
+    PERMISSION_DENIED = 103103
+
+    # Conversation errors
+    CONVERSATION_NOT_FOUND = 103201
+    WRONG_USER = 103204
+
+    @property
+    def error_type(self) -> "BackendErrorType":
+        """Return the corresponding BackendErrorType for this code."""
+        return _CODE_TO_ERROR_TYPE[self]
+
+    @property
+    def debug_message(self) -> str:
+        """Return a human-readable debug message for this error code."""
+        return _CODE_TO_DEBUG_MESSAGE[self]
+
+    @classmethod
+    def from_response(cls, error_code: int | None) -> "BackendErrorCode | None":
+        """Try to convert a raw error code to a BackendErrorCode, or return None."""
+        if error_code is None:
+            return None
+        try:
+            return cls(error_code)
+        except ValueError:
+            return None
 
 
 class BackendErrorType(str, Enum):
@@ -16,19 +70,36 @@ class BackendErrorType(str, Enum):
     Maps to error_code from backend API.
     """
 
-    # Configuration errors (103000)
-    LLM_NOT_ENABLED = "llm_not_enabled"  # 103000 - Assistant commands only available when LLM is enabled
+    LLM_NOT_ENABLED = "llm_not_enabled"
+    USER_NOT_FOUND = "user_not_found"
+    PERMISSION_DENIED = "permission_denied"
+    CONVERSATION_NOT_FOUND = "conversation_not_found"
+    WRONG_USER = "wrong_user"
+    UNKNOWN = "unknown"
 
-    # Permission errors (103102-103103)
-    USER_NOT_FOUND = "user_not_found"  # 103102 - User doesn't exist in the system
-    PERMISSION_DENIED = "permission_denied"  # 103103 - User lacks assistant permissions
+    @property
+    def user_message(self) -> str:
+        """Return the default user-facing message for this error type."""
+        return _ERROR_TYPE_TO_USER_MESSAGE.get(self, AssistantMessages.GENERIC_ERROR)
 
-    # Conversation errors (103201-103205)
-    CONVERSATION_NOT_FOUND = "conversation_not_found"  # 103201 - Conversation not found (may have expired)
-    WRONG_USER = "wrong_user"  # 103204 - Conversation belongs to another user
 
-    # Generic errors
-    UNKNOWN = "unknown"  # Other/unknown error
+# Mapping from BackendErrorCode → BackendErrorType
+_CODE_TO_ERROR_TYPE: dict[BackendErrorCode, BackendErrorType] = {
+    BackendErrorCode.LLM_NOT_ENABLED: BackendErrorType.LLM_NOT_ENABLED,
+    BackendErrorCode.USER_NOT_FOUND: BackendErrorType.USER_NOT_FOUND,
+    BackendErrorCode.PERMISSION_DENIED: BackendErrorType.PERMISSION_DENIED,
+    BackendErrorCode.CONVERSATION_NOT_FOUND: BackendErrorType.CONVERSATION_NOT_FOUND,
+    BackendErrorCode.WRONG_USER: BackendErrorType.WRONG_USER,
+}
+
+# Mapping from BackendErrorCode → debug log message
+_CODE_TO_DEBUG_MESSAGE: dict[BackendErrorCode, str] = {
+    BackendErrorCode.LLM_NOT_ENABLED: "LLM not enabled in Cortex platform",
+    BackendErrorCode.USER_NOT_FOUND: "User not found",
+    BackendErrorCode.PERMISSION_DENIED: "Permission denied",
+    BackendErrorCode.CONVERSATION_NOT_FOUND: "Conversation not found",
+    BackendErrorCode.WRONG_USER: "Wrong user for conversation",
+}
 
 
 @dataclass
@@ -65,6 +136,13 @@ class AssistantStatus(str, Enum):
     AWAITING_AGENT_SELECTION = "awaiting_agent_selection"
     AWAITING_SENSITIVE_ACTION_APPROVAL = "awaiting_sensitive_action_approval"
 
+    TIMEOUTS: ClassVar[dict[str, int]] = {
+        "awaiting_backend_response": 1 * 60,  # 1 minute
+        "responding_with_plan": 5 * 60,  # 5 minutes
+        "awaiting_agent_selection": 7 * 24 * 60 * 60,  # 7 days
+        "awaiting_sensitive_action_approval": 14 * 24 * 60 * 60,  # 14 days
+    }
+
     @classmethod
     def is_awaiting_user_action(cls, status: str) -> bool:
         """
@@ -89,13 +167,7 @@ class AssistantStatus(str, Enum):
         Returns:
             Timeout duration in seconds, or 0 if status is invalid
         """
-        timeouts = {
-            cls.AWAITING_BACKEND_RESPONSE.value: 1 * 60,  # 1 minutes
-            cls.RESPONDING_WITH_PLAN.value: 5 * 60,  # 5 minutes
-            cls.AWAITING_AGENT_SELECTION.value: 7 * 24 * 60 * 60,  # 7 days
-            cls.AWAITING_SENSITIVE_ACTION_APPROVAL.value: 14 * 24 * 60 * 60,  # 14 days
-        }
-        return timeouts.get(status, 0)
+        return cls.TIMEOUTS.get(status, 0)
 
     @classmethod
     def is_expired(cls, status: str, last_updated: float) -> bool:
@@ -109,8 +181,6 @@ class AssistantStatus(str, Enum):
         Returns:
             True if the conversation has expired, False otherwise
         """
-        from datetime import datetime, UTC
-
         timeout = cls.get_timeout_for_status(status)
         if timeout == 0:
             return False
@@ -181,7 +251,7 @@ class AssistantActionIds(str, Enum):
 
     # Special constants (not enum values)
     AGENT_SELECTION_VALUE_PREFIX = "assistant-agent-selection-"
-    FEEDBACK_MODAL_CALLBACK_ID = "assistant_feedback_modal"
+    FEEDBACK_MODAL_CALLBACK_ID = "assistant_feedback_modal_callback_id"
     FEEDBACK_MODAL_QUICK_BLOCK_ID = "quick_feedback_block"
     FEEDBACK_MODAL_TEXT_BLOCK_ID = "feedback_text_block"
     FEEDBACK_MODAL_CHECKBOXES_ACTION_ID = "quick_feedback_checkboxes"
@@ -258,6 +328,7 @@ class AssistantMessages:
     NOT_CONVERSATION_OWNER_FEEDBACK = "Only the chat owner can provide feedback on this message."
 
     # Generic error messages
+    GENERIC_ERROR = "❌ An error occurred. Please try again later or contact your administrator if the issue persists."
     SYSTEM_ERROR = "❌ A system error occurred. Please try again later or contact your administrator if the issue persists."
 
     # Reset session messages
@@ -334,6 +405,17 @@ class AssistantMessages:
     DECISION_CANCELLED = "❌ *Cancelled*"
 
 
+# Mapping from BackendErrorType → default user-facing message
+_ERROR_TYPE_TO_USER_MESSAGE: dict[BackendErrorType, str] = {
+    BackendErrorType.LLM_NOT_ENABLED: AssistantMessages.LLM_NOT_ENABLED,
+    BackendErrorType.USER_NOT_FOUND: AssistantMessages.USER_NOT_FOUND,
+    BackendErrorType.PERMISSION_DENIED: AssistantMessages.NO_ASSISTANT_PERMISSIONS,
+    BackendErrorType.WRONG_USER: AssistantMessages.NOT_CONVERSATION_OWNER_FEEDBACK,
+    BackendErrorType.CONVERSATION_NOT_FOUND: AssistantMessages.SYSTEM_ERROR,
+    BackendErrorType.UNKNOWN: AssistantMessages.SYSTEM_ERROR,
+}
+
+
 # ============================================================================
 # Base Handler Class
 # ============================================================================
@@ -343,7 +425,7 @@ class AssistantMessagingHandler:
     """
     Base class for handling Assistant messaging across different platforms.
     This class contains the platform-agnostic logic for handling Assistant interactions.
-    Platform-specific implementations (Slack, Teams, etc.) should inherit from this class
+    Platform-specific implementations (Slack, Microsoft Teams, etc.) should inherit from this class
     and implement the abstract methods.
     """
 
@@ -377,34 +459,43 @@ class AssistantMessagingHandler:
             thread_id: Optional thread ID
             blocks: Optional platform-specific blocks
             attachments: Optional attachments
-            ephemeral: Whether message should be ephemeral (visible only to user_id)
+            ephemeral: Whether message should be ephemeral (visible only to a specific user)
             user_id: User ID for ephemeral messages
         """
         raise NotImplementedError("Subclass must implement send_message_async()")
 
+    @staticmethod
+    def _validate_update_message_args(text: str, blocks: list | None) -> None:
+        """Validate that at least one of ``text`` or ``blocks`` is provided."""
+        if not text and not blocks:
+            raise ValueError("update_message requires at least one of 'text' or 'blocks'")
+
     async def update_message(
         self,
         channel_id: str,
-        message_ts: str,
+        message_id: str,
         text: str = "",
-        blocks: Optional[list] = None,
+        blocks: list | None = None,
     ):
         """
         Update an existing message.
         Must be implemented by subclass.
+        At least one of ``text`` or ``blocks`` must be provided;
+        implementations should raise ``ValueError`` otherwise.
 
         Args:
             channel_id: The channel/conversation ID
-            message_ts: The message timestamp/ID
-            text: Optional new text
-            blocks: Optional new blocks
+            message_id: The message ID
+            text: New text content (at least one of text/blocks required)
+            blocks: New blocks content (at least one of text/blocks required)
         """
+        self._validate_update_message_args(text, blocks)
         raise NotImplementedError("Subclass must implement update_message()")
 
-    def delete_message_sync(
+    def delete_message(
         self,
         channel_id: str,
-        message_ts: str,
+        message_id: str,
     ):
         """
         Delete an existing message.
@@ -412,7 +503,7 @@ class AssistantMessagingHandler:
 
         Args:
             channel_id: The channel/conversation ID
-            message_ts: The message timestamp/ID
+            message_id: The message ID
         """
         raise NotImplementedError("Subclass must implement delete_message_sync()")
 
@@ -429,7 +520,7 @@ class AssistantMessagingHandler:
         """
         raise NotImplementedError("Subclass must implement get_user_info()")
 
-    async def get_thread_history(self, channel_id: str, thread_id: str, limit: int = 20) -> list:
+    async def get_thread_last_messages(self, channel_id: str, thread_id: str, limit: int = 20) -> list:
         """
         Get conversation history.
         Must be implemented by subclass.
@@ -470,7 +561,7 @@ class AssistantMessagingHandler:
         """
         raise NotImplementedError("Subclass must implement normalize_message_from_user()")
 
-    def prepare_message_blocks(self, message: str, message_type: str) -> tuple:
+    def prepare_message_blocks(self, message: str, message_type: AssistantMessageType) -> tuple:
         """
         Prepare platform-specific message blocks.
         Must be implemented by subclass.
@@ -536,7 +627,7 @@ class AssistantMessagingHandler:
         """
         raise NotImplementedError("Subclass must implement create_feedback_ui()")
 
-    def post_agent_response_sync(
+    def post_agent_response(
         self,
         channel_id: str,
         thread_id: str,
@@ -573,7 +664,7 @@ class AssistantMessagingHandler:
         """
         raise NotImplementedError("Subclass must implement update_context()")
 
-    async def open_feedback_modal(
+    async def show_feedback_modal(
         self,
         trigger_id: str,
         message_id: str,
@@ -609,42 +700,20 @@ class AssistantMessagingHandler:
                 demisto.debug(f"Backend {operation} succeeded")
                 return BackendResponse(success=True)
             
-            error_code = response.get("error_code")
+            raw_error_code = response.get("error_code")
             error_msg = str(response.get("error", ""))
-            
-            # Map error_code to error type
-            # Configuration errors (103000)
-            if error_code == 103000:
-                demisto.debug(f"LLM not enabled for {operation}: {error_msg}")
+
+            known_code = BackendErrorCode.from_response(raw_error_code)
+            if known_code is not None:
+                demisto.debug(f"{known_code.debug_message} for {operation}: {error_msg}")
                 return BackendResponse(
-                    success=False, error_type=BackendErrorType.LLM_NOT_ENABLED, error_message=error_msg, error_code=error_code
+                    success=False, error_type=known_code.error_type, error_message=error_msg, error_code=raw_error_code
                 )
-            # Permission errors (103102-103103)
-            elif error_code == 103102:
-                demisto.debug(f"User not found for {operation}: {error_msg}")
-                return BackendResponse(
-                    success=False, error_type=BackendErrorType.USER_NOT_FOUND, error_message=error_msg, error_code=error_code
-                )
-            elif error_code == 103103:
-                demisto.debug(f"Permission denied for {operation}: {error_msg}")
-                return BackendResponse(
-                    success=False, error_type=BackendErrorType.PERMISSION_DENIED, error_message=error_msg, error_code=error_code
-                )
-            # Conversation errors (103201-103205)
-            elif error_code == 103201:
-                demisto.debug(f"Conversation not found for {operation}: {error_msg}")
-                return BackendResponse(
-                    success=False, error_type=BackendErrorType.CONVERSATION_NOT_FOUND, error_message=error_msg, error_code=error_code
-                )
-            elif error_code == 103204:
-                demisto.debug(f"Wrong user for {operation}: {error_msg}")
-                return BackendResponse(
-                    success=False, error_type=BackendErrorType.WRONG_USER, error_message=error_msg, error_code=error_code
-                )
-            else:
-                # Unknown error code or no error code
-                demisto.error(f"Backend {operation} failed with error_code={error_code}: {error_msg}")
-                return BackendResponse(success=False, error_type=BackendErrorType.UNKNOWN, error_message=error_msg, error_code=error_code)
+
+            demisto.error(f"Backend {operation} failed with error_code={raw_error_code}: {error_msg}")
+            return BackendResponse(
+                success=False, error_type=BackendErrorType.UNKNOWN, error_message=error_msg, error_code=raw_error_code
+            )
         else:
             error_msg = f"Unexpected response type: {type(response)}"
             demisto.error(f"Backend {operation} returned unexpected response: {response}")
@@ -688,14 +757,14 @@ class AssistantMessagingHandler:
         if message:
             args["improvement_suggestion"] = message
 
-        raw_response = demisto.agentixCommands("rateMessage", args)
-        return self.handle_backend_response(raw_response, "rateMessage")
+        raw_response = demisto.agentixCommands(BackendCommand.RATE_MESSAGE, args)
+        return self.handle_backend_response(raw_response, BackendCommand.RATE_MESSAGE)
 
     # ============================================================================
     # Platform-agnostic methods - shared logic across all platforms
     # ============================================================================
 
-    def cleanup_expired_conversations(self, assistant: dict) -> dict:
+    def delete_expired_conversations(self, assistant: dict) -> dict:
         """
         Cleans up expired conversations from the assistant context.
         Each status has a different timeout duration.
@@ -707,7 +776,7 @@ class AssistantMessagingHandler:
             Updated assistant dictionary with expired conversations removed
         """
         if not assistant:
-            return assistant
+            return {}
 
         expired_keys = []
 
@@ -733,7 +802,7 @@ class AssistantMessagingHandler:
 
         return assistant
 
-    def check_and_cleanup_assistant_conversations(self):
+    def delete_assistant_conversations_from_context(self):
         """
         Checks and cleans up expired Assistant conversations from integration context.
         This should be called periodically (e.g., in long_running_loop).
@@ -744,23 +813,27 @@ class AssistantMessagingHandler:
             integration_context = get_integration_context(sync=True)
             assistant = integration_context.get(self.CONTEXT_KEY, {})
 
-            # Parse if it's a string
-            if isinstance(assistant, str):
-                assistant = json.loads(assistant)
-
             if not assistant:
                 return
+
+            # Parse if it's a string
+            if isinstance(assistant, str):
+                try:
+                    assistant = json.loads(assistant)
+                except json.JSONDecodeError:
+                    demisto.error(f"Failed to parse assistant context as JSON: {assistant[:200]}")
+                    assistant = {}
 
             # Store original count before cleanup
             original_count = len(assistant)
 
             # Cleanup expired conversations
-            cleaned_assistant = self.cleanup_expired_conversations(assistant)
+            deleted_converstations = self.delete_expired_conversations(assistant)
 
             # Update context if anything was cleaned
-            if len(cleaned_assistant) != original_count:
-                demisto.debug(f"Updating context after cleanup: {original_count} -> {len(cleaned_assistant)} conversations")
-                set_to_integration_context_with_retries({self.CONTEXT_KEY: cleaned_assistant}, sync=True)
+            if len(deleted_converstations) < original_count:
+                demisto.debug(f"Updating context after cleanup: {original_count} -> {len(deleted_converstations)} conversations")
+                set_to_integration_context_with_retries({self.CONTEXT_KEY: deleted_converstations}, sync=True)
         except Exception as e:
             demisto.error(f"Failed to cleanup expired Assistant conversations: {e}")
 
@@ -843,7 +916,7 @@ class AssistantMessagingHandler:
         # Call backend to reset conversation
         demisto.debug(f"Resetting conversation for user {user_email} in channel {channel_id}")
         raw_response = demisto.agentixCommands(
-            "resetConversation",
+            BackendCommand.RESET_CONVERSATION,
             {
                 "channel_id": channel_id,
                 "thread_id": thread_id,
@@ -851,7 +924,7 @@ class AssistantMessagingHandler:
             },
         )
 
-        backend_response = self.handle_backend_response(raw_response, "resetConversation")
+        backend_response = self.handle_backend_response(raw_response, BackendCommand.RESET_CONVERSATION)
 
         if backend_response.success:
             # Remove from assistant context
@@ -869,20 +942,10 @@ class AssistantMessagingHandler:
             await self.send_message_async(
                 channel_id, no_session_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
             )
-        elif backend_response.error_type == BackendErrorType.USER_NOT_FOUND:
-            # 103102 - User not found in system
-            await self.send_message_async(
-                channel_id, AssistantMessages.USER_NOT_FOUND, thread_id=thread_id, ephemeral=True, user_id=user_id
-            )
-        elif backend_response.error_type == BackendErrorType.PERMISSION_DENIED:
-            # 103103 - User lacks assistant permissions
-            await self.send_message_async(
-                channel_id, AssistantMessages.NO_ASSISTANT_PERMISSIONS, thread_id=thread_id, ephemeral=True, user_id=user_id
-            )
         else:
-            # Other error
+            error_msg = backend_response.error_type.user_message if backend_response.error_type else AssistantMessages.RESET_SESSION_FAILED
             await self.send_message_async(
-                channel_id, AssistantMessages.RESET_SESSION_FAILED, thread_id=thread_id, ephemeral=True, user_id=user_id
+                channel_id, error_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
             )
 
         return True, assistant
@@ -924,22 +987,73 @@ class AssistantMessagingHandler:
         # Send appropriate message based on backend response
         if backend_response.success:
             feedback_msg = AssistantMessages.FEEDBACK_THANK_YOU
-        elif backend_response.error_type == BackendErrorType.WRONG_USER:
-            # 103204 - Wrong user (conversation belongs to someone else)
-            feedback_msg = AssistantMessages.NOT_CONVERSATION_OWNER_FEEDBACK
-        elif backend_response.error_type == BackendErrorType.USER_NOT_FOUND:
-            # 103102 - User not found in system
-            feedback_msg = AssistantMessages.USER_NOT_FOUND
-        elif backend_response.error_type == BackendErrorType.PERMISSION_DENIED:
-            # 103103 - User lacks assistant permissions
-            feedback_msg = AssistantMessages.NO_ASSISTANT_PERMISSIONS
         else:
-            # Other errors (conversation not found, etc.)
-            feedback_msg = AssistantMessages.FEEDBACK_FAILED
+            feedback_msg = backend_response.error_type.user_message if backend_response.error_type else AssistantMessages.FEEDBACK_FAILED
 
         await self.send_message_async(
             channel_id, feedback_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
         )
+
+    async def _handle_feedback_action(
+        self,
+        action_value: str,
+        channel_id: str,
+        thread_id: str,
+        user_id: str,
+        user_email: str,
+        trigger_id: str,
+    ) -> None:
+        """
+        Handles feedback button actions (positive/negative).
+
+        Args:
+            action_value: The action value string (e.g., "positive-message_id")
+            channel_id: The channel ID
+            thread_id: The thread ID
+            user_id: The user ID
+            user_email: The user's email
+            trigger_id: The trigger ID for modals
+        """
+        # Value format: "positive-message_id" or "negative-message_id"
+        # message_id can contain hyphens (e.g., UUID), so split only on first hyphen
+        parts = action_value.split("-", 1)
+        if len(parts) != 2:
+            demisto.error(f"Invalid feedback value format: {action_value}")
+            return
+
+        feedback_type, message_id = parts
+        is_positive = feedback_type == "positive"
+
+        if is_positive:
+            # Positive feedback - send immediately
+            backend_response = await self.submit_feedback(
+                message_id=message_id,
+                is_positive=True,
+                thread_id=thread_id,
+                channel_id=channel_id,
+                username=user_email,
+            )
+
+            # Send appropriate message based on backend response
+            if backend_response.success:
+                feedback_msg = AssistantMessages.FEEDBACK_THANK_YOU
+            else:
+                feedback_msg = backend_response.error_type.user_message if backend_response.error_type else AssistantMessages.FEEDBACK_FAILED
+
+            await self.send_message_async(
+                channel_id, feedback_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
+            )
+        else:
+            # Negative feedback - open modal
+            if trigger_id:
+                try:
+                    await self.show_feedback_modal(trigger_id, message_id, channel_id, thread_id)
+                except Exception as e:
+                    demisto.error(f"Failed to open feedback modal: {e}")
+                    # Fallback to ephemeral message
+                    await self.send_message_async(
+                        channel_id, AssistantMessages.FEEDBACK_THANK_YOU, thread_id=thread_id, ephemeral=True, user_id=user_id
+                    )
 
     async def handle_action(
         self,
@@ -973,9 +1087,11 @@ class AssistantMessagingHandler:
         Returns:
             Updated assistant dictionary
         """
-        from datetime import UTC, datetime
+        message_id = message.get("ts", "")
 
-        message_ts = message.get("ts", "")
+        if not actions:
+            demisto.error("Received action event with empty actions list")
+            return assistant
 
         # Decode the action payload
         action = actions[0]
@@ -986,57 +1102,14 @@ class AssistantMessagingHandler:
 
         # OPTION 1: Feedback Buttons
         if action_id == AssistantActionIds.FEEDBACK.value:
-            # Value format: "positive-message_id" or "negative-message_id"
-            # message_id can contain hyphens (e.g., UUID), so split only on first hyphen
-            parts = action_value.split("-", 1)
-            if len(parts) == 2:
-                feedback_type, message_id = parts
-                is_positive = feedback_type == "positive"
-            else:
-                demisto.error(f"Invalid feedback value format: {action_value}")
-                return assistant
-
-            if is_positive:
-                # Positive feedback - send immediately
-                backend_response = await self.submit_feedback(
-                    message_id=message_id,
-                    is_positive=True,
-                    thread_id=thread_id,
-                    channel_id=channel_id,
-                    username=user_email,
-                )
-
-                # Send appropriate message based on backend response
-                if backend_response.success:
-                    feedback_msg = AssistantMessages.FEEDBACK_THANK_YOU
-                elif backend_response.error_type == BackendErrorType.WRONG_USER:
-                    # 103204 - Wrong user (conversation belongs to someone else)
-                    feedback_msg = AssistantMessages.NOT_CONVERSATION_OWNER_FEEDBACK
-                elif backend_response.error_type == BackendErrorType.USER_NOT_FOUND:
-                    # 103102 - User not found in system
-                    feedback_msg = AssistantMessages.USER_NOT_FOUND
-                elif backend_response.error_type == BackendErrorType.PERMISSION_DENIED:
-                    # 103103 - User lacks assistant permissions
-                    feedback_msg = AssistantMessages.NO_ASSISTANT_PERMISSIONS
-                else:
-                    # Other errors (conversation not found, etc.)
-                    feedback_msg = AssistantMessages.FEEDBACK_FAILED
-
-                await self.send_message_async(
-                    channel_id, feedback_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
-                )
-            else:
-                # Negative feedback - open modal
-                if trigger_id:
-                    try:
-                        await self.open_feedback_modal(trigger_id, message_id, channel_id, thread_id)
-                    except Exception as e:
-                        demisto.error(f"Failed to open feedback modal: {e}")
-                        # Fallback to ephemeral message
-                        await self.send_message_async(
-                            channel_id, AssistantMessages.FEEDBACK_THANK_YOU, thread_id=thread_id, ephemeral=True, user_id=user_id
-                        )
-
+            await self._handle_feedback_action(
+                action_value=action_value,
+                channel_id=channel_id,
+                thread_id=thread_id,
+                user_id=user_id,
+                user_email=user_email,
+                trigger_id=trigger_id,
+            )
             # Feedback doesn't require active conversation
             return assistant
 
@@ -1060,7 +1133,7 @@ class AssistantMessagingHandler:
 
                 # Send message to backend with selected agent
                 raw_response = demisto.agentixCommands(
-                    "sendToConversation",
+                    BackendCommand.SEND_TO_CONVERSATION,
                     {
                         "channel_id": channel_id,
                         "thread_id": thread_id,
@@ -1074,7 +1147,7 @@ class AssistantMessagingHandler:
 
                 if backend_response.success:
                     # Update the original message to show selection
-                    await self.update_message(channel_id, message_ts, text=f"Selected agent: {selected_agent_name}", blocks=[])
+                    await self.update_message(channel_id, message_id, text=f"Selected agent: {selected_agent_name}", blocks=[])
 
                     # Send help hint as ephemeral message to the user
                     if bot_id:
@@ -1094,22 +1167,16 @@ class AssistantMessagingHandler:
                     assistant[assistant_id_key]["selected_agent"] = selected_agent_id
                     assistant[assistant_id_key]["last_updated"] = datetime.now(UTC).timestamp()
 
-                    # Store thinking message timestamp if sent successfully
+                    # Store thinking message ID if sent successfully
                     if thinking_ts:
-                        assistant[assistant_id_key]["thinking_message_ts"] = thinking_ts
+                        assistant[assistant_id_key][THINKING_MESSAGE_ID_KEY] = thinking_ts
                 else:
                     # Backend call failed - show appropriate error message
-                    if backend_response.error_type == BackendErrorType.USER_NOT_FOUND:
-                        # 103102 - User not found in system
-                        error_msg = AssistantMessages.USER_NOT_FOUND
-                    elif backend_response.error_type == BackendErrorType.PERMISSION_DENIED:
-                        # 103103 - User lacks assistant permissions
-                        error_msg = AssistantMessages.NO_ASSISTANT_PERMISSIONS
-                    elif backend_response.error_type == BackendErrorType.WRONG_USER:
-                        # 103204 - Wrong user (thread locked to another user)
+                    if backend_response.error_type == BackendErrorType.WRONG_USER:
                         error_msg = AssistantMessages.THREAD_LOCKED_TO_ANOTHER_USER.format(bot_tag="the assistant")
+                    elif backend_response.error_type:
+                        error_msg = backend_response.error_type.user_message
                     else:
-                        # Generic error
                         error_msg = AssistantMessages.AGENT_SELECTION_FAILED
                         if backend_response.error_code:
                             error_msg = f"{error_msg} (Error code: {backend_response.error_code})"
@@ -1131,7 +1198,7 @@ class AssistantMessagingHandler:
 
                 # Send response to backend
                 raw_response = demisto.agentixCommands(
-                    "sendToConversation",
+                    BackendCommand.SEND_TO_CONVERSATION,
                     {
                         "channel_id": channel_id,
                         "thread_id": thread_id,
@@ -1149,11 +1216,11 @@ class AssistantMessagingHandler:
                     updated_blocks.append({"type": "context", "elements": [{"type": "mrkdwn", "text": decision_indicator}]})
 
                     try:
-                        await self.update_message(channel_id, message_ts, blocks=updated_blocks)
+                        await self.update_message(channel_id, message_id, blocks=updated_blocks)
                     except Exception as e:
                         demisto.error(f"Failed to update approval message: {e}")
                         # Fallback
-                        await self.update_message(channel_id, message_ts, text=decision_indicator, blocks=[])
+                        await self.update_message(channel_id, message_id, text=decision_indicator, blocks=[])
 
                     # Send thinking indicator
                     thinking_response = await self.send_message_async(
@@ -1166,20 +1233,15 @@ class AssistantMessagingHandler:
                     assistant[assistant_id_key]["sensitive_action_response"] = "approved" if is_approved else "rejected"
                     assistant[assistant_id_key]["last_updated"] = datetime.now(UTC).timestamp()
 
-                    # Store thinking message timestamp if sent successfully
+                    # Store thinking message ID if sent successfully
                     if thinking_ts:
-                        assistant[assistant_id_key]["thinking_message_ts"] = thinking_ts
+                        assistant[assistant_id_key][THINKING_MESSAGE_ID_KEY] = thinking_ts
                 else:
                     # Backend call failed - show appropriate error
-                    if backend_response.error_type == BackendErrorType.USER_NOT_FOUND:
-                        # 103102 - User not found in system
-                        error_msg = AssistantMessages.USER_NOT_FOUND
-                    elif backend_response.error_type == BackendErrorType.PERMISSION_DENIED:
-                        # 103103 - User lacks assistant permissions
-                        error_msg = AssistantMessages.NO_ASSISTANT_PERMISSIONS
-                    elif backend_response.error_type == BackendErrorType.WRONG_USER:
-                        # 103204 - Wrong user
+                    if backend_response.error_type == BackendErrorType.WRONG_USER:
                         error_msg = AssistantMessages.THREAD_LOCKED_TO_ANOTHER_USER.format(bot_tag="the assistant")
+                    elif backend_response.error_type:
+                        error_msg = backend_response.error_type.user_message
                     else:
                         error_msg = "Failed to process your response. Please try again."
                         if backend_response.error_code:
@@ -1216,7 +1278,7 @@ class AssistantMessagingHandler:
         return "\n".join(context_lines)
 
     async def get_conversation_context_formatted(
-        self, channel_id: str, thread_id: str, bot_id: str, current_message_ts: str
+        self, channel_id: str, thread_id: str, bot_id: str, current_message_id: str
     ) -> str:
         """
         Retrieves and formats conversation context.
@@ -1226,7 +1288,7 @@ class AssistantMessagingHandler:
             channel_id: The channel ID
             thread_id: The thread ID
             bot_id: The bot user ID
-            current_message_ts: The current message timestamp
+            current_message_id: The current message ID
 
         Returns:
             Formatted context string
@@ -1243,7 +1305,7 @@ class AssistantMessagingHandler:
         assistant: dict,
         assistant_id_key: str,
         bot_id: str,
-        message_ts: str,
+        message_id: str,
     ) -> dict:
         """
         Handles when the bot is mentioned in a message for Assistant AI.
@@ -1258,7 +1320,7 @@ class AssistantMessagingHandler:
             assistant: The assistant context dictionary
             assistant_id_key: The unique key for this conversation
             bot_id: The bot user ID
-            message_ts: The current message timestamp
+            message_id: The current message ID
 
         Returns:
             Updated assistant dictionary - to be saved by caller
@@ -1321,7 +1383,7 @@ class AssistantMessagingHandler:
             return assistant
 
         # Get conversation context (up to 5 previous messages)
-        context = await self.get_conversation_context_formatted(channel_id, thread_id, bot_id, message_ts)
+        context = await self.get_conversation_context_formatted(channel_id, thread_id, bot_id, message_id)
 
         # Replace bot mention with friendly display name for backend
         bot_mention = self.format_user_mention(bot_id)
@@ -1341,7 +1403,7 @@ class AssistantMessagingHandler:
         # Send message to backend using agentixCommands
         demisto.debug(f"Sending user message to backend: channel={channel_id}, thread={thread_id}, user={user_email}")
         raw_response = demisto.agentixCommands(
-            "sendToConversation",
+            BackendCommand.SEND_TO_CONVERSATION,
             {
                 "channel_id": channel_id,
                 "thread_id": thread_id,
@@ -1367,8 +1429,6 @@ class AssistantMessagingHandler:
                     await self.send_message_async(channel_id, "", thread_id, blocks=agent_selection_blocks)
 
                     # Lock the conversation with agent selection status
-                    from datetime import UTC, datetime
-
                     assistant[assistant_id_key] = {
                         "date": thread_id,
                         "user": user_id,
@@ -1398,8 +1458,6 @@ class AssistantMessagingHandler:
             thinking_ts = thinking_response.get("ts") if thinking_response else None
 
             # Lock the conversation with initial status
-            from datetime import UTC, datetime
-
             assistant[assistant_id_key] = {
                 "date": thread_id,
                 "user": user_id,
@@ -1410,9 +1468,9 @@ class AssistantMessagingHandler:
                 "last_updated": datetime.now(UTC).timestamp(),
             }
 
-            # Store thinking message timestamp if sent successfully
+            # Store thinking message ID if sent successfully
             if thinking_ts:
-                assistant[assistant_id_key]["thinking_message_ts"] = thinking_ts
+                assistant[assistant_id_key][THINKING_MESSAGE_ID_KEY] = thinking_ts
             
             demisto.debug(f"Locked conversation {assistant_id_key}, awaiting backend response")
 
@@ -1421,30 +1479,24 @@ class AssistantMessagingHandler:
             error_msg = None
             is_ephemeral = False
             
-            if backend_response.error_type == BackendErrorType.LLM_NOT_ENABLED:
-                # 103000 - LLM not enabled (public message)
-                demisto.debug("LLM not enabled in Cortex platform")
-                error_msg = AssistantMessages.LLM_NOT_ENABLED
-            elif backend_response.error_type == BackendErrorType.USER_NOT_FOUND:
-                # 103102 - User not found in system (public message with user tag)
-                demisto.debug(f"User {user_email} not found in system")
+            if backend_response.error_type == BackendErrorType.USER_NOT_FOUND:
+                # Public message with user tag
                 user_mention = self.format_user_mention(user_id)
-                error_msg = f"{user_mention} {AssistantMessages.USER_NOT_FOUND}"
+                error_msg = f"{user_mention} {backend_response.error_type.user_message}"
             elif backend_response.error_type == BackendErrorType.PERMISSION_DENIED:
-                # 103103 - User lacks assistant permissions (public message with user tag)
-                demisto.debug(f"User {user_email} lacks assistant permissions")
+                # Public message with user tag
                 user_mention = self.format_user_mention(user_id)
-                error_msg = f"{user_mention} {AssistantMessages.NO_ASSISTANT_PERMISSIONS}"
+                error_msg = f"{user_mention} {backend_response.error_type.user_message}"
             elif backend_response.error_type == BackendErrorType.WRONG_USER:
-                # 103204 - Wrong user (thread locked to another user)
                 is_ephemeral = True
-                demisto.debug(f"Thread {thread_id} is locked to another user")
                 error_msg = AssistantMessages.THREAD_LOCKED_TO_ANOTHER_USER.format(bot_tag=self.format_user_mention(bot_id))
+            elif backend_response.error_type:
+                error_msg = backend_response.error_type.user_message
+                if backend_response.error_code:
+                    error_msg = f"{error_msg} (Error code: {backend_response.error_code})"
             else:
-                # Other error (conversation not found, system errors, etc.)
-                demisto.error(f"Backend sendToConversation failed: {backend_response.error_message}")
+                demisto.error(f"Backend sendToConversation failed: {raw_response}")
                 error_msg = AssistantMessages.SYSTEM_ERROR
-                # Add error code to help with debugging
                 if backend_response.error_code:
                     error_msg = f"{error_msg} (Error code: {backend_response.error_code})"
             
@@ -1569,13 +1621,13 @@ class AssistantMessagingHandler:
 
         # Delete thinking indicator if it exists (before sending first response)
         if assistant_id_key in assistant_context:
-            thinking_ts = assistant_context[assistant_id_key].get("thinking_message_ts")
+            thinking_ts = assistant_context[assistant_id_key].get(THINKING_MESSAGE_ID_KEY)
             if thinking_ts:
                 try:
-                    self.delete_message_sync(channel_id, thinking_ts)
+                    self.delete_message(channel_id, thinking_ts)
                 except Exception as e:
                     demisto.error(f"Failed to delete thinking indicator: {e}")
-                assistant_context[assistant_id_key].pop("thinking_message_ts", None)
+                assistant_context[assistant_id_key].pop(THINKING_MESSAGE_ID_KEY, None)
 
         # Group messages by type category
         grouped = self._group_messages_by_type(messages)
@@ -1600,7 +1652,7 @@ class AssistantMessagingHandler:
                     continue
                 blocks, attachments = self.prepare_merged_step_blocks(step_contents)
 
-                self.post_agent_response_sync(
+                self.post_agent_response(
                     channel_id, thread_id, blocks, attachments, agent_name,
                     fallback_text=" | ".join(step_contents),
                 )
@@ -1645,8 +1697,6 @@ class AssistantMessagingHandler:
                 del assistant_context[assistant_id_key]
                 self.update_context({self.CONTEXT_KEY: assistant_context})
             elif new_status:
-                from datetime import UTC, datetime
-
                 assistant_context[assistant_id_key]["status"] = new_status
                 assistant_context[assistant_id_key]["last_updated"] = datetime.now(UTC).timestamp()
                 self.update_context({self.CONTEXT_KEY: assistant_context})
@@ -1659,7 +1709,7 @@ class AssistantMessagingHandler:
         channel_id: str,
         thread_id: str,
         message: str,
-        message_type: str,
+        message_type: AssistantMessageType,
         message_id: str,
         agent_name: str,
         user_id: str,
@@ -1700,6 +1750,6 @@ class AssistantMessagingHandler:
                 blocks.append(self.create_feedback_ui(message_id))
 
         # Send message using platform-specific method
-        self.post_agent_response_sync(
+        self.post_agent_response(
             channel_id, thread_id, blocks, attachments, agent_name, fallback_text=message
         )

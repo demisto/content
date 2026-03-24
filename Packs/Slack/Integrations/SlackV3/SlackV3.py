@@ -148,6 +148,7 @@ class SlackAssistantHandler(AssistantMessagingHandler):
             attachments=attachments,
             ephemeral_message=ephemeral,
             user_id=user_id,
+            bot_name=AssistantMessages.BOT_DISPLAY_NAME,
         )
 
     async def update_message(
@@ -166,6 +167,8 @@ class SlackAssistantHandler(AssistantMessagingHandler):
             text: Optional new text
             blocks: Optional new blocks
         """
+        self._validate_update_message_args(text, blocks)
+
         body: Dict = {"channel": channel_id, "ts": message_ts}
         if text:
             body["text"] = text
@@ -174,7 +177,7 @@ class SlackAssistantHandler(AssistantMessagingHandler):
 
         return await send_slack_request_async(client=ASYNC_CLIENT, method="chat.update", body=body)
 
-    def delete_message_sync(
+    def delete_message(
         self,
         channel_id: str,
         message_ts: str,
@@ -202,7 +205,7 @@ class SlackAssistantHandler(AssistantMessagingHandler):
         """
         return await get_user_details(user_id)  # type: ignore[return-value]
 
-    async def get_thread_history(self, channel_id: str, thread_ts: str, limit: int = 20) -> list:
+    async def get_thread_last_messages(self, channel_id: str, thread_ts: str, limit: int = 20) -> list:
         """
         Get Slack conversation history.
 
@@ -304,7 +307,7 @@ class SlackAssistantHandler(AssistantMessagingHandler):
         """
         return get_feedback_buttons_block(message_id)
 
-    def post_agent_response_sync(
+    def post_agent_response(
         self, channel_id: str, thread_id: str, blocks: list, attachments: list, agent_name: str = "", fallback_text: str = ""
     ) -> dict:
         """
@@ -323,7 +326,9 @@ class SlackAssistantHandler(AssistantMessagingHandler):
             Response dict with 'ts' if successful
         """
         try:
-            response = send_message_to_destinations([channel_id], "", thread_id, blocks, attachments, bot_name=agent_name)
+            response = send_message_to_destinations(
+                [channel_id], "", thread_id, blocks, attachments, bot_name=AssistantMessages.BOT_DISPLAY_NAME
+            )
             if response:
                 return {"ts": response.get("ts")}
             return {}
@@ -332,7 +337,9 @@ class SlackAssistantHandler(AssistantMessagingHandler):
             if "invalid_blocks" in str(e):
                 demisto.error(f"Invalid blocks format, sending as plain text: {e}")
                 if fallback_text:
-                    response = send_message_to_destinations([channel_id], fallback_text, thread_id, bot_name=agent_name)
+                    response = send_message_to_destinations(
+                        [channel_id], fallback_text, thread_id, bot_name=AssistantMessages.BOT_DISPLAY_NAME
+                    )
                     if response:
                         return {"ts": response.get("ts")}
             raise
@@ -347,7 +354,7 @@ class SlackAssistantHandler(AssistantMessagingHandler):
         """
         set_to_integration_context_with_retries(context_updates, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
-    async def open_feedback_modal(
+    async def show_feedback_modal(
         self,
         trigger_id: str,
         message_id: str,
@@ -1326,7 +1333,7 @@ def long_running_loop():
 
             # Cleanup expired Assistant conversations
             if ENABLED_AI_ASSISTANT:
-                slack_assistant_handler.check_and_cleanup_assistant_conversations()
+                slack_assistant_handler.delete_assistant_conversations_from_context()
 
             if EXTENSIVE_LOGGING:
                 demisto.debug(f"Number of threads currently - {threading.active_count()}")

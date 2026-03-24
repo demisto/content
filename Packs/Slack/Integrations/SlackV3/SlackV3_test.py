@@ -5774,7 +5774,7 @@ async def test_post_agent_response_sync_with_invalid_blocks_fallback(mocker):
     mocker.patch.object(demisto, "error")
 
     handler = SlackV3.slack_assistant_handler
-    result = handler.post_agent_response_sync(
+    result = handler.post_agent_response(
         channel_id="C123",
         thread_id="thread123",
         blocks=[{"invalid": "block"}],

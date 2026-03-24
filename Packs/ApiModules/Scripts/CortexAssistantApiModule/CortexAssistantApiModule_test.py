@@ -4,6 +4,7 @@ from datetime import datetime, UTC
 from pytest_mock import MockerFixture
 import demistomock as demisto
 from CortexAssistantApiModule import (
+    BackendErrorCode,
     BackendErrorType,
     BackendResponse,
     AssistantStatus,
@@ -34,16 +35,16 @@ class MockMessagingHandler(AssistantMessagingHandler):
         self.sent_messages.append({"channel_id": channel_id, "message": message, "ephemeral": ephemeral})
         return {"ts": "1234567890.123456"}
 
-    async def update_message(self, channel_id: str, message_ts: str, text: str = "", blocks: list | None = None):
-        self.updated_messages.append({"channel_id": channel_id, "message_ts": message_ts, "text": text})
+    async def update_message(self, channel_id: str, message_id: str, text: str = "", blocks: list | None = None):
+        self.updated_messages.append({"channel_id": channel_id, "message_id": message_id, "text": text})
 
-    def delete_message_sync(self, channel_id: str, message_ts: str):
-        self.deleted_messages.append({"channel_id": channel_id, "message_ts": message_ts})
+    def delete_message(self, channel_id: str, message_id: str):
+        self.deleted_messages.append({"channel_id": channel_id, "message_id": message_id})
 
     async def get_user_info(self, user_id: str) -> dict:
         return {"id": user_id, "email": "test@example.com"}
 
-    async def get_thread_history(self, channel_id: str, thread_id: str, limit: int = 20) -> list:
+    async def get_thread_last_messages(self, channel_id: str, thread_id: str, limit: int = 20) -> list:
         return []
 
     def format_user_mention(self, user_id: str) -> str:
@@ -67,26 +68,26 @@ class MockMessagingHandler(AssistantMessagingHandler):
     def create_feedback_ui(self, message_id: str) -> dict:
         return {"type": "actions"}
 
-    def post_agent_response_sync(self, channel_id: str, thread_id: str, blocks: list,
+    def post_agent_response(self, channel_id: str, thread_id: str, blocks: list,
                                   attachments: list, agent_name: str = "") -> dict | None:
         self.last_posted_blocks = blocks
         return {"ts": "1234567890.123456"}
 
-    def update_existing_message(self, channel_id: str, thread_id: str, message_ts: str,
+    def update_existing_message(self, channel_id: str, thread_id: str, message_id: str,
                                 attachments: list) -> bool:
         return True
 
-    def finalize_plan_header(self, channel_id: str, thread_id: str, step_message_ts: str):
+    def finalize_plan_header(self, channel_id: str, thread_id: str, step_message_id: str):
         pass
 
     def update_context(self, context_updates: dict):
         pass
 
-    async def open_feedback_modal(self, trigger_id: str, message_id: str, channel_id: str, thread_id: str):
+    async def show_feedback_modal(self, trigger_id: str, message_id: str, channel_id: str, thread_id: str):
         pass
 
     async def get_conversation_context_formatted(self, channel_id: str, thread_id: str,
-                                                  bot_id: str, current_message_ts: str) -> str:
+                                                  bot_id: str, current_message_id: str) -> str:
         return ""
 
 
@@ -283,7 +284,7 @@ def test_cleanup_expired_conversations_empty():
         Returns empty dictionary.
     """
     handler = MockMessagingHandler()
-    result = handler.cleanup_expired_conversations({})
+    result = handler.delete_expired_conversations({})
     assert result == {}
 
 
@@ -310,7 +311,7 @@ def test_cleanup_expired_conversations_removes_expired():
         }
     }
     
-    result = handler.cleanup_expired_conversations(assistant)
+    result = handler.delete_expired_conversations(assistant)
     assert "expired" not in result
     assert "active" in result
 
@@ -335,11 +336,11 @@ def test_handle_backend_response_success(mocker: MockerFixture):
 
 
 @pytest.mark.parametrize("error_code,expected_type", [
-    (103000, BackendErrorType.LLM_NOT_ENABLED),
-    (103102, BackendErrorType.USER_NOT_FOUND),
-    (103103, BackendErrorType.PERMISSION_DENIED),
-    (103201, BackendErrorType.CONVERSATION_NOT_FOUND),
-    (103204, BackendErrorType.WRONG_USER),
+    (BackendErrorCode.LLM_NOT_ENABLED, BackendErrorType.LLM_NOT_ENABLED),
+    (BackendErrorCode.USER_NOT_FOUND, BackendErrorType.USER_NOT_FOUND),
+    (BackendErrorCode.PERMISSION_DENIED, BackendErrorType.PERMISSION_DENIED),
+    (BackendErrorCode.CONVERSATION_NOT_FOUND, BackendErrorType.CONVERSATION_NOT_FOUND),
+    (BackendErrorCode.WRONG_USER, BackendErrorType.WRONG_USER),
 ])
 def test_handle_backend_response_errors(mocker: MockerFixture, error_code, expected_type):
     """
@@ -649,7 +650,7 @@ def test_send_agent_response_error_adds_user_mention(mocker: MockerFixture):
 def test_send_agent_response_deletes_thinking_indicator(mocker: MockerFixture):
     """
     Given:
-        Assistant context with thinking_message_ts.
+        Assistant context with thinking_message_id.
     When:
         Sending agent response.
     Then:
@@ -658,7 +659,7 @@ def test_send_agent_response_deletes_thinking_indicator(mocker: MockerFixture):
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "results")
     handler = MockMessagingHandler()
-    assistant = {"conv1": {"thinking_message_ts": "1234567890.123456"}}
+    assistant = {"conv1": {"thinking_message_id": "1234567890.123456"}}
 
     handler.send_agent_response(
         channel_id="channel123",
@@ -669,7 +670,7 @@ def test_send_agent_response_deletes_thinking_indicator(mocker: MockerFixture):
     )
 
     assert len(handler.deleted_messages) == 1
-    assert handler.deleted_messages[0]["message_ts"] == "1234567890.123456"
+    assert handler.deleted_messages[0]["message_id"] == "1234567890.123456"
 
 
 def test_send_agent_response_model_adds_user_mention(mocker: MockerFixture):
@@ -791,14 +792,14 @@ def test_send_agent_response_merges_consecutive_steps(mocker: MockerFixture):
     mocker.patch.object(demisto, "results")
     handler = MockMessagingHandler()
     handler.posted_calls = []
-    original_post = handler.post_agent_response_sync
+    original_post = handler.post_agent_response
 
     def tracking_post(*args, **kwargs):
         result = original_post(*args, **kwargs)
         handler.posted_calls.append({"blocks": args[2] if len(args) > 2 else kwargs.get("blocks", [])})
         return result
 
-    handler.post_agent_response_sync = tracking_post
+    handler.post_agent_response = tracking_post
     assistant = {"conv1": {"status": "awaiting_backend_response"}}
 
     handler.send_agent_response(
