@@ -1207,6 +1207,7 @@ def fetch_incidents(v1_client: pytmv1.Client):
     """
     end = datetime.now(UTC)
     days = int(demisto.params().get("first_fetch", "7"))
+    max_fetch = int(demisto.params().get("max_fetch", 50))
 
     last_run = demisto.getLastRun()
     if last_run and "start_time" in last_run:
@@ -1216,6 +1217,11 @@ def fetch_incidents(v1_client: pytmv1.Client):
     # Fetch alerts
     demisto.debug(f"fetch_incidents: querying alerts from {start.isoformat()} to {end.isoformat()}")
     alerts: list[Any] = get_workbench_histories(v1_client, start, end)
+    # Sort by created_date_time ascending so oldest alerts are processed first
+    alerts.sort(key=lambda a: a.created_date_time)
+    # Apply max_fetch limit
+    truncated = len(alerts) > max_fetch
+    alerts = alerts[:max_fetch]
     # list to store incidents that will be sent to the UI
     incidents: list[dict[str, Any]] = []
     if alerts:
@@ -1233,8 +1239,13 @@ def fetch_incidents(v1_client: pytmv1.Client):
                 "rawJSON": json.dumps(alert_data),
             }
             incidents.append(incident)
-    demisto.debug(f"fetch_incidents: fetched {len(incidents)} incidents")
-    demisto.setLastRun({"start_time": end.isoformat()})
+    demisto.debug(f"fetch_incidents: fetched {len(incidents)} incidents (truncated={truncated})")
+    # If truncated, use last processed alert's time so remaining alerts are fetched next cycle
+    if truncated and alerts:
+        next_start = alerts[-1].created_date_time
+        demisto.setLastRun({"start_time": next_start})
+    else:
+        demisto.setLastRun({"start_time": end.isoformat()})
     demisto.incidents(incidents)
     return incidents
 
