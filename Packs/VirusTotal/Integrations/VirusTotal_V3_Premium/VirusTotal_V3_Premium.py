@@ -253,7 +253,7 @@ class Client(BaseClient):
         """
         return self._http_request("GET", f"intelligence/zip_files/{zip_id}/download", allow_redirects=True, resp_type="request")
 
-    def get_pcap_beaviour(self, report_id) -> dict:
+    def get_pcap_behaviour(self, report_id) -> dict:
         """Extracted PCAP from a sandbox analysis.
 
         See Also:
@@ -481,7 +481,7 @@ def test_module(client: Client, params: dict) -> str:
     if argToBoolean(params.get("isFetch")):
         fetch_incidents(client, params, get_last_run_time(last_run={}))
     else:
-        client.list_livehunt_rules(limit=1)
+        client.get_quota_limits(id_=client.api_key)
     return "ok"
 
 
@@ -543,7 +543,7 @@ def download_zip(client: Client, args: dict) -> dict:
 def get_pcap_behaviour(client: Client, args: dict) -> dict:
     """Extracted PCAP from a sandbox analysis"""
     report_id = args["report_id"]
-    content = client.get_pcap_beaviour(report_id)
+    content = client.get_pcap_behaviour(report_id)
     assert isinstance(content, bytes | str), "Response from PCAP Behavior is not a bytes-like object."
     return fileResult(f"{report_id}.pcap", content)
 

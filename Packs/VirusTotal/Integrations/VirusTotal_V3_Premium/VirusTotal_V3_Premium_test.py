@@ -34,7 +34,7 @@ class TestTimeHelpers:
         assert get_time_range_object("", "") == {}
 
 
-class TestDecreaceDataSize:
+class TestDecreaseDataSize:
     full_attributes_to_remove = {
         "attributes": {
             "last_analysis_results": "data",
