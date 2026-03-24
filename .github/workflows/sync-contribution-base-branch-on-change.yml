@@ -29,8 +29,9 @@ jobs:
       - name: Sync Base Branch to Master
         env:
           CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
           echo "Updating contribution base branch (contrib/*)"
           cd .github/github_workflow_scripts
-          poetry run ./sync_contrib_base.py --branch_name ${{ github.event.pull_request.base.ref }}
+          poetry run ./sync_contrib_base.py --branch_name "$BASE_REF"
           echo "Finished updating base branch"
