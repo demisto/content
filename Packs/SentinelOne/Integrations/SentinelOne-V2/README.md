@@ -2252,16 +2252,16 @@ Updates the analyst verdict for a group of UAM alerts. Relevant for API version 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| analyst_verdict | UAM alert analyst verdict. Possible values are: False positive - Benign, False positive - Benign but suspicious, False positive - System error, False positive - Undefined, False positive - User error, True positive - Advanced persistent threat, True positive - Benign, True positive - Benign but suspicious, True positive - Data exfiltration, True positive - Denial of service, True positive - Exploitation tools, True positive - Insider threat, True positive - Malware, True positive - Phishing attack, True positive - Policy violation, True positive - PUA/Adware, True positive - Ransomware, True positive - Unauthorized access, True positive - Undefined, Undefined. | Required | 
-| alert_ids | A comma-separated list of UAM alert IDs. | Required | 
+| analyst_verdict | UAM alert analyst verdict. Possible values are: False positive - Benign, False positive - Benign but suspicious, False positive - System error, False positive - Undefined, False positive - User error, True positive - Advanced persistent threat, True positive - Benign, True positive - Benign but suspicious, True positive - Data exfiltration, True positive - Denial of service, True positive - Exploitation tools, True positive - Insider threat, True positive - Malware, True positive - Phishing attack, True positive - Policy violation, True positive - PUA/Adware, True positive - Ransomware, True positive - Unauthorized access, True positive - Undefined, Undefined. | Required |
+| alert_ids | A comma-separated list of UAM alert IDs. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SentinelOne.UAMAlert.ID | String | The UAM alert ID. | 
-| SentinelOne.UAMAlert.Updated | Boolean | Whether the analyst verdict was successfully updated. | 
-| SentinelOne.UAMAlert.AnalystVerdict | String | Name of the analyst verdict performed on the alerts. | 
+| SentinelOne.UAMAlert.ID | String | The UAM alert ID. |
+| SentinelOne.UAMAlert.Updated | Boolean | Whether the analyst verdict was successfully updated. |
+| SentinelOne.UAMAlert.AnalystVerdict | String | Name of the analyst verdict performed on the alerts. |
 
 ### sentinelone-update-uam-alert-status
 
@@ -2276,14 +2276,13 @@ Updates the status for a group of UAM alerts. Relevant for API version 2.1.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| status | UAM alert status. Possible values are: New, In progress, Resolved. | Required | 
-| alert_ids | A comma-separated list of UAM alert IDs. | Required | 
+| status | UAM alert status. Possible values are: New, In progress, Resolved. | Required |
+| alert_ids | A comma-separated list of UAM alert IDs. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SentinelOne.UAMAlert.ID | String | The UAM alert ID. | 
-| SentinelOne.UAMAlert.Updated | Boolean | Whether the status was successfully updated. | 
-| SentinelOne.UAMAlert.Status | String | Name of the status performed on the alerts. | 
-
+| SentinelOne.UAMAlert.ID | String | The UAM alert ID. |
+| SentinelOne.UAMAlert.Updated | Boolean | Whether the status was successfully updated. |
+| SentinelOne.UAMAlert.Status | String | Name of the status performed on the alerts. |
