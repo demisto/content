@@ -399,6 +399,9 @@ script:
       description: The Slack user (username, email or user ID).
       name: user
       required: true
+      compliantpolicies:
+      - User Hard Remediation
+      - User Soft Remediation
     description: Get details about a specified user.
     name: slack-get-user-details
     outputs:
