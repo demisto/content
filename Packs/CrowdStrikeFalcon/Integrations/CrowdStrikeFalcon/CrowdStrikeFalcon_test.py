@@ -7786,7 +7786,7 @@ def test_get_remote_recon_data_not_found(mocker):
 @pytest.mark.parametrize(
     "delta, inc_status, close_in_cs, expected_status, expected_call",
     [
-        ({"status": 2}, IncidentStatus.DONE, True, "closed", True),
+        ({"status": 2}, IncidentStatus.DONE, True, "closed-true-positive", True),
         ({"status": "in-progress"}, IncidentStatus.ACTIVE, False, "in-progress", True),
         ({"other_field": 1}, IncidentStatus.DONE, False, None, False),
     ],
@@ -7813,7 +7813,7 @@ def test_update_remote_recon_notification(mocker, delta, inc_status, close_in_cs
 
     if expected_call:
         mock_http_request.assert_called_once_with(
-            "PATCH", "/recon/entities/notifications/v1", json={"id": remote_id, "fields": {"status": expected_status}}
+            "PATCH", "/recon/entities/notifications/v1", json=[{"id": remote_id, "status": expected_status}]
         )
     else:
         mock_http_request.assert_not_called()

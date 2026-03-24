@@ -2769,7 +2769,7 @@ def update_remote_recon_notification(delta: Dict[str, Any], inc_status: int, rem
     remote_id = remote_incident_id.replace(f"{IncidentType.RECON.value}", "", 1)
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
         demisto.debug(f"Recon-Log Closing Recon Notification: {remote_id} in remote system.")
-        result = str(resolve_case(remote_id, status="closed", is_recon_type=True))
+        result = str(resolve_case(remote_id, status="closed-true-positive", is_recon_type=True))
         demisto.debug(f"Recon-Log result closing Recon Notification: {remote_id} in remote system. {result=}")
         return result
     elif "status" in delta:
@@ -7128,9 +7128,13 @@ def resolve_case(
     }
     fields = {k: v for k, v in fields.items() if v is not None}
 
-    payload = {"id": case_id, "fields": fields}
+    if is_recon_type:
+        payload = {"id": case_id, **fields}
+        url_suffix = "/recon/entities/notifications/v1"
+    else:
+        payload = {"id": case_id, "fields": fields}
+        url_suffix = "/cases/entities/cases/v2"
     demisto.debug(f"About to call http_request with {payload=}")
-    url_suffix = "/recon/entities/notifications/v1" if is_recon_type else "/cases/entities/cases/v2"
     return http_request("PATCH", url_suffix, json=payload)
 
 
