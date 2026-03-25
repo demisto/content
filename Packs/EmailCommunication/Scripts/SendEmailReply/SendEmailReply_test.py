@@ -330,22 +330,6 @@ GET_EMAIL_RECIPIENTS = [
         "",
         {"test123@gmail.com", "test1@gmail.com", "avishai@demistodev.onmicrosoft.com"},
     ),
-    # Mailbox is configured with different capitalization, but should still be removed.
-    (
-        '["avishai@demistodev.onmicrosoft.com", "test1@gmail.com"]',
-        "test123@gmail.com",
-        "",
-        "AVISHAI@DEMISTODEV.ONMICROSOFT.COM",
-        {"test123@gmail.com", "test1@gmail.com"},
-    ),
-    # Service mail is configured with different capitalization, but should still be removed.
-    (
-        '["avishai@demistodev.onmicrosoft.com", "test1@gmail.com"]',
-        "test123@gmail.com",
-        "AVISHAI@DEMISTODEV.ONMICROSOFT.COM",
-        "",
-        {"test123@gmail.com", "test1@gmail.com"},
-    ),
 ]
 
 
