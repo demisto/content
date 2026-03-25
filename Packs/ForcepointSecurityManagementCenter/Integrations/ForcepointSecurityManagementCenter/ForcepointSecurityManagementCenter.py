@@ -889,7 +889,7 @@ def engine_refresh_command(args: dict) -> PollResult:
         demisto.debug("All refresh tasks are complete.")
         return PollResult(
             response=CommandResults(
-                f"Existing policy on specified devices ({', '.join(engine_names)}) were refreshed successfully."
+                readable_output=f"Existing policy on specified devices ({', '.join(engine_names)}) were refreshed successfully."
             ),
             continue_to_poll=False,
         )

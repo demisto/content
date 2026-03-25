@@ -716,7 +716,7 @@ def test_engine_refresh_command_polling_complete(mocker):
     result = engine_refresh_command(args)
 
     assert result.scheduled_command is None
-    assert "refreshed successfully" in result.outputs_prefix
+    assert "refreshed successfully" in result.readable_output
 
 
 def test_engine_refresh_command_failure(mocker):
