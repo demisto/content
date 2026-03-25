@@ -318,10 +318,14 @@ class TestFetchEventsWithPagination:
         page1_events = [_create_risk_event(f"event-{i}", created_at=f"2026-03-01T{10 + i}:00:00Z") for i in range(100)]
         page2_events = [_create_risk_event(f"event-{100 + i}", created_at=f"2026-03-02T{i}:00:00Z") for i in range(50)]
 
-        mocker.patch.object(client, "_http_request", side_effect=[
-            {"data": page1_events},
-            {"data": page2_events},
-        ])
+        mocker.patch.object(
+            client,
+            "_http_request",
+            side_effect=[
+                {"data": page1_events},
+                {"data": page2_events},
+            ],
+        )
 
         events = _fetch_events_with_pagination(client, "2026-03-01", "2026-03-02", limit=200)
         assert len(events) == 150
@@ -354,6 +358,83 @@ class TestFetchEventsWithPagination:
 
         events = _fetch_events_with_pagination(client, "2026-03-01", "2026-03-01", limit=10)
         assert len(events) == 10
+
+    def test_page_beyond_data_returns_error(self, client, mocker):
+        """
+        Given:
+            - First page returns a full batch, second page returns a 400 error
+              (API returns error for out-of-range page instead of empty result)
+        When:
+            - Calling _fetch_events_with_pagination
+        Then:
+            - Ensure events from the first page are returned and pagination stops gracefully
+        """
+        page1_events = [_create_risk_event(f"event-{i}", created_at=f"2026-03-01T{i:02d}:00:00Z") for i in range(100)]
+
+        mocker.patch.object(
+            client,
+            "_http_request",
+            side_effect=[
+                {"data": page1_events},
+                DemistoException("Error in API call [400] - Bad Request"),
+            ],
+        )
+
+        events = _fetch_events_with_pagination(client, "2026-03-01", "2026-03-01", limit=200)
+        assert len(events) == 100
+
+    def test_page_beyond_data_returns_404(self, client, mocker):
+        """
+        Given:
+            - First page returns events, second page returns a 404 error
+        When:
+            - Calling _fetch_events_with_pagination
+        Then:
+            - Ensure events from the first page are returned and pagination stops gracefully
+        """
+        page1_events = [_create_risk_event(f"event-{i}", created_at=f"2026-03-01T{i:02d}:00:00Z") for i in range(100)]
+
+        mocker.patch.object(
+            client,
+            "_http_request",
+            side_effect=[
+                {"data": page1_events},
+                DemistoException("Error in API call [404] - Not Found"),
+            ],
+        )
+
+        events = _fetch_events_with_pagination(client, "2026-03-01", "2026-03-01", limit=200)
+        assert len(events) == 100
+
+    def test_unexpected_error_is_raised(self, client, mocker):
+        """
+        Given:
+            - API returns a 500 server error during pagination
+        When:
+            - Calling _fetch_events_with_pagination
+        Then:
+            - Ensure the error is re-raised (not swallowed)
+        """
+        mocker.patch.object(
+            client, "_http_request", side_effect=DemistoException("Error in API call [500] - Internal Server Error")
+        )
+
+        with pytest.raises(DemistoException, match="500"):
+            _fetch_events_with_pagination(client, "2026-03-01", "2026-03-01", limit=100)
+
+    def test_auth_error_is_raised(self, client, mocker):
+        """
+        Given:
+            - API returns a 401 unauthorized error during pagination
+        When:
+            - Calling _fetch_events_with_pagination
+        Then:
+            - Ensure the auth error is re-raised (not treated as end of data)
+        """
+        mocker.patch.object(client, "_http_request", side_effect=DemistoException("Error in API call [401] - Unauthorized"))
+
+        with pytest.raises(DemistoException, match="401"):
+            _fetch_events_with_pagination(client, "2026-03-01", "2026-03-01", limit=100)
 
 
 class TestTestModuleCommand:
@@ -484,9 +565,6 @@ class TestFetchEventsCommand:
         assert len(events) == 2
         assert next_run["last_fetch_time"] == "2026-03-14T12:00:00Z"
         assert "event-2" in next_run["last_fetch_ids"]
-        # Verify _ENTRY_STATUS fields
-        assert events[0]["_ENTRY_STATUS"] == "new"
-        assert events[1]["_ENTRY_STATUS"] == "modified"
 
     @freeze_time("2026-03-15T12:00:00Z")
     def test_subsequent_fetch_with_dedup(self, client, mocker):
@@ -546,31 +624,6 @@ class TestFetchEventsCommand:
         assert len(events) == 0
         assert next_run == last_run
 
-    @freeze_time("2026-03-15T12:00:00Z")
-    def test_fetch_events_have_fields(self, client, mocker):
-        """
-        Given:
-            - Events fetched from the API
-        When:
-            - Calling fetch_events_command
-        Then:
-            - Ensure _time and _ENTRY_STATUS fields are added
-        """
-        mock_events = [
-            _create_risk_event("event-1", created_at="2026-03-14T10:00:00Z", updated_at="2026-03-14T10:00:00Z"),
-        ]
-        mocker.patch.object(client, "_http_request", return_value={"data": mock_events})
-
-        _, events = fetch_events_command(
-            client=client,
-            last_run={},
-            max_events=1000,
-        )
-
-        assert len(events) == 1
-        assert events[0]["_time"] == "2026-03-14T10:00:00Z"
-        assert events[0]["_ENTRY_STATUS"] == "new"
-
 
 class TestParseDateString:
     """Tests for _parse_date_string function."""
@@ -579,15 +632,16 @@ class TestParseDateString:
     def test_parse_none_default(self):
         """
         Given:
-            - None date string with default 3 days ago
+            - None date string
         When:
             - Calling _parse_date_string
         Then:
-            - Ensure the result is 3 days before now
+            - Ensure the result is the current UTC time (today)
         """
-        result = _parse_date_string(None, default_days_ago=3)
-        assert result.day == 12
+        result = _parse_date_string(None)
+        assert result.day == 15
         assert result.month == 3
+        assert result.year == 2026
 
     def test_parse_iso_date(self):
         """
@@ -614,6 +668,21 @@ class TestParseDateString:
         with pytest.raises(ValueError, match="Failed to parse"):
             _parse_date_string("not-a-date")
 
+    @freeze_time("2026-03-15T12:00:00Z")
+    def test_parse_none_with_days_ago(self):
+        """
+        Given:
+            - None date string with default_days_ago=3
+        When:
+            - Calling _parse_date_string
+        Then:
+            - Ensure the result is 3 days before now
+        """
+        result = _parse_date_string(None, default_days_ago=3)
+        assert result.day == 12
+        assert result.month == 3
+        assert result.year == 2026
+
 
 class TestDatetimeToApiDate:
     """Tests for _datetime_to_api_date function."""
@@ -628,6 +697,7 @@ class TestDatetimeToApiDate:
             - Ensure the correct YYYY-MM-DD string is returned
         """
         from datetime import datetime, timezone
+
         dt = datetime(2026, 3, 15, 12, 0, 0, tzinfo=timezone.utc)
         result = _datetime_to_api_date(dt)
         assert result == "2026-03-15"

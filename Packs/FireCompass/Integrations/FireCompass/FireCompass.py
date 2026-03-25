@@ -9,12 +9,10 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "FireCompass"
 PRODUCT = "FireCompass"
 DEFAULT_MAX_EVENTS = 1000
 MAX_PAGE_SIZE = 100  # API maximum per page
-FIRST_FETCH = "1 hour"
 API_DATE_FORMAT = "%Y-%m-%d"
 
 
@@ -94,13 +92,15 @@ class Client(ContentClient):
 """ HELPER FUNCTIONS """
 
 
-def _parse_date_string(date_str: str | None, default_days_ago: int = 3) -> datetime:
+def _parse_date_string(date_str: str | None, default_days_ago: int = 0) -> datetime:
     """Parse a date string into a datetime object.
 
     Args:
         date_str: Date string to parse (ISO format or natural language like '3 days ago').
-                  If None, returns current time minus default_days_ago.
-        default_days_ago: Number of days to subtract from now if date_str is None.
+                  If None, returns the current UTC time minus default_days_ago days.
+                  Since the API only accepts day-level dates (YYYY-MM-DD), the time
+                  component is discarded by _datetime_to_api_date() before sending.
+        default_days_ago: Number of days to subtract from now if date_str is None (default: 0 = today).
 
     Returns:
         datetime: Parsed datetime object (timezone-aware, UTC).
@@ -228,12 +228,25 @@ def _fetch_events_with_pagination(
 
         demisto.debug(f"Fetching page {page}: page_size={page_size}, total_so_far={len(events)}")
 
-        response = client.get_risks(
-            page=page,
-            page_size=page_size,
-            from_date=from_date,
-            to_date=to_date,
-        )
+        try:
+            response = client.get_risks(
+                page=page,
+                page_size=page_size,
+                from_date=from_date,
+                to_date=to_date,
+            )
+        except DemistoException as e:
+            # The API may return an error (e.g., 400/404) when requesting a page beyond available data
+            # instead of returning an empty result. Treat pagination errors gracefully.
+            error_str = str(e)
+            if any(code in error_str for code in ("400", "404", "Bad Request", "Not Found")):
+                demisto.debug(
+                    f"Received error on page {page}, likely no more data available: {error_str}. "
+                    f"Stopping pagination with {len(events)} events collected so far."
+                )
+                break
+            # Re-raise unexpected errors (auth failures, server errors, etc.)
+            raise
 
         batch = response if isinstance(response, list) else response.get("results", response.get("data", []))
 
@@ -246,7 +259,7 @@ def _fetch_events_with_pagination(
             break
 
         # Log the order of created_at timestamps to help verify API sort order
-        #TODO remove after testing
+        # TODO: remove after testing with real API
         if batch:
             first_created = batch[0].get("created_at", "N/A")
             last_created = batch[-1].get("created_at", "N/A")
@@ -293,7 +306,8 @@ def _update_last_run(
         demisto.debug("No new events, keeping previous last_run state")
         return last_run
 
-    # The last event has the latest created_at
+    # The last event has the latest created_at (assumes events are sorted ascending by created_at)
+    # TODO: verify sort order with real API and adjust if needed
     latest_created_at = events[-1].get("created_at", "")
 
     # Collect IDs of all events with the latest created_at timestamp
@@ -380,7 +394,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> tuple[list[dict[
     events = _fetch_events_with_pagination(client, from_date, to_date, limit)
 
     demisto.debug(f"Retrieved {len(events)} total events")
-    hr = tableToMarkdown(name="FireCompass Risk Events", t=events[:10], removeNull=True)
+    hr = tableToMarkdown(name="FireCompass Risk Events", t=events, removeNull=True)
     return events, CommandResults(readable_output=hr)
 
 
@@ -413,13 +427,13 @@ def fetch_events_command(
         # Parse the ISO timestamp from last run to get the date
         from_dt = arg_to_datetime(last_fetch_time)
         if from_dt is None:
-            demisto.debug(f"Failed to parse last_fetch_time '{last_fetch_time}', falling back to FIRST_FETCH")
-            from_dt = _parse_date_string(FIRST_FETCH)
+            demisto.debug(f"Failed to parse last_fetch_time '{last_fetch_time}', falling back to today")
+            from_dt = datetime.now(tz=UTC)
         else:
             demisto.debug(f"Continuing fetch from last_fetch_time: {last_fetch_time}")
     else:
-        # First fetch - hardcoded to FIRST_FETCH constant
-        from_dt = _parse_date_string(FIRST_FETCH)
+        # First fetch - start from today (API uses day-level dates, so time is irrelevant)
+        from_dt = datetime.now(tz=UTC)
         demisto.debug(f"First fetch, starting from: {from_dt}")
 
     to_dt = datetime.now(tz=UTC)
@@ -435,9 +449,6 @@ def fetch_events_command(
     events = _deduplicate_events(events, last_fetch_ids)
     demisto.debug(f"After deduplication: {len(events)} events")
 
-    # Add fields for ingestion
-    _add_fields_to_events(events)
-
     # Update last_run state
     next_run = _update_last_run(events, last_run)
 
@@ -446,6 +457,18 @@ def fetch_events_command(
 
 
 """ MAIN FUNCTION """
+
+
+def _send_events(events: list[dict[str, Any]]) -> None:
+    """Add required fields and send events to the platform.
+
+    Args:
+        events: List of event dictionaries to enrich and send.
+    """
+    _add_fields_to_events(events)
+    demisto.debug(f"Sending {len(events)} events.")
+    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+    demisto.debug("Sent events successfully.")
 
 
 def main() -> None:  # pragma: no cover
@@ -481,9 +504,7 @@ def main() -> None:  # pragma: no cover
             should_push_events = argToBoolean(args.pop("should_push_events", False))
             events, results = get_events_command(client, args)
             if should_push_events:
-                _add_fields_to_events(events)
-                demisto.debug(f"Sending {len(events)} events.")
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                _send_events(events)
                 if results.readable_output:
                     results.readable_output += f"\n\n{len(events)} events sent."
             return_results(results)
@@ -497,9 +518,7 @@ def main() -> None:  # pragma: no cover
                 max_events=max_events,
             )
 
-            demisto.debug(f"Sending {len(events)} events.")
-            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-            demisto.debug("Sent events successfully")
+            _send_events(events)
             demisto.setLastRun(next_run)
             demisto.debug(f"Setting next run to {next_run}.")
 
