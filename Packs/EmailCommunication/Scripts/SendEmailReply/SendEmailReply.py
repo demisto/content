@@ -1599,7 +1599,7 @@ def main():  # pragma: no cover
         body_type = args.get("bodyType") or args.get("body_type") or "html"
         reputation_calc_async = argToBoolean(args.get("reputation_calc_async", False))
         from_mail = args.get("from")
-        time_zone = demisto.args().get("timezone", "UTC")
+        time_zone = args.get("timezone", "UTC")
         demisto.debug("Getting notes")
         is_succeed, notes = execute_command(
             "getEntries", {"filter": {"categories": ["notes"]}}, extract_contents=False, fail_on_error=False
