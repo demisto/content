@@ -4,7 +4,6 @@ from FireCompass import (
     Client,
     get_events_command,
     fetch_events_command,
-    test_module_command,
     _add_fields_to_events,
     _deduplicate_events,
     _fetch_events_with_pagination,
@@ -36,36 +35,15 @@ def client():
     Then:
         - Ensure the client is properly initialized
     """
-    from ContentClientApiModule import RetryPolicy, CircuitBreakerPolicy, CircuitBreaker, ContentClientLogger
-    import threading
-
     c = Client(
         base_url=BASE_URL,
         api_key=API_KEY,
         verify=False,
         proxy=False,
     )
-    # Set attributes that ContentClient.__init__ would normally set
+    # Set required attributes that would be set by ContentClient.__init__
     c._base_url = BASE_URL
     c._verify = False
-    c._headers = {"accept": "application/json", "X-Api-Token": API_KEY}
-    c._ok_codes = ()
-    c._auth = None
-    c.timeout = 60.0
-    c._reuse_client = True
-    c._is_multithreaded = True
-    c._closed = False
-    c._retry_policy = RetryPolicy()
-    c._circuit_breaker = CircuitBreaker(CircuitBreakerPolicy())
-    c._rate_limiter = None
-    c._auth_handler = None
-    c._diagnostic_mode = False
-    c._local_storage = threading.local()
-    c._http2_available = True
-    c.logger = ContentClientLogger("FireCompass", diagnostic_mode=False)
-    from CommonServerPython import ClientExecutionMetrics  # noqa: F811
-
-    c.execution_metrics = ClientExecutionMetrics()
     return c
 
 
@@ -472,6 +450,8 @@ class TestTestModuleCommand:
         Then:
             - Ensure 'ok' is returned
         """
+        from FireCompass import test_module_command
+
         mocker.patch.object(client, "_http_request", return_value={"data": []})
         result = test_module_command(client)
         assert result == "ok"
@@ -485,6 +465,8 @@ class TestTestModuleCommand:
         Then:
             - Ensure an authorization error message is returned
         """
+        from FireCompass import test_module_command
+
         mocker.patch.object(client, "_http_request", side_effect=Exception("401 Unauthorized"))
         result = test_module_command(client)
         assert "Authorization Error" in result
@@ -498,6 +480,8 @@ class TestTestModuleCommand:
         Then:
             - Ensure an exception is raised
         """
+        from FireCompass import test_module_command
+
         mocker.patch.object(client, "_http_request", side_effect=DemistoException("500 Internal Server Error"))
         with pytest.raises(DemistoException):
             test_module_command(client)
