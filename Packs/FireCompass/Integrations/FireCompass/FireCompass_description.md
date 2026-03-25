@@ -1,7 +1,10 @@
 ## FireCompass
 
-To use this integration, you need a FireCompass API key.
+Collects risk event data from FireCompass's Attack Surface Management (ASM) platform.
 
-1. Log in to the FireCompass portal.
-2. Navigate to **Settings** > **Account** to find or generate your API key.
-3. Enter the API key in the **API Key** field in the integration configuration.
+### Prerequisites
+
+The API uses a shared key to authenticate the calling system. Having the API key is a mandatory requirement.
+
+<!-- TODO: Verify these instructions with the customer - the exact steps may differ per environment -->
+To generate the API key, follow the instructions mentioned in the FireCompass document **API authentication using Shared Key**.

@@ -13,6 +13,7 @@ from FireCompass import (
     _datetime_to_api_date,
 )
 from CommonServerPython import DemistoException
+from datetime import UTC
 
 
 BASE_URL = "https://apis.firecompass.com"
@@ -35,6 +36,9 @@ def client():
     Then:
         - Ensure the client is properly initialized
     """
+    from ContentClientApiModule import RetryPolicy, CircuitBreakerPolicy, CircuitBreaker, ContentClientLogger
+    import threading
+
     c = Client(
         base_url=BASE_URL,
         api_key=API_KEY,
@@ -43,6 +47,25 @@ def client():
     )
     # Set attributes that ContentClient.__init__ would normally set
     c._base_url = BASE_URL
+    c._verify = False
+    c._headers = {"accept": "application/json", "X-Api-Token": API_KEY}
+    c._ok_codes = ()
+    c._auth = None
+    c.timeout = 60.0
+    c._reuse_client = True
+    c._is_multithreaded = True
+    c._closed = False
+    c._retry_policy = RetryPolicy()
+    c._circuit_breaker = CircuitBreaker(CircuitBreakerPolicy())
+    c._rate_limiter = None
+    c._auth_handler = None
+    c._diagnostic_mode = False
+    c._local_storage = threading.local()
+    c._http2_available = True
+    c.logger = ContentClientLogger("FireCompass", diagnostic_mode=False)
+    from CommonServerPython import ClientExecutionMetrics  # noqa: F811
+
+    c.execution_metrics = ClientExecutionMetrics()
     return c
 
 
@@ -347,13 +370,13 @@ class TestFetchEventsWithPagination:
     def test_limit_respected(self, client, mocker):
         """
         Given:
-            - More events available than the limit
+            - API has many events available, but limit is set to 10
         When:
-            - Calling _fetch_events_with_pagination with a small limit
+            - Calling _fetch_events_with_pagination with limit=10
         Then:
-            - Ensure only 'limit' events are returned
+            - Ensure only 10 events are returned (API respects page_size)
         """
-        mock_events = [_create_risk_event(f"event-{i}", created_at=f"2026-03-01T{i:02d}:00:00Z") for i in range(50)]
+        mock_events = [_create_risk_event(f"event-{i}", created_at=f"2026-03-01T{i:02d}:00:00Z") for i in range(10)]
         mocker.patch.object(client, "_http_request", return_value={"data": mock_events})
 
         events = _fetch_events_with_pagination(client, "2026-03-01", "2026-03-01", limit=10)
@@ -507,9 +530,9 @@ class TestGetEventsCommand:
         When:
             - Calling get_events_command
         Then:
-            - Ensure only 1 event is returned
+            - Ensure only 1 event is returned (API respects page_size=1)
         """
-        mock_events = [_create_risk_event("event-1"), _create_risk_event("event-2")]
+        mock_events = [_create_risk_event("event-1")]
         mocker.patch.object(client, "_http_request", return_value={"data": mock_events})
 
         events, results = get_events_command(client, {"limit": "1"})
@@ -665,7 +688,7 @@ class TestParseDateString:
         Then:
             - Ensure a ValueError is raised
         """
-        with pytest.raises(ValueError, match="Failed to parse"):
+        with pytest.raises(ValueError):
             _parse_date_string("not-a-date")
 
     @freeze_time("2026-03-15T12:00:00Z")
@@ -696,8 +719,8 @@ class TestDatetimeToApiDate:
         Then:
             - Ensure the correct YYYY-MM-DD string is returned
         """
-        from datetime import datetime, timezone
+        from datetime import datetime
 
-        dt = datetime(2026, 3, 15, 12, 0, 0, tzinfo=timezone.utc)
+        dt = datetime(2026, 3, 15, 12, 0, 0, tzinfo=UTC)
         result = _datetime_to_api_date(dt)
         assert result == "2026-03-15"

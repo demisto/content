@@ -4,6 +4,13 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure FireCompass in Cortex
 
+### Prerequisites
+
+The API uses a shared key to authenticate the calling system. Having the API key is a mandatory requirement.
+
+<!-- TODO: Verify these instructions with the customer - the exact steps may differ per environment -->
+To generate the API key, follow the instructions mentioned in the FireCompass document **API authentication using Shared Key**.
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The base URL of the FireCompass API. Default is `https://apis.firecompass.com`. | True |
@@ -12,14 +19,6 @@ This is the default integration for this content pack when configured by the Dat
 | Maximum number of events per fetch | The maximum number of risk events to fetch per cycle. Maximum page size from the API is 100. Default is 1000. | False |
 | Trust any certificate (not secure) | Use SSL secure connection or not. | False |
 | Use system proxy settings | Use proxy settings for connection or not. | False |
-
-## FireCompass Authentication
-
-To use this integration, you need a FireCompass API key.
-
-1. Log in to the FireCompass portal.
-2. Navigate to **Settings** > **Account** to find or generate your API key.
-3. Enter the API key in the **API Key** field in the integration configuration.
 
 ## Commands
 
@@ -47,4 +46,3 @@ Fetches risk events from FireCompass. This manual command is used for developing
 #### Context Output
 
 There is no context output for this command.
-
