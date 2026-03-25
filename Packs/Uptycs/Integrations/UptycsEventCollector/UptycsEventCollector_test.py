@@ -230,13 +230,13 @@ def test_generate_jwt_token_without_optional_claims():
         ({"url": SERVER_URL}, r"(?i)api key is required"),
         ({"url": SERVER_URL, "api_key": ""}, r"(?i)api key is required"),
         ({"url": SERVER_URL, "api_key": MOCK_API_KEY}, r"(?i)api secret is required"),
-        ({"url": SERVER_URL, "api_key": MOCK_API_KEY, "api_secret": ""}, r"(?i)api secret is required"),
+        ({"url": SERVER_URL, "api_key": MOCK_API_KEY, "credentials": {"password": ""}}, r"(?i)api secret is required"),
         (
-            {"url": SERVER_URL, "api_key": MOCK_API_KEY, "api_secret": MOCK_API_SECRET},
+            {"url": SERVER_URL, "api_key": MOCK_API_KEY, "credentials": {"password": MOCK_API_SECRET}},
             r"(?i)customer id is required",
         ),
         (
-            {"url": SERVER_URL, "api_key": MOCK_API_KEY, "api_secret": MOCK_API_SECRET, "customer_id": ""},
+            {"url": SERVER_URL, "api_key": MOCK_API_KEY, "credentials": {"password": MOCK_API_SECRET}, "customer_id": ""},
             r"(?i)customer id is required",
         ),
     ],
@@ -254,7 +254,7 @@ def test_parse_integration_params_missing_required_fail(params: dict[str, Any], 
             {
                 "url": SERVER_URL,
                 "api_key": MOCK_API_KEY,
-                "api_secret": MOCK_API_SECRET,
+                "credentials": {"password": MOCK_API_SECRET},
                 "customer_id": MOCK_CUSTOMER_ID,
                 "insecure": True,
                 "proxy": True,
@@ -266,7 +266,7 @@ def test_parse_integration_params_missing_required_fail(params: dict[str, Any], 
             {
                 "url": f"{SERVER_URL}/",
                 "api_key": MOCK_API_KEY,
-                "api_secret": MOCK_API_SECRET,
+                "credentials": {"password": MOCK_API_SECRET},
                 "customer_id": MOCK_CUSTOMER_ID,
                 "insecure": False,
                 "proxy": False,
@@ -293,7 +293,7 @@ def test_parse_integration_params_optional_fields():
     params = {
         "url": SERVER_URL,
         "api_key": MOCK_API_KEY,
-        "api_secret": MOCK_API_SECRET,
+        "credentials": {"password": MOCK_API_SECRET},
         "customer_id": MOCK_CUSTOMER_ID,
         "role_id": MOCK_ROLE_ID,
         "security_zone_id": MOCK_SECURITY_ZONE_ID,
@@ -309,7 +309,7 @@ def test_parse_integration_params_optional_fields_empty():
     params = {
         "url": SERVER_URL,
         "api_key": MOCK_API_KEY,
-        "api_secret": MOCK_API_SECRET,
+        "credentials": {"password": MOCK_API_SECRET},
         "customer_id": MOCK_CUSTOMER_ID,
         "role_id": "",
         "security_zone_id": "",
@@ -1011,7 +1011,7 @@ def test_main_invalid_command_fail(mocker, capfd):
             return_value={
                 "url": SERVER_URL,
                 "api_key": MOCK_API_KEY,
-                "api_secret": MOCK_API_SECRET,
+                "credentials": {"password": MOCK_API_SECRET},
                 "customer_id": MOCK_CUSTOMER_ID,
             },
         )
@@ -1037,7 +1037,7 @@ def test_main_test_module_success(mocker):
         return_value={
             "url": SERVER_URL,
             "api_key": MOCK_API_KEY,
-            "api_secret": MOCK_API_SECRET,
+            "credentials": {"password": MOCK_API_SECRET},
             "customer_id": MOCK_CUSTOMER_ID,
         },
     )
@@ -1061,7 +1061,7 @@ def test_main_get_events_success(mocker):
         return_value={
             "url": SERVER_URL,
             "api_key": MOCK_API_KEY,
-            "api_secret": MOCK_API_SECRET,
+            "credentials": {"password": MOCK_API_SECRET},
             "customer_id": MOCK_CUSTOMER_ID,
         },
     )
@@ -1085,7 +1085,7 @@ def test_main_fetch_events_success(mocker):
         return_value={
             "url": SERVER_URL,
             "api_key": MOCK_API_KEY,
-            "api_secret": MOCK_API_SECRET,
+            "credentials": {"password": MOCK_API_SECRET},
             "customer_id": MOCK_CUSTOMER_ID,
         },
     )
@@ -1107,7 +1107,7 @@ def test_main_command_execution_error(mocker, capfd):
             return_value={
                 "url": SERVER_URL,
                 "api_key": MOCK_API_KEY,
-                "api_secret": MOCK_API_SECRET,
+                "credentials": {"password": MOCK_API_SECRET},
                 "customer_id": MOCK_CUSTOMER_ID,
             },
         )

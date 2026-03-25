@@ -22,11 +22,13 @@ configuration:
   type: 0
   section: Connect
   additionalinfo: The API Key from the Uptycs API Client Management page. Used for JWT authentication.
-- name: api_secret
+- name: credentials
   display: API Secret
+  displaypassword: API Secret
   required: true
-  type: 0
+  type: 9
   section: Connect
+  hiddenusername: true
   additionalinfo: The API Secret from the Uptycs API Client Management page. Used for JWT signing.
 - name: customer_id
   display: Customer ID

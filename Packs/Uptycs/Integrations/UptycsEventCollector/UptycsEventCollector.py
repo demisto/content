@@ -178,7 +178,8 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     if not api_key:
         raise DemistoException("API Key is required.")
 
-    api_secret = params.get("api_secret", "").strip() or None
+    credentials = params.get("credentials", {})
+    api_secret = credentials.get("password", "").strip() or None
     if not api_secret:
         raise DemistoException("API Secret is required.")
 
