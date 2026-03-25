@@ -1,0 +1,354 @@
+fromversion: 8.9.0
+id: AS104 Test - Display Label Context Path Validation
+version: -1
+name: AS104 Test - Display Label Context Path Validation
+description: |-
+  Dummy playbook to test AS104 validation.
+  Contains tasks with both valid and invalid displayLabel context key usages.
+
+  - Task 1: Gets alert data using issue.id (sets up context)
+  - Task 2 (VALID): displayLabel uses ${issue.id} which IS used in task 1
+  - Task 3 (VALID): displayLabel uses ${PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username} which IS used in task 5
+  - Task 4 (INVALID): displayLabel uses ${File.SHA256} which is NOT used in any other task
+  - Task 5: Uses PaloAltoNetworksXQL.GenericQuery.results context key
+  - Task 6 (VALID): displayLabel with static text (no context keys)
+  - Task 7 (INVALID): displayLabel uses ${Endpoint.ID} which is NOT used in any other task
+tags:
+- TA0005 - Defense Evasion
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: a0000000-0000-0000-0000-000000000000
+    type: start
+    task:
+      id: a0000000-0000-0000-0000-000000000000
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: a1111111-1111-1111-1111-111111111111
+    type: regular
+    task:
+      id: a1111111-1111-1111-1111-111111111111
+      version: -1
+      name: Get additional alert data
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+    scriptarguments:
+      alert_ids:
+        simple: ${issue.id}
+      filter_alert_fields:
+        simple: 'false'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: a2222222-2222-2222-2222-222222222222
+    type: regular
+    task:
+      id: a2222222-2222-2222-2222-222222222222
+      version: -1
+      name: Alert ${issue.id} confirmed as false positive.
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+      displayLabel: Alert ${issue.id} confirmed as false positive.
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      value:
+        simple: Alert ${issue.id} confirmed as false positive.
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: a3333333-3333-3333-3333-333333333333
+    type: regular
+    task:
+      id: a3333333-3333-3333-3333-333333333333
+      version: -1
+      name: User ${PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username} detected renaming file.
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+      displayLabel: User ${PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username} detected renaming file.
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      value:
+        simple: User ${PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username} detected renaming file.
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: a4444444-4444-4444-4444-444444444444
+    type: regular
+    task:
+      id: a4444444-4444-4444-4444-444444444444
+      version: -1
+      name: Script retrieved with SHA256 ${File.SHA256}.
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+      displayLabel: Script retrieved with SHA256 ${File.SHA256}.
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      value:
+        simple: Script retrieved with SHA256 ${File.SHA256}.
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: a5555555-5555-5555-5555-555555555555
+    type: regular
+    task:
+      id: a5555555-5555-5555-5555-555555555555
+      version: -1
+      name: Set username from XQL results
+      description: Sets a value into the context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      key:
+        simple: DetectedUsername
+      value:
+        complex:
+          root: PaloAltoNetworksXQL.GenericQuery.results
+          accessor: actor_effective_username
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: a6666666-6666-6666-6666-666666666666
+    type: regular
+    task:
+      id: a6666666-6666-6666-6666-666666666666
+      version: -1
+      name: No evidence found requiring remediation.
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+      displayLabel: No evidence found requiring remediation.
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      value:
+        simple: No evidence found requiring remediation.
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: a7777777-7777-7777-7777-777777777777
+    type: regular
+    task:
+      id: a7777777-7777-7777-7777-777777777777
+      version: -1
+      name: Endpoint ${Endpoint.ID} found.
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+      displayLabel: Endpoint ${Endpoint.ID} found.
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      value:
+        simple: Endpoint ${Endpoint.ID} found.
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: a8888888-8888-8888-8888-888888888888
+    type: title
+    task:
+      id: a8888888-8888-8888-8888-888888888888
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 700,
+        "width": 1880,
+        "x": -200,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
