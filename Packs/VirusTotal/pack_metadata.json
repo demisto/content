@@ -14,7 +14,9 @@
         "Free Enricher"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "VirusTotal"
+    ],
     "dependencies": {},
     "marketplaces": [
         "xsoar",
