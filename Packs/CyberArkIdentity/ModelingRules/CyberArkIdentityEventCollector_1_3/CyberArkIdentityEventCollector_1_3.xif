@@ -1,3 +1,198 @@
+/* Classification Rule - determines if event is Auth 102 or SaaS Audit */
+[RULE: CyberArk_Auth_OR_Saas_classification]
+alter
+    is_auth = if(
+        EventType in (
+            "Cloud.Core.Login.MultifactorChallenge",
+            "Cloud.Core.Login",
+            "Cloud.Core.O365WsTrustLogin",
+            "Cloud.Core.SamlResponseGenerate",
+            "Cloud.Core.SamlResponseValidate",
+            "Cloud.Core.OAuthToken.Create",
+            "Cloud.Core.StartImpersonate",
+            "Cloud.Core.MfaSummary",
+            "Cloud.Core.Login.MultifactorChallenge.MultifactorResponse"
+        ) or AuditCode in (
+            "IDP2005", "IDP2008", "IDP2007", "IDP2009",
+            "IDP2013", "IDP2014", "IDP2020", "IDP2101", "IDP6006"
+        )
+    ),
+    is_saas = if(
+        AuditCode in (
+            "IDP2001", "IDP2002", "IDP2003", "IDP2005", "IDP2007", "IDP2008", "IDP2009",
+            "IDP2013", "IDP2014", "IDP2701", "IDP2702", "IDP3001", "IDP3004", "IDP4001",
+            "IDP4002", "IDP6001", "IDP6004", "IDP6006", "IDP6010", "IDP6011", "IDP6016",
+            "IDP1501", "IDP1502"
+        )
+    );
+
+/* Auth 102 - CyberArk IdP Authentication Story Mapping */
+[RULE: CyberArk_Auth_Mapping]
+alter
+    source_ip = coalesce(json_extract_scalar(CustomData, "$.source_ip_address"), FromIPAddress),
+    success_val = json_extract_scalar(CustomData, "$.success"),
+    failure_reason = json_extract_scalar(CustomData, "$.failure_reason"),
+    denied_by_user = json_extract_scalar(CustomData, "$.denied_by_user"),
+    mechanism = json_extract_scalar(CustomData, "$.mechanism"),
+    auth_method_val = json_extract_scalar(CustomData, "$.authentication_method"),
+    factors_val = json_extract_scalar(CustomData, "$.factors"),
+    roles_val = json_extract_scalar(CustomData, "$.roles"),
+    mobile_device_val = json_extract_scalar(CustomData, "$.mobile_device"),
+    cookie_session_val = json_extract_scalar(CustomData, "$.cookie_session"),
+    device_os_val = json_extract_scalar(CustomData, "$.device_os"),
+    browser_name_val = json_extract_scalar(CustomData, "$.browser_name"),
+    user_agent_val = json_extract_scalar(CustomData, "$.user_agent"),
+    entity_name_val = json_extract_scalar(CustomData, "$.entity_name"),
+    session_id_val = json_extract_scalar(CustomData, "$.internal_session_id"),
+    city_val = json_extract_scalar(CustomData, "$.geoip_city_name"),
+    country_val = json_extract_scalar(CustomData, "$.geoip_country_name")
+| alter
+    xdm.event.type = "authentication",
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION),
+    xdm.source.ipv4 = source_ip,
+    xdm.target.ipv4 = coalesce(DstHost, ""),
+    xdm.source.port = to_integer(0),
+    xdm.target.port = to_integer(0),
+    xdm.network.ip_protocol = coalesce(Protocol, ""),
+    xdm.source.user.upn = UserName,
+    xdm.source.user.identifier = UserGuid,
+    xdm.source.user.username = UserName,
+    xdm.event.original_event_type = EventType,
+    xdm.event.description = Action,
+    xdm.event.id = _id,
+    xdm.source.host.device_id = coalesce(json_extract_scalar(CustomData, "$.source_ip_address"), FromIPAddress),
+    xdm.event.operation = if(
+        factors_val contains ",", "MFA",
+        AuditCode in ("IDP2012", "IDP2013", "IDP2014"), "MFA",
+        "Login"
+    ),
+    xdm.logon.type = if(EventType = "Cloud.Core.O365WsTrustLogin", XDM_CONST.LOGON_TYPE_SERVICE, XDM_CONST.LOGON_TYPE_INTERACTIVE),
+    xdm.auth.service = if(
+        AuditCode in ("IDP2013", "IDP2014", "IDP2012"), "IDP",
+        auth_method_val = "Federation", "SP",
+        "IDP"
+    ),
+    xdm.event.operation_sub_type = if(
+        mechanism = "Email", "email",
+        mechanism = "SMS", "sms",
+        auth_method_val = "Federation", "Generic SSO",
+        "password"
+    ),
+    xdm.event.outcome = if(
+        success_val = "True", XDM_CONST.OUTCOME_SUCCESS,
+        AuditCode = "IDP2005" and cookie_session_val != "null", XDM_CONST.OUTCOME_SUCCESS,
+        AuditCode = "IDP2009", XDM_CONST.OUTCOME_SUCCESS,
+        XDM_CONST.OUTCOME_FAILED
+    ),
+    xdm.event.outcome_reason = if(
+        failure_reason contains "abandoned", "mfa_expired",
+        failure_reason contains "Internal error", "OTHER",
+        denied_by_user = "True", "user_reject",
+        "failed_login"
+    ),
+    xdm.source.user.user_type = if(IdentityType = "HUMAN", XDM_CONST.USER_TYPE_REGULAR, XDM_CONST.USER_TYPE_SERVICE_ACCOUNT),
+    xdm.auth.privilege_level = if(
+        roles_val contains "sysadmin", XDM_CONST.PRIVILEGE_LEVEL_ADMIN,
+        roles_val contains "Admin", XDM_CONST.PRIVILEGE_LEVEL_ADMIN,
+        XDM_CONST.PRIVILEGE_LEVEL_USER
+    ),
+    xdm.target.resource.name = entity_name_val,
+    xdm.source.user_agent = user_agent_val,
+    xdm.source.application.name = browser_name_val,
+    xdm.source.host.os_family = if(
+        device_os_val contains "Windows", XDM_CONST.OS_FAMILY_WINDOWS,
+        device_os_val contains "Mac", XDM_CONST.OS_FAMILY_MACOS,
+        device_os_val contains "Linux", XDM_CONST.OS_FAMILY_LINUX,
+        device_os_val contains "Android", XDM_CONST.OS_FAMILY_ANDROID,
+        device_os_val contains "iOS", XDM_CONST.OS_FAMILY_IOS,
+        device_os_val contains "Chrome", XDM_CONST.OS_FAMILY_CHROMEOS,
+        device_os_val = null, null,
+        to_string(device_os_val)
+    ),
+    xdm.source.host.device_category = if(mobile_device_val = "True", "Mobile", "Computer"),
+    xdm.network.session_id = session_id_val,
+    xdm.source.location.city = city_val,
+    xdm.source.location.country = country_val;
+
+/* SaaS Audit - CyberArk IdP to XDM SaaS Story Mapping */
+[RULE: CyberArk_Saas_Mapping]
+alter
+    source_ip = coalesce(json_extract_scalar(CustomData, "$.source_ip_address"), FromIPAddress),
+    roles_val = json_extract_scalar(CustomData, "$.roles"),
+    level_val = json_extract_scalar(CustomData, "$.level"),
+    status_val = json_extract_scalar(CustomData, "$.status"),
+    failure_reason_val = json_extract_scalar(CustomData, "$.failure_reason"),
+    user_state_val = json_extract_scalar(CustomData, "$.user_state"),
+    user_agent_val = json_extract_scalar(CustomData, "$.user_agent"),
+    device_os_val = json_extract_scalar(CustomData, "$.device_os"),
+    entity_uuid_val = json_extract_scalar(CustomData, "$.entity_uuid"),
+    application_id_val = json_extract_scalar(CustomData, "$.application_id"),
+    role_id_val = json_extract_scalar(CustomData, "$.role_id"),
+    application_name_val = json_extract_scalar(CustomData, "$.application_name"),
+    entity_name_val = json_extract_scalar(CustomData, "$.entity_name"),
+    role_name_val = json_extract_scalar(CustomData, "$.role_name"),
+    policy_name_val = json_extract_scalar(CustomData, "$.policy_name"),
+    object_name_val = json_extract_scalar(CustomData, "$.object_name"),
+    session_id_val = json_extract_scalar(CustomData, "$.internal_session_id"),
+    session_guid_val = json_extract_scalar(CustomData, "$.session_guid"),
+    browser_name_val = json_extract_scalar(CustomData, "$.browser_name"),
+    action_type_lower = lowercase(ActionType),
+    message_lower = lowercase(EventType)
+| alter
+    xdm.event.type = "saas audit",
+    xdm.event.id = Uuid,
+    xdm.source.cloud.project_id = TenantId,
+    xdm.session_context_id = coalesce(session_id_val, session_guid_val),
+    xdm.event.original_event_type = message_lower,
+    xdm.event.operation = if(
+        action_type_lower in ("create", "add"), "CREATE",
+        action_type_lower = "delete" or message_lower contains "remove", "DELETE",
+        action_type_lower in ("edit", "approve", "upgrade"), "MODIFY",
+        action_type_lower = "connect", "OTHER",
+        "OTHER"
+    ),
+    xdm.source.user.upn = UserName,
+    xdm.source.user.identifier = UserGuid,
+    xdm.source.user.identity_type = if(
+        UserName contains "SYSTEM$" or UserName contains "RA-SYSTEM-USER$", "SERVICE_ACCOUNT",
+        IdentityType = "HUMAN", "USER",
+        "USER"
+    ),
+    xdm.auth.privilege_level = if(
+        roles_val contains "sysadmin", XDM_CONST.PRIVILEGE_LEVEL_ADMIN,
+        roles_val contains "Admin", XDM_CONST.PRIVILEGE_LEVEL_ADMIN,
+        XDM_CONST.PRIVILEGE_LEVEL_USER
+    ),
+    xdm.event.outcome = if(
+        level_val = "Error" or status_val = "NonExist", XDM_CONST.OUTCOME_FAILED,
+        status_val in ("Deleted", "Created", "Updated", "Success", "Normal"), XDM_CONST.OUTCOME_SUCCESS,
+        XDM_CONST.OUTCOME_SUCCESS
+    ),
+    xdm.event.outcome_reason = coalesce(failure_reason_val, status_val, user_state_val),
+    xdm.target.resource.type = if(
+        AuditCode ~= "^IDP4", "Policy",
+        AuditCode ~= "^IDP15", "Access Right",
+        AuditCode ~= "^IDP60" or AuditCode ~= "^IDP21", "Application",
+        AuditCode in ("IDP2001", "IDP2002", "IDP2003", "IDP2701"), "User",
+        "Other"
+    ),
+    xdm.target.resource.id = coalesce(entity_uuid_val, application_id_val, role_id_val),
+    xdm.target.resource.name = coalesce(application_name_val, entity_name_val, role_name_val, policy_name_val, object_name_val),
+    xdm.source.user_agent = user_agent_val,
+    xdm.source.ipv4 = source_ip,
+    xdm.source.application.name = browser_name_val,
+    xdm.source.host.os_family = if(
+        device_os_val contains "Windows", XDM_CONST.OS_FAMILY_WINDOWS,
+        device_os_val contains "Mac", XDM_CONST.OS_FAMILY_MACOS,
+        device_os_val contains "Linux", XDM_CONST.OS_FAMILY_LINUX,
+        device_os_val contains "Android", XDM_CONST.OS_FAMILY_ANDROID,
+        device_os_val contains "iOS", XDM_CONST.OS_FAMILY_IOS,
+        device_os_val contains "Chrome", XDM_CONST.OS_FAMILY_CHROMEOS,
+        device_os_val = null, null,
+        to_string(device_os_val)
+    ),
+    xdm.observer.type = "Identity";
+
 [MODEL: dataset=cyberark_identity_raw]
 filter
     EventType in ("Cloud.Core.OAuthToken.Create", "Cloud.Core.Logout", "Cloud.Core.MfaSummary", "Cloud.Core.StartImpersonate","Cloud.Core.Login", "Cloud.Core.LoginFail", "Cloud.Core.Logout", "Cloud.Core.OAuthToken.InvalidClient" )
@@ -32,3 +227,13 @@ filter  EventType not in ("Cloud.Core.OAuthToken.Create", "Cloud.Core.Logout", "
     xdm.target.resource.sub_type = MobileAppType,
     xdm.session_context_id = coalesce(JobUniqueId, SessionId),
 	xdm.event.type=EventType;
+
+/* Auth 102 - CyberArk IdP Authentication Story */
+call CyberArk_Auth_OR_Saas_classification
+| filter is_auth
+| call CyberArk_Auth_Mapping;
+
+/* SaaS Audit - CyberArk IdP to XDM SaaS Story */
+call CyberArk_Auth_OR_Saas_classification
+| filter is_saas
+| call CyberArk_Saas_Mapping;
