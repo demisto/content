@@ -1008,9 +1008,9 @@ Refreshes the specified engines. Use `forcepoint-smc-engine-list` command to lis
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| engine_name | List of engine names to refresh. | Required | 
-| interval_in_seconds | Interval between polling attempts in seconds. To prevent search timeouts, set this value within the 60-90 second range. Default is 30. | Optional | 
-| timeout_in_seconds | Timeout for polling in seconds. Default is 600. | Optional | 
+| engine_name | List of engine names to refresh. | Required |
+| interval_in_seconds | Interval between polling attempts in seconds. To prevent search timeouts, set this value within the 60-90 second range. Default is 30. | Optional |
+| timeout_in_seconds | Timeout for polling in seconds. Default is 600. | Optional |
 
 #### Context Output
 
