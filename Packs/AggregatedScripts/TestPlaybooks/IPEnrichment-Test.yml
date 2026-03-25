@@ -2,6 +2,7 @@ id: IPEnrichment-Test
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: IPEnrichment-Test
+description: Test playbook for the IPEnrichment script.
 starttaskid: "0"
 tasks:
   "0":
