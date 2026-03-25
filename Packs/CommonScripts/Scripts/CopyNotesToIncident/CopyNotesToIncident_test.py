@@ -4,7 +4,7 @@ from typing import Any
 import pytest
 
 import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerPython import DemistoException, entryTypes, formats
+from CommonServerPython import DemistoException, EntryFormat, EntryType
 from CopyNotesToIncident import copy_notes_to_target_incident
 
 MOCK_TARGET_INCIDENT_ID = "99"
@@ -39,7 +39,7 @@ def test_copy_no_note_entries(mocker):
                 raise ValueError("id must be provided to addEntries")
             if "entries" not in args or not isinstance(args["entries"], list):
                 raise ValueError("a list of entries must be provided to addEntries")
-            return [{"Type": entryTypes["note"], "OK": "OK"}]
+            return [{"Type": EntryType.NOTE, "OK": "OK"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
@@ -74,7 +74,7 @@ def test_copy_all_note_entries(mocker):
                 raise ValueError("id must be provided to addEntries")
             if "entries" not in args or not isinstance(args["entries"], list):
                 raise ValueError("a list of entries must be provided to addEntries")
-            return [{"Type": entryTypes["note"], "OK": "OK"}]
+            return [{"Type": EntryType.NOTE, "OK": "OK"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
@@ -122,7 +122,7 @@ def test_copy_tagged_note_entries(mocker):
                 raise ValueError("id must be provided to addEntries")
             if "entries" not in args or not isinstance(args["entries"], list):
                 raise ValueError("a list of entries must be provided to addEntries")
-            return [{"Type": entryTypes["note"], "OK": "OK"}]
+            return [{"Type": EntryType.NOTE, "OK": "OK"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
@@ -158,7 +158,7 @@ def test_copy_note_entries_disable_auto_extract(mocker):
                 raise ValueError("id must be provided to addEntries")
             if "entries" not in args or not isinstance(args["entries"], list):
                 raise ValueError("a list of entries must be provided to addEntries")
-            return [{"Type": entryTypes["note"], "OK": "OK"}]
+            return [{"Type": EntryType.NOTE, "OK": "OK"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
@@ -195,8 +195,8 @@ def test_copy_notes_add_entries_error(mocker):
         elif name == "addEntries":
             return [
                 {
-                    "Type": entryTypes["error"],
-                    "ContentsFormat": formats["text"],
+                    "Type": EntryType.ERROR,
+                    "ContentsFormat": EntryFormat.TEXT,
                     "Contents": error_message,
                 }
             ]
