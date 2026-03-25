@@ -53,6 +53,9 @@ FIELDS_TO_COPY_FROM_REMOTE_INCIDENT = [
 MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
 XSOAR_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 MIRROR_RESET = "XSOARMirror_mirror_reset"
+# Integration-context key used to suppress the /public/v1/incidents/modified endpoint for the rest of the day
+# when the remote XSOAR machine does not support it (HTTP 303/404).  Value is an ISO date string "YYYY-MM-DD".
+MODIFIED_ENDPOINT_UNSUPPORTED_DATE_KEY = "XSOARMirror_modified_endpoint_unsupported_date"
 
 """ CLIENT CLASS """
 
@@ -837,6 +840,26 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
     """
     remote_args = GetModifiedRemoteDataArgs(args)
 
+    # --- Circuit-breaker: skip the endpoint for the rest of the day if it was found unsupported ---
+    today_utc: str = datetime.now(tz=UTC).strftime("%Y-%m-%d")
+    integration_context = get_integration_context()
+    unsupported_date: str = integration_context.get(MODIFIED_ENDPOINT_UNSUPPORTED_DATE_KEY, "")
+    if unsupported_date == today_utc:
+        cached_error_msg = (
+            "The remote XSOAR machine does not support the /public/v1/incidents/modified endpoint. "
+            "This endpoint is only available on XSOAR 8.14.0 and later. "
+            f"The endpoint was found unsupported on {unsupported_date} (UTC) and will be retried tomorrow."
+        )
+        demisto.error(f"get-modified-remote-data: {cached_error_msg}")
+        demisto.results(
+            {
+                "Type": EntryType.ERROR,
+                "ContentsFormat": EntryFormat.TEXT,
+                "Contents": cached_error_msg,
+            }
+        )
+        sys.exit(0)
+
     # last_update is an ISO8601 string (e.g. '2026-01-10T00:00:00.123456789Z'); fall back to now minus 1 minute if empty.
     if not remote_args.last_update:
         from_timestamp = int((datetime.now(tz=UTC) - timedelta(minutes=1)).timestamp())
@@ -862,6 +885,10 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
                 f"(HTTP {status_code=}). This endpoint is only available on XSOAR 8.14.0 and later. Original error: {e}"
             )
             demisto.error(f"get-modified-remote-data: {error_msg}")
+            # Persist the flag so subsequent cycles skip this endpoint for the rest of today (UTC).
+            integration_context[MODIFIED_ENDPOINT_UNSUPPORTED_DATE_KEY] = today_utc
+            set_to_integration_context_with_retries(context=integration_context)
+            demisto.debug(f"get-modified-remote-data: stored unsupported-endpoint flag for {today_utc} in integration context.")
             demisto.results(
                 {
                     "Type": EntryType.ERROR,
@@ -871,6 +898,15 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
             )
             sys.exit(0)
         raise
+
+    # If the call succeeded and a stale unsupported-flag exists in the integration context
+    # (meaning the remote machine was upgraded), clear it so the endpoint is no longer suppressed.
+    if integration_context.get(MODIFIED_ENDPOINT_UNSUPPORTED_DATE_KEY):
+        del integration_context[MODIFIED_ENDPOINT_UNSUPPORTED_DATE_KEY]
+        set_to_integration_context_with_retries(context=integration_context)
+        demisto.debug(
+            "get-modified-remote-data: cleared unsupported-endpoint flag from integration context after successful call."
+        )
 
     demisto.debug(f"get-modified-remote-data: found {len(modified_incident_ids)} modified incident(s): {modified_incident_ids}")
     return GetModifiedRemoteDataResponse(modified_incident_ids)
