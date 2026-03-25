@@ -1571,7 +1571,7 @@ script:
       name: variables
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to bypass ServiceNow form validation when creating the catalog item order. When set to "true", the sysparm_no_validation flag is included in the request, which is useful when the catalog item has required attachments or custom validation that cannot be satisfied at order-creation time. The attachment can be uploaded separately using the ***servicenow-upload-file*** command.
+      description: Whether to bypass ServiceNow form validation when creating the catalog item order. When set to "true", the sysparm_no_validation flag is included in the request.
       name: no_validation
       predefined:
       - 'true'
