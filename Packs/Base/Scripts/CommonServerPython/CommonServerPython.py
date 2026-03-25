@@ -9170,9 +9170,9 @@ def is_xsoar_saas():
     return demisto.demistoVersion().get("platform") == "xsoar" and is_xsiam_or_xsoar_saas()
 
 def is_platform():
-    """Determines whether or not the platform is platform.
+    """Determines whether running on a unified Cortex platform tenant.
 
-    :return: True iff the platform is unified_platform.
+    :return: True iff the platform type is 'unified_platform'.
     :rtype: ``bool``
     """
     return demisto.demistoVersion().get("platform") == "unified_platform"
