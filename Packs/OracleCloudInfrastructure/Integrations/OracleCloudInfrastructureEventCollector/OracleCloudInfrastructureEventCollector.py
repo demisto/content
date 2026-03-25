@@ -14,7 +14,7 @@ MAX_EVENTS_TO_FETCH = 1000
 FETCH_DEFAULT_TIME = "3 days"
 PORT = 20190901
 SEARCHLOG_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
-
+SEARCHLOG_FIRST_FETCH_TIME_IN_MINUTES = 10
 
 """ CLIENT CLASS """
 
@@ -588,7 +588,9 @@ def main():
                 if searchlog_last_run.get("lastRun"):
                     first_fetch_time_search_logs = searchlog_last_run["lastRun"]
                 else:
-                    first_fetch_time_search_logs = (datetime.now() - timedelta(minutes=10)).strftime(SEARCHLOG_DATE_FORMAT)
+                    first_fetch_time_search_logs = (
+                        datetime.now() - timedelta(minutes=SEARCHLOG_FIRST_FETCH_TIME_IN_MINUTES)
+                    ).strftime(SEARCHLOG_DATE_FORMAT)
 
                 searchlog_events, searchlog_last_run = get_searchlogs_events(
                     client,
