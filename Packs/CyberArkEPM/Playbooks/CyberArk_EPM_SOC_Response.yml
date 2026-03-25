@@ -118,7 +118,7 @@ tasks:
       external_ip:
         simple: ${inputs.endpoint_external_ip}
       risk_plan:
-        simple: Medium_Risk_Plan
+        simple: Medium_Risk_Endpoint
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -157,7 +157,7 @@ tasks:
       external_ip:
         simple: ${inputs.endpoint_external_ip}
       risk_plan:
-        simple: High_Risk_Plan
+        simple: High_Risk_Endpoint
     separatecontext: false
     continueonerrortype: ""
     view: |-

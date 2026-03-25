@@ -171,7 +171,7 @@ inputs:
 - key: risk_plan
   value: {}
   required: true
-  description: "The name of the risk plan to remove (Medium_Risk_Plan or High_Risk_Plan)."
+  description: "The name of the risk plan to remove (i.e. Medium_Risk_Endpoint or High_Risk_Endpoint)."
   playbookInputQuery: null
 inputSections:
 - inputs:
