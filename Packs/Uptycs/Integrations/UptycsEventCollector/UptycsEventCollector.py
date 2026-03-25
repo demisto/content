@@ -59,7 +59,7 @@ class APIValues:
     """API Endpoint paths and fixed Parameter Values."""
 
     ALERTS_ENDPOINT = "/public/api/customers/{customer_id}/alertsReporting"
-    DEFAULT_SORT = "lastOccurredAt:desc"
+    DEFAULT_SORT = "lastOccurredAt:asc"
 
 
 def get_formatted_utc_time(date_input: str | None) -> str:
@@ -423,7 +423,7 @@ def fetch_events_with_pagination(
         max_events: Maximum total events to retrieve.
 
     Returns:
-        List of alert event dictionaries, sorted by createdAt (oldest first).
+        List of alert event dictionaries, sorted by lastOccurredAt ascending (oldest first) as returned by the API.
     """
     events: list[dict[str, Any]] = []
     offset = 0
@@ -453,17 +453,12 @@ def fetch_events_with_pagination(
 
         offset += page_size
 
-        if len(events) >= max_events:
-            demisto.debug(f"[Pagination Loop] Threshold reached ({len(events)} >= {max_events}). Stopping.")
-            break
+    if len(events) >= max_events:
+        demisto.debug(f"[Pagination Loop] Threshold reached ({len(events)} >= {max_events}).")
 
     if not events:
         demisto.debug("[Pagination Result] No events found.")
         return []
-
-    # Sort events by createdAt (Oldest -> Newest)
-    demisto.debug(f"[Pagination Process] Sorting {len(events)} events by createdAt...")
-    events.sort(key=lambda x: x.get("createdAt", ""))
 
     # Slice to limit
     if len(events) > max_events:

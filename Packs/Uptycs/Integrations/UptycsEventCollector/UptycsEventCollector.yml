@@ -5,7 +5,7 @@ name: UptycsEventCollector
 display: Uptycs Event Collector
 category: Analytics & SIEM
 provider: Uptycs
-description: Uptycs Event Collector fetches security alerts from the Uptycs platform and ingests them into Cortex XSIAM. The integration uses JWT-based authentication to connect to the Uptycs alertsReporting API and supports incremental fetching with deduplication.
+description: Uptycs is a cloud-native security analytics platform that provides visibility, threat detection, and compliance across endpoints and cloud workloads.
 sectionorder:
 - Connect
 - Collect

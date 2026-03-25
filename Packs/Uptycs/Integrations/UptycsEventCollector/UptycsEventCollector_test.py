@@ -141,80 +141,70 @@ def test_generate_jwt_token_structure():
     assert len(parts) == 3, "JWT must have 3 parts: header.payload.signature"
 
 
+JWT_HEADER_INDEX = 0
+JWT_PAYLOAD_INDEX = 1
+
+
+def _decode_jwt_part(token: str, part: int) -> dict[str, Any]:
+    """Helper to decode a base64url-encoded JWT part.
+
+    Args:
+        token: The full JWT token string.
+        part: JWT_HEADER_INDEX (0) for header, JWT_PAYLOAD_INDEX (1) for payload.
+    """
+    import base64
+
+    part_b64 = token.split(".")[part]
+    padding = 4 - len(part_b64) % 4
+    part_b64 += "=" * padding
+    return json.loads(base64.urlsafe_b64decode(part_b64))
+
+
 def test_generate_jwt_token_header():
     """Tests generate_jwt_token includes correct header claims."""
     token = generate_jwt_token(MOCK_API_KEY, MOCK_API_SECRET)
-    header_b64 = token.split(".")[0]
-
-    # Add padding for base64 decoding
-    import base64
-
-    padding = 4 - len(header_b64) % 4
-    header_b64 += "=" * padding
-    header = json.loads(base64.urlsafe_b64decode(header_b64))
+    header = _decode_jwt_part(token, JWT_HEADER_INDEX)
 
     assert header["alg"] == "HS256"
     assert header["typ"] == "JWT"
 
 
-def test_generate_jwt_token_payload_contains_iss():
-    """Tests generate_jwt_token includes api_key as 'iss' claim."""
-    token = generate_jwt_token(MOCK_API_KEY, MOCK_API_SECRET)
-    payload_b64 = token.split(".")[1]
+@pytest.mark.parametrize(
+    "role_id,security_zone_id,expected_claims,unexpected_claims",
+    [
+        (None, None, {"iss": MOCK_API_KEY}, ["roleId", "securityZoneId"]),
+        (MOCK_ROLE_ID, None, {"iss": MOCK_API_KEY, "roleId": MOCK_ROLE_ID}, ["securityZoneId"]),
+        (None, MOCK_SECURITY_ZONE_ID, {"iss": MOCK_API_KEY, "securityZoneId": MOCK_SECURITY_ZONE_ID}, ["roleId"]),
+        (
+            MOCK_ROLE_ID,
+            MOCK_SECURITY_ZONE_ID,
+            {"iss": MOCK_API_KEY, "roleId": MOCK_ROLE_ID, "securityZoneId": MOCK_SECURITY_ZONE_ID},
+            [],
+        ),
+    ],
+)
+def test_generate_jwt_token_payload_claims(
+    role_id: str | None,
+    security_zone_id: str | None,
+    expected_claims: dict[str, str],
+    unexpected_claims: list[str],
+):
+    """Tests generate_jwt_token includes correct payload claims based on optional parameters."""
+    token = generate_jwt_token(MOCK_API_KEY, MOCK_API_SECRET, role_id=role_id, security_zone_id=security_zone_id)
+    payload = _decode_jwt_part(token, JWT_PAYLOAD_INDEX)
 
-    import base64
-
-    padding = 4 - len(payload_b64) % 4
-    payload_b64 += "=" * padding
-    payload = json.loads(base64.urlsafe_b64decode(payload_b64))
-
-    assert payload["iss"] == MOCK_API_KEY
+    # Verify standard time claims
     assert "iat" in payload
     assert "exp" in payload
     assert payload["exp"] - payload["iat"] == Config.TOKEN_EXPIRY_SECONDS
 
+    # Verify expected claims
+    for claim, value in expected_claims.items():
+        assert payload[claim] == value
 
-def test_generate_jwt_token_with_role_id():
-    """Tests generate_jwt_token includes roleId when provided."""
-    token = generate_jwt_token(MOCK_API_KEY, MOCK_API_SECRET, role_id=MOCK_ROLE_ID)
-    payload_b64 = token.split(".")[1]
-
-    import base64
-
-    padding = 4 - len(payload_b64) % 4
-    payload_b64 += "=" * padding
-    payload = json.loads(base64.urlsafe_b64decode(payload_b64))
-
-    assert payload["roleId"] == MOCK_ROLE_ID
-
-
-def test_generate_jwt_token_with_security_zone_id():
-    """Tests generate_jwt_token includes securityZoneId when provided."""
-    token = generate_jwt_token(MOCK_API_KEY, MOCK_API_SECRET, security_zone_id=MOCK_SECURITY_ZONE_ID)
-    payload_b64 = token.split(".")[1]
-
-    import base64
-
-    padding = 4 - len(payload_b64) % 4
-    payload_b64 += "=" * padding
-    payload = json.loads(base64.urlsafe_b64decode(payload_b64))
-
-    assert payload["securityZoneId"] == MOCK_SECURITY_ZONE_ID
-
-
-def test_generate_jwt_token_without_optional_claims():
-    """Tests generate_jwt_token excludes roleId/securityZoneId when not provided."""
-    token = generate_jwt_token(MOCK_API_KEY, MOCK_API_SECRET)
-    payload_b64 = token.split(".")[1]
-
-    import base64
-
-    padding = 4 - len(payload_b64) % 4
-    payload_b64 += "=" * padding
-    payload = json.loads(base64.urlsafe_b64decode(payload_b64))
-
-    assert "roleId" not in payload
-    assert "securityZoneId" not in payload
+    # Verify unexpected claims are absent
+    for claim in unexpected_claims:
+        assert claim not in payload
 
 
 # ========================================
@@ -288,36 +278,32 @@ def test_parse_integration_params_success(params: dict[str, Any], expected_verif
     assert result["customer_id"] == MOCK_CUSTOMER_ID
 
 
-def test_parse_integration_params_optional_fields():
+@pytest.mark.parametrize(
+    "role_id_input,zone_id_input,expected_role_id,expected_zone_id",
+    [
+        (MOCK_ROLE_ID, MOCK_SECURITY_ZONE_ID, MOCK_ROLE_ID, MOCK_SECURITY_ZONE_ID),
+        ("", "", None, None),
+    ],
+)
+def test_parse_integration_params_optional_fields(
+    role_id_input: str,
+    zone_id_input: str,
+    expected_role_id: str | None,
+    expected_zone_id: str | None,
+):
     """Tests parse_integration_params handles optional role_id and security_zone_id."""
     params = {
         "url": SERVER_URL,
         "api_key": MOCK_API_KEY,
         "credentials": {"password": MOCK_API_SECRET},
         "customer_id": MOCK_CUSTOMER_ID,
-        "role_id": MOCK_ROLE_ID,
-        "security_zone_id": MOCK_SECURITY_ZONE_ID,
+        "role_id": role_id_input,
+        "security_zone_id": zone_id_input,
     }
     result = parse_integration_params(params)
 
-    assert result["role_id"] == MOCK_ROLE_ID
-    assert result["security_zone_id"] == MOCK_SECURITY_ZONE_ID
-
-
-def test_parse_integration_params_optional_fields_empty():
-    """Tests parse_integration_params returns None for empty optional fields."""
-    params = {
-        "url": SERVER_URL,
-        "api_key": MOCK_API_KEY,
-        "credentials": {"password": MOCK_API_SECRET},
-        "customer_id": MOCK_CUSTOMER_ID,
-        "role_id": "",
-        "security_zone_id": "",
-    }
-    result = parse_integration_params(params)
-
-    assert result["role_id"] is None
-    assert result["security_zone_id"] is None
+    assert result["role_id"] == expected_role_id
+    assert result["security_zone_id"] == expected_zone_id
 
 
 # ========================================
@@ -344,47 +330,49 @@ def test_determine_entry_status(created_at: str, updated_at: str, expected_statu
 # ========================================
 
 
-def test_enrich_events_for_xsiam_sets_time_from_created_at():
-    """Tests enrich_events_for_xsiam sets _TIME from createdAt."""
-    events: list[dict[str, Any]] = [
-        {"id": "1", "createdAt": "2024-01-01T00:00:00Z", "updatedAt": "2024-01-01T00:00:00Z"},
-    ]
+@pytest.mark.parametrize(
+    "event,expected_time,expected_status",
+    [
+        (
+            {"id": "1", "createdAt": "2024-01-01T00:00:00Z", "updatedAt": "2024-01-01T00:00:00Z"},
+            "2024-01-01T00:00:00Z",
+            "new",
+        ),
+        (
+            {"id": "1", "createdAt": "2024-01-01T00:00:00Z", "updatedAt": "2024-01-02T00:00:00Z"},
+            "2024-01-01T00:00:00Z",
+            "updated",
+        ),
+        (
+            {"id": "1", "updatedAt": "2024-01-02T00:00:00Z"},
+            "2024-01-02T00:00:00Z",
+            None,
+        ),
+        (
+            {"id": "1"},
+            None,
+            None,
+        ),
+    ],
+)
+def test_enrich_events_for_xsiam(
+    event: dict[str, Any],
+    expected_time: str | None,
+    expected_status: str | None,
+):
+    """Tests enrich_events_for_xsiam sets _TIME and _ENTRY_STATUS correctly for various event shapes."""
+    events: list[dict[str, Any]] = [event]
     enrich_events_for_xsiam(events)
 
-    assert events[0]["_TIME"] == "2024-01-01T00:00:00Z"
-    assert events[0]["_ENTRY_STATUS"] == "new"
+    if expected_time:
+        assert events[0]["_TIME"] == expected_time
+    else:
+        assert "_TIME" not in events[0]
 
-
-def test_enrich_events_for_xsiam_falls_back_to_updated_at():
-    """Tests enrich_events_for_xsiam uses updatedAt when createdAt is missing."""
-    events: list[dict[str, Any]] = [
-        {"id": "1", "updatedAt": "2024-01-02T00:00:00Z"},
-    ]
-    enrich_events_for_xsiam(events)
-
-    assert events[0]["_TIME"] == "2024-01-02T00:00:00Z"
-    assert "_ENTRY_STATUS" not in events[0]
-
-
-def test_enrich_events_for_xsiam_missing_both_timestamps():
-    """Tests enrich_events_for_xsiam handles events missing both timestamps."""
-    events: list[dict[str, Any]] = [
-        {"id": "1"},
-    ]
-    enrich_events_for_xsiam(events)
-
-    assert "_TIME" not in events[0]
-    assert "_ENTRY_STATUS" not in events[0]
-
-
-def test_enrich_events_for_xsiam_updated_status():
-    """Tests enrich_events_for_xsiam sets _ENTRY_STATUS to 'updated' when updatedAt > createdAt."""
-    events: list[dict[str, Any]] = [
-        {"id": "1", "createdAt": "2024-01-01T00:00:00Z", "updatedAt": "2024-01-02T00:00:00Z"},
-    ]
-    enrich_events_for_xsiam(events)
-
-    assert events[0]["_ENTRY_STATUS"] == "updated"
+    if expected_status:
+        assert events[0]["_ENTRY_STATUS"] == expected_status
+    else:
+        assert "_ENTRY_STATUS" not in events[0]
 
 
 def test_enrich_events_for_xsiam_multiple_events():
@@ -669,12 +657,12 @@ def test_fetch_events_with_pagination_empty_page(mocker, client: Client):
     assert len(events) == 0
 
 
-def test_fetch_events_with_pagination_sorts_by_created_at(mocker, client: Client):
-    """Tests fetch_events_with_pagination sorts events by createdAt."""
+def test_fetch_events_with_pagination_preserves_api_order(mocker, client: Client):
+    """Tests fetch_events_with_pagination preserves the ascending order returned by the API."""
     mock_events = [
-        {"id": "event3", "createdAt": "2024-01-03T00:00:00Z"},
         {"id": "event1", "createdAt": "2024-01-01T00:00:00Z"},
         {"id": "event2", "createdAt": "2024-01-02T00:00:00Z"},
+        {"id": "event3", "createdAt": "2024-01-03T00:00:00Z"},
     ]
 
     mocker.patch.object(client, "get_alerts", return_value=(mock_events, len(mock_events)))
@@ -1028,57 +1016,17 @@ def test_main_invalid_command_fail(mocker, capfd):
         assert re.search(r"not implemented", error_call_args, re.IGNORECASE)
 
 
-def test_main_test_module_success(mocker):
-    """Tests main() executes test-module command successfully."""
-    mocker.patch.object(demisto, "command", return_value="test-module")
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "url": SERVER_URL,
-            "api_key": MOCK_API_KEY,
-            "credentials": {"password": MOCK_API_SECRET},
-            "customer_id": MOCK_CUSTOMER_ID,
-        },
-    )
-    mocker.patch.object(demisto, "args", return_value={})
-    mocker.patch.object(UptycsEventCollector, "generate_jwt_token", return_value=MOCK_JWT_TOKEN)
-    mocker.patch.object(UptycsEventCollector, "fetch_events_with_pagination", return_value=[])
-
-    mock_return_results = mocker.patch("UptycsEventCollector.return_results")
-
-    UptycsEventCollector.main()
-
-    mock_return_results.assert_called_once_with("ok")
-
-
-def test_main_get_events_success(mocker):
-    """Tests main() executes uptycs-get-events command successfully."""
-    mocker.patch.object(demisto, "command", return_value="uptycs-get-events")
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "url": SERVER_URL,
-            "api_key": MOCK_API_KEY,
-            "credentials": {"password": MOCK_API_SECRET},
-            "customer_id": MOCK_CUSTOMER_ID,
-        },
-    )
-    mocker.patch.object(demisto, "args", return_value={})
-    mocker.patch.object(UptycsEventCollector, "generate_jwt_token", return_value=MOCK_JWT_TOKEN)
-    mocker.patch.object(UptycsEventCollector, "fetch_events_with_pagination", return_value=[])
-
-    mock_return_results = mocker.patch("UptycsEventCollector.return_results")
-
-    UptycsEventCollector.main()
-
-    mock_return_results.assert_called_once()
-
-
-def test_main_fetch_events_success(mocker):
-    """Tests main() executes fetch-events command successfully."""
-    mocker.patch.object(demisto, "command", return_value="fetch-events")
+@pytest.mark.parametrize(
+    "command_name",
+    [
+        "test-module",
+        "uptycs-get-events",
+        "fetch-events",
+    ],
+)
+def test_main_command_success(mocker, command_name: str):
+    """Tests main() executes supported commands successfully."""
+    mocker.patch.object(demisto, "command", return_value=command_name)
     mocker.patch.object(
         demisto,
         "params",
@@ -1093,8 +1041,12 @@ def test_main_fetch_events_success(mocker):
     mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch.object(UptycsEventCollector, "generate_jwt_token", return_value=MOCK_JWT_TOKEN)
     mocker.patch.object(UptycsEventCollector, "fetch_events_with_pagination", return_value=[])
+    mock_return_results = mocker.patch("UptycsEventCollector.return_results")
 
     UptycsEventCollector.main()
+
+    if command_name in ("test-module", "uptycs-get-events"):
+        mock_return_results.assert_called_once()
 
 
 def test_main_command_execution_error(mocker, capfd):
