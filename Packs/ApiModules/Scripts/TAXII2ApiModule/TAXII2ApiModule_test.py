@@ -2157,6 +2157,7 @@ TEST_CREATE_STIX_OBJECT_PARAM = [
             "name": "bad malware",
             "description": "",
             "is_family": False,
+            "labels": ["malware"],
         },
     ),
 ]
@@ -2248,20 +2249,23 @@ def test_get_tlp(indicator_json, expected_result):
 @pytest.mark.parametrize(
     "stix_object,xsoar_indicator, expected_stix_object",
     [
-        ({"type": "malware"}, {"CustomFields": {}}, {"is_family": False, "type": "malware"}),
-        ({"type": "report"}, {"CustomFields": {"published": "some_date"}}, {"published": "some_date", "type": "report"}),
+        ({"type": "malware"}, {"CustomFields": {}}, {"is_family": False, "type": "malware", "labels": ["malware"]}),
+        (
+            {"type": "report"},
+            {"CustomFields": {"published": "some_date"}},
+            {"published": "some_date", "type": "report", "labels": ["report"]},
+        ),
     ],
 )
 def test_add_sdo_required_field_2_1(stix_object, xsoar_indicator, expected_stix_object):
     """
     Given
-        - Case 1: A STIX indicator of type 'malware', and an XSOAR indicator.
-        - Case 2: A STIX indicator of type 'report' and an XSOAR indicator.
-        - Case 3: A STIX indicator of type 'report' and an XSOAR indicator.
+        - Case 1: A STIX indicator of type 'malware', and an XSOAR indicator with no tags.
+        - Case 2: A STIX indicator of type 'report' and an XSOAR indicator with a published date but no tags.
     When
-    - call the test_add_sdo_required_field_2_1 method
+    - call the add_sdo_required_field_2_1 method
     Then
-    - Validates that the method properly set the required fields.
+    - Validates that the method properly sets the required fields, including labels falling back to the type name.
     """
     cilent = XSOAR2STIXParser(
         server_version="2.1", fields_to_present={"name", "type"}, types_for_indicator_sdo=[], namespace_uuid=PAWN_UUID
@@ -2337,7 +2341,7 @@ def test_add_sdo_required_field_2_0(stix_object, xsoar_indicator, expected_stix_
         ),
     ],
 )
-def test_add_sdo_required_field_2_1(stix_object, xsoar_indicator, expected_stix_object):
+def test_add_sdo_required_field_2_1_labels(stix_object, xsoar_indicator, expected_stix_object):
     """
     Given
         - Case 1: A STIX indicator of type 'indicator' with empty tags, using TAXII 2.1.

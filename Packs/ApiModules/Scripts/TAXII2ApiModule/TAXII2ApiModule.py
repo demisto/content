@@ -815,7 +815,7 @@ class XSOAR2STIXParser:
         Returns:
             The uuid that represents the indicator according to STIX.
         """
-        if stixid := xsoar_indicator.get("CustomFields", {}).get("stixid"):
+        if stixid := (xsoar_indicator.get("CustomFields") or {}).get("stixid"):
             return stixid
         value = value if value else xsoar_indicator.get("value")
         if stix_type == "attack-pattern":
