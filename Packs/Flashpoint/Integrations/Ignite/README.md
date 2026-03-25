@@ -1014,6 +1014,7 @@ Looks up the "IP" type indicator details. The reputation of the IP address is de
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip | A comma-separated list of IP addresses. | Required |
+| exact_match | Whether to perform an exact match on the IP address value. Possible values are: True, False. Default is False. | Optional |
 
 #### Context Output
 
@@ -2047,6 +2048,7 @@ Looks up the "URL" type indicator details. The reputation of the URL is decided 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | url | A comma-separated list of URLs. | Required |
+| exact_match | Whether to perform an exact match on the URL value. Possible values are: True, False. Default is False. | Optional |
 
 #### Context Output
 
@@ -2242,6 +2244,7 @@ Looks up the "Domain" type indicator details. The reputation of the domain is de
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domain | A comma-separated list of domains. | Required |
+| exact_match | Whether to perform an exact match on the domain value. Possible values are: True, False. Default is False. | Optional |
 
 #### Context Output
 
@@ -2435,6 +2438,7 @@ Looks up the "File" type indicator details. The reputation of the file is decide
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | file | List of files. | Required |
+| exact_match | Whether to perform an exact match on the file hash value. Possible values are: True, False. Default is False. | Optional |
 
 #### Context Output
 
