@@ -2014,7 +2014,9 @@ def test_fetch_assets_and_vulnerabilities_by_date_last_page_empty(mocker: Mocker
     assert send_data_to_xsiam_kwargs["vendor"] == VENDOR
     assert send_data_to_xsiam_kwargs["product"] == "assets"
     assert send_data_to_xsiam_kwargs["snapshot_id"] == SNAPSHOT_ID
-    assert send_data_to_xsiam_kwargs["items_count"] == str(last_total_assets + 1)  # total_assets + 1 to account for the empty JSON row
+    assert send_data_to_xsiam_kwargs["items_count"] == str(
+        last_total_assets + 1
+    )  # total_assets + 1 to account for the empty JSON row
     assert not send_data_to_xsiam_kwargs["should_update_health_module"]
 
     assert next_run["next_page"] == ""

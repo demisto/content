@@ -3466,9 +3466,7 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
             )
 
             if is_last_page:
-                assets, total_assets_to_report = close_snapshot_if_empty(
-                    assets, total_assets_to_report, snapshot_id, "assets"
-                )
+                assets, total_assets_to_report = close_snapshot_if_empty(assets, total_assets_to_report, snapshot_id, "assets")
 
             send_data_to_xsiam(
                 data=assets,
