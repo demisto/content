@@ -2,7 +2,7 @@
     "name": "GCP",
     "description": "Google Cloud Platform Services",
     "support": "xsoar",
-    "currentVersion": "1.1.4",
+    "currentVersion": "1.1.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -13,9 +13,6 @@
     "useCases": [],
     "keywords": [],
     "supportedModules": [
-        "C1",
-        "C3",
-        "X5",
         "cloud_posture",
         "cloud",
         "cloud_runtime_security",

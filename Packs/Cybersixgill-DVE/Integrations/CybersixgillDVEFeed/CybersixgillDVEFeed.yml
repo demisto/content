@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: BitSight
 commonfields:
   id: Sixgill_DVE_Feed v2
   version: -1
@@ -124,7 +123,7 @@ script:
       name: limit
     description: Fetching Sixgill DVE Feed indicators.
     name: cybersixgill-get-indicators
-  dockerimage: demisto/sixgill:1.0.0.3557591
+  dockerimage: demisto/sixgill:1.0.0.6979213
   feed: true
   runonce: false
   script: '-'
@@ -136,3 +135,4 @@ tests:
 sectionorder:
 - Connect
 - Collect
+provider: BitSight

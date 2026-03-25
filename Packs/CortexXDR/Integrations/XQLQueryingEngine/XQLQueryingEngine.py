@@ -79,6 +79,9 @@ GENERIC_QUERY_COMMANDS = {
     "xdr-xql-generic-query": start_xql_query_polling_command,
     "xdr-xql-get-query-results": get_xql_query_results_polling_command,
     "xdr-xql-get-quota": get_xql_quota_command,
+    "xdr-xql-library-delete": xql_library_delete_command,
+    "xdr-xql-library-create": xql_library_create_command,
+    "xdr-xql-library-list": xql_library_list_command,
 }
 
 
