@@ -71,7 +71,7 @@ script:
       required: false
     description: Fetches risk events from FireCompass.
     name: firecompass-get-events
-  dockerimage: demisto/fastapi:0.125.0.7178097
+  dockerimage: demisto/fastapi:0.125.0.7704170
   isfetchevents: true
   runonce: false
   script: "-"
