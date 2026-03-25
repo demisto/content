@@ -1196,8 +1196,9 @@ def merge_samples(current_ctx: dict, changes: dict) -> None:
     current_samples = current_ctx.get(SAMPLE_INCIDENTS_KEY, [])
     if isinstance(current_samples, list):
         # Ensure samples do not grow unbounded due to the list appending behavior of always_merger
-        demisto.debug("Appending new samples to existing ones in context.")
-        current_ctx[SAMPLE_INCIDENTS_KEY] = (current_samples + new_samples)[:SAMPLE_SIZE]
+        # Store samples from the LAST iteration by prioritizing new_samples over current_samples
+        demisto.debug("Storing new samples from the last iteration in context.")
+        current_ctx[SAMPLE_INCIDENTS_KEY] = (new_samples + current_samples)[:SAMPLE_SIZE]
     else:
         # If samples is a JSON string (legacy context schema), then override
         demisto.debug("Setting new samples in context.")
