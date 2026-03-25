@@ -1797,7 +1797,7 @@ def get_computer_section_command(client: Client, args: dict[str, Any]) -> Comman
 
     return CommandResults(
         readable_output=tableToMarkdown(readable_title, readable_output, removeNull=True),
-        outputs_prefix=f"JAMF.Computer.{section_as_enum.value}",
+        outputs_prefix="JAMF.Computer",
         outputs_key_field="id",
         outputs=computer_response,
         raw_response=response,
