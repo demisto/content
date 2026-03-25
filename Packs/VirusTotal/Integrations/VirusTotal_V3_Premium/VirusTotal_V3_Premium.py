@@ -473,7 +473,7 @@ class Client(BaseClient):
 
 def test_module(client: Client, params: dict) -> str:
     """Tests API connectivity and authentication'
-    A simple call to list_livehunt_rules
+    A simple call to get_quota_limits
 
     Returns:
         'ok' if test passed, anything else will fail the test.
