@@ -10,6 +10,7 @@ from FireCompass import (
     _update_last_run,
     _parse_date_string,
     _datetime_to_api_date,
+    _send_events,
 )
 from CommonServerPython import DemistoException
 from datetime import UTC
@@ -630,6 +631,171 @@ class TestFetchEventsCommand:
 
         assert len(events) == 0
         assert next_run == last_run
+
+
+class TestSendEvents:
+    """Tests for _send_events function."""
+
+    def test_send_events_adds_fields_and_sends(self, mocker):
+        """
+        Given:
+            - A list of events without _time and _ENTRY_STATUS fields
+        When:
+            - Calling _send_events
+        Then:
+            - Ensure _add_fields_to_events is called and events are sent via send_events_to_xsiam
+        """
+        events = [
+            _create_risk_event("event-1", created_at="2026-03-01T12:00:00Z", updated_at="2026-03-01T12:00:00Z"),
+            _create_risk_event("event-2", created_at="2026-03-02T12:00:00Z", updated_at="2026-03-03T12:00:00Z"),
+        ]
+        mock_send = mocker.patch("FireCompass.send_events_to_xsiam")
+
+        _send_events(events)
+
+        # Verify fields were added
+        assert events[0]["_time"] == "2026-03-01T12:00:00Z"
+        assert events[0]["_ENTRY_STATUS"] == "new"
+        assert events[1]["_ENTRY_STATUS"] == "modified"
+
+        # Verify send was called with correct vendor/product
+        mock_send.assert_called_once_with(events, vendor="FireCompass", product="FireCompass")
+
+    def test_send_events_empty_list(self, mocker):
+        """
+        Given:
+            - An empty list of events
+        When:
+            - Calling _send_events
+        Then:
+            - Ensure send_events_to_xsiam is still called (with empty list)
+        """
+        mock_send = mocker.patch("FireCompass.send_events_to_xsiam")
+
+        _send_events([])
+
+        mock_send.assert_called_once_with([], vendor="FireCompass", product="FireCompass")
+
+
+class TestClientGetRisks:
+    """Tests for Client.get_risks method."""
+
+    def test_get_risks_passes_correct_params(self, client, mocker):
+        """
+        Given:
+            - Specific page, page_size, from_date, and to_date parameters
+        When:
+            - Calling client.get_risks
+        Then:
+            - Ensure _http_request is called with the correct params
+        """
+        mock_http = mocker.patch.object(client, "_http_request", return_value={"data": []})
+
+        client.get_risks(page=2, page_size=50, from_date="2026-03-01", to_date="2026-03-15")
+
+        mock_http.assert_called_once_with(
+            method="GET",
+            url_suffix="/rest/v4/risk",
+            params={
+                "page": 2,
+                "page_size": 50,
+                "from_date": "2026-03-01",
+                "to_date": "2026-03-15",
+            },
+            resp_type="json",
+        )
+
+    def test_get_risks_caps_page_size(self, client, mocker):
+        """
+        Given:
+            - A page_size larger than MAX_PAGE_SIZE (100)
+        When:
+            - Calling client.get_risks
+        Then:
+            - Ensure page_size is capped at 100
+        """
+        mock_http = mocker.patch.object(client, "_http_request", return_value={"data": []})
+
+        client.get_risks(page=1, page_size=500, from_date="2026-03-01", to_date="2026-03-15")
+
+        call_params = mock_http.call_args.kwargs["params"]
+        assert call_params["page_size"] == 100
+
+
+class TestEndToEndFetch:
+    """End-to-end tests simulating multiple fetch cycles."""
+
+    @freeze_time("2026-03-15T12:00:00Z")
+    def test_two_consecutive_fetches_with_dedup(self, client, mocker):
+        """
+        Given:
+            - First fetch returns 3 events, second fetch returns 2 events (1 overlapping)
+        When:
+            - Running two consecutive fetch_events_command cycles
+        Then:
+            - Ensure first fetch returns all 3 events
+            - Ensure second fetch deduplicates the overlapping event
+            - Ensure last_run state progresses correctly across cycles
+        """
+        # First fetch - returns 3 events
+        first_batch = [
+            _create_risk_event("event-1", created_at="2026-03-14T08:00:00Z"),
+            _create_risk_event("event-2", created_at="2026-03-14T10:00:00Z"),
+            _create_risk_event("event-3", created_at="2026-03-14T12:00:00Z"),
+        ]
+        mocker.patch.object(client, "_http_request", return_value={"data": first_batch})
+
+        next_run_1, events_1 = fetch_events_command(client=client, last_run={}, max_events=1000)
+
+        assert len(events_1) == 3
+        assert next_run_1["last_fetch_time"] == "2026-03-14T12:00:00Z"
+        assert "event-3" in next_run_1["last_fetch_ids"]
+
+        # Second fetch - returns event-3 (overlap) and event-4 (new)
+        second_batch = [
+            _create_risk_event("event-3", created_at="2026-03-14T12:00:00Z"),
+            _create_risk_event("event-4", created_at="2026-03-15T06:00:00Z"),
+        ]
+        mocker.patch.object(client, "_http_request", return_value={"data": second_batch})
+
+        next_run_2, events_2 = fetch_events_command(client=client, last_run=next_run_1, max_events=1000)
+
+        # event-3 should be deduplicated
+        assert len(events_2) == 1
+        assert events_2[0]["id"] == "event-4"
+        assert next_run_2["last_fetch_time"] == "2026-03-15T06:00:00Z"
+        assert "event-4" in next_run_2["last_fetch_ids"]
+
+    @freeze_time("2026-03-15T12:00:00Z")
+    def test_three_fetches_no_new_events_then_new(self, client, mocker):
+        """
+        Given:
+            - First fetch returns events, second fetch returns nothing, third fetch returns new events
+        When:
+            - Running three consecutive fetch_events_command cycles
+        Then:
+            - Ensure state is preserved when no events are returned
+            - Ensure new events are properly collected after an empty cycle
+        """
+        # First fetch
+        first_batch = [_create_risk_event("event-1", created_at="2026-03-14T10:00:00Z")]
+        mocker.patch.object(client, "_http_request", return_value={"data": first_batch})
+        next_run_1, events_1 = fetch_events_command(client=client, last_run={}, max_events=1000)
+        assert len(events_1) == 1
+
+        # Second fetch - no new events
+        mocker.patch.object(client, "_http_request", return_value={"data": []})
+        next_run_2, events_2 = fetch_events_command(client=client, last_run=next_run_1, max_events=1000)
+        assert len(events_2) == 0
+        assert next_run_2 == next_run_1  # State preserved
+
+        # Third fetch - new events
+        third_batch = [_create_risk_event("event-2", created_at="2026-03-15T08:00:00Z")]
+        mocker.patch.object(client, "_http_request", return_value={"data": third_batch})
+        next_run_3, events_3 = fetch_events_command(client=client, last_run=next_run_2, max_events=1000)
+        assert len(events_3) == 1
+        assert events_3[0]["id"] == "event-2"
+        assert next_run_3["last_fetch_time"] == "2026-03-15T08:00:00Z"
 
 
 class TestParseDateString:
