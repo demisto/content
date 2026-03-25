@@ -6,6 +6,9 @@ description: |-
   Dummy playbook to test AS104 validation.
   Contains tasks with both valid and invalid displayLabel context key usages.
 
+
+
+
   - Task 1: Gets alert data using issue.id (sets up context)
   - Task 2 (VALID): displayLabel uses ${issue.id} which IS used in task 1
   - Task 3 (VALID): displayLabel uses ${PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username} which IS used in task 5
