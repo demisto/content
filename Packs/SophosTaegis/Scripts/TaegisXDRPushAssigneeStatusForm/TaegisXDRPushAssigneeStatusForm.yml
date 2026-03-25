@@ -1,0 +1,15 @@
+commonfields:
+  id: TaegisXDRPushAssigneeStatusForm
+  version: -1
+name: TaegisXDRPushAssigneeStatusForm
+script: ''
+type: python
+subtype: python3
+tags:
+  - incident-action-button
+enabled: true
+comment: "Reads Taegis Requested Assignee and Taegis Requested Status from the incident, pushes to Taegis, then clears those fields. Use in the 'Update in Taegis' section with the two dropdowns."
+runas: DBotRole
+runonce: false
+fromversion: 6.0.0
+description: "Select assignee and status from the 'Update in Taegis' section (human-friendly dropdowns), then click the button to push to Taegis. After push the requested fields are set to 'Select Assignee' / 'Select Status' so they're distinct from the read-only Taegis XDR Assignee and Case Status."

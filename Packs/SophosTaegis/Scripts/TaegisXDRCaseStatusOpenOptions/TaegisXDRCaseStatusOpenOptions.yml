@@ -1,0 +1,14 @@
+commonfields:
+  id: TaegisXDRCaseStatusOpenOptions
+  version: -1
+name: TaegisXDRCaseStatusOpenOptions
+script: ''
+type: python
+subtype: python3
+tags: [field-display]
+enabled: true
+comment: "Field display script: returns Taegis XDR case status values that do not start with CLOSED_, for use in Case Details section."
+runas: DBotRole
+runonce: false
+fromversion: 6.0.0
+description: "Returns only Taegis XDR case status options that do not start with CLOSED_ (ACTIVE, AWAITING_ACTION, OPEN, SUSPENDED). Attach to incident field taegisxdrcasestatus as the field display script for sections where only open/active statuses should be shown."
