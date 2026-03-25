@@ -32,38 +32,58 @@ def get_now():
 
 
 def get_fetch_times(last_fetch, look_back_minutes: int = 0):
-    """Get list of every hour since last_fetch. Last time is now minus look-back buffer.
+    """Generate time intervals for fetching events from Proofpoint TAP API.
+    
+    Creates intervals of up to 59 minutes each, ensuring each interval is at least 30 seconds
+    to comply with Proofpoint API requirements.
 
     Applies a buffer to account for Proofpoint's API indexing delay (30-60 seconds).
     This prevents querying for events that haven't been indexed yet, which would
     cause them to be permanently missed in subsequent fetches.
 
     Args:
-        last_fetch (datetime or str): last_fetch time
+        last_fetch (datetime or str): Starting time for fetch
         look_back_minutes (int): Buffer time in minutes to subtract from 'now'. Default is 0.
+        
     Returns:
-        List[str]: list of str represents every hour since last_fetch
+        List[tuple[str, str]]: List of (start_time, end_time) tuples in DATE_FORMAT.
+                               Each interval is ≤59 minutes and ≥30 seconds.
+                               Returns empty list if no valid intervals can be created.
     """
     # Apply indexing delay buffer: subtract buffer from 'now' to avoid querying
     # for events that haven't been indexed yet by Proofpoint's API
     now = get_now() - timedelta(minutes=look_back_minutes)
     time_format = DATE_FORMAT
+
+    # Convert last_fetch to datetime if it's a string
     if isinstance(last_fetch, str):
         last_fetch = datetime.strptime(last_fetch, time_format)
 
     # Guard against invalid intervals if polled too frequently
-    # If last_fetch is > now (with buffer), return empty list to skip this fetch cycle
-    if last_fetch > now:
-        demisto.debug(f"Skipping fetch: last_fetch ({last_fetch}) > now with buffer ({now})")
+    # If last_fetch is >= now (with buffer), return empty list to skip this fetch cycle
+    if last_fetch >= now:
+        demisto.debug(f"Skipping fetch. {last_fetch=} >= now with {look_back_minutes=}.")
         return []
 
-    times = []
-    times.append(last_fetch.strftime(time_format))
-    while now - last_fetch > timedelta(minutes=59):
-        last_fetch += timedelta(minutes=59)
-        times.append(last_fetch.strftime(time_format))
-    times.append(now.strftime(time_format))
-    return times
+    intervals = []
+    current_start = last_fetch
+
+    # Create 59-minute intervals until we're within 59 minutes of 'now'
+    while now - current_start > timedelta(minutes=59):
+        current_end = current_start + timedelta(minutes=59)
+        intervals.append((current_start.strftime(time_format), current_end.strftime(time_format)))
+        current_start = current_end
+
+    # Add final interval from current_start to now, but only if it's at least 30 seconds
+    # Proofpoint API requires minimum 30-second intervals
+    seconds_remaining = (now - current_start).total_seconds()
+    if seconds_remaining >= 30:
+        intervals.append((current_start.strftime(time_format), now.strftime(time_format)))
+        demisto.debug(f"Final interval: {seconds_remaining:.0f} seconds")
+    else:
+        demisto.debug(f"Skipping final interval: only {seconds_remaining:.0f} seconds remaining (< 30s minimum)")
+
+    return intervals
 
 
 class Client:
@@ -562,17 +582,15 @@ def fetch_incidents(
     # Handle first time fetch, fetch incidents retroactively
     if not start_query_time:
         start_query_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
-    fetch_times = get_fetch_times(start_query_time, look_back_minutes)
+    fetch_intervals = get_fetch_times(start_query_time, look_back_minutes)
 
-    # If fetch_times is empty (polled too frequently), skip this fetch cycle
+    # If fetch_intervals is empty (polled too frequently), skip this fetch cycle
     # Keep last_run unchanged so the next cycle can try again
-    if not fetch_times:
-        demisto.debug("No fetch times generated - skipping this fetch cycle")
+    if not fetch_intervals:
+        demisto.debug("No fetch intervals generated - skipping this fetch cycle")
         return last_run, [], []
 
-    for i in range(len(fetch_times) - 1):
-        start_query_time = fetch_times[i]
-        end_query_time = fetch_times[i + 1]
+    for start_query_time, end_query_time in fetch_intervals:
         demisto.debug(f"{start_query_time=}  {end_query_time=}")
         raw_events = client.get_events(
             interval=start_query_time + "/" + end_query_time,

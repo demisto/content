@@ -192,11 +192,13 @@ def test_first_fetch_incidents(requests_mock, mocker):
 
 
 def test_next_fetch(requests_mock, mocker):
-    mock_date = "2010-01-01T00:00:00Z"
-    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(mock_date, "%Y-%m-%dT%H:%M:%SZ"))
+    # Use 31 minutes to ensure interval is >= 30 seconds
+    current_date = "2010-01-01T00:31:00Z"
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_date, "%Y-%m-%dT%H:%M:%SZ"))
+
     requests_mock.get(
         MOCK_URL + "/v2/siem/all?format=json&interval=2010-01-01T00%3A00%3A00Z%"
-        "2F2010-01-01T00%3A00%3A00Z&threatStatus=active&threatStatus=cleared",
+        "2F2010-01-01T00%3A31%3A00Z&threatStatus=active&threatStatus=cleared",
         json=MOCK_ALL_EVENTS,
     )
 
@@ -206,7 +208,7 @@ def test_next_fetch(requests_mock, mocker):
 
     next_run, incidents, _ = fetch_incidents(
         client=client,
-        last_run={"last_fetch": mock_date},
+        last_run={"last_fetch": "2010-01-01T00:00:00Z"},
         first_fetch_time="3 days",
         event_type_filter=ALL_EVENTS,
         threat_status=["active", "cleared"],
@@ -220,9 +222,10 @@ def test_next_fetch(requests_mock, mocker):
 
 
 def test_fetch_limit(requests_mock, mocker):
-    mock_date = "2010-01-01T00:00:00Z"
+    # Use 31 minutes to ensure interval is >= 30 seconds
+    current_date = "2010-01-01T00:31:00Z"
     this_run = {"last_fetch": "2010-01-01T00:00:00Z"}
-    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(mock_date, "%Y-%m-%dT%H:%M:%SZ"))
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_date, "%Y-%m-%dT%H:%M:%SZ"))
     requests_mock.get(MOCK_URL + "/v2/siem/all", json=MOCK_ALL_EVENTS)
 
     client = Client(
@@ -240,7 +243,7 @@ def test_fetch_limit(requests_mock, mocker):
         look_back_minutes=0,
     )
 
-    assert next_run["last_fetch"] == "2010-01-01T00:00:00Z"
+    assert next_run["last_fetch"] == "2010-01-01T00:31:00Z"
     assert len(incidents) == 3
     assert len(remained) == 1
     # test another run
@@ -260,7 +263,7 @@ def test_fetch_limit(requests_mock, mocker):
     assert not remained
 
 
-@freeze_time("2010-01-01T00:00:00Z", tz_offset=0)
+@freeze_time("2010-01-01T00:01:00Z", tz_offset=0)
 def test_fetch_incidents_with_encoding(requests_mock, mocker):
     """
     Given:
@@ -273,10 +276,11 @@ def test_fetch_incidents_with_encoding(requests_mock, mocker):
     Then:
         - Ensure subject is returned properly in the raw JSON
     """
-    mocker.patch("ProofpointTAP_v2.get_now", return_value=get_mocked_time())
+    # Mock time to be 1 minute after the parsed time to ensure >= 30 second interval
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime("2010-01-01T00:01:00Z", "%Y-%m-%dT%H:%M:%SZ"))
     mocker.patch("ProofpointTAP_v2.parse_date_range", return_value=("2010-01-01T00:00:00Z", "never mind"))
     requests_mock.get(
-        MOCK_URL + "/v2/siem/all?format=json&interval=2010-01-01T00%3A00%3A00Z%2F2010-01-01T00%3A00%3A00Z",
+        MOCK_URL + "/v2/siem/all?format=json&interval=2010-01-01T00%3A00%3A00Z%2F2010-01-01T00%3A01%3A00Z",
         json={
             "messagesDelivered": [
                 {
@@ -310,7 +314,12 @@ def test_fetch_incidents_with_encoding(requests_mock, mocker):
     assert json.loads(incidents[0]["rawJSON"])["subject"] == "pérdida"
 
 
-FETCH_TIMES_MOCK = [("2010-01-01T00:00:00Z", "2010-01-01T03:00:00Z", 5), ("2010-01-01T00:00:00Z", "2010-01-01T00:03:00Z", 2)]
+# Test data: (last_fetch, current_time, expected_interval_count)
+# Old format returned list of timestamps, new format returns list of (start, end) tuples
+FETCH_TIMES_MOCK = [
+    ("2010-01-01T00:00:00Z", "2010-01-01T03:00:00Z", 4),  # 3 hours = 3 intervals of 59min + 1 final interval
+    ("2010-01-01T00:00:00Z", "2010-01-01T00:03:00Z", 1),  # 3 minutes = 1 interval
+]
 
 
 @pytest.mark.parametrize("mock_past, mock_now, expected", FETCH_TIMES_MOCK)
@@ -318,8 +327,15 @@ def test_get_fetch_times(mocker, mock_past, mock_now, expected):
     from ProofpointTAP_v2 import get_fetch_times
 
     mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(mock_now, "%Y-%m-%dT%H:%M:%SZ"))
-    times = get_fetch_times(mock_past)
-    assert len(times) == expected
+    intervals = get_fetch_times(mock_past)
+    assert len(intervals) == expected
+    # Verify all intervals are tuples of (start, end)
+    for interval in intervals:
+        assert isinstance(interval, tuple)
+        assert len(interval) == 2
+        start, end = interval
+        assert isinstance(start, str)
+        assert isinstance(end, str)
 
 
 def test_fetch_with_look_back_buffer(requests_mock, mocker):
