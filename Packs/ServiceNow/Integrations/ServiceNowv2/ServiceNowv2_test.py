@@ -4275,4 +4275,4 @@ class TestCreateItemOrderFixes:
 
         call_kwargs = mock_send.call_args
         body = call_kwargs[1].get("body") or call_kwargs[0][2]
-        assert body.get("sysparm_no_validation") is "true"
+        assert body.get("sysparm_no_validation") == "true"
