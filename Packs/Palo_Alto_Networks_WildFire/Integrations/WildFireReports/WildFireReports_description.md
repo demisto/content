@@ -3,7 +3,7 @@ This integration is set up by default on Cortex XSOAR with the Threat Intel Modu
 #### How to retrieve a Palo Alto Networks WildFire Reports API key
 
 Note: If you have a TIM license that is up-to-date, you do not need to set up an API key.
-The required information is automatically retrieved from your Cortex TIM license.
+The required information is automatically retrieved from your Cortex XSOAR TIM license.
 This API key is used in the *API Key* field in the integration configuration.
 
 1. Navigate to your [WildFire Account](https://wildfire.paloaltonetworks.com/wildfire/account).
