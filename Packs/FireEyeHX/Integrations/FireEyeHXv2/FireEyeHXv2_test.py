@@ -957,13 +957,13 @@ GET_HOSTS_ACQS_COMMAND_BAD_CASES = [
 
 
 @pytest.mark.parametrize("demisto_args, expected_results", GET_HOSTS_ACQS_COMMAND_BAD_CASES)
-def test_get_host_acqs_failed(demisto_args, expected_results):
-    from FireEyeHXv2 import get_host_acqs
+def test_list_host_acquisitions_failed(demisto_args, expected_results):
+    from FireEyeHXv2 import list_host_acquisitions
 
     client = ""
 
     with pytest.raises(Exception) as e:
-        get_host_acqs(client, demisto_args)
+        list_host_acquisitions(client, demisto_args)
     assert str(e.value) == expected_results
 
 
@@ -1117,15 +1117,15 @@ UPSERT_COMMAND_HOST_ACQS = [
 
 
 @pytest.mark.parametrize("demisto_args, call_count, results", UPSERT_COMMAND_HOST_ACQS)
-def test_get_host_acqs_success(mocker, demisto_args, call_count, results):
-    from FireEyeHXv2 import Client, get_host_acqs
+def test_list_host_acquisitions_success(mocker, demisto_args, call_count, results):
+    from FireEyeHXv2 import Client, list_host_acquisitions
 
     mocker.patch.object(Client, "get_token_request", return_value="test")
     client = Client(base_url="base_url", verify=False, proxy=True, auth=("userName", "password"))
     host_info_call = mocker.patch.object(client, "get_hosts_request", return_value={"data": {"entries": [{"_id": "test"}]}})
     mocker.patch.object(client, "host_acquisition_information_request", return_value={})
 
-    result = get_host_acqs(client, demisto_args)
+    result = list_host_acquisitions(client, demisto_args)
     assert host_info_call.call_count == call_count["host_info_call"]
     assert result.readable_output.startswith(results["readable"])
 

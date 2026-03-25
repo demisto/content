@@ -1836,7 +1836,7 @@ script:
       type: Unknown
       description: A json object with triage acquisition details.
     description: Starts a triage acquisition
-  - name: fireeye-hx-host-acquisitions-get
+  - name: fireeye-hx-host-acquisitions-list
     description: Gets all acquisitions for a host
     arguments:
     - name: hostName

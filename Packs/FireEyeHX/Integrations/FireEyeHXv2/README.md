@@ -2792,14 +2792,14 @@ Starts a new triage request for a host.
 
 >Triage Acquisition ID: 31032 on Instance: FireEyeHX v2_instance_1 created.
 
-### fireeye-hx-host-acquisitions-get
+### fireeye-hx-host-acquisitions-list
 
 ***
 Gets a list of all acquisitions for a host.
 
 #### Base Command
 
-`fireeye-hx-host-acquisitions-get`
+`fireeye-hx-host-acquisitions-list`
 
 #### Input
 
@@ -2819,7 +2819,7 @@ Gets a list of all acquisitions for a host.
 
 #### Command example
 
-```!fireeye-hx-host-acquisitions-get agentId=SomeAgentID```
+```!fireeye-hx-host-acquisitions-list agentId=SomeAgentID```
 
 #### Human Readable Output
 

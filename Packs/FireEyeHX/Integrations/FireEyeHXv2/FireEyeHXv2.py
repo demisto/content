@@ -1962,7 +1962,7 @@ def initiate_triage_acquisition_command(client: Client, args: Dict[str, Any]) ->
     )
 
 
-def get_host_acqs(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_host_acquisitions(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Demisto call to get acq info for a host
 
     Args:
@@ -2825,7 +2825,7 @@ def main() -> None:
         "fireeye-hx-triage-acquisition-package-get": get_triage_acquisition_package,
         "fireeye-hx-triage-acquisition-get": get_triage_acquisition_information,
         "fireeye-hx-triage-acquisition-start": initiate_triage_acquisition_command,
-        "fireeye-hx-host-acquisitions-get": get_host_acqs,
+        "fireeye-hx-host-acquisitions-list": list_host_acquisitions,
     }
 
     params = demisto.params()
