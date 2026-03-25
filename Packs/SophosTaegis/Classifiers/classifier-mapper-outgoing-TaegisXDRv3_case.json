@@ -1,0 +1,111 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "Maps outgoing XSOAR incident fields for Taegis XDR case update and mirroring.",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "TaegisXDR-Case-Outgoing-Mapper",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 15,
+	"mapping": {
+		"Taegis XDR - Case": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"assignee": {
+					"complex": {
+						"filters": [],
+						"root": "taegisxdrassignee",
+						"transformers": []
+					}
+				},
+				"closeNotes": {
+					"simple": "closenotes"
+				},
+				"close_notes": {
+					"simple": "close_notes"
+				},
+				"closenotes": {
+					"simple": "closeNotes"
+				},
+				"id": {
+					"simple": "dbotMirrorId"
+				},
+				"key_findings": {
+					"simple": "taegisxdrkeyfindings"
+				},
+				"priority": {
+					"simple": "severity"
+				},
+				"serviceDeskId": {
+					"simple": "id"
+				},
+				"serviceDeskType": {
+					"simple": "Cortex XSOAR"
+				},
+				"status": {
+					"complex": {
+						"filters": [],
+						"root": "taegisxdrcasestatus",
+						"transformers": []
+					}
+				},
+				"taegisxdrassigneeoptionsdata": {
+					"complex": {
+						"filters": [],
+						"root": "taegisxdrassigneeoptionsdata",
+						"transformers": []
+					}
+				},
+			"taegisxdrcasearchiveonclose": {
+				"complex": {
+					"filters": [],
+					"root": "taegisxdrcasearchiveonclose",
+					"transformers": []
+				}
+			},
+			"taegisxdrcaseclosereason": {
+				"complex": {
+					"filters": [],
+					"root": "taegisxdrcaseclosereason",
+					"transformers": []
+				}
+			},
+				"taegisxdrdetectionstatus": {
+					"complex": {
+						"filters": [],
+						"root": "taegisxdrdetectionstatus",
+						"transformers": []
+					}
+				},
+				"tenant_id": {
+					"complex": {
+						"filters": [],
+						"root": "tenantid",
+						"transformers": []
+					}
+				}
+			}
+		}
+	},
+	"name": "Taegis XDR Case - Outgoing Mapper",
+	"nameRaw": "Taegis XDR Case - Outgoing Mapper",
+	"packID": "",
+	"packName": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-outgoing",
+	"unclassifiedCases": null,
+	"version": -1
+}

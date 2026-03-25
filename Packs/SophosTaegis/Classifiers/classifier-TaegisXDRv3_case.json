@@ -1,0 +1,41 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "Classifies Taegis XDR cases.",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "TaegisXDR-Case-Classifier",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {
+		"case": "Taegis XDR - Case",
+		"detection": "Taegis XDR - Case"
+	},
+	"locked": false,
+	"logicalVersion": 7,
+	"mapping": null,
+	"name": "Taegis XDR Case Classifier",
+	"nameRaw": "Taegis XDR Case Classifier",
+	"packID": "",
+	"packName": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": {
+			"filters": [],
+			"root": "taegisxdr_type",
+			"transformers": []
+		}
+	},
+	"type": "classification",
+	"unclassifiedCases": null,
+	"version": -1
+}

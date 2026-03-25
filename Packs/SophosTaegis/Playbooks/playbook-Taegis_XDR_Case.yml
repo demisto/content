@@ -1,0 +1,210 @@
+id: b0ff6c79-5287-4109-80df-d429363c08d8
+version: 3
+contentitemexportablefields:
+  contentitemfields:
+    packID: ""
+    packName: Default
+    itemVersion: 2.0.16
+    fromServerVersion: 5.0.0
+    toServerVersion: 7.9.9
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
+name: Taegis XDR Case
+description: This playbook executes when no other playbook is associated with an incident.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 08854949-08a5-4873-8f01-b3935c78675f
+    type: start
+    task:
+      id: 08854949-08a5-4873-8f01-b3935c78675f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: b80a86c0-5c2d-4128-8154-0f31028a19db
+    type: regular
+    task:
+      id: b80a86c0-5c2d-4128-8154-0f31028a19db
+      version: -1
+      name: Assign analyst to incident
+      description: Assigns a random analyst to this incident.
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      assignBy:
+        simple: random
+      onCall:
+        complex:
+          root: inputs.OnCall
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 4a2366db-81b0-41b5-8c8f-41b09e83a215
+    type: condition
+    task:
+      id: 4a2366db-81b0-41b5-8c8f-41b09e83a215
+      version: -1
+      name: Manually review the incident.
+      description: Manually review and investigate this incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "12"
+      "Yes":
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 9ed78579-2deb-4871-8c5c-f6118f6e1ac2
+    type: regular
+    task:
+      id: 9ed78579-2deb-4871-8c5c-f6118f6e1ac2
+      version: -1
+      name: Close Investigation
+      description: Closes the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      closeNotes:
+        simple: Default Enrichment Playbook
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: de6f9320-320d-4bd6-820f-b612a7a0c2c7
+    type: title
+    task:
+      id: de6f9320-320d-4bd6-820f-b612a7a0c2c7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "7_12_No": 0.65,
+      "7_8_Yes": 0.71
+    },
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Enrich
+  value:
+    simple: "True"
+  required: false
+  description: Determines whether to enrich all indicators in the incident.
+  playbookInputQuery: null
+- key: OnCall
+  value:
+    simple: "false"
+  required: false
+  description: Set to true to assign only user that is currently on shift. Requires
+    Cortex XSOAR v5.5 or later.
+  playbookInputQuery: null
+outputs: []
+sourceplaybookid: playbook0
