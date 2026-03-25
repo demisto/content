@@ -5902,7 +5902,8 @@
             ],
             "instance_names": [
                 "virus_total_v3"
-            ]
+            ],
+            "marketplaces": "xsoar_saas"
         },
         {
             "playbookID": "DomainEnrichment-Test",
