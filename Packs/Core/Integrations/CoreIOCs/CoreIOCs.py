@@ -77,11 +77,11 @@ class Client(CoreClient):
 
 
 def get_headers(params: dict) -> dict:
-    api_key = str(params.get("apikey"))
-    api_key_id = str(params.get("apikey_id"))
+    api_key = str(params.get("apikey", ""))
+    api_key_id = str(params.get("apikey_id", ""))
     headers = {
         "Content-Type": "application/json",
-        "x-xdr-auth-id": api_key_id,
+        "X-XDR-AUTH-ID": api_key_id,
         "Authorization": api_key,
     }
     add_sensitive_log_strs(api_key)
