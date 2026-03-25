@@ -1755,7 +1755,7 @@ def get_computer_section_command(client: Client, args: dict[str, Any]) -> Comman
     """
     Returns a specific section of a computer inventory record.
 
-    Implementes the `jamf-get-computer-subset` command, which is a generalization of the older
+    Implements the `jamf-get-computer-subset` command, which is a generalization of the older
     `jamf-get-computer-*-subset` commands.
 
     Args:
