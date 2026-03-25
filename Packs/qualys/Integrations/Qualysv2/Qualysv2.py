@@ -2939,6 +2939,37 @@ def get_detections_from_hosts(hosts):
     return fetched_assets, False
 
 
+def close_snapshot_if_empty(
+    data: list,
+    items_count: int,
+    snapshot_id: str,
+    product: str,
+) -> tuple[list, int]:
+    """Ensures a snapshot can be closed even when the last page returned 0 items.
+
+    `send_data_to_xsiam` skips the API call when `data` is an empty list, which prevents the snapshot
+    from being finalized with the correct `items_count`. When this happens, we send an empty JSON (`[{}]`)
+    to trigger the API call and increment `items_count` by 1 to account for the extra row in the dataset.
+
+    Args:
+        data (list): The data to send. If empty and snapshot needs closing, will be replaced with [{}].
+        items_count (int): The total items count to report for the snapshot.
+        snapshot_id (str): The snapshot ID.
+        product (str): The product name (for logging).
+
+    Returns:
+        tuple[list, int]: The (possibly modified) data and items_count.
+    """
+    if not data and items_count > 0:
+        items_count += 1  # Account for the empty JSON row added to the dataset
+        demisto.debug(
+            f"Last page returned 0 {product}. "
+            f"Sending snapshot closing signal with items_count={items_count} for snapshot {snapshot_id}."
+        )
+        data = [{}]
+    return data, items_count
+
+
 def send_assets_and_vulnerabilities_to_xsiam(
     assets: list,
     vulnerabilities: list,
@@ -2969,14 +3000,11 @@ def send_assets_and_vulnerabilities_to_xsiam(
         f"Reported items count: {total_assets_to_report}. Is closing snapshot: {is_closing_snapshot}."
     )
 
-    # If the last page returned 0 assets but we need to close the snapshot, send an empty JSON to trigger the API call.
-    # send_data_to_xsiam skips an empty list, which would prevent the snapshot from being finalized.
-    assets_data = assets if assets else ([{}] if is_closing_snapshot and cumulative_assets_count > 0 else assets)
-    if not assets and is_closing_snapshot and cumulative_assets_count > 0:
-        demisto.debug(f"Last page returned 0 assets. Sending snapshot closing signal with items_count={total_assets_to_report}.")
+    if is_closing_snapshot:
+        assets, total_assets_to_report = close_snapshot_if_empty(assets, total_assets_to_report, snapshot_id, "assets")
 
     send_data_to_xsiam(
-        data=assets_data,
+        data=assets,
         vendor=VENDOR,
         product="assets",
         data_type="assets",
@@ -2991,17 +3019,13 @@ def send_assets_and_vulnerabilities_to_xsiam(
         f"Reported items count: {total_vulns_to_report}."
     )
 
-    # Same behavior for vulnerabilities: if closing the snapshot with 0 vulnerabilities, send an empty JSON.
-    vulns_data = (
-        vulnerabilities if vulnerabilities else ([{}] if is_closing_snapshot and cumulative_vulns_count > 0 else vulnerabilities)
-    )
-    if not vulnerabilities and is_closing_snapshot and cumulative_vulns_count > 0:
-        demisto.debug(
-            f"Last page returned 0 vulnerabilities. Sending snapshot closing signal with items_count={total_vulns_to_report}."
+    if is_closing_snapshot:
+        vulnerabilities, total_vulns_to_report = close_snapshot_if_empty(
+            vulnerabilities, total_vulns_to_report, snapshot_id, "vulnerabilities"
         )
 
     send_data_to_xsiam(
-        data=vulns_data,
+        data=vulnerabilities,
         vendor=VENDOR,
         product="vulnerabilities",
         data_type="assets",
@@ -3441,31 +3465,20 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
                 f"Reported items count: {total_assets_to_report}. Is last page: {is_last_page}."
             )
 
-            if not assets and is_last_page and cumulative_assets_count > 0:
-                # Last page returned 0 assets but we need to close the snapshot with the correct items_count.
-                # send_data_to_xsiam skips an empty list, so we send an empty JSON to trigger the API call.
-                demisto.debug(
-                    f"Last page returned 0 assets. Sending snapshot closing signal with items_count={total_assets_to_report}."
+            if is_last_page:
+                assets, total_assets_to_report = close_snapshot_if_empty(
+                    assets, total_assets_to_report, snapshot_id, "assets"
                 )
-                send_data_to_xsiam(
-                    data=[{}],
-                    vendor=VENDOR,
-                    product="assets",
-                    data_type="assets",
-                    snapshot_id=snapshot_id,
-                    items_count=str(total_assets_to_report),
-                    should_update_health_module=False,
-                )
-            else:
-                send_data_to_xsiam(
-                    data=assets,
-                    vendor=VENDOR,
-                    product="assets",
-                    data_type="assets",
-                    snapshot_id=snapshot_id,
-                    items_count=str(total_assets_to_report),
-                    should_update_health_module=False,
-                )
+
+            send_data_to_xsiam(
+                data=assets,
+                vendor=VENDOR,
+                product="assets",
+                data_type="assets",
+                snapshot_id=snapshot_id,
+                items_count=str(total_assets_to_report),
+                should_update_health_module=False,
+            )
 
             demisto.updateModuleHealth({"assetsPulled": cumulative_assets_count})
 
