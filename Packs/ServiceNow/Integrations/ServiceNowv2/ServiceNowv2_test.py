@@ -4192,9 +4192,6 @@ class TestCredentialFlowEndToEnd:
         assert "Basic" in auth
 
 
-# ---- Tests for XSUP-65101 fixes ----
-
-
 class TestCreateItemOrderFixes:
     """Tests for the two bugs fixed in XSUP-65101:
     1. servicecatalog order_now endpoint must use v1 even when instance is configured with v2.
