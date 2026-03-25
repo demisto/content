@@ -91,7 +91,7 @@ def triage_endpoint_command(client: CyberTriageClient, args: dict[str, Any]) -> 
 
     response.raise_for_status()
 
-    if is_ip_valid(endpoint):
+    if is_ip_valid(host_name):
         endpoint_context = {"IPAddress": host_name}
     else:
         endpoint_context = {"Hostname": host_name}
