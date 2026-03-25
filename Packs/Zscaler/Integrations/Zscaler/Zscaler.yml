@@ -1893,6 +1893,13 @@ script:
       description: If set to true, the destination IP address group is non-editable. This field is applicable only to predefined IP address groups, which cannot be modified.
       defaultValue: "False"
       type: textArea
+    - name: override
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: When set to true (default), the existing IP destination group configuration is replaced with the new values. When set to false, the existing configuration is preserved and new entries are appended.
+      defaultValue: "True"
     outputs:
     - contextPath: Zscaler.IPDestinationGroup.ID
       description: Unique identifier for the destination IP group.
