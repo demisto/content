@@ -148,10 +148,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- defaultvalue: 'false'
-  defaultvalue:platform: 'true'
-  hidden:
-  - xsoar
+- defaultvalue: 'true'
   display: Enabled AI assistant
   name: enabled_ai_assistant
   type: 8
