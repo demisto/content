@@ -3488,30 +3488,30 @@ def message_handler(integration_context: dict, request_body: dict, channel_data:
 
     from_property: dict = request_body.get("from", {})
     team_member_id: str = from_property.get("id", "")
-    demisto.debug(f"Processing message for user: {from_property}")
 
     if integration_context.get("teams"):
         teams: list = json.loads(integration_context["teams"])
         for team in teams:
             if team.get("team_id", "") == team_id:
                 mirrored_channels: list = team.get("mirrored_channels", [])
-                demisto.debug(f"Found mirrored channels: {mirrored_channels}")
                 for mirrored_channel in mirrored_channels:
-                    demisto.debug(f"Checking if message should be mirrored for channel: {mirrored_channel}")
-                    demisto.info(f"Mirroring message from channel {channel_id} to investigation {mirrored_channel.get('investigation_id', '')}")
-                    investigation_id: str = mirrored_channel.get("investigation_id", "")
-                    username: str = from_property.get("name", "")
-                    user_email: str = get_team_member(integration_context, team_member_id).get("user_email", "")
-                    demisto.debug(f"Adding Entry {message} to investigation {investigation_id}")
-                    demisto.addEntry(
-                        id=investigation_id,
-                        # when pasting the message into the chat, it contains leading and trailing whitespaces
-                        entry=message.strip(),
-                        username="Hezi Yaffe",
-                        email="hyaffe@paloaltonetworks.com",
-                        footer=f"\n**{ENTRY_FOOTER}**",
-                    )
-                return
+                    if mirrored_channel.get("channel_id") == channel_id:
+                        if mirrored_channel.get("mirror_direction", "") != "FromDemisto" and "none" not in mirrored_channel.get(
+                            "mirror_type", ""
+                        ):
+                            investigation_id: str = mirrored_channel.get("investigation_id", "")
+                            username: str = from_property.get("name", "")
+                            user_email: str = get_team_member(integration_context, team_member_id).get("user_email", "")
+                            demisto.debug(f"Adding Entry {message} to investigation {investigation_id}")
+                            demisto.addEntry(
+                                id=investigation_id,
+                                # when pasting the message into the chat, it contains leading and trailing whitespaces
+                                entry=message.strip(),
+                                username=username,
+                                email=user_email,
+                                footer=f"\n**{ENTRY_FOOTER}**",
+                            )
+                        return
 
 
 @APP.route("/health", methods=["GET"])
