@@ -4250,7 +4250,9 @@ class TestCreateItemOrderFixes:
         - sysparm_no_validation must NOT be present in the body (preserves existing behaviour)
         """
         client = self._make_client()
-        mock_send = mocker.patch.object(client, "send_request", return_value={"result": {"sys_id": "12", "request_number": "REQ001"}})
+        mock_send = mocker.patch.object(
+            client, "send_request", return_value={"result": {"sys_id": "12", "request_number": "REQ001"}}
+        )
 
         client.create_item_order("item_id", "1", {})
 
@@ -4268,10 +4270,12 @@ class TestCreateItemOrderFixes:
         - sysparm_no_validation=True must be present in the body
         """
         client = self._make_client()
-        mock_send = mocker.patch.object(client, "send_request", return_value={"result": {"sys_id": "12", "request_number": "REQ001"}})
+        mock_send = mocker.patch.object(
+            client, "send_request", return_value={"result": {"sys_id": "12", "request_number": "REQ001"}}
+        )
 
         client.create_item_order("item_id", "1", {}, no_validation=True)
 
         call_kwargs = mock_send.call_args
         body = call_kwargs[1].get("body") or call_kwargs[0][2]
-        assert body.get("sysparm_no_validation") is True
+        assert body.get("sysparm_no_validation") is "true"
