@@ -16,16 +16,16 @@ configuration:
 - display: AppID as configured in AIM
   name: app_id
   type: 0
-  required: false
+  required: true
   section: Connect
 - display: Folder to search in safe
   name: folder
-  required: true
+  required: false
   type: 0
   section: Collect
 - display: Safe to search in
   name: safe
-  required: true
+  required: false
   type: 0
   section: Collect
 - display: A comma-separated list of credential names in the safe.
