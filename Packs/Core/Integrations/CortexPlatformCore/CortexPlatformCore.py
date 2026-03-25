@@ -844,7 +844,7 @@ class Client(CoreClient):
         Returns:
             dict: The API response containing the decrypted body and subject.
         """
-        json_data = {"internet_message_id": internet_message_id, "enforce_severity_check": True}
+        json_data = {"internet_message_id": internet_message_id}
         if issue_severity:
             json_data["issue_severity"] = issue_severity
         return self._http_request(
