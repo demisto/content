@@ -65,8 +65,6 @@ configuration:
   hidden:
   - marketplacev2
   - platform
-  supportedModules:
-  - xsoar
 - display: Max incidents per fetch
   name: incidents_per_fetch
   type: 0
