@@ -3682,7 +3682,7 @@ def test_get_remote_data_with_new_attachment(mock_is_new_incident: MagicMock, mo
     ticket_updated_on = datetime.now()
 
     args = {"id": ticket_id, "lastUpdate": str(last_update_ts)}
-
+ 
     ticket_data = {
         "result": [
             {
