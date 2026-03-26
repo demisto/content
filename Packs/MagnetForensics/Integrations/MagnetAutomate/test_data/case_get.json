@@ -1,0 +1,34 @@
+{
+  "id": 10,
+  "caseNumber": "CASE-001",
+  "status": "Processing",
+  "startDateTime": "2021-01-29T12:05:30.0000000",
+  "endDateTime": null,
+  "duration": 3600,
+  "customFields": [
+    {
+      "name": "CheckBox",
+      "value": "true",
+      "description": "A checkbox field",
+      "variableName": "CASE_CHECK_BOX",
+      "type": "CustomFieldCheckbox"
+    }
+  ],
+  "caseRunDetails": [
+    {
+      "runId": 1,
+      "evidenceSource": null,
+      "createdBy": {
+        "id": "1",
+        "fullName": "John Doe",
+        "roles": [
+          {
+            "name": "Admin"
+          }
+        ],
+        "enabled": true,
+        "isLocal": true
+      }
+    }
+  ]
+}
