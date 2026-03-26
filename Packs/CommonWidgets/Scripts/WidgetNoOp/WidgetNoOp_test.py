@@ -21,8 +21,4 @@ def test_main(mocker):
 
     # Then
     expected_groups = [{"name": "", "data": [], "color": "", "groups": []}]
-    demisto.results.assert_called_once_with({
-        "Type": 1,
-        "ContentsFormat": "json",
-        "Contents": json.dumps(expected_groups)
-    })
+    demisto.results.assert_called_once_with({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(expected_groups)})
