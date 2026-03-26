@@ -3,12 +3,14 @@ import ast
 from unittest.mock import MagicMock
 from MondayEventCollector import (
     get_audit_logs,
+    get_activity_logs,
     generate_log_hash,
     subtract_epsilon_from_timestamp,
     fetch_audit_logs,
     fetch_activity_logs,
     initiate_activity_log_last_run,
     test_connection as monday_test_connection,
+    ActivityLogsClient,
 )
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
@@ -872,3 +874,111 @@ class TestInitiateActivityLogLastRun:
         assert "1808515822" in result
         assert result["1808515822"] == {}
         assert result["5092890815"] == {"last_timestamp": "2024-06-03T14:25:47.000Z"}
+
+
+class TestEmptyBoardsResponse:
+    """Tests for handling empty boards response from Monday.com API (XSUP-65887)."""
+
+    def test_get_activity_logs_returns_empty_when_boards_list_is_empty(self, mocker):
+        """
+        Given:
+            - Monday.com API returns an empty boards list (e.g., invalid board ID or no permissions)
+        When:
+            get_activity_logs is called
+        Then:
+            It should return empty logs and unchanged last_run instead of raising IndexError
+        """
+        mocker.patch.object(demisto, "debug")
+        mocker.patch("MondayEventCollector.get_access_token", return_value="mock_access_token")
+
+        mock_client = MagicMock(spec=ActivityLogsClient)
+        mock_client.get_activity_logs_request.return_value = {"data": {"boards": []}}
+
+        last_run: dict = {}
+        now_ms = int(time.time() * 1000)
+
+        result_logs, result_last_run = get_activity_logs(
+            last_run=last_run, now_ms=now_ms, limit=10, board_id="invalid_board_id", client=mock_client
+        )
+
+        assert result_logs == []
+        assert result_last_run == last_run
+
+    def test_get_activity_logs_returns_empty_when_boards_key_missing(self, mocker):
+        """
+        Given:
+            - Monday.com API returns a response without the boards key
+        When:
+            get_activity_logs is called
+        Then:
+            It should return empty logs and unchanged last_run instead of raising IndexError
+        """
+        mocker.patch.object(demisto, "debug")
+        mocker.patch("MondayEventCollector.get_access_token", return_value="mock_access_token")
+
+        mock_client = MagicMock(spec=ActivityLogsClient)
+        mock_client.get_activity_logs_request.return_value = {"data": {}}
+
+        last_run: dict = {}
+        now_ms = int(time.time() * 1000)
+
+        result_logs, result_last_run = get_activity_logs(
+            last_run=last_run, now_ms=now_ms, limit=10, board_id="999", client=mock_client
+        )
+
+        assert result_logs == []
+        assert result_last_run == last_run
+
+    def test_check_empty_page_returns_true_when_boards_list_is_empty(self, mocker):
+        """
+        Given:
+            - Monday.com API returns an empty boards list during pagination check
+        When:
+            check_empty_page is called on an ActivityLogsClient
+        Then:
+            It should return True (treat as empty page) instead of raising IndexError
+        """
+        mocker.patch.object(demisto, "debug")
+
+        mock_client = MagicMock(spec=ActivityLogsClient)
+        mock_client.get_activity_logs_request.return_value = {"data": {"boards": []}}
+
+        # Call the actual method by using the real class method with the mock
+        client = ActivityLogsClient.__new__(ActivityLogsClient)
+        client.get_activity_logs_request = mock_client.get_activity_logs_request
+
+        result = client.check_empty_page("query", "token")
+        assert result is True
+
+    def test_test_connection_handles_empty_boards_gracefully(self, mocker):
+        """
+        Given:
+            - Activity logs configured with valid credentials but invalid board ID
+            - Monday.com API returns empty boards list
+        When:
+            test_connection (monday-auth-test) is called
+        Then:
+            It should not raise 'list index out of range' error
+        """
+        mock_params = {
+            "credentials": {"identifier": "client_id", "password": "client_secret"},
+            "auth_code": {"password": "auth_code"},
+            "activity_logs_url": "https://api.monday.com",
+            "board_ids": "invalid_board",
+            "audit_token": {"password": ""},
+            "audit_logs_url": "",
+            "proxy": False,
+            "insecure": False,
+        }
+        mocker.patch.object(demisto, "params", return_value=mock_params)
+        mocker.patch.object(demisto, "debug")
+        mocker.patch("MondayEventCollector.get_integration_context", return_value={"access_token": "mock_token"})
+        mocker.patch("MondayEventCollector.get_access_token", return_value="mock_token")
+
+        mock_http_request = mocker.patch("MondayEventCollector.BaseClient._http_request")
+        mock_http_request.return_value = {"data": {"boards": []}}
+
+        result = monday_test_connection()
+        # Should complete without IndexError - activity logs test returns empty (success path with 0 logs)
+        assert result is not None
+        assert "activity logs" in result.readable_output.lower()

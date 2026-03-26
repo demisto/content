@@ -131,7 +131,11 @@ class ActivityLogsClient(BaseClient):
         """
         try:
             response = self.get_activity_logs_request(query, access_token)
-            logs = response["data"]["boards"][0].get("activity_logs", [])
+            boards = response.get("data", {}).get("boards", [])
+            if not boards:
+                demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}No boards returned in check_empty_page.")
+                return True
+            logs = boards[0].get("activity_logs", [])
             return not logs
         except Exception as e:
             demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}Error checking empty page: {str(e)}")
@@ -634,7 +638,14 @@ def get_activity_logs(last_run: dict, now_ms: int, limit: int, board_id: str, cl
         raise DemistoException(f"Exception during get activity logs. Exception is {e!s}")
 
     # Extract board logs from response
-    board_logs = response.get("data", {}).get("boards", [{}])[0].get("activity_logs", [])
+    boards = response.get("data", {}).get("boards", [])
+    if not boards:
+        demisto.debug(
+            f"{ACTIVITY_LOG_DEBUG_PREFIX}No boards returned for board_id: {board_id}. "
+            "Verify the board ID exists and the OAuth token has permissions to access it."
+        )
+        return [], last_run
+    board_logs = boards[0].get("activity_logs", [])
     fetched_logs = extract_activity_log_data(board_logs)
     demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}Successfully fetched {len(fetched_logs)} activity logs from board: {board_id}")
 
