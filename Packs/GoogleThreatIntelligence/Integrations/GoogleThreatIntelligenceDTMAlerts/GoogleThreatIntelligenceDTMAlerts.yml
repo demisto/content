@@ -28,7 +28,7 @@ configuration:
   defaultvalue: '25'
   type: 0
   required: false
-  additionalinfo: Maximum number of Alerts to fetch each time. Maximum value is 25.
+  additionalinfo: Maximum number of Alerts to fetch each time. Maximum value is 100.
   section: Collect
 - display: First Fetch Time
   name: first_fetch
