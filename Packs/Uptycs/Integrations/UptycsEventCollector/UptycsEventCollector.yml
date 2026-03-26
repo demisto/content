@@ -19,7 +19,7 @@ configuration:
 - name: api_key
   display: API Key
   required: true
-  type: 0
+  type: 14
   section: Connect
   additionalinfo: The API Key from the Uptycs API Client Management page. Used for JWT authentication.
 - name: credentials
@@ -106,7 +106,7 @@ script:
       description: Tags associated with the alert (e.g., MITRE ATT&CK techniques).
       type: Unknown
     - contextPath: Uptycs.Alert.alertTime
-      description: Timestamp when the alert was triggered.
+      description: 'Timestamp when the alert was triggered. Format: YYYY-MM-DDTHH:MM:SS.sssZ.'
       type: Date
     - contextPath: Uptycs.Alert.alertTimeSuppresionDuration
       description: Duration of alert time suppression.
@@ -148,10 +148,10 @@ script:
       description: Unique identifier of the asset.
       type: String
     - contextPath: Uptycs.Alert.assetLastActivityAt
-      description: Timestamp of the asset's last activity.
+      description: 'Timestamp of the asset''s last activity. Format: YYYY-MM-DDTHH:MM:SS.sssZ.'
       type: Date
     - contextPath: Uptycs.Alert.assetLastEnrolledAt
-      description: Timestamp when the asset was last enrolled.
+      description: 'Timestamp when the asset was last enrolled. Format: YYYY-MM-DDTHH:MM:SS.sssZ.'
       type: Date
     - contextPath: Uptycs.Alert.assetLatitude
       description: Latitude of the asset's location.
@@ -220,7 +220,7 @@ script:
       description: Alert code identifier.
       type: String
     - contextPath: Uptycs.Alert.createdAt
-      description: Timestamp when the alert was created.
+      description: 'Timestamp when the alert was created. Format: YYYY-MM-DDTHH:MM:SS.sssZ.'
       type: Date
     - contextPath: Uptycs.Alert.custom
       description: Whether this is a custom alert rule.
@@ -271,10 +271,10 @@ script:
       description: Key field of the alert.
       type: String
     - contextPath: Uptycs.Alert.lastActiveAt
-      description: Timestamp when the alert was last active.
+      description: 'Timestamp when the alert was last active. Format: YYYY-MM-DDTHH:MM:SS.sssZ.'
       type: Date
     - contextPath: Uptycs.Alert.lastOccurredAt
-      description: Timestamp when the alert last occurred.
+      description: 'Timestamp when the alert last occurred. Format: YYYY-MM-DDTHH:MM:SS.sssZ.'
       type: Date
     - contextPath: Uptycs.Alert.metadata
       description: Alert metadata containing detailed event information.
@@ -286,7 +286,7 @@ script:
       description: Note attached to the alert.
       type: String
     - contextPath: Uptycs.Alert.noteCreatedAt
-      description: Timestamp when the note was created.
+      description: 'Timestamp when the note was created. Format: YYYY-MM-DDTHH:MM:SS.sssZ.'
       type: Date
     - contextPath: Uptycs.Alert.noteCreatedBy
       description: User who created the note.
@@ -301,7 +301,7 @@ script:
       description: Number of days to resolve the alert.
       type: Number
     - contextPath: Uptycs.Alert.resolvedAt
-      description: Timestamp when the alert was resolved.
+      description: 'Timestamp when the alert was resolved. Format: YYYY-MM-DDTHH:MM:SS.sssZ.'
       type: Date
     - contextPath: Uptycs.Alert.rowCount
       description: Number of rows associated with the alert.
@@ -316,7 +316,7 @@ script:
       description: Current status of the alert (e.g., open, closed).
       type: String
     - contextPath: Uptycs.Alert.updatedAt
-      description: Timestamp when the alert was last updated.
+      description: 'Timestamp when the alert was last updated. Format: YYYY-MM-DDTHH:MM:SS.sssZ.'
       type: Date
     - contextPath: Uptycs.Alert.updatedBy
       description: User who last updated the alert.

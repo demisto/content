@@ -162,17 +162,3 @@ Gets alerts from Uptycs. This command is intended for developing and debugging a
 | Uptycs.Alert.updatedBy | String | User who last updated the alert. |
 | Uptycs.Alert.value | String | Value associated with the alert key. |
 | Uptycs.Alert.source | String | Source of the alert (e.g., host). |
-
-#### Command Example
-
-```
-!uptycs-get-events start_time="3 days ago" limit=50
-```
-
-```
-!uptycs-get-events start_time="2025-09-15T17:10:00Z" end_time="2025-09-15T17:11:00Z" limit=100
-```
-
-```
-!uptycs-get-events start_time="1 hour ago" limit=10 should_push_events=false
-```

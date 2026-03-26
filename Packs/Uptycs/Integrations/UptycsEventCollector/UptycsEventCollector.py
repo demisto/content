@@ -237,15 +237,15 @@ def enrich_events_for_xsiam(events: list[dict[str, Any]]) -> None:
         updated_at = event.get("updatedAt", "")
 
         if created_at:
-            event["_TIME"] = created_at
+            event["_time"] = created_at
         elif updated_at:
-            event["_TIME"] = updated_at
+            event["_time"] = updated_at
             demisto.debug(f"[Event Enrichment] Event {event_id}: 'createdAt' missing, using 'updatedAt' for _TIME")
         else:
             demisto.debug(f"[Event Enrichment] WARNING: Event {event_id} missing both 'createdAt' and 'updatedAt'")
 
         if created_at and updated_at:
-            event["_ENTRY_STATUS"] = determine_entry_status(created_at, updated_at)
+            event["_entry_status"] = determine_entry_status(created_at, updated_at)
         else:
             demisto.debug(
                 f"[Event Enrichment] WARNING: Event {event_id} missing 'createdAt' or 'updatedAt',"
