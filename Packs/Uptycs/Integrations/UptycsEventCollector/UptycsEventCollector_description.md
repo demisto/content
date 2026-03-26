@@ -1,3 +1,7 @@
+## Uptycs Event Collector
+
+Use this integration to collect events from the Uptycs cloud-native security analytics platform.
+
 To create an API Key:
 
 1. On the **API Client Management** list page, click **Create**.
