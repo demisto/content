@@ -605,7 +605,7 @@ script:
     - contextPath: CBP.FileRule.PolicyIDs
       description: Policies of which this rule is a part.
       type: String
-    - contextPath: CBP.Only
+    - contextPath: CBP.FileRule.ReportOnly
       description: Whether this rule is "reporting only, or also "enforcing".
       type: String
   - arguments:
@@ -637,7 +637,7 @@ script:
     - contextPath: CBP.FileRule.PolicyIDs
       description: Policies of which this rule is a part.
       type: String
-    - contextPath: CBP.Only
+    - contextPath: CBP.FileRule.ReportOnly
       description: Whether this rule is "reporting only, or also "enforcing".
       type: String
   - arguments:
@@ -1398,7 +1398,7 @@ script:
     - contextPath: CBP.FileRule.PolicyIDs
       description: The policies this rule belongs to.
       type: String
-    - contextPath: CBP.Only
+    - contextPath: CBP.FileRule.ReportOnly
       description: Whether this rule "reporting only" or is also "enforcing".
       type: String
   - arguments:
