@@ -13,7 +13,7 @@ VENDOR = "FireCompass"
 PRODUCT = "FireCompass"
 DEFAULT_MAX_EVENTS = 1000
 MAX_PAGE_SIZE = 100  # API maximum per page
-API_DATE_FORMAT = "%Y-%m-%d"
+API_DATE_FORMAT = "%Y-%m-%d"  # Date format supported by the FireCompass API (day precision, no time)
 
 
 """ CLIENT CLASS """
@@ -67,7 +67,12 @@ class Client(ContentClient):
             to_date: End date filter in YYYY-MM-DD format.
 
         Returns:
-            dict: The API response containing risk data.
+            dict: The API response containing risk data with keys:
+                - results: List of risk events.
+                - count: Total number of events matching the query.
+                - total_pages: Total number of pages available.
+                - page: Current page number.
+                - page_size: Page size used.
 
         Raises:
             DemistoException: If the API request fails.
@@ -158,13 +163,16 @@ def _add_fields_to_events(events: list[dict[str, Any]]) -> None:
 
 def _deduplicate_events(
     events: list[dict[str, Any]],
-    last_run_ids: list[str],
+    known_ids: list[str],
 ) -> list[dict[str, Any]]:
-    """Remove duplicate events based on event IDs from the previous fetch cycle.
+    """Remove duplicate events based on IDs already fetched.
+
+    Used only for boundary deduplication when re-fetching the last page
+    to detect new events on the same page.
 
     Args:
         events: List of events to deduplicate.
-        last_run_ids: List of event IDs from the last run to filter out.
+        known_ids: List of event IDs already fetched (to filter out).
 
     Returns:
         list: Deduplicated events preserving original order.
@@ -172,13 +180,13 @@ def _deduplicate_events(
     if not events:
         return []
 
-    if not last_run_ids:
+    if not known_ids:
         return events
 
-    seen_ids = set(last_run_ids)
+    seen_ids = set(known_ids)
     deduplicated: list[dict[str, Any]] = []
 
-    demisto.debug(f"Deduplicating {len(events)} events against {len(last_run_ids)} previous IDs")
+    demisto.debug(f"Deduplicating {len(events)} events against {len(known_ids)} known IDs")
 
     for event in events:
         event_id = event.get("id")
@@ -197,61 +205,79 @@ def _deduplicate_events(
     return deduplicated
 
 
+def _advance_day(date_str: str) -> str:
+    """Advance a YYYY-MM-DD date string by one day.
+
+    Args:
+        date_str: Date string in YYYY-MM-DD format.
+
+    Returns:
+        str: Next day in YYYY-MM-DD format.
+    """
+    dt = datetime.strptime(date_str, API_DATE_FORMAT)
+    return (dt + timedelta(days=1)).strftime(API_DATE_FORMAT)
+
+
 def _fetch_events_with_pagination(
     client: Client,
     from_date: str,
     to_date: str,
+    start_page: int,
     limit: int,
-) -> list[dict[str, Any]]:
-    """Fetch events with pagination support.
+    page_size: int = MAX_PAGE_SIZE,
+) -> tuple[list[dict[str, Any]], int, int, int]:
+    """Fetch events with pagination support, starting from a specific page.
 
-    Iterates through API pages collecting events until the limit is reached
-    or no more events are available.
+    Uses a fixed page_size for all pages in the session to keep total_pages
+    consistent across calls. Results are trimmed to the requested limit.
 
     Args:
         client: FireCompass client instance.
-        from_date: Start date in YYYY-MM-DD format.
+        from_date: Start date in YYYY-MM-DD format (should equal to_date for single-day queries).
         to_date: End date in YYYY-MM-DD format.
-        limit: Maximum number of events to fetch.
+        start_page: Page number to start fetching from (1-based).
+        limit: Maximum number of events to return.
+        page_size: Number of events per page (default: MAX_PAGE_SIZE).
+                   Must be consistent across all calls for the same date to keep
+                   total_pages stable.
 
     Returns:
-        list: All fetched events in API order, trimmed to the requested limit.
+        tuple: (events, last_page_fetched, total_pages, count)
+            - events: Fetched events trimmed to the requested limit.
+            - last_page_fetched: The last page number that was fetched.
+            - total_pages: Total pages reported by the API.
+            - count: Total event count reported by the API.
     """
     events: list[dict[str, Any]] = []
-    page = 1
+    page = start_page
+    last_page_fetched = start_page
+    total_pages = 0
+    count = 0
 
-    demisto.debug(f"Fetching risks with pagination: from_date={from_date}, to_date={to_date}, limit={limit}")
+    demisto.debug(
+        f"Fetching risks with pagination: from_date={from_date}, to_date={to_date}, "
+        f"start_page={start_page}, limit={limit}, page_size={page_size}"
+    )
 
     while len(events) < limit:
-        remaining = limit - len(events)
-        page_size = min(remaining, MAX_PAGE_SIZE)
+        demisto.debug(f"Fetching page {page}: total_so_far={len(events)}")
 
-        demisto.debug(f"Fetching page {page}: page_size={page_size}, total_so_far={len(events)}")
+        response = client.get_risks(
+            page=page,
+            page_size=page_size,
+            from_date=from_date,
+            to_date=to_date,
+        )
 
-        try:
-            response = client.get_risks(
-                page=page,
-                page_size=page_size,
-                from_date=from_date,
-                to_date=to_date,
-            )
-        except DemistoException as e:
-            # The API may return an error (e.g., 400/404) when requesting a page beyond available data
-            # instead of returning an empty result. Treat pagination errors gracefully.
-            error_str = str(e)
-            if any(code in error_str for code in ("400", "404", "Bad Request", "Not Found")):
-                demisto.debug(
-                    f"Received error on page {page}, likely no more data available: {error_str}. "
-                    f"Stopping pagination with {len(events)} events collected so far."
-                )
-                break
-            # Re-raise unexpected errors (auth failures, server errors, etc.)
-            raise
+        # Extract metadata from API response
+        total_pages = response.get("total_pages", 0)
+        count = response.get("count", 0)
+        demisto.debug(f"API metadata: total_pages={total_pages}, count={count}")
 
-        batch = response if isinstance(response, list) else response.get("results", response.get("data", []))
+        batch = response.get("results", [])
 
         if not batch:
-            demisto.debug("No more events available, stopping pagination")
+            demisto.debug("No events in response, stopping pagination")
             break
 
         if not isinstance(batch, list):
@@ -260,81 +286,66 @@ def _fetch_events_with_pagination(
 
         # Log the order of created_at timestamps to help verify API sort order
         # TODO: remove after testing with real API
-        if batch:
-            first_created = batch[0].get("created_at", "N/A")
-            last_created = batch[-1].get("created_at", "N/A")
-            demisto.debug(
-                f"Page {page} event order: first created_at={first_created}, last created_at={last_created} "
-                f"({'ascending' if first_created <= last_created else 'descending'})"
-            )
+        first_created = batch[0].get("created_at", "N/A")
+        last_created = batch[-1].get("created_at", "N/A")
+        demisto.debug(
+            f"Page {page} event order: first created_at={first_created}, last created_at={last_created} "
+            f"({'ascending' if first_created <= last_created else 'descending'})"
+        )
 
         events.extend(batch)
+        last_page_fetched = page
         demisto.debug(f"Fetched {len(batch)} events in page {page}, total now: {len(events)}")
 
-        # If we got fewer events than requested, there are no more pages
-        if len(batch) < page_size:
-            demisto.debug(f"Received {len(batch)} events (less than page_size {page_size}), no more pages")
+        # Use total_pages from API as source of truth for pagination
+        if page >= total_pages:
+            demisto.debug(f"Reached last page ({page}/{total_pages}), stopping pagination")
             break
 
         page += 1
 
-    demisto.debug(f"Total events fetched: {len(events)}")
-    return events
+    events = events[:limit]
+    demisto.debug(f"Pagination complete: returning {len(events)} events (limit={limit})")
+    return events, last_page_fetched, total_pages, count
 
 
-def _update_last_run(
-    events: list[dict[str, Any]],
-    last_run: dict[str, Any],
+def _build_next_run(
+    current_date: str,
+    last_page_fetched: int,
+    total_pages: int,
+    count: int,
+    last_batch: list[dict[str, Any]],
 ) -> dict[str, Any]:
-    """Calculate the next last_run state based on fetched events.
-
-    Tracks the latest created_at timestamp and the IDs of events at that timestamp
-    to enable proper deduplication across fetch cycles.
+    """Build the next_run state dictionary for persistence.
 
     Args:
-        events: List of fetched events.
-        last_run: Previous last_run state dictionary.
+        current_date: The date being fetched (YYYY-MM-DD).
+        last_page_fetched: The last page number that was successfully fetched.
+        total_pages: Total pages reported by the API.
+        count: Total event count reported by the API.
+        last_batch: The last batch of events fetched (for extracting IDs for boundary dedup).
 
     Returns:
-        dict: Updated last_run state with 'last_fetch_time' and 'last_fetch_ids'.
-
-    Logic:
-        - No new events: Keep old state.
-        - New events: Update to the latest created_at and track IDs at that timestamp.
+        dict: State dictionary with current_date, next_page, total_pages, count,
+              and last_page_fetched_ids.
     """
-    if not events:
-        demisto.debug("No new events, keeping previous last_run state")
-        return last_run
+    # Extract IDs from the last batch for boundary deduplication
+    last_page_ids = [str(e["id"]) for e in last_batch if e.get("id")]
 
-    # The last event has the latest created_at (assumes events are sorted ascending by created_at)
-    # TODO: verify sort order with real API and adjust if needed
-    latest_created_at = events[-1].get("created_at", "")
+    next_page = last_page_fetched + 1
 
-    # Collect IDs of all events with the latest created_at timestamp
-    latest_ids: list[str] = []
-    for event in reversed(events):
-        event_created_at = event.get("created_at", "")
-        if event_created_at == latest_created_at:
-            event_id = event.get("id")
-            if event_id:
-                latest_ids.append(event_id)
-        else:
-            break
+    demisto.debug(
+        f"Building next_run: current_date={current_date}, next_page={next_page}, "
+        f"total_pages={total_pages}, count={count}, last_page_ids_count={len(last_page_ids)}"
+    )
 
-    previous_time = last_run.get("last_fetch_time", "")
-    previous_ids = last_run.get("last_fetch_ids", [])
-
-    if latest_created_at == previous_time:
-        # Same timestamp - combine IDs to avoid duplicates
-        combined_ids = list(set(previous_ids + latest_ids))
-        demisto.debug(
-            f"Same timestamp {latest_created_at}, combined IDs: "
-            f"{len(previous_ids)} old + {len(latest_ids)} new = {len(combined_ids)} total"
-        )
-        return {"last_fetch_time": latest_created_at, "last_fetch_ids": combined_ids}
-
-    demisto.debug(f"Updated last_fetch_time from '{previous_time}' to '{latest_created_at}' with {len(latest_ids)} IDs")
-    return {"last_fetch_time": latest_created_at, "last_fetch_ids": latest_ids}
+    return {
+        "current_date": current_date,
+        "next_page": next_page,
+        "total_pages": total_pages,
+        "count": count,
+        "last_page_fetched_ids": last_page_ids,
+    }
 
 
 """ COMMAND FUNCTIONS """
@@ -391,11 +402,100 @@ def get_events_command(client: Client, args: dict[str, Any]) -> tuple[list[dict[
 
     demisto.debug(f"Getting events: limit={limit}, from_date={from_date}, to_date={to_date}")
 
-    events = _fetch_events_with_pagination(client, from_date, to_date, limit)
+    page_size = min(limit, MAX_PAGE_SIZE)
+    events, _, _, _ = _fetch_events_with_pagination(
+        client,
+        from_date,
+        to_date,
+        start_page=1,
+        limit=limit,
+        page_size=page_size,
+    )
 
     demisto.debug(f"Retrieved {len(events)} total events")
     hr = tableToMarkdown(name="FireCompass Risk Events", t=events, removeNull=True)
     return events, CommandResults(readable_output=hr)
+
+
+def _probe_for_new_events(
+    client: Client,
+    current_date: str,
+    stored_count: int,
+    stored_total_pages: int,
+    last_page_fetched_ids: list[str],
+    max_events: int,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Probe the API for new events on the current day.
+
+    Re-fetches the last known page to get fresh count/total_pages metadata.
+    If count is unchanged, returns the original state with no events.
+    If count increased, deduplicates the re-fetched page and fetches any new pages.
+
+    Args:
+        client: FireCompass client instance.
+        current_date: The day being fetched (YYYY-MM-DD).
+        stored_count: Event count from the last fetch cycle.
+        stored_total_pages: Total pages from the last fetch cycle.
+        last_page_fetched_ids: IDs from the last fetched page (for boundary dedup).
+        max_events: Maximum number of events to return.
+
+    Returns:
+        tuple: (next_run state dict, list of new events).
+    """
+    probe_page = max(stored_total_pages, 1)
+    page_size = min(max_events, MAX_PAGE_SIZE)
+
+    demisto.debug(
+        f"Probing page {probe_page} for changes " f"(stored_count={stored_count}, stored_total_pages={stored_total_pages})"
+    )
+
+    response = client.get_risks(
+        page=probe_page,
+        page_size=page_size,
+        from_date=current_date,
+        to_date=current_date,
+    )
+
+    new_count = response.get("count", 0)
+    new_total_pages = response.get("total_pages", 0)
+
+    if new_count == stored_count:
+        demisto.debug(f"No new events (count still {stored_count}), returning empty")
+        return {
+            "current_date": current_date,
+            "next_page": stored_total_pages + 1,
+            "total_pages": stored_total_pages,
+            "count": stored_count,
+            "last_page_fetched_ids": last_page_fetched_ids,
+        }, []
+
+    demisto.debug(
+        f"New events detected: count {stored_count} → {new_count}, " f"total_pages {stored_total_pages} → {new_total_pages}"
+    )
+
+    probe_results = response.get("results", [])
+    new_events = _deduplicate_events(probe_results, last_page_fetched_ids)
+
+    if new_total_pages > stored_total_pages and new_total_pages > probe_page:
+        # New pages appeared — fetch them after the deduped probe page
+        additional_events, last_page, total_pages, count = _fetch_events_with_pagination(
+            client,
+            current_date,
+            current_date,
+            start_page=probe_page + 1,
+            limit=max_events - len(new_events),
+            page_size=page_size,
+        )
+        new_events += additional_events
+        # Use the latest page's events for ID tracking
+        id_source = additional_events if additional_events else new_events
+        next_run = _build_next_run(current_date, last_page, total_pages, count, id_source)
+    else:
+        # Same or fewer total_pages — new events are on the last page only
+        next_run = _build_next_run(current_date, probe_page, new_total_pages, new_count, probe_results)
+
+    demisto.debug(f"Probe complete: {len(new_events)} new events")
+    return next_run, new_events
 
 
 def fetch_events_command(
@@ -403,60 +503,103 @@ def fetch_events_command(
     last_run: dict[str, Any],
     max_events: int,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-    """Fetch events from FireCompass API for ingestion.
+    """Fetch events from FireCompass API for ingestion using page-resumption.
 
-    Handles deduplication, pagination, and state management across fetch cycles.
+    Uses a single-day-at-a-time strategy with page tracking to avoid redundant
+    API calls and ensure complete deduplication.
+
+    Algorithm:
+        1. No last_run → first fetch: current_date = today, start at page 1.
+        2. next_page <= total_pages → resume pagination from next_page.
+        3. All pages consumed, current_date < today → advance to next day.
+        4. All pages consumed, current_date == today → probe for new events.
 
     Args:
         client: FireCompass client instance.
-        last_run: Dictionary containing the last fetch state:
-            - last_fetch_time: ISO timestamp of the latest fetched event's created_at.
-            - last_fetch_ids: List of event IDs at the last_fetch_time for dedup.
+        last_run: Dictionary containing the page-resumption state.
         max_events: Maximum number of events to fetch per cycle.
 
     Returns:
-        tuple: (next_run dictionary for state persistence, list of deduplicated events).
+        tuple: (next_run dictionary for state persistence, list of events to ingest).
     """
-    demisto.debug(f"Starting fetch_events_command: max_events={max_events}")
+    demisto.debug(f"Starting fetch_events_command: max_events={max_events}, last_run={last_run}")
 
-    last_fetch_time = last_run.get("last_fetch_time")
-    last_fetch_ids = last_run.get("last_fetch_ids", [])
+    current_date = last_run.get("current_date")
+    next_page = last_run.get("next_page", 1)
+    stored_total_pages = last_run.get("total_pages", 0)
+    stored_count = last_run.get("count", 0)
+    last_page_fetched_ids = last_run.get("last_page_fetched_ids", [])
+    page_size = min(max_events, MAX_PAGE_SIZE)
 
-    # Determine the start date for fetching
-    if last_fetch_time:
-        # Parse the ISO timestamp from last run to get the date
-        from_dt = arg_to_datetime(last_fetch_time)
-        if from_dt is None:
-            demisto.debug(f"Failed to parse last_fetch_time '{last_fetch_time}', falling back to today")
-            from_dt = datetime.now(tz=UTC)
-        else:
-            demisto.debug(f"Continuing fetch from last_fetch_time: {last_fetch_time}")
+    today = _datetime_to_api_date(datetime.now(tz=UTC))
+
+    if not current_date:
+        # First fetch ever — start from today
+        current_date = today
+        start_page = 1
+        demisto.debug(f"First fetch, starting from: {current_date}")
+
+    elif next_page <= stored_total_pages:
+        # More pages to fetch from the current date — resume (was not fetched due to low max_events limit)
+        start_page = next_page
+        demisto.debug(f"Resuming pagination: current_date={current_date}, start_page={start_page}")
+
+    elif current_date < today:
+        # All pages consumed for current_date, but before advancing to the next day,
+        # probe the current day for late-arriving events (e.g., events added after
+        # the last fetch ran but still dated on current_date).
+        demisto.debug(f"All pages consumed for {current_date}, probing before advancing to next day")
+        probe_next_run, probe_events = _probe_for_new_events(
+            client,
+            current_date,
+            stored_count,
+            stored_total_pages,
+            last_page_fetched_ids,
+            max_events,
+        )
+        if probe_events:
+            # Late-arriving events found — return them before advancing
+            demisto.debug(f"Found {len(probe_events)} late events on {current_date}, deferring day advance")
+            return probe_next_run, probe_events
+
+        # No new events on current_date — safe to advance
+        current_date = _advance_day(current_date)
+        start_page = 1
+        demisto.debug(f"No late events, advancing to next day: {current_date}")
+
     else:
-        # First fetch - start from today (API uses day-level dates, so time is irrelevant)
-        from_dt = datetime.now(tz=UTC)
-        demisto.debug(f"First fetch, starting from: {from_dt}")
+        # All pages consumed, still the same day — delegate to probe
+        return _probe_for_new_events(
+            client,
+            current_date,
+            stored_count,
+            stored_total_pages,
+            last_page_fetched_ids,
+            max_events,
+        )
 
-    to_dt = datetime.now(tz=UTC)
+    # Standard pagination flow (first fetch, resume, or day advance)
+    events, last_page_fetched, total_pages, count = _fetch_events_with_pagination(
+        client,
+        current_date,
+        current_date,
+        start_page=start_page,
+        limit=max_events,
+        page_size=page_size,
+    )
 
-    from_date = _datetime_to_api_date(from_dt)
-    to_date = _datetime_to_api_date(to_dt)
+    if not events and not last_run:
+        # First fetch with no events — save minimal state
+        demisto.debug("First fetch returned no events")
+        return _build_next_run(current_date, 0, 0, 0, []), []
 
-    # Fetch events with pagination
-    events = _fetch_events_with_pagination(client, from_date, to_date, max_events)
-    demisto.debug(f"Fetched {len(events)} events before deduplication")
+    if not events:
+        demisto.debug("No events returned, keeping previous state")
+        return last_run, []
 
-    # Deduplicate against previous fetch cycle
-    events = _deduplicate_events(events, last_fetch_ids)
-    demisto.debug(f"After deduplication: {len(events)} events")
-
-    # Update last_run state
-    next_run = _update_last_run(events, last_run)
-
+    next_run = _build_next_run(current_date, last_page_fetched, total_pages, count, events)
     demisto.debug(f"Fetch complete: {len(events)} events, next_run={next_run}")
     return next_run, events
-
-
-""" MAIN FUNCTION """
 
 
 def _send_events(events: list[dict[str, Any]]) -> None:
@@ -469,6 +612,9 @@ def _send_events(events: list[dict[str, Any]]) -> None:
     demisto.debug(f"Sending {len(events)} events.")
     send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
     demisto.debug("Sent events successfully.")
+
+
+""" MAIN FUNCTION """
 
 
 def main() -> None:  # pragma: no cover

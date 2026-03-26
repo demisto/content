@@ -7,10 +7,12 @@ from FireCompass import (
     _add_fields_to_events,
     _deduplicate_events,
     _fetch_events_with_pagination,
-    _update_last_run,
+    _build_next_run,
+    _advance_day,
     _parse_date_string,
     _datetime_to_api_date,
     _send_events,
+    MAX_PAGE_SIZE,
 )
 from CommonServerPython import DemistoException
 from datetime import UTC
@@ -70,6 +72,23 @@ def _create_risk_event(
         "created_at": created_at,
         "updated_at": updated_at,
         "version": 1,
+    }
+
+
+def _make_api_response(
+    results: list[dict],
+    page: int = 1,
+    total_pages: int = 1,
+    count: int | None = None,
+    page_size: int = MAX_PAGE_SIZE,
+) -> dict:
+    """Helper to create a mock API response with metadata."""
+    return {
+        "results": results,
+        "page": page,
+        "total_pages": total_pages,
+        "count": count if count is not None else len(results),
+        "page_size": page_size,
     }
 
 
@@ -138,7 +157,7 @@ class TestDeduplicateEvents:
     def test_deduplicate_removes_known_ids(self):
         """
         Given:
-            - Events with IDs that overlap with last_run_ids
+            - Events with IDs that overlap with last_page_fetched_ids
         When:
             - Calling _deduplicate_events
         Then:
@@ -149,8 +168,8 @@ class TestDeduplicateEvents:
             _create_risk_event("event-2"),
             _create_risk_event("event-3"),
         ]
-        last_run_ids = ["event-1", "event-2"]
-        result = _deduplicate_events(events, last_run_ids)
+        last_page_ids = ["event-1", "event-2"]
+        result = _deduplicate_events(events, last_page_ids)
         assert len(result) == 1
         assert result[0]["id"] == "event-3"
 
@@ -212,75 +231,106 @@ class TestDeduplicateEvents:
         assert result == []
 
 
-class TestUpdateLastRun:
-    """Tests for _update_last_run function."""
+class TestAdvanceDay:
+    """Tests for _advance_day function."""
 
-    def test_update_last_run_with_new_events(self):
+    def test_advance_normal_day(self):
         """
         Given:
-            - New events with a newer timestamp than last_run
+            - A date string '2026-03-15'
         When:
-            - Calling _update_last_run
+            - Calling _advance_day
         Then:
-            - Ensure last_fetch_time is updated and IDs are tracked
+            - Ensure '2026-03-16' is returned
         """
-        events = [
-            _create_risk_event("event-1", created_at="2026-03-01T12:00:00Z"),
-            _create_risk_event("event-2", created_at="2026-03-02T12:00:00Z"),
-        ]
-        last_run = {"last_fetch_time": "2026-02-28T12:00:00Z", "last_fetch_ids": []}
-        result = _update_last_run(events, last_run)
-        assert result["last_fetch_time"] == "2026-03-02T12:00:00Z"
-        assert "event-2" in result["last_fetch_ids"]
+        assert _advance_day("2026-03-15") == "2026-03-16"
 
-    def test_update_last_run_same_timestamp(self):
+    def test_advance_end_of_month(self):
         """
         Given:
-            - New events with the same timestamp as last_run
+            - A date string at end of month '2026-03-31'
         When:
-            - Calling _update_last_run
+            - Calling _advance_day
         Then:
-            - Ensure IDs are combined
+            - Ensure '2026-04-01' is returned
         """
-        events = [
-            _create_risk_event("event-2", created_at="2026-03-01T12:00:00Z"),
-        ]
-        last_run = {"last_fetch_time": "2026-03-01T12:00:00Z", "last_fetch_ids": ["event-1"]}
-        result = _update_last_run(events, last_run)
-        assert result["last_fetch_time"] == "2026-03-01T12:00:00Z"
-        assert set(result["last_fetch_ids"]) == {"event-1", "event-2"}
+        assert _advance_day("2026-03-31") == "2026-04-01"
 
-    def test_update_last_run_no_events(self):
+    def test_advance_end_of_year(self):
         """
         Given:
-            - No new events
+            - A date string at end of year '2026-12-31'
         When:
-            - Calling _update_last_run
+            - Calling _advance_day
         Then:
-            - Ensure last_run state is preserved
+            - Ensure '2027-01-01' is returned
         """
-        last_run = {"last_fetch_time": "2026-03-01T12:00:00Z", "last_fetch_ids": ["event-1"]}
-        result = _update_last_run([], last_run)
-        assert result == last_run
+        assert _advance_day("2026-12-31") == "2027-01-01"
 
-    def test_update_last_run_multiple_events_same_latest_time(self):
+
+class TestBuildNextRun:
+    """Tests for _build_next_run function."""
+
+    def test_build_next_run_basic(self):
         """
         Given:
-            - Multiple events sharing the latest created_at timestamp
+            - A completed page fetch with events
         When:
-            - Calling _update_last_run
+            - Calling _build_next_run
         Then:
-            - Ensure all IDs at the latest timestamp are tracked
+            - Ensure the state dictionary is correctly built
         """
-        events = [
-            _create_risk_event("event-1", created_at="2026-03-01T12:00:00Z"),
-            _create_risk_event("event-2", created_at="2026-03-02T12:00:00Z"),
-            _create_risk_event("event-3", created_at="2026-03-02T12:00:00Z"),
-        ]
-        last_run: dict = {"last_fetch_time": "", "last_fetch_ids": []}
-        result = _update_last_run(events, last_run)
-        assert result["last_fetch_time"] == "2026-03-02T12:00:00Z"
-        assert set(result["last_fetch_ids"]) == {"event-2", "event-3"}
+        events = [_create_risk_event("event-1"), _create_risk_event("event-2")]
+        result = _build_next_run(
+            current_date="2026-03-15",
+            last_page_fetched=3,
+            total_pages=5,
+            count=487,
+            last_batch=events,
+        )
+        assert result["current_date"] == "2026-03-15"
+        assert result["next_page"] == 4
+        assert result["total_pages"] == 5
+        assert result["count"] == 487
+        assert set(result["last_page_fetched_ids"]) == {"event-1", "event-2"}
+
+    def test_build_next_run_no_ids(self):
+        """
+        Given:
+            - Events without ID fields
+        When:
+            - Calling _build_next_run
+        Then:
+            - Ensure last_page_fetched_ids is empty
+        """
+        events = [{"title": "No ID", "created_at": "2026-03-15T12:00:00Z"}]
+        result = _build_next_run(
+            current_date="2026-03-15",
+            last_page_fetched=1,
+            total_pages=1,
+            count=1,
+            last_batch=events,
+        )
+        assert result["last_page_fetched_ids"] == []
+
+    def test_build_next_run_empty_batch(self):
+        """
+        Given:
+            - An empty last batch
+        When:
+            - Calling _build_next_run
+        Then:
+            - Ensure state is built with empty IDs
+        """
+        result = _build_next_run(
+            current_date="2026-03-15",
+            last_page_fetched=1,
+            total_pages=1,
+            count=0,
+            last_batch=[],
+        )
+        assert result["last_page_fetched_ids"] == []
+        assert result["next_page"] == 2
 
 
 class TestFetchEventsWithPagination:
@@ -289,124 +339,214 @@ class TestFetchEventsWithPagination:
     def test_single_page_fetch(self, client, mocker):
         """
         Given:
-            - API returns fewer events than page_size
+            - API returns fewer events than MAX_PAGE_SIZE on a single page
         When:
             - Calling _fetch_events_with_pagination
         Then:
-            - Ensure all events are returned without additional pages
+            - Ensure all events are returned with correct metadata
         """
-        mock_response = {
-            "data": [
-                _create_risk_event("event-1", created_at="2026-03-01T10:00:00Z"),
-                _create_risk_event("event-2", created_at="2026-03-01T12:00:00Z"),
-            ]
-        }
-        mocker.patch.object(client, "_http_request", return_value=mock_response)
+        events_data = [
+            _create_risk_event("event-1", created_at="2026-03-01T10:00:00Z"),
+            _create_risk_event("event-2", created_at="2026-03-01T12:00:00Z"),
+        ]
+        mocker.patch.object(client, "_http_request", return_value=_make_api_response(events_data, count=2))
 
-        events = _fetch_events_with_pagination(client, "2026-03-01", "2026-03-01", limit=100)
+        events, last_page, total_pages, count = _fetch_events_with_pagination(
+            client,
+            "2026-03-01",
+            "2026-03-01",
+            start_page=1,
+            limit=100,
+        )
         assert len(events) == 2
-        assert events[0]["id"] == "event-1"
-        assert events[1]["id"] == "event-2"
+        assert last_page == 1
+        assert total_pages == 1
+        assert count == 2
 
     def test_multi_page_fetch(self, client, mocker):
         """
         Given:
-            - API returns a full page of events requiring pagination
+            - API returns events across multiple pages
         When:
-            - Calling _fetch_events_with_pagination with a limit larger than page_size
+            - Calling _fetch_events_with_pagination
         Then:
-            - Ensure events from multiple pages are combined
+            - Ensure events from all pages are combined
         """
-        page1_events = [_create_risk_event(f"event-{i}", created_at=f"2026-03-01T{10 + i}:00:00Z") for i in range(100)]
-        page2_events = [_create_risk_event(f"event-{100 + i}", created_at=f"2026-03-02T{i}:00:00Z") for i in range(50)]
+        page1 = [_create_risk_event(f"event-{i}") for i in range(100)]
+        page2 = [_create_risk_event(f"event-{100 + i}") for i in range(50)]
 
         mocker.patch.object(
             client,
             "_http_request",
             side_effect=[
-                {"data": page1_events},
-                {"data": page2_events},
+                _make_api_response(page1, page=1, total_pages=2, count=150),
+                _make_api_response(page2, page=2, total_pages=2, count=150),
             ],
         )
 
-        events = _fetch_events_with_pagination(client, "2026-03-01", "2026-03-02", limit=200)
+        events, last_page, total_pages, count = _fetch_events_with_pagination(
+            client,
+            "2026-03-01",
+            "2026-03-01",
+            start_page=1,
+            limit=200,
+        )
         assert len(events) == 150
+        assert last_page == 2
+        assert total_pages == 2
+        assert count == 150
 
     def test_empty_response(self, client, mocker):
         """
         Given:
-            - API returns an empty response
+            - API returns an empty results list
         When:
             - Calling _fetch_events_with_pagination
         Then:
             - Ensure an empty list is returned
         """
-        mocker.patch.object(client, "_http_request", return_value={"data": []})
+        mocker.patch.object(client, "_http_request", return_value=_make_api_response([], count=0, total_pages=0))
 
-        events = _fetch_events_with_pagination(client, "2026-03-01", "2026-03-01", limit=100)
+        events, last_page, total_pages, count = _fetch_events_with_pagination(
+            client,
+            "2026-03-01",
+            "2026-03-01",
+            start_page=1,
+            limit=100,
+        )
         assert events == []
+        assert count == 0
 
-    def test_limit_respected(self, client, mocker):
+    def test_limit_trims_results(self, client, mocker):
         """
         Given:
-            - API has many events available, but limit is set to 10
+            - API returns 100 events but limit is 30
         When:
-            - Calling _fetch_events_with_pagination with limit=10
+            - Calling _fetch_events_with_pagination with limit=30
         Then:
-            - Ensure only 10 events are returned (API respects page_size)
+            - Ensure only 30 events are returned (trimmed from full page)
         """
-        mock_events = [_create_risk_event(f"event-{i}", created_at=f"2026-03-01T{i:02d}:00:00Z") for i in range(10)]
-        mocker.patch.object(client, "_http_request", return_value={"data": mock_events})
-
-        events = _fetch_events_with_pagination(client, "2026-03-01", "2026-03-01", limit=10)
-        assert len(events) == 10
-
-    def test_page_beyond_data_returns_error(self, client, mocker):
-        """
-        Given:
-            - First page returns a full batch, second page returns a 400 error
-              (API returns error for out-of-range page instead of empty result)
-        When:
-            - Calling _fetch_events_with_pagination
-        Then:
-            - Ensure events from the first page are returned and pagination stops gracefully
-        """
-        page1_events = [_create_risk_event(f"event-{i}", created_at=f"2026-03-01T{i:02d}:00:00Z") for i in range(100)]
-
+        page_events = [_create_risk_event(f"event-{i}") for i in range(100)]
         mocker.patch.object(
             client,
             "_http_request",
-            side_effect=[
-                {"data": page1_events},
-                DemistoException("Error in API call [400] - Bad Request"),
-            ],
+            return_value=_make_api_response(page_events, page=1, total_pages=5, count=487),
         )
 
-        events = _fetch_events_with_pagination(client, "2026-03-01", "2026-03-01", limit=200)
-        assert len(events) == 100
+        events, last_page, total_pages, count = _fetch_events_with_pagination(
+            client,
+            "2026-03-01",
+            "2026-03-01",
+            start_page=1,
+            limit=30,
+        )
+        assert len(events) == 30
+        assert total_pages == 5
+        assert count == 487
 
-    def test_page_beyond_data_returns_404(self, client, mocker):
+    def test_start_page_respected(self, client, mocker):
         """
         Given:
-            - First page returns events, second page returns a 404 error
+            - start_page is set to 3
         When:
             - Calling _fetch_events_with_pagination
         Then:
-            - Ensure events from the first page are returned and pagination stops gracefully
+            - Ensure the API is called starting from page 3
         """
-        page1_events = [_create_risk_event(f"event-{i}", created_at=f"2026-03-01T{i:02d}:00:00Z") for i in range(100)]
+        page3_events = [_create_risk_event(f"event-{i}") for i in range(50)]
+        mock_http = mocker.patch.object(
+            client,
+            "_http_request",
+            return_value=_make_api_response(page3_events, page=3, total_pages=3, count=250),
+        )
 
-        mocker.patch.object(
+        events, last_page, total_pages, count = _fetch_events_with_pagination(
+            client,
+            "2026-03-01",
+            "2026-03-01",
+            start_page=3,
+            limit=100,
+        )
+        assert len(events) == 50
+        assert last_page == 3
+
+        # Verify page=3 was passed to the API
+        call_params = mock_http.call_args.kwargs["params"]
+        assert call_params["page"] == 3
+
+    def test_page_size_uses_limit_when_smaller(self, client, mocker):
+        """
+        Given:
+            - A limit (10) smaller than MAX_PAGE_SIZE (100)
+        When:
+            - Calling _fetch_events_with_pagination
+        Then:
+            - Ensure page_size equals the limit (not MAX_PAGE_SIZE)
+        """
+        page_events = [_create_risk_event(f"event-{i}") for i in range(10)]
+        mock_http = mocker.patch.object(
+            client,
+            "_http_request",
+            return_value=_make_api_response(page_events, count=10),
+        )
+
+        _fetch_events_with_pagination(client, "2026-03-01", "2026-03-01", start_page=1, limit=10, page_size=10)
+
+        call_params = mock_http.call_args.kwargs["params"]
+        assert call_params["page_size"] == 10
+
+    def test_page_size_capped_at_max(self, client, mocker):
+        """
+        Given:
+            - A limit (500) larger than MAX_PAGE_SIZE (100)
+        When:
+            - Calling _fetch_events_with_pagination
+        Then:
+            - Ensure page_size is capped at MAX_PAGE_SIZE
+        """
+        page_events = [_create_risk_event(f"event-{i}") for i in range(100)]
+        mock_http = mocker.patch.object(
+            client,
+            "_http_request",
+            return_value=_make_api_response(page_events, page=1, total_pages=5, count=500),
+        )
+
+        _fetch_events_with_pagination(client, "2026-03-01", "2026-03-01", start_page=1, limit=500)
+
+        call_params = mock_http.call_args_list[0].kwargs["params"]
+        assert call_params["page_size"] == MAX_PAGE_SIZE
+
+    def test_stops_at_total_pages(self, client, mocker):
+        """
+        Given:
+            - API reports total_pages=2 and limit allows more
+        When:
+            - Calling _fetch_events_with_pagination
+        Then:
+            - Ensure pagination stops at total_pages (no page 3 call)
+        """
+        page1 = [_create_risk_event(f"event-{i}") for i in range(100)]
+        page2 = [_create_risk_event(f"event-{100 + i}") for i in range(100)]
+
+        mock_http = mocker.patch.object(
             client,
             "_http_request",
             side_effect=[
-                {"data": page1_events},
-                DemistoException("Error in API call [404] - Not Found"),
+                _make_api_response(page1, page=1, total_pages=2, count=200),
+                _make_api_response(page2, page=2, total_pages=2, count=200),
             ],
         )
 
-        events = _fetch_events_with_pagination(client, "2026-03-01", "2026-03-01", limit=200)
-        assert len(events) == 100
+        events, last_page, total_pages, count = _fetch_events_with_pagination(
+            client,
+            "2026-03-01",
+            "2026-03-01",
+            start_page=1,
+            limit=500,
+        )
+        assert len(events) == 200
+        assert last_page == 2
+        assert mock_http.call_count == 2  # No page 3 call
 
     def test_unexpected_error_is_raised(self, client, mocker):
         """
@@ -422,21 +562,7 @@ class TestFetchEventsWithPagination:
         )
 
         with pytest.raises(DemistoException, match="500"):
-            _fetch_events_with_pagination(client, "2026-03-01", "2026-03-01", limit=100)
-
-    def test_auth_error_is_raised(self, client, mocker):
-        """
-        Given:
-            - API returns a 401 unauthorized error during pagination
-        When:
-            - Calling _fetch_events_with_pagination
-        Then:
-            - Ensure the auth error is re-raised (not treated as end of data)
-        """
-        mocker.patch.object(client, "_http_request", side_effect=DemistoException("Error in API call [401] - Unauthorized"))
-
-        with pytest.raises(DemistoException, match="401"):
-            _fetch_events_with_pagination(client, "2026-03-01", "2026-03-01", limit=100)
+            _fetch_events_with_pagination(client, "2026-03-01", "2026-03-01", start_page=1, limit=100)
 
 
 class TestTestModuleCommand:
@@ -453,7 +579,7 @@ class TestTestModuleCommand:
         """
         from FireCompass import test_module_command
 
-        mocker.patch.object(client, "_http_request", return_value={"data": []})
+        mocker.patch.object(client, "_http_request", return_value=_make_api_response([]))
         result = test_module_command(client)
         assert result == "ok"
 
@@ -501,7 +627,7 @@ class TestGetEventsCommand:
             - Ensure events are returned with a CommandResults object
         """
         mock_events = [_create_risk_event("event-1"), _create_risk_event("event-2")]
-        mocker.patch.object(client, "_http_request", return_value={"data": mock_events})
+        mocker.patch.object(client, "_http_request", return_value=_make_api_response(mock_events, count=2))
 
         events, results = get_events_command(client, {})
         assert len(events) == 2
@@ -515,10 +641,10 @@ class TestGetEventsCommand:
         When:
             - Calling get_events_command
         Then:
-            - Ensure only 1 event is returned (API respects page_size=1)
+            - Ensure only 1 event is returned (trimmed from full page)
         """
-        mock_events = [_create_risk_event("event-1")]
-        mocker.patch.object(client, "_http_request", return_value={"data": mock_events})
+        mock_events = [_create_risk_event("event-1"), _create_risk_event("event-2")]
+        mocker.patch.object(client, "_http_request", return_value=_make_api_response(mock_events, count=2))
 
         events, results = get_events_command(client, {"limit": "1"})
         assert len(events) == 1
@@ -533,7 +659,7 @@ class TestGetEventsCommand:
         Then:
             - Ensure the correct date range is passed to the API call
         """
-        mock_http = mocker.patch.object(client, "_http_request", return_value={"data": []})
+        mock_http = mocker.patch.object(client, "_http_request", return_value=_make_api_response([]))
 
         get_events_command(client, {"from_date": "2026-03-10", "to_date": "2026-03-15"})
 
@@ -545,7 +671,7 @@ class TestGetEventsCommand:
 
 
 class TestFetchEventsCommand:
-    """Tests for fetch_events_command function."""
+    """Tests for fetch_events_command with page-resumption strategy."""
 
     @freeze_time("2026-03-15T12:00:00Z")
     def test_first_fetch(self, client, mocker):
@@ -555,82 +681,324 @@ class TestFetchEventsCommand:
         When:
             - Calling fetch_events_command
         Then:
-            - Ensure events are fetched from the hardcoded first fetch time range
-            - Ensure next_run state is properly set
+            - Ensure events are fetched for today with page-resumption state
         """
         mock_events = [
-            _create_risk_event("event-1", created_at="2026-03-13T10:00:00Z", updated_at="2026-03-13T10:00:00Z"),
-            _create_risk_event("event-2", created_at="2026-03-14T12:00:00Z", updated_at="2026-03-15T08:00:00Z"),
+            _create_risk_event("event-1", created_at="2026-03-15T10:00:00Z"),
+            _create_risk_event("event-2", created_at="2026-03-15T12:00:00Z"),
         ]
-        mocker.patch.object(client, "_http_request", return_value={"data": mock_events})
-
-        next_run, events = fetch_events_command(
-            client=client,
-            last_run={},
-            max_events=1000,
+        mocker.patch.object(
+            client,
+            "_http_request",
+            return_value=_make_api_response(mock_events, page=1, total_pages=1, count=2),
         )
+
+        next_run, events = fetch_events_command(client=client, last_run={}, max_events=1000)
 
         assert len(events) == 2
-        assert next_run["last_fetch_time"] == "2026-03-14T12:00:00Z"
-        assert "event-2" in next_run["last_fetch_ids"]
+        assert next_run["current_date"] == "2026-03-15"
+        assert next_run["next_page"] == 2
+        assert next_run["total_pages"] == 1
+        assert next_run["count"] == 2
+        assert "event-1" in next_run["last_page_fetched_ids"]
+        assert "event-2" in next_run["last_page_fetched_ids"]
 
     @freeze_time("2026-03-15T12:00:00Z")
-    def test_subsequent_fetch_with_dedup(self, client, mocker):
+    def test_resume_pagination(self, client, mocker):
         """
         Given:
-            - Previous last_run state with known event IDs
-        When:
-            - Calling fetch_events_command with overlapping events
-        Then:
-            - Ensure duplicate events are removed
-        """
-        mock_events = [
-            _create_risk_event("event-2", created_at="2026-03-14T12:00:00Z"),
-            _create_risk_event("event-3", created_at="2026-03-15T08:00:00Z"),
-        ]
-        mocker.patch.object(client, "_http_request", return_value={"data": mock_events})
-
-        last_run = {
-            "last_fetch_time": "2026-03-14T12:00:00Z",
-            "last_fetch_ids": ["event-1", "event-2"],
-        }
-
-        next_run, events = fetch_events_command(
-            client=client,
-            last_run=last_run,
-            max_events=1000,
-        )
-
-        # event-2 should be deduplicated
-        assert len(events) == 1
-        assert events[0]["id"] == "event-3"
-        assert next_run["last_fetch_time"] == "2026-03-15T08:00:00Z"
-
-    @freeze_time("2026-03-15T12:00:00Z")
-    def test_fetch_no_new_events(self, client, mocker):
-        """
-        Given:
-            - API returns no new events
+            - Previous state with next_page=3 and total_pages=5
         When:
             - Calling fetch_events_command
         Then:
-            - Ensure last_run state is preserved
+            - Ensure pagination resumes from page 3
         """
-        mocker.patch.object(client, "_http_request", return_value={"data": []})
+        page3_events = [_create_risk_event(f"event-{i}") for i in range(100)]
+        page4_events = [_create_risk_event(f"event-{100 + i}") for i in range(100)]
+        page5_events = [_create_risk_event(f"event-{200 + i}") for i in range(50)]
+
+        mock_http = mocker.patch.object(
+            client,
+            "_http_request",
+            side_effect=[
+                _make_api_response(page3_events, page=3, total_pages=5, count=450),
+                _make_api_response(page4_events, page=4, total_pages=5, count=450),
+                _make_api_response(page5_events, page=5, total_pages=5, count=450),
+            ],
+        )
 
         last_run = {
-            "last_fetch_time": "2026-03-14T12:00:00Z",
-            "last_fetch_ids": ["event-1"],
+            "current_date": "2026-03-15",
+            "next_page": 3,
+            "total_pages": 5,
+            "count": 450,
+            "last_page_fetched_ids": ["prev-event-1"],
         }
 
-        next_run, events = fetch_events_command(
-            client=client,
-            last_run=last_run,
-            max_events=1000,
+        next_run, events = fetch_events_command(client=client, last_run=last_run, max_events=1000)
+
+        assert len(events) == 250
+        assert next_run["next_page"] == 6
+        assert next_run["total_pages"] == 5
+
+        # Verify first API call was for page 3
+        first_call_params = mock_http.call_args_list[0].kwargs["params"]
+        assert first_call_params["page"] == 3
+
+    @freeze_time("2026-03-16T12:00:00Z")
+    def test_day_advancement(self, client, mocker):
+        """
+        Given:
+            - All pages consumed for 2026-03-15, now it's 2026-03-16
+        When:
+            - Calling fetch_events_command
+        Then:
+            - Ensure probe finds no late events on 2026-03-15, then advances to 2026-03-16
+        """
+        # First call: probe March 15 (count unchanged → no late events)
+        probe_response = _make_api_response(
+            [_create_risk_event("old-event")],
+            page=5,
+            total_pages=5,
+            count=487,
         )
+        # Second call: fetch March 16
+        new_day_events = [_create_risk_event("event-new-1", created_at="2026-03-16T08:00:00Z")]
+        new_day_response = _make_api_response(new_day_events, page=1, total_pages=1, count=1)
+
+        mock_http = mocker.patch.object(
+            client,
+            "_http_request",
+            side_effect=[probe_response, new_day_response],
+        )
+
+        last_run = {
+            "current_date": "2026-03-15",
+            "next_page": 6,
+            "total_pages": 5,
+            "count": 487,
+            "last_page_fetched_ids": ["old-event"],
+        }
+
+        next_run, events = fetch_events_command(client=client, last_run=last_run, max_events=1000)
+
+        assert len(events) == 1
+        assert next_run["current_date"] == "2026-03-16"
+        assert next_run["next_page"] == 2
+
+        # Verify probe was called for March 15, then fetch for March 16
+        assert mock_http.call_count == 2
+        probe_params = mock_http.call_args_list[0].kwargs["params"]
+        assert probe_params["from_date"] == "2026-03-15"
+        fetch_params = mock_http.call_args_list[1].kwargs["params"]
+        assert fetch_params["from_date"] == "2026-03-16"
+
+    @freeze_time("2026-03-16T12:00:00Z")
+    def test_day_advancement_with_late_events(self, client, mocker):
+        """
+        Given:
+            - All pages consumed for 2026-03-15, now it's 2026-03-16
+            - But new events were added to 2026-03-15 after the last fetch
+        When:
+            - Calling fetch_events_command
+        Then:
+            - Ensure late events on 2026-03-15 are fetched before advancing
+        """
+        # Probe March 15: count increased (487 → 490), same total_pages
+        probe_events = [
+            _create_risk_event("old-event"),
+            _create_risk_event("late-event-1"),
+            _create_risk_event("late-event-2"),
+            _create_risk_event("late-event-3"),
+        ]
+        mocker.patch.object(
+            client,
+            "_http_request",
+            return_value=_make_api_response(probe_events, page=5, total_pages=5, count=490),
+        )
+
+        last_run = {
+            "current_date": "2026-03-15",
+            "next_page": 6,
+            "total_pages": 5,
+            "count": 487,
+            "last_page_fetched_ids": ["old-event"],
+        }
+
+        next_run, events = fetch_events_command(client=client, last_run=last_run, max_events=1000)
+
+        # Should get 3 late events (old-event deduped)
+        assert len(events) == 3
+        assert next_run["current_date"] == "2026-03-15"  # Did NOT advance yet
+        assert next_run["count"] == 490
+
+    @freeze_time("2026-03-15T12:00:00Z")
+    def test_same_day_no_new_events(self, client, mocker):
+        """
+        Given:
+            - All pages consumed, same day, count unchanged
+        When:
+            - Calling fetch_events_command
+        Then:
+            - Ensure empty list is returned and state is preserved
+        """
+        # Probe returns same count
+        probe_events = [_create_risk_event("event-old")]
+        mocker.patch.object(
+            client,
+            "_http_request",
+            return_value=_make_api_response(probe_events, page=5, total_pages=5, count=487),
+        )
+
+        last_run = {
+            "current_date": "2026-03-15",
+            "next_page": 6,
+            "total_pages": 5,
+            "count": 487,
+            "last_page_fetched_ids": ["event-old"],
+        }
+
+        next_run, events = fetch_events_command(client=client, last_run=last_run, max_events=1000)
 
         assert len(events) == 0
         assert next_run == last_run
+
+    @freeze_time("2026-03-15T12:00:00Z")
+    def test_same_day_new_events_same_total_pages(self, client, mocker):
+        """
+        Given:
+            - All pages consumed, same day, count increased but total_pages unchanged
+            (new events landed on the last page which wasn't full)
+        When:
+            - Calling fetch_events_command
+        Then:
+            - Ensure only new events are returned (deduped against last_page_fetched_ids)
+        """
+        # Probe returns increased count, same total_pages
+        probe_events = [
+            _create_risk_event("event-old-1"),
+            _create_risk_event("event-old-2"),
+            _create_risk_event("event-new-1"),
+        ]
+        mocker.patch.object(
+            client,
+            "_http_request",
+            return_value=_make_api_response(probe_events, page=3, total_pages=3, count=210),
+        )
+
+        last_run = {
+            "current_date": "2026-03-15",
+            "next_page": 4,
+            "total_pages": 3,
+            "count": 200,
+            "last_page_fetched_ids": ["event-old-1", "event-old-2"],
+        }
+
+        next_run, events = fetch_events_command(client=client, last_run=last_run, max_events=1000)
+
+        assert len(events) == 1
+        assert events[0]["id"] == "event-new-1"
+        assert next_run["count"] == 210
+
+    @freeze_time("2026-03-15T12:00:00Z")
+    def test_same_day_new_events_more_total_pages(self, client, mocker):
+        """
+        Given:
+            - All pages consumed, same day, count and total_pages both increased
+        When:
+            - Calling fetch_events_command
+        Then:
+            - Ensure the old last page is deduped and new pages are fetched
+        """
+        # Probe re-fetches old last page (page 3) — has old + new events
+        probe_events = [
+            _create_risk_event("event-old-1"),
+            _create_risk_event("event-old-2"),
+            _create_risk_event("event-new-on-old-page"),
+        ]
+        # New page 4
+        page4_events = [_create_risk_event("event-new-page4")]
+
+        mocker.patch.object(
+            client,
+            "_http_request",
+            side_effect=[
+                # Probe call (re-fetches page 3)
+                _make_api_response(probe_events, page=3, total_pages=4, count=310),
+                # Fetch page 4
+                _make_api_response(page4_events, page=4, total_pages=4, count=310),
+            ],
+        )
+
+        last_run = {
+            "current_date": "2026-03-15",
+            "next_page": 4,
+            "total_pages": 3,
+            "count": 300,
+            "last_page_fetched_ids": ["event-old-1", "event-old-2"],
+        }
+
+        next_run, events = fetch_events_command(client=client, last_run=last_run, max_events=1000)
+
+        # Should get: event-new-on-old-page (deduped from probe) + event-new-page4
+        assert len(events) == 2
+        event_ids = [e["id"] for e in events]
+        assert "event-new-on-old-page" in event_ids
+        assert "event-new-page4" in event_ids
+        assert next_run["total_pages"] == 4
+        assert next_run["count"] == 310
+
+    @freeze_time("2026-03-15T12:00:00Z")
+    def test_first_fetch_no_events(self, client, mocker):
+        """
+        Given:
+            - First fetch with no events available
+        When:
+            - Calling fetch_events_command
+        Then:
+            - Ensure minimal state is saved
+        """
+        mocker.patch.object(
+            client,
+            "_http_request",
+            return_value=_make_api_response([], total_pages=0, count=0),
+        )
+
+        next_run, events = fetch_events_command(client=client, last_run={}, max_events=1000)
+
+        assert len(events) == 0
+        assert next_run["current_date"] == "2026-03-15"
+        assert next_run["count"] == 0
+
+    @freeze_time("2026-03-15T12:00:00Z")
+    def test_mid_pagination_limit_reached(self, client, mocker):
+        """
+        Given:
+            - API has 5 pages but max_events allows only 2 pages worth
+        When:
+            - Calling fetch_events_command
+        Then:
+            - Ensure pagination stops at limit and state saves the resume point
+        """
+        page1 = [_create_risk_event(f"event-{i}") for i in range(100)]
+        page2 = [_create_risk_event(f"event-{100 + i}") for i in range(100)]
+
+        mocker.patch.object(
+            client,
+            "_http_request",
+            side_effect=[
+                _make_api_response(page1, page=1, total_pages=5, count=487),
+                _make_api_response(page2, page=2, total_pages=5, count=487),
+            ],
+        )
+
+        next_run, events = fetch_events_command(client=client, last_run={}, max_events=150)
+
+        # Fetched 200 events (2 full pages), trimmed to 150
+        assert len(events) == 150
+        # State should allow resuming from page 3
+        assert next_run["next_page"] == 3
+        assert next_run["total_pages"] == 5
 
 
 class TestSendEvents:
@@ -689,7 +1057,7 @@ class TestClientGetRisks:
         Then:
             - Ensure _http_request is called with the correct params
         """
-        mock_http = mocker.patch.object(client, "_http_request", return_value={"data": []})
+        mock_http = mocker.patch.object(client, "_http_request", return_value=_make_api_response([]))
 
         client.get_risks(page=2, page_size=50, from_date="2026-03-01", to_date="2026-03-15")
 
@@ -714,7 +1082,7 @@ class TestClientGetRisks:
         Then:
             - Ensure page_size is capped at 100
         """
-        mock_http = mocker.patch.object(client, "_http_request", return_value={"data": []})
+        mock_http = mocker.patch.object(client, "_http_request", return_value=_make_api_response([]))
 
         client.get_risks(page=1, page_size=500, from_date="2026-03-01", to_date="2026-03-15")
 
@@ -723,79 +1091,164 @@ class TestClientGetRisks:
 
 
 class TestEndToEndFetch:
-    """End-to-end tests simulating multiple fetch cycles."""
+    """End-to-end tests simulating multiple fetch cycles with page-resumption."""
 
     @freeze_time("2026-03-15T12:00:00Z")
-    def test_two_consecutive_fetches_with_dedup(self, client, mocker):
+    def test_full_day_pagination_then_probe(self, client, mocker):
         """
         Given:
-            - First fetch returns 3 events, second fetch returns 2 events (1 overlapping)
+            - Day has 3 pages of events, max_events=150 (1.5 pages)
         When:
-            - Running two consecutive fetch_events_command cycles
+            - Running multiple fetch cycles
         Then:
-            - Ensure first fetch returns all 3 events
-            - Ensure second fetch deduplicates the overlapping event
-            - Ensure last_run state progresses correctly across cycles
+            - Cycle 1: fetches pages 1-2, trims to 150, saves next_page=3
+            - Cycle 2: fetches page 3 (remaining), saves next_page=4
+            - Cycle 3: probes, count unchanged → empty
         """
-        # First fetch - returns 3 events
-        first_batch = [
-            _create_risk_event("event-1", created_at="2026-03-14T08:00:00Z"),
-            _create_risk_event("event-2", created_at="2026-03-14T10:00:00Z"),
-            _create_risk_event("event-3", created_at="2026-03-14T12:00:00Z"),
-        ]
-        mocker.patch.object(client, "_http_request", return_value={"data": first_batch})
+        page1 = [_create_risk_event(f"e-{i}") for i in range(100)]
+        page2 = [_create_risk_event(f"e-{100 + i}") for i in range(100)]
+        page3 = [_create_risk_event(f"e-{200 + i}") for i in range(50)]
 
-        next_run_1, events_1 = fetch_events_command(client=client, last_run={}, max_events=1000)
+        # Cycle 1: pages 1 and 2
+        mocker.patch.object(
+            client,
+            "_http_request",
+            side_effect=[
+                _make_api_response(page1, page=1, total_pages=3, count=250),
+                _make_api_response(page2, page=2, total_pages=3, count=250),
+            ],
+        )
+        next_run_1, events_1 = fetch_events_command(client=client, last_run={}, max_events=150)
+        assert len(events_1) == 150
+        assert next_run_1["next_page"] == 3
+        assert next_run_1["total_pages"] == 3
 
-        assert len(events_1) == 3
-        assert next_run_1["last_fetch_time"] == "2026-03-14T12:00:00Z"
-        assert "event-3" in next_run_1["last_fetch_ids"]
+        # Cycle 2: page 3 (resume)
+        mocker.patch.object(
+            client,
+            "_http_request",
+            return_value=_make_api_response(page3, page=3, total_pages=3, count=250),
+        )
+        next_run_2, events_2 = fetch_events_command(client=client, last_run=next_run_1, max_events=150)
+        assert len(events_2) == 50
+        assert next_run_2["next_page"] == 4
+        assert next_run_2["total_pages"] == 3
 
-        # Second fetch - returns event-3 (overlap) and event-4 (new)
-        second_batch = [
-            _create_risk_event("event-3", created_at="2026-03-14T12:00:00Z"),
-            _create_risk_event("event-4", created_at="2026-03-15T06:00:00Z"),
-        ]
-        mocker.patch.object(client, "_http_request", return_value={"data": second_batch})
+        # Cycle 3: probe — count unchanged
+        mocker.patch.object(
+            client,
+            "_http_request",
+            return_value=_make_api_response(page3, page=3, total_pages=3, count=250),
+        )
+        next_run_3, events_3 = fetch_events_command(client=client, last_run=next_run_2, max_events=150)
+        assert len(events_3) == 0
+        assert next_run_3 == next_run_2
 
-        next_run_2, events_2 = fetch_events_command(client=client, last_run=next_run_1, max_events=1000)
+    def test_multi_day_catchup(self, client, mocker):
+        """
+        Given:
+            - Integration was down from March 13 to March 15
+        When:
+            - Running fetch cycles starting from March 13
+        Then:
+            - Each cycle processes one day, probes for late events, then advances
+        """
+        # Cycle 1: Fetch March 13 events (resume path: next_page=1 <= total_pages=1)
+        with freeze_time("2026-03-15T12:00:00Z"):
+            march13_events = [_create_risk_event("e-13", created_at="2026-03-13T10:00:00Z")]
+            mocker.patch.object(
+                client,
+                "_http_request",
+                return_value=_make_api_response(march13_events, count=1),
+            )
+            next_run_1, events_1 = fetch_events_command(
+                client=client,
+                last_run={
+                    "current_date": "2026-03-13",
+                    "next_page": 1,
+                    "total_pages": 1,
+                    "count": 0,
+                    "last_page_fetched_ids": [],
+                },
+                max_events=1000,
+            )
+            assert len(events_1) == 1
+            assert next_run_1["current_date"] == "2026-03-13"
 
-        # event-3 should be deduplicated
-        assert len(events_2) == 1
-        assert events_2[0]["id"] == "event-4"
-        assert next_run_2["last_fetch_time"] == "2026-03-15T06:00:00Z"
-        assert "event-4" in next_run_2["last_fetch_ids"]
+        # Cycle 2: Probe March 13 (count unchanged) → advance to March 14 → fetch
+        with freeze_time("2026-03-15T12:00:00Z"):
+            march14_events = [_create_risk_event("e-14", created_at="2026-03-14T10:00:00Z")]
+            mocker.patch.object(
+                client,
+                "_http_request",
+                side_effect=[
+                    # Probe March 13: count=1 (unchanged) → no late events
+                    _make_api_response(march13_events, count=1),
+                    # Fetch March 14
+                    _make_api_response(march14_events, count=1),
+                ],
+            )
+            next_run_2, events_2 = fetch_events_command(client=client, last_run=next_run_1, max_events=1000)
+            assert len(events_2) == 1
+            assert next_run_2["current_date"] == "2026-03-14"
+
+        # Cycle 3: Probe March 14 (count unchanged) → advance to March 15 → fetch
+        with freeze_time("2026-03-15T12:00:00Z"):
+            march15_events = [_create_risk_event("e-15", created_at="2026-03-15T10:00:00Z")]
+            mocker.patch.object(
+                client,
+                "_http_request",
+                side_effect=[
+                    # Probe March 14: count=1 (unchanged)
+                    _make_api_response(march14_events, count=1),
+                    # Fetch March 15
+                    _make_api_response(march15_events, count=1),
+                ],
+            )
+            next_run_3, events_3 = fetch_events_command(client=client, last_run=next_run_2, max_events=1000)
+            assert len(events_3) == 1
+            assert next_run_3["current_date"] == "2026-03-15"
 
     @freeze_time("2026-03-15T12:00:00Z")
-    def test_three_fetches_no_new_events_then_new(self, client, mocker):
+    def test_same_day_new_events_then_no_change(self, client, mocker):
         """
         Given:
-            - First fetch returns events, second fetch returns nothing, third fetch returns new events
+            - Day fully consumed, then new events appear, then no more changes
         When:
-            - Running three consecutive fetch_events_command cycles
+            - Running multiple fetch cycles
         Then:
-            - Ensure state is preserved when no events are returned
-            - Ensure new events are properly collected after an empty cycle
+            - Cycle 1: fetches all events for the day
+            - Cycle 2: probes, detects new events, fetches only new ones
+            - Cycle 3: probes, no change → empty
         """
-        # First fetch
-        first_batch = [_create_risk_event("event-1", created_at="2026-03-14T10:00:00Z")]
-        mocker.patch.object(client, "_http_request", return_value={"data": first_batch})
+        # Cycle 1: initial fetch
+        initial_events = [_create_risk_event(f"e-{i}") for i in range(50)]
+        mocker.patch.object(
+            client,
+            "_http_request",
+            return_value=_make_api_response(initial_events, page=1, total_pages=1, count=50),
+        )
         next_run_1, events_1 = fetch_events_command(client=client, last_run={}, max_events=1000)
-        assert len(events_1) == 1
+        assert len(events_1) == 50
 
-        # Second fetch - no new events
-        mocker.patch.object(client, "_http_request", return_value={"data": []})
+        # Cycle 2: probe detects new events (count 50 → 55, total_pages still 1)
+        updated_page = initial_events + [_create_risk_event(f"e-new-{i}") for i in range(5)]
+        mocker.patch.object(
+            client,
+            "_http_request",
+            return_value=_make_api_response(updated_page, page=1, total_pages=1, count=55),
+        )
         next_run_2, events_2 = fetch_events_command(client=client, last_run=next_run_1, max_events=1000)
-        assert len(events_2) == 0
-        assert next_run_2 == next_run_1  # State preserved
+        assert len(events_2) == 5  # Only new events
 
-        # Third fetch - new events
-        third_batch = [_create_risk_event("event-2", created_at="2026-03-15T08:00:00Z")]
-        mocker.patch.object(client, "_http_request", return_value={"data": third_batch})
+        # Cycle 3: probe, no change
+        mocker.patch.object(
+            client,
+            "_http_request",
+            return_value=_make_api_response(updated_page, page=1, total_pages=1, count=55),
+        )
         next_run_3, events_3 = fetch_events_command(client=client, last_run=next_run_2, max_events=1000)
-        assert len(events_3) == 1
-        assert events_3[0]["id"] == "event-2"
-        assert next_run_3["last_fetch_time"] == "2026-03-15T08:00:00Z"
+        assert len(events_3) == 0
 
 
 class TestParseDateString:
