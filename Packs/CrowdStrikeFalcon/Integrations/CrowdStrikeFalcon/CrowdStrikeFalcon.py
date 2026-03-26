@@ -17,7 +17,7 @@ import asyncio
 import aiohttp
 import gzip
 
-# Disable insecure warnings
+# Disable insecure warnings.
 import urllib3
 from gql import Client, gql
 from gql.transport.requests import RequestsHTTPTransport

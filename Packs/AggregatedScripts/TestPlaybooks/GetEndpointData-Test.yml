@@ -2,7 +2,6 @@ id: GetEndpointData-Test
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: GetEndpointData-Test
-description: Test playbook for the GetEndpointData script.
 starttaskid: "0"
 tasks:
   "0":
