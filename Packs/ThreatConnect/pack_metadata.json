@@ -12,7 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "ThreatConnect"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

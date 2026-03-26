@@ -955,7 +955,7 @@ def tc_get_indicators_by_tag_command(client: Client, args: dict) -> None:  # pra
     page: str = args.get("page", "0")
     tag: str = args.get("tag") or ""
     tag_operator: str = args.get("operator", "LIKE")
-    fields_to_return = argToList(args.get("fields_to_return") or []).append(["tags"])
+    fields_to_return = argToList(args.get("fields_to_return") or []) + ["tags"]
     indicators = tc_get_indicators(
         client, owners=owners, limit=limit, page=page, tag=tag, tag_operator=tag_operator, fields_to_return=fields_to_return
     )
