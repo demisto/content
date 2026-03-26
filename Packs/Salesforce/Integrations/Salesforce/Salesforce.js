@@ -53,30 +53,46 @@ function sendRequest(method, url, body, token) {
 }
 
 function sendRequestInSession(method, uri, body) {
-    console.log('sendRequestInSession: method=' + method + ', uri=' + uri + ', body=' + body);
+    var fullUrl = SESSION_DATA.instance_url + URI_PREFIX + uri;
+    console.log('Salesforce: sendRequestInSession: method=' + method + ', url=' + fullUrl
+        + ', has_body=' + (body ? 'yes' : 'no')
+        + ', has_access_token=' + (SESSION_DATA && SESSION_DATA.access_token ? 'yes' : 'no'));
     if (!SESSION_DATA || !SESSION_DATA.access_token) {
-        console.log('sendRequestInSession: No access token in session, getting new token...');
+        console.log('Salesforce: sendRequestInSession: FATAL — no access token in SESSION_DATA. '
+            + 'SESSION_DATA keys: ' + (SESSION_DATA ? Object.keys(SESSION_DATA).join(',') : 'null'));
         throw "Failed to get access token for Salesforce integration.";
     }
-    var response = sendRequest(method, SESSION_DATA.instance_url + URI_PREFIX + uri, body, SESSION_DATA.access_token);
+    var response = sendRequest(method, fullUrl, body, SESSION_DATA.access_token);
+    console.log('Salesforce: sendRequestInSession: initial response StatusCode=' + response.StatusCode);
     if (response.StatusCode === 401) {
         // ── UCP: Try refreshing from BE first, fall back to legacy token exchange ──
-        console.log('Salesforce 401 retry: Got 401 for uri=' + uri + ', refreshing credentials...');
+        console.log('Salesforce: sendRequestInSession: received 401 for ' + method + ' ' + uri
+            + '. Attempting credential refresh...');
         var ucpCreds = getUcpCredentials();
-        console.log('Salesforce 401 retry: getUcpCredentials() returned credentials (redacted)');
         if (ucpCreds) {
-            console.log('Salesforce 401 retry: Using refreshed UCP credentials');
-            SESSION_DATA.access_token = ucpCreds.access_token || ucpCreds.key;
+            var newToken = ucpCreds.access_token || ucpCreds.key;
+            var tokenPreview = newToken ? newToken.substring(0, 10) + '...' : '<empty>';
+            console.log('Salesforce: sendRequestInSession: 401 retry — using refreshed UCP credentials. '
+                + 'type=' + (ucpCreds.type || 'N/A')
+                + ', token_preview=' + tokenPreview
+                + ', expires_at=' + (ucpCreds.expires_at || 'static'));
+            SESSION_DATA.access_token = newToken;
         } else {
-            console.log('Salesforce 401 retry: Falling back to legacy getNewToken()');
+            console.log('Salesforce: sendRequestInSession: 401 retry — UCP not available, '
+                + 'falling back to legacy getNewToken() OAuth2 password grant...');
             SESSION_DATA = getNewToken();
+            console.log('Salesforce: sendRequestInSession: 401 retry — legacy token obtained. '
+                + 'instance_url=' + (SESSION_DATA ? SESSION_DATA.instance_url : 'null'));
         }
         response = sendRequest(method, SESSION_DATA.instance_url + URI_PREFIX + uri, body, SESSION_DATA.access_token);
-        console.log('Salesforce 401 retry: Retry result StatusCode=' + response.StatusCode);
+        console.log('Salesforce: sendRequestInSession: 401 retry result StatusCode=' + response.StatusCode);
     }
     if (response.StatusCode < 200 || response.StatusCode >= 300) {
+        console.log('Salesforce: sendRequestInSession: FAILED. StatusCode=' + response.StatusCode
+            + ', uri=' + uri + ', Body=' + (response.Body ? response.Body.substring(0, 500) : 'empty'));
         throw 'Failed to run command uri: ' + uri + ', request status code: ' + response.StatusCode + ' and Body: ' + response.Body + '.';
     }
+    console.log('Salesforce: sendRequestInSession: SUCCESS. StatusCode=' + response.StatusCode + ', uri=' + uri);
     return response;
 }
 
@@ -842,20 +858,33 @@ function fetchIncident() {
 }
 
 // ── UCP: Use BE-managed token if available, otherwise legacy OAuth2 ──
-console.log('Salesforce init: Calling getUcpCredentials()...')
+console.log('Salesforce init: Detecting UCP mode via getUcpCredentials()...');
+console.log("Params: " + JSON.stringify(params));
 var _ucpCreds = getUcpCredentials();
-console.log('Salesforce init: getUcpCredentials() returned credentials: ' + (_ucpCreds ? 'present' : 'null'));
 if (_ucpCreds) {
-    console.log('Salesforce init: UCP mode — using BE-managed credentials');
+    var _ucpToken = _ucpCreds.access_token || _ucpCreds.key || '';
+    var _ucpTokenPreview = _ucpToken ? _ucpToken.substring(0, 10) + '...' : '<empty>';
+    var _instanceUrl = params.InstanceURL || '';
+    console.log('Salesforce init: UCP mode ENABLED. '
+        + 'cred_type=' + (_ucpCreds.type || 'N/A')
+        + ', token_type=' + (_ucpCreds.token_type || 'N/A')
+        + ', token_preview=' + _ucpTokenPreview
+        + ', expires_at=' + (_ucpCreds.expires_at || 'static')
+        + ', instance_url=' + _instanceUrl);
     SESSION_DATA = {
-        access_token: _ucpCreds.access_token || _ucpCreds.key,
-        instance_url: "https://d4k0000039io4uae-dev-ed.my.salesforce.com"
+        access_token: _ucpToken,
+        instance_url: _instanceUrl
     };
-    console.log('Salesforce init: SESSION_DATA set with instance_url=' + SESSION_DATA.instance_url);
+    console.log('Salesforce init: SESSION_DATA initialized for UCP mode. '
+        + 'instance_url=' + SESSION_DATA.instance_url
+        + ', has_access_token=' + (SESSION_DATA.access_token ? 'yes' : 'no'));
 } else {
-    console.log('Salesforce init: Legacy mode — performing OAuth2 password grant via getNewToken()');
+    console.log('Salesforce init: UCP not available — legacy mode. '
+        + 'Performing OAuth2 password grant via getNewToken()...');
     SESSION_DATA = getNewToken();
-    console.log('Salesforce init: Legacy token obtained, instance_url=' + (SESSION_DATA ? SESSION_DATA.instance_url : 'null'));
+    console.log('Salesforce init: Legacy token obtained. '
+        + 'instance_url=' + (SESSION_DATA ? SESSION_DATA.instance_url : 'null')
+        + ', has_access_token=' + (SESSION_DATA && SESSION_DATA.access_token ? 'yes' : 'no'));
 }
 // The command input arg holds the command sent from the user.
 var response;

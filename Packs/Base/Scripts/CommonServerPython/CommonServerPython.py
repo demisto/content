@@ -9765,18 +9765,45 @@ if 'requests' in sys.modules:
             self._ucp_creds_expiry = 0         # epoch timestamp
 
             try:
+                demisto.debug('UCP: Calling demisto.unifiedConnectorMetadata() for UCP detection...')
                 connector_info = demisto.unifiedConnectorMetadata()
-                
+
                 if connector_info:
-                    demisto.debug('BaseClient: Unified Connector detected with info: {}'.format(connector_info))
+                    profiles = connector_info.get('connectionProfiles', [])
+                    demisto.info(
+                        'UCP: Unified Connector detected. connectorId={}, instanceId={}, '
+                        'handlerId={}, num_profiles={}'.format(
+                            connector_info.get('connectorId', 'N/A'),
+                            connector_info.get('instanceId', 'N/A'),
+                            connector_info.get('handlerId', 'N/A'),
+                            len(profiles),
+                        )
+                    )
+                    for i, p in enumerate(profiles):
+                        demisto.debug(
+                            'UCP: Profile[{}]: method_unique_id={}, profile_id={}, type={}, '
+                            'capability={}, sub_capabilities={}'.format(
+                                i,
+                                p.get('method_unique_id', 'N/A'),
+                                p.get('profile_id', 'N/A'),
+                                p.get('type', 'N/A'),
+                                p.get('capability', 'N/A'),
+                                p.get('sub_capabilities'),
+                            )
+                        )
                     self._ucp_enabled = True
                     self._ucp_info = connector_info
-                    self._ucp_method_unique_id = connector_info.get("connectionProfiles", [{}])[0].get("method_unique_id")
-                    demisto.debug(
-                        'BaseClient: UCP enabled, profile={}'.format(self._ucp_method_unique_id)
+                    # Resolve which profile to use for the current command
+                    self._ucp_method_unique_id = self._resolve_ucp_profile()
+                    demisto.info(
+                        'UCP: Enabled. Resolved method_unique_id={}, base_url={}'.format(
+                            self._ucp_method_unique_id, self._base_url
+                        )
                     )
+                else:
+                    demisto.debug('UCP: unifiedConnectorMetadata() returned empty — legacy auth mode.')
             except Exception as e:
-                demisto.debug('UCP detection skipped: {}'.format(e))
+                demisto.debug('UCP: Detection skipped (not available on this server version): {}'.format(e))
             # ── End UCP ──
 
         def _apply_connectus_headers(self, integration_headers):
@@ -9804,58 +9831,91 @@ if 'requests' in sys.modules:
         # ── UCP: Refresh threshold (seconds). Overridable by subclass. ──
         _UCP_REFRESH_THRESHOLD_SECONDS = 30
 
+        # ── UCP: Hardcoded command-to-capability mapping. ──
+        # Default: all commands use 'automation-and-remediation'.
+        # Specific commands override the default.
+        _UCP_DEFAULT_CAPABILITY = 'automation-and-remediation'
+        _UCP_COMMAND_CAPABILITIES = {
+            'fetch-incidents': 'collection',
+        }
+
         def _resolve_ucp_profile(self):
-            """Resolve which connection profile to use for the current command.
+            """Resolve which connection profile's method_unique_id to use for the current command.
 
             Resolution order:
             1. Single profile → use it (no ambiguity)
-            2. Per-command capability from YML metadata
-            3. Default capability from YML metadata
-            4. Fallback: best profile by auth type priority
+            2. Hardcoded command-to-capability mapping:
+               - 'fetch-incidents' → 'collection'
+               - All other commands → 'automation-and-remediation'
+            3. If no profile matches the required capability → raise DemistoException
+
+            Each profile has a single 'capability' field (string).
+
+            Returns:
+                str: The method_unique_id of the selected profile.
+
+            Raises:
+                DemistoException: If no profiles are available or no profile matches
+                    the required capability for the current command.
             """
             profiles = self._ucp_info.get('connectionProfiles', [])
-
-            if len(profiles) == 1:
-                return profiles[0]['profileInstanceId']
-
-            # Check command-to-capability mapping from integration YML
             cmd = demisto.command()
-            calling_context = demisto.callingContext.get('context', {})
-            ucp_meta = calling_context.get('connectus', {})
 
-            capability = ucp_meta.get('command_capabilities', {}).get(cmd)
-            if not capability:
-                capability = ucp_meta.get('default_capability')
-
-            if capability:
-                for profile in profiles:
-                    if capability in profile.get('capabilities', []):
-                        demisto.debug(
-                            'UCP: Command "{}" -> capability "{}" -> profile "{}"'.format(
-                                cmd, capability, profile['profileInstanceId']
-                            )
-                        )
-                        return profile['profileInstanceId']
-
-            # Fallback: best profile by auth type priority
-            priority = {
-                'oauth2_client_credentials': 1,
-                'oauth2_code_exchange': 2,
-                'api_key': 3,
-                'plain': 4,
-            }
             if not profiles:
+                demisto.error('UCP: _resolve_ucp_profile: no connection profiles available')
                 raise DemistoException('UCP enabled but no connection profiles available')
-            sorted_profiles = sorted(
-                profiles, key=lambda p: priority.get(p.get('type', ''), 99)
-            )
-            selected = sorted_profiles[0]
+
+            # Step 1: Single profile — no ambiguity
+            if len(profiles) == 1:
+                selected = profiles[0]
+                demisto.debug(
+                    'UCP: _resolve_ucp_profile: single profile available. '
+                    'method_unique_id={}, capability={}, type={}'.format(
+                        selected.get('method_unique_id'),
+                        selected.get('capability'),
+                        selected.get('type'),
+                    )
+                )
+                return selected['method_unique_id']
+
+            # Step 2: Resolve capability for the current command
+            target_capability = self._UCP_COMMAND_CAPABILITIES.get(cmd, self._UCP_DEFAULT_CAPABILITY)
             demisto.debug(
-                'UCP: Fallback profile -> "{}" (type={})'.format(
-                    selected['profileInstanceId'], selected.get('type')
+                'UCP: _resolve_ucp_profile: command="{}" -> target_capability="{}" '
+                '(from {} mapping)'.format(
+                    cmd, target_capability,
+                    'per-command' if cmd in self._UCP_COMMAND_CAPABILITIES else 'default',
                 )
             )
-            return selected['profileInstanceId']
+
+            # Step 3: Find profile matching the capability
+            for profile in profiles:
+                if profile.get('capability') == target_capability:
+                    demisto.debug(
+                        'UCP: _resolve_ucp_profile: MATCH. command="{}" -> capability="{}" '
+                        '-> method_unique_id={}, type={}'.format(
+                            cmd, target_capability,
+                            profile['method_unique_id'], profile.get('type'),
+                        )
+                    )
+                    return profile['method_unique_id']
+
+            # No matching profile — raise error
+            available_capabilities = [p.get('capability') for p in profiles]
+            demisto.error(
+                'UCP: _resolve_ucp_profile: NO MATCH. command="{}" requires capability="{}" '
+                'but available capabilities are: {}. Profiles: {}'.format(
+                    cmd, target_capability, available_capabilities,
+                    [(p.get('method_unique_id'), p.get('capability'), p.get('type')) for p in profiles],
+                )
+            )
+            raise DemistoException(
+                'UCP: No connection profile found for capability "{}". '
+                'Command "{}" cannot be executed. '
+                'Available capabilities: {}'.format(
+                    target_capability, cmd, available_capabilities,
+                )
+            )
 
         def _get_ucp_credentials(self):
             """Get UCP credentials with TTL-aware caching.
@@ -9870,11 +9930,32 @@ if 'requests' in sys.modules:
             if self._ucp_creds_cache is not None:
                 if self._ucp_creds_expiry == 0:
                     # Static creds (api_key, plain) — never expire
+                    demisto.debug('UCP: _get_ucp_credentials: returning cached static credentials (type={})'.format(
+                        self._ucp_creds_cache.get('type', 'unknown')
+                    ))
                     return self._ucp_creds_cache
+                remaining_ttl = self._ucp_creds_expiry - now
                 if now < (self._ucp_creds_expiry - self._UCP_REFRESH_THRESHOLD_SECONDS):
+                    demisto.debug(
+                        'UCP: _get_ucp_credentials: returning cached credentials (type={}, '
+                        'remaining_ttl={:.0f}s, refresh_threshold={}s)'.format(
+                            self._ucp_creds_cache.get('type', 'unknown'),
+                            remaining_ttl,
+                            self._UCP_REFRESH_THRESHOLD_SECONDS,
+                        )
+                    )
                     return self._ucp_creds_cache
+                demisto.debug(
+                    'UCP: _get_ucp_credentials: cache expired or within refresh threshold '
+                    '(remaining_ttl={:.0f}s, threshold={}s). Fetching fresh credentials...'.format(
+                        remaining_ttl, self._UCP_REFRESH_THRESHOLD_SECONDS
+                    )
+                )
 
             # Fetch fresh credentials from BE
+            demisto.debug('UCP: _get_ucp_credentials: calling demisto.getUCPCredentials(method_unique_id={})'.format(
+                self._ucp_method_unique_id
+            ))
             creds = demisto.getUCPCredentials(self._ucp_method_unique_id)
 
             # Determine cache expiry
@@ -9883,15 +9964,23 @@ if 'requests' in sys.modules:
                 try:
                     dt = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
                     self._ucp_creds_expiry = dt.timestamp()
-                except (ValueError, AttributeError):
+                    demisto.debug('UCP: _get_ucp_credentials: parsed expires_at={}, epoch={:.0f}, ttl={:.0f}s'.format(
+                        expires_at, self._ucp_creds_expiry, self._ucp_creds_expiry - now
+                    ))
+                except (ValueError, AttributeError) as parse_err:
                     self._ucp_creds_expiry = now + 300
+                    demisto.debug('UCP: _get_ucp_credentials: failed to parse expires_at={} ({}), '
+                                  'using conservative 300s TTL'.format(expires_at, parse_err))
             else:
                 self._ucp_creds_expiry = 0
+                demisto.debug('UCP: _get_ucp_credentials: no expires_at in response — static credentials, cached forever')
 
             self._ucp_creds_cache = creds
-            demisto.debug(
-                'UCP: Fetched fresh credentials, type={}, expires_at={}'.format(
-                    creds.get('type'), expires_at or 'static'
+            demisto.info(
+                'UCP: Fetched fresh credentials from BE. type={}, token_type={}, expires_at={}'.format(
+                    creds.get('type', 'unknown'),
+                    creds.get('token_type', 'N/A'),
+                    expires_at or 'static (no expiry)',
                 )
             )
             return creds
@@ -9908,30 +9997,41 @@ if 'requests' in sys.modules:
             (custom header name, query param, request body, etc.).
 
             Args:
-                credentials: dict from demisto.getCredentials()
+                credentials: dict from demisto.getUCPCredentials()
                 ctx: UcpRequestContext — mutate this to apply credentials.
                      Do NOT return anything.
             """
             cred_type = credentials.get('type')
+            demisto.debug('UCP: _apply_ucp_credentials: applying credentials of type={}'.format(cred_type))
 
             if ctx.headers is None:
                 ctx.headers = {}
 
             if cred_type == 'oauth2':
                 token_type = credentials.get('token_type', 'Bearer')
-                ctx.headers['Authorization'] = '{} {}'.format(
-                    token_type, credentials.get('access_token')
+                access_token = credentials.get('access_token', '')
+                ctx.headers['Authorization'] = '{} {}'.format(token_type, access_token)
+                # Log token prefix only (first 10 chars) for debugging without exposing the full token
+                token_preview = access_token[:10] + '...' if len(access_token) > 10 else '<empty>'
+                demisto.debug(
+                    'UCP: _apply_ucp_credentials: set Authorization header: {} {}... '
+                    '(token_preview={})'.format(token_type, token_preview, token_preview)
                 )
             elif cred_type == 'api_key':
-                ctx.headers['Authorization'] = 'Bearer {}'.format(
-                    credentials.get('key')
+                key = credentials.get('key', '')
+                ctx.headers['Authorization'] = 'Bearer {}'.format(key)
+                key_preview = key[:6] + '...' if len(key) > 6 else '<empty>'
+                demisto.debug(
+                    'UCP: _apply_ucp_credentials: set Authorization: Bearer {}... (api_key)'.format(key_preview)
                 )
             elif cred_type == 'plain':
-                ctx.auth = (
-                    credentials.get('username', ''),
-                    credentials.get('password', ''),
+                username = credentials.get('username', '')
+                ctx.auth = (username, credentials.get('password', ''))
+                demisto.debug(
+                    'UCP: _apply_ucp_credentials: set basic auth for username={}'.format(username)
                 )
             else:
+                demisto.error('UCP: _apply_ucp_credentials: unknown credential type: {}'.format(cred_type))
                 raise DemistoException(
                     'Unknown UCP credential type: {}'.format(cred_type)
                 )
@@ -10187,6 +10287,9 @@ if 'requests' in sys.modules:
 
                 # ── UCP: Inject credentials ──
                 if self._ucp_enabled:
+                    demisto.debug(
+                        'UCP: _http_request: injecting credentials for {} {}'.format(method, address)
+                    )
                     ucp_creds = self._get_ucp_credentials()
                     ctx = UcpRequestContext(
                         headers=dict(headers) if headers else {},
@@ -10201,6 +10304,14 @@ if 'requests' in sys.modules:
                     auth = ctx.auth
                     data = ctx.data
                     json_data = ctx.json_data
+                    demisto.debug(
+                        'UCP: _http_request: credentials injected. '
+                        'has_auth_header={}, has_auth_tuple={}, has_params={}'.format(
+                            'Authorization' in (headers or {}),
+                            auth is not None,
+                            params is not None,
+                        )
+                    )
                 # ── End UCP ──
 
                 # Execute
@@ -10220,7 +10331,12 @@ if 'requests' in sys.modules:
 
                 # ── UCP: Single 401 retry with cache invalidation ──
                 if self._ucp_enabled and res.status_code == 401:
-                    demisto.debug('UCP: Got 401, invalidating cache and retrying')
+                    demisto.info(
+                        'UCP: _http_request: received 401 for {} {}. '
+                        'Invalidating credential cache and retrying with fresh credentials...'.format(
+                            method, address
+                        )
+                    )
                     self._ucp_creds_cache = None
                     ucp_creds = self._get_ucp_credentials()
                     ctx = UcpRequestContext(
@@ -10231,6 +10347,9 @@ if 'requests' in sys.modules:
                         json_data=json_data,
                     )
                     self._apply_ucp_credentials(ucp_creds, ctx)
+                    demisto.debug(
+                        'UCP: _http_request: retrying {} {} with refreshed credentials'.format(method, address)
+                    )
                     res = self._session.request(
                         method,
                         address,
@@ -10243,6 +10362,9 @@ if 'requests' in sys.modules:
                         auth=ctx.auth,
                         timeout=request_timeout,
                         **kwargs
+                    )
+                    demisto.debug(
+                        'UCP: _http_request: 401 retry result: status_code={}'.format(res.status_code)
                     )
                 # ── End UCP ──
 

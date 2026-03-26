@@ -40,7 +40,7 @@ class Client(BaseClient):
         """Perform OAuth2 password grant token exchange (legacy mode only).
 
         In UCP mode, this method is never called — the BE provides
-        a ready-to-use access token via demisto.getCredentials().
+        a ready-to-use access token via demisto.getUCPCredentials().
         """
         params = {
             "client_id": client_id,
@@ -336,18 +336,17 @@ def get_mapping_fields_command(client):
 
 
 def main():
-    import time
     params = demisto.params()
-    demisto.info("Starting Salesforce IAM integration")
-    metadata = demisto.unifiedConnectorMetadata()
-    demisto.info(f"UCP Metadata: {metadata}")
-    demisto.info("Attempting to retrieve UCP credentials...")
-    
     args = demisto.args()
     command = demisto.command()
 
+    demisto.info("Salesforce IAM: Starting. command={}".format(command))
+    demisto.debug("Salesforce IAM: Raw params: {}".format(params))
+
     # get the service API url
-    base_url = "https://d4k0000039io4uae-dev-ed.my.salesforce.com"
+    base_url = params.get("url", "")
+    if not base_url:
+        return_error("Instance URL must be provided.")
     # checks for '/' at the end url, if it is not available add it
     if base_url[-1] != "/":
         base_url += "/"
@@ -364,9 +363,15 @@ def main():
     is_enable_enabled = params.get("enable_user_enabled")
     create_if_not_exists = params.get("create_if_not_exists")
 
-    LOG("Command being called is {}".format(command))
+    demisto.debug(
+        "Salesforce IAM: config: base_url={}, verify={}, proxy={}, "
+        "mapper_in={}, mapper_out={}".format(
+            base_url, verify_certificate, proxy, mapper_in, mapper_out
+        )
+    )
 
     try:
+        demisto.debug("Salesforce IAM: Creating Client instance (BaseClient will detect UCP mode)...")
         client = Client(
             demisto_params=params,
             base_url=base_url,
@@ -379,7 +384,10 @@ def main():
         # In UCP mode, BaseClient handles auth transparently —
         # skip credential extraction entirely.
         if not client._ucp_enabled:
-            demisto.info("Running in legacy auth mode. Non UCP")
+            demisto.info(
+                "Salesforce IAM: UCP not enabled — running in legacy auth mode. "
+                "Extracting credentials from params and performing OAuth2 password grant..."
+            )
             username = params.get("credentials").get("identifier")
             password = params.get("credentials").get("password")
             client_id = (
@@ -394,19 +402,36 @@ def main():
                 return_error(
                     "Consumer Key and Consumer Secret must be provided."
                 )
+            demisto.debug(
+                "Salesforce IAM: Legacy auth: username={}, client_id={} (secrets redacted)".format(
+                    username, client_id
+                )
+            )
             client.setup_legacy_auth(
                 client_id, client_secret, username, password
             )
+            demisto.info("Salesforce IAM: Legacy OAuth2 token exchange completed successfully.")
+        else:
+            demisto.info(
+                "Salesforce IAM: UCP mode enabled (method_unique_id={}). "
+                "Skipping legacy credential extraction — BaseClient will inject auth per-request.".format(
+                    client._ucp_method_unique_id
+                )
+            )
+
+        demisto.debug("Salesforce IAM: Dispatching command={}".format(command))
 
         if command == "test-module":
-            demisto.info("Running test-module command.")
+            demisto.info("Salesforce IAM: Running test-module command.")
             return_results(test_module(client))
 
         elif command == "iam-get-user":
+            demisto.debug("Salesforce IAM: Executing iam-get-user")
             user_profile = get_user_command(client, args, mapper_in, mapper_out)
             return_results(user_profile)
 
         elif command == "iam-create-user":
+            demisto.debug("Salesforce IAM: Executing iam-create-user")
             user_profile = create_user_command(
                 client, args, mapper_out,
                 is_create_enabled, is_update_enabled, is_enable_enabled,
@@ -414,6 +439,7 @@ def main():
             return_results(user_profile)
 
         elif command == "iam-update-user":
+            demisto.debug("Salesforce IAM: Executing iam-update-user")
             user_profile = update_user_command(
                 client, args, mapper_out,
                 is_update_enabled, is_enable_enabled,
@@ -422,15 +448,20 @@ def main():
             return_results(user_profile)
 
         elif command == "iam-disable-user":
+            demisto.debug("Salesforce IAM: Executing iam-disable-user")
             user_profile = disable_user_command(
                 client, args, mapper_out, is_disable_enabled,
             )
             return_results(user_profile)
 
         elif command == "get-mapping-fields":
+            demisto.debug("Salesforce IAM: Executing get-mapping-fields")
             return_results(get_mapping_fields_command(client))
 
+        demisto.info("Salesforce IAM: command={} completed successfully.".format(command))
+
     except Exception as e:
+        demisto.error("Salesforce IAM: command={} failed with error: {}".format(command, e))
         return_error("Failed to execute {} command. Error: {}.".format(command, e))
 
 

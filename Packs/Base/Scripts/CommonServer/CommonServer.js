@@ -2127,18 +2127,30 @@ function fileResult(file_name, file_content,entryType=null, human_readable_optio
  */
 function getUcpConnectorInfo() {
     try {
-        console.log('UCP: Calling unifiedConnectorMetadata()...');
+        console.log('UCP: getUcpConnectorInfo: calling unifiedConnectorMetadata()...');
         var info = unifiedConnectorMetadata();
         console.log('UCP: unifiedConnectorMetadata() returned: ' + JSON.stringify(info));
         if (info && info.connectionProfiles && info.connectionProfiles.length > 0) {
-            console.log('UCP: Detected ' + info.connectionProfiles.length + ' connection profile(s)');
+            console.log('UCP: getUcpConnectorInfo: Unified Connector detected. '
+                + 'connectorId=' + (info.connectorId || 'N/A')
+                + ', instanceId=' + (info.instanceId || 'N/A')
+                + ', handlerId=' + (info.handlerId || 'N/A')
+                + ', num_profiles=' + info.connectionProfiles.length);
+            for (var i = 0; i < info.connectionProfiles.length; i++) {
+                var p = info.connectionProfiles[i];
+                console.log('UCP: getUcpConnectorInfo: Profile[' + i + ']: '
+                    + 'method_unique_id=' + (p.method_unique_id || 'N/A')
+                    + ', profile_id=' + (p.profile_id || 'N/A')
+                    + ', type=' + (p.type || 'N/A')
+                    + ', capability=' + (p.capability || 'N/A')
+                    + ', sub_capabilities=' + JSON.stringify(p.sub_capabilities));
+            }
             return info;
         }
-        console.log('UCP: No connection profiles found — legacy mode');
+        console.log('UCP: getUcpConnectorInfo: unifiedConnectorMetadata() returned empty or no profiles — legacy auth mode');
     } catch (e) {
-        console.log('UCP: unifiedConnectorMetadata() not available (legacy mode): ' + e);
+        console.log('UCP: getUcpConnectorInfo: unifiedConnectorMetadata() not available (legacy mode): ' + e);
     }
-    console.log('UCP: Not in UCP mode, returning null');
     return null;
 }
 
@@ -2157,20 +2169,38 @@ function getUcpConnectorInfo() {
  *   For plain:   {type: 'plain', username: '...', password: '...'}
  */
 function getUcpCredentials() {
+    console.log('UCP: getUcpCredentials: starting credential retrieval...');
     var info = getUcpConnectorInfo();
     if (!info) {
-        console.log('UCP: getUcpCredentials() — not in UCP mode, returning null');
+        console.log('UCP: getUcpCredentials: not in UCP mode, returning null');
         return null;
     }
 
+    var method_unique_id = 'unknown';
     try {
-        console.log('UCP: Calling getUCPCredentials(<method_unique_id>)...');
-        method_unique_id = info["connectionProfiles"][0]["method_unique_id"];
+        method_unique_id = info.connectionProfiles[0].method_unique_id;
+        console.log('UCP: getUcpCredentials: calling getUCPCredentials(method_unique_id=' + method_unique_id + ')...');
         var creds = getUCPCredentials(method_unique_id);
-        console.log('UCP: getUCPCredentials() returned credentials of type: ' + (creds ? creds.type : 'null'));
+        if (creds) {
+            // Log credential metadata without exposing secrets
+            var tokenPreview = '';
+            if (creds.type === 'oauth2' && creds.access_token) {
+                tokenPreview = creds.access_token.substring(0, 10) + '...';
+            } else if (creds.type === 'api_key' && creds.key) {
+                tokenPreview = creds.key.substring(0, 6) + '...';
+            } else if (creds.type === 'plain' && creds.username) {
+                tokenPreview = 'username=' + creds.username;
+            }
+            console.log('UCP: getUcpCredentials: SUCCESS. type=' + creds.type
+                + ', token_type=' + (creds.token_type || 'N/A')
+                + ', expires_at=' + (creds.expires_at || 'static')
+                + ', preview=' + tokenPreview);
+        } else {
+            console.log('UCP: getUcpCredentials: getUCPCredentials() returned null/undefined');
+        }
         return creds;
     } catch (e) {
-        console.log('UCP: getUCPCredentials() FAILED for profile ' + method_unique_id + ': ' + e);
-        throw 'UCP: Failed to get credentials for profile ' + method_unique_id + ': ' + e;
+        console.log('UCP: getUcpCredentials: FAILED for method_unique_id=' + method_unique_id + ': ' + e);
+        throw 'UCP: Failed to get credentials for method_unique_id=' + method_unique_id + ': ' + e;
     }
 }
