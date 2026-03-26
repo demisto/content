@@ -181,6 +181,42 @@ class Client(BaseClient):
         else:
             raise DemistoException(f"The request failed with status code {res.status_code}.\nMessage: {res.text}")
 
+    def _do_http_request(
+        self,
+        method: str,
+        url_suffix: str,
+        data: dict | list | None,
+        params: dict | None,
+        resp_type: str,
+    ):
+        """Executes a single authenticated HTTP request to the ZIA API.
+
+        Injects the current Bearer token Authorization header and retries
+        automatically on HTTP 429 (rate limit) responses up to 3 times.
+
+        Args:
+            method: HTTP method string (e.g. "GET", "POST", "PUT", "DELETE").
+            url_suffix: The API path suffix appended to BASE_API_URL.
+            data: Optional JSON-serializable body payload (dict or list).
+            params: Optional URL query parameters dict.
+            resp_type: Response parsing mode passed to _http_request.
+
+        Returns:
+            The parsed API response (type depends on resp_type).
+        """
+        return self._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            json_data=data,
+            params=params,
+            headers=self._get_auth_headers(),
+            error_handler=self._error_handler,
+            ok_codes=(200, 204),
+            resp_type=resp_type,
+            retries=3,
+            status_list_to_retry=[429],
+        )
+
     def api_request(
         self,
         method: str,
@@ -210,37 +246,15 @@ class Client(BaseClient):
             The parsed API response (type depends on resp_type).
         """
         try:
-            return self._http_request(
-                method=method,
-                url_suffix=url_suffix,
-                json_data=data,
-                params=params,
-                headers=self._get_auth_headers(),
-                error_handler=self._error_handler,
-                ok_codes=(200, 204),
-                resp_type=resp_type,
-                retries=3,
-                status_list_to_retry=[429],
-            )
+            return self._do_http_request(method, url_suffix, data, params, resp_type)
         except DemistoException as e:
-            if "401" in str(e):
+            if getattr(getattr(e, "res", None), "status_code", None) == 401:
                 demisto.debug("401 detected - forcing token refresh and retrying request.")
                 ctx = get_integration_context() or {}
                 ctx.pop("access_token", None)
                 ctx.pop("token_expires_at", None)
                 set_integration_context(ctx)
-                return self._http_request(
-                    method=method,
-                    url_suffix=url_suffix,
-                    json_data=data,
-                    params=params,
-                    headers=self._get_auth_headers(),
-                    error_handler=self._error_handler,
-                    ok_codes=(200, 204),
-                    resp_type=resp_type,
-                    retries=3,
-                    status_list_to_retry=[429],
-                )
+                return self._do_http_request(method, url_suffix, data, params, resp_type)
             raise
 
     def activate_changes(self) -> dict:
