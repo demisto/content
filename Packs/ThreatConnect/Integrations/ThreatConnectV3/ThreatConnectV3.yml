@@ -104,7 +104,7 @@ configuration:
   required: false
   section: Collect
   advanced: true
-- additionalinfo: A free text TQL filter to apply to the fetch. This filter is added as AND to the other filters. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide.
+- additionalinfo: A free text TQL filter to apply to the fetch. This filter is added as an AND to the other filters. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide.
   display: TQL Filter
   name: tql_filter
   type: 0
