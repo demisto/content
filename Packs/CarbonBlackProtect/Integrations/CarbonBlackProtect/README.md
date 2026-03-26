@@ -329,7 +329,7 @@ Search for file rules. For more information, see the Carbon Black documentation:
 | CBP.FileRule.ID | String | ID of the rule. |
 | CBP.FileRule.Name | String | Name of the rule. |
 | CBP.FileRule.PolicyIDs | String | Policies of which this rule is a part. |
-| CBP.FileRule.ReportOnly | String | Whether this rule is "reporting only, or also "enforcing". |
+| CBP.Only | String | Whether this rule is "reporting only, or also "enforcing". |
 
 ### cbp-fileRule-get
 
@@ -357,7 +357,7 @@ Gets the file rule. For more information, see the Carbon Black documentation: ht
 | CBP.FileRule.ID | String | ID of the rule. |
 | CBP.FileRule.Name | String | Name of the rule. |
 | CBP.FileRule.PolicyIDs | String | Policies of which this rule is a part. |
-| CBP.FileRule.ReportOnly | String | Whether this rule is "reporting only, or also "enforcing". |
+| CBP.Only | String | Whether this rule is "reporting only, or also "enforcing". |
 
 ### cbp-fileRule-delete
 
@@ -844,3 +844,40 @@ Creates or updates a file rule. For more information, see the Carbon Black docum
 | CBP.FileRule.Name | String | The rule name. |
 | CBP.FileRule.PolicyIDs | String | The policies this rule belongs to. |
 | CBP.FileRule.ReportOnly | String | Is this rule "reporting only" or is it also "enforcing". |
+
+### cbp-disable-user
+
+***
+Sends request to disable user account
+
+#### Base Command
+
+`cbp-disable-user`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | ID of the user to disable. Retrieved from cbp-retrieve-user-data. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### cbp-retrieve-user-data
+
+***
+Retrieve all user account data
+
+#### Base Command
+
+`cbp-retrieve-user-data`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_email | Email address of user account to retrieve data for. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
