@@ -693,7 +693,7 @@ script:
       - NE
       - CONTAINS
       - STARTSWITH
-      - ENDWITH
+      - ENDSWITH
       - IN
     description: Fetches all indicators that have a tag.
     name: tc-get-indicators-by-tag
