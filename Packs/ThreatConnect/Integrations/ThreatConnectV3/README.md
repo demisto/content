@@ -30,7 +30,7 @@ For more information - click [here](https://training.threatconnect.com/learn/art
     | Default Organization | The default owner for the integration | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, for example, 12 hours, 7 days, 3 months, 1 year) | | True |
     | Maximum number of incidents to fetch | The maximum amount of incidents to fetch per run. Default is 200. | False |
-    | Trust any certificate (not secure) | Whether or not to trust any certificate| False |
+    | Trust any certificate (not secure) | Whether to trust any certificate| False |
     | Use system proxy settings | Whether or not to use proxy | False |
     | Tags filter for the fetch | Free text box to add comma-separated tags to filter the fetched incidents by. | False |
     | Group Type filter for the fetch | The group type to filter the fetched incidents by. | False |
