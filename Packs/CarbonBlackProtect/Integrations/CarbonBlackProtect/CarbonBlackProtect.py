@@ -2076,6 +2076,33 @@ def resolve_approval_request(id, resolution, requestor_email=None, res_comments=
     return http_request("POST", "/approvalRequest", data=body_params)
 
 
+def retrieve_user_data():
+    """
+    Sends request to get user information
+    :param user_email: user email address
+    :return: Result of the request
+    """
+    args = demisto.args()
+    user_email = args.get("user_email")
+    query = f"name:{user_email}"
+    params = {'q': query}
+    return_outputs(http_request("GET", f"/user", params=params))
+
+
+def disable_user_command():
+    """
+    Sends request to disable user account
+    :param user_id: ID of user to disable - retrieved from cbp-retrieve-user-data
+    :return: Result of the request
+    """
+    args = demisto.args()
+    user_id = args.get("user_id")
+    payload = {
+        "enabled": False
+    }
+    return_outputs(http_request("PUT", f"/user/{user_id}", data=json.dumps(payload)))
+
+
 def fetch_incidents():
     """
     Fetches incident using the events API
@@ -2176,6 +2203,10 @@ def main():
                 search_connector_command()
             elif command == "cbp-approvalRequest-resolve":
                 resolve_approval_request_command()
+            elif command == "cbp-user-disable":
+                disable_user_command()
+            elif command == "cbp-user-data-retrieve":
+                retrieve_user_data()
             else:
                 return_error(f"Command {command} is not supported.")
         # Log exceptions
