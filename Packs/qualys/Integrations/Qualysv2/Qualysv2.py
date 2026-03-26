@@ -1621,7 +1621,7 @@ class Client(BaseClient):
         err_msg += f"Error in API call [{res.status_code}] - {res.reason}"
         try:
             simple_response = get_simple_response_from_raw(parse_raw_response(res.text))
-            err_msg = f'{err_msg}\nError Code: {simple_response.get("CODE")}\nError Message: {simple_response.get("TEXT")}'
+            err_msg = f"{err_msg}\nError Code: {simple_response.get('CODE')}\nError Message: {simple_response.get('TEXT')}"
         except Exception:
             try:
                 # Try to parse json error response
@@ -2538,7 +2538,7 @@ def build_ip_list_output(**kwargs) -> tuple[dict[str, List[str]], str]:
     limit_msg = ""
 
     if "STATUS" in handled_result:
-        readable_output += f'### Current Status: {handled_result["STATUS"]}\n'
+        readable_output += f"### Current Status: {handled_result['STATUS']}\n"
 
     if command_parse_and_output_data["collection_name"] in handled_result:
         asset_collection = handled_result[command_parse_and_output_data["collection_name"]]
@@ -2992,8 +2992,8 @@ def send_assets_and_vulnerabilities_to_xsiam(
     # Set to 1 if not done pulling to signal to the server that the dataset snapshot is not yet complete
     total_assets_to_report = 1 if has_next_page else cumulative_assets_count
     total_vulns_to_report = 1 if has_next_page else cumulative_vulns_count
-
     is_closing_snapshot = not has_next_page
+
     demisto.debug(
         f"Sending {len(assets)} assets to XSIAM with snapshot ID: {snapshot_id}. "
         f"Total assets collected so far: {cumulative_assets_count}. "

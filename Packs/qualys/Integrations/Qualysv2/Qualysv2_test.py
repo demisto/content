@@ -1994,6 +1994,10 @@ def test_fetch_assets_and_vulnerabilities_by_date_last_page_empty(mocker: Mocker
         - Ensure a snapshot closing signal is sent to XSIAM with a placeholder [{}] and the correct items_count.
         - Ensure the stage transitions to "vulnerabilities".
     """
+    from contextlib import nullcontext
+
+    mocker.patch("Qualysv2.ExecutionTimeout", return_value=nullcontext(), create=True)
+
     last_total_assets = 500
     last_run = {"stage": "assets", "total_assets": last_total_assets, "snapshot_id": SNAPSHOT_ID}
 
