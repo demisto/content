@@ -25,6 +25,7 @@ UPDATE_INCIDENT_URL = "public/incident-feedback"
 SLEEP_TIME_URL = "public/seconds-between-incident-notifications-pull"
 FETCH_SLEEP = 5  # sleep between fetches (in seconds)
 LAST_FETCH_TIME = "last_fetch_time"
+DEFAULT_FIRST_FETCH = "60 minutes"
 ACCESS_TOKEN = "access_token"
 RESET_KEY = "reset"
 CREDENTIAL = "credential"
@@ -656,15 +657,16 @@ def long_running_execution_command(client: Client, params: dict) -> None:
     demisto.setIntegrationContext({ACCESS_TOKEN: ""})
     regions = params.get("dlp_regions", "")
     incident_type = params.get("incidentType", "Data Loss Prevention")
-
     sleep_time = FETCH_SLEEP
-    last_time_sleep_interval_queries = math.floor(datetime.now(tz=UTC).timestamp())
+    last_time_sleep_interval_queries = math.floor(datetime.now().timestamp())
 
-    first_fetch_timestamp = math.floor((datetime.now(tz=UTC) - timedelta(minutes=5)).timestamp())
+    first_fetch = params.get("first_fetch") or DEFAULT_FIRST_FETCH
+    first_fetch_datetime = arg_to_datetime(first_fetch, settings={"TIMEZONE": "UTC"})
+    first_fetch_timestamp = int(first_fetch_datetime.timestamp())  # type: ignore
 
     while True:
         try:
-            current_time = math.floor(datetime.now(tz=UTC).timestamp())
+            current_time = math.floor(datetime.now().timestamp())
             fetch_notifications(
                 client=client,
                 regions=regions,
