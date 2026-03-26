@@ -1,8 +1,8 @@
 ## Overview
 
-Uptycs is a cloud-native security analytics platform that provides unified visibility across endpoints, cloud workloads, and containers. It leverages osquery-based telemetry and threat intelligence to detect threats, monitor compliance, and investigate security incidents across hybrid environments.
+Uptycs is a cloud-native security analytics platform that provides unified visibility across endpoints, cloud workloads, and containers. It leverages Osquery-based telemetry and threat intelligence to detect threats, monitor compliance, and investigate security incidents across hybrid environments.
 
-This integration collects security alerts from the Uptycs platform and ingests them into Cortex XSIAM for centralized security monitoring and incident response.
+This integration collects security alerts from the Uptycs platform and ingests them into Cortex XSIAM for centralized security monitoring and case (incident) response.
 
 ## Authentication
 

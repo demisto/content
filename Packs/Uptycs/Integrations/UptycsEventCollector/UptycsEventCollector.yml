@@ -65,12 +65,12 @@ script:
     arguments:
     - name: start_time
       description: >-
-        The start time to fetch alerts from.
+        The start time to fetch alerts.
         Supports relative time (e.g., "3 days ago", "2 hours ago", "now")
         or absolute dates (ISO 8601 format, e.g., "2024-12-01" or "2024-12-01T10:00:00Z").
     - name: end_time
       description: >-
-        The end time to fetch alerts until.
+        The end time to fetch alerts.
         Supports relative time (e.g., "1 hour ago", "now")
         or absolute dates (ISO 8601 format, e.g., "2024-12-01" or "2024-12-01T10:00:00Z").
     - name: limit
