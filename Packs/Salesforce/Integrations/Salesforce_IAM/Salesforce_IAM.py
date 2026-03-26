@@ -36,13 +36,34 @@ class Client(BaseClient):
         )
         self.demisto_params = demisto_params
 
-    def setup_legacy_auth(self, client_id, client_secret, username, password):
-        """Perform OAuth2 password grant token exchange (legacy mode only).
+    def setup_legacy_auth(self):
+        """Extract credentials from params and perform OAuth2 password grant token exchange.
 
         In UCP mode, this method is never called — the BE provides
         a ready-to-use access token via demisto.getUCPCredentials().
         """
-        params = {
+        username = self.demisto_params.get("credentials", {}).get("identifier")
+        password = self.demisto_params.get("credentials", {}).get("password")
+        client_id = (
+            self.demisto_params.get("credentials_consumer", {}).get("identifier")
+            or self.demisto_params.get("consumer_key")
+        )
+        client_secret = (
+            self.demisto_params.get("credentials_consumer", {}).get("password")
+            or self.demisto_params.get("consumer_secret")
+        )
+        if not (client_id and client_secret):
+            raise DemistoException(
+                "Consumer Key and Consumer Secret must be provided."
+            )
+
+        demisto.debug(
+            "Salesforce IAM: Legacy auth: username={}, client_id={} (secrets redacted)".format(
+                username, client_id
+            )
+        )
+
+        token_params = {
             "client_id": client_id,
             "client_secret": client_secret,
             "username": username,
@@ -50,12 +71,11 @@ class Client(BaseClient):
             "grant_type": "password",
         }
         res = self._http_request(
-            method="POST", full_url=GENERATE_TOKEN_URL, params=params
+            method="POST", full_url=GENERATE_TOKEN_URL, params=token_params
         )
-        token = res.get("access_token")
         self._headers = {
             "Content-Type": "application/json",
-            "Authorization": "Bearer {}".format(token),
+            "Authorization": "Bearer {}".format(res.get("access_token")),
         }
 
     def get_user(self, user_term):
@@ -385,31 +405,9 @@ def main():
         # skip credential extraction entirely.
         if not client._ucp_enabled:
             demisto.info(
-                "Salesforce IAM: UCP not enabled — running in legacy auth mode. "
-                "Extracting credentials from params and performing OAuth2 password grant..."
+                "Salesforce IAM: UCP not enabled — running in legacy auth mode."
             )
-            username = params.get("credentials").get("identifier")
-            password = params.get("credentials").get("password")
-            client_id = (
-                params.get("credentials_consumer", {}).get("identifier")
-                or params.get("consumer_key")
-            )
-            client_secret = (
-                params.get("credentials_consumer", {}).get("password")
-                or params.get("consumer_secret")
-            )
-            if not (client_id and client_secret):
-                return_error(
-                    "Consumer Key and Consumer Secret must be provided."
-                )
-            demisto.debug(
-                "Salesforce IAM: Legacy auth: username={}, client_id={} (secrets redacted)".format(
-                    username, client_id
-                )
-            )
-            client.setup_legacy_auth(
-                client_id, client_secret, username, password
-            )
+            client.setup_legacy_auth()
             demisto.info("Salesforce IAM: Legacy OAuth2 token exchange completed successfully.")
         else:
             demisto.info(
