@@ -65,6 +65,8 @@ configuration:
   hidden:
   - marketplacev2
   - platform
+  supportedModules:
+  - xsoar
 - display: Max incidents per fetch
   name: incidents_per_fetch
   type: 0
@@ -183,6 +185,8 @@ configuration:
   defaultvalue: 'true'
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13
