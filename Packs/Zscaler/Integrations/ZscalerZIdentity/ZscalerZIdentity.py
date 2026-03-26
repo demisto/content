@@ -10,7 +10,7 @@ BASE_API_URL = "https://api.zsapi.net/zia/api/v1"
 TOKEN_URL_TEMPLATE = "https://{server_url}/oauth2/v1/token"
 AUDIENCE = "https://api.zscaler.com"
 SUSPICIOUS_CATEGORIES = ["SUSPICIOUS_DESTINATION", "SPYWARE_OR_ADWARE"]
-TOKEN_EXPIRY_BUFFER_SECONDS = 30  # Refresh the cached token this many seconds before it actually expires
+TOKEN_EXPIRY_BUFFER_SECONDS = 120  # Refresh the cached token this many seconds before it actually expires
 
 ERROR_CODES_DICT = {
     400: "Invalid or bad request",
@@ -194,6 +194,10 @@ class Client(BaseClient):
         Automatically injects the Bearer token Authorization header and retries
         on HTTP 429 (rate limit) responses up to 3 times.
 
+        If a 401 response is received (e.g. due to a stale cached token caused
+        by clock drift), the cached token is cleared and the request is retried
+        once with a freshly obtained token.
+
         Args:
             method: HTTP method string (e.g. "GET", "POST", "PUT", "DELETE").
             url_suffix: The API path suffix appended to BASE_API_URL.
@@ -205,18 +209,39 @@ class Client(BaseClient):
         Returns:
             The parsed API response (type depends on resp_type).
         """
-        return self._http_request(
-            method=method,
-            url_suffix=url_suffix,
-            json_data=data,
-            params=params,
-            headers=self._get_auth_headers(),
-            error_handler=self._error_handler,
-            ok_codes=(200, 204),
-            resp_type=resp_type,
-            retries=3,
-            status_list_to_retry=[429],
-        )
+        try:
+            return self._http_request(
+                method=method,
+                url_suffix=url_suffix,
+                json_data=data,
+                params=params,
+                headers=self._get_auth_headers(),
+                error_handler=self._error_handler,
+                ok_codes=(200, 204),
+                resp_type=resp_type,
+                retries=3,
+                status_list_to_retry=[429],
+            )
+        except DemistoException as e:
+            if "401" in str(e):
+                demisto.debug("401 detected - forcing token refresh and retrying request.")
+                ctx = get_integration_context() or {}
+                ctx.pop("access_token", None)
+                ctx.pop("token_expires_at", None)
+                set_integration_context(ctx)
+                return self._http_request(
+                    method=method,
+                    url_suffix=url_suffix,
+                    json_data=data,
+                    params=params,
+                    headers=self._get_auth_headers(),
+                    error_handler=self._error_handler,
+                    ok_codes=(200, 204),
+                    resp_type=resp_type,
+                    retries=3,
+                    status_list_to_retry=[429],
+                )
+            raise
 
     def activate_changes(self) -> dict:
         """Activates saved ZIA configuration changes.
