@@ -1680,75 +1680,75 @@ class TestGenerateLoginUrlCommand:
 
 
 class TestIsTokenExpired:
-    """Tests for the is_token_expired function."""
+    """Tests for the AuthClient.is_token_expired static method."""
 
     def test_token_not_expired(self):
         """
         Given:
             - A token expiration time 10 minutes in the future.
         When:
-            - is_token_expired is called.
+            - AuthClient.is_token_expired is called.
         Then:
             - Returns False (token is still valid).
         """
-        from BmcITSM import is_token_expired
+        from BmcITSM import AuthClient
 
         future_time = (datetime.now(UTC) + timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
-        assert is_token_expired(future_time) is False
+        assert AuthClient.is_token_expired(future_time) is False
 
     def test_token_expired(self):
         """
         Given:
             - A token expiration time 10 minutes in the past.
         When:
-            - is_token_expired is called.
+            - AuthClient.is_token_expired is called.
         Then:
             - Returns True (token is expired).
         """
-        from BmcITSM import is_token_expired
+        from BmcITSM import AuthClient
 
         past_time = (datetime.now(UTC) - timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
-        assert is_token_expired(past_time) is True
+        assert AuthClient.is_token_expired(past_time) is True
 
     def test_token_expires_within_buffer(self):
         """
         Given:
             - A token expiration time 30 seconds in the future (within 1-minute buffer).
         When:
-            - is_token_expired is called.
+            - AuthClient.is_token_expired is called.
         Then:
             - Returns True (token is considered expired due to buffer).
         """
-        from BmcITSM import is_token_expired
+        from BmcITSM import AuthClient
 
         near_future = (datetime.now(UTC) + timedelta(seconds=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
-        assert is_token_expired(near_future) is True
+        assert AuthClient.is_token_expired(near_future) is True
 
     def test_token_empty_string(self):
         """
         Given:
             - An empty string for expiration time.
         When:
-            - is_token_expired is called.
+            - AuthClient.is_token_expired is called.
         Then:
             - Returns True (treated as expired).
         """
-        from BmcITSM import is_token_expired
+        from BmcITSM import AuthClient
 
-        assert is_token_expired("") is True
+        assert AuthClient.is_token_expired("") is True
 
     def test_token_malformed_date(self):
         """
         Given:
             - A malformed date string.
         When:
-            - is_token_expired is called.
+            - AuthClient.is_token_expired is called.
         Then:
             - Returns True (treated as expired).
         """
-        from BmcITSM import is_token_expired
+        from BmcITSM import AuthClient
 
-        assert is_token_expired("not-a-date") is True
+        assert AuthClient.is_token_expired("not-a-date") is True
 
 
 class test_getOAuthToken:

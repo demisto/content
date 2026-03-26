@@ -469,12 +469,12 @@ class AuthClient(BaseClient):
             refresh_token_expires_in = integration_context.get("oauth_refresh_token_expires_in", "")
 
             # 1. Check if token exists and is still valid
-            if access_token and not is_token_expired(access_token_expires_in):
+            if access_token and not self.is_token_expired(access_token_expires_in):
                 demisto.debug("[get_oauth_token] - Using existing access token from integration context.")
                 return access_token
 
             # 2. Token expired, but refresh token is valid -> refresh
-            if refresh_token and not is_token_expired(refresh_token_expires_in):
+            if refresh_token and not self.is_token_expired(refresh_token_expires_in):
                 demisto.debug("[get_oauth_token] - Access token expired, but refresh token valid. Attempting refresh.")
                 data = {
                     "grant_type": "refresh_token",
@@ -550,6 +550,35 @@ class AuthClient(BaseClient):
             }
         )
         set_integration_context(integration_context)
+
+    @staticmethod
+    def is_token_expired(expires_in: str) -> bool:
+        """
+        Check if an OAuth token is expired.
+
+        Args:
+            expires_in (str): ISO format datetime string representing when the token expires (UTC).
+
+        Returns:
+            bool: True if token is expired or will expire within 1 minute, False otherwise.
+        """
+        if not expires_in:
+            return True
+        try:
+            expiration_time = datetime.strptime(expires_in, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=UTC)
+
+            # Subtract 1 min to refresh slightly early and avoid expiration issues.
+            current_time_with_buffer = datetime.now(UTC) + timedelta(minutes=1)
+
+            if expiration_time > current_time_with_buffer:
+                demisto.debug(f"[is_token_expired] - Token still valid (expires at {expires_in}).")
+                return False
+            else:
+                demisto.debug("[is_token_expired] - Token expired.")
+                return True
+        except (ValueError, TypeError) as e:
+            demisto.debug(f"[is_token_expired] - Error parsing expiration time: {e}. Treating as expired.")
+            return True
 
 
 class Client(BaseClient):
@@ -4381,35 +4410,6 @@ def generate_login_url_command(rsso_url: str, client_id: str, redirect_uri: str)
     return CommandResults(readable_output=readable_output)
 
 
-def is_token_expired(expires_in: str) -> bool:
-    """
-    Check if an OAuth token is expired.
-
-    Args:
-        expires_in (str): ISO format datetime string representing when the token expires (UTC).
-
-    Retur
-        bool: True if token is expired or will expire within 1 minute, False otherwise.
-    """
-    if not expires_in:
-        return True
-    try:
-        expiration_time = datetime.strptime(expires_in, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=UTC)
-
-        # Subtract 1 min to refresh slightly early and avoid expiration issues.
-        current_time_with_buffer = datetime.now(UTC) + timedelta(minutes=1)
-
-        if expiration_time > current_time_with_buffer:
-            demisto.debug(f"[is_token_expired] - Token still valid (expires at {expires_in}).")
-            return False
-        else:
-            demisto.debug("[is_token_expired] - Token expired.")
-            return True
-    except (ValueError, TypeError) as e:
-        demisto.debug(f"[is_token_expired] - Error parsing expiration time: {e}. Treating as expired.")
-        return True
-
-
 def check_auth_params(auth_client: AuthClient):
     if auth_client._use_oauth:
         if not auth_client._rsso_url or not auth_client._client_id or not auth_client._redirect_uri or not auth_client._auth_code:
@@ -4452,7 +4452,7 @@ def add_attachment_command(client: Client, args: Dict[str, Any]) -> CommandResul
     field_names_raw: List[str] = argToList(args.get("field_names", ""))
     entry_type: str = args["entry_type"]
     request_id: str = args["request_id"]
-    entry_json_str: str | None = args.get("entry")
+    entry_json_str: str = args.get("entry", "{}")
 
     demisto.debug(f"{prefix} {args=}")
     # Validation 1: entry_ids and field_names must have the same length
