@@ -1,5 +1,5 @@
 Use the IPinfo.io API to get data about an IP address.
-We support all plan types: Lite, Core, Plus, Max, Enterprise. The response from the API will match your plan type.
+The integration supports all subscription tiers (Lite, Core, Plus, Max, and Enterprise) with context outputs adapting to match your specific plan's data fields.
 
 ## Differences from IPinfo (v1)
 
