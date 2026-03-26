@@ -83,7 +83,7 @@ configuration:
   required: false
   section: Collect
   advanced: true
-- additionalinfo: The status to filter the fetched incidents by (if not field will fetch all statuses).
+- additionalinfo: The status to filter the fetched incidents by (if not, the field will fetch all statuses).
   display: Status filter for the fetch
   name: status
   options:
