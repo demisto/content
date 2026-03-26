@@ -827,6 +827,7 @@ class Client(CoreClient):
                 "page_number": page_number,
             }
         }
+        demisto.debug(f"Email investigation summary request payload: {input_data}")
         remove_nulls_from_dictionary(input_data)
         return self._http_request(
             method="POST",
@@ -6010,7 +6011,7 @@ def get_email_investigation_summary_command(client: Client, args: dict) -> Comma
         raise DemistoException("This command is restricted to manual execution by a user and cannot be run via automation.")
 
     timeframe = args.get("timeframe", "30 days")
-    page_number = args.get("page_number", 1)
+    page_number = arg_to_number(args.get("page_number")) or 1
 
     response = client.get_email_investigation_summary(timeframe, page_number)
     data = response if isinstance(response, list) else response.get("reply", response)

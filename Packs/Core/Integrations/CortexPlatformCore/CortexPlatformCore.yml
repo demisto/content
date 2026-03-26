@@ -4269,7 +4269,7 @@ script:
     - arguments:
         - description: 'Time to look back for issues. Supports relative date (for example: "1 day", "3 weeks ago"). Note: The minimum allowed value is 1 day.'
           name: timeframe
-          defaultValue: 'last 30 days'
+          defaultValue: '30 days'
         - description: Page number for pagination.
           name: page_number
           defaultValue: "1"
