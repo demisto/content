@@ -638,7 +638,8 @@ def get_activity_logs(last_run: dict, now_ms: int, limit: int, board_id: str, cl
         raise DemistoException(f"Exception during get activity logs. Exception is {e!s}")
 
     # Extract board logs from response
-    boards = response.get("data", {}).get("boards", [])
+    data = response.get("data") or {}
+    boards = data.get("boards", [])
     if not boards:
         demisto.debug(
             f"{ACTIVITY_LOG_DEBUG_PREFIX}No boards returned for board_id: {board_id}. "
