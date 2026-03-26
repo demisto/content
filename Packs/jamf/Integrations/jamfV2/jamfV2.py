@@ -341,7 +341,7 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: A dictionary containing all available inventory sections for the specified computer.
         """
-        demisto.debug(f"Sending a Pro API /computers-inventory-details/{id} request.")
+        demisto.debug(f"Sending a Pro API /computers-inventory-details/{computer_id} request.")
 
         return self._pro_api_get(
             url_suffix=f"/computers-inventory-detail/{computer_id}",
@@ -2090,7 +2090,7 @@ def endpoint_command(client: Client, args: dict[str, Any]) -> list[CommandResult
         "hostname": argToList(args.get("hostname")),
     }
 
-    if not any(arg_values):
+    if not any(arg_values.values()):
         raise Exception(f"{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname")
 
     field_map = {
