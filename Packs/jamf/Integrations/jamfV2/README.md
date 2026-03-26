@@ -2441,8 +2441,8 @@ Returns the requested section for a specific computer according to the given arg
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.ComputerSubset.id | Number | The computer's ID. |
-| JAMF.ComputerSubset.udid | String | The computer's UDID. |
+| JAMF.Computer.id | Number | The computer's ID. |
+| JAMF.Computer.udid | String | The computer's UDID. |
 
 #### Command Example
 
