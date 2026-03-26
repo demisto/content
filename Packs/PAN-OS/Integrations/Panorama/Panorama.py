@@ -12174,24 +12174,48 @@ class FirewallCommand:
         Retrieve Panorama pushed shared policies (pre-rulebase and post-rulebase)
         and map them by rule name for fast lookup.
         """
+        # Map by rule name for quick lookup
         pushed_rulebase_results: dict[str, PushedSharedPolicy] = {}
 
         # Operational command to retrieve the full configuration of policies pushed from Panorama
         pushed_config_cmd = "<show><config><pushed-shared-policy/></config></show>"
         pushed_config_response = run_op_command(firewall, cmd=pushed_config_cmd, cmd_xml=False)
+        demisto.debug(f"[get_pushed_shared_policy_rules] Pushed config response:\n{pushed_config_response}")
 
         # Panorama rules can exist in pre-rulebase or post-rulebase
         for position in ["pre-rulebase", "post-rulebase"]:
-            xpath = f"./result/policy/panorama/{position}/{rulebase_type}/rules/entry"
-            pushed_rules = pushed_config_response.findall(xpath)
-
+            # 1. Handle Global Shared Rules
+            panorama_xpath = f"./result/policy/panorama/{position}/{rulebase_type}/rules/entry"
+            pushed_rules = pushed_config_response.findall(panorama_xpath)
             for pushed_rule in pushed_rules:
-                pushed_rulebase_entry: PushedSharedPolicy = dataclass_from_element(firewall, PushedSharedPolicy, pushed_rule)
-                pushed_rulebase_entry.policy_type = rulebase_type
-                pushed_rulebase_entry.position = position.replace("-", "_")
+                entry: PushedSharedPolicy = dataclass_from_element(firewall, PushedSharedPolicy, pushed_rule)
+                if entry:
+                    entry.policy_type = rulebase_type
+                    entry.position = position.replace("-", "_")
+                    pushed_rulebase_results[entry.name] = entry
+                    demisto.debug(f"[get_pushed_shared_policy_rules] Found pushed shared policy rule: {entry.name} in {position}")
 
-                # Map by rule name for quick lookup
-                pushed_rulebase_results[pushed_rulebase_entry.name] = pushed_rulebase_entry
+            # 2. Handle Device-Group Rules (with Parent Name Retrieval)
+            dg_entry_xpath = f"./result/policy/device-group-entry"
+            dg_entries = pushed_config_response.findall(dg_entry_xpath)
+            for dg_entry in dg_entries:
+                dg_name = dg_entry.get("name", "")
+
+                # Find the DG entry first, then its rules
+                rules_xpath = f"./{position}/{rulebase_type}/rules/entry"
+                rules_xml = dg_entry.findall(rules_xpath)
+                for rule_xml in rules_xml:
+                    entry = dataclass_from_element(firewall, PushedSharedPolicy, rule_xml)
+                    if entry:
+                        entry.policy_type = rulebase_type
+                        entry.position = position.replace("-", "_")
+                        entry.loc = (
+                            entry.loc if entry.loc else dg_name
+                        )  # If the entry itself doesn't have a 'loc', use the parent DG name
+                        pushed_rulebase_results[entry.name] = entry
+                        demisto.debug(
+                            f"[get_pushed_shared_policy_rules] Found pushed device-group policy rule: {entry.name} in {dg_name}, {position}"
+                        )
 
         return pushed_rulebase_results
 
@@ -12312,9 +12336,12 @@ class FirewallCommand:
                         # Add information about Panorama pushed policy, if any
                         pushed_rule_entry = pushed_rulebase_results.get(result.name)
                         if pushed_rule_entry:
+                            demisto.debug(f"{debug_prefix} Rule {result.name} found in Panorama pushed policy")
                             result.is_from_panorama = True
                             result.position = pushed_rule_entry.position
                             result.from_dg_name = pushed_rule_entry.loc
+                        else:
+                            demisto.debug(f"{debug_prefix} Rule {result.name} not found in Panorama pushed policy")
 
                         result_data.append(result)
 
