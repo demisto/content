@@ -827,7 +827,6 @@ class Client(CoreClient):
                 "page_number": page_number,
             }
         }
-        demisto.debug(f"Email investigation summary request payload: {input_data}")
         remove_nulls_from_dictionary(input_data)
         return self._http_request(
             method="POST",
