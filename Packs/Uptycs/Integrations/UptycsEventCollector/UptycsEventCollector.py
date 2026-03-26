@@ -223,10 +223,10 @@ def determine_entry_status(created_at: str, updated_at: str) -> str:
 
 
 def enrich_events_for_xsiam(events: list[dict[str, Any]]) -> None:
-    """Enrich events with _TIME and _ENTRY_STATUS fields for XSIAM ingestion.
+    """Enrich events with _time and _entry_status fields for XSIAM ingestion.
 
-    Sets '_TIME' from 'createdAt' (falls back to 'updatedAt' if missing).
-    Sets '_ENTRY_STATUS' to 'new' or 'updated' based on createdAt vs updatedAt.
+    Sets '_time' from 'createdAt' (falls back to 'updatedAt' if missing).
+    Sets '_entry_status' to 'new' or 'updated' based on createdAt vs updatedAt.
 
     Args:
         events: List of event dictionaries to enrich in-place.
@@ -240,7 +240,7 @@ def enrich_events_for_xsiam(events: list[dict[str, Any]]) -> None:
             event["_time"] = created_at
         elif updated_at:
             event["_time"] = updated_at
-            demisto.debug(f"[Event Enrichment] Event {event_id}: 'createdAt' missing, using 'updatedAt' for _TIME")
+            demisto.debug(f"[Event Enrichment] Event {event_id}: 'createdAt' missing, using 'updatedAt' for _time")
         else:
             demisto.debug(f"[Event Enrichment] WARNING: Event {event_id} missing both 'createdAt' and 'updatedAt'")
 
@@ -249,7 +249,7 @@ def enrich_events_for_xsiam(events: list[dict[str, Any]]) -> None:
         else:
             demisto.debug(
                 f"[Event Enrichment] WARNING: Event {event_id} missing 'createdAt' or 'updatedAt',"
-                " cannot determine _ENTRY_STATUS"
+                " cannot determine _entry_status"
             )
 
 

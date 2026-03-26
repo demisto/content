@@ -360,19 +360,19 @@ def test_enrich_events_for_xsiam(
     expected_time: str | None,
     expected_status: str | None,
 ):
-    """Tests enrich_events_for_xsiam sets _TIME and _ENTRY_STATUS correctly for various event shapes."""
+    """Tests enrich_events_for_xsiam sets _time and _entry_status correctly for various event shapes."""
     events: list[dict[str, Any]] = [event]
     enrich_events_for_xsiam(events)
 
     if expected_time:
-        assert events[0]["_TIME"] == expected_time
+        assert events[0]["_time"] == expected_time
     else:
-        assert "_TIME" not in events[0]
+        assert "_time" not in events[0]
 
     if expected_status:
-        assert events[0]["_ENTRY_STATUS"] == expected_status
+        assert events[0]["_entry_status"] == expected_status
     else:
-        assert "_ENTRY_STATUS" not in events[0]
+        assert "_entry_status" not in events[0]
 
 
 def test_enrich_events_for_xsiam_multiple_events():
@@ -384,9 +384,9 @@ def test_enrich_events_for_xsiam_multiple_events():
     ]
     enrich_events_for_xsiam(events)
 
-    assert events[0]["_ENTRY_STATUS"] == "new"
-    assert events[1]["_ENTRY_STATUS"] == "updated"
-    assert "_ENTRY_STATUS" not in events[2]
+    assert events[0]["_entry_status"] == "new"
+    assert events[1]["_entry_status"] == "updated"
+    assert "_entry_status" not in events[2]
 
 
 def test_enrich_events_for_xsiam_empty_list():
