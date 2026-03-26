@@ -2180,23 +2180,39 @@ function getUcpCredentials() {
     try {
         method_unique_id = info.connectionProfiles[0].method_unique_id;
         console.log('UCP: getUcpCredentials: calling getUCPCredentials(method_unique_id=' + method_unique_id + ')...');
-        var creds = getUCPCredentials(method_unique_id);
+        var creds = getUCPCredentials(method_unique_id, from_cache=false);
+        console.log('UCP: getUcpCredentials: getUCPCredentials() returned: '
+            + (creds ? 'object' : 'null/undefined'));
         if (creds) {
             // Log credential metadata without exposing secrets
+            var credKeys = Object.keys(creds);
+            console.log('UCP: getUcpCredentials: Credential keys=' + credKeys.join(',')
+                + ', num_keys=' + credKeys.length);
             var tokenPreview = '';
-            if (creds.type === 'oauth2' && creds.access_token) {
+            if ((creds.type === 'oauth2_client_credentials' || creds.type === 'oauth2_authorization_code'
+                || creds.type === 'oauth2_client_credentials') && creds.access_token) {
                 tokenPreview = creds.access_token.substring(0, 10) + '...';
+                console.log('UCP: getUcpCredentials: OAuth2 token details — '
+                    + 'token_length=' + creds.access_token.length
+                    + ', token_type=' + (creds.token_type || 'N/A')
+                    + ', expires_at=' + (creds.expires_at || 'static'));
             } else if (creds.type === 'api_key' && creds.key) {
                 tokenPreview = creds.key.substring(0, 6) + '...';
+                console.log('UCP: getUcpCredentials: API key details — '
+                    + 'key_length=' + creds.key.length);
             } else if (creds.type === 'plain' && creds.username) {
                 tokenPreview = 'username=' + creds.username;
+                console.log('UCP: getUcpCredentials: Plain auth details — '
+                    + 'username=' + creds.username
+                    + ', has_password=' + (creds.password ? 'yes' : 'no'));
             }
             console.log('UCP: getUcpCredentials: SUCCESS. type=' + creds.type
                 + ', token_type=' + (creds.token_type || 'N/A')
                 + ', expires_at=' + (creds.expires_at || 'static')
                 + ', preview=' + tokenPreview);
         } else {
-            console.log('UCP: getUcpCredentials: getUCPCredentials() returned null/undefined');
+            console.log('UCP: getUcpCredentials: getUCPCredentials() returned null/undefined — '
+                + 'this should not happen in UCP mode. Check BE connector configuration.');
         }
         return creds;
     } catch (e) {

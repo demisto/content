@@ -2,10 +2,16 @@ var URI_PREFIX = '/services/data/v63.0/';
 var SESSION_DATA = '';
 
 function getNewToken() {
+    console.log('Salesforce: getNewToken: ENTRY — performing OAuth2 password grant token exchange');
     var client_id = params.credentials_client_secret !== null ? params.credentials_client_secret.identifier : params.clientID;
     var client_secret = params.credentials_client_secret !== null ? params.credentials_client_secret.password : params.clientSecret;
+    console.log('Salesforce: getNewToken: client_id=' + (client_id ? client_id.substring(0, 10) + '...' : '<null>')
+        + ', has_client_secret=' + (client_secret ? 'yes' : 'no')
+        + ', username=' + (params.credentials ? params.credentials.identifier : '<null>'));
     if  (client_id === null || client_secret === null)
         return('Consumer Key and Consumer Secret must be provided.')
+    var tokenUrl = params.InstanceURL + '/services/oauth2/token';
+    console.log('Salesforce: getNewToken: Requesting token from URL=' + tokenUrl);
     var request = {
         grant_type: 'password',
         client_id: client_id,
@@ -16,7 +22,7 @@ function getNewToken() {
 
     var body = encodeToURLQuery(request).substr(1);
     var response = http(
-        params.InstanceURL + '/services/oauth2/token',
+        tokenUrl,
         {
             Method: 'POST',
             Headers: {'Content-Type': ['application/x-www-form-urlencoded']},
@@ -25,14 +31,27 @@ function getNewToken() {
         params.insecure === false,
         params.useproxy
     );
+    console.log('Salesforce: getNewToken: Response StatusCode=' + response.StatusCode);
     if (response.StatusCode < 200 || response.StatusCode >= 300) {
+        console.log('Salesforce: getNewToken: FAILED. StatusCode=' + response.StatusCode
+            + ', Body=' + (response.Body ? response.Body.substring(0, 500) : 'empty'));
         throw 'Failed to get new token, request status code: ' + response.StatusCode + ' and Body: ' + response.Body + '.';
     }
-    return JSON.parse(response.Body);
+    var tokenData = JSON.parse(response.Body);
+    console.log('Salesforce: getNewToken: SUCCESS. response_keys=' + Object.keys(tokenData).join(',')
+        + ', instance_url=' + (tokenData.instance_url || 'N/A')
+        + ', token_type=' + (tokenData.token_type || 'N/A')
+        + ', has_access_token=' + (tokenData.access_token ? 'yes' : 'no'));
+    return tokenData;
 }
 
 
 function sendRequest(method, url, body, token) {
+    var tokenPreview = token ? token.substring(0, 10) + '...' : '<no-token>';
+    console.log('Salesforce: sendRequest: ENTRY. method=' + method
+        + ', url=' + url
+        + ', has_body=' + (body ? 'yes' : 'no')
+        + ', token_preview=' + tokenPreview);
     var headers = {};
     if (token) {
         headers['Authorization'] = ['Bearer ' + token];
@@ -40,7 +59,8 @@ function sendRequest(method, url, body, token) {
     if (method == 'POST' || method == 'PATCH') {
         headers['Content-Type'] = ['application/json'];
     }
-    return http(
+    console.log('Salesforce: sendRequest: header_keys=' + Object.keys(headers).join(','));
+    var response = http(
         url,
         {
             Method: method,
@@ -50,6 +70,9 @@ function sendRequest(method, url, body, token) {
         params.insecure === false,
         params.useproxy
     );
+    console.log('Salesforce: sendRequest: Response StatusCode=' + response.StatusCode
+        + ', method=' + method + ', url=' + url);
+    return response;
 }
 
 function sendRequestInSession(method, uri, body) {

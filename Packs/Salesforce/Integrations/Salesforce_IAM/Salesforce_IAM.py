@@ -42,6 +42,7 @@ class Client(BaseClient):
         In UCP mode, this method is never called — the BE provides
         a ready-to-use access token via demisto.getUCPCredentials().
         """
+        demisto.debug("Salesforce IAM: setup_legacy_auth: ENTRY — extracting credentials from demisto_params")
         username = self.demisto_params.get("credentials", {}).get("identifier")
         password = self.demisto_params.get("credentials", {}).get("password")
         client_id = (
@@ -52,14 +53,22 @@ class Client(BaseClient):
             self.demisto_params.get("credentials_consumer", {}).get("password")
             or self.demisto_params.get("consumer_secret")
         )
+        demisto.debug(
+            "Salesforce IAM: setup_legacy_auth: Extracted credentials. "
+            "username={}, has_password={}, client_id={}, has_client_secret={}".format(
+                username, bool(password), client_id, bool(client_secret)
+            )
+        )
         if not (client_id and client_secret):
+            demisto.debug("Salesforce IAM: setup_legacy_auth: MISSING consumer credentials — raising error")
             raise DemistoException(
                 "Consumer Key and Consumer Secret must be provided."
             )
 
         demisto.debug(
-            "Salesforce IAM: Legacy auth: username={}, client_id={} (secrets redacted)".format(
-                username, client_id
+            "Salesforce IAM: setup_legacy_auth: Performing OAuth2 password grant. "
+            "token_url={}, username={}, client_id={}".format(
+                GENERATE_TOKEN_URL, username, client_id
             )
         )
 
@@ -73,10 +82,25 @@ class Client(BaseClient):
         res = self._http_request(
             method="POST", full_url=GENERATE_TOKEN_URL, params=token_params
         )
+        demisto.debug(
+            "Salesforce IAM: setup_legacy_auth: Token response received. "
+            "response_keys={}, has_access_token={}, token_type={}".format(
+                list(res.keys()) if isinstance(res, dict) else type(res).__name__,
+                bool(res.get("access_token")) if isinstance(res, dict) else "N/A",
+                res.get("token_type", "N/A") if isinstance(res, dict) else "N/A",
+            )
+        )
+        access_token = res.get("access_token", "")
+        token_preview = access_token[:10] + "..." if access_token else "<empty>"
+        demisto.debug(
+            "Salesforce IAM: setup_legacy_auth: Setting Authorization header. "
+            "token_preview={}".format(token_preview)
+        )
         self._headers = {
             "Content-Type": "application/json",
-            "Authorization": "Bearer {}".format(res.get("access_token")),
+            "Authorization": "Bearer {}".format(access_token),
         }
+        demisto.debug("Salesforce IAM: setup_legacy_auth: COMPLETE — headers set successfully")
 
     def get_user(self, user_term):
         uri = URI_PREFIX + "sobjects/User/{}".format(user_term)
@@ -399,6 +423,15 @@ def main():
             verify=verify_certificate,
             proxy=proxy,
         )
+        demisto.debug(
+            "Salesforce IAM: Client created. _ucp_enabled={}, _ucp_method_unique_id={}, "
+            "_ucp_creds_cache={}, _ucp_creds_expiry={}".format(
+                client._ucp_enabled,
+                getattr(client, '_ucp_method_unique_id', 'N/A'),
+                type(client._ucp_creds_cache).__name__ if client._ucp_creds_cache else 'None',
+                getattr(client, '_ucp_creds_expiry', 'N/A'),
+            )
+        )
 
         # Legacy mode: extract credentials and perform token exchange.
         # In UCP mode, BaseClient handles auth transparently —
@@ -414,6 +447,14 @@ def main():
                 "Salesforce IAM: UCP mode enabled (method_unique_id={}). "
                 "Skipping legacy credential extraction — BaseClient will inject auth per-request.".format(
                     client._ucp_method_unique_id
+                )
+            )
+            demisto.debug(
+                "Salesforce IAM: UCP mode details — _ucp_info keys={}, "
+                "base_url={}, headers={}".format(
+                    list(client._ucp_info.keys()) if hasattr(client, '_ucp_info') else 'N/A',
+                    client._base_url,
+                    list(client._headers.keys()) if client._headers else 'None',
                 )
             )
 
