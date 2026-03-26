@@ -40,7 +40,7 @@ For more information - click [here](https://training.threatconnect.com/learn/art
     | Rating Threshold for Malicious Indicators | Rating Threshold for Malicious Indicators. This is necessary to calculate reputation. | False |
     | Confidence Threshold for Malicious Indicators | Confidence Threshold for Malicious Indicators. This is necessary to calculate reputation. | False |
     | Indicator Reputation Freshness in days | Indicator Reputation Freshness. This is necessary to calculate reputation. | False |
-    | TQL Filter | A free text TQL filter to apply to the fetch. This filter is added as AND to the other filters. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide. | False |
+    | TQL Filter | A free text TQL filter to apply to the fetch. This filter is added as an AND to the other filters. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
