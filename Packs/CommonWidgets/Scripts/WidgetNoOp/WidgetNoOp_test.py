@@ -5,7 +5,14 @@ from WidgetNoOp import main
 
 
 def test_main(mocker):
-    """Test that the no-op script runs without error and returns a single space string."""
+    """
+    Given:
+        - No input arguments (no-op script).
+    When:
+        - Running the main function.
+    Then:
+        - Ensure demisto.results is called once with the expected no-op payload.
+    """
     # Given
     mocker.patch.object(demisto, "results")
 
