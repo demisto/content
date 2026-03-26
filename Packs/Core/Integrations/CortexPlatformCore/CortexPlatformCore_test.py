@@ -8783,8 +8783,18 @@ def test_validate_custom_fields_success(mocker):
     metadata_response = {
         "reply": {
             "DATA": [
-                {"CUSTOM_FIELD_NAME": "field1", "CUSTOM_FIELD_PRETTY_NAME": "Field 1", "CUSTOM_FIELD_IS_SYSTEM": False},
-                {"CUSTOM_FIELD_NAME": "field2", "CUSTOM_FIELD_PRETTY_NAME": "Field 2", "CUSTOM_FIELD_IS_SYSTEM": False},
+                {
+                    "CUSTOM_FIELD_NAME": "field1",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Field 1",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "text",
+                },
+                {
+                    "CUSTOM_FIELD_NAME": "field2",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Field 2",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "text",
+                },
             ]
         }
     }
@@ -8813,11 +8823,17 @@ def test_validate_custom_fields_system_field(mocker):
     metadata_response = {
         "reply": {
             "DATA": [
-                {"CUSTOM_FIELD_NAME": "system_field", "CUSTOM_FIELD_PRETTY_NAME": "System Field", "CUSTOM_FIELD_IS_SYSTEM": True},
+                {
+                    "CUSTOM_FIELD_NAME": "system_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "System Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": True,
+                    "CUSTOM_FIELD_TYPE": "text",
+                },
                 {
                     "CUSTOM_FIELD_NAME": "custom_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Custom Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "text",
                 },
             ]
         }
@@ -8853,6 +8869,7 @@ def test_validate_custom_fields_non_existent_field(mocker):
                     "CUSTOM_FIELD_NAME": "existing_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Existing Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "text",
                 },
             ]
         }
@@ -8866,6 +8883,163 @@ def test_validate_custom_fields_non_existent_field(mocker):
     assert "non_existent" not in valid_fields
     assert error_messages
     assert "does not exist" in error_messages
+
+
+def test_validate_custom_fields_multiselect_with_string_value_returns_error(mocker):
+    """
+    GIVEN:
+        A multiSelect custom field provided with a string value instead of a list.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is excluded and a clear error message instructs the user to provide a list value.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "multi_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Multi Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "multiSelect",
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"multi_field": "single_value"}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert "multi_field" not in valid_fields
+    assert "multiSelect" in error_messages
+    assert "list" in error_messages
+
+
+def test_validate_custom_fields_multiselect_with_list_value_succeeds(mocker):
+    """
+    GIVEN:
+        A multiSelect custom field provided with a proper list value.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is accepted as valid and no error messages are returned.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "multi_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Multi Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "multiSelect",
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"multi_field": ["value1", "value2"]}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert valid_fields == {"multi_field": ["value1", "value2"]}
+    assert not error_messages
+
+
+def test_validate_custom_fields_singleselect_with_list_value_returns_error(mocker):
+    """
+    GIVEN:
+        A singleSelect custom field provided with a list value.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is excluded and a clear error message instructs the user to provide a single value.
+        (singleSelect is an enum field that does not accept arrays, per be3 validation logic.)
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "single_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "Single Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "singleSelect",
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"single_field": ["value1", "value2"]}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert "single_field" not in valid_fields
+    assert "does not accept a list value" in error_messages
+
+
+@pytest.mark.parametrize(
+    "field_type",
+    [
+        "shortText",
+        "longText",
+        "number",
+        "boolean",
+        "date",
+        "markdown",
+        "html",
+        "url",
+        "user",
+        "role",
+        "grid",
+        "tagsSelect",
+        "json",
+    ],
+)
+def test_validate_custom_fields_non_enum_types_accept_string_value(mocker, field_type):
+    """
+    GIVEN:
+        A non-enum custom field (e.g. shortText, boolean, date, etc.) provided with a string value.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is accepted — non-enum types have no list restriction at the content layer
+        (the backend handles further type validation).
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "my_field",
+                    "CUSTOM_FIELD_PRETTY_NAME": "My Field",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": field_type,
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    fields_to_validate = {"my_field": "some_value"}
+    valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
+
+    assert "my_field" in valid_fields
+    assert not error_messages
 
 
 # =========================================== TEST platform_http_request Method ===========================================#

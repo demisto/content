@@ -3465,7 +3465,10 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
         if f.get("CUSTOM_FIELD_NAME") and f.get("CUSTOM_FIELD_IS_SYSTEM")
     }
     custom_fields = {
-        f["CUSTOM_FIELD_NAME"]: f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"])
+        f["CUSTOM_FIELD_NAME"]: {
+            "pretty_name": f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"]),
+            "field_type": f.get("CUSTOM_FIELD_TYPE", ""),
+        }
         for f in fields_data
         if f.get("CUSTOM_FIELD_NAME") and not f.get("CUSTOM_FIELD_IS_SYSTEM")
     }
@@ -3482,7 +3485,19 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
                 f" be set with custom_fields argument."
             )
         elif field_name in custom_fields:
-            valid_fields[field_name] = field_value
+            field_type = custom_fields[field_name]["field_type"]
+            if field_type == "multiSelect" and not isinstance(field_value, list):
+                error_messages.append(
+                    f"Field '{field_name}' is of type multiSelect and requires a list value (e.g., [\"value\"])."
+                    f" Received: {field_value!r}"
+                )
+            elif field_type == "singleSelect" and isinstance(field_value, list):
+                error_messages.append(
+                    f"Field '{field_name}' is of type singleSelect and does not accept a list value."
+                    f" Provide a single value instead."
+                )
+            else:
+                valid_fields[field_name] = field_value
         else:
             error_messages.append(f"Field '{field_name}' does not exist.")
 
