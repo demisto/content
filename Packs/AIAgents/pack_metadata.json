@@ -2,7 +2,7 @@
     "name": "AI Agents",
     "description": "AI Agents",
     "support": "xsoar",
-    "currentVersion": "1.0.18",
+    "currentVersion": "1.0.19",
     "serverMinVersion": "8.13",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
@@ -23,7 +23,6 @@
         "cloud_appsec",
         "cloud_posture",
         "cloud_runtime_security",
-        "edr",
         "email_security",
         "exposure_management",
         "xsiam"
