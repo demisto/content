@@ -5,7 +5,7 @@
   "name": "Page Break Widget",
   "dataType": "scripts",
   "widgetType": "text",
-  "query": "",
+  "query": "WidgetNoOp",
   "fromVersion": "5.0.0",
   "description": "Use the page break widget in a report to force a page break before the widgets that follow.",
   "isPredefined": true,
