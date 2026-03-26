@@ -3,11 +3,14 @@ import ast
 from unittest.mock import MagicMock
 from MondayEventCollector import (
     get_audit_logs,
+    get_activity_logs,
     generate_log_hash,
     subtract_epsilon_from_timestamp,
     fetch_audit_logs,
     fetch_activity_logs,
+    initiate_activity_log_last_run,
     test_connection as monday_test_connection,
+    ActivityLogsClient,
 )
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
@@ -796,3 +799,186 @@ class TestConnectionAndUtilities:
         timestamp = "2024-06-03T14:00:00.000Z"
         result = subtract_epsilon_from_timestamp(timestamp)
         assert result == "2024-06-03T13:59:59.999000Z"
+
+
+class TestInitiateActivityLogLastRun:
+    """Tests for initiate_activity_log_last_run to verify board ID initialization."""
+
+    def test_empty_last_run_initializes_all_boards(self):
+        """
+        Given:
+            - An empty last_run dict
+            - A list of board IDs ["123", "456"]
+        When:
+            initiate_activity_log_last_run is called
+        Then:
+            All board IDs should be initialized with empty dicts
+        """
+        last_run: dict[str, dict] = {}
+        board_ids = ["123", "456"]
+        result = initiate_activity_log_last_run(last_run, board_ids)
+        assert "123" in result
+        assert "456" in result
+        assert result["123"] == {}
+        assert result["456"] == {}
+
+    def test_existing_last_run_preserves_data_and_adds_new_boards(self):
+        """
+        Given:
+            - A last_run dict with existing board "123" containing state data
+            - A board_ids_list with both "123" (existing) and "456" (new)
+        When:
+            initiate_activity_log_last_run is called
+        Then:
+            - Existing board "123" state should be preserved
+            - New board "456" should be initialized with empty dict
+        """
+        last_run: dict = {"123": {"last_timestamp": "2024-06-03T14:25:47.000Z", "lower_bound_log_id": ["id1"]}}
+        board_ids = ["123", "456"]
+        result = initiate_activity_log_last_run(last_run, board_ids)
+        assert result["123"] == {"last_timestamp": "2024-06-03T14:25:47.000Z", "lower_bound_log_id": ["id1"]}
+        assert result["456"] == {}
+
+    def test_non_empty_last_run_with_all_boards_present(self):
+        """
+        Given:
+            - A last_run dict with all configured board IDs already present
+        When:
+            initiate_activity_log_last_run is called
+        Then:
+            No changes should be made, existing state preserved for all boards
+        """
+        last_run: dict = {
+            "123": {"last_timestamp": "2024-06-03T14:25:47.000Z"},
+            "456": {"last_timestamp": "2024-06-04T10:00:00.000Z"},
+        }
+        board_ids = ["123", "456"]
+        result = initiate_activity_log_last_run(last_run, board_ids)
+        assert result["123"] == {"last_timestamp": "2024-06-03T14:25:47.000Z"}
+        assert result["456"] == {"last_timestamp": "2024-06-04T10:00:00.000Z"}
+
+    def test_board_id_from_error_scenario(self):
+        """
+        Given:
+            - A last_run dict that is non-empty (has data from a previous fetch for board "5092890815")
+            - Board IDs list includes "1808515822" which is NOT in last_run (a previously observed missing-board-id scenario)
+        When:
+            initiate_activity_log_last_run is called
+        Then:
+            - The missing board "1808515822" should be initialized
+            - The existing board "5092890815" state should be preserved
+        """
+        last_run: dict = {"5092890815": {"last_timestamp": "2024-06-03T14:25:47.000Z"}}
+        board_ids = ["5092890815", "1808515822"]
+        result = initiate_activity_log_last_run(last_run, board_ids)
+        assert "1808515822" in result
+        assert result["1808515822"] == {}
+        assert result["5092890815"] == {"last_timestamp": "2024-06-03T14:25:47.000Z"}
+
+
+class TestEmptyBoardsResponse:
+    """Tests for handling empty boards response from Monday.com API (XSUP-65887)."""
+
+    def test_get_activity_logs_returns_empty_when_boards_list_is_empty(self, mocker):
+        """
+        Given:
+            - Monday.com API returns an empty boards list (e.g., invalid board ID or no permissions)
+        When:
+            get_activity_logs is called
+        Then:
+            It should return empty logs and unchanged last_run instead of raising IndexError
+        """
+        mocker.patch.object(demisto, "debug")
+        mocker.patch("MondayEventCollector.get_access_token", return_value="mock_access_token")
+
+        mock_client = MagicMock(spec=ActivityLogsClient)
+        mock_client.get_activity_logs_request.return_value = {"data": {"boards": []}}
+
+        last_run: dict = {}
+        now_ms = int(time.time() * 1000)
+
+        result_logs, result_last_run = get_activity_logs(
+            last_run=last_run, now_ms=now_ms, limit=10, board_id="invalid_board_id", client=mock_client
+        )
+
+        assert result_logs == []
+        assert result_last_run == last_run
+
+    def test_get_activity_logs_returns_empty_when_boards_key_missing(self, mocker):
+        """
+        Given:
+            - Monday.com API returns a response without the boards key
+        When:
+            get_activity_logs is called
+        Then:
+            It should return empty logs and unchanged last_run instead of raising IndexError
+        """
+        mocker.patch.object(demisto, "debug")
+        mocker.patch("MondayEventCollector.get_access_token", return_value="mock_access_token")
+
+        mock_client = MagicMock(spec=ActivityLogsClient)
+        mock_client.get_activity_logs_request.return_value = {"data": {}}
+
+        last_run: dict = {}
+        now_ms = int(time.time() * 1000)
+
+        result_logs, result_last_run = get_activity_logs(
+            last_run=last_run, now_ms=now_ms, limit=10, board_id="999", client=mock_client
+        )
+
+        assert result_logs == []
+        assert result_last_run == last_run
+
+    def test_check_empty_page_returns_true_when_boards_list_is_empty(self, mocker):
+        """
+        Given:
+            - Monday.com API returns an empty boards list during pagination check
+        When:
+            check_empty_page is called on an ActivityLogsClient
+        Then:
+            It should return True (treat as empty page) instead of raising IndexError
+        """
+        mocker.patch.object(demisto, "debug")
+
+        mock_client = MagicMock(spec=ActivityLogsClient)
+        mock_client.get_activity_logs_request.return_value = {"data": {"boards": []}}
+
+        # Call the actual method by using the real class method with the mock
+        client = ActivityLogsClient.__new__(ActivityLogsClient)
+        client.get_activity_logs_request = mock_client.get_activity_logs_request
+
+        result = client.check_empty_page("query", "token")
+        assert result is True
+
+    def test_test_connection_handles_empty_boards_gracefully(self, mocker):
+        """
+        Given:
+            - Activity logs configured with valid credentials but invalid board ID
+            - Monday.com API returns empty boards list
+        When:
+            test_connection (monday-auth-test) is called
+        Then:
+            It should not raise 'list index out of range' error
+        """
+        mock_params = {
+            "credentials": {"identifier": "client_id", "password": "client_secret"},
+            "auth_code": {"password": "auth_code"},
+            "activity_logs_url": "https://api.monday.com",
+            "board_ids": "invalid_board",
+            "audit_token": {"password": ""},
+            "audit_logs_url": "",
+            "proxy": False,
+            "insecure": False,
+        }
+        mocker.patch.object(demisto, "params", return_value=mock_params)
+        mocker.patch.object(demisto, "debug")
+        mocker.patch("MondayEventCollector.get_integration_context", return_value={"access_token": "mock_token"})
+        mocker.patch("MondayEventCollector.get_access_token", return_value="mock_token")
+
+        mock_http_request = mocker.patch("MondayEventCollector.BaseClient._http_request")
+        mock_http_request.return_value = {"data": {"boards": []}}
+
+        result = monday_test_connection()
+        # Should complete without IndexError - activity logs test returns empty (success path with 0 logs)
+        assert result is not None
+        assert "activity logs" in result.readable_output.lower()
