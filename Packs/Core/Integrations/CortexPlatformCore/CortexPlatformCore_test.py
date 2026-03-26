@@ -3988,6 +3988,13 @@ def test_add_cases_extra_data_empty_list(mocker):
         ('[{"---": "value1", "@#$": "value2"}]', {}),
         ('[{"123": "value1", "456field": "value2"}]', {"123": "value1", "456field": "value2"}),
         ('[{"": "value1", "field2": "value2"}]', {"field2": "value2"}),
+        # multiSelect field: list value must be preserved as-is (not stringified)
+        ('[{"multifield": ["opt1", "opt2"]}]', {"multifield": ["opt1", "opt2"]}),
+        # mixed: one string field and one multiSelect list field
+        (
+            '[{"textfield": "hello"}, {"multifield": ["opt1", "opt2"]}]',
+            {"textfield": "hello", "multifield": ["opt1", "opt2"]},
+        ),
     ],
 )
 def test_parse_custom_fields(custom_fields_json, expected):
@@ -3998,6 +4005,7 @@ def test_parse_custom_fields(custom_fields_json, expected):
         The parse_custom_fields function is called with the JSON string.
     Then:
         The function should return a dictionary with normalized field names matching the expected result.
+        List values (e.g. multiSelect fields) are preserved as lists; all other values are stringified.
     """
     from CortexPlatformCore import parse_custom_fields
 

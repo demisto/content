@@ -2813,8 +2813,10 @@ def parse_custom_fields(custom_fields: str) -> dict:
         custom_fields: JSON string containing array of custom field objects
 
     Returns:
-        dict: Dictionary with sanitized alphanumeric keys and string values,
-              duplicate keys are ignored (first occurrence wins)
+        dict: Dictionary with sanitized alphanumeric keys and values.
+              List values (e.g. multiselect fields) are preserved as lists;
+              all other values are converted to strings.
+              Duplicate keys are ignored (first occurrence wins).
     """
     custom_fields = safe_load_json(custom_fields)
 
@@ -2825,7 +2827,8 @@ def parse_custom_fields(custom_fields: str) -> dict:
             # Sanitize key: remove non-alphanumeric characters
             sanitized_key = "".join(char for char in key if char.isalnum())
             if sanitized_key and sanitized_key not in parsed_fields:
-                parsed_fields[sanitized_key] = str(value)
+                # Preserve list values for multiselect fields; stringify everything else
+                parsed_fields[sanitized_key] = value if isinstance(value, list) else str(value)
 
     return parsed_fields
 
