@@ -1969,7 +1969,9 @@ def test_get_remote_data(mocker):
 
     assert res[1]["Tags"] == ["FromServiceNow"]
     assert res[1]["File"] == "test.txt"
-    assert res[2]["Contents"]["Contents"] == "Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment"
+    assert (
+        res[2]["Contents"]["Contents"] == "Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment"
+    )
 
 
 def test_get_remote_data_last_fetched_incidents_entries(mocker):
@@ -2008,7 +2010,9 @@ def test_get_remote_data_last_fetched_incidents_entries(mocker):
     res = get_remote_data_command(client, args, params)
 
     assert "sys_created_on" not in client_query_mocker.call_args[0][3]
-    assert res[1]["Contents"]["Contents"] == "Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment"
+    assert (
+        res[1]["Contents"]["Contents"] == "Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment"
+    )
     assert not demisto.getIntegrationContext()["last_fetched_incident_ids"]
 
 
@@ -2092,7 +2096,9 @@ def test_get_remote_data_last_fetched_incidents_use_display_value(mocker):
     res = get_remote_data_command(client, args, params)
 
     assert "filter" not in client_query_mocker.call_args[0][1]
-    assert res[1]["Contents"]["Contents"] == "Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment"
+    assert (
+        res[1]["Contents"]["Contents"] == "Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment"
+    )
     assert not demisto.getIntegrationContext()["last_fetched_incident_ids"]
 
 
@@ -2274,7 +2280,9 @@ def test_get_remote_data_no_attachment(mocker):
     mocker.patch.object(client, "get", return_value=RESPONSE_ASSIGNMENT_GROUP)
 
     res = get_remote_data_command(client, args, params)
-    assert res[1]["Contents"]["Contents"] == "Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment"
+    assert (
+        res[1]["Contents"]["Contents"] == "Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment"
+    )
     assert len(res) == 2
 
 
@@ -3682,7 +3690,7 @@ def test_get_remote_data_with_new_attachment(mock_is_new_incident: MagicMock, mo
     ticket_updated_on = datetime.now()
 
     args = {"id": ticket_id, "lastUpdate": str(last_update_ts)}
- 
+
     ticket_data = {
         "result": [
             {
