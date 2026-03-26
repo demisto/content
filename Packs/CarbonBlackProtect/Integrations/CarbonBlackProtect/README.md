@@ -329,7 +329,7 @@ Search for file rules. For more information, see the Carbon Black documentation:
 | CBP.FileRule.ID | String | ID of the rule. |
 | CBP.FileRule.Name | String | Name of the rule. |
 | CBP.FileRule.PolicyIDs | String | Policies of which this rule is a part. |
-| CBP.Only | String | Whether this rule is "reporting only, or also "enforcing". |
+| CBP.FileRule.ReportOnly | String | Whether this rule is "reporting only, or also "enforcing". |
 
 ### cbp-fileRule-get
 
@@ -357,7 +357,7 @@ Gets the file rule. For more information, see the Carbon Black documentation: ht
 | CBP.FileRule.ID | String | ID of the rule. |
 | CBP.FileRule.Name | String | Name of the rule. |
 | CBP.FileRule.PolicyIDs | String | Policies of which this rule is a part. |
-| CBP.Only | String | Whether this rule is "reporting only, or also "enforcing". |
+| CBP.FileRule.ReportOnly | String | Whether this rule is "reporting only, or also "enforcing". |
 
 ### cbp-fileRule-delete
 
