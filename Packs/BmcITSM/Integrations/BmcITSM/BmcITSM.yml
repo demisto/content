@@ -2091,6 +2091,7 @@ script:
       - Caused by
       - Duplicate of
       - Original of
+      - Related to
       - Resolved
       - Resolved by
       required: true

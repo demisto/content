@@ -1721,7 +1721,7 @@ Creates a relationship between two tickets.
 | second_form_name | Second Form Name. Possible values are: incident, task, change request, problem investigation, known error, work order. | Required |
 | request_type | Request Type. Possible values are: Incident, Asset, Work order. | Required |
 | request_description | Request Description. | Required |
-| association_type | Association Type. Possible values are: Caused, Caused by, Duplicate of, Original of, Resolved, Resolved by. | Required |
+| association_type | Association Type. Possible values are: Caused, Caused by, Duplicate of, Original of, Related to, Resolved, Resolved by. | Required |
 | bidirectional | Bidirectionality. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output

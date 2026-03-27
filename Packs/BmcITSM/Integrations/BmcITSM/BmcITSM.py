@@ -2048,6 +2048,7 @@ def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> 
             "Original of": "Duplicate of",
             "Resolved": "Resolved by",
             "Resolved by": "Resolved",
+            "Related to": "Related to",
         }
 
         client.ticket_create_relationship_request(
