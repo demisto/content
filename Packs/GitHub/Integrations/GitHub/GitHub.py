@@ -2142,8 +2142,7 @@ def github_revoke_credentials_command() -> None:
     invalid = [c for c in credentials if not c.startswith(VALID_CREDENTIAL_PREFIXES)]
     if invalid:
         raise DemistoException(
-            f"{len(invalid)} credential(s) have invalid prefixes. "
-            f"Supported prefixes: {', '.join(VALID_CREDENTIAL_PREFIXES)}"
+            f"{len(invalid)} credential(s) have invalid prefixes. " f"Supported prefixes: {', '.join(VALID_CREDENTIAL_PREFIXES)}"
         )
 
     headers = {"Accept": "application/vnd.github+json"}
