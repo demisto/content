@@ -97,6 +97,13 @@ configuration:
   section: Collect
   required: false
   additionalinfo: The label name of the Saved Result Set to pull indicators from.
+- display: Maximum number of incidents per fetch
+  name: max_fetch
+  type: 0
+  section: Collect
+  defaultvalue: '10'
+  required: false
+  hidden: true
 - display: Saved Result Set Version
   name: saved_result_set_version
   type: 15
@@ -119,11 +126,11 @@ configuration:
   required: false
   defaultvalue: "12 hours"
   additionalinfo: How often the platform polls CTIX for new indicators (e.g. "30 minutes", "1 hour", "12 hours"). Controls the XSOAR feed scheduler cadence.
-- defaultvalue: "false"
+- defaultvalue: "true"
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
+  required: false
   section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
