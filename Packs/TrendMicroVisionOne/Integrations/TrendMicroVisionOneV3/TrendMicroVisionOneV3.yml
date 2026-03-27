@@ -44,12 +44,6 @@ configuration:
   type: 0
   section: Collect
   required: false
-- defaultvalue: '50'
-  display: Max Incidents
-  name: max_fetch
-  type: 0
-  required: false
-  section: Collect
 - display: Use system proxy settings
   name: proxy
   defaultvalue: 'false'

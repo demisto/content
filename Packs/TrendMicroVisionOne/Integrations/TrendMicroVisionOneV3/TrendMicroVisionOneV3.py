@@ -1207,7 +1207,6 @@ def fetch_incidents(v1_client: pytmv1.Client):
     """
     end = datetime.now(UTC)
     days = int(demisto.params().get("first_fetch", "7"))
-    max_fetch = int(demisto.params().get("max_fetch", 50))
 
     last_run = demisto.getLastRun()
     if last_run and "start_time" in last_run:
@@ -1219,35 +1218,24 @@ def fetch_incidents(v1_client: pytmv1.Client):
     alerts: list[Any] = get_workbench_histories(v1_client, start, end)
     # Sort by created_date_time ascending so oldest alerts are processed first
     alerts.sort(key=lambda a: a.created_date_time)
-    # Apply max_fetch limit
-    truncated = len(alerts) > max_fetch
-    alerts = alerts[:max_fetch]
-    # list to store incidents that will be sent to the UI
     incidents: list[dict[str, Any]] = []
-    if alerts:
-        for record in alerts:
-            alert_data = record.model_dump()
+    for record in alerts:
+        alert_data = record.model_dump()
 
-            mirroring_fields = get_mirroring()
-            mirroring_fields["mirror_id"] = record.id
-            alert_data.update(mirroring_fields)
+        mirroring_fields = get_mirroring()
+        mirroring_fields["mirror_id"] = record.id
+        alert_data.update(mirroring_fields)
 
-            incident = {
-                "name": record.model,
-                "occurred": record.created_date_time,
-                "severity": incident_severity_to_dbot_score(record.severity),
-                "rawJSON": json.dumps(alert_data),
-            }
-            incidents.append(incident)
-    demisto.debug(f"fetch_incidents: fetched {len(incidents)} incidents (truncated={truncated})")
-    # If truncated, use last processed alert's time so remaining alerts are fetched next cycle
-    if truncated and alerts:
-        next_start = alerts[-1].created_date_time
-        demisto.setLastRun({"start_time": next_start})
-    else:
-        demisto.setLastRun({"start_time": end.isoformat()})
+        incident = {
+            "name": record.model,
+            "occurred": record.created_date_time,
+            "severity": incident_severity_to_dbot_score(record.severity),
+            "rawJSON": json.dumps(alert_data),
+        }
+        incidents.append(incident)
+    demisto.debug(f"fetch_incidents: {len(incidents)} incidents created, next start_time={end.isoformat()}")
+    demisto.setLastRun({"start_time": end.isoformat()})
     demisto.incidents(incidents)
-    return incidents
 
 
 def quarantine_or_delete_email_message(v1_client: pytmv1.Client, command: str, args: dict[str, Any]) -> str | CommandResults:
@@ -3143,7 +3131,7 @@ def main():  # pragma: no cover
             return_results(test_module(v1_client))
 
         elif command == FETCH_INCIDENTS:
-            return_results(fetch_incidents(v1_client))
+            fetch_incidents(v1_client)
 
         elif command in (ENABLE_USER_ACCOUNT_COMMAND, DISABLE_USER_ACCOUNT_COMMAND):
             return_results(enable_or_disable_user_account(v1_client, command, args))
