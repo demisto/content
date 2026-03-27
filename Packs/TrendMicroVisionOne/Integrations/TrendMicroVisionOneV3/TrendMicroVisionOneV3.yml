@@ -38,7 +38,7 @@ configuration:
   type: 13
   required: false
   section: Collect
-- defaultvalue: '30'
+- defaultvalue: '7'
   display: Sync On First Run (days)
   name: first_fetch
   type: 0
