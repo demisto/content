@@ -2137,15 +2137,12 @@ def github_revoke_credentials_command() -> None:
         raise DemistoException("The 'credentials' argument is required and must contain at least one token.")
 
     if len(credentials) > 1000:
-        raise DemistoException(
-            f"The GitHub API accepts a maximum of 1000 credentials per request. Received {len(credentials)}."
-        )
+        raise DemistoException(f"The GitHub API accepts a maximum of 1000 credentials per request. Received {len(credentials)}.")
 
     invalid = [c for c in credentials if not c.startswith(VALID_CREDENTIAL_PREFIXES)]
     if invalid:
         raise DemistoException(
-            f"Invalid credential prefix for: {invalid}. "
-            f"Supported prefixes: {', '.join(VALID_CREDENTIAL_PREFIXES)}"
+            f"Invalid credential prefix for: {invalid}. " f"Supported prefixes: {', '.join(VALID_CREDENTIAL_PREFIXES)}"
         )
 
     headers = {"Accept": "application/vnd.github+json"}
