@@ -526,11 +526,17 @@ def incident_severity_to_dbot_score(severity: str) -> int:
 
 # returns initialized pytmv1 client used to make rest calls
 def _get_client(name: str, api_key: str, base_url: str) -> pytmv1.Client:
-    return Client(Core(
-        appname=name, token=api_key, url=base_url,
-        pool_connections=1, pool_maxsize=1,
-        connect_timeout=10, read_timeout=30,
-    ))
+    return Client(
+        Core(
+            appname=name,
+            token=api_key,
+            url=base_url,
+            pool_connections=1,
+            pool_maxsize=1,
+            connect_timeout=10,
+            read_timeout=30,
+        )
+    )
 
 
 # Checks the api response for error
@@ -3115,8 +3121,10 @@ def main():  # pragma: no cover
             urllib3.disable_warnings()
 
         proxy_enabled = params.get("proxy", False)
-        demisto.debug(f"Initializing client: base_url={base_url}, proxy_enabled={proxy_enabled}, "
-                      f"insecure={params.get('insecure', False)}")
+        demisto.debug(
+            f"Initializing client: base_url={base_url}, proxy_enabled={proxy_enabled}, "
+            f"insecure={params.get('insecure', False)}"
+        )
 
         if base_url == "":
             raise RuntimeError("The base_url cannot be empty, please provide a valid value.")
