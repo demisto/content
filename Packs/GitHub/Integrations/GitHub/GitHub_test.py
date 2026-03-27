@@ -586,7 +586,7 @@ def test_github_revoke_credentials_invalid_prefix(mocker):
     mock_args = {"credentials": "ghp_valid,invalid_token_abc"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
 
-    with pytest.raises(DemistoException, match="Invalid credential prefix"):
+    with pytest.raises(DemistoException, match="invalid prefixes"):
         GitHub.github_revoke_credentials_command()
 
 
