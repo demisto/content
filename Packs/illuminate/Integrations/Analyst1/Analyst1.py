@@ -855,7 +855,7 @@ class Client(BaseClient):
                 raise DemistoException("OAuth2 authentication failed after token refresh. Status: 401")
         return response
 
-    def _http_request(self, method, url_suffix="", full_url=None, headers=None, **kwargs):
+    def _http_request(self, method, url_suffix="", full_url=None, headers=None, **kwargs):  # type: ignore[override]
         if self._auth_method == "basic":
             return super()._http_request(method, url_suffix=url_suffix, full_url=full_url, headers=headers, **kwargs)
 
@@ -1614,7 +1614,7 @@ def analyst1_evidence_search_command(client: Client, args: dict) -> CommandResul
     page_size = argsToInt(args, "page_size", 50)
     evidence_type = args.get("evidence_type")
     tlp = args.get("tlp")
-    actor_id = argsToInt(args, "actor_id", None) if args.get("actor_id") else None
+    actor_id = argsToInt(args, "actor_id", 0) if args.get("actor_id") else None
     source_id = args.get("source_id")
     analyzed_state = args.get("analyzed_state")
     analyzed_date_from = args.get("analyzed_date_from")
@@ -1675,7 +1675,7 @@ def analyst1_evidence_file_fetch_command(client: Client, args: dict) -> dict:
     Returns:
         File result dictionary for XSOAR
     """
-    evidence_id = argsToInt(args, "evidence_id", None)
+    evidence_id = argsToInt(args, "evidence_id", 0)
 
     if not evidence_id:
         raise ValueError("evidence_id is required")
