@@ -8429,9 +8429,9 @@ script:
       description: Virtual system feature.
       type: String
   - arguments:
-    - description: The string to filter the results by to only show specific hostnames or serial numbers.
+    - description: The Panorama hostname or serial number used to filter device groups. This command is specifically for Panorama and requires an exact match (substrings are not supported).
       name: device_filter_string
-    description: Gets the operational information of the device groups in the topology(only device groups with associated devices will be listed by this command).
+    description: Gets operational information for all device groups in the Panorama topology, including group names, hierarchy, and associated firewalls. If no filter is provided, the command returns all device groups within the Panorama instance.
     name: pan-os-platform-get-device-groups
     outputs:
     - contextPath: PANOS.DeviceGroupOp.hostid
@@ -10661,7 +10661,7 @@ script:
     - contextPath: Panorama.Certificate.devices_using_certificate
       type: Unknown
       description: List of devices using this certificate if it was pushed from Panorama.
-  dockerimage: demisto/pan-os-python:1.0.0.4889421
+  dockerimage: demisto/pan-os-python:1.0.0.6975992
   isfetch: true
   runonce: false
   script: ''
