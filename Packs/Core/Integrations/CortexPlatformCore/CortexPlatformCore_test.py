@@ -8932,15 +8932,15 @@ def test_validate_custom_fields_multiselect_with_list_value_succeeds(mocker):
     assert not error_messages
 
 
-def test_validate_custom_fields_singleselect_with_list_value_returns_error(mocker):
+def test_validate_custom_fields_shortText_with_list_value_returns_error(mocker):
     """
     GIVEN:
-        A singleSelect custom field provided with a list value.
+        A shortText custom field provided with a list value.
     WHEN:
         validate_custom_fields is called.
     THEN:
         The field is excluded and a clear error message instructs the user to provide a single value.
-        (singleSelect is an enum field that does not accept arrays, per be3 validation logic.)
+        (shortText is an enum field that does not accept arrays, per be3 validation logic.)
     """
     from CortexPlatformCore import validate_custom_fields, Client
 
@@ -8953,7 +8953,7 @@ def test_validate_custom_fields_singleselect_with_list_value_returns_error(mocke
                     "CUSTOM_FIELD_NAME": "single_field",
                     "CUSTOM_FIELD_PRETTY_NAME": "Single Field",
                     "CUSTOM_FIELD_IS_SYSTEM": False,
-                    "CUSTOM_FIELD_TYPE": "singleSelect",
+                    "CUSTOM_FIELD_TYPE": "shortText",
                 },
             ]
         }

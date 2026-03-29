@@ -3498,7 +3498,7 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
                     f"Field '{field_name}' is of type multiSelect and requires a list value (e.g., [\"value\"])."
                     f" Received: {field_value!r}"
                 )
-            elif field_type == "singleSelect" and isinstance(field_value, list):
+            elif field_type == "shortText" and isinstance(field_value, list):
                 error_messages.append(
                     f"Field '{field_name}' is of type singleSelect and does not accept a list value."
                     f" Provide a single value instead."
