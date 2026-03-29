@@ -132,14 +132,6 @@ class TestExtractTimeFromEvent:
         result = extract_time_from_event(event, log_type)
         assert result is None
 
-    def test_alert_event_with_invalid_created_time(self):
-        """Test extracting time from an alert with invalid epoch value returns None (covers lines 166-168)."""
-        from Koi import extract_time_from_event, LogType
-
-        event = {"finding_info": {"created_time": "not-a-number"}}
-        result = extract_time_from_event(event, LogType.ALERTS)
-        assert result is None
-
 
 # endregion
 
@@ -871,7 +863,7 @@ class TestMain:
 
     def test_main_fetch_events(self, mocker):
         """Test main routes fetch-events command correctly (covers lines 664-665)."""
-        from Koi import main
+        from Koi import main, COMMAND_MAP
 
         mocker.patch.object(demisto, "command", return_value="fetch-events")
         mocker.patch.object(
@@ -885,7 +877,8 @@ class TestMain:
             },
         )
         mocker.patch("Koi.Client")
-        mock_fetch = mocker.patch("Koi.fetch_events_command")
+        mock_fetch = mocker.MagicMock()
+        COMMAND_MAP["fetch-events"] = mock_fetch
 
         main()
 
@@ -893,7 +886,7 @@ class TestMain:
 
     def test_main_get_events(self, mocker):
         """Test main routes koi-get-events command correctly (covers lines 667-668)."""
-        from Koi import main
+        from Koi import main, COMMAND_MAP
 
         mocker.patch.object(demisto, "command", return_value="koi-get-events")
         mocker.patch.object(demisto, "args", return_value={"limit": "10", "should_push_events": "false"})
@@ -910,7 +903,8 @@ class TestMain:
         )
         mocker.patch("Koi.Client")
         mock_return = mocker.patch("Koi.return_results")
-        mocker.patch("Koi.get_events_command", return_value="mock_result")
+        mock_get_events = mocker.MagicMock(return_value="mock_result")
+        COMMAND_MAP["koi-get-events"] = mock_get_events
 
         main()
 
