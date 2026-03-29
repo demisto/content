@@ -63,6 +63,9 @@ NUM_OF_WORKERS = 20
 HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
 JSON_SEPARATORS = (",", ":")  # To get the most compact JSON representation, we should specify (',', ':') to eliminate whitespace.
 DEFAULT_INSIGHT_CACHE_SIZE = 3072
+FETCH_COMMANDS = ('fetch-incidents', 'fetch-credentials', 'fetch-indicators', 'fetch-assets')
+LONG_RUNNING_COMMAND = 'long-running-execution'
+                                                
 
 def register_module_line(module_name, start_end, line, wrapper=0):
     global _MODULES_LINE_MAPPING
@@ -8025,10 +8028,7 @@ def return_error(message, error='', outputs=None):
     """
     is_command = hasattr(demisto, 'command')
     try:
-        is_server_handled = is_command and demisto.command() in ('fetch-incidents',
-                                                                 'fetch-credentials',
-                                                                 'long-running-execution',
-                                                                 'fetch-indicators')
+        is_server_handled = is_command and (demisto.command() in FETCH_COMMANDS or demisto.command() == LONG_RUNNING_COMMAND)
     except Exception:
         is_server_handled = False
     message = LOG(message)
@@ -9140,7 +9140,7 @@ def is_xsoar():
     :return: True iff the platform is XSOAR.
     :rtype: ``bool``
     """
-    return "xsoar" in demisto.demistoVersion().get("platform")
+    return "xsoar" in demisto.demistoVersion().get("platform", "")
 
 
 def is_xsoar_on_prem():
@@ -9169,6 +9169,13 @@ def is_xsoar_saas():
     """
     return demisto.demistoVersion().get("platform") == "xsoar" and is_xsiam_or_xsoar_saas()
 
+def is_platform():
+    """Determines whether running on a unified Cortex platform tenant.
+
+    :return: True iff the platform type is 'unified_platform'.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "unified_platform"
 
 def is_xsiam():
     """Determines whether or not the platform is XSIAM.
@@ -9176,16 +9183,13 @@ def is_xsiam():
     :return: True iff the platform is XSIAM.
     :rtype: ``bool``
     """
-    return demisto.demistoVersion().get("platform") == "x2"
+    XSIAM_PLATFORM_CODES = {"x1", "x3", "x5"}
+    
+    version_info = demisto.demistoVersion()
+    is_xsiam_legacy = version_info.get("platform") == "x2"
+    is_xsiam_platform = is_platform() and (version_info.get("module") in XSIAM_PLATFORM_CODES)
+    return is_xsiam_legacy or is_xsiam_platform
 
-
-def is_platform():
-    """Determines whether or not the platform is platform.
-
-    :return: True iff the platform is unified_platform.
-    :rtype: ``bool``
-    """
-    return demisto.demistoVersion().get("platform") == "unified_platform"
 
 
 def is_using_engine():
@@ -11792,6 +11796,10 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
                 *arguments: any additional arguments to the command function.
                 **kwargs: additional keyword arguments to the command function.
             """
+            if not isinstance(args, dict):
+                demisto.debug("Detected args of type {args_type}. Casting to dict.".format(args_type=type(args)))
+                args = dict(args or {})
+
             if not requires_polling_arg or argToBoolean(args.get(polling_arg_name, False)):
                 ScheduledCommand.raise_error_if_not_supported()
                 poll_result = func(args, *arguments, **kwargs)
