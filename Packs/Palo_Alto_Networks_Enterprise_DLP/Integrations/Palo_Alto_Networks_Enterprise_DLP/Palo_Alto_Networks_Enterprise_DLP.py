@@ -625,6 +625,10 @@ def fetch_notifications(
                 new_incidents.append(incident)
                 fetched_incident_ids_committed_timestamps[incident_id] = incident_committed_timestamp
 
+        if len(new_incidents) >= 100:
+            demisto.debug(f"Reached or exceeded fetch limit. Fetched {len(new_incidents)} incidents. Breaking...")
+            break
+
     next_run = compute_next_run(fetched_incident_ids_committed_timestamps, last_run)
 
     if not is_reset_triggered():
