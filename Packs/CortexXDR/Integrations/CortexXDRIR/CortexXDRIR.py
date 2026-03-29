@@ -245,7 +245,7 @@ class Client(CoreClient):
             return {}
         return get_headers(self._params)
 
-    def test_module(self, first_fetch_time):
+    def test_module(self):
         """
         Performs basic request to verify connectivity and authentication.
         Uses list_users() (RBAC endpoint) which is available on all Cortex platforms
@@ -2942,10 +2942,9 @@ def main():  # pragma: no cover
     # using two different credentials object as they both fields need to be encrypted
     first_fetch_time = params.get("fetch_time", "3 days")
     if FORWARD_USER_RUN_RBAC:
-        url = "/api/webapp/"
+        base_url = "/api/webapp/public_api/v1"
     else:
-        url = params.get("url")
-    base_url = urljoin(url, "/public_api/v1")
+        base_url = urljoin(params.get("url"), "/public_api/v1")
     proxy = params.get("proxy")
     verify_cert = not params.get("insecure", False)
     statuses = params.get("status")
@@ -2973,7 +2972,7 @@ def main():  # pragma: no cover
     args["integration_name"] = INTEGRATION_NAME
     try:
         if command == "test-module":
-            client.test_module(first_fetch_time)
+            client.test_module()
             demisto.results("ok")
 
         elif command == "fetch-incidents":

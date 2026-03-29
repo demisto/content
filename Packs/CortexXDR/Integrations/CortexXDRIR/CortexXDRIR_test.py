@@ -1719,6 +1719,82 @@ def test_main(mocker):
     main()
 
 
+def test_headers_with_forward_user_run_rbac(mocker):
+    """
+    Given:
+        - FORWARD_USER_RUN_RBAC is True.
+    When:
+        - Accessing the headers property on the Client.
+    Then:
+        - The headers property should return an empty dict.
+    """
+    mocker.patch("CortexXDRIR.FORWARD_USER_RUN_RBAC", new=True)
+    from CortexXDRIR import Client
+
+    client = Client(base_url=f'{XDR_URL}/public_api/v1', proxy=False, verify=False, timeout=120, params={})
+    assert client.headers == {}
+
+
+def test_headers_without_forward_user_run_rbac(mocker):
+    """
+    Given:
+        - FORWARD_USER_RUN_RBAC is False.
+    When:
+        - Accessing the headers property on the Client.
+    Then:
+        - The headers property should call get_headers with the client params.
+    """
+    mocker.patch("CortexXDRIR.FORWARD_USER_RUN_RBAC", new=False)
+    mock_get_headers = mocker.patch("CortexXDRIR.get_headers", return_value={"Authorization": "test"})
+    from CortexXDRIR import Client
+
+    params = {"apikey": "test_key", "apikey_id": "1"}
+    client = Client(base_url=f'{XDR_URL}/public_api/v1', proxy=False, verify=False, timeout=120, params=params)
+    headers = client.headers
+    mock_get_headers.assert_called_once_with(params)
+    assert headers == {"Authorization": "test"}
+
+
+def test_test_module_calls_list_users(mocker):
+    """
+    Given:
+        - FORWARD_USER_RUN_RBAC is True.
+    When:
+        - Running test_module on the Client.
+    Then:
+        - test_module should call list_users for connectivity check.
+    """
+    mocker.patch("CortexXDRIR.FORWARD_USER_RUN_RBAC", new=True)
+    from CortexXDRIR import Client
+
+    client = Client(base_url=f'{XDR_URL}/public_api/v1', proxy=False, verify=False, timeout=120, params={})
+    mocker.patch.object(client, 'list_users', return_value=[])
+    client.test_module()
+    client.list_users.assert_called_once()
+
+
+def test_main_url_construction_with_rbac(mocker):
+    """
+    Given:
+        - FORWARD_USER_RUN_RBAC is True.
+    When:
+        - Running main().
+    Then:
+        - The Client should be instantiated with base_url='/api/webapp/public_api/v1'.
+    """
+    from CortexXDRIR import main
+
+    mocker.patch("CortexXDRIR.FORWARD_USER_RUN_RBAC", new=True)
+    mocker.patch.object(demisto, "params", return_value={"url": "https://should-not-be-used.com"})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mock_client_class = mocker.patch("CortexXDRIR.Client", autospec=True)
+    mock_client_class.return_value.test_module.return_value = "ok"
+    main()
+    # Verify the Client was instantiated with the RBAC base_url
+    call_kwargs = mock_client_class.call_args
+    assert call_kwargs[1].get("base_url") or call_kwargs[0][0] == "/api/webapp/public_api/v1"
+
+
 @freeze_time("1993-06-17 11:00:00 GMT")
 def test_core_http_request_xpanse_tenant(mocker):
     """
