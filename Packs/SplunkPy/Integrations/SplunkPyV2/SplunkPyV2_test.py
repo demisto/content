@@ -5634,14 +5634,13 @@ def test_update_investigation_or_finding_both_fail(mocker):
     When:
         - update_investigation_or_finding is called.
     Then:
-        - An Exception is raised with a message containing the investigation/finding ID.
+        - The second Exception is raised (from the retry attempt).
         - service.post is called exactly twice.
     """
-    mocker.patch.object(demisto, "error")
     mock_service = MagicMock()
     mock_service.post.side_effect = [Exception("First error"), Exception("Second error")]
 
-    with pytest.raises(Exception, match="Failed to update investigation/finding finding-abc"):
+    with pytest.raises(Exception, match="Second error"):
         splunk.update_investigation_or_finding(
             service=mock_service,
             investigation_or_finding_id="finding-abc",
