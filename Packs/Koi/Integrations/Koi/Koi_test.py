@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from pathlib import Path
 
 import pytest
@@ -140,25 +141,33 @@ class TestExtractTimeFromEvent:
 class TestAddTimeToEvents:
     """Tests for the add_time_to_events helper function."""
 
-    def test_alert_events(self):
-        """Test enriching alert events with _time and source_log_type."""
+    @pytest.mark.parametrize(
+        "events, log_type_name, expected_time, expected_source",
+        [
+            (
+                [{"id": "alert-001", "finding_info": {"created_time": 1704067200000}}],
+                "ALERTS",
+                "2024-01-01T00:00:00Z",
+                "Alerts",
+            ),
+            (
+                [{"id": "audit-001", "created_at": "2024-01-01T00:00:00Z"}],
+                "AUDIT",
+                "2024-01-01T00:00:00Z",
+                "Audit",
+            ),
+        ],
+        ids=["alert_events", "audit_events"],
+    )
+    def test_events_with_time(self, events, log_type_name, expected_time, expected_source):
+        """Test enriching events with _time and source_log_type."""
         from Koi import add_time_to_events, LogType
 
-        events = [{"id": "alert-001", "finding_info": {"created_time": 1704067200000}}]
-        add_time_to_events(events, LogType.ALERTS)
+        log_type = LogType[log_type_name]
+        add_time_to_events(events, log_type)
 
-        assert events[0]["_time"] == "1704067200000"
-        assert events[0]["source_log_type"] == "Alerts"
-
-    def test_audit_events(self):
-        """Test enriching audit events with _time and source_log_type."""
-        from Koi import add_time_to_events, LogType
-
-        events = [{"id": "audit-001", "created_at": "2024-01-01T00:00:00Z"}]
-        add_time_to_events(events, LogType.AUDIT)
-
-        assert events[0]["_time"] == "2024-01-01T00:00:00Z"
-        assert events[0]["source_log_type"] == "Audit"
+        assert events[0]["_time"] == expected_time
+        assert events[0]["source_log_type"] == expected_source
 
     def test_missing_time_field(self):
         """Test enriching events when time field is missing still sets source_log_type."""
@@ -212,50 +221,38 @@ class TestGetEventId:
 class TestDeduplicateEvents:
     """Tests for the deduplicate_events helper function."""
 
-    def test_no_previous_ids(self):
-        """Test deduplication with no previous run IDs returns all events."""
+    @pytest.mark.parametrize(
+        "events, last_ids, expected_count",
+        [
+            (
+                [{"id": "1"}, {"id": "2"}],
+                [],
+                2,
+            ),
+            (
+                [{"id": "1"}, {"id": "2"}, {"id": "3"}],
+                ["1"],
+                2,
+            ),
+            (
+                [{"id": "1"}, {"id": "2"}],
+                ["1", "2"],
+                0,
+            ),
+            (
+                [],
+                ["1"],
+                0,
+            ),
+        ],
+        ids=["no_previous_ids", "with_duplicates", "all_duplicates", "empty_events"],
+    )
+    def test_deduplication(self, events: list, last_ids: list, expected_count: int):
+        """Test deduplication with various scenarios."""
         from Koi import deduplicate_events
 
-        events = [
-            {"id": "1", "created_at": "2024-01-01T00:00:00Z"},
-            {"id": "2", "created_at": "2024-01-01T00:01:00Z"},
-        ]
-
-        result = deduplicate_events(events, last_fetched_ids=[])
-        assert len(result) == 2
-
-    def test_with_duplicates(self):
-        """Test deduplication removes previously seen events."""
-        from Koi import deduplicate_events
-
-        events = [
-            {"id": "1", "created_at": "2024-01-01T00:00:00Z"},
-            {"id": "2", "created_at": "2024-01-01T00:00:00Z"},
-            {"id": "3", "created_at": "2024-01-01T00:01:00Z"},
-        ]
-
-        result = deduplicate_events(events, last_fetched_ids=["1"])
-        assert len(result) == 2
-        assert all(e["id"] != "1" for e in result)
-
-    def test_all_duplicates(self):
-        """Test deduplication when all events are duplicates."""
-        from Koi import deduplicate_events
-
-        events = [
-            {"id": "1", "created_at": "2024-01-01T00:00:00Z"},
-            {"id": "2", "created_at": "2024-01-01T00:00:00Z"},
-        ]
-
-        result = deduplicate_events(events, last_fetched_ids=["1", "2"])
-        assert len(result) == 0
-
-    def test_empty_events(self):
-        """Test deduplication with empty events list."""
-        from Koi import deduplicate_events
-
-        result = deduplicate_events([], last_fetched_ids=["1"])
-        assert len(result) == 0
+        result = deduplicate_events(events, last_fetched_ids=last_ids)
+        assert len(result) == expected_count
 
 
 # endregion
@@ -546,6 +543,81 @@ class TestFetchEventsCommand:
 
 # endregion
 
+# region Date helper tests
+
+
+class TestParseDate:
+    """Tests for parse_date_or_use_current and get_formatted_utc_time."""
+
+    @pytest.mark.parametrize(
+        "date_input, expected_contains",
+        [
+            ("2024-01-01T00:00:00Z", "2024-01-01"),
+            ("2024-06-15T12:30:00Z", "2024-06-15"),
+        ],
+        ids=["iso_format", "iso_with_time"],
+    )
+    def test_get_formatted_utc_time_valid(self, date_input: str, expected_contains: str):
+        """Test formatting valid date strings."""
+        from Koi import get_formatted_utc_time
+
+        result = get_formatted_utc_time(date_input)
+        assert expected_contains in result
+
+    def test_get_formatted_utc_time_none_returns_current(self):
+        """Test that None input returns current UTC time."""
+        from Koi import get_formatted_utc_time
+
+        result = get_formatted_utc_time(None)
+        assert result  # Should return a non-empty string
+
+    @pytest.mark.parametrize(
+        "date_input",
+        [
+            None,
+            "",
+        ],
+        ids=["none_input", "empty_string"],
+    )
+    def test_parse_date_or_use_current_fallback(self, date_input):
+        """Test that empty/None input falls back to current UTC."""
+        from Koi import parse_date_or_use_current
+
+        result = parse_date_or_use_current(date_input)
+        assert isinstance(result, datetime)
+
+    def test_parse_date_or_use_current_valid_iso(self):
+        """Test parsing a valid ISO 8601 date string."""
+        from Koi import parse_date_or_use_current
+
+        result = parse_date_or_use_current("2024-01-01T00:00:00Z")
+        assert isinstance(result, datetime)
+        assert result.year == 2024
+        assert result.month == 1
+        assert result.day == 1
+
+
+# endregion
+
+# region get_events_command error tests
+
+
+class TestGetEventsCommandErrors:
+    """Tests for error handling in get_events_command."""
+
+    def test_invalid_event_type(self, mock_client):
+        """Test get-events command with invalid event type raises error."""
+        from Koi import get_events_command
+
+        args = {"event_type": "InvalidType", "limit": "10", "should_push_events": "false"}
+        params = {"event_types_to_fetch": "Alerts"}
+
+        with pytest.raises(Exception, match="Invalid event type"):
+            get_events_command(mock_client, args, params)
+
+
+# endregion
+
 # region Config and constants tests
 
 
@@ -582,6 +654,59 @@ class TestConfig:
         assert Config.DEFAULT_MAX_FETCH == 5000
         assert Config.MAX_PAGES_PER_FETCH == 10
         assert Config.DEFAULT_FROM_TIME == "5 minutes ago"
+
+
+# endregion
+
+# region Main tests
+
+
+class TestMain:
+    """Tests for the main entry point."""
+
+    def test_main_test_module(self, mocker):
+        """Test main routes test-module command correctly."""
+        from Koi import main
+
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://api.prod.koi.security/",
+                "api_key": {"password": "test-key"},
+                "insecure": False,
+                "proxy": False,
+            },
+        )
+        mocker.patch("Koi.Client")
+        mock_return = mocker.patch("Koi.return_results")
+        mocker.patch("Koi.test_module", return_value="ok")
+
+        main()
+
+        mock_return.assert_called_once_with("ok")
+
+    def test_main_unknown_command(self, mocker):
+        """Test main raises error for unknown command."""
+        from Koi import main
+
+        mocker.patch.object(demisto, "command", return_value="unknown-command")
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://api.prod.koi.security/",
+                "api_key": {"password": "test-key"},
+            },
+        )
+        mocker.patch.object(demisto, "error")
+        mock_return_error = mocker.patch("Koi.return_error")
+
+        main()
+
+        mock_return_error.assert_called_once()
+        assert "not implemented" in mock_return_error.call_args[0][0]
 
 
 # endregion

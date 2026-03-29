@@ -3,7 +3,6 @@ from datetime import datetime, timedelta, UTC
 from enum import Enum
 from typing import Any
 
-import dateparser
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
@@ -94,23 +93,27 @@ def get_formatted_utc_time(date_input: str | None) -> str:
 
 
 def parse_date_or_use_current(date_string: str | None) -> datetime:
-    """Parse a date string or return current UTC datetime if parsing fails."""
+    """Parse a date string or return current UTC datetime if parsing fails.
+
+    Uses arg_to_datetime from CommonServerPython for consistent date parsing.
+
+    Args:
+        date_string: Date string to parse, or None to use current UTC time.
+
+    Returns:
+        Parsed datetime object in UTC.
+    """
     if not date_string:
         current_time = datetime.now(UTC)
         demisto.debug(f"[Date Helper] No input provided. Using current UTC: {current_time}")
         return current_time
 
     demisto.debug(f"[Date Helper] Attempting to parse date string: '{date_string}'")
-    parsed_datetime = dateparser.parse(
-        date_string, settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True, "TO_TIMEZONE": "UTC"}
-    )
+    parsed_datetime = arg_to_datetime(arg=date_string, is_utc=True)
 
     if not parsed_datetime:
         demisto.debug(f"[Date Helper] Failed to parse '{date_string}'. Fallback to current UTC.")
         return datetime.now(UTC)
-
-    if parsed_datetime.tzinfo != UTC:
-        parsed_datetime = parsed_datetime.astimezone(UTC)
 
     demisto.debug(f"[Date Helper] Final parsed date: {parsed_datetime.isoformat()}")
     return parsed_datetime
@@ -172,24 +175,18 @@ def extract_time_from_event(event: dict, log_type: LogType) -> str | None:
 def add_time_to_events(events: list[dict], log_type: LogType) -> None:
     """Add _time and source_log_type fields to events for XSIAM ingestion.
 
+    Uses extract_time_from_event for consistent time extraction across all code paths.
+
     Args:
         events: List of event dictionaries to enrich.
         log_type: The LogType Enum member representing the source.
     """
     for event in events:
-        if log_type == LogType.ALERTS:
-            finding_info = event.get("finding_info", {})
-            created_time_ms = finding_info.get("created_time")
-            if created_time_ms:
-                event["_time"] = str(created_time_ms)
-            else:
-                demisto.debug(f"[Event Time] WARNING: Alert missing 'finding_info.created_time': {event.get('id', 'unknown')}")
+        event_time = extract_time_from_event(event, log_type)
+        if event_time:
+            event["_time"] = event_time
         else:
-            created_at = event.get("created_at")
-            if created_at:
-                event["_time"] = created_at
-            else:
-                demisto.debug(f"[Event Time] WARNING: Audit log missing 'created_at': {event.get('id', 'unknown')}")
+            demisto.debug(f"[Event Time] WARNING: Event missing time field: {event.get('id', 'unknown')}")
 
         event["source_log_type"] = log_type.title
 
@@ -497,6 +494,8 @@ def get_events_command(client: Client, args: dict, params: dict) -> CommandResul
         add_time_to_events(events, log_type)
         all_events.extend(events)
 
+    demisto.debug(f"[Command Result] Total events retrieved: {len(all_events)}")
+
     if should_push_events and all_events:
         send_events_to_xsiam(events=all_events, vendor=Config.VENDOR, product=Config.PRODUCT)
         demisto.debug(f"[Command] Pushed {len(all_events)} events to XSIAM")
@@ -530,13 +529,14 @@ def fetch_events_command(client: Client) -> None:
     demisto.debug(f"[Fetch] Starting with last_run: {last_run}")
 
     all_new_events: list[dict] = []
-    updated_last_run = dict(last_run)
+    updated_last_run: dict[str, str | list[str]] = dict(last_run)
 
     for log_type in log_types:
         last_fetch_key = f"last_fetch_{log_type.type_string}"
         previous_ids_key = f"previous_ids_{log_type.type_string}"
 
-        last_fetch_timestamp = updated_last_run.get(last_fetch_key)
+        raw_timestamp = updated_last_run.get(last_fetch_key)
+        last_fetch_timestamp: str | None = raw_timestamp if isinstance(raw_timestamp, str) else None
         raw_ids = updated_last_run.get(previous_ids_key)
         last_fetched_ids: list[str] = raw_ids if isinstance(raw_ids, list) else []
 
@@ -564,6 +564,9 @@ def fetch_events_command(client: Client) -> None:
             demisto.debug(f"[Fetch] {log_type.type_string}: No events found.")
             continue
 
+        # Sort events chronologically (oldest first) to ensure correct HWM tracking
+        events.sort(key=lambda e: extract_time_from_event(e, log_type) or "")
+
         # Deduplicate
         new_events = deduplicate_events(events, last_fetched_ids)
 
@@ -580,11 +583,15 @@ def fetch_events_command(client: Client) -> None:
 
         if new_last_run_time:
             # Collect IDs for the new high-water mark timestamp
-            ids_at_last_timestamp = [
-                get_event_id(event)
+            ids_at_last_timestamp: list[str] = [
+                event_id
                 for event in events
-                if extract_time_from_event(event, log_type) == new_last_run_time and get_event_id(event)
+                if extract_time_from_event(event, log_type) == new_last_run_time and (event_id := get_event_id(event))
             ]
+
+            # If the HWM timestamp hasn't changed, merge with previous IDs to prevent duplicates
+            if new_last_run_time == last_fetch_timestamp:
+                ids_at_last_timestamp = list(set(last_fetched_ids) | set(ids_at_last_timestamp))
 
             updated_last_run[last_fetch_key] = new_last_run_time
             updated_last_run[previous_ids_key] = ids_at_last_timestamp
