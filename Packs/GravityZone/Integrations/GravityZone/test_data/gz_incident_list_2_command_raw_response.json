@@ -1,0 +1,43 @@
+[
+    {
+        "incidentId": "INCIDENT_ID_1",
+        "incidentNumber": 477,
+        "status": "open",
+        "mainAction": "reported",
+        "created": "2025-12-17T09:02:03+02:00",
+        "lastUpdated": "2025-12-17T09:02:03+02:00",
+        "lastProcessed": "2025-12-17T09:02:13+02:00",
+        "severityScore": 33,
+        "incidentLink": "https://localhost/#!/incidents/view/INCIDENT_ID_1",
+        "assignee": null,
+        "priority": "unknown",
+        "attackTypes": [
+            "Malware"
+        ],
+        "company": {
+            "id": "COMPANY_ID",
+            "name": "COMPANY_NAME"
+        },
+        "incidentType": "incident",
+        "details": {
+            "detectionName": "RegSecurityDump",
+            "counters": {
+                "endpoints": 1,
+                "files": 0,
+                "processes": 2,
+                "domains": 0,
+                "registries": 0,
+                "events": 6,
+                "storages": 0
+            },
+            "computerId": "ENDPOINT_ID",
+            "computerName": "ENDPOINT_NAME",
+            "computerFqdn": "ENDPOINT_FQDN",
+            "computerIp": "ENDPOINT_IP",
+            "computerMacAddresses": [
+                "ENDPOINT_MAC"
+            ],
+            "partOf": []
+        }
+    }
+]
