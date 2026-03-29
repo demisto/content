@@ -34,6 +34,7 @@ SELF_DEPLOYED_AUTH_TYPE = "self_deployed"
 # grant types in self-deployed authorization
 CLIENT_CREDENTIALS = "client_credentials"
 AUTHORIZATION_CODE = "authorization_code"
+MANAGED_IDENTITIES = "managed_identities"
 REFRESH_TOKEN = "refresh_token"  # guardrails-disable-line
 DEVICE_CODE = "urn:ietf:params:oauth:grant-type:device_code"
 REGEX_SEARCH_URL = r"(?P<url>https?://[^\s]+)"
@@ -668,6 +669,52 @@ def get_azure_cloud(params, integration_name):
     return AZURE_CLOUDS.get(AZURE_CLOUD_NAME_MAPPING.get(azure_cloud_arg), AZURE_WORLDWIDE_CLOUD)  # type: ignore[arg-type]
 
 
+def get_auth_type_flow(auth_flow: str) -> str | None:
+    """Maps a human-readable auth flow name to the corresponding auth type or grant type constant.
+
+    Should be called before creating the MicrosoftClient to determine the grant_type parameter.
+
+    Args:
+        auth_flow: The human-readable auth flow name (e.g., "Client Credentials", "Device Code").
+
+    Returns:
+        The corresponding constant string, or None if "Not Selected" or unrecognized.
+    """
+    auth_flow_dict = {
+        "Not Selected": None,
+        "Cortex App": OPROXY_AUTH_TYPE,
+        "Azure Managed Identities": MANAGED_IDENTITIES,
+        "Client Credentials": CLIENT_CREDENTIALS,
+        "Authorization Code": AUTHORIZATION_CODE,
+        "Device Code": DEVICE_CODE,
+    }
+    return auth_flow_dict.get(auth_flow, None)
+
+
+def is_self_deployed_flow(auth_flow: str) -> bool:
+    """Determines whether the given auth flow represents a self-deployed authentication flow.
+
+    Should be called before creating the MicrosoftClient to determine the self_deployed parameter.
+
+    Args:
+        auth_flow: The human-readable auth flow name or grant type constant.
+
+    Returns:
+        True if the auth flow is self-deployed, False otherwise.
+    """
+    self_deployed_flows = {
+        "Device Code",
+        "Authorization Code",
+        "Client Credentials",
+        "Azure Managed Identities",
+        DEVICE_CODE,
+        AUTHORIZATION_CODE,
+        CLIENT_CREDENTIALS,
+        MANAGED_IDENTITIES,
+    }
+    return auth_flow in self_deployed_flows
+
+
 class MicrosoftClient(BaseClient):
     def __init__(
         self,
@@ -901,6 +948,76 @@ class MicrosoftClient(BaseClient):
         except ValueError as exception:
             raise DemistoException(f"Failed to parse json object from response: {response.content}", exception)
 
+    def main_test_module(self):
+        """
+        Checks all necessary fields for the specific authentication flow.
+        """
+
+        def require_fields(fields: list[str], message_prefix: str):
+            """Helper to validate required fields."""
+            for field in fields:
+                if not getattr(self, field, None):
+                    raise DemistoException(f"{message_prefix} enter {field.replace('_', ' ').title()}.")
+
+        if self.auth_type == OPROXY_AUTH_TYPE:
+            demisto.debug("Running test-module for OPROXY_AUTH_TYPE auth type.")
+            self.get_access_token()
+            return "ok"
+        elif self.grant_type == MANAGED_IDENTITIES:
+            demisto.debug("Running test-module for MANAGED_IDENTITIES grant type.")
+            try:
+                self.get_access_token()
+            except Exception as e:
+                raise DemistoException(
+                    f"Failed to connect to Azure Managed Identities. "
+                    f"Please ensure the following: "
+                    f"1. You have entered the Azure Managed Identities Client ID. "
+                    f"2. This integration is running on an Azure resource "
+                    f"that has been assigned a Managed Identity within your Azure tenant. "
+                    f"Original Error: {e}"
+                )
+            return "ok"
+
+        elif self.grant_type == CLIENT_CREDENTIALS:
+            demisto.debug("Running test-module for CLIENT_CREDENTIALS grant type.")
+            require_fields(
+                fields=["tenant_id", "client_secret", "client_id"], message_prefix="When using Client Credentials flow you must "
+            )
+            self.get_access_token()
+            return "ok"
+
+        elif self.grant_type == DEVICE_CODE:
+            demisto.debug("Running test-module for DEVICE_CODE grant type.")
+            require_fields(fields=["client_id"], message_prefix="When using Device Code flow you must ")
+            raise DemistoException(
+                f"The *Test* button is not available for the Device Code Flow. "
+                f"Please run !{self.command_prefix}-auth-start and then "
+                f"{self.command_prefix}-auth-complete. Then you can check the connection using the "
+                f"!{self.command_prefix}-auth-test command."
+            )
+
+        elif self.grant_type == AUTHORIZATION_CODE:
+            demisto.debug("Running test-module for AUTHORIZATION_CODE grant type.")
+            if not demisto.params().get("redirect_uri"):  # this is taken from demisto.params because we have a default
+                # value for this parameter in MicrosoftClient class
+                raise DemistoException(
+                    "A redirect URI is required. Please enter the redirect URI that you configured"
+                    " in your self-deployed application."
+                )
+            require_fields(
+                fields=["tenant_id", "client_secret", "client_id", "redirect_uri"],
+                message_prefix="When using Authorization Code flow you must ",
+            )
+            raise DemistoException(
+                f"The *Test* button is not available for the Authorization Code Flow. "
+                f"Please use the !{self.command_prefix}-generate-login-url command in order to generate the Auth Code. "
+                f"Then you can check the connection using the "
+                f"!{self.command_prefix}-auth-test command."
+            )
+
+        else:
+            raise DemistoException(f"Unsupported grant type: {self.grant_type}")
+
     def get_access_token(self, resource: str = "", scope: str | None = None) -> str:
         """
         Obtains access and refresh token from oproxy server or just a token from a self deployed app.
@@ -1067,7 +1184,7 @@ class MicrosoftClient(BaseClient):
     def _get_self_deployed_token(
         self, refresh_token: str = "", scope: str | None = None, integration_context: dict | None = None
     ) -> tuple[str, int, str]:
-        if self.managed_identities_client_id:
+        if self.grant_type == MANAGED_IDENTITIES or self.managed_identities_client_id:
             if not self.multi_resource:
                 return self._get_managed_identities_token()
 
@@ -1133,7 +1250,11 @@ class MicrosoftClient(BaseClient):
                 )
             response_json = response.json()
         except Exception as e:
-            return_error(f"Error in Microsoft authorization: {e!s}")
+            return_error(
+                f"Error in Microsoft authorization."
+                f" For self-deployed apps, ensure the 'Self-deployed' checkbox is selected.\n"
+                f" Error: {e!s}"
+            )
 
         access_token = response_json.get("access_token", "")
         expires_in = int(response_json.get("expires_in", 3595))
@@ -1185,7 +1306,11 @@ class MicrosoftClient(BaseClient):
                 )
             response_json = response.json()
         except Exception as e:
-            return_error(f"Error in Microsoft authorization: {e!s}")
+            return_error(
+                f"Error in Microsoft authorization."
+                f" For self-deployed apps, ensure the 'Self-deployed' checkbox is selected.\n"
+                f" Error: {e!s}"
+            )
 
         access_token = response_json.get("access_token", "")
         expires_in = int(response_json.get("expires_in", 3595))
@@ -1221,7 +1346,7 @@ class MicrosoftClient(BaseClient):
             err = f"{e!s}"
 
         return_error(f"Error in Microsoft authorization with Azure Managed Identities: {err}")
-        return None
+        return None  # return_error calls sys.exit, this is unreachable but satisfies the linter
 
     def _get_token_device_code(
         self, refresh_token: str = "", scope: str | None = None, integration_context: dict | None = None
@@ -1251,7 +1376,11 @@ class MicrosoftClient(BaseClient):
                 )
             response_json = response.json()
         except Exception as e:
-            return_error(f"Error in Microsoft authorization: {e!s}")
+            return_error(
+                f"Error in Microsoft authorization."
+                f" For self-deployed apps, ensure the 'Self-deployed' checkbox is selected. \n"
+                f" Error: {e!s}"
+            )
 
         access_token = response_json.get("access_token", "")
         expires_in = int(response_json.get("expires_in", 3595))
@@ -1523,8 +1652,11 @@ def get_azure_managed_identities_client_id(params: dict) -> str | None:
         will return, otherwise - None
 
     """
-    auth_type = params.get("auth_type") or params.get("authentication_type")
-    if params and (argToBoolean(params.get("use_managed_identities") or auth_type == "Azure Managed Identities")):
+    auth_type = params.get("auth_type") or params.get("authentication_type") or params.get("auth_flow")
+    use_managed_identities = params.get("use_managed_identities")
+    if params and (
+        (use_managed_identities is not None and argToBoolean(use_managed_identities)) or auth_type == "Azure Managed Identities"
+    ):
         client_id = params.get("managed_identities_client_id", {}).get("password")
         return client_id or MANAGED_IDENTITIES_SYSTEM_ASSIGNED
     return None
