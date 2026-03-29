@@ -98,7 +98,7 @@ This powerful command allows you to check reputation for a mixed list of IPs, do
 
 The bulk check command provides:
 
-1. **Summary Statistics**: 
+1. **Summary Statistics**:
    - Total indicators processed
    - Success/failure counts
    - Breakdown by entity type (IPs, domains, URLs, hashes)

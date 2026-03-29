@@ -324,7 +324,7 @@ Similar to IP command, with `SOCRadarIoCEnrichment.File.*` prefix.
 
 ---
 
-**Integration Type**: Data Enrichment & Threat Intelligence  
-**Vendor**: SOCRadar  
-**Support**: Community  
+**Integration Type**: Data Enrichment & Threat Intelligence
+**Vendor**: SOCRadar
+**Support**: Community
 **Categories**: Threat Intelligence, IoC Enrichment, Reputation

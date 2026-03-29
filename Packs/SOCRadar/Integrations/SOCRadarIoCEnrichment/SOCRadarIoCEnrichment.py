@@ -37,16 +37,16 @@ class Client(BaseClient):
 
     def get_indicator_enrichment(self, indicator: str, fields: Optional[List[str]] = None):
         """Get indicator enrichment from SOCRadar IoC Enrichment API
-        
+
         Args:
             indicator: The indicator value (IP, domain, URL, or hash)
             fields: List of fields to include (defaults to all except AI insight)
-            
+
         Returns:
             API response with enrichment data
         """
         suffix = "/ioc_enrichment/get/indicator_details"
-        
+
         if fields is None:
             # Check if AI insights are enabled in configuration
             include_ai = demisto.params().get("include_ai_insights", False)
@@ -54,19 +54,19 @@ class Client(BaseClient):
                 fields = DEFAULT_FIELDS + ["indicator_ai_insight"]
             else:
                 fields = DEFAULT_FIELDS
-        
+
         request_body = {
             "indicator": indicator,
             "fields": fields
         }
-        
+
         headers = {
             "Api-Key": self.api_key,
             "Content-Type": "application/json"
         }
-        
+
         response = self._http_request(
-            method="POST", 
+            method="POST",
             url_suffix=suffix,
             json_data=request_body,
             headers=headers,
@@ -117,12 +117,12 @@ class Client(BaseClient):
 
 def calculate_dbot_score(score: float, signal_strength: str = None, confidence: str = None) -> int:
     """Calculate DBot score from SOCRadar enrichment data
-    
+
     Args:
         score: Reputation score from API (0-100 range)
         signal_strength: IoC signal strength (Very Strong, Strong, Moderate, Slightly Noisy, Noisy)
         confidence: Cross-source confidence (Very High, High, Medium, Low)
-        
+
     Returns:
         DBot score (0=Unknown, 1=Good, 2=Suspicious, 3=Malicious)
     """
@@ -132,13 +132,13 @@ def calculate_dbot_score(score: float, signal_strength: str = None, confidence: 
         score = score[0] if score else 0
     elif score is None:
         score = 0
-    
+
     # Convert to float safely
     try:
         score = float(score)
     except (ValueError, TypeError):
         score = 0
-    
+
     # If score is 0, check signal strength
     if score == 0:
         if signal_strength in ["Very Strong", "Strong"]:
@@ -147,7 +147,7 @@ def calculate_dbot_score(score: float, signal_strength: str = None, confidence: 
             return 2  # Suspicious
         else:
             return 0  # Unknown
-    
+
     # Score-based classification
     if score > 80:
         return 3  # Malicious
@@ -180,7 +180,7 @@ class Validator:
     @staticmethod
     def validate_hash(hash_to_validate):
         return get_hash_type(hash_to_validate) != "Unknown"
-    
+
     @staticmethod
     def validate_url(url_to_validate):
         """Validate URL format"""
@@ -207,7 +207,7 @@ class Validator:
     def raise_if_hash_not_valid(file_hash: str):
         if not Validator.validate_hash(file_hash):
             raise ValueError(f'Hash "{file_hash}" is not a valid hash')
-    
+
     @staticmethod
     def raise_if_url_not_valid(url: str):
         if not Validator.validate_url(url):
@@ -216,7 +216,7 @@ class Validator:
 
 def build_entry_context(raw_response: dict, indicator: str) -> dict:
     """Build context entry from API response"""
-    
+
     # Extract main components
     details = raw_response.get("details", {})
     summary = raw_response.get("summary", {})
@@ -226,18 +226,18 @@ def build_entry_context(raw_response: dict, indicator: str) -> dict:
     activity_labels = raw_response.get("activity_label_dict", {})
     premium_feeds = raw_response.get("premium_feeds", [])
     relations = raw_response.get("relations", [])
-    
+
     # Extract score - API returns it as array, take first value and round to 2 decimals
     score_value = details.get("score")
     if isinstance(score_value, list) and len(score_value) > 0:
         score = score_value[0]
     else:
         score = score_value
-    
+
     # Round score to 2 decimal places for readability
     if score is not None:
         score = round(float(score), 2)
-    
+
     context_entry = {
         "Indicator": indicator,
         "Score": score,
@@ -251,7 +251,7 @@ def build_entry_context(raw_response: dict, indicator: str) -> dict:
         "SignalStrength": details.get("ioc_signal_strength") or raw_response.get("ioc_signal_strength"),
         "Confidence": details.get("cross_source_confidence") or raw_response.get("cross_source_confidence"),
         "IsWhitelisted": details.get("is_whitelisted", False),
-        
+
         # Activity labels
         "Activity": {
             "Last1Day": activity_labels.get("last_1_day"),
@@ -259,7 +259,7 @@ def build_entry_context(raw_response: dict, indicator: str) -> dict:
             "Last30Days": activity_labels.get("last_30_days"),
             "Last90Days": activity_labels.get("last_90_days"),
         },
-        
+
         # Categorization flags
         "Categorization": {
             "CDN": categorization.get("cdn", False),
@@ -274,7 +274,7 @@ def build_entry_context(raw_response: dict, indicator: str) -> dict:
             "Tor": categorization.get("tor", False),
             "VPN": categorization.get("vpn", False),
         },
-        
+
         # Classifications
         "Classifications": {
             "Campaign": classifications.get("campaign"),
@@ -285,7 +285,7 @@ def build_entry_context(raw_response: dict, indicator: str) -> dict:
             "TargetCountries": classifications.get("target_country_list", []),
             "ThreatActors": classifications.get("threat_actors", []),
         },
-        
+
         # Premium Feeds
         "PremiumFeeds": [
             {
@@ -295,7 +295,7 @@ def build_entry_context(raw_response: dict, indicator: str) -> dict:
             }
             for feed in premium_feeds
         ],
-        
+
         # Relations (limited to 10)
         "Relations": [
             {
@@ -306,11 +306,11 @@ def build_entry_context(raw_response: dict, indicator: str) -> dict:
             }
             for rel in relations[:10]
         ],
-        
+
         # History (limited to last 10 events)
         "History": []
     }
-    
+
     # Process history
     indicator_history = history.get("indicator_history", [])
     # Ensure indicator_history is a list before slicing
@@ -322,31 +322,31 @@ def build_entry_context(raw_response: dict, indicator: str) -> dict:
                     "FeedSource": event.get("feed_source"),
                     "Date": event.get("insert_date")
                 })
-    
+
     # AI Insight (only if present in response)
     ai_insight = raw_response.get("socradar_copilot:ioc_agent")
     if ai_insight:
         context_entry["AIInsight"] = ai_insight
-    
+
     return context_entry
 
 
 def detect_indicator_type(indicator: str) -> str:
     """Detect indicator type"""
     indicator = indicator.strip()
-    
+
     if indicator.startswith('http://') or indicator.startswith('https://'):
         return 'url'
-    
+
     if Validator.validate_ipv4(indicator) or Validator.validate_ipv6(indicator):
         return 'ip'
-    
+
     if Validator.validate_hash(indicator):
         return 'file'
-    
+
     if Validator.validate_domain(indicator):
         return 'domain'
-    
+
     raise ValueError(f'Unable to determine indicator type for: {indicator}')
 
 
@@ -359,7 +359,7 @@ def test_module(client: Client) -> str:
         demisto.debug("Starting test_module...")
         response = client.check_auth()
         demisto.debug(f"Test response received: {response}")
-        
+
         if response:
             demisto.debug("Test successful")
             return "ok"
@@ -382,28 +382,28 @@ def ip_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """Returns SOCRadar IoC enrichment for IP addresses"""
     ips = args.get("ip", "")
     ip_list: list = argToList(ips)
-    
+
     command_results_list: List[CommandResults] = []
 
     for ip in ip_list:
         try:
             Validator.raise_if_ip_not_valid(ip)
-            
+
             raw_response = client.get_indicator_enrichment(ip)
-            
+
             if raw_response:
                 details = raw_response.get("details", {})
                 score = details.get("score", 0)
                 signal_strength = raw_response.get("ioc_signal_strength")
                 confidence = raw_response.get("cross_source_confidence")
-                
+
                 dbot_score_value = calculate_dbot_score(score, signal_strength, confidence)
-                
+
                 title = f"SOCRadar IoC Enrichment - Analysis for IP: {ip}"
-                
+
                 context_entry = build_entry_context(raw_response, ip)
                 human_readable = tableToMarkdown(title, context_entry)
-                
+
                 dbot_score = Common.DBotScore(
                     indicator=ip,
                     indicator_type=DBotScoreType.IP,
@@ -411,12 +411,12 @@ def ip_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
                     score=dbot_score_value,
                     reliability=demisto.params().get("integrationReliability"),
                 )
-                
+
                 ip_object = Common.IP(
                     ip=ip,
                     dbot_score=dbot_score
                 )
-                
+
                 command_results_list.append(
                     CommandResults(
                         outputs_prefix="SOCRadarIoCEnrichment.IP",
@@ -434,7 +434,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
             command_results_list.append(CommandResults(readable_output=str(e)))
         except Exception as e:
             command_results_list.append(CommandResults(readable_output=f"Error processing IP {ip}: {str(e)}"))
-            
+
     return command_results_list
 
 
@@ -442,28 +442,28 @@ def domain_command(client: Client, args: dict[str, Any]) -> List[CommandResults]
     """Returns SOCRadar IoC enrichment for domains"""
     domains = args.get("domain", "")
     domain_list: list = argToList(domains)
-    
+
     command_results_list: List[CommandResults] = []
 
     for domain in domain_list:
         try:
             Validator.raise_if_domain_not_valid(domain)
-            
+
             raw_response = client.get_indicator_enrichment(domain)
-            
+
             if raw_response:
                 details = raw_response.get("details", {})
                 score = details.get("score", 0)
                 signal_strength = raw_response.get("ioc_signal_strength")
                 confidence = raw_response.get("cross_source_confidence")
-                
+
                 dbot_score_value = calculate_dbot_score(score, signal_strength, confidence)
-                
+
                 title = f"SOCRadar IoC Enrichment - Analysis for Domain: {domain}"
-                
+
                 context_entry = build_entry_context(raw_response, domain)
                 human_readable = tableToMarkdown(title, context_entry)
-                
+
                 dbot_score = Common.DBotScore(
                     indicator=domain,
                     indicator_type=DBotScoreType.DOMAIN,
@@ -471,12 +471,12 @@ def domain_command(client: Client, args: dict[str, Any]) -> List[CommandResults]
                     score=dbot_score_value,
                     reliability=demisto.params().get("integrationReliability"),
                 )
-                
+
                 domain_object = Common.Domain(
                     domain=domain,
                     dbot_score=dbot_score
                 )
-                
+
                 command_results_list.append(
                     CommandResults(
                         outputs_prefix="SOCRadarIoCEnrichment.Domain",
@@ -494,7 +494,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> List[CommandResults]
             command_results_list.append(CommandResults(readable_output=str(e)))
         except Exception as e:
             command_results_list.append(CommandResults(readable_output=f"Error processing domain {domain}: {str(e)}"))
-            
+
     return command_results_list
 
 
@@ -502,28 +502,28 @@ def url_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """Returns SOCRadar IoC enrichment for URLs"""
     urls = args.get("url", "")
     url_list: list = argToList(urls)
-    
+
     command_results_list: List[CommandResults] = []
 
     for url in url_list:
         try:
             Validator.raise_if_url_not_valid(url)
-            
+
             raw_response = client.get_indicator_enrichment(url)
-            
+
             if raw_response:
                 details = raw_response.get("details", {})
                 score = details.get("score", 0)
                 signal_strength = raw_response.get("ioc_signal_strength")
                 confidence = raw_response.get("cross_source_confidence")
-                
+
                 dbot_score_value = calculate_dbot_score(score, signal_strength, confidence)
-                
+
                 title = f"SOCRadar IoC Enrichment - Analysis for URL: {url}"
-                
+
                 context_entry = build_entry_context(raw_response, url)
                 human_readable = tableToMarkdown(title, context_entry)
-                
+
                 dbot_score = Common.DBotScore(
                     indicator=url,
                     indicator_type=DBotScoreType.URL,
@@ -531,12 +531,12 @@ def url_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
                     score=dbot_score_value,
                     reliability=demisto.params().get("integrationReliability"),
                 )
-                
+
                 url_object = Common.URL(
                     url=url,
                     dbot_score=dbot_score
                 )
-                
+
                 command_results_list.append(
                     CommandResults(
                         outputs_prefix="SOCRadarIoCEnrichment.URL",
@@ -554,7 +554,7 @@ def url_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
             command_results_list.append(CommandResults(readable_output=str(e)))
         except Exception as e:
             command_results_list.append(CommandResults(readable_output=f"Error processing URL {url}: {str(e)}"))
-            
+
     return command_results_list
 
 
@@ -562,29 +562,29 @@ def file_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """Returns SOCRadar IoC enrichment for file hashes"""
     file_hashes = args.get("file", "")
     file_hash_list: list = argToList(file_hashes)
-    
+
     command_results_list: List[CommandResults] = []
 
     for hash_value in file_hash_list:
         try:
             Validator.raise_if_hash_not_valid(hash_value)
             hash_type = get_hash_type(hash_value)
-            
+
             raw_response = client.get_indicator_enrichment(hash_value)
-            
+
             if raw_response:
                 details = raw_response.get("details", {})
                 score = details.get("score", 0)
                 signal_strength = raw_response.get("ioc_signal_strength")
                 confidence = raw_response.get("cross_source_confidence")
-                
+
                 dbot_score_value = calculate_dbot_score(score, signal_strength, confidence)
-                
+
                 title = f"SOCRadar IoC Enrichment - Analysis for Hash: {hash_value}"
-                
+
                 context_entry = build_entry_context(raw_response, hash_value)
                 human_readable = tableToMarkdown(title, context_entry)
-                
+
                 dbot_score = Common.DBotScore(
                     indicator=hash_value,
                     indicator_type=DBotScoreType.FILE,
@@ -592,16 +592,16 @@ def file_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
                     score=dbot_score_value,
                     reliability=demisto.params().get("integrationReliability"),
                 )
-                
+
                 file_object = Common.File(dbot_score=dbot_score)
-                
+
                 if hash_type == "sha256":
                     file_object.sha256 = hash_value
                 elif hash_type == "sha1":
                     file_object.sha1 = hash_value
                 elif hash_type == "md5":
                     file_object.md5 = hash_value
-                
+
                 command_results_list.append(
                     CommandResults(
                         outputs_prefix="SOCRadarIoCEnrichment.File",
@@ -619,41 +619,41 @@ def file_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
             command_results_list.append(CommandResults(readable_output=str(e)))
         except Exception as e:
             command_results_list.append(CommandResults(readable_output=f"Error processing hash {hash_value}: {str(e)}"))
-            
+
     return command_results_list
 
 
 def socradar_ioc_enrichment_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """Generic enrichment command for any indicator type with auto-detection"""
     indicator = args.get("indicator", "").strip()
-    
+
     if not indicator:
         return [CommandResults(readable_output="Indicator parameter is required.")]
-    
+
     command_results_list: List[CommandResults] = []
-    
+
     try:
         # Detect indicator type
         indicator_type = detect_indicator_type(indicator)
-        
+
         # Get enrichment data
         raw_response = client.get_indicator_enrichment(indicator)
-        
+
         if raw_response:
             details = raw_response.get("details", {})
-            
+
             # Extract score
             score_value = details.get("score")
             if isinstance(score_value, list) and len(score_value) > 0:
                 score = score_value[0]
             else:
                 score = score_value or 0
-            
+
             signal_strength = raw_response.get("ioc_signal_strength")
             confidence = raw_response.get("cross_source_confidence")
-            
+
             dbot_score_value = calculate_dbot_score(score, signal_strength, confidence)
-            
+
             # Determine DBot type based on detected type
             if indicator_type == "ip":
                 dbot_type = DBotScoreType.IP
@@ -698,7 +698,7 @@ def socradar_ioc_enrichment_command(client: Client, args: dict[str, Any]) -> Lis
                 dbot_type = DBotScoreType.FILE
                 output_prefix = "SOCRadarIoCEnrichment.File"
                 hash_type = get_hash_type(indicator)
-                
+
                 dbot_score = Common.DBotScore(
                     indicator=indicator,
                     indicator_type=dbot_type,
@@ -706,7 +706,7 @@ def socradar_ioc_enrichment_command(client: Client, args: dict[str, Any]) -> Lis
                     score=dbot_score_value,
                     reliability=demisto.params().get("integrationReliability"),
                 )
-                
+
                 common_object = Common.File(dbot_score=dbot_score)
                 if hash_type == "sha256":
                     common_object.sha256 = indicator
@@ -714,11 +714,11 @@ def socradar_ioc_enrichment_command(client: Client, args: dict[str, Any]) -> Lis
                     common_object.sha1 = indicator
                 elif hash_type == "md5":
                     common_object.md5 = indicator
-            
+
             title = f"SOCRadar IoC Enrichment - {indicator_type.upper()}: {indicator}"
             context_entry = build_entry_context(raw_response, indicator)
             human_readable = tableToMarkdown(title, context_entry)
-            
+
             command_results_list.append(
                 CommandResults(
                     outputs_prefix=output_prefix,
@@ -732,12 +732,12 @@ def socradar_ioc_enrichment_command(client: Client, args: dict[str, Any]) -> Lis
         else:
             message = f"No enrichment data found for indicator: {indicator}"
             command_results_list.append(CommandResults(readable_output=message))
-            
+
     except ValueError as e:
         command_results_list.append(CommandResults(readable_output=f"Error: {str(e)}"))
     except Exception as e:
         command_results_list.append(CommandResults(readable_output=f"Error processing indicator {indicator}: {str(e)}"))
-    
+
     return command_results_list
 
 

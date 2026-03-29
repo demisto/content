@@ -38,24 +38,24 @@ class Client(BaseClient):
 
     def get_entity_reputation(self, entity_value: str, entity_type: str):
         """Get entity reputation from SOCRadar Rapid Reputation API
-        
+
         Args:
             entity_value: The value of the entity (IP, domain, URL, or hash)
             entity_type: The type of entity (ip, hostname, url, hash)
-            
+
         Returns:
             API response with reputation data
         """
         suffix = "/threatfeed/rapid/reputation"
         api_params = {"entity_value": entity_value, "entity_type": entity_type}
         headers = {"Api-Key": self.api_key}
-        
+
         response = self._http_request(
-            method="GET", 
-            url_suffix=suffix, 
+            method="GET",
+            url_suffix=suffix,
             params=api_params,
             headers=headers,
-            timeout=60, 
+            timeout=60,
             error_handler=self.handle_error_response,
             resp_type='json'
         )
@@ -145,7 +145,7 @@ class Validator:
     @staticmethod
     def validate_hash(hash_to_validate):
         return get_hash_type(hash_to_validate) != "Unknown"
-    
+
     @staticmethod
     def validate_url(url_to_validate):
         """Validate URL format"""
@@ -175,7 +175,7 @@ class Validator:
         """Raises an error if file_hash is not valid"""
         if not Validator.validate_hash(file_hash):
             raise ValueError(f'Hash "{file_hash}" is not a valid hash')
-    
+
     @staticmethod
     def raise_if_url_not_valid(url: str):
         """Raises an error if URL is not valid"""
@@ -186,12 +186,12 @@ class Validator:
 def build_entry_context(raw_response: dict, entity_value: str, entity_type: str) -> dict:
     """Build context entry from API response"""
     data = raw_response.get("data", {})
-    
+
     # Get and round score to 2 decimal places
     score = data.get("score")
     if score is not None:
         score = round(float(score), 2)
-    
+
     context_entry = {
         "Entity": entity_value,
         "EntityType": entity_type,
@@ -199,7 +199,7 @@ def build_entry_context(raw_response: dict, entity_value: str, entity_type: str)
         "IsWhitelisted": data.get("is_whitelisted", False),
         "FindingSources": []
     }
-    
+
     # Process finding sources
     finding_sources = data.get("finding_sources", [])
     for source in finding_sources:
@@ -212,30 +212,30 @@ def build_entry_context(raw_response: dict, entity_value: str, entity_type: str)
             "SeenCount": source.get("seen_count")
         }
         context_entry["FindingSources"].append(source_entry)
-    
+
     return context_entry
 
 
 def detect_entity_type(entity: str) -> str:
     """Automatically detect the type of an entity"""
     entity = entity.strip()
-    
+
     # Check if it's a URL (starts with http:// or https://)
     if entity.startswith('http://') or entity.startswith('https://'):
         return 'url'
-    
+
     # Check if it's an IP address
     if Validator.validate_ipv4(entity) or Validator.validate_ipv6(entity):
         return 'ip'
-    
+
     # Check if it's a hash
     if Validator.validate_hash(entity):
         return 'hash'
-    
+
     # Check if it's a domain
     if Validator.validate_domain(entity):
         return 'hostname'
-    
+
     # If nothing matches, raise an error
     raise ValueError(f'Unable to determine entity type for: {entity}')
 
@@ -243,20 +243,20 @@ def detect_entity_type(entity: str) -> str:
 def process_entity_by_type(client: Client, entity: str, entity_type: str) -> dict:
     """Process a single entity based on its type"""
     raw_response = client.get_entity_reputation(entity, entity_type)
-    
+
     if raw_response.get("is_success"):
         data = raw_response.get("data", {})
-        
+
         if data.get("is_whitelisted"):
             score = 1
         elif (api_score := data.get("score")) is not None:
             score = calculate_dbot_score(api_score)
         else:
             score = 0
-        
+
         context_entry = build_entry_context(raw_response, entity, entity_type)
         context_entry["DetectedType"] = entity_type
-        
+
         return {
             "entity": entity,
             "entity_type": entity_type,
@@ -284,7 +284,7 @@ def test_module(client: Client) -> str:
         demisto.debug("Starting test_module...")
         response = client.check_auth()
         demisto.debug(f"Test response received: {response}")
-        
+
         if response and response.get("is_success"):
             demisto.debug("Test successful")
             return "ok"
@@ -308,30 +308,30 @@ def ip_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """Returns SOCRadar reputation details for the given IP entity."""
     ips = args.get("ip", "")
     ip_list: list = argToList(ips)
-    
+
     command_results_list: List[CommandResults] = []
 
     for ip_to_score in ip_list:
         try:
             Validator.raise_if_ip_not_valid(ip_to_score)
-            
+
             raw_response = client.get_entity_reputation(ip_to_score, "ip")
-            
+
             if raw_response.get("is_success"):
                 data = raw_response.get("data", {})
-                
+
                 if data.get("is_whitelisted"):
                     score = 1
                 elif (api_score := data.get("score")) is not None:
                     score = calculate_dbot_score(api_score)
                 else:
                     score = 0
-                    
+
                 title = f"SOCRadar Rapid Reputation - Analysis results for IP: {ip_to_score}"
-                
+
                 context_entry = build_entry_context(raw_response, ip_to_score, "ip")
                 human_readable = tableToMarkdown(title, context_entry)
-                
+
                 dbot_score = Common.DBotScore(
                     indicator=ip_to_score,
                     indicator_type=DBotScoreType.IP,
@@ -339,12 +339,12 @@ def ip_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
                     score=score,
                     reliability=demisto.params().get("integrationReliability"),
                 )
-                
+
                 ip_object = Common.IP(
                     ip=ip_to_score,
                     dbot_score=dbot_score
                 )
-                
+
                 command_results_list.append(
                     CommandResults(
                         outputs_prefix="SOCRadarRapidReputation.IP",
@@ -362,7 +362,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
             command_results_list.append(CommandResults(readable_output=str(e)))
         except Exception as e:
             command_results_list.append(CommandResults(readable_output=f"Error processing IP {ip_to_score}: {str(e)}"))
-            
+
     if not command_results_list:
         command_results_list = [CommandResults("SOCRadar Rapid Reputation could not find any results for the given IP(s).")]
 
@@ -373,30 +373,30 @@ def domain_command(client: Client, args: dict[str, Any]) -> List[CommandResults]
     """Returns SOCRadar reputation details for the given domain entity."""
     domains = args.get("domain", "")
     domain_list: list = argToList(domains)
-    
+
     command_results_list: List[CommandResults] = []
 
     for domain_to_score in domain_list:
         try:
             Validator.raise_if_domain_not_valid(domain_to_score)
-            
+
             raw_response = client.get_entity_reputation(domain_to_score, "hostname")
-            
+
             if raw_response.get("is_success"):
                 data = raw_response.get("data", {})
-                
+
                 if data.get("is_whitelisted"):
                     score = 1
                 elif (api_score := data.get("score")) is not None:
                     score = calculate_dbot_score(api_score)
                 else:
                     score = 0
-                    
+
                 title = f"SOCRadar Rapid Reputation - Analysis results for Domain: {domain_to_score}"
-                
+
                 context_entry = build_entry_context(raw_response, domain_to_score, "hostname")
                 human_readable = tableToMarkdown(title, context_entry)
-                
+
                 dbot_score = Common.DBotScore(
                     indicator=domain_to_score,
                     indicator_type=DBotScoreType.DOMAIN,
@@ -404,12 +404,12 @@ def domain_command(client: Client, args: dict[str, Any]) -> List[CommandResults]
                     score=score,
                     reliability=demisto.params().get("integrationReliability"),
                 )
-                
+
                 domain_object = Common.Domain(
                     domain=domain_to_score,
                     dbot_score=dbot_score
                 )
-                
+
                 command_results_list.append(
                     CommandResults(
                         outputs_prefix="SOCRadarRapidReputation.Domain",
@@ -427,7 +427,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> List[CommandResults]
             command_results_list.append(CommandResults(readable_output=str(e)))
         except Exception as e:
             command_results_list.append(CommandResults(readable_output=f"Error processing domain {domain_to_score}: {str(e)}"))
-            
+
     if not command_results_list:
         command_results_list = [CommandResults("SOCRadar Rapid Reputation could not find any results for the given domain(s).")]
 
@@ -438,30 +438,30 @@ def url_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """Returns SOCRadar reputation details for the given URL entity."""
     urls = args.get("url", "")
     url_list: list = argToList(urls)
-    
+
     command_results_list: List[CommandResults] = []
 
     for url_to_score in url_list:
         try:
             Validator.raise_if_url_not_valid(url_to_score)
-            
+
             raw_response = client.get_entity_reputation(url_to_score, "url")
-            
+
             if raw_response.get("is_success"):
                 data = raw_response.get("data", {})
-                
+
                 if data.get("is_whitelisted"):
                     score = 1
                 elif (api_score := data.get("score")) is not None:
                     score = calculate_dbot_score(api_score)
                 else:
                     score = 0
-                    
+
                 title = f"SOCRadar Rapid Reputation - Analysis results for URL: {url_to_score}"
-                
+
                 context_entry = build_entry_context(raw_response, url_to_score, "url")
                 human_readable = tableToMarkdown(title, context_entry)
-                
+
                 dbot_score = Common.DBotScore(
                     indicator=url_to_score,
                     indicator_type=DBotScoreType.URL,
@@ -469,12 +469,12 @@ def url_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
                     score=score,
                     reliability=demisto.params().get("integrationReliability"),
                 )
-                
+
                 url_object = Common.URL(
                     url=url_to_score,
                     dbot_score=dbot_score
                 )
-                
+
                 command_results_list.append(
                     CommandResults(
                         outputs_prefix="SOCRadarRapidReputation.URL",
@@ -492,7 +492,7 @@ def url_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
             command_results_list.append(CommandResults(readable_output=str(e)))
         except Exception as e:
             command_results_list.append(CommandResults(readable_output=f"Error processing URL {url_to_score}: {str(e)}"))
-            
+
     if not command_results_list:
         command_results_list = [CommandResults("SOCRadar Rapid Reputation could not find any results for the given URL(s).")]
 
@@ -503,31 +503,31 @@ def file_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """Returns SOCRadar reputation details for the given file hash entity."""
     file_hashes = args.get("file", "")
     file_hash_list: list = argToList(file_hashes)
-    
+
     command_results_list: List[CommandResults] = []
 
     for hash_to_score in file_hash_list:
         try:
             Validator.raise_if_hash_not_valid(hash_to_score)
             hash_type = get_hash_type(hash_to_score)
-            
+
             raw_response = client.get_entity_reputation(hash_to_score, "hash")
-            
+
             if raw_response.get("is_success"):
                 data = raw_response.get("data", {})
-                
+
                 if data.get("is_whitelisted"):
                     score = 1
                 elif (api_score := data.get("score")) is not None:
                     score = calculate_dbot_score(api_score)
                 else:
                     score = 0
-                    
+
                 title = f"SOCRadar Rapid Reputation - Analysis results for Hash: {hash_to_score}"
-                
+
                 context_entry = build_entry_context(raw_response, hash_to_score, "hash")
                 human_readable = tableToMarkdown(title, context_entry)
-                
+
                 dbot_score = Common.DBotScore(
                     indicator=hash_to_score,
                     indicator_type=DBotScoreType.FILE,
@@ -535,9 +535,9 @@ def file_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
                     score=score,
                     reliability=demisto.params().get("integrationReliability"),
                 )
-                
+
                 file_object = Common.File(dbot_score=dbot_score)
-                
+
                 # Set hash based on type
                 if hash_type == "sha256":
                     file_object.sha256 = hash_to_score
@@ -545,7 +545,7 @@ def file_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
                     file_object.sha1 = hash_to_score
                 elif hash_type == "md5":
                     file_object.md5 = hash_to_score
-                
+
                 command_results_list.append(
                     CommandResults(
                         outputs_prefix="SOCRadarRapidReputation.File",
@@ -563,7 +563,7 @@ def file_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
             command_results_list.append(CommandResults(readable_output=str(e)))
         except Exception as e:
             command_results_list.append(CommandResults(readable_output=f"Error processing hash {hash_to_score}: {str(e)}"))
-            
+
     if not command_results_list:
         command_results_list = [CommandResults("SOCRadar Rapid Reputation could not find any results for the given file hash(es).")]
 
@@ -574,10 +574,10 @@ def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> List[Co
     """Check reputation for a mixed list of indicators with automatic type detection."""
     indicators = args.get("indicators", "")
     indicator_list: list = argToList(indicators)
-    
+
     if not indicator_list:
         return [CommandResults(readable_output="No indicators provided.")]
-    
+
     # Check maximum limit to avoid XSOAR argument/output size limits
     if len(indicator_list) > MAX_BULK_CHECK_INDICATORS:
         error_msg = (
@@ -598,9 +598,9 @@ def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> List[Co
             f"**Recommended:** Use 10-20 indicators per batch for best performance."
         )
         return [CommandResults(readable_output=error_msg)]
-    
+
     command_results_list: List[CommandResults] = []
-    
+
     # Warning for large batches (over 50 indicators)
     if len(indicator_list) > 50:
         warning_msg = (
@@ -625,21 +625,21 @@ def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> List[Co
             "whitelisted": 0
         }
     }
-    
+
     for idx, indicator in enumerate(indicator_list):
         try:
             # Detect entity type
             entity_type = detect_entity_type(indicator)
             summary_data["by_type"][entity_type] += 1
-            
+
             # Process the entity
             result = process_entity_by_type(client, indicator, entity_type)
-            
+
             if result["success"]:
                 summary_data["processed"] += 1
                 context = result["context"]
                 score = context.get("Score", 0) or 0
-                
+
                 # Score range classification
                 if context.get("IsWhitelisted"):
                     summary_data["by_score_range"]["whitelisted"] += 1
@@ -656,7 +656,7 @@ def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> List[Co
                 else:
                     summary_data["by_score_range"]["0-25"] += 1
                     score_range = "0-25"
-                
+
                 title = f"SOCRadar - {entity_type.upper()}: {indicator}"
                 summary_dict = {
                     "Entity": indicator,
@@ -666,9 +666,9 @@ def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> List[Co
                     "IsWhitelisted": context.get("IsWhitelisted", False),
                     "Sources": len(context.get("FindingSources", []))
                 }
-                
+
                 human_readable = tableToMarkdown(title, summary_dict)
-                
+
                 command_results_list.append(
                     CommandResults(
                         outputs_prefix="SOCRadarRapidReputation.BulkCheck",
@@ -687,7 +687,7 @@ def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> List[Co
                 })
                 error_msg = f"❌ Failed: {indicator} - {error_reason}"
                 command_results_list.append(CommandResults(readable_output=error_msg))
-                
+
         except Exception as e:
             summary_data["failed"] += 1
             error_reason = str(e)
@@ -697,12 +697,12 @@ def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> List[Co
             })
             error_msg = f"❌ Error: {indicator} - {error_reason}"
             command_results_list.append(CommandResults(readable_output=error_msg))
-        
+
         # Rate limiting: 1 request per second
         # Sleep after each request except the last one
         if idx < len(indicator_list) - 1:
             time.sleep(1)
-    
+
     # Build summary with score ranges
     summary_table_data = [
         {"Metric": "Total Indicators", "Count": summary_data["total"]},
@@ -715,9 +715,9 @@ def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> List[Co
         {"Metric": "Score 0-25", "Count": summary_data["by_score_range"]["0-25"]},
         {"Metric": "Whitelisted", "Count": summary_data["by_score_range"]["whitelisted"]},
     ]
-    
+
     summary_table = tableToMarkdown("📊 Bulk Check Summary", summary_table_data)
-    
+
     # Add failed details if any
     if summary_data["failed_details"]:
         failed_table = tableToMarkdown(
@@ -726,13 +726,13 @@ def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> List[Co
             headers=["Entity", "Reason"]
         )
         summary_table += "\n\n" + failed_table
-    
+
     command_results_list.insert(0, CommandResults(
         outputs_prefix="SOCRadarRapidReputation.BulkCheckSummary",
         readable_output=summary_table,
         outputs=summary_data
     ))
-    
+
     return command_results_list
 
 
@@ -740,30 +740,30 @@ def socradar_reputation_command(client: Client, args: dict[str, Any]) -> List[Co
     """Generic reputation check for any entity type."""
     entity_value = args.get("entity_value")
     entity_type = args.get("entity_type")
-    
+
     if not entity_value or not entity_type:
         return [CommandResults(readable_output="Both entity_value and entity_type are required.")]
-    
+
     command_results_list: List[CommandResults] = []
-    
+
     try:
         raw_response = client.get_entity_reputation(entity_value, entity_type)
-        
+
         if raw_response.get("is_success"):
             data = raw_response.get("data", {})
-            
+
             if data.get("is_whitelisted"):
                 score = 1
             elif (api_score := data.get("score")) is not None:
                 score = calculate_dbot_score(api_score)
             else:
                 score = 0
-            
+
             title = f"SOCRadar Rapid Reputation - Analysis for {entity_type.upper()}: {entity_value}"
-            
+
             context_entry = build_entry_context(raw_response, entity_value, entity_type)
             human_readable = tableToMarkdown(title, context_entry)
-            
+
             # Determine DBot type based on entity_type
             if entity_type == "ip":
                 dbot_type = DBotScoreType.IP
@@ -775,7 +775,7 @@ def socradar_reputation_command(client: Client, args: dict[str, Any]) -> List[Co
                 dbot_type = DBotScoreType.FILE
             else:
                 dbot_type = DBotScoreType.IP  # default
-            
+
             dbot_score = Common.DBotScore(
                 indicator=entity_value,
                 indicator_type=dbot_type,
@@ -783,7 +783,7 @@ def socradar_reputation_command(client: Client, args: dict[str, Any]) -> List[Co
                 score=score,
                 reliability=demisto.params().get("integrationReliability"),
             )
-            
+
             command_results_list.append(
                 CommandResults(
                     outputs_prefix="SOCRadarRapidReputation.Reputation",
@@ -799,7 +799,7 @@ def socradar_reputation_command(client: Client, args: dict[str, Any]) -> List[Co
             command_results_list.append(CommandResults(readable_output=message))
     except Exception as e:
         command_results_list.append(CommandResults(readable_output=f"Error: {str(e)}"))
-    
+
     return command_results_list
 
 

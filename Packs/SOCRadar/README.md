@@ -88,7 +88,7 @@ Deep threat intelligence enrichment with comprehensive context:
 - Understanding attacker infrastructure and tactics
 - Incident context enrichment
 
-### SOCRadar Threat Feed 
+### SOCRadar Threat Feed
 
 Collection-based IoC feed integration for automated indicator ingestion:
 

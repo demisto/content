@@ -11,7 +11,7 @@ SOCRadar is a digital risk protection platform that provides extended threat int
 - **Attack Surface Management**: External exposure findings, misconfigurations
 - **Dark Web Intelligence**: Compromised credentials, leaked data from dark web sources
 - **Supply Chain Security**: Third-party risks and vendor security issues
-  
+
 ## Multi-Tenant Features
 
 ### Centralized Multi-Company Management

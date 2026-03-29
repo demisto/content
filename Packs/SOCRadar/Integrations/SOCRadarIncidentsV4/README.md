@@ -367,7 +367,7 @@ Using REVERSE PAGINATION (page 10 → page 1)
 Sample incidents:
 - [81171696] HIGH | OPEN | example.com
   Company: 789 | Type: Brand Protection / Impersonating Domain
-  
+
 - [81171697] CRITICAL | OPEN | admin@company.com
   Company: 789 | Type: Cyber Threat Intelligence / Stolen Credentials
 ```
