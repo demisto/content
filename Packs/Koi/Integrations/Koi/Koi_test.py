@@ -132,6 +132,14 @@ class TestExtractTimeFromEvent:
         result = extract_time_from_event(event, log_type)
         assert result is None
 
+    def test_alert_event_with_invalid_created_time(self):
+        """Test extracting time from an alert with invalid epoch value returns None (covers lines 166-168)."""
+        from Koi import extract_time_from_event, LogType
+
+        event = {"finding_info": {"created_time": "not-a-number"}}
+        result = extract_time_from_event(event, LogType.ALERTS)
+        assert result is None
+
 
 # endregion
 
@@ -254,6 +262,14 @@ class TestDeduplicateEvents:
         result = deduplicate_events(events, last_fetched_ids=last_ids)
         assert len(result) == expected_count
 
+    def test_no_duplicates_found(self):
+        """Test dedup when none of the events match previous IDs (covers line 237)."""
+        from Koi import deduplicate_events
+
+        events = [{"id": "3"}, {"id": "4"}]
+        result = deduplicate_events(events, last_fetched_ids=["1", "2"])
+        assert len(result) == 2
+
 
 # endregion
 
@@ -295,6 +311,25 @@ class TestClient:
 
         assert len(events) == 2
         assert events[0]["id"] == "audit-001"
+
+    def test_get_events_page_with_created_at_lte(self, mock_client, alerts_response, mocker):
+        """Test fetching events with created_at_lte parameter (covers line 322)."""
+        from Koi import LogType
+
+        mocker.patch.object(mock_client, "_http_request", return_value=alerts_response)
+
+        events = mock_client.get_events_page(
+            log_type=LogType.ALERTS,
+            created_at_gte="2024-01-01T00:00:00Z",
+            created_at_lte="2024-01-02T00:00:00Z",
+            page=1,
+            page_size=100,
+        )
+
+        assert len(events) == 2
+        # Verify created_at_lte was passed in params
+        call_kwargs = mock_client._http_request.call_args[1]
+        assert call_kwargs["params"]["created_at_lte"] == "2024-01-02T00:00:00Z"
 
     def test_get_events_page_empty(self, mock_client, empty_response, mocker):
         """Test fetching when no events are returned."""
@@ -386,6 +421,25 @@ class TestFetchEventsWithPagination:
 
         assert len(events) == 10
 
+    def test_max_pages_limit(self, mock_client, mocker):
+        """Test pagination stops at MAX_PAGES_PER_FETCH (covers lines 438-439)."""
+        from Koi import fetch_events_with_pagination, LogType, Config
+
+        page_size = Config.MAX_PAGE_SIZE
+        # Return full pages every time to force pagination to continue
+        full_page = [{"id": f"event-{i}", "created_at": f"2024-01-01T00:00:{i:02d}Z"} for i in range(page_size)]
+        mocker.patch.object(mock_client, "get_events_page", return_value=full_page)
+
+        fetch_events_with_pagination(
+            mock_client,
+            log_type=LogType.AUDIT,
+            created_after="2024-01-01T00:00:00Z",
+            max_events=999999,  # Very high limit so pages limit is hit first
+        )
+
+        # Should have fetched MAX_PAGES_PER_FETCH pages
+        assert mock_client.get_events_page.call_count == Config.MAX_PAGES_PER_FETCH
+
 
 # endregion
 
@@ -412,6 +466,15 @@ class TestTestModule:
 
         result = test_module(mock_client)
         assert "Authorization Error" in result
+
+    def test_non_auth_failure_reraises(self, mock_client, mocker):
+        """Test test-module re-raises non-auth errors (covers line 378)."""
+        from Koi import test_module
+
+        mocker.patch.object(mock_client, "get_events_page", side_effect=Exception("Connection timeout"))
+
+        with pytest.raises(Exception, match="Connection timeout"):
+            test_module(mock_client)
 
 
 class TestGetEventsCommand:
@@ -540,6 +603,95 @@ class TestFetchEventsCommand:
         mock_send.assert_not_called()
         mock_set_last_run.assert_called_once()
 
+    def test_all_events_are_duplicates(self, mock_client, alerts_response, mocker):
+        """Test fetch-events when all returned events are duplicates (covers line 578)."""
+        from Koi import fetch_events_command
+
+        mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["data"])
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "max_fetch": "5000",
+                "event_types_to_fetch": "Alerts",
+            },
+        )
+        mocker.patch.object(
+            demisto,
+            "getLastRun",
+            return_value={
+                "last_fetch_alerts": "2024-01-01T00:00:00Z",
+                "previous_ids_alerts": ["alert-001", "alert-002"],
+            },
+        )
+        mock_send = mocker.patch("Koi.send_events_to_xsiam")
+        mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        mock_send.assert_not_called()
+
+    def test_hwm_timestamp_unchanged_merges_ids(self, mock_client, mocker):
+        """Test that when HWM timestamp hasn't changed, IDs are merged (covers line 594)."""
+        from Koi import fetch_events_command
+
+        # Events with same timestamp as last_fetch
+        events = [
+            {"id": "alert-003", "finding_info": {"created_time": 1704067200000}},
+        ]
+        mocker.patch.object(mock_client, "get_events_page", return_value=events)
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "max_fetch": "5000",
+                "event_types_to_fetch": "Alerts",
+            },
+        )
+        mocker.patch.object(
+            demisto,
+            "getLastRun",
+            return_value={
+                "last_fetch_alerts": "2024-01-01T00:00:00Z",
+                "previous_ids_alerts": ["alert-001"],
+            },
+        )
+        mocker.patch("Koi.send_events_to_xsiam")
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        # Verify IDs were merged
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        previous_ids = last_run_arg["previous_ids_alerts"]
+        assert "alert-001" in previous_ids
+        assert "alert-003" in previous_ids
+
+    def test_last_event_missing_time(self, mock_client, mocker):
+        """Test fetch-events when last event has no time field (covers line 600)."""
+        from Koi import fetch_events_command
+
+        # Audit event without created_at
+        events = [{"id": "audit-no-time"}]
+        mocker.patch.object(mock_client, "get_events_page", return_value=events)
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "max_fetch": "5000",
+                "event_types_to_fetch": "Audit",
+            },
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mocker.patch("Koi.send_events_to_xsiam")
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        # Event should still be sent (it's new), but last_run should not have audit timestamp
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        assert "last_fetch_audit" not in last_run_arg
+
 
 # endregion
 
@@ -595,6 +747,15 @@ class TestParseDate:
         assert result.year == 2024
         assert result.month == 1
         assert result.day == 1
+
+    def test_parse_date_or_use_current_unparseable(self, mocker):
+        """Test fallback when arg_to_datetime returns None (covers lines 115-116)."""
+        from Koi import parse_date_or_use_current
+
+        mocker.patch("Koi.arg_to_datetime", return_value=None)
+
+        result = parse_date_or_use_current("completely-invalid-date")
+        assert isinstance(result, datetime)
 
 
 # endregion
@@ -707,6 +868,77 @@ class TestMain:
 
         mock_return_error.assert_called_once()
         assert "not implemented" in mock_return_error.call_args[0][0]
+
+    def test_main_fetch_events(self, mocker):
+        """Test main routes fetch-events command correctly (covers lines 664-665)."""
+        from Koi import main
+
+        mocker.patch.object(demisto, "command", return_value="fetch-events")
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://api.prod.koi.security/",
+                "api_key": {"password": "test-key"},
+                "insecure": False,
+                "proxy": False,
+            },
+        )
+        mocker.patch("Koi.Client")
+        mock_fetch = mocker.patch("Koi.fetch_events_command")
+
+        main()
+
+        mock_fetch.assert_called_once()
+
+    def test_main_get_events(self, mocker):
+        """Test main routes koi-get-events command correctly (covers lines 667-668)."""
+        from Koi import main
+
+        mocker.patch.object(demisto, "command", return_value="koi-get-events")
+        mocker.patch.object(demisto, "args", return_value={"limit": "10", "should_push_events": "false"})
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://api.prod.koi.security/",
+                "api_key": {"password": "test-key"},
+                "insecure": False,
+                "proxy": False,
+                "event_types_to_fetch": "Alerts",
+            },
+        )
+        mocker.patch("Koi.Client")
+        mock_return = mocker.patch("Koi.return_results")
+        mocker.patch("Koi.get_events_command", return_value="mock_result")
+
+        main()
+
+        mock_return.assert_called_once_with("mock_result")
+
+    def test_main_invalid_audit_types(self, mocker):
+        """Test main raises error for invalid audit types filter (covers lines 648-650)."""
+        from Koi import main
+
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "https://api.prod.koi.security/",
+                "api_key": {"password": "test-key"},
+                "insecure": False,
+                "proxy": False,
+                "audit_types_filter": "invalid_type",
+            },
+        )
+        mocker.patch.object(demisto, "error")
+        mock_return_error = mocker.patch("Koi.return_error")
+
+        main()
+
+        mock_return_error.assert_called_once()
+        assert "Invalid audit log type" in mock_return_error.call_args[0][0]
 
 
 # endregion
