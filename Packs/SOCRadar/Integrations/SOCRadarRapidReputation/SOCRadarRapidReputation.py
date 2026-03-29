@@ -4,7 +4,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 import traceback
-from typing import Any, List, Optional
+from typing import Any, Optional
 import re
 from json.decoder import JSONDecodeError
 import time
@@ -304,12 +304,12 @@ def test_module(client: Client) -> str:
         raise DemistoException(error_details)
 
 
-def ip_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Returns SOCRadar reputation details for the given IP entity."""
     ips = args.get("ip", "")
     ip_list: list = argToList(ips)
 
-    command_results_list: List[CommandResults] = []
+    command_results_list: list[CommandResults] = []
 
     for ip_to_score in ip_list:
         try:
@@ -369,12 +369,12 @@ def ip_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     return command_results_list
 
 
-def domain_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Returns SOCRadar reputation details for the given domain entity."""
     domains = args.get("domain", "")
     domain_list: list = argToList(domains)
 
-    command_results_list: List[CommandResults] = []
+    command_results_list: list[CommandResults] = []
 
     for domain_to_score in domain_list:
         try:
@@ -434,12 +434,12 @@ def domain_command(client: Client, args: dict[str, Any]) -> List[CommandResults]
     return command_results_list
 
 
-def url_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def url_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Returns SOCRadar reputation details for the given URL entity."""
     urls = args.get("url", "")
     url_list: list = argToList(urls)
 
-    command_results_list: List[CommandResults] = []
+    command_results_list: list[CommandResults] = []
 
     for url_to_score in url_list:
         try:
@@ -499,12 +499,12 @@ def url_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     return command_results_list
 
 
-def file_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def file_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Returns SOCRadar reputation details for the given file hash entity."""
     file_hashes = args.get("file", "")
     file_hash_list: list = argToList(file_hashes)
 
-    command_results_list: List[CommandResults] = []
+    command_results_list: list[CommandResults] = []
 
     for hash_to_score in file_hash_list:
         try:
@@ -570,7 +570,7 @@ def file_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     return command_results_list
 
 
-def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Check reputation for a mixed list of indicators with automatic type detection."""
     indicators = args.get("indicators", "")
     indicator_list: list = argToList(indicators)
@@ -599,7 +599,7 @@ def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> List[Co
         )
         return [CommandResults(readable_output=error_msg)]
 
-    command_results_list: List[CommandResults] = []
+    command_results_list: list[CommandResults] = []
 
     # Warning for large batches (over 50 indicators)
     if len(indicator_list) > 50:
@@ -736,7 +736,7 @@ def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> List[Co
     return command_results_list
 
 
-def socradar_reputation_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def socradar_reputation_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Generic reputation check for any entity type."""
     entity_value = args.get("entity_value")
     entity_type = args.get("entity_type")
@@ -744,7 +744,7 @@ def socradar_reputation_command(client: Client, args: dict[str, Any]) -> List[Co
     if not entity_value or not entity_type:
         return [CommandResults(readable_output="Both entity_value and entity_type are required.")]
 
-    command_results_list: List[CommandResults] = []
+    command_results_list: list[CommandResults] = []
 
     try:
         raw_response = client.get_entity_reputation(entity_value, entity_type)

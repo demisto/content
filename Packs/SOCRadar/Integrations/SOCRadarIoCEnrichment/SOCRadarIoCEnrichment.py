@@ -35,7 +35,7 @@ class Client(BaseClient):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self.api_key = api_key
 
-    def get_indicator_enrichment(self, indicator: str, fields: Optional[List[str]] = None):
+    def get_indicator_enrichment(self, indicator: str, fields: Optional[list[str]] = None):
         """Get indicator enrichment from SOCRadar IoC Enrichment API
 
         Args:
@@ -378,12 +378,12 @@ def test_module(client: Client) -> str:
         raise DemistoException(error_details)
 
 
-def ip_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Returns SOCRadar IoC enrichment for IP addresses"""
     ips = args.get("ip", "")
     ip_list: list = argToList(ips)
 
-    command_results_list: List[CommandResults] = []
+    command_results_list: list[CommandResults] = []
 
     for ip in ip_list:
         try:
@@ -438,12 +438,12 @@ def ip_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     return command_results_list
 
 
-def domain_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Returns SOCRadar IoC enrichment for domains"""
     domains = args.get("domain", "")
     domain_list: list = argToList(domains)
 
-    command_results_list: List[CommandResults] = []
+    command_results_list: list[CommandResults] = []
 
     for domain in domain_list:
         try:
@@ -498,12 +498,12 @@ def domain_command(client: Client, args: dict[str, Any]) -> List[CommandResults]
     return command_results_list
 
 
-def url_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def url_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Returns SOCRadar IoC enrichment for URLs"""
     urls = args.get("url", "")
     url_list: list = argToList(urls)
 
-    command_results_list: List[CommandResults] = []
+    command_results_list: list[CommandResults] = []
 
     for url in url_list:
         try:
@@ -558,12 +558,12 @@ def url_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     return command_results_list
 
 
-def file_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def file_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Returns SOCRadar IoC enrichment for file hashes"""
     file_hashes = args.get("file", "")
     file_hash_list: list = argToList(file_hashes)
 
-    command_results_list: List[CommandResults] = []
+    command_results_list: list[CommandResults] = []
 
     for hash_value in file_hash_list:
         try:
@@ -623,14 +623,14 @@ def file_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     return command_results_list
 
 
-def socradar_ioc_enrichment_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def socradar_ioc_enrichment_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Generic enrichment command for any indicator type with auto-detection"""
     indicator = args.get("indicator", "").strip()
 
     if not indicator:
         return [CommandResults(readable_output="Indicator parameter is required.")]
 
-    command_results_list: List[CommandResults] = []
+    command_results_list: list[CommandResults] = []
 
     try:
         # Detect indicator type
