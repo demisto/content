@@ -38,18 +38,12 @@ configuration:
   type: 13
   required: false
   section: Collect
-- defaultvalue: '30'
+- defaultvalue: '7'
   display: Sync On First Run (days)
   name: first_fetch
   type: 0
   section: Collect
   required: false
-- defaultvalue: '50'
-  display: Max Incidents
-  name: max_fetch
-  type: 0
-  required: false
-  section: Collect
 - display: Use system proxy settings
   name: proxy
   defaultvalue: 'false'
@@ -1480,7 +1474,7 @@ script:
     arguments:
     - name: last_update
       description: Retrieve entries that were modified after last_update timestamp.
-  dockerimage: demisto/pytmv1:0.9.3.6979213
+  dockerimage: demisto/pytmv1:0.10.1.7762963
   isFetchSamples: true
   isfetch: true
   ismappable: true
