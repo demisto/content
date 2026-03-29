@@ -50,6 +50,7 @@ configuration:
   type: 0
   required: false
   section: Collect
+  hidden: true
 - display: Use system proxy settings
   name: proxy
   defaultvalue: 'false'
