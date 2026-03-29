@@ -1571,11 +1571,14 @@ class TestGetContainerWorkingSetBytes:
         mem_stat_file = tmp_path / "memory.stat"
         mem_stat_file.write_text(f"anon 1234\ninactive_file {100 * 1024 * 1024}\nactive_file 5678\n")
 
-        import unittest.mock as mock
+        from unittest import mock
 
-        with mock.patch("builtins.open", side_effect=lambda path, *a, **kw: open(
-            str(mem_current_file) if "memory.current" in path else str(mem_stat_file), *a, **kw
-        )):
+        with mock.patch(
+            "builtins.open",
+            side_effect=lambda path, *a, **kw: open(
+                str(mem_current_file) if "memory.current" in path else str(mem_stat_file), *a, **kw
+            ),
+        ):
             result = get_container_working_set_bytes()
 
         assert result == 400 * 1024 * 1024
@@ -1611,7 +1614,7 @@ class TestGetContainerWorkingSetBytes:
         Then: returns 0 (clamped, never negative)
         """
         from rasterize import get_container_working_set_bytes
-        import unittest.mock as mock
+        from unittest import mock
 
         mem_current = 50 * 1024 * 1024
         inactive_file = 100 * 1024 * 1024
@@ -1725,7 +1728,7 @@ class TestComputeMemoryBasedLimits:
         from rasterize import compute_memory_based_limits
 
         available = 2 * 1024 * 1024 * 1024  # 2 GiB
-        per_instance = 1024 * 1024 * 1024   # 1 GiB
+        per_instance = 1024 * 1024 * 1024  # 1 GiB
 
         chromes, tabs, rasterizations = compute_memory_based_limits(
             available_bytes=available,
@@ -1768,7 +1771,7 @@ class TestComputeMemoryBasedLimits:
 
         chromes, tabs, rasterizations = compute_memory_based_limits(
             available_bytes=1024 * 1024 * 1024 * 1024,  # 1 TiB
-            per_instance_bytes=1024 * 1024 * 1024,       # 1 GiB
+            per_instance_bytes=1024 * 1024 * 1024,  # 1 GiB
             default_chromes=64,
             default_tabs=10,
             default_rasterizations=500,
@@ -1922,7 +1925,9 @@ class TestWaitWithMemoryWatchdog:
 # Helpers used by the memory tests above
 # ---------------------------------------------------------------------------
 
+
 def mock_open_for_max(content: str):
     """Return a side_effect callable that makes open() return *content* as file data."""
     from unittest.mock import mock_open
+
     return mock_open(read_data=content)

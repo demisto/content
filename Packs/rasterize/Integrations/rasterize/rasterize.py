@@ -154,6 +154,7 @@ def _mem_log(level: str, message: str) -> None:
     else:
         demisto.debug(message)
 
+
 # Consts for custom width and height
 MAX_FULLSCREEN_WIDTH = 8000
 MAX_FULLSCREEN_HEIGHT = 8000
