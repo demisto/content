@@ -6,6 +6,7 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
+    "created": "2022-02-17T00:00:00Z",
     "categories": [
         "Endpoint"
     ],
@@ -20,7 +21,10 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Cortex",
+        "Cortex XSOAR"
+    ],
     "marketplaces": [
         "marketplacev2",
         "xpanse",
