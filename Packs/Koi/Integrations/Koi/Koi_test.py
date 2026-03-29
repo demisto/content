@@ -323,6 +323,38 @@ class TestClient:
         call_kwargs = mock_client._http_request.call_args[1]
         assert call_kwargs["params"]["created_at_lte"] == "2024-01-02T00:00:00Z"
 
+    def test_sort_direction_asc_alerts(self, mock_client, alerts_response, mocker):
+        """Test that sort_direction=asc is passed to the API for alerts."""
+        from Koi import LogType, Config
+
+        mocker.patch.object(mock_client, "_http_request", return_value=alerts_response)
+
+        mock_client.get_events_page(
+            log_type=LogType.ALERTS,
+            created_at_gte="2024-01-01T00:00:00Z",
+            page=1,
+            page_size=100,
+        )
+
+        call_kwargs = mock_client._http_request.call_args[1]
+        assert call_kwargs["params"]["sort_direction"] == Config.SORT_DIRECTION
+
+    def test_sort_direction_asc_audit(self, mock_client, audit_response, mocker):
+        """Test that sort_direction=asc is passed to the API for audit logs."""
+        from Koi import LogType, Config
+
+        mocker.patch.object(mock_client, "_http_request", return_value=audit_response)
+
+        mock_client.get_events_page(
+            log_type=LogType.AUDIT,
+            created_at_gte="2024-01-01T00:00:00Z",
+            page=1,
+            page_size=100,
+        )
+
+        call_kwargs = mock_client._http_request.call_args[1]
+        assert call_kwargs["params"]["sort_direction"] == Config.SORT_DIRECTION
+
     def test_get_events_page_empty(self, mock_client, empty_response, mocker):
         """Test fetching when no events are returned."""
         from Koi import LogType
@@ -350,7 +382,7 @@ class TestFetchEventsWithPagination:
         """Test fetching events that fit in a single page."""
         from Koi import fetch_events_with_pagination, LogType
 
-        mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["data"])
+        mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["alerts"])
 
         events = fetch_events_with_pagination(
             mock_client,
@@ -479,7 +511,7 @@ class TestGetEventsCommand:
         mocker.patch.object(
             mock_client,
             "get_events_page",
-            side_effect=[alerts_response["data"], audit_response["data"]],
+            side_effect=[alerts_response["alerts"], audit_response["data"]],
         )
 
         args = {"limit": "50", "should_push_events": "false"}
@@ -494,8 +526,8 @@ class TestGetEventsCommand:
         """Test get-events command with push to XSIAM."""
         from Koi import get_events_command
 
-        mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["data"])
-        mock_send = mocker.patch("Koi.send_events_to_xsiam")
+        mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["alerts"])
+        mock_send = mocker.patch.object(mock_client, "send_events")
 
         args = {"limit": "50", "should_push_events": "true", "event_type": "Alerts"}
         params = {"event_types_to_fetch": "Alerts"}
@@ -517,7 +549,7 @@ class TestFetchEventsCommand:
         mocker.patch.object(
             mock_client,
             "get_events_page",
-            side_effect=[alerts_response["data"], audit_response["data"]],
+            side_effect=[alerts_response["alerts"], audit_response["data"]],
         )
         mocker.patch.object(
             demisto,
@@ -528,7 +560,7 @@ class TestFetchEventsCommand:
             },
         )
         mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_send = mocker.patch("Koi.send_events_to_xsiam")
+        mock_send = mocker.patch.object(mock_client, "send_events")
         mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
 
         fetch_events_command(mock_client)
@@ -545,7 +577,7 @@ class TestFetchEventsCommand:
         """Test fetch-events on subsequent run with deduplication."""
         from Koi import fetch_events_command
 
-        mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["data"])
+        mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["alerts"])
         mocker.patch.object(
             demisto,
             "params",
@@ -562,14 +594,14 @@ class TestFetchEventsCommand:
                 "previous_ids_alerts": ["alert-001"],
             },
         )
-        mock_send = mocker.patch("Koi.send_events_to_xsiam")
+        mock_send = mocker.patch.object(mock_client, "send_events")
         mocker.patch.object(demisto, "setLastRun")
 
         fetch_events_command(mock_client)
 
         # Should have sent only 1 event (alert-002, since alert-001 is deduped)
         mock_send.assert_called_once()
-        sent_events = mock_send.call_args[1]["events"]
+        sent_events = mock_send.call_args[0][0]
         assert len(sent_events) == 1
         assert sent_events[0]["id"] == "alert-002"
 
@@ -587,7 +619,7 @@ class TestFetchEventsCommand:
             },
         )
         mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_send = mocker.patch("Koi.send_events_to_xsiam")
+        mock_send = mocker.patch.object(mock_client, "send_events")
         mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
 
         fetch_events_command(mock_client)
@@ -599,7 +631,7 @@ class TestFetchEventsCommand:
         """Test fetch-events when all returned events are duplicates (covers line 578)."""
         from Koi import fetch_events_command
 
-        mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["data"])
+        mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["alerts"])
         mocker.patch.object(
             demisto,
             "params",
@@ -616,7 +648,7 @@ class TestFetchEventsCommand:
                 "previous_ids_alerts": ["alert-001", "alert-002"],
             },
         )
-        mock_send = mocker.patch("Koi.send_events_to_xsiam")
+        mock_send = mocker.patch.object(mock_client, "send_events")
         mocker.patch.object(demisto, "setLastRun")
 
         fetch_events_command(mock_client)
@@ -648,7 +680,7 @@ class TestFetchEventsCommand:
                 "previous_ids_alerts": ["alert-001"],
             },
         )
-        mocker.patch("Koi.send_events_to_xsiam")
+        mocker.patch.object(mock_client, "send_events")
         mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
 
         fetch_events_command(mock_client)
@@ -675,7 +707,7 @@ class TestFetchEventsCommand:
             },
         )
         mocker.patch.object(demisto, "getLastRun", return_value={})
-        mocker.patch("Koi.send_events_to_xsiam")
+        mocker.patch.object(mock_client, "send_events")
         mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
 
         fetch_events_command(mock_client)
@@ -683,6 +715,328 @@ class TestFetchEventsCommand:
         # Event should still be sent (it's new), but last_run should not have audit timestamp
         last_run_arg = mock_set_last_run.call_args[0][0]
         assert "last_fetch_audit" not in last_run_arg
+
+    def test_alerts_failure_does_not_block_audit(self, mock_client, audit_response, mocker):
+        """Test that if alerts fetching fails, audit logs are still fetched and sent."""
+        from Koi import fetch_events_command, LogType
+
+        # Alerts raises an exception, audit returns data
+        def side_effect_get_events_page(**kwargs):
+            if kwargs.get("log_type") == LogType.ALERTS:
+                raise Exception("API timeout for alerts")
+            return audit_response["data"]
+
+        mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "max_fetch": "5000",
+                "event_types_to_fetch": "Alerts,Audit",
+            },
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mock_send = mocker.patch.object(mock_client, "send_events")
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        # Audit events should still be sent despite alerts failure
+        mock_send.assert_called_once()
+        sent_events = mock_send.call_args[0][0]
+        assert len(sent_events) == 2
+        assert all(e.get("source_log_type") == "Audit" for e in sent_events)
+
+        # Last run should have audit state but no alerts state
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        assert "last_fetch_audit" in last_run_arg
+        assert "last_fetch_alerts" not in last_run_arg
+
+    def test_audit_failure_does_not_block_alerts(self, mock_client, alerts_response, mocker):
+        """Test that if audit fetching fails, alerts are still fetched and sent."""
+        from Koi import fetch_events_command, LogType
+
+        # Alerts returns data, audit raises an exception
+        def side_effect_get_events_page(**kwargs):
+            if kwargs.get("log_type") == LogType.AUDIT:
+                raise Exception("API timeout for audit")
+            return alerts_response["alerts"]
+
+        mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "max_fetch": "5000",
+                "event_types_to_fetch": "Alerts,Audit",
+            },
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mock_send = mocker.patch.object(mock_client, "send_events")
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        # Alerts events should still be sent despite audit failure
+        mock_send.assert_called_once()
+        sent_events = mock_send.call_args[0][0]
+        assert len(sent_events) == 2
+        assert all(e.get("source_log_type") == "Alerts" for e in sent_events)
+
+        # Last run should have alerts state but no audit state
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        assert "last_fetch_alerts" in last_run_arg
+        assert "last_fetch_audit" not in last_run_arg
+
+
+class TestLastRunState:
+    """Parametrized tests for last_run state management across all scenarios."""
+
+    @pytest.mark.parametrize(
+        "description, event_types, initial_last_run, alert_events, audit_events, "
+        "expected_last_run_keys, expected_missing_keys, expected_event_count",
+        [
+            (
+                "first_run_both_types",
+                "Alerts,Audit",
+                {},
+                [{"id": "a1", "finding_info": {"created_time": 1704067200000}}],
+                [{"id": "au1", "created_at": "2024-01-01T00:00:00Z"}],
+                ["last_fetch_alerts", "previous_ids_alerts", "last_fetch_audit", "previous_ids_audit"],
+                [],
+                2,
+            ),
+            (
+                "first_run_alerts_only",
+                "Alerts",
+                {},
+                [{"id": "a1", "finding_info": {"created_time": 1704067200000}}],
+                [],
+                ["last_fetch_alerts", "previous_ids_alerts"],
+                ["last_fetch_audit"],
+                1,
+            ),
+            (
+                "first_run_audit_only",
+                "Audit",
+                {},
+                [],
+                [{"id": "au1", "created_at": "2024-01-01T00:00:00Z"}],
+                ["last_fetch_audit", "previous_ids_audit"],
+                ["last_fetch_alerts"],
+                1,
+            ),
+            (
+                "subsequent_run_preserves_existing_state",
+                "Alerts",
+                {
+                    "last_fetch_alerts": "2024-01-01T00:00:00Z",
+                    "previous_ids_alerts": ["old-id"],
+                    "last_fetch_audit": "2024-01-01T00:00:00Z",
+                    "previous_ids_audit": ["old-audit-id"],
+                },
+                [{"id": "a2", "finding_info": {"created_time": 1704067260000}}],
+                [],
+                ["last_fetch_alerts", "previous_ids_alerts", "last_fetch_audit", "previous_ids_audit"],
+                [],
+                1,
+            ),
+            (
+                "no_events_preserves_state",
+                "Alerts,Audit",
+                {
+                    "last_fetch_alerts": "2024-01-01T00:00:00Z",
+                    "previous_ids_alerts": ["existing-id"],
+                },
+                [],
+                [],
+                ["last_fetch_alerts", "previous_ids_alerts"],
+                [],
+                0,
+            ),
+            (
+                "hwm_unchanged_merges_ids",
+                "Alerts",
+                {
+                    "last_fetch_alerts": "2024-01-01T00:00:00Z",
+                    "previous_ids_alerts": ["a1"],
+                },
+                [
+                    {"id": "a1", "finding_info": {"created_time": 1704067200000}},
+                    {"id": "a2", "finding_info": {"created_time": 1704067200000}},
+                ],
+                [],
+                ["last_fetch_alerts", "previous_ids_alerts"],
+                [],
+                1,
+            ),
+        ],
+        ids=[
+            "first_run_both_types",
+            "first_run_alerts_only",
+            "first_run_audit_only",
+            "subsequent_run_preserves_existing_state",
+            "no_events_preserves_state",
+            "hwm_unchanged_merges_ids",
+        ],
+    )
+    def test_last_run_state(
+        self,
+        mock_client,
+        mocker,
+        description: str,
+        event_types: str,
+        initial_last_run: dict,
+        alert_events: list,
+        audit_events: list,
+        expected_last_run_keys: list,
+        expected_missing_keys: list,
+        expected_event_count: int,
+    ):
+        """Parametrized test for last_run state management across all scenarios."""
+        from Koi import fetch_events_command, LogType
+
+        def side_effect_get_events_page(**kwargs):
+            log_type = kwargs.get("log_type")
+            if log_type == LogType.ALERTS:
+                return alert_events
+            return audit_events
+
+        mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "max_fetch": "5000",
+                "event_types_to_fetch": event_types,
+            },
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value=initial_last_run)
+        mock_send = mocker.patch.object(mock_client, "send_events")
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        # Verify setLastRun was called exactly once (single write, no race condition)
+        mock_set_last_run.assert_called_once()
+        last_run_arg = mock_set_last_run.call_args[0][0]
+
+        # Verify expected keys are present
+        for key in expected_last_run_keys:
+            assert key in last_run_arg, f"Expected key '{key}' missing from last_run: {last_run_arg}"
+
+        # Verify expected missing keys are absent
+        for key in expected_missing_keys:
+            assert key not in last_run_arg, f"Unexpected key '{key}' found in last_run: {last_run_arg}"
+
+        # Verify event count
+        if expected_event_count > 0:
+            mock_send.assert_called_once()
+            assert len(mock_send.call_args[0][0]) == expected_event_count
+        else:
+            mock_send.assert_not_called()
+
+    def test_last_run_ids_stored_per_type(self, mock_client, mocker):
+        """Test that IDs are stored independently per event type in last_run."""
+        from Koi import fetch_events_command, LogType
+
+        def side_effect_get_events_page(**kwargs):
+            log_type = kwargs.get("log_type")
+            if log_type == LogType.ALERTS:
+                return [{"id": "alert-100", "finding_info": {"created_time": 1704067200000}}]
+            return [{"id": "audit-200", "created_at": "2024-01-01T00:00:00Z"}]
+
+        mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "max_fetch": "5000",
+                "event_types_to_fetch": "Alerts,Audit",
+            },
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mocker.patch.object(mock_client, "send_events")
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        last_run_arg = mock_set_last_run.call_args[0][0]
+
+        # Verify IDs are stored per type, not mixed
+        assert "alert-100" in last_run_arg["previous_ids_alerts"]
+        assert "audit-200" in last_run_arg["previous_ids_audit"]
+        assert "audit-200" not in last_run_arg["previous_ids_alerts"]
+        assert "alert-100" not in last_run_arg["previous_ids_audit"]
+
+    def test_last_run_single_get_single_set(self, mock_client, alerts_response, audit_response, mocker):
+        """Test that getLastRun is called once and setLastRun is called once (no race condition)."""
+        from Koi import fetch_events_command
+
+        mocker.patch.object(
+            mock_client,
+            "get_events_page",
+            side_effect=[alerts_response["alerts"], audit_response["data"]],
+        )
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "max_fetch": "5000",
+                "event_types_to_fetch": "Alerts,Audit",
+            },
+        )
+        mock_get_last_run = mocker.patch.object(demisto, "getLastRun", return_value={})
+        mocker.patch.object(mock_client, "send_events")
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        # Single read, single write — no race condition
+        mock_get_last_run.assert_called_once()
+        mock_set_last_run.assert_called_once()
+
+    def test_last_run_failure_preserves_successful_type_state(self, mock_client, mocker):
+        """Test that when one type fails, the other type's state is still saved in last_run."""
+        from Koi import fetch_events_command, LogType
+
+        def side_effect_get_events_page(**kwargs):
+            log_type = kwargs.get("log_type")
+            if log_type == LogType.ALERTS:
+                return [{"id": "alert-ok", "finding_info": {"created_time": 1704067200000}}]
+            raise Exception("Audit API is down")
+
+        mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "max_fetch": "5000",
+                "event_types_to_fetch": "Alerts,Audit",
+            },
+        )
+        mocker.patch.object(
+            demisto,
+            "getLastRun",
+            return_value={
+                "last_fetch_audit": "2024-01-01T00:00:00Z",
+                "previous_ids_audit": ["old-audit-id"],
+            },
+        )
+        mocker.patch.object(mock_client, "send_events")
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        last_run_arg = mock_set_last_run.call_args[0][0]
+
+        # Alerts state should be updated (successful)
+        assert "last_fetch_alerts" in last_run_arg
+        assert "alert-ok" in last_run_arg["previous_ids_alerts"]
+
+        # Audit state should be preserved from initial last_run (failed, not overwritten)
+        assert last_run_arg["last_fetch_audit"] == "2024-01-01T00:00:00Z"
+        assert last_run_arg["previous_ids_audit"] == ["old-audit-id"]
 
 
 # endregion

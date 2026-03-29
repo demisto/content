@@ -1,4 +1,6 @@
 import traceback
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta, UTC
 from enum import Enum
 from typing import Any
@@ -42,6 +44,9 @@ class Config:
     DEFAULT_MAX_FETCH = 5000
     # Default lookback time for first fetch or get-events command
     DEFAULT_FROM_TIME = "5 minutes ago"
+
+    # API sort direction for chronological ordering
+    SORT_DIRECTION = "asc"
 
     # Test module settings
     TEST_MODULE_LOOKBACK_MINUTES = 5
@@ -314,6 +319,7 @@ class Client(ContentClient):
         params: dict[str, Any] = {
             "page": page,
             "page_size": min(page_size, Config.MAX_PAGE_SIZE),
+            "sort_direction": Config.SORT_DIRECTION,
         }
 
         if created_at_gte:
@@ -331,10 +337,23 @@ class Client(ContentClient):
             params=params,
         )
 
-        events = response.get("data", response.get("items", response.get("results", [])))
+        events = response.get("alerts") or response.get("data") or response.get("items") or response.get("results") or []
         demisto.debug(f"[API Fetch] {log_type.type_string} | Page {page}: {len(events)} events returned")
 
         return events
+
+    def send_events(self, events: list[dict]) -> None:
+        """Send events to XSIAM using the ContentClient context.
+
+        Wraps send_events_to_xsiam to keep event sending encapsulated
+        within the client class for consistent logging and diagnostics.
+
+        Args:
+            events: List of event dicts to send.
+        """
+        demisto.debug(f"[API] Sending {len(events)} events to XSIAM")
+        send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
+        demisto.debug(f"[API] Successfully sent {len(events)} events to XSIAM")
 
 
 # endregion
@@ -489,7 +508,7 @@ def get_events_command(client: Client, args: dict, params: dict) -> CommandResul
             created_after=created_after,
             created_before=created_before,
             max_events=limit,
-            audit_types=audit_types_filter,
+            audit_types=audit_types_filter if log_type == LogType.AUDIT else None,
         )
         add_time_to_events(events, log_type)
         all_events.extend(events)
@@ -497,8 +516,7 @@ def get_events_command(client: Client, args: dict, params: dict) -> CommandResul
     demisto.debug(f"[Command Result] Total events retrieved: {len(all_events)}")
 
     if should_push_events and all_events:
-        send_events_to_xsiam(events=all_events, vendor=Config.VENDOR, product=Config.PRODUCT)
-        demisto.debug(f"[Command] Pushed {len(all_events)} events to XSIAM")
+        client.send_events(all_events)
         return f"Successfully retrieved and pushed {len(all_events)} events to XSIAM"
 
     readable_output = tableToMarkdown(f"{INTEGRATION_NAME} Events", all_events, removeNull=True)
@@ -511,33 +529,56 @@ def get_events_command(client: Client, args: dict, params: dict) -> CommandResul
     )
 
 
-def fetch_events_command(client: Client) -> None:
-    """Scheduled command to fetch events.
+@dataclass
+class FetchResult:
+    """Result of fetching events for a single log type."""
+
+    log_type: LogType
+    new_events: list[dict] = field(default_factory=list)
+    last_run_updates: dict[str, str | list[str]] = field(default_factory=dict)
+    error: str | None = None
+
+
+def _fetch_single_log_type(
+    client: Client,
+    log_type: LogType,
+    last_run: dict[str, str | list[str]],
+    max_events: int,
+    audit_types: list[str] | None,
+) -> FetchResult:
+    """Fetch and process events for a single log type.
+
+    This function is executed in a separate thread by fetch_events_command via
+    ThreadPoolExecutor, enabling parallel fetching of multiple log types.
+    Each thread receives an immutable copy of last_run to avoid shared mutable state.
+
+    The function handles its own errors — if an API call fails, the error is captured
+    in FetchResult.error and the thread returns gracefully without affecting other threads.
+
+    Thread safety:
+        - Receives a dict copy of last_run (no shared mutable state).
+        - Returns a FetchResult with last_run_updates (merged by the main thread after completion).
+        - Uses demisto.debug() for logging (thread-safe in XSOAR runtime).
 
     Args:
-        client: The Koi client.
+        client: The Koi client (thread-safe — ContentClient uses httpx which is thread-safe).
+        log_type: The LogType to fetch (ALERTS or AUDIT).
+        last_run: Immutable copy of the current last_run state dict.
+        max_events: Maximum events to fetch per type.
+        audit_types: Optional audit type filter (only applied for AUDIT log type).
+
+    Returns:
+        FetchResult containing new_events, last_run_updates, and any error message.
     """
-    params = demisto.params()
-    max_events_to_fetch = int(params.get("max_fetch", Config.DEFAULT_MAX_FETCH))
+    result = FetchResult(log_type=log_type)
 
-    event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["Alerts", "Audit"]))
-    log_types = get_log_types_from_titles(event_types_to_fetch)
-
-    audit_types_filter = argToList(params.get("audit_types_filter")) or None
-
-    last_run = demisto.getLastRun()
-    demisto.debug(f"[Fetch] Starting with last_run: {last_run}")
-
-    all_new_events: list[dict] = []
-    updated_last_run: dict[str, str | list[str]] = dict(last_run)
-
-    for log_type in log_types:
+    try:
         last_fetch_key = f"last_fetch_{log_type.type_string}"
         previous_ids_key = f"previous_ids_{log_type.type_string}"
 
-        raw_timestamp = updated_last_run.get(last_fetch_key)
+        raw_timestamp = last_run.get(last_fetch_key)
         last_fetch_timestamp: str | None = raw_timestamp if isinstance(raw_timestamp, str) else None
-        raw_ids = updated_last_run.get(previous_ids_key)
+        raw_ids = last_run.get(previous_ids_key)
         last_fetched_ids: list[str] = raw_ids if isinstance(raw_ids, list) else []
 
         if last_fetch_timestamp:
@@ -556,55 +597,132 @@ def fetch_events_command(client: Client) -> None:
             client,
             log_type=log_type,
             created_after=created_after,
-            max_events=max_events_to_fetch,
-            audit_types=audit_types_filter if log_type == LogType.AUDIT else None,
+            max_events=max_events,
+            audit_types=audit_types if log_type == LogType.AUDIT else None,
         )
 
         if not events:
             demisto.debug(f"[Fetch] {log_type.type_string}: No events found.")
-            continue
+            return result
 
-        # Sort events chronologically (oldest first) to ensure correct HWM tracking
-        events.sort(key=lambda e: extract_time_from_event(e, log_type) or "")
+        # Pre-compute time values to avoid redundant extract_time_from_event calls.
+        # Events are already sorted chronologically by the API (sort_direction=asc).
+        event_times: list[str] = [extract_time_from_event(event, log_type) or "" for event in events]
 
         # Deduplicate
         new_events = deduplicate_events(events, last_fetched_ids)
 
         if new_events:
             add_time_to_events(new_events, log_type)
-            all_new_events.extend(new_events)
+            result.new_events = new_events
             demisto.debug(f"[Fetch] {log_type.type_string}: {len(new_events)} new events after dedup")
         else:
             demisto.debug(f"[Fetch] {log_type.type_string}: All events were duplicates.")
 
         # Update Last Run - always update based on ALL fetched events (not just new_events)
-        last_event = events[-1]
-        new_last_run_time = extract_time_from_event(last_event, log_type)
+        new_last_run_time = event_times[-1] if event_times else None
 
         if new_last_run_time:
-            # Collect IDs for the new high-water mark timestamp
+            # Collect IDs for the new high-water mark timestamp using pre-computed times
             ids_at_last_timestamp: list[str] = [
                 event_id
-                for event in events
-                if extract_time_from_event(event, log_type) == new_last_run_time and (event_id := get_event_id(event))
+                for event, event_time in zip(events, event_times)
+                if event_time == new_last_run_time and (event_id := get_event_id(event))
             ]
 
             # If the HWM timestamp hasn't changed, merge with previous IDs to prevent duplicates
             if new_last_run_time == last_fetch_timestamp:
                 ids_at_last_timestamp = list(set(last_fetched_ids) | set(ids_at_last_timestamp))
 
-            updated_last_run[last_fetch_key] = new_last_run_time
-            updated_last_run[previous_ids_key] = ids_at_last_timestamp
+            result.last_run_updates[last_fetch_key] = new_last_run_time
+            result.last_run_updates[previous_ids_key] = ids_at_last_timestamp
             demisto.debug(f"[Fetch] {log_type.type_string}: State updated. New HWM: {new_last_run_time}")
         else:
             demisto.debug(f"[Fetch] {log_type.type_string}: Warning: Last event missing time. State not updated.")
 
-    # Send all events to XSIAM
-    if all_new_events:
-        send_events_to_xsiam(events=all_new_events, vendor=Config.VENDOR, product=Config.PRODUCT)
-        demisto.debug(f"[Fetch] Pushed {len(all_new_events)} total events to XSIAM")
+    except Exception as e:
+        result.error = str(e)
+        demisto.debug(f"[Fetch] {log_type.type_string}: Error fetching events: {e!s}.")
 
-    # Update last run state
+    return result
+
+
+def fetch_events_command(client: Client) -> None:
+    """Scheduled command to fetch events using parallel threads.
+
+    Uses ThreadPoolExecutor to fetch all configured log types (Alerts, Audit)
+    simultaneously. This ensures that if one type takes a long time or fails,
+    the other type still completes within the XSOAR execution timeout.
+
+    Architecture:
+        1. Single getLastRun() read at the start.
+        2. Each log type is fetched in a separate thread via _fetch_single_log_type().
+           Each thread receives an immutable copy of last_run (no shared mutable state).
+        3. After all threads complete, results are merged sequentially:
+           - New events from successful types are collected.
+           - last_run updates from successful types are applied.
+           - Failed types are skipped (their previous state is preserved).
+        4. All events are sent to XSIAM in a single batch.
+        5. Single setLastRun() write at the end.
+
+    Race condition prevention:
+        - One getLastRun() call, one setLastRun() call.
+        - Threads don't share mutable state — each gets a dict copy.
+        - Merge happens after all threads complete (no concurrent writes).
+
+    Args:
+        client: The Koi client.
+    """
+    params = demisto.params()
+    max_events_to_fetch = int(params.get("max_fetch", Config.DEFAULT_MAX_FETCH))
+
+    event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["Alerts", "Audit"]))
+    log_types = get_log_types_from_titles(event_types_to_fetch)
+
+    audit_types_filter = argToList(params.get("audit_types_filter")) or None
+
+    # Single read of last_run state — no race condition
+    last_run = demisto.getLastRun()
+    demisto.debug(f"[Fetch] Starting with last_run: {last_run}")
+
+    # Fetch all log types in parallel so one slow type doesn't block the other
+    results: list[FetchResult] = []
+    with ThreadPoolExecutor(max_workers=len(log_types)) as executor:
+        futures = {
+            executor.submit(
+                _fetch_single_log_type,
+                client=client,
+                log_type=log_type,
+                last_run=dict(last_run),
+                max_events=max_events_to_fetch,
+                audit_types=audit_types_filter,
+            ): log_type
+            for log_type in log_types
+        }
+        for future in as_completed(futures):
+            log_type = futures[future]
+            try:
+                result = future.result()
+                results.append(result)
+            except Exception as e:
+                demisto.debug(f"[Fetch] {log_type.type_string}: Thread failed: {e!s}")
+
+    # Merge results — collect all new events and last_run updates
+    all_new_events: list[dict] = []
+    updated_last_run: dict[str, str | list[str]] = dict(last_run)
+
+    for result in results:
+        if result.error:
+            demisto.debug(f"[Fetch] {result.log_type.type_string}: Skipped due to error: {result.error}")
+            continue
+        all_new_events.extend(result.new_events)
+        updated_last_run.update(result.last_run_updates)
+
+    # Send all successfully fetched events to XSIAM
+    if all_new_events:
+        client.send_events(all_new_events)
+
+    # Single write of last_run state — preserves progress from successful types
     demisto.setLastRun(updated_last_run)
     demisto.debug(f"[Fetch] Last run updated: {updated_last_run}")
 
