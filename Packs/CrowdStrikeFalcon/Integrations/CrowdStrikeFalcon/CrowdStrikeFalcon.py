@@ -3394,7 +3394,6 @@ def fetch_items(command="fetch-incidents"):
 
     # Initialize and migrate last_run
     last_run = demisto.getLastRun()
-    demisto.debug(f"CrowdStrikeFalconMsg: last_run object before fetch: {last_run}")
     last_run_length = TOTAL_FETCH_TYPE_XSIAM if is_fetch_events else TOTAL_FETCH_TYPE_XSOAR
     if not last_run:
         last_run = [{} for _ in range(last_run_length)]
