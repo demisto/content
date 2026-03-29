@@ -5,34 +5,42 @@ SOCRadar is a cloud-based external threat intelligence and digital risk protecti
 ## What does this pack do?
 
 ### SOCRadar Incidents
+
 This pack allows you to integrate SOCRadar incidents with XSOAR. Automated integration fetches and populates incidents into XSOAR from SOCRadar platform along with all the details of the incident and leads XSOAR analyst to take relevant actions over the incidents such as:
+
 - Marking the incident as false positive.
 - Resolve the incident.
 - Adding notes for the incident.
 
-### SOCRadar Incidentsv4
+### SOCRadar Incidents v4
+
 This pack allows you to integrate SOCRadar incidents with XSOAR. Automated integration fetches and populates incidents into XSOAR from SOCRadar platform along with all the details of the incident and leads XSOAR analyst to take relevant actions over the incidents such as:
+
 - Marking the incident as false positive.
 - Resolve the incident.
 - Adding notes for the incident.
-- add assignee
-- add comment
-- change status with related findings
+- Add assignee
+- Add comment
+- Change status with related findings
 
 In short, you can perform the actions that an analyst would need to do on SOCRadar platform while responding an incident.
 
 In addition to the incident management, this pack also provides integrations with SOCRadar's threat intelligence capabilities:
 
 ### SOCRadar ThreatFusion
+
 Enrich indicators by obtaining enhanced information and reputation via SOCRadar. Supported indicator types for the SOCRadar reputation query are as follow:
+
 - IPv4
 - IPv6
 - Domain
 - File SHA-1
 - File MD5
 
-### SOCRadar Rapid Reputation ⚡
+### SOCRadar Rapid Reputation
+
 Fast reputation checking for IPs, domains, URLs, and file hashes with bulk support:
+
 - **Speed**: Sub-second response times for rapid triage
 - **Bulk Operations**: Check up to 100 indicators at once with automatic rate limiting (1 req/sec)
 - **Auto Detection**: Automatically identifies indicator types (IP, domain, URL, hash)
@@ -41,18 +49,22 @@ Fast reputation checking for IPs, domains, URLs, and file hashes with bulk suppo
 - **Threat Sources**: Aggregates data from multiple threat intelligence feeds
 
 **Commands:**
+
 - `!ip`, `!domain`, `!url`, `!file` - Check reputation for specific indicator types
 - `!socradar-reputation` - Generic command with manual type specification
 - `!socradar-bulk-check` - Bulk check mixed list of indicators with auto-detection
 
 **Use Cases:**
+
 - Fast incident triage and IOC screening
 - Bulk validation of threat intelligence feeds
 - Automated playbook integration for rapid reputation checks
 - Daily security monitoring
 
-### SOCRadar IoC Enrichment 🔍
+### SOCRadar IoC Enrichment
+
 Deep threat intelligence enrichment with comprehensive context:
+
 - **Signal Strength**: 5 levels (Very Strong, Strong, Moderate, Slightly Noisy, Noisy)
 - **Confidence Levels**: Cross-source validation (Very High, High, Medium, Low)
 - **Activity Labels**: Track indicator activity over 1/7/30/90 day periods
@@ -65,17 +77,21 @@ Deep threat intelligence enrichment with comprehensive context:
 - **AI Insights**: Optional AI-generated threat analysis (disabled by default for performance)
 
 **Commands:**
+
 - `!ip`, `!domain`, `!url`, `!file` - Enrich specific indicator types with full threat intelligence
 - `!socradar-ioc-enrichment` - Generic command with automatic type detection
 
 **Use Cases:**
+
 - Deep investigation of suspicious indicators
 - Threat attribution and campaign analysis
 - Understanding attacker infrastructure and tactics
 - Incident context enrichment
 
-### SOCRadar Threat Feed 🌐
+### SOCRadar Threat Feed 
+
 Collection-based IoC feed integration for automated indicator ingestion:
+
 - **Collection Management**: Use custom feed collections from SOCRadar platform via UUIDs
 - **Multiple Collections**: Support for multiple collection UUIDs simultaneously
 - **Incremental Feed**: Only fetches new or modified indicators
@@ -87,10 +103,12 @@ Collection-based IoC feed integration for automated indicator ingestion:
 - **Scheduled Fetch**: Configurable fetch interval for automated ingestion
 
 **Commands:**
+
 - `!socradar-get-indicators` - Manually retrieve indicators from collections
 - `!socradar-reset-fetch-indicators` - Reset fetch history
 
 **Configuration:**
+
 1. Log in to SOCRadar platform
 2. Navigate to **Threat Intelligence > Feeds** section
 3. Create custom collections or use existing ones
@@ -100,6 +118,7 @@ Collection-based IoC feed integration for automated indicator ingestion:
 7. Set TLP color and custom tags
 
 **Use Cases:**
+
 - Automated threat intelligence feed ingestion
 - Custom collection-based IOC management
 - Integration with XSOAR's indicator lifecycle
@@ -107,13 +126,14 @@ Collection-based IoC feed integration for automated indicator ingestion:
 
 ## Prerequisites
 
-- SOCRadar API key (obtain from Company Settings → API Options)
+- SOCRadar API key (obtain from Settings → API & Integrations)
 - XSOAR 6.0.0 or higher
 - Network access to platform.socradar.com
 
 ## Support
 
-For Cortex XSOAR support, contact **XSOARn@socradar.io** or visit https://socradar.io
+For Cortex XSOAR support, contact **xsoar@socradar.io** or visit https://socradar.io
 
 ### Demo Video
+
 [![SOCRadar in Cortex XSOAR](doc_files/SOCRadar_in_Cortex_XSOAR.jpg)](https://www.youtube.com/watch?v=VqyPruyOtTs&ab_channel=SOCRadarInc "SOCRadar in Cortex XSOAR")
