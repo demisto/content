@@ -83,6 +83,8 @@ configuration:
   advanced: true
   required: false
   additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  supportedModules:
+  - agentix
 - display: IDP Detections filter query
   name: idp_detections_fetch_query
   type: 0
@@ -90,6 +92,8 @@ configuration:
   required: false
   advanced: true
   additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  supportedModules:
+  - agentix
 - display: Mobile Detections filter query
   name: mobile_detections_fetch_query
   type: 0
@@ -97,6 +101,8 @@ configuration:
   required: false
   advanced: true
   additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  supportedModules:
+  - agentix
 - display: IOM filter query
   name: iom_fetch_query
   type: 0
@@ -124,6 +130,9 @@ configuration:
   required: false
   advanced: true
   additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  supportedModules:
+  - agentix
+  - xsiam
 - display: OFP Detections filter query
   name: ofp_detection_fetch_query
   type: 0
@@ -131,6 +140,9 @@ configuration:
   required: false
   advanced: true
   additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Third Party Detection fetch query
   name: third_party_detection_fetch_query
   type: 0
@@ -285,6 +297,9 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+  supportedModules:
+  - agentix
+  - xsiam
 - display: 'Fetch Asset types'
   name: fetch_assets_type
   defaultvalue: 'Spotlight,CNAPP Alerts'
@@ -338,6 +353,9 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+  supportedModules:
+  - agentix
+  - xsiam
 - display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
   additionalinfo: Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created.
   defaultvalue: 2
