@@ -26,7 +26,7 @@ In order to use the CrowdStrike Falcon integration, the API client and secret mu
 - Identity Protection Assessment - Read
 - Cases - Read and Write
 - NGSIEM Search - Read and Write
-- Recon - Read and Write
+- Recon - monitoring-rules Read and Write
 
 ### Troubleshooting
 
