@@ -2809,26 +2809,37 @@ def parse_custom_fields(custom_fields: str) -> dict:
     """
     Parse and sanitize custom fields from JSON string input.
 
+    Accepts two formats:
+    - Dict: ``{"field1": "value1", "field2": ["a", "b"]}``
+    - List of single-key objects (legacy): ``[{"field1": "value1"}, {"field2": ["a", "b"]}]``
+
     Args:
-        custom_fields: JSON string containing array of custom field objects
+        custom_fields: JSON string in either dict or list-of-objects format.
 
     Returns:
-        dict: Dictionary with sanitized alphanumeric keys and values.
-              List values (e.g. multiselect fields) are preserved as lists;
-              all other values are converted to strings.
+        dict: Dictionary with sanitized alphanumeric keys and native values.
+              Values are passed as-is (no stringification) so that multiselect
+              list values, booleans, and numbers reach the API in the correct type.
               Duplicate keys are ignored (first occurrence wins).
     """
-    custom_fields = safe_load_json(custom_fields)
+    parsed = safe_load_json(custom_fields)
 
     parsed_fields = {}
 
-    for custom_field in custom_fields:
-        for key, value in custom_field.items():
-            # Sanitize key: remove non-alphanumeric characters
-            sanitized_key = "".join(char for char in key if char.isalnum())
-            if sanitized_key and sanitized_key not in parsed_fields:
-                # Preserve list values for multiselect fields; stringify everything else
-                parsed_fields[sanitized_key] = value if isinstance(value, list) else str(value)
+    if isinstance(parsed, dict):
+        # New preferred format: {"field1": "value1", "field2": ["a", "b"]}
+        items = parsed.items()
+    elif isinstance(parsed, list):
+        # Legacy format: [{"field1": "value1"}, {"field2": ["a", "b"]}]
+        items = ((k, v) for obj in parsed for k, v in (obj.items() if isinstance(obj, dict) else []))
+    else:
+        return {}
+
+    for key, value in items:
+        # Sanitize key: remove non-alphanumeric characters
+        sanitized_key = "".join(char for char in key if char.isalnum())
+        if sanitized_key and sanitized_key not in parsed_fields:
+            parsed_fields[sanitized_key] = value
 
     return parsed_fields
 

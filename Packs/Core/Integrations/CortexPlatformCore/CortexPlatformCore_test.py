@@ -3975,6 +3975,7 @@ def test_add_cases_extra_data_empty_list(mocker):
 @pytest.mark.parametrize(
     "custom_fields_json,expected",
     [
+        # --- Legacy list-of-objects format ---
         (
             '[{"field1": "value1"}, {"field2": "value2"}, {"field3": "value3"}]',
             {"field1": "value1", "field2": "value2", "field3": "value3"},
@@ -3988,24 +3989,38 @@ def test_add_cases_extra_data_empty_list(mocker):
         ('[{"---": "value1", "@#$": "value2"}]', {}),
         ('[{"123": "value1", "456field": "value2"}]', {"123": "value1", "456field": "value2"}),
         ('[{"": "value1", "field2": "value2"}]', {"field2": "value2"}),
-        # multiSelect field: list value must be preserved as-is (not stringified)
+        # multiSelect field in legacy format: list value preserved as-is
         ('[{"multifield": ["opt1", "opt2"]}]', {"multifield": ["opt1", "opt2"]}),
-        # mixed: one string field and one multiSelect list field
+        # mixed legacy: string field and multiSelect list field
         (
             '[{"textfield": "hello"}, {"multifield": ["opt1", "opt2"]}]',
             {"textfield": "hello", "multifield": ["opt1", "opt2"]},
         ),
+        # --- New preferred dict format ---
+        # Simple dict with string values
+        ('{"field1": "value1", "field2": "value2"}', {"field1": "value1", "field2": "value2"}),
+        # Dict with multiSelect list value
+        ('{"textfield": "hello", "multifield": ["opt1", "opt2"]}', {"textfield": "hello", "multifield": ["opt1", "opt2"]}),
+        # Dict with special chars in keys (sanitized)
+        ('{"field-1": "value1", "field_2": "value2"}', {"field1": "value1", "field2": "value2"}),
+        # Dict with numeric value (not stringified)
+        ('{"numfield": 42}', {"numfield": 42}),
+        # Dict with boolean value (not stringified)
+        ('{"boolfield": true}', {"boolfield": True}),
+        # Empty dict
+        ("{}", {}),
     ],
 )
 def test_parse_custom_fields(custom_fields_json, expected):
     """
     Given:
-        A JSON string containing custom fields and expected parsed result.
+        A JSON string containing custom fields in either dict or list-of-objects format.
     When:
         The parse_custom_fields function is called with the JSON string.
     Then:
-        The function should return a dictionary with normalized field names matching the expected result.
-        List values (e.g. multiSelect fields) are preserved as lists; all other values are stringified.
+        The function should return a dictionary with sanitized alphanumeric keys.
+        Values are passed as-is (no stringification): lists, booleans, and numbers are preserved.
+        Both the new dict format and the legacy list-of-objects format are supported.
     """
     from CortexPlatformCore import parse_custom_fields
 
