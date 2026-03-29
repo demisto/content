@@ -1874,7 +1874,7 @@ script:
       required: false
       isArray: true
     outputs:
-    - contextPath: AWS.EKS.Cluster
+    - contextPath: AWS.EKS.Clusters
       description: A list of all of the clusters for your account in the specified Region.
       type: String
     - contextPath: AWS.EKS.ClustersNextToken
