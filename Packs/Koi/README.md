@@ -9,7 +9,7 @@ This pack includes the **Koi Event Collector** integration for Cortex XSIAM, whi
 ## Configuration
 
 1. Navigate to **Settings** > **Data Sources & Integrations**.
-2. Search for **Koi Event Collector**.
+2. Click **Add New** and search for **Koi Event Collector**.
 3. Click **Add instance** and configure the required parameters.
 
 | Parameter | Description | Required |
