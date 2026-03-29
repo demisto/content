@@ -3979,7 +3979,7 @@ def test_list_issues_command(args, expected_filters, expected_sort):
                 "is_excluded": True,
                 "is_starred": False,
                 "assigned_to": "admin@example.com",
-                "asset_id": ["asset-1", "asset-2"],
+                "asset_ids": ["asset-1", "asset-2"],
             },
         ),
     ],
