@@ -2820,18 +2820,18 @@ def parse_custom_fields(custom_fields: str) -> dict:
     """
     parsed = safe_load_json(custom_fields)
 
-    parsed_fields = {}
+    parsed_fields: dict = {}
 
     if isinstance(parsed, dict):
         # New preferred format: {"field1": "value1", "field2": ["a", "b"]}
-        items = parsed.items()
+        raw_items = list(parsed.items())
     elif isinstance(parsed, list):
         # Legacy format: [{"field1": "value1"}, {"field2": ["a", "b"]}]
-        items = ((k, v) for obj in parsed for k, v in (obj.items() if isinstance(obj, dict) else []))
+        raw_items = [(k, v) for obj in parsed if isinstance(obj, dict) for k, v in obj.items()]
     else:
         return {}
 
-    for key, value in items:
+    for key, value in raw_items:
         # Sanitize key: remove non-alphanumeric characters
         sanitized_key = "".join(char for char in key if char.isalnum())
         if sanitized_key and sanitized_key not in parsed_fields:

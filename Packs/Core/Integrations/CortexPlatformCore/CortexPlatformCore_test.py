@@ -8900,11 +8900,12 @@ def test_validate_custom_fields_multiselect_with_string_value_returns_error(mock
 def test_validate_custom_fields_multiselect_with_list_value_succeeds(mocker):
     """
     GIVEN:
-        A multiSelect custom field provided with a proper list value.
+        A multiSelect custom field provided with a list value.
     WHEN:
         validate_custom_fields is called.
     THEN:
         The field is accepted as valid and no error messages are returned.
+        validate_custom_fields does not enforce type — the list is passed through as-is.
     """
     from CortexPlatformCore import validate_custom_fields, Client
 
