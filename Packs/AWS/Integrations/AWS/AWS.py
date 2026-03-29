@@ -5855,8 +5855,6 @@ class EKS:
         if include := argToList(args.get("include")):
             kwargs["include"] = include
 
-        remove_nulls_from_dictionary(kwargs)
-
         print_debug_logs(client, f"Listing EKS clusters with parameters: {kwargs}")
         response = client.list_clusters(**kwargs)
 
