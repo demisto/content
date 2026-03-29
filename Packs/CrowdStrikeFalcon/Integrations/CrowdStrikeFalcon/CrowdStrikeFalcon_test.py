@@ -8230,6 +8230,132 @@ def test_resolve_case_command(requests_mock):
         resolve_case_command({"status": "new"})
 
 
+def test_resolve_case_recon_type(requests_mock):
+    """
+    Given:
+        - A case ID, status, and is_recon_type=True.
+    When:
+        - Calling resolve_case with is_recon_type=True.
+    Then:
+        - Verify the request is sent to the recon endpoint with the correct payload format (list).
+    """
+    from CrowdStrikeFalcon import resolve_case
+
+    requests_mock.patch(f"{SERVER_URL}/recon/entities/notifications/v1", json={"resources": []})
+
+    resolve_case(case_id="recon-case-1", status="closed-true-positive", is_recon_type=True)
+
+    assert requests_mock.last_request.json() == [{"id": "recon-case-1", "status": "closed-true-positive"}]
+
+
+def test_resolve_case_recon_type_with_multiple_fields(requests_mock):
+    """
+    Given:
+        - A case ID with status and severity, and is_recon_type=True.
+    When:
+        - Calling resolve_case with is_recon_type=True and multiple fields.
+    Then:
+        - Verify the recon payload includes all fields flattened (not nested under 'fields').
+    """
+    from CrowdStrikeFalcon import resolve_case
+
+    requests_mock.patch(f"{SERVER_URL}/recon/entities/notifications/v1", json={"resources": []})
+
+    resolve_case(case_id="recon-case-2", status="in_progress", severity=50, is_recon_type=True)
+
+    sent_payload = requests_mock.last_request.json()
+    assert isinstance(sent_payload, list)
+    assert len(sent_payload) == 1
+    assert sent_payload[0] == {"id": "recon-case-2", "status": "in_progress", "severity": 50}
+
+
+def test_resolve_case_with_template_id(requests_mock):
+    """
+    Given:
+        - A case ID and a template_id.
+    When:
+        - Calling resolve_case with template_id.
+    Then:
+        - Verify the template field is formatted as {"id": template_id} in the payload.
+    """
+    from CrowdStrikeFalcon import resolve_case
+
+    requests_mock.patch(f"{SERVER_URL}/cases/entities/cases/v2", json={"resources": []})
+
+    resolve_case(case_id="case-tmpl-1", template_id="tmpl-abc-123")
+
+    assert requests_mock.last_request.json() == {
+        "id": "case-tmpl-1",
+        "fields": {"template": {"id": "tmpl-abc-123"}},
+    }
+
+
+def test_resolve_case_with_name_and_assigned_to(requests_mock):
+    """
+    Given:
+        - A case ID with name and assigned_to_uuid.
+    When:
+        - Calling resolve_case with name and assigned_to_uuid.
+    Then:
+        - Verify the payload includes the correct field mappings.
+    """
+    from CrowdStrikeFalcon import resolve_case
+
+    requests_mock.patch(f"{SERVER_URL}/cases/entities/cases/v2", json={"resources": []})
+
+    resolve_case(case_id="case-name-1", name="Updated Case", assigned_to_uuid="user-uuid-123")
+
+    assert requests_mock.last_request.json() == {
+        "id": "case-name-1",
+        "fields": {"name": "Updated Case", "assigned_to_user_uuid": "user-uuid-123"},
+    }
+
+
+def test_resolve_case_command_with_name_and_template(requests_mock):
+    """
+    Given:
+        - A case ID with name and template_id arguments.
+    When:
+        - Running resolve_case_command with name and template_id.
+    Then:
+        - Verify the command returns success and the payload is correct.
+    """
+    from CrowdStrikeFalcon import resolve_case_command
+
+    requests_mock.patch(f"{SERVER_URL}/cases/entities/cases/v2", json={})
+
+    args = {"id": "case1", "name": "New Name", "template_id": "tmpl-1"}
+    result = resolve_case_command(args)
+    assert "Case case1 was changed successfully" in result.readable_output
+    assert "Name" in result.readable_output
+    assert requests_mock.last_request.json() == {
+        "id": "case1",
+        "fields": {"name": "New Name", "template": {"id": "tmpl-1"}},
+    }
+
+
+def test_resolve_case_command_with_valid_severity(requests_mock):
+    """
+    Given:
+        - A case ID with a valid severity value (between 10 and 100).
+    When:
+        - Running resolve_case_command with severity=50.
+    Then:
+        - Verify the command returns success and severity is in the payload.
+    """
+    from CrowdStrikeFalcon import resolve_case_command
+
+    requests_mock.patch(f"{SERVER_URL}/cases/entities/cases/v2", json={})
+
+    args = {"id": "case1", "severity": "50"}
+    result = resolve_case_command(args)
+    assert "Case case1 was changed successfully" in result.readable_output
+    assert requests_mock.last_request.json() == {
+        "id": "case1",
+        "fields": {"severity": 50},
+    }
+
+
 # ============== NGSIEM Search Events Tests ==============
 @pytest.mark.parametrize(
     "events, expected_rawstring",

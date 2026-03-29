@@ -7129,13 +7129,13 @@ def resolve_case(
 
     if is_recon_type:
         recon_payload = {"id": case_id, **fields}
-        payload = [recon_payload]
+        request_payload: dict | list = [recon_payload]
         url_suffix = "/recon/entities/notifications/v1"
     else:
-        payload = {"id": case_id, "fields": fields}
+        request_payload = {"id": case_id, "fields": fields}
         url_suffix = "/cases/entities/cases/v2"
-    demisto.debug(f"About to call http_request with {payload=}")
-    return http_request("PATCH", url_suffix, json=payload)
+    demisto.debug(f"About to call http_request with {request_payload=}")
+    return http_request("PATCH", url_suffix, json=request_payload)
 
 
 def resolve_case_command(args: dict[str, Any]) -> CommandResults:
