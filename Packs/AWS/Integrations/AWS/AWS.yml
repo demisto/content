@@ -1679,7 +1679,7 @@ script:
       description: The ARN of the IAM principal to associate with the access entry.
       required: true
     - name: kubernetes_groups
-      description: A comma-separated list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings.
+      description: The Kubernetes groups that the access entry is associated with.
       required: false
       isArray: true
     - name: client_request_token
