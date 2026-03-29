@@ -99,17 +99,7 @@
             "printers": null,
             "storage": null,
             "applications": null,
-            "userAndLocation": {
-                "username": "user91",
-                "realname": "User 91",
-                "email": "User91@email.com",
-                "position": null,
-                "phone": "612-605-6625",
-                "departmentId": null,
-                "buildingId": null,
-                "room": "100 Walker Street\t \r\nLevel 14, Suite 3",
-                "extensionAttributes": []
-            },
+            "userAndLocation": null,
             "configurationProfiles": null,
             "services": null,
             "hardware": {
