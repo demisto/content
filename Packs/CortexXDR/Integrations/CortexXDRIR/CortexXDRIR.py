@@ -3072,7 +3072,7 @@ def create_issue_command(client: Client, args: Dict) -> CommandResults:
         "category": args.get("category"),
         "severity": args["severity"].upper(),
         # Optional
-        "asset_id": argToList(args.get("asset_id")),
+        "asset_ids": argToList(args.get("asset_id")),
         "mitre_tactic": argToList(args.get("mitre_tactic")),
         "mitre_technique": argToList(args.get("mitre_technique")),
         "type": args.get("type"),
