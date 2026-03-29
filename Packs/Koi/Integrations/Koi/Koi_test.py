@@ -544,13 +544,15 @@ class TestFetchEventsCommand:
 
     def test_first_run(self, mock_client, alerts_response, audit_response, mocker):
         """Test fetch-events on first run (no last_run state)."""
-        from Koi import fetch_events_command
+        from Koi import fetch_events_command, LogType
 
-        mocker.patch.object(
-            mock_client,
-            "get_events_page",
-            side_effect=[alerts_response["alerts"], audit_response["data"]],
-        )
+        def side_effect_get_events_page(**kwargs):
+            log_type = kwargs.get("log_type")
+            if log_type == LogType.ALERTS:
+                return alerts_response["alerts"]
+            return audit_response["data"]
+
+        mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
         mocker.patch.object(
             demisto,
             "params",
@@ -971,13 +973,15 @@ class TestLastRunState:
 
     def test_last_run_single_get_single_set(self, mock_client, alerts_response, audit_response, mocker):
         """Test that getLastRun is called once and setLastRun is called once (no race condition)."""
-        from Koi import fetch_events_command
+        from Koi import fetch_events_command, LogType
 
-        mocker.patch.object(
-            mock_client,
-            "get_events_page",
-            side_effect=[alerts_response["alerts"], audit_response["data"]],
-        )
+        def side_effect_get_events_page(**kwargs):
+            log_type = kwargs.get("log_type")
+            if log_type == LogType.ALERTS:
+                return alerts_response["alerts"]
+            return audit_response["data"]
+
+        mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
         mocker.patch.object(
             demisto,
             "params",
