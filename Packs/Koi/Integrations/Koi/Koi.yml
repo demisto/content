@@ -97,7 +97,6 @@ script:
       predefined:
       - 'Alerts'
       - 'Audit'
-      - 'Alerts,Audit'
       isArray: true
     - name: limit
       description: The maximum number of events to return per type.
@@ -113,7 +112,19 @@ script:
       predefined:
       - 'true'
       - 'false'
-    outputs: []
+    outputs:
+    - contextPath: Koi.Event.id
+      description: The unique identifier of the event.
+      type: String
+    - contextPath: Koi.Event.source_log_type
+      description: The source log type of the event (Alerts or Audit).
+      type: String
+    - contextPath: Koi.Event._time
+      description: The timestamp of the event in ISO 8601 format.
+      type: Date
+    - contextPath: Koi.Event.created_at
+      description: The creation time of the event (audit logs).
+      type: Date
   runonce: false
   script: '-'
   type: python

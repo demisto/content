@@ -15,9 +15,13 @@ This pack includes the **Koi Event Collector** integration for Cortex XSIAM, whi
 | Parameter | Description | Required |
 | --- | --- | --- |
 | Server URL | The Koi API server URL. | True |
-| API Key | The API key for authenticating with the Koi API. | True |
-| Fetch event types | Select which event types to fetch (Alerts, Audit). | True |
-| Audit log type filter | Filter audit logs by type(s). | False |
-| Maximum number of events per fetch | Maximum events per type per fetch cycle (default: 5000). | False |
+| API Key | The API key for authenticating with the Koi API. See the help section for instructions on creating an API key. | True |
+| Trust any certificate (not secure) | | False |
+| Use system proxy settings | | False |
+| Fetch events | | False |
+| Fetch event types | Select which event types to fetch from Koi. | True |
+| Audit log type filter | Filter audit logs by type(s). If not specified, all audit log types will be fetched. | False |
+| Maximum number of events per fetch | Maximum number of events to fetch per type per fetch cycle (default: 5000). | False |
+| Events Fetch Interval | | False |
 
 </~XSIAM>
