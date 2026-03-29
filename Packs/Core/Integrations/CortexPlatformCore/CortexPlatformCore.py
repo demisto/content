@@ -3500,7 +3500,7 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
                 )
             elif field_type == "shortText" and isinstance(field_value, list):
                 error_messages.append(
-                    f"Field '{field_name}' is of type singleSelect and does not accept a list value."
+                    f"Field '{field_name}' is of type shortText and does not accept a list value."
                     f" Provide a single value instead."
                 )
             else:
