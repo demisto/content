@@ -7129,7 +7129,8 @@ def resolve_case(
     fields = {k: v for k, v in fields.items() if v is not None}
 
     if is_recon_type:
-        payload = {"id": case_id, **fields}
+        recon_payload = {"id": case_id, **fields}
+        payload = [recon_payload]
         url_suffix = "/recon/entities/notifications/v1"
     else:
         payload = {"id": case_id, "fields": fields}
