@@ -4237,6 +4237,26 @@ class TestCreateItemOrderFixes:
         assert "/v2/" not in url, "order_now URL must not contain /v2/"
         assert "/v1/" in url, "order_now URL must be downgraded to /v1/"
 
+    def test_construct_url_order_now_no_downgrade_when_sc_api_false(self):
+        """
+        Given
+        - A Client configured with API version v2
+        When
+        - _construct_url is called with sc_api=False and a path ending in /order_now
+        Then
+        - The resulting URL must still contain /v2/ (the downgrade is exclusive to sc_api calls)
+        """
+        client = self._make_client()
+        url = client._construct_url(
+            custom_api="",
+            sc_api=False,
+            cr_api=False,
+            path="some/items/abc123/order_now",
+            get_attachments=False,
+        )
+        assert "/v2/" in url, "Non-sc_api order_now URL must NOT be downgraded to /v1/"
+        assert "/v1/" not in url, "Non-sc_api order_now URL must not contain /v1/"
+
     def test_create_item_order_no_validation_false_by_default(self, mocker):
         """
         Given
