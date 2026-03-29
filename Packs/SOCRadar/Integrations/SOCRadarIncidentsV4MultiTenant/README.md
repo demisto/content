@@ -106,6 +106,7 @@ To obtain your API credentials:
 | **Max incidents per fetch** | No | 10000 | Maximum incidents per fetch cycle |
 | **First fetch time** | No | 3 days | Initial time range for first fetch |
 | **Fetch Interval (Minutes)** | No | 1 | Time window for subsequent fetches |
+| **Show Content** | No | False | Show Alarm Content Field |
 
 ### Filtering Options
 
@@ -142,6 +143,17 @@ Change the status of one or more alarms.
 | status_reason | New status reason for the alarms. Possible values are: OPEN, INVESTIGATING, RESOLVED, PENDING_INFO, LEGAL_REVIEW, VENDOR_ASSESSMENT, FALSE_POSITIVE, DUPLICATE, PROCESSED_INTERNALLY, MITIGATED, NOT_APPLICABLE. | Required |
 | comments | Optional comments explaining the status change. | Optional |
 | company_id | Company ID for the alarm. If not provided, will be auto-fetched from alarm data. Can also use ${incident.socradarcompanyid} from incident fields. | Optional |
+| update_related_finding_status | Optional boolean. If set to true, also update related finding status. | Optional |
+| email | Email of action owner. **Required if `update_related_finding_status` is true.** | Conditionally Required |
+
+**Relational Logic:**
+If you select `update_related_finding_status`, you must provide the `email` field.
+
+**Example:**
+
+```
+!socradar-change-alarm-status alarm_ids="81171696" status_reason="INVESTIGATING" comments="Under review" update_related_finding_status=true email="analyst@company.com"
+```
 
 #### Context Output
 

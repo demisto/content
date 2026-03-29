@@ -1290,6 +1290,7 @@ script:
       - name: account_id
         description: The AWS account ID.
         prettyname: Account ID
+        defaultValue: Account ID
         required: true
         prettypredefined:
           Account ID: ${asset.xdm.asset.realm}
@@ -1325,6 +1326,103 @@ script:
         description: Specifies the number of previous passwords that IAM users are prevented from reusing.
         defaultValue: '24'
         hidden: true
+
+  - name: aws-iam-login-profile-delete-quick-action
+    description: Permanently deletes the IAM user's password (login profile). This prevents the user from signing into the AWS Management Console but does not deactivate their programmatic access keys or delete the IAM user itself.
+    prettyname: Remove User Console Access
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        defaultValue: Account ID
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        defaultValue: Region
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: userName
+        description: The name of the user whose console access you want to remove.
+        prettyname: User Name
+        required: true
+        defaultValue: User Name
+        prettypredefined:
+          User Name: ${asset.xdm.asset.name}
+
+  - name: aws-iam-user-policy-put-quick-action
+    description: Attaches an inline "Deny All" policy for the specified IAM user, effectively blocking the user from performing any actions on all AWS resources.
+    prettyname: Block All User Actions
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        defaultValue: Account ID
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        defaultValue: Region
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: userName
+        description: The name of the user to block all actions for.
+        prettyname: User Name
+        required: true
+        defaultValue: User Name
+        prettypredefined:
+          User Name: ${asset.xdm.asset.name}
+      - name: policyName
+        description: The name of the deny-all policy document.
+        defaultValue: 'DenyAllPolicy'
+        hidden: true
+      - name: policyDocument
+        description: The policy document in JSON format.
+        defaultValue: '{"Version":"2012-10-17","Statement":[{"Effect":"Deny","Action":"*","Resource":"*"}]}'
+        hidden: true
+
+  - name: aws-iam-access-key-update-quick-action
+    description: Immediately disables a specific IAM access key. This stops all CLI, SDK, and API-based communication for this key ID without deleting it, enabling forensic recovery or re-enabling if the key is found to be safe.
+    prettyname: Deactivate User IAM Access Key
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        defaultValue: Account ID
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        defaultValue: Region
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: accessKeyId
+        description: The ID of the access key you want to deactivate.
+        prettyname: Access Key ID
+        required: true
+        defaultValue: Access key ID
+        prettypredefined:
+          Access Key Id: ${asset.xdm.asset.name}
+      - name: status
+        description: The status to assign to the access key.
+        defaultValue: 'Inactive'
+        hidden: true
+
   - arguments:
     - description: The name of the role to list policies for.
       name: roleName
@@ -1656,7 +1754,7 @@ script:
       required: false
     description: Deletes a virtual MFA device.
     name: aws-iam-delete-mfa-devices
-  dockerimage: demisto/boto3py3:1.0.0.5983318
+  dockerimage: demisto/boto3py3:1.0.0.7605711
   runonce: false
   script: '-'
   subtype: python3
