@@ -1272,5 +1272,5 @@ script:
   type: python
 tests:
 - Wildfire Test
-- Detonate File - WildFire - Test
+- Detonate URL - WildFire-v2 - Test
 fromversion: 5.0.0

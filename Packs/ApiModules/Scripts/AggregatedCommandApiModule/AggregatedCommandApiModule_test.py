@@ -1744,7 +1744,7 @@ def test_search_indicators_in_tim_success(module_factory, mocker, data, pages, e
     q = captured.get("query", "")
     assert f"type:{schema.type}" in q
     for val in data:
-        assert f"value:{val}" in q
+        assert f'value:"{val}"' in q
 
     assert iocs == expected_iocs
 

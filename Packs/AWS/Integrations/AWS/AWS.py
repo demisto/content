@@ -769,7 +769,9 @@ class S3:
             Exception: If there's an error while applying the bucket policy
         """
         kwargs = {"Bucket": args.get("bucket", ""), "Policy": json.dumps(args.get("policy"))}
+
         try:
+            demisto.debug(f"calling put_bucket_policy with {kwargs=}")
             response = client.put_bucket_policy(**kwargs)
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 return CommandResults(readable_output=f"Successfully applied bucket policy to {args.get('bucket')} bucket")
@@ -974,6 +976,7 @@ class S3:
 
         remove_nulls_from_dictionary(kwargs)
         try:
+            demisto.debug(f"calling put_bucket_ownership_controls with {kwargs=}")
             response = client.put_bucket_ownership_controls(**kwargs)
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 return CommandResults(readable_output=f"Bucket Ownership Controls successfully updated for {args.get('bucket')}")
@@ -1335,6 +1338,7 @@ class IAM:
         user_name = args.get("user_name", "")
 
         try:
+            demisto.debug(f"calling delete_login_profile with {user_name=}")
             response = client.delete_login_profile(UserName=user_name)
 
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
@@ -1366,8 +1370,8 @@ class IAM:
         user_name = args.get("user_name", "")
         policy_name = args.get("policy_name", "")
         policy_document = args.get("policy_document", "")
-
         try:
+            demisto.debug(f"calling put_user_policy with {user_name=}, {policy_name=}, {policy_document=}")
             response = client.put_user_policy(
                 UserName=user_name,
                 PolicyName=policy_name,
@@ -1403,6 +1407,7 @@ class IAM:
         role_name = args.get("role_name", "")
 
         try:
+            demisto.debug(f"calling remove_role_from_instance_profile with {instance_profile_name=}, {role_name=}")
             response = client.remove_role_from_instance_profile(InstanceProfileName=instance_profile_name, RoleName=role_name)
 
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
@@ -1444,6 +1449,7 @@ class IAM:
             kwargs["UserName"] = user_name
 
         try:
+            demisto.debug(f"calling update_access_key with {kwargs=}")
             response = client.update_access_key(**kwargs)
 
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
@@ -3256,6 +3262,7 @@ class RDS:
         remove_nulls_from_dictionary(kwargs)
 
         try:
+            demisto.debug(f"calling modify_event_subscription with {kwargs=}")
             response = client.modify_event_subscription(**kwargs)
 
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
@@ -4457,9 +4464,11 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-s3-bucket-acl-put": S3.put_bucket_acl_command,
     "aws-s3-bucket-acl-set-to-private-quick-action": S3.put_bucket_acl_command,
     "aws-s3-bucket-policy-put": S3.put_bucket_policy_command,
+    "aws-s3-bucket-policy-put-quick-action": S3.put_bucket_policy_command,
     "aws-s3-bucket-website-delete": S3.delete_bucket_website_command,
     "aws-s3-bucket-website-disable-hosting-quick-action": S3.delete_bucket_website_command,
     "aws-s3-bucket-ownership-controls-put": S3.put_bucket_ownership_controls_command,
+    "aws-s3-bucket-ownership-controls-put-quick-action": S3.put_bucket_ownership_controls_command,
     "aws-s3-file-upload": S3.file_upload_command,
     "aws-s3-file-download": S3.file_download_command,
     "aws-s3-bucket-website-get": S3.get_bucket_website_command,
@@ -4518,6 +4527,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-rds-db-instance-enable-multi-az-quick-action": RDS.modify_db_instance_command,
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
     "aws-rds-event-subscription-modify": RDS.modify_event_subscription_command,
+    "aws-rds-event-subscription-modify-quick-action": RDS.modify_event_subscription_command,
     "aws-rds-db-snapshot-attribute-set-snapshot-to-private-quick-action": RDS.modify_db_snapshot_attribute_command,
     "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
     "aws-cloudtrail-logging-start-enable-logging-quick-action": CloudTrail.start_logging_command,

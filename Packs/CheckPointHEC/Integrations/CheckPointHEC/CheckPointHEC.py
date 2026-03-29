@@ -85,10 +85,11 @@ class Client(BaseClient):
 
     def _generate_infinity_token(self):
         if self._should_refresh_token():
-            payload = {"clientId": self.client_id, "accessKey": self.client_secret}
+            payload = {"accessKey": self.client_secret}
+            headers = {"cloudinfra-external-client-id": self.client_id}
             timestamp = time.time()
 
-            res = self._http_request(method="POST", url_suffix="auth/external", json_data=payload)
+            res = self._http_request(method="POST", url_suffix="/v2/auth/external", json_data=payload, headers=headers)
             data = res["data"]
             self.token = data.get("token")
             self.token_expiry = timestamp + float(data.get("expiresIn"))
@@ -356,6 +357,12 @@ class Client(BaseClient):
             "GET",
             f"download/entity/{entity}?original={1 if original else 0}",
             resp_type="content",
+        )
+
+    def get_large_email_presigned_url(self, entity: str):
+        return self._call_api(
+            "GET",
+            f"download_large_email/entity/{entity}",
         )
 
     def get_ap_exceptions(self, exc_type: str, exc_id: str = None):
@@ -948,6 +955,24 @@ def checkpointhec_download_email(client: Client, args: dict) -> dict:
         filename=f"{entity}.eml",
         data=eml,
     )
+
+
+def checkpointhec_download_large_email(client: Client, args: dict) -> dict:
+    entity: str = args["entity_id"]
+
+    response = client.get_large_email_presigned_url(entity)
+    if url := response.get("responseData", {}).get("url"):
+        eml_response = requests.get(url)
+        if eml_response.status_code == 200:
+            eml = eml_response.content
+        else:
+            raise DemistoException(f"Error downloading email from presigned url, status code: {eml_response.status_code}")
+
+        return fileResult(
+            filename=f"{entity}.eml",
+            data=eml,
+        )
+    raise DemistoException("Presigned URL not found in API response when downloading large email")
 
 
 def checkpointhec_get_ap_exceptions(client: Client, args: dict) -> CommandResults:
@@ -1594,6 +1619,8 @@ def main() -> None:  # pragma: no cover
             return_results(checkpointhec_report_mis_classification(client, args))
         elif command == "checkpointhec-download-email":
             return_results(checkpointhec_download_email(client, args))
+        elif command == "checkpointhec-download-large-email":
+            return_results(checkpointhec_download_large_email(client, args))
         elif command == "checkpointhec-get-ap-exceptions":
             return_results(checkpointhec_get_ap_exceptions(client, args))
         elif command == "checkpointhec-create-ap-exception":

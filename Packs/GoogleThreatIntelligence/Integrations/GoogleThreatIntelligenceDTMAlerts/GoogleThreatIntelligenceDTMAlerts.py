@@ -18,9 +18,10 @@ OK_CODES = (200, 401)
 STATUS_CODE_TO_RETRY = [429, *(status_code for status_code in requests.status_codes._codes if status_code >= 500)]  # type: ignore
 MAX_RETRIES = 4
 BACKOFF_FACTOR = 7.5
-MAX_FETCH = 25
+MAX_FETCH = 100
 DEFAULT_MAX_FETCH = 25
 DEFAULT_PAGE_SIZE = 10
+DEFAULT_TIMEOUT_THRESHOLD_SECONDS = 240  # 4 minutes in seconds
 DEFAULT_FETCH_TIME = "1 days"
 DEFAULT_SORT_VALUE = "Created At"
 DEFAULT_FETCH_SORT_ORDER = "Asc"
@@ -95,8 +96,8 @@ MESSAGES = {
     "REQUIRED_ARGUMENT": "Missing argument {}.",
 }
 ERROR_MESSAGES = {
-    "INVALID_MAX_FETCH": "'{}' is invalid 'max_fetch' value. Max fetch for DTM Alerts should be between 1 and 25.",
-    "INVALID_PAGE_SIZE": "'{}' is an invalid value for 'page_size'. Value must be between 1 and 25.",
+    "INVALID_MAX_FETCH": "'{}' is invalid 'max_fetch' value. Max fetch for DTM Alerts should be between 1 and {}.",
+    "INVALID_PAGE_SIZE": "'{}' is an invalid value for 'page_size'. Value must be between 1 and {}.",
     "INVALID_MSCORE_GTE": "'{}' is an invalid value for 'mscore_gte'. Value must be between 0 and 100.",
     "INVALID_OBJECT": "Failed to parse {} object from response: {}",
     "UNAUTHORIZED_REQUEST": "{} Unauthorized request: Invalid API key provided {}.",
@@ -455,11 +456,11 @@ def validate_dtm_alert_list_args(
     Raises:
         ValueError: If the arguments are invalid.
     """
-    if size is not None and (size > MAX_FETCH or size < 1):
-        if fetch:
-            raise ValueError(ERROR_MESSAGES["INVALID_MAX_FETCH"].format(size))
-        else:
-            raise ValueError(ERROR_MESSAGES["INVALID_PAGE_SIZE"].format(size, MAX_FETCH))
+    if size is not None:
+        max_allowed = MAX_FETCH if fetch else DEFAULT_MAX_FETCH
+        if size < 1 or size > max_allowed:
+            error_key = "INVALID_MAX_FETCH" if fetch else "INVALID_PAGE_SIZE"
+            raise ValueError(ERROR_MESSAGES[error_key].format(size, max_allowed))
 
     if order and order.lower() not in ALERTS_ORDER_LIST:
         raise ValueError(ERROR_MESSAGES["INVALID_ARGUMENT"].format(order, "order", ALERTS_ORDER_HUMAN_READABLE))
@@ -799,6 +800,24 @@ def gti_dtm_alert_status_update_command(client: Client, args: dict) -> CommandRe
     )
 
 
+def _get_next_page_token(response_headers) -> str | None:
+    """
+    Extract pagination token from response Link header.
+
+    Args:
+        response_headers: Response headers from API call
+
+    Returns:
+        Pagination token string or None if not found
+    """
+    link_header = response_headers.get("link", "")
+    if link_header:
+        match = re.search(r"[?&]page=([^&>;]+)", link_header)
+        if match:
+            return match.group(1)
+    return None
+
+
 def fetch_incidents(
     client: Client, last_run: dict, params: dict, is_test: bool = False
 ) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
@@ -815,7 +834,7 @@ def fetch_incidents(
     """
     # Get parameters with guaranteed non-None fallbacks
     first_fetch_time = arg_to_datetime(params.get("first_fetch", DEFAULT_FETCH_TIME))
-    max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH), "Max Fetch")
+    max_fetch: int = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH), "Max Fetch")  # type: ignore
 
     # Initialize variables
     alert_incidents: List[Dict[str, Any]] = []
@@ -854,27 +873,73 @@ def fetch_incidents(
     )
 
     # Get data from last_run
-    next_page_link = last_run.get("next_page_link")
     current_alert_ids = last_run.get("alert_ids", [])
     last_alert_created_at = last_run.get("last_alert_created_at", first_fetch_time.strftime(DATE_TIME_FORMAT))  # type: ignore
+    alerts_list: List[Dict[str, Any]] = []
 
-    if not last_run:
+    if max_fetch <= DEFAULT_MAX_FETCH:
+        # Initial or time-based request
+        demisto.debug(f"Time-based request for DTM Alert fetch since: {last_alert_created_at}")
         query_params["since"] = last_alert_created_at
         response = client.get_alert_list(query_params, response_type="response")
-    else:
-        if next_page_link:
-            # Pagination request without query parameters when page_link exist in last_run
-            page_params = {"page": next_page_link}
-            response = client.get_alert_list(page_params, response_type="response")
-        else:
-            # Initial or new time-based request
-            query_params["since"] = last_alert_created_at
-            response = client.get_alert_list(query_params, response_type="response")
 
-    # Extract data from response
-    alerts_response = response.json()  # type: ignore
-    response_headers = response.headers  # type: ignore
-    alerts_list = alerts_response.get("alerts", [])
+        # Extract data from response
+        alerts_response = response.json()  # type: ignore
+        alerts_list = alerts_response.get("alerts", [])
+
+    else:
+        next_page_link = None
+        current_time_str = datetime.now(timezone.utc).strftime(DATE_TIME_FORMAT)
+        demisto.debug(f"Large fetch for DTM Alert started at {current_time_str}, max_fetch={max_fetch}")
+        remaining: int = max_fetch
+        while remaining > 0:
+            # Check if pagination has exceeded the 4-minute timeout threshold
+            if has_passed_time_threshold(current_time_str, DEFAULT_TIMEOUT_THRESHOLD_SECONDS):
+                demisto.debug(
+                    f"Timeout reached after {DEFAULT_TIMEOUT_THRESHOLD_SECONDS} seconds. "
+                    f"Fetched {len(alerts_list)} alerts, {remaining} remaining alerts."
+                )
+                break
+
+            if next_page_link:
+                # Pagination request without query parameters when page_link exist in last_run
+                demisto.debug(f"Using pagination token for DTM Alert fetch: {next_page_link}")
+                page_params = {"page": next_page_link}
+                response = client.get_alert_list(page_params, response_type="response")
+            else:
+                # Initial or new time-based request
+                demisto.debug(
+                    f"Time-based request for DTM Alert fetch since: {last_alert_created_at}, "
+                    f"batch_size: {min(remaining, DEFAULT_MAX_FETCH)}"
+                )
+                query_params["since"] = last_alert_created_at
+                query_params["size"] = min(remaining, DEFAULT_MAX_FETCH)
+                response = client.get_alert_list(query_params, response_type="response")
+
+            # Extract data from response
+            alerts_response = response.json()  # type: ignore
+            result_alert = alerts_response.get("alerts", [])
+            alert_count = len(result_alert)
+            if remaining <= alert_count:
+                alerts_list.extend(result_alert[:remaining])
+                demisto.debug("Reached max_fetch provided limit, stopping pagination.")
+                break
+
+            alerts_list.extend(result_alert)
+            remaining -= alert_count
+            demisto.debug(f"DTM Alert fetch: {alert_count} alerts received, {remaining} remaining")
+
+            # For test connectivity, exit after first call when max_fetch > 25
+            if is_test:
+                demisto.debug(f"DTM Alert fetch Test connectivity api call for provided max_fetch:{max_fetch}")
+                break
+
+            next_page_link = _get_next_page_token(response.headers)  # type: ignore
+
+            # Stop if API returned no alerts to avoid infinite loop
+            if alert_count == 0 or not next_page_link:
+                demisto.debug("No DTM Alert data available to fetch, stopping pagination")
+                break
 
     if is_test:
         return alert_incidents, next_run_params
@@ -926,26 +991,13 @@ def fetch_incidents(
             }
         )
         found_alert_ids.append(alert.get("id"))
-
-    # Extract next page link from Link header
-    next_page = response_headers.get("link", "")
-    next_page_link = None
-    if next_page:
-        m = re.search(r"[?&]page=([^&>;]+)", next_page)
-        if m:
-            next_page_link = m.group(1)
-
     next_run_params["alert_ids"] = current_alert_ids + found_alert_ids
 
     # Update next_run_params
-    if next_page_link and len(alerts_list) == max_fetch:
-        # PAGINATION CONTINUES: Next page exists and current page is full
-        next_run_params["next_page_link"] = next_page_link
+    if alerts_list:
         next_run_params["last_alert_created_at"] = alerts_list[-1].get("created_at")
     else:
-        # PAGINATION ENDS: Next page does not exist or current page is not full
-        next_run_params.pop("next_page_link", None)
-        next_run_params["last_alert_created_at"] = alerts_list[-1].get("created_at") if alerts_list else last_alert_created_at
+        next_run_params["last_alert_created_at"] = last_alert_created_at
 
     demisto.debug(f"Fetched {len(found_alert_ids)} new incidents")
     demisto.debug(f"next_run_params: {next_run_params}")

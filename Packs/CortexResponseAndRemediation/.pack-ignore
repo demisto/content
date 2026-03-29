@@ -558,6 +558,3 @@ SMTP
 # GR109 fails on playbooks that use modules that the pack does not support. This ignore entry should be removed once GR109 can be ignored at the pack level / no longer poses an issue (new repo or pack).
 [file:silent-playbook-New_Administrative_Behavior.yml]
 ignore=GR109
-
-[file:Packs/CortexResponseAndRemediation/Triggers/silent-Trigger_-_Encoded_information_using_windows_certificate_management_tool.json]
-ignore=GR103

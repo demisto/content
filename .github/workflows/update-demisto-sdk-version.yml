@@ -25,7 +25,7 @@ jobs:
 
     steps:
     - name: Install poetry
-      uses: Gr1N/setup-poetry@v8
+      uses: Gr1N/setup-poetry@15821dc8a61bc630db542ae4baf6a7c19a994844 # v8
 
     - name: Checkout
       uses: actions/checkout@v4
@@ -40,15 +40,19 @@ jobs:
         cache: 'poetry'
 
     - name: Create branch
+      env:
+        RELEASE_VERSION: ${{ inputs.release_version }}
       run: |
         git config --global user.email "bot@demisto.com"
         git config --global user.name "Content Bot"
-        git checkout -b ${{ inputs.release_version }}
+        git checkout -b "$RELEASE_VERSION"
     
     - name: Update dependencies
       continue-on-error: true
+      env:
+        RELEASE_VERSION: ${{ inputs.release_version }}
       run: |
-        poetry add --group dev demisto-sdk@${{inputs.release_version}}
+        poetry add --group dev "demisto-sdk@${RELEASE_VERSION}"
         poetry lock --no-update
         git add .
         source .venv/bin/activate
@@ -56,15 +60,18 @@ jobs:
         git add .
 
     - name: Create pull request
-      run: |
-        git commit -m "poetry files" -a
-        git push origin ${{ inputs.release_version }}
-        if ${{ inputs.is_draft == true }}; then
-          echo "creating draft release pull request"
-          gh pr create -B master -H ${{ inputs.release_version }} --title "demisto-sdk-release ${{ inputs.release_version }}" --body "Initial body, will be replaced." --reviewer ${{ inputs.reviewer }} -l "docs-approved" --draft
-        else
-          echo "creating release pull request"
-          gh pr create -B master -H ${{ inputs.release_version }} --title "demisto-sdk-release ${{ inputs.release_version }}" --body "Initial body, will be replaced." --reviewer ${{ inputs.reviewer }} -l "docs-approved"
-        fi
       env:
         GH_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
+        RELEASE_VERSION: ${{ inputs.release_version }}
+        REVIEWER: ${{ inputs.reviewer }}
+        IS_DRAFT: ${{ inputs.is_draft }}
+      run: |
+        git commit -m "poetry files" -a
+        git push origin "$RELEASE_VERSION"
+        if [ "$IS_DRAFT" = "true" ]; then
+          echo "creating draft release pull request"
+          gh pr create -B master -H "$RELEASE_VERSION" --title "demisto-sdk-release $RELEASE_VERSION" --body "Initial body, will be replaced." --reviewer "$REVIEWER" -l "docs-approved" --draft
+        else
+          echo "creating release pull request"
+          gh pr create -B master -H "$RELEASE_VERSION" --title "demisto-sdk-release $RELEASE_VERSION" --body "Initial body, will be replaced." --reviewer "$REVIEWER" -l "docs-approved"
+        fi

@@ -185,6 +185,7 @@ filter category in("Administrative", "Policy", "Alert") and (CategoryValue = nul
 | alter
         xdm.event.type = arrayindex(split(operationName, "/"), 0),
         xdm.target.cloud.project_hierarchy = if(arraystring(split(properties -> hierarchy, "/"), "") != "", split(properties -> hierarchy, "/"), arraystring(arraycreate(properties -> tenantId, properties -> subscriptionId), "") != "", arraycreate(properties -> tenantId, properties -> subscriptionId), null),
+        xdm.target.cloud.project_id = if(json_extract_scalar(properties , "$.subscriptionId") != null, json_extract_scalar(properties , "$.subscriptionId"), arraystring(split(properties -> hierarchy, "/"), "") != "", arrayindex(split(properties -> hierarchy, "/"), -1)),
         xdm.network.rule = if(category = "Policy", to_string (properties -> policies), null),
         xdm.alert.severity = if(to_string(SEVERITY) != "" and to_string(SEVERITY) != null, to_string(SEVERITY), null),
         xdm.alert.name = if(ALERT_NAME != "" and ALERT_NAME != null, ALERT_NAME, ruleName != "" and ruleName != null, ruleName, null),

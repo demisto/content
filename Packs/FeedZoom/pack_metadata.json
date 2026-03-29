@@ -5,7 +5,7 @@
     "videos": [
         "https://www.youtube.com/embed/s9lRtJltTGI"
     ],
-    "currentVersion": "1.1.18",
+    "currentVersion": "1.1.19",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -28,10 +28,6 @@
         "platform"
     ],
     "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
         "agentix",
         "xsiam"
     ]
