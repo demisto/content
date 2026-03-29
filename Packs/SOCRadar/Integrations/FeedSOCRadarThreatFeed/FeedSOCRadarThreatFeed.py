@@ -40,7 +40,7 @@ def parse_int_or_raise(str_to_parse: Any, error_msg=None) -> int:
     return res
 
 
-def build_entry_context(indicators: Union[dict, List]) -> List[dict]:
+def build_entry_context(indicators: Union[dict, List]) -> list[dict]:
     """Formatting indicators from SOCRadar Threat Feed/IOC API to Demisto Context.
 
     :type indicators: ``Union[Dict, List]``
@@ -339,7 +339,7 @@ def fetch_indicators(client: Client, collection_uuids: list, limit: int = None) 
     :param limit: Maximum number of indicators to fetch.
 
     :return: Fetched indicators list.
-    :rtype: ``List[Dict]``
+    :rtype: ``list[Dict]``
     """
     indicators = []
     for collection_uuid in collection_uuids:
