@@ -4,4 +4,6 @@ name: CyberArk EPM Modeling Rule
 rules: ''
 schema: ''
 tags: CyberArk
-supportedModules: agentix, xsiam
+supportedModules:
+- agentix
+- xsiam
