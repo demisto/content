@@ -11,7 +11,6 @@ This integration was integrated and tested with version 3 API of TrendAI Vision 
 | Incidents Fetch Interval |  | False |
 | Incident type |  | False |
 | Sync On First Run (days) |  | False |
-| Max Incidents |  | False |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
