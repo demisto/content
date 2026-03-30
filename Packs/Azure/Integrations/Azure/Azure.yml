@@ -6108,7 +6108,7 @@ script:
       - name: db_name
         type: string
         required: true
-        description: Database name.
+        description: The database name.
         prettyname: DB Name
         defaultValue: DB Name
         prettypredefined:
@@ -6116,7 +6116,7 @@ script:
       - name: server_name
         type: string
         required: true
-        description: Server name.
+        description: The server name.
         prettyname: Server Name
         defaultValue: Server Name
         prettypredefined:
@@ -6129,43 +6129,43 @@ script:
         hidden: true
     outputs:
       - contextPath: Azure.SqlDBThreatPolicy.kind
-        description: Kind of threat policy.
+        description: The type of threat policy.
         type: String
       - contextPath: Azure.SqlDBThreatPolicy.location
-        description: Threat policy location.
+        description: The location of the threat policy.
         type: String
       - contextPath: Azure.SqlDBThreatPolicy.id
-        description: Threat policy ID.
+        description: The threat policy ID.
         type: String
       - contextPath: Azure.SqlDBThreatPolicy.name
-        description: Threat policy name.
+        description: The threat policy name.
         type: String
       - contextPath: Azure.SqlDBThreatPolicy.type
-        description: Threat policy type.
+        description: The threat policy type.
         type: String
       - contextPath: Azure.SqlDBThreatPolicy.state
-        description: Threat policy state.
+        description: The threat policy state.
         type: String
       - contextPath: Azure.SqlDBThreatPolicy.creationTime
-        description: Threat policy creation time.
+        description: The threat policy creation time.
         type: String
       - contextPath: Azure.SqlDBThreatPolicy.retentionDays
-        description: Number of days to keep in the Threat Detection audit logs.
+        description: The number of days to keep the logs in the threat detection audit logs.
         type: Number
       - contextPath: Azure.SqlDBThreatPolicy.storageAccountAccessKey
-        description: The identifier key of the Threat Detection audit storage account.
+        description: The identifier key of the threat detection audit storage account.
         type: String
       - contextPath: Azure.SqlDBThreatPolicy.storageEndpoint
-        description: Threat Detection audit storage account.
+        description: The threat detection audit storage account.
         type: String
       - contextPath: Azure.SqlDBThreatPolicy.emailAccountAdmins
-        description: Email accounts administrators who the alert is sent to.
+        description: A list of email account administrators the alert is sent to.
         type: Boolean
       - contextPath: Azure.SqlDBThreatPolicy.emailAddresses
-        description: List of email addresses to which the alert is sent.
+        description: A list of email addresses the alert is sent to.
         type: String
       - contextPath: Azure.SqlDBThreatPolicy.disabledAlerts
-        description: List of alerts that are disabled, or an empty string if no alerts are disabled.
+        description: A list of disabled alerts. If no alerts are disabled, an empty string is returned.
         type: String
       - contextPath: Azure.SqlDBThreatPolicy.useServerDefault
         description: Whether to use the default server policy.
@@ -6201,7 +6201,7 @@ script:
       - name: server_name
         type: String
         required: true
-        description: Server name.
+        description: The server name.
         prettyname: Server Name
         defaultValue: Server Name
         prettypredefined:
@@ -6209,7 +6209,7 @@ script:
       - name: db_name
         type: String
         required: true
-        description: DB name.
+        description: The database name.
         prettyname: DB Name
         defaultValue: DB Name
         prettypredefined:
@@ -6218,7 +6218,7 @@ script:
         type: String
         required: false
         defaultValue: Enabled
-        description: Enable the transparent data encryption.
+        description: Enables transparent data encryption.
         hidden: true
     outputs: []
 
@@ -6239,7 +6239,7 @@ script:
       - name: vault_name
         type: string
         required: true
-        description: Key vault name.
+        description: The key vault name.
         prettyname: Key Vault Name
         defaultValue: Key Vault Name
         prettypredefined:
@@ -6266,38 +6266,38 @@ script:
         hidden: true
     outputs:
       - contextPath: Azure.KeyVault.id
-        description: Resource ID.
+        description: The resource ID.
         type: String
       - contextPath: Azure.KeyVault.name
         description: Key Vault name.
         type: String
       - contextPath: Azure.KeyVault.type
-        description: Resource type in Azure.
+        description: The Azure resource type.
         type: String
       - contextPath: Azure.KeyVault.location
         description: Key Vault location.
         type: String
       - contextPath: Azure.KeyVault.tags
-        description: Resource tags.
+        description: The resource tags.
       - contextPath: Azure.KeyVault.properties.sku.family
-        description: SKU family name.
+        description: The SKU family name.
         type: String
       - contextPath: Azure.KeyVault.properties.sku.name
-        description: SKU name to specify whether the key vault is a standard vault or a premium vault.
+        description: The SKU name specifying whether the key vault is a standard or premium vault.
         type: String
       - contextPath: Azure.KeyVault.properties.tenantId
-        description: The Entra ID tenant ID that should be used for authenticating requests to the key vault.
+        description: The Entra ID tenant ID to use for authenticating requests to the key vault.
         type: String
       - contextPath: Azure.KeyVault.properties.accessPolicies
-        description: An array of 0 to 16 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID.
+        description: A list of up to 16 identities that have access to the key vault. All identities must use the same tenant ID as the key vault.
       - contextPath: Azure.KeyVault.properties.accessPolicies.tenantId
-        description: The Entra ID tenant ID that should be used for authenticating requests to the key vault.
+        description: The Entra ID tenant ID to use for authenticating requests to the key vault.
         type: String
       - contextPath: Azure.KeyVault.properties.accessPolicies.objectId
         description: The object ID of a user, service principal or security group in the Entra ID tenant for the vault. The object ID must be unique for the list of access policies.
         type: String
       - contextPath: Azure.KeyVault.properties.accessPolicies.permissions
-        description: Permissions the identity has for keys, secrets and certificates.
+        description: The permissions the identity has for keys, secrets, and certificates.
       - contextPath: Azure.KeyVault.properties.enabledForDeployment
         description: Whether Azure Virtual Machines are allowed to retrieve certificates stored as secrets from the key vault.
         type: Boolean
@@ -6323,14 +6323,14 @@ script:
         description: The current provisioning state.
         type: String
       - contextPath: Azure.KeyVault.properties.privateEndpointConnections
-        description: List of private endpoint connections associated with the key vault.
+        description: A list of private endpoint connections associated with the key vault.
       - contextPath: Azure.KeyVault.properties.networkAcls
-        description: Rules governing the accessibility of the key vault from specific network locations.
+        description: The rules governing the accessibility of the key vault from specific network locations.
       - contextPath: Azure.KeyVault.properties.networkAcls.bypass
-        description: What traffic can bypass network rules.
+        description: The traffic that can bypass network rules.
         type: String
       - contextPath: Azure.KeyVault.properties.networkAcls.defaultAction
-        description: The default action when no rules match from ipRules and virtualNetworkRules.
+        description: The default action when no rules match with ipRules and virtualNetworkRules.
         type: String
       - contextPath: Azure.KeyVault.properties.networkAcls.ipRules
         description: The list of IP address rules.
@@ -6338,7 +6338,7 @@ script:
         description: The list of virtual network rules.
 
   - name: azure-webapp-set-webapp-to-https-only-quick-action
-    description: Enforces HTTPS-only traffic for the WebApp.
+    description: Enforces HTTPS-only traffic for the web app.
     prettyname: Set Webapp to HTTPS only
     hidden: true
     quickaction: true
@@ -6362,7 +6362,7 @@ script:
       - name: name
         type: String
         required: true
-        description: Name of the app.
+        description: The name of the app.
         prettyname: AZ Webapp
         defaultValue: AZ Webapp
         prettypredefined:
@@ -6375,7 +6375,7 @@ script:
         hidden: true
     outputs:
       - contextPath: Azure.WebApp.id
-        description: Fully qualified resource ID for the web app.
+        description: The fully qualified resource ID for the web app.
         type: String
       - contextPath: Azure.WebApp.name
         description: The name of the web app.
@@ -6384,13 +6384,13 @@ script:
         description: The resource type, e.g., Microsoft.Web/sites.
         type: String
       - contextPath: Azure.WebApp.location
-        description: Geographic location of the web app.
+        description: The geographic location of the web app.
         type: String
       - contextPath: Azure.WebApp.kind
-        description: The kind of the app, e.g., app, functionapp, etc.
+        description: The type of app, for example app or functionapp.
         type: String
       - contextPath: Azure.WebApp.tags
-        description: Resource tags as key-value pairs.
+        description: The resource tags as key-value pairs.
       - contextPath: Azure.WebApp.identity.type
         description: The type of managed identity (SystemAssigned, UserAssigned, etc.).
         type: String
@@ -6403,18 +6403,18 @@ script:
       - contextPath: Azure.WebApp.identity.userAssignedIdentities
         description: The list of user-assigned identities associated with the web app.
       - contextPath: Azure.WebApp.properties.state
-        description: Current state of the web app (Running, Stopped, etc.).
+        description: The current state of the web app (For example Running or Stopped).
         type: String
       - contextPath: Azure.WebApp.properties.enabled
         description: Whether the web app is enabled.
         type: Boolean
       - contextPath: Azure.WebApp.properties.defaultHostName
-        description: Default host name of the web app.
+        description: The default host name of the web app.
         type: String
       - contextPath: Azure.WebApp.properties.hostNames
-        description: List of host names associated with the web app.
+        description: A list of host names associated with the web app.
       - contextPath: Azure.WebApp.properties.repositorySiteName
-        description: Name of the repository site.
+        description: The name of the repository site.
         type: String
       - contextPath: Azure.WebApp.properties.clientAffinityEnabled
         description: Whether client affinity is enabled.
@@ -6423,13 +6423,13 @@ script:
         description: Whether client certificates are enabled.
         type: Boolean
       - contextPath: Azure.WebApp.properties.clientCertExclusionPaths
-        description: Paths to exclude from client certificate authentication.
+        description: A list of paths to exclude from client certificate authentication.
         type: String
       - contextPath: Azure.WebApp.properties.hostingEnvironment
-        description: App Service Environment to use for the web app.
+        description: The App Service Environment to use for the web app.
         type: String
       - contextPath: Azure.WebApp.properties.serverFarmId
-        description: Resource ID of the associated App Service plan.
+        description: The resource ID of the associated App Service plan.
         type: String
       - contextPath: Azure.WebApp.properties.reserved
         description: Whether the web app is on a Linux plan.
@@ -6441,11 +6441,11 @@ script:
         description: Whether Hyper-V is enabled for the web app.
         type: Boolean
       - contextPath: Azure.WebApp.properties.siteConfig.appSettings
-        description: List of app settings.
+        description: A list of app settings.
       - contextPath: Azure.WebApp.properties.siteConfig.metadata
-        description: List of metadata settings.
+        description: A list of metadata settings.
       - contextPath: Azure.WebApp.properties.siteConfig.connectionStrings
-        description: List of connection strings.
+        description: A list of connection strings.
       - contextPath: Azure.WebApp.properties.siteConfig.localMySqlEnabled
         description: Whether local MySQL is enabled.
         type: Boolean
@@ -6456,10 +6456,10 @@ script:
         description: Whether HTTP/2 is enabled.
         type: Boolean
       - contextPath: Azure.WebApp.properties.siteConfig.minTlsVersion
-        description: Minimum TLS version required.
+        description: The minimum required TLS version.
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.ftpsState
-        description: FTPS state (Disabled, AllAllowed, etc.).
+        description: The FTPS state (for example, Disabled or AllAllowed).
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.linuxFxVersion
         description: Runtime stack for Linux apps.
