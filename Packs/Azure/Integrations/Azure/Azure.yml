@@ -6462,7 +6462,7 @@ script:
         description: The FTPS state (for example, Disabled or AllAllowed).
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.linuxFxVersion
-        description: Runtime stack for Linux apps.
+        description: The runtime stack for Linux apps.
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.windowsFxVersion
         description: The runtime stack for Windows apps.
@@ -6856,10 +6856,10 @@ script:
         description: Whether ACR uses managed identity credentials.
         type: Boolean
       - contextPath: Azure.WebApp.properties.siteConfig.acrUserManagedIdentityID
-        description: User-assigned identity ID for ACR.
+        description: The user-assigned identity ID for ACR.
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.scmType
-        description: Source control management type.
+        description: The source control management type.
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.use32BitWorkerProcess
         description: Whether to use 32-bit worker process.
@@ -6868,15 +6868,15 @@ script:
         description: Whether auto-heal is enabled.
         type: Boolean
       - contextPath: Azure.WebApp.properties.siteConfig.autoHealRules
-        description: Auto-heal rules configuration.
+        description: The auto-heal rules configuration.
       - contextPath: Azure.WebApp.properties.siteConfig.tracingOptions
-        description: Tracing options.
+        description: The tracing options.
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled
         description: Whether remote debugging is enabled.
         type: Boolean
       - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingVersion
-        description: Remote debugging version.
+        description: The remote debugging version.
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.detailedErrorLoggingEnabled
         description: Whether detailed error logging is enabled.
@@ -6888,14 +6888,14 @@ script:
         description: Whether request tracing is enabled.
         type: Boolean
       - contextPath: Azure.WebApp.properties.siteConfig.requestTracingExpirationTime
-        description: Request tracing expiration time.
+        description: The request tracing expiration date and time.
         type: DateTime
       - contextPath: Azure.WebApp.properties.siteConfig.defaultDocuments
-        description: List of default documents.
+        description: Aist of default documents.
       - contextPath: Azure.WebApp.properties.siteConfig.virtualApplications
-        description: List of virtual applications.
+        description: A list of virtual applications.
       - contextPath: Azure.WebApp.properties.siteConfig.loadBalancing
-        description: Load balancing settings.
+        description: The load balancing settings.
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.experiments
         description: The experiments configuration.
