@@ -387,12 +387,14 @@ class Client(BaseClient):
         body: dict = {"name": identifier}
         if details_level:
             body["details-level"] = details_level
+        demisto.debug(f"show-network request body: {body}")
         return self._http_request(method="POST", url_suffix="show-network", headers=self.headers, json_data=body)
 
     def list_networks(self, limit: int, offset: int, details_level: Optional[str] = None):
         body: dict = {"limit": limit, "offset": offset}
         if details_level:
             body["details-level"] = details_level
+        demisto.debug(f"show-networks request body: {body}")
         return self._http_request(method="POST", url_suffix="show-networks", headers=self.headers, json_data=body)
 
     def add_network(
@@ -422,6 +424,7 @@ class Client(BaseClient):
             body["broadcast"] = broadcast
         if nat_settings:
             body["nat-settings"] = nat_settings
+        demisto.debug(f"add-network request body: {body}")
         return self._http_request(method="POST", url_suffix="add-network", headers=self.headers, json_data=body)
 
     def update_network(
@@ -453,27 +456,32 @@ class Client(BaseClient):
             body["broadcast"] = broadcast
         if nat_settings:
             body["nat-settings"] = nat_settings
+        demisto.debug(f"set-network request body: {body}")
         return self._http_request(method="POST", url_suffix="set-network", headers=self.headers, json_data=body)
 
     def delete_network(self, identifier: str, ignore_warnings: bool = True):
+        body: dict = {"name": identifier, "ignore-warnings": ignore_warnings}
+        demisto.debug(f"delete-network request body: {body}")
         return self._http_request(
             method="POST",
             url_suffix="delete-network",
             headers=self.headers,
-            json_data={"name": identifier, "ignore-warnings": ignore_warnings},
+            json_data=body,
         )
 
     def show_service(self, identifier: str, service_type: str):
-        return self._http_request(
-            method="POST", url_suffix=f"show-service-{service_type}", headers=self.headers, json_data={"name": identifier}
-        )
+        body: dict = {"name": identifier}
+        demisto.debug(f"show-service-{service_type} request body: {body}")
+        return self._http_request(method="POST", url_suffix=f"show-service-{service_type}", headers=self.headers, json_data=body)
 
     def list_services(self, limit: int, offset: int, service_type: str):
+        body: dict = {"limit": limit, "offset": offset}
+        demisto.debug(f"show-services-{service_type} request body: {body}")
         return self._http_request(
             method="POST",
             url_suffix=f"show-services-{service_type}",
             headers=self.headers,
-            json_data={"limit": limit, "offset": offset},
+            json_data=body,
         )
 
     def add_service_tcp(
@@ -496,6 +504,7 @@ class Client(BaseClient):
             body["session-timeout"] = session_timeout
         if tags:
             body["tags"] = tags
+        demisto.debug(f"add-service-tcp request body: {body}")
         return self._http_request(method="POST", url_suffix="add-service-tcp", headers=self.headers, json_data=body)
 
     def add_service_udp(
@@ -516,6 +525,7 @@ class Client(BaseClient):
             body["session-timeout"] = session_timeout
         if tags:
             body["tags"] = tags
+        demisto.debug(f"add-service-udp request body: {body}")
         return self._http_request(method="POST", url_suffix="add-service-udp", headers=self.headers, json_data=body)
 
     def add_service_icmp(
@@ -536,6 +546,7 @@ class Client(BaseClient):
             body["color"] = color
         if tags:
             body["tags"] = tags
+        demisto.debug(f"add-service-icmp request body: {body}")
         return self._http_request(method="POST", url_suffix="add-service-icmp", headers=self.headers, json_data=body)
 
     def update_service_tcp(
@@ -558,6 +569,7 @@ class Client(BaseClient):
             body["color"] = color
         if tags:
             body["tags"] = tags
+        demisto.debug(f"set-service-tcp request body: {body}")
         return self._http_request(method="POST", url_suffix="set-service-tcp", headers=self.headers, json_data=body)
 
     def update_service_udp(
@@ -580,6 +592,7 @@ class Client(BaseClient):
             body["color"] = color
         if tags:
             body["tags"] = tags
+        demisto.debug(f"set-service-udp request body: {body}")
         return self._http_request(method="POST", url_suffix="set-service-udp", headers=self.headers, json_data=body)
 
     def update_service_icmp(
@@ -605,29 +618,34 @@ class Client(BaseClient):
             body["color"] = color
         if tags:
             body["tags"] = tags
+        demisto.debug(f"set-service-icmp request body: {body}")
         return self._http_request(method="POST", url_suffix="set-service-icmp", headers=self.headers, json_data=body)
 
     def delete_service(self, identifier: str, service_type: str, ignore_warnings: bool = False):
         body: dict = {"name": identifier}
         if ignore_warnings:
             body["ignore-warnings"] = ignore_warnings
+        demisto.debug(f"delete-service-{service_type} request body: {body}")
         return self._http_request(
             method="POST", url_suffix=f"delete-service-{service_type}", headers=self.headers, json_data=body
         )
 
     def show_nat_rule(self, identifier: str, package: str):
         identifier_key = "rule-number" if str(identifier).isdigit() else "name"
+        body: dict = {identifier_key: identifier, "package": package}
+        demisto.debug(f"show-nat-rule request body: {body}")
         return self._http_request(
             method="POST",
             url_suffix="show-nat-rule",
             headers=self.headers,
-            json_data={identifier_key: identifier, "package": package},
+            json_data=body,
         )
 
     def list_nat_rulebase(self, package: str, limit: int, offset: int, filter_str: Optional[str] = None):
         body: dict = {"package": package, "limit": limit, "offset": offset}
         if filter_str:
             body["filter"] = filter_str
+        demisto.debug(f"show-nat-rulebase request body: {body}")
         return self._http_request(method="POST", url_suffix="show-nat-rulebase", headers=self.headers, json_data=body)
 
     def add_nat_rule(
@@ -672,6 +690,7 @@ class Client(BaseClient):
             body["method"] = method
         if tags:
             body["tags"] = tags
+        demisto.debug(f"add-nat-rule request body: {body}")
         return self._http_request(method="POST", url_suffix="add-nat-rule", headers=self.headers, json_data=body)
 
     def update_nat_rule(
@@ -711,11 +730,13 @@ class Client(BaseClient):
             body["method"] = method
         if tags:
             body["tags"] = tags
+        demisto.debug(f"set-nat-rule request body: {body}")
         return self._http_request(method="POST", url_suffix="set-nat-rule", headers=self.headers, json_data=body)
 
     def delete_nat_rule(self, identifier: str, package: str):
         identifier_key = "rule-number" if str(identifier).isdigit() else "name"
         body: dict = {identifier_key: identifier, "package": package}
+        demisto.debug(f"delete-nat-rule request body: {body}")
         return self._http_request(method="POST", url_suffix="delete-nat-rule", headers=self.headers, json_data=body)
 
     def show_task(self, task_id):
@@ -2554,6 +2575,7 @@ def checkpoint_network_get_command(client: Client, identifier: str, details_leve
         identifier (str): uid or name.
         details_level (str): The level of detail for some of the fields in the response.
     """
+    demisto.debug(f"checkpoint-network-get command called with args: {demisto.args()}")
     result = client.show_network(identifier, details_level)
     printable_result = build_printable_result(DEFAULT_LIST_FIELD, result)
     readable_output = tableToMarkdown(
@@ -2561,6 +2583,7 @@ def checkpoint_network_get_command(client: Client, identifier: str, details_leve
     )
     readable_output, printable_result = build_group_data(result, readable_output, printable_result)
 
+    demisto.debug("checkpoint-network-get command completed successfully")
     return CommandResults(
         outputs_prefix="CheckPoint.Network",
         outputs_key_field="uid",
@@ -2582,6 +2605,7 @@ def checkpoint_network_list_command(
         offset (int): Number of the results to initially skip. default is 0.
         details_level (str): The level of detail for some of the fields in the response.
     """
+    demisto.debug(f"checkpoint-network-list command called with args: {demisto.args()}")
     limit = arg_to_number(limit) or 50
     offset = arg_to_number(offset) or 0
 
@@ -2605,6 +2629,7 @@ def checkpoint_network_list_command(
                 "CheckPoint data for all networks:", printable_result, DEFAULT_LIST_FIELD, removeNull=True
             )
 
+    demisto.debug("checkpoint-network-list command completed successfully")
     return CommandResults(
         outputs_prefix="CheckPoint.Network",
         outputs_key_field="uid",
@@ -2649,6 +2674,7 @@ def checkpoint_network_add_command(
         nat_settings_ip (str): IPv4 address for NAT.
         nat_method (str): NAT translation method.
     """
+    demisto.debug(f"checkpoint-network-add command called with args: {demisto.args()}")
     tags = argToList(tags)
 
     nat_settings = build_nat_settings(
@@ -2687,6 +2713,7 @@ def checkpoint_network_add_command(
     readable_output = tableToMarkdown("CheckPoint data for adding a network:", printable_result, headers=headers, removeNull=True)
     readable_output, printable_result = build_group_data(result, readable_output, printable_result)
 
+    demisto.debug("checkpoint-network-add command completed successfully")
     return CommandResults(
         outputs_prefix="CheckPoint.Network",
         outputs_key_field="uid",
@@ -2731,6 +2758,7 @@ def checkpoint_network_update_command(
         nat_settings_ip (str): IPv4 address for NAT.
         nat_method (str): NAT translation method.
     """
+    demisto.debug(f"checkpoint-network-update command called with args: {demisto.args()}")
     tags = argToList(tags)
 
     nat_settings = build_nat_settings(
@@ -2771,6 +2799,7 @@ def checkpoint_network_update_command(
     )
     readable_output, printable_result = build_group_data(result, readable_output, printable_result)
 
+    demisto.debug("checkpoint-network-update command completed successfully")
     return CommandResults(
         outputs_prefix="CheckPoint.Network",
         outputs_key_field="uid",
@@ -2791,10 +2820,12 @@ def checkpoint_network_delete_command(
         identifier (str): uid or name.
         ignore_warnings (bool): Whether to ignore warnings when deleting the network object.
     """
+    demisto.debug(f"checkpoint-network-delete command called with args: {demisto.args()}")
     ignore_warnings = argToBoolean(ignore_warnings)
 
     client.delete_network(identifier, ignore_warnings)
 
+    demisto.debug("checkpoint-network-delete command completed successfully")
     return CommandResults(
         readable_output="Object deleted successfully.",
     )
@@ -2816,6 +2847,7 @@ def checkpoint_service_get_command(client: Client, identifier: str, service_type
         identifier (str): uid or name.
         service_type (str): The service type (tcp, udp, or icmp).
     """
+    demisto.debug(f"checkpoint-service-get command called with args: {demisto.args()}")
     result = client.show_service(identifier, service_type)
     printable_result = build_printable_result(DEFAULT_LIST_FIELD, result)
     readable_output = tableToMarkdown(
@@ -2825,6 +2857,7 @@ def checkpoint_service_get_command(client: Client, identifier: str, service_type
         removeNull=True,
     )
 
+    demisto.debug("checkpoint-service-get command completed successfully")
     return CommandResults(
         outputs_prefix=SERVICE_TYPE_CONTEXT_MAP[service_type],
         outputs_key_field="uid",
@@ -2847,6 +2880,7 @@ def checkpoint_service_list_command(
         limit (int): The maximal number of returned results. default is 50.
         offset (int): Number of the results to initially skip. default is 0.
     """
+    demisto.debug(f"checkpoint-service-list command called with args: {demisto.args()}")
     if identifier:
         result = client.show_service(identifier, service_type)
         printable_result = build_printable_result(DEFAULT_LIST_FIELD, result)
@@ -2887,6 +2921,7 @@ def checkpoint_service_list_command(
                 f"CheckPoint data for all {service_type} services:", printable_results, DEFAULT_LIST_FIELD, removeNull=True
             )
 
+    demisto.debug("checkpoint-service-list command completed successfully")
     return CommandResults(
         outputs_prefix=SERVICE_TYPE_CONTEXT_MAP[service_type],
         outputs_key_field="uid",
@@ -2917,6 +2952,7 @@ def checkpoint_tcp_service_add_command(
         session_timeout (str): Time (in seconds) before the session times out.
         tags: Collection of tag identifiers.
     """
+    demisto.debug(f"checkpoint-tcp-service-add command called with args: {demisto.args()}")
     tags = argToList(tags)
 
     result = client.add_service_tcp(
@@ -2946,6 +2982,7 @@ def checkpoint_tcp_service_add_command(
     )
     readable_output, printable_result = build_group_data(result, readable_output, printable_result)
 
+    demisto.debug("checkpoint-tcp-service-add command completed successfully")
     return CommandResults(
         outputs_prefix="CheckPoint.TCPService",
         outputs_key_field="uid",
@@ -2976,6 +3013,7 @@ def checkpoint_udp_service_add_command(
         session_timeout (str): Time (in seconds) before the session times out.
         tags: Collection of tag identifiers.
     """
+    demisto.debug(f"checkpoint-udp-service-add command called with args: {demisto.args()}")
     tags = argToList(tags)
 
     result = client.add_service_udp(
@@ -3005,6 +3043,7 @@ def checkpoint_udp_service_add_command(
     )
     readable_output, printable_result = build_group_data(result, readable_output, printable_result)
 
+    demisto.debug("checkpoint-udp-service-add command completed successfully")
     return CommandResults(
         outputs_prefix="CheckPoint.UDPService",
         outputs_key_field="uid",
@@ -3035,6 +3074,7 @@ def checkpoint_icmp_service_add_command(
         color (str): Color of the object.
         tags: Collection of tag identifiers.
     """
+    demisto.debug(f"checkpoint-icmp-service-add command called with args: {demisto.args()}")
     tags = argToList(tags)
 
     result = client.add_service_icmp(
@@ -3064,6 +3104,7 @@ def checkpoint_icmp_service_add_command(
     )
     readable_output, printable_result = build_group_data(result, readable_output, printable_result)
 
+    demisto.debug("checkpoint-icmp-service-add command completed successfully")
     return CommandResults(
         outputs_prefix="CheckPoint.ICMPService",
         outputs_key_field="uid",
@@ -3094,6 +3135,7 @@ def checkpoint_tcp_service_update_command(
         color (str): Color of the object.
         tags: Collection of tag identifiers.
     """
+    demisto.debug(f"checkpoint-tcp-service-update command called with args: {demisto.args()}")
     tags = argToList(tags)
 
     result = client.update_service_tcp(
@@ -3123,6 +3165,7 @@ def checkpoint_tcp_service_update_command(
     )
     readable_output, printable_result = build_group_data(result, readable_output, printable_result)
 
+    demisto.debug("checkpoint-tcp-service-update command completed successfully")
     return CommandResults(
         outputs_prefix="CheckPoint.TCPService",
         outputs_key_field="uid",
@@ -3153,6 +3196,7 @@ def checkpoint_udp_service_update_command(
         color (str): Color of the object.
         tags: Collection of tag identifiers.
     """
+    demisto.debug(f"checkpoint-udp-service-update command called with args: {demisto.args()}")
     tags = argToList(tags)
 
     result = client.update_service_udp(
@@ -3182,6 +3226,7 @@ def checkpoint_udp_service_update_command(
     )
     readable_output, printable_result = build_group_data(result, readable_output, printable_result)
 
+    demisto.debug("checkpoint-udp-service-update command completed successfully")
     return CommandResults(
         outputs_prefix="CheckPoint.UDPService",
         outputs_key_field="uid",
@@ -3215,6 +3260,7 @@ def checkpoint_icmp_service_update_command(
         color (str): Color of the object.
         tags: Collection of tag identifiers.
     """
+    demisto.debug(f"checkpoint-icmp-service-update command called with args: {demisto.args()}")
     tags = argToList(tags)
 
     result = client.update_service_icmp(
@@ -3245,6 +3291,7 @@ def checkpoint_icmp_service_update_command(
     )
     readable_output, printable_result = build_group_data(result, readable_output, printable_result)
 
+    demisto.debug("checkpoint-icmp-service-update command completed successfully")
     return CommandResults(
         outputs_prefix="CheckPoint.ICMPService",
         outputs_key_field="uid",
@@ -3266,10 +3313,12 @@ def checkpoint_service_delete_command(
         service_type (str): The service type (tcp, udp, or icmp).
         ignore_warnings (bool): Whether to ignore warnings when deleting the service object.
     """
+    demisto.debug(f"checkpoint-service-delete command called with args: {demisto.args()}")
     ignore_warnings = argToBoolean(ignore_warnings)
 
     client.delete_service(identifier, service_type, ignore_warnings)
 
+    demisto.debug("checkpoint-service-delete command completed successfully")
     return CommandResults(
         readable_output="Service deleted successfully.",
     )
@@ -3284,10 +3333,12 @@ def checkpoint_nat_rule_get_command(client: Client, identifier: str, package: st
         identifier (str): Object unique identifier or name.
         package (str): Name of the package.
     """
+    demisto.debug(f"checkpoint-nat-rule-get command called with args: {demisto.args()}")
     result = client.show_nat_rule(identifier, package)
 
     readable_output = tableToMarkdown(f"CheckPoint data for NAT rule {identifier}:", result, removeNull=True)
 
+    demisto.debug("checkpoint-nat-rule-get command completed successfully")
     return CommandResults(
         outputs_prefix="CheckPoint.NatRule",
         outputs_key_field="uid",
@@ -3314,6 +3365,7 @@ def checkpoint_nat_rule_list_command(
         offset (str): Number of the results to initially skip. default is 0.
         filter (str): Search expression to filter the rulebase.
     """
+    demisto.debug(f"checkpoint-nat-rule-list command called with args: {demisto.args()}")
     limit_int = arg_to_number(limit) or 50
     offset_int = arg_to_number(offset) or 0
 
@@ -3337,6 +3389,7 @@ def checkpoint_nat_rule_list_command(
 
             readable_output = tableToMarkdown("CheckPoint NAT rules:", rules, removeNull=True)
 
+    demisto.debug("checkpoint-nat-rule-list command completed successfully")
     return CommandResults(
         outputs_prefix="CheckPoint.NatRule",
         outputs_key_field="uid",
@@ -3383,6 +3436,7 @@ def checkpoint_nat_rule_add_command(
         nat_method (str): NAT translation method.
         tags: Collection of tag identifiers.
     """
+    demisto.debug(f"checkpoint-nat-rule-add command called with args: {demisto.args()}")
     install_on = argToList(install_on)
     tags = argToList(tags)
 
@@ -3405,6 +3459,7 @@ def checkpoint_nat_rule_add_command(
 
     readable_output = tableToMarkdown("CheckPoint data for adding a NAT rule:", result, removeNull=True)
 
+    demisto.debug("checkpoint-nat-rule-add command completed successfully")
     return CommandResults(
         outputs_prefix="CheckPoint.NatRule",
         outputs_key_field="uid",
@@ -3447,6 +3502,7 @@ def checkpoint_nat_rule_update_command(
         nat_method (str): NAT translation method.
         tags: Collection of tag identifiers.
     """
+    demisto.debug(f"checkpoint-nat-rule-update command called with args: {demisto.args()}")
     tags = argToList(tags)
 
     result = client.update_nat_rule(
@@ -3466,6 +3522,7 @@ def checkpoint_nat_rule_update_command(
 
     readable_output = tableToMarkdown("CheckPoint data for updating a NAT rule:", result, removeNull=True)
 
+    demisto.debug("checkpoint-nat-rule-update command completed successfully")
     return CommandResults(
         outputs_prefix="CheckPoint.NatRule",
         outputs_key_field="uid",
@@ -3485,11 +3542,13 @@ def checkpoint_nat_rule_delete_command(client: Client, identifier: str, package:
         package (str): Name of the package.
         ignore_warnings (bool): Whether to ignore warnings when deleting the NAT rule.
     """
+    demisto.debug(f"checkpoint-nat-rule-delete command called with args: {demisto.args()}")
     client.delete_nat_rule(
         identifier=identifier,
         package=package,
     )
 
+    demisto.debug("checkpoint-nat-rule-delete command completed successfully")
     return CommandResults(
         readable_output="Nat Rule deleted successfully.",
     )
