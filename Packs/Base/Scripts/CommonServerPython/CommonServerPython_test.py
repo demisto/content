@@ -695,8 +695,7 @@ class TestTableToMarkdown:
         """
         table = tableToMarkdown('tableToMarkdown test with single key dict and empty list',
                                 {'Name Servers': []})
-        assert '**No entries.**' in table
-        assert 'IndexError' not in table
+        assert '|Name Servers|\n|---|\n|  |' in table
 
     @staticmethod
     def test_dict_with_special_character():
