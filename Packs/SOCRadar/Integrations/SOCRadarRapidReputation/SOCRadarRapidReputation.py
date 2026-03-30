@@ -785,6 +785,9 @@ def socradar_reputation_command(client: Client, args: dict[str, Any]) -> list[Co
                 reliability=demisto.params().get("integrationReliability"),
             )
 
+            # Initialize indicator_object with Union type
+            indicator_object: Common.IP | Common.Domain | Common.URL | Common.File | None = None
+
             # Create appropriate indicator object based on entity type
             if entity_type == "ip":
                 indicator_object = Common.IP(ip=entity_value, dbot_score=dbot_score)
