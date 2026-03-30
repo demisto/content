@@ -1,5 +1,5 @@
 The Best Way to Protect Enterprise Email & Collaboration from phishing, malware, account takeover, data loss, etc.
-This integration was integrated and tested with version 1.1.10 of CheckPointHEC
+This integration was integrated and tested with version 1.1.14 of CheckPointHEC
 
 ## Configure Check Point Harmony Email and Collaboration (HEC) in Cortex
 
@@ -1254,6 +1254,25 @@ Download email file.
 | --- | --- | --- |
 | entity_id | Email entity id, currently available in the incident's mirror external id. | Required |
 | original | Whether to download original email or with modifications. Possible values are: True, False. Default is False. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### checkpointhec-download-large-email
+
+***
+Download large email file.
+
+#### Base Command
+
+`checkpointhec-download-large-email`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entity_id | Email entity id, currently available in the incident's mirror external id. | Required |
 
 #### Context Output
 
