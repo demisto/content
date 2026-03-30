@@ -2538,9 +2538,9 @@ script:
     - defaultValue: None
       description: Executes the command with the specified session ID.
       name: session_id
-    - description: ICMP type as listed in RFC 792. (default is 0)
+    - description: ICMP type as listed in RFC 792 (default is 0).
       name: icmp_type
-    - description: ICMP code as listed in RFC 792. (default is 0)
+    - description: ICMP code as listed in RFC 792 (default is 0).
       name: icmp_code
     - description: Comments string.
       name: comments
@@ -3217,7 +3217,7 @@ script:
     description: Delete a NAT rule.
     name: checkpoint-nat-rule-delete
     outputs: []
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.7444307
   runonce: false
   script: ''
   subtype: python3

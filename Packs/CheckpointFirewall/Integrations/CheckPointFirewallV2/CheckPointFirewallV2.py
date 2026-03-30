@@ -2530,7 +2530,7 @@ def build_nat_settings(
             "'nat_hide_behind' is 'gateway'. Please remove 'nat_settings_ip' or change 'nat_hide_behind'."
             " This prevents ambiguity and matches SmartConsole behavior."
         )
-        
+
     nat_settings: dict = {}
     if nat_settings_auto_rule is not None:
         nat_settings["auto-rule"] = nat_settings_auto_rule
@@ -2899,7 +2899,7 @@ def checkpoint_service_list_command(
 def checkpoint_tcp_service_add_command(
     client: Client,
     identifier: str,
-    port:  str = None,
+    port: str = None,
     comments: str = None,
     color: str = None,
     session_timeout: str = None,
@@ -3475,8 +3475,7 @@ def checkpoint_nat_rule_update_command(
     )
 
 
-def checkpoint_nat_rule_delete_command(
-    client: Client, identifier: str, package: str) -> CommandResults:
+def checkpoint_nat_rule_delete_command(client: Client, identifier: str, package: str) -> CommandResults:
     """
     Delete a NAT rule.
 

@@ -3067,22 +3067,22 @@ Gets full data for the specified network object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | Object unique identifier (UID) or name. | Required | 
-| session_id | Executes the command with the specified session ID. Default is None. | Optional | 
-| details_level | The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object. Possible values are: standard, full, uid. | Optional | 
+| identifier | Object unique identifier (UID) or name. | Required |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+| details_level | The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object. Possible values are: standard, full, uid. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.Network.name | String | Object name. | 
-| CheckPoint.Network.uid | String | Object UID. | 
-| CheckPoint.Network.type | String | Object type. | 
-| CheckPoint.Network.domain.name | String | Domain name. | 
-| CheckPoint.Network.domain.uid | String | Domain UID. | 
-| CheckPoint.Network.read-only | Boolean | Indicates if the object is read-only. | 
-| CheckPoint.Network.meta-info.creator | String | The creator of the object. | 
-| CheckPoint.Network.meta-info.last-modifier | String | The user that last modified the object. | 
+| CheckPoint.Network.name | String | Object name. |
+| CheckPoint.Network.uid | String | Object UID. |
+| CheckPoint.Network.type | String | Object type. |
+| CheckPoint.Network.domain.name | String | Domain name. |
+| CheckPoint.Network.domain.uid | String | Domain UID. |
+| CheckPoint.Network.read-only | Boolean | Indicates if the object is read-only. |
+| CheckPoint.Network.meta-info.creator | String | The creator of the object. |
+| CheckPoint.Network.meta-info.last-modifier | String | The user that last modified the object. |
 
 ### checkpoint-network-list
 
@@ -3097,18 +3097,18 @@ Retrieve a list of network objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. Default is 50. Max is 500. Default is 50. | Optional | 
-| offset | Number of results to initially skip. Default is 0. Default is 0. | Optional | 
-| session_id | Executes the command with the specified session ID. Default is None. | Optional | 
-| details_level | The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object. Possible values are: standard, full, uid. | Optional | 
+| limit | The maximum number of results to return. Default is 50. Max is 500. Default is 50. | Optional |
+| offset | Number of results to initially skip. Default is 0. Default is 0. | Optional |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+| details_level | The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object. Possible values are: standard, full, uid. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.Network.name | String | Object name. | 
-| CheckPoint.Network.uid | String | Object UID. | 
-| CheckPoint.Network.type | String | Object type. | 
+| CheckPoint.Network.name | String | Object name. |
+| CheckPoint.Network.uid | String | Object UID. |
+| CheckPoint.Network.type | String | Object type. |
 
 ### checkpoint-network-add
 
@@ -3123,34 +3123,34 @@ Create a new network object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | Object name. Must be unique in the domain. | Required | 
-| subnet | IPv4 network address. | Required | 
-| mask_length | IPv4 network mask length (e.g. 24). | Optional | 
-| subnet_mask | IPv4 network mask (e.g. 255.255.255.0). | Optional | 
-| comments | Comments string. | Optional | 
-| color | Color of the object. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default is black. | Optional | 
-| tags | Collection of tag identifiers. | Optional | 
-| broadcast | Allow broadcast address inclusion. Possible values are: disallow, allow. | Optional | 
-| nat_install_on | Gateway for NAT rule. | Optional | 
-| nat_hide_behind | Hide behind method. This parameter is forbidden when nat_method is "static". Possible values are: gateway, ip_address. | Optional | 
-| nat_settings_auto_rule | Whether to add automatic address translation rules. Possible values are: true, false. Default is false. | Optional | 
-| nat_settings_ip | IPv4 address. This parameter is not required when nat_method is "hide" and nat_hide_behind is "gateway". | Optional | 
-| nat_method | NAT translation method. Possible values are: hide, static. | Optional | 
-| session_id | Executes the command with the specified session ID. Default is None. | Optional | 
+| identifier | Object name. Must be unique in the domain. | Required |
+| subnet | IPv4 network address. | Required |
+| mask_length | IPv4 network mask length (e.g. 24). | Optional |
+| subnet_mask | IPv4 network mask (e.g. 255.255.255.0). | Optional |
+| comments | Comments string. | Optional |
+| color | Color of the object. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default is black. | Optional |
+| tags | Collection of tag identifiers. | Optional |
+| broadcast | Allow broadcast address inclusion. Possible values are: disallow, allow. | Optional |
+| nat_install_on | Gateway for NAT rule. | Optional |
+| nat_hide_behind | Hide behind method. This parameter is forbidden when nat_method is "static". Possible values are: gateway, ip_address. | Optional |
+| nat_settings_auto_rule | Whether to add automatic address translation rules. Possible values are: true, false. Default is false. | Optional |
+| nat_settings_ip | IPv4 address. This parameter is not required when nat_method is "hide" and nat_hide_behind is "gateway". | Optional |
+| nat_method | NAT translation method. Possible values are: hide, static. | Optional |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.Network.name | String | Object name. | 
-| CheckPoint.Network.uid | String | Object UID. | 
-| CheckPoint.Network.type | String | Object type. | 
-| CheckPoint.Network.domain.name | String | Domain name. | 
-| CheckPoint.Network.domain.uid | String | Domain UID. | 
-| CheckPoint.Network.domain.domain-type | String | Domain type. | 
-| CheckPoint.Network.meta-info.creator | String | The creator of the object. | 
-| CheckPoint.Network.meta-info.last-modifier | String | The user that last modified the object. | 
-| CheckPoint.Network.read-only | Boolean | Indicates if the object is read-only. | 
+| CheckPoint.Network.name | String | Object name. |
+| CheckPoint.Network.uid | String | Object UID. |
+| CheckPoint.Network.type | String | Object type. |
+| CheckPoint.Network.domain.name | String | Domain name. |
+| CheckPoint.Network.domain.uid | String | Domain UID. |
+| CheckPoint.Network.domain.domain-type | String | Domain type. |
+| CheckPoint.Network.meta-info.creator | String | The creator of the object. |
+| CheckPoint.Network.meta-info.last-modifier | String | The user that last modified the object. |
+| CheckPoint.Network.read-only | Boolean | Indicates if the object is read-only. |
 
 ### checkpoint-network-update
 
@@ -3165,35 +3165,35 @@ Update an existing network object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | Object unique identifier (UID) or name. | Required | 
-| new_identifier | New name of the object. | Optional | 
-| subnet | IPv4 network address. | Optional | 
-| subnet_mask | IPv4 network mask (e.g. 255.255.255.0). | Optional | 
-| comments | Comments string. | Optional | 
-| color | Color of the object. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default is black. | Optional | 
-| tags | Collection of tag identifiers. | Optional | 
-| broadcast | Allow broadcast address inclusion. Possible values are: disallow, allow. | Optional | 
-| nat_install_on | Gateway for NAT rule. | Optional | 
-| nat_hide_behind | Hide behind method. This parameter is forbidden when nat_method is "static". Possible values are: gateway, ip_address. | Optional | 
-| nat_settings_auto_rule | Whether to add automatic address translation rules. Possible values are: true, false. Default is false. | Optional | 
-| nat_settings_ip | IPv4 address. This parameter is not required when nat_method is "hide" and nat_hide_behind is "gateway". | Optional | 
-| nat_method | NAT translation method. Possible values are: hide, static. | Optional | 
-| session_id | Executes the command with the specified session ID. Default is None. | Optional | 
+| identifier | Object unique identifier (UID) or name. | Required |
+| new_identifier | New name of the object. | Optional |
+| subnet | IPv4 network address. | Optional |
+| subnet_mask | IPv4 network mask (e.g. 255.255.255.0). | Optional |
+| comments | Comments string. | Optional |
+| color | Color of the object. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default is black. | Optional |
+| tags | Collection of tag identifiers. | Optional |
+| broadcast | Allow broadcast address inclusion. Possible values are: disallow, allow. | Optional |
+| nat_install_on | Gateway for NAT rule. | Optional |
+| nat_hide_behind | Hide behind method. This parameter is forbidden when nat_method is "static". Possible values are: gateway, ip_address. | Optional |
+| nat_settings_auto_rule | Whether to add automatic address translation rules. Possible values are: true, false. Default is false. | Optional |
+| nat_settings_ip | IPv4 address. This parameter is not required when nat_method is "hide" and nat_hide_behind is "gateway". | Optional |
+| nat_method | NAT translation method. Possible values are: hide, static. | Optional |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.Network.name | String | Object name. | 
-| CheckPoint.Network.uid | String | Object UID. | 
-| CheckPoint.Network.type | String | Object type. | 
-| CheckPoint.Network.domain.name | String | Domain name. | 
-| CheckPoint.Network.domain.uid | String | Domain UID. | 
-| CheckPoint.Network.domain.domain-type | String | Domain type. | 
-| CheckPoint.Network.meta-info.creator | String | The creator of the object. | 
-| CheckPoint.Network.meta-info.last-modifier | String | The user that last modified the object. | 
-| CheckPoint.Network.read-only | Boolean | Indicates if the object is read-only. | 
-| CheckPoint.Network.comments | String | Comments string. | 
+| CheckPoint.Network.name | String | Object name. |
+| CheckPoint.Network.uid | String | Object UID. |
+| CheckPoint.Network.type | String | Object type. |
+| CheckPoint.Network.domain.name | String | Domain name. |
+| CheckPoint.Network.domain.uid | String | Domain UID. |
+| CheckPoint.Network.domain.domain-type | String | Domain type. |
+| CheckPoint.Network.meta-info.creator | String | The creator of the object. |
+| CheckPoint.Network.meta-info.last-modifier | String | The user that last modified the object. |
+| CheckPoint.Network.read-only | Boolean | Indicates if the object is read-only. |
+| CheckPoint.Network.comments | String | Comments string. |
 
 ### checkpoint-network-delete
 
@@ -3208,13 +3208,14 @@ Delete a network object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | Object unique identifier (UID) or name. | Required | 
-| session_id | Executes the command with the specified session ID. Default is None. | Optional | 
-| ignore_warnings | Whether to ignore warnings when deleting the network object. Possible values are: true, false. Default is true. | Optional | 
+| identifier | Object unique identifier (UID) or name. | Required |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+| ignore_warnings | Whether to ignore warnings when deleting the network object. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpoint-service-get
 
 ***
@@ -3228,42 +3229,42 @@ Gets full data for the specified service object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | Object unique identifier (UID) or name. | Required | 
-| session_id | Executes the command with the specified session ID. Default is None. | Optional | 
-| service_type | The type of service to retrieve. Possible values are: tcp, udp, icmp. | Required | 
+| identifier | Object unique identifier (UID) or name. | Required |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+| service_type | The type of service to retrieve. Possible values are: tcp, udp, icmp. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.TCPService.name | String | Object name. | 
-| CheckPoint.TCPService.uid | String | Object UID. | 
-| CheckPoint.TCPService.type | String | Object type. | 
-| CheckPoint.TCPService.domain.name | String | Domain name. | 
-| CheckPoint.TCPService.domain.uid | String | Domain UID. | 
-| CheckPoint.TCPService.read-only | Boolean | Indicates if the object is read-only. | 
-| CheckPoint.TCPService.meta-info.creator | String | The creator of the object. | 
-| CheckPoint.TCPService.meta-info.last-modifier | String | The user that last modified the object. | 
-| CheckPoint.TCPService.port | String | The number of the port used to provide this service. | 
-| CheckPoint.UDPService.name | String | Object name. | 
-| CheckPoint.UDPService.uid | String | Object UID. | 
-| CheckPoint.UDPService.type | String | Object type. | 
-| CheckPoint.UDPService.domain.name | String | Domain name. | 
-| CheckPoint.UDPService.domain.uid | String | Domain UID. | 
-| CheckPoint.UDPService.read-only | Boolean | Indicates if the object is read-only. | 
-| CheckPoint.UDPService.meta-info.creator | String | The creator of the object. | 
-| CheckPoint.UDPService.meta-info.last-modifier | String | The user that last modified the object. | 
-| CheckPoint.UDPService.port | String | The number of the port used to provide this service. | 
-| CheckPoint.ICMPService.name | String | Object name. | 
-| CheckPoint.ICMPService.uid | String | Object UID. | 
-| CheckPoint.ICMPService.type | String | Object type. | 
-| CheckPoint.ICMPService.domain.name | String | Domain name. | 
-| CheckPoint.ICMPService.domain.uid | String | Domain UID. | 
-| CheckPoint.ICMPService.read-only | Boolean | Indicates if the object is read-only. | 
-| CheckPoint.ICMPService.meta-info.creator | String | The creator of the object. | 
-| CheckPoint.ICMPService.meta-info.last-modifier | String | The user that last modified the object. | 
-| CheckPoint.ICMPService.icmp-type | Number | ICMP type as listed in RFC 792. | 
-| CheckPoint.ICMPService.icmp-code | Number | ICMP code as listed in RFC 792. | 
+| CheckPoint.TCPService.name | String | Object name. |
+| CheckPoint.TCPService.uid | String | Object UID. |
+| CheckPoint.TCPService.type | String | Object type. |
+| CheckPoint.TCPService.domain.name | String | Domain name. |
+| CheckPoint.TCPService.domain.uid | String | Domain UID. |
+| CheckPoint.TCPService.read-only | Boolean | Indicates if the object is read-only. |
+| CheckPoint.TCPService.meta-info.creator | String | The creator of the object. |
+| CheckPoint.TCPService.meta-info.last-modifier | String | The user that last modified the object. |
+| CheckPoint.TCPService.port | String | The number of the port used to provide this service. |
+| CheckPoint.UDPService.name | String | Object name. |
+| CheckPoint.UDPService.uid | String | Object UID. |
+| CheckPoint.UDPService.type | String | Object type. |
+| CheckPoint.UDPService.domain.name | String | Domain name. |
+| CheckPoint.UDPService.domain.uid | String | Domain UID. |
+| CheckPoint.UDPService.read-only | Boolean | Indicates if the object is read-only. |
+| CheckPoint.UDPService.meta-info.creator | String | The creator of the object. |
+| CheckPoint.UDPService.meta-info.last-modifier | String | The user that last modified the object. |
+| CheckPoint.UDPService.port | String | The number of the port used to provide this service. |
+| CheckPoint.ICMPService.name | String | Object name. |
+| CheckPoint.ICMPService.uid | String | Object UID. |
+| CheckPoint.ICMPService.type | String | Object type. |
+| CheckPoint.ICMPService.domain.name | String | Domain name. |
+| CheckPoint.ICMPService.domain.uid | String | Domain UID. |
+| CheckPoint.ICMPService.read-only | Boolean | Indicates if the object is read-only. |
+| CheckPoint.ICMPService.meta-info.creator | String | The creator of the object. |
+| CheckPoint.ICMPService.meta-info.last-modifier | String | The user that last modified the object. |
+| CheckPoint.ICMPService.icmp-type | Number | ICMP type as listed in RFC 792. |
+| CheckPoint.ICMPService.icmp-code | Number | ICMP code as listed in RFC 792. |
 
 ### checkpoint-service-list
 
@@ -3278,38 +3279,38 @@ Retrieve a list of service objects. When identifier is provided, returns a singl
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | Object unique identifier (UID) or name. When provided, calls the single-object endpoint instead of the list endpoint. | Optional | 
-| session_id | Executes the command with the specified session ID. Default is None. | Optional | 
-| service_type | The type of service to retrieve. Possible values are: tcp, udp, icmp. | Required | 
-| limit | The maximum number of results to return. Default is 50. Max is 500. Default is 50. | Optional | 
-| offset | Number of results to initially skip. Default is 0. Default is 0. | Optional | 
+| identifier | Object unique identifier (UID) or name. When provided, calls the single-object endpoint instead of the list endpoint. | Optional |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+| service_type | The type of service to retrieve. Possible values are: tcp, udp, icmp. | Required |
+| limit | The maximum number of results to return. Default is 50. Max is 500. Default is 50. | Optional |
+| offset | Number of results to initially skip. Default is 0. Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.TCPService.name | String | Object name. | 
-| CheckPoint.TCPService.uid | String | Object UID. | 
-| CheckPoint.TCPService.type | String | Object type. | 
-| CheckPoint.TCPService.port | String | The number of the port used to provide this service. | 
-| CheckPoint.TCPService.domain.name | String | Domain name. | 
-| CheckPoint.TCPService.domain.uid | String | Domain UID. | 
-| CheckPoint.TCPService.domain.domain-type | String | Domain type. | 
-| CheckPoint.UDPService.name | String | Object name. | 
-| CheckPoint.UDPService.uid | String | Object UID. | 
-| CheckPoint.UDPService.type | String | Object type. | 
-| CheckPoint.UDPService.port | String | The number of the port used to provide this service. | 
-| CheckPoint.UDPService.domain.name | String | Domain name. | 
-| CheckPoint.UDPService.domain.uid | String | Domain UID. | 
-| CheckPoint.UDPService.domain.domain-type | String | Domain type. | 
-| CheckPoint.ICMPService.name | String | Object name. | 
-| CheckPoint.ICMPService.uid | String | Object UID. | 
-| CheckPoint.ICMPService.type | String | Object type. | 
-| CheckPoint.ICMPService.icmp-type | Number | ICMP type as listed in RFC 792. | 
-| CheckPoint.ICMPService.icmp-code | Number | ICMP code as listed in RFC 792. | 
-| CheckPoint.ICMPService.domain.name | String | Domain name. | 
-| CheckPoint.ICMPService.domain.uid | String | Domain UID. | 
-| CheckPoint.ICMPService.domain.domain-type | String | Domain type. | 
+| CheckPoint.TCPService.name | String | Object name. |
+| CheckPoint.TCPService.uid | String | Object UID. |
+| CheckPoint.TCPService.type | String | Object type. |
+| CheckPoint.TCPService.port | String | The number of the port used to provide this service. |
+| CheckPoint.TCPService.domain.name | String | Domain name. |
+| CheckPoint.TCPService.domain.uid | String | Domain UID. |
+| CheckPoint.TCPService.domain.domain-type | String | Domain type. |
+| CheckPoint.UDPService.name | String | Object name. |
+| CheckPoint.UDPService.uid | String | Object UID. |
+| CheckPoint.UDPService.type | String | Object type. |
+| CheckPoint.UDPService.port | String | The number of the port used to provide this service. |
+| CheckPoint.UDPService.domain.name | String | Domain name. |
+| CheckPoint.UDPService.domain.uid | String | Domain UID. |
+| CheckPoint.UDPService.domain.domain-type | String | Domain type. |
+| CheckPoint.ICMPService.name | String | Object name. |
+| CheckPoint.ICMPService.uid | String | Object UID. |
+| CheckPoint.ICMPService.type | String | Object type. |
+| CheckPoint.ICMPService.icmp-type | Number | ICMP type as listed in RFC 792. |
+| CheckPoint.ICMPService.icmp-code | Number | ICMP code as listed in RFC 792. |
+| CheckPoint.ICMPService.domain.name | String | Domain name. |
+| CheckPoint.ICMPService.domain.uid | String | Domain UID. |
+| CheckPoint.ICMPService.domain.domain-type | String | Domain type. |
 
 ### checkpoint-tcp-service-add
 
@@ -3324,28 +3325,28 @@ Create a new TCP service object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | Object name. Must be unique in the domain. | Required | 
-| session_id | Executes the command with the specified session ID. Default is None. | Optional | 
-| port | The number of the port used to provide this service. To specify a port range, place a hyphen between the lowest and highest port numbers (for example, 44-55). | Optional | 
-| comments | Comments string. | Optional | 
-| color | Color of the object. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default is black. | Optional | 
-| session_timeout | Time (in seconds) before the session times out. | Optional | 
-| tags | Collection of tag identifiers. | Optional | 
+| identifier | Object name. Must be unique in the domain. | Required |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+| port | The number of the port used to provide this service. To specify a port range, place a hyphen between the lowest and highest port numbers (for example, 44-55). | Optional |
+| comments | Comments string. | Optional |
+| color | Color of the object. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default is black. | Optional |
+| session_timeout | Time (in seconds) before the session times out. | Optional |
+| tags | Collection of tag identifiers. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.TCPService.name | String | Object name. | 
-| CheckPoint.TCPService.uid | String | Object UID. | 
-| CheckPoint.TCPService.type | String | Object type. | 
-| CheckPoint.TCPService.domain.name | String | Domain name. | 
-| CheckPoint.TCPService.domain.uid | String | Domain UID. | 
-| CheckPoint.TCPService.domain.domain-type | String | Domain type. | 
-| CheckPoint.TCPService.meta-info.creator | String | The creator of the object. | 
-| CheckPoint.TCPService.meta-info.last-modifier | String | The user that last modified the object. | 
-| CheckPoint.TCPService.read-only | Boolean | Indicates if the object is read-only. | 
-| CheckPoint.TCPService.port | String | The number of the port used to provide this service. | 
+| CheckPoint.TCPService.name | String | Object name. |
+| CheckPoint.TCPService.uid | String | Object UID. |
+| CheckPoint.TCPService.type | String | Object type. |
+| CheckPoint.TCPService.domain.name | String | Domain name. |
+| CheckPoint.TCPService.domain.uid | String | Domain UID. |
+| CheckPoint.TCPService.domain.domain-type | String | Domain type. |
+| CheckPoint.TCPService.meta-info.creator | String | The creator of the object. |
+| CheckPoint.TCPService.meta-info.last-modifier | String | The user that last modified the object. |
+| CheckPoint.TCPService.read-only | Boolean | Indicates if the object is read-only. |
+| CheckPoint.TCPService.port | String | The number of the port used to provide this service. |
 
 ### checkpoint-udp-service-add
 
@@ -3360,28 +3361,28 @@ Create a new UDP service object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | Object name. Must be unique in the domain. | Required | 
-| session_id | Executes the command with the specified session ID. Default is None. | Optional | 
-| port | The number of the port used to provide this service. To specify a port range, place a hyphen between the lowest and highest port numbers (for example, 44-55). | Optional | 
-| comments | Comments string. | Optional | 
-| color | Color of the object. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default is black. | Optional | 
-| session_timeout | Time (in seconds) before the session times out. | Optional | 
-| tags | Collection of tag identifiers. | Optional | 
+| identifier | Object name. Must be unique in the domain. | Required |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+| port | The number of the port used to provide this service. To specify a port range, place a hyphen between the lowest and highest port numbers (for example, 44-55). | Optional |
+| comments | Comments string. | Optional |
+| color | Color of the object. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default is black. | Optional |
+| session_timeout | Time (in seconds) before the session times out. | Optional |
+| tags | Collection of tag identifiers. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.UDPService.name | String | Object name. | 
-| CheckPoint.UDPService.uid | String | Object UID. | 
-| CheckPoint.UDPService.type | String | Object type. | 
-| CheckPoint.UDPService.domain.name | String | Domain name. | 
-| CheckPoint.UDPService.domain.uid | String | Domain UID. | 
-| CheckPoint.UDPService.domain.domain-type | String | Domain type. | 
-| CheckPoint.UDPService.meta-info.creator | String | The creator of the object. | 
-| CheckPoint.UDPService.meta-info.last-modifier | String | The user that last modified the object. | 
-| CheckPoint.UDPService.read-only | Boolean | Indicates if the object is read-only. | 
-| CheckPoint.UDPService.port | String | The number of the port used to provide this service. | 
+| CheckPoint.UDPService.name | String | Object name. |
+| CheckPoint.UDPService.uid | String | Object UID. |
+| CheckPoint.UDPService.type | String | Object type. |
+| CheckPoint.UDPService.domain.name | String | Domain name. |
+| CheckPoint.UDPService.domain.uid | String | Domain UID. |
+| CheckPoint.UDPService.domain.domain-type | String | Domain type. |
+| CheckPoint.UDPService.meta-info.creator | String | The creator of the object. |
+| CheckPoint.UDPService.meta-info.last-modifier | String | The user that last modified the object. |
+| CheckPoint.UDPService.read-only | Boolean | Indicates if the object is read-only. |
+| CheckPoint.UDPService.port | String | The number of the port used to provide this service. |
 
 ### checkpoint-icmp-service-add
 
@@ -3396,29 +3397,29 @@ Create a new ICMP service object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | Object name. Must be unique in the domain. | Required | 
-| session_id | Executes the command with the specified session ID. Default is None. | Optional | 
-| icmp_type | ICMP type as listed in RFC 792. (default is 0). | Optional | 
-| icmp_code | ICMP code as listed in RFC 792. (default is 0). | Optional | 
-| comments | Comments string. | Optional | 
-| color | Color of the object. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default is black. | Optional | 
-| tags | Collection of tag identifiers. | Optional | 
+| identifier | Object name. Must be unique in the domain. | Required |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+| icmp_type | ICMP type as listed in RFC 792. (default is 0). | Optional |
+| icmp_code | ICMP code as listed in RFC 792. (default is 0). | Optional |
+| comments | Comments string. | Optional |
+| color | Color of the object. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default is black. | Optional |
+| tags | Collection of tag identifiers. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.ICMPService.name | String | Object name. | 
-| CheckPoint.ICMPService.uid | String | Object UID. | 
-| CheckPoint.ICMPService.type | String | Object type. | 
-| CheckPoint.ICMPService.domain.name | String | Domain name. | 
-| CheckPoint.ICMPService.domain.uid | String | Domain UID. | 
-| CheckPoint.ICMPService.domain.domain-type | String | Domain type. | 
-| CheckPoint.ICMPService.meta-info.creator | String | The creator of the object. | 
-| CheckPoint.ICMPService.meta-info.last-modifier | String | The user that last modified the object. | 
-| CheckPoint.ICMPService.read-only | Boolean | Indicates if the object is read-only. | 
-| CheckPoint.ICMPService.icmp-type | Number | ICMP type as listed in RFC 792. | 
-| CheckPoint.ICMPService.icmp-code | Number | ICMP code as listed in RFC 792. | 
+| CheckPoint.ICMPService.name | String | Object name. |
+| CheckPoint.ICMPService.uid | String | Object UID. |
+| CheckPoint.ICMPService.type | String | Object type. |
+| CheckPoint.ICMPService.domain.name | String | Domain name. |
+| CheckPoint.ICMPService.domain.uid | String | Domain UID. |
+| CheckPoint.ICMPService.domain.domain-type | String | Domain type. |
+| CheckPoint.ICMPService.meta-info.creator | String | The creator of the object. |
+| CheckPoint.ICMPService.meta-info.last-modifier | String | The user that last modified the object. |
+| CheckPoint.ICMPService.read-only | Boolean | Indicates if the object is read-only. |
+| CheckPoint.ICMPService.icmp-type | Number | ICMP type as listed in RFC 792. |
+| CheckPoint.ICMPService.icmp-code | Number | ICMP code as listed in RFC 792. |
 
 ### checkpoint-tcp-service-update
 
@@ -3433,29 +3434,29 @@ Update an existing TCP service object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | Object unique identifier (UID) or name. | Required | 
-| session_id | Executes the command with the specified session ID. Default is None. | Optional | 
-| new_identifier | New name of the object. | Optional | 
-| port | The number of the port used to provide this service. | Optional | 
-| comments | Comments string. | Optional | 
-| color | Color of the object. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default is black. | Optional | 
-| tags | Collection of tag identifiers. | Optional | 
+| identifier | Object unique identifier (UID) or name. | Required |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+| new_identifier | New name of the object. | Optional |
+| port | The number of the port used to provide this service. | Optional |
+| comments | Comments string. | Optional |
+| color | Color of the object. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default is black. | Optional |
+| tags | Collection of tag identifiers. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.TCPService.name | String | Object name. | 
-| CheckPoint.TCPService.uid | String | Object UID. | 
-| CheckPoint.TCPService.type | String | Object type. | 
-| CheckPoint.TCPService.domain.name | String | Domain name. | 
-| CheckPoint.TCPService.domain.uid | String | Domain UID. | 
-| CheckPoint.TCPService.domain.domain-type | String | Domain type. | 
-| CheckPoint.TCPService.meta-info.creator | String | The creator of the object. | 
-| CheckPoint.TCPService.meta-info.last-modifier | String | The user that last modified the object. | 
-| CheckPoint.TCPService.read-only | Boolean | Indicates if the object is read-only. | 
-| CheckPoint.TCPService.comments | String | Comments string. | 
-| CheckPoint.TCPService.port | String | The number of the port used to provide this service. | 
+| CheckPoint.TCPService.name | String | Object name. |
+| CheckPoint.TCPService.uid | String | Object UID. |
+| CheckPoint.TCPService.type | String | Object type. |
+| CheckPoint.TCPService.domain.name | String | Domain name. |
+| CheckPoint.TCPService.domain.uid | String | Domain UID. |
+| CheckPoint.TCPService.domain.domain-type | String | Domain type. |
+| CheckPoint.TCPService.meta-info.creator | String | The creator of the object. |
+| CheckPoint.TCPService.meta-info.last-modifier | String | The user that last modified the object. |
+| CheckPoint.TCPService.read-only | Boolean | Indicates if the object is read-only. |
+| CheckPoint.TCPService.comments | String | Comments string. |
+| CheckPoint.TCPService.port | String | The number of the port used to provide this service. |
 
 ### checkpoint-udp-service-update
 
@@ -3470,29 +3471,29 @@ Update an existing UDP service object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | Object unique identifier (UID) or name. | Required | 
-| session_id | Executes the command with the specified session ID. Default is None. | Optional | 
-| new_identifier | New name of the object. | Optional | 
-| port | The number of the port used to provide this service. | Optional | 
-| comments | Comments string. | Optional | 
-| color | Color of the object. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default is black. | Optional | 
-| tags | Collection of tag identifiers. | Optional | 
+| identifier | Object unique identifier (UID) or name. | Required |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+| new_identifier | New name of the object. | Optional |
+| port | The number of the port used to provide this service. | Optional |
+| comments | Comments string. | Optional |
+| color | Color of the object. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default is black. | Optional |
+| tags | Collection of tag identifiers. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.UDPService.name | String | Object name. | 
-| CheckPoint.UDPService.uid | String | Object UID. | 
-| CheckPoint.UDPService.type | String | Object type. | 
-| CheckPoint.UDPService.domain.name | String | Domain name. | 
-| CheckPoint.UDPService.domain.uid | String | Domain UID. | 
-| CheckPoint.UDPService.domain.domain-type | String | Domain type. | 
-| CheckPoint.UDPService.meta-info.creator | String | The creator of the object. | 
-| CheckPoint.UDPService.meta-info.last-modifier | String | The user that last modified the object. | 
-| CheckPoint.UDPService.read-only | Boolean | Indicates if the object is read-only. | 
-| CheckPoint.UDPService.comments | String | Comments string. | 
-| CheckPoint.UDPService.port | String | The number of the port used to provide this service. | 
+| CheckPoint.UDPService.name | String | Object name. |
+| CheckPoint.UDPService.uid | String | Object UID. |
+| CheckPoint.UDPService.type | String | Object type. |
+| CheckPoint.UDPService.domain.name | String | Domain name. |
+| CheckPoint.UDPService.domain.uid | String | Domain UID. |
+| CheckPoint.UDPService.domain.domain-type | String | Domain type. |
+| CheckPoint.UDPService.meta-info.creator | String | The creator of the object. |
+| CheckPoint.UDPService.meta-info.last-modifier | String | The user that last modified the object. |
+| CheckPoint.UDPService.read-only | Boolean | Indicates if the object is read-only. |
+| CheckPoint.UDPService.comments | String | Comments string. |
+| CheckPoint.UDPService.port | String | The number of the port used to provide this service. |
 
 ### checkpoint-icmp-service-update
 
@@ -3507,31 +3508,31 @@ Update an existing ICMP service object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | Object unique identifier (UID) or name. | Required | 
-| session_id | Executes the command with the specified session ID. Default is None. | Optional | 
-| new_identifier | New name of the object. | Optional | 
-| icmp_type | ICMP type as listed in RFC 792. | Optional | 
-| icmp_code | ICMP code as listed in RFC 792. | Optional | 
-| comments | Comments string. | Optional | 
-| color | Color of the object. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default is black. | Optional | 
-| tags | Collection of tag identifiers. | Optional | 
+| identifier | Object unique identifier (UID) or name. | Required |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+| new_identifier | New name of the object. | Optional |
+| icmp_type | ICMP type as listed in RFC 792. | Optional |
+| icmp_code | ICMP code as listed in RFC 792. | Optional |
+| comments | Comments string. | Optional |
+| color | Color of the object. Possible values are: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default is black. | Optional |
+| tags | Collection of tag identifiers. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.ICMPService.name | String | Object name. | 
-| CheckPoint.ICMPService.uid | String | Object UID. | 
-| CheckPoint.ICMPService.type | String | Object type. | 
-| CheckPoint.ICMPService.domain.name | String | Domain name. | 
-| CheckPoint.ICMPService.domain.uid | String | Domain UID. | 
-| CheckPoint.ICMPService.domain.domain-type | String | Domain type. | 
-| CheckPoint.ICMPService.meta-info.creator | String | The creator of the object. | 
-| CheckPoint.ICMPService.meta-info.last-modifier | String | The user that last modified the object. | 
-| CheckPoint.ICMPService.read-only | Boolean | Indicates if the object is read-only. | 
-| CheckPoint.ICMPService.comments | String | Comments string. | 
-| CheckPoint.ICMPService.icmp-type | Number | ICMP type as listed in RFC 792. | 
-| CheckPoint.ICMPService.icmp-code | Number | ICMP code as listed in RFC 792. | 
+| CheckPoint.ICMPService.name | String | Object name. |
+| CheckPoint.ICMPService.uid | String | Object UID. |
+| CheckPoint.ICMPService.type | String | Object type. |
+| CheckPoint.ICMPService.domain.name | String | Domain name. |
+| CheckPoint.ICMPService.domain.uid | String | Domain UID. |
+| CheckPoint.ICMPService.domain.domain-type | String | Domain type. |
+| CheckPoint.ICMPService.meta-info.creator | String | The creator of the object. |
+| CheckPoint.ICMPService.meta-info.last-modifier | String | The user that last modified the object. |
+| CheckPoint.ICMPService.read-only | Boolean | Indicates if the object is read-only. |
+| CheckPoint.ICMPService.comments | String | Comments string. |
+| CheckPoint.ICMPService.icmp-type | Number | ICMP type as listed in RFC 792. |
+| CheckPoint.ICMPService.icmp-code | Number | ICMP code as listed in RFC 792. |
 
 ### checkpoint-service-delete
 
@@ -3546,14 +3547,15 @@ Delete a service object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | Object unique identifier (UID) or name. | Required | 
-| session_id | Executes the command with the specified session ID. Default is None. | Optional | 
-| service_type | The type of service to delete. Possible values are: tcp, udp, icmp. | Required | 
-| ignore_warnings | Whether to ignore warnings when deleting the service object. Possible values are: true, false. Default is false. | Optional | 
+| identifier | Object unique identifier (UID) or name. | Required |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
+| service_type | The type of service to delete. Possible values are: tcp, udp, icmp. | Required |
+| ignore_warnings | Whether to ignore warnings when deleting the service object. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpoint-nat-rule-get
 
 ***
@@ -3567,29 +3569,29 @@ Gets full data for the specified NAT rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | Rule name or Rule number. | Required | 
-| package | Name of the package. | Required | 
-| session_id | Executes the command with the specified session ID. Default is None. | Optional | 
+| identifier | Rule name or Rule number. | Required |
+| package | Name of the package. | Required |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.NatRule.uid | String | Object unique identifier. | 
-| CheckPoint.NatRule.name | String | Object name. | 
-| CheckPoint.NatRule.type | String | Object type. | 
-| CheckPoint.NatRule.enabled | Boolean | Whether the rule is enabled. | 
-| CheckPoint.NatRule.method | String | NAT translation method. | 
-| CheckPoint.NatRule.original-source.name | String | Original source object name. | 
-| CheckPoint.NatRule.original-destination.name | String | Original destination object name. | 
-| CheckPoint.NatRule.original-service.name | String | Original service object name. | 
-| CheckPoint.NatRule.translated-source.name | String | Translated source object name. | 
-| CheckPoint.NatRule.translated-destination.name | String | Translated destination object name. | 
-| CheckPoint.NatRule.translated-service.name | String | Translated service object name. | 
-| CheckPoint.NatRule.comments | String | Comments string. | 
-| CheckPoint.NatRule.domain.name | String | Domain name. | 
-| CheckPoint.NatRule.domain.uid | String | Domain UID. | 
-| CheckPoint.NatRule.domain.domain-type | String | Domain type. | 
+| CheckPoint.NatRule.uid | String | Object unique identifier. |
+| CheckPoint.NatRule.name | String | Object name. |
+| CheckPoint.NatRule.type | String | Object type. |
+| CheckPoint.NatRule.enabled | Boolean | Whether the rule is enabled. |
+| CheckPoint.NatRule.method | String | NAT translation method. |
+| CheckPoint.NatRule.original-source.name | String | Original source object name. |
+| CheckPoint.NatRule.original-destination.name | String | Original destination object name. |
+| CheckPoint.NatRule.original-service.name | String | Original service object name. |
+| CheckPoint.NatRule.translated-source.name | String | Translated source object name. |
+| CheckPoint.NatRule.translated-destination.name | String | Translated destination object name. |
+| CheckPoint.NatRule.translated-service.name | String | Translated service object name. |
+| CheckPoint.NatRule.comments | String | Comments string. |
+| CheckPoint.NatRule.domain.name | String | Domain name. |
+| CheckPoint.NatRule.domain.uid | String | Domain UID. |
+| CheckPoint.NatRule.domain.domain-type | String | Domain type. |
 
 ### checkpoint-nat-rule-list
 
@@ -3604,18 +3606,18 @@ Retrieve a list of NAT rules from the rulebase.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| package | Name of the package. | Required | 
-| limit | The maximum number of results to return. Default is 50. Max is 500. Default is 50. | Optional | 
-| offset | Number of results to initially skip. Default is 0. Default is 0. | Optional | 
-| filter | Search expression to filter the rulebase. The provided text should be exactly the same as it would be given in Smart Console. The logical operators in the expression (AND, OR) should be provided in capital letters. Default operator is OR. | Optional | 
-| session_id | Executes the command with the specified session ID. Default is None. | Optional | 
+| package | Name of the package. | Required |
+| limit | The maximum number of results to return. Default is 50. Max is 500. Default is 50. | Optional |
+| offset | Number of results to initially skip. Default is 0. Default is 0. | Optional |
+| filter | Search expression to filter the rulebase. The provided text should be exactly the same as it would be given in Smart Console. The logical operators in the expression (AND, OR) should be provided in capital letters. Default operator is OR. | Optional |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.NatRule.uid | String | Object unique identifier. | 
-| CheckPoint.NatRule.name | String | Object name. | 
+| CheckPoint.NatRule.uid | String | Object unique identifier. |
+| CheckPoint.NatRule.name | String | Object name. |
 
 ### checkpoint-nat-rule-add
 
@@ -3630,41 +3632,41 @@ Add a new NAT rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| package | Name of the package. | Required | 
-| position | Position in the rulebase. Possible values are: top, bottom. | Required | 
-| name | Rule name. | Optional | 
-| original_source | Original source object. | Optional | 
-| original_destination | Original destination object. | Optional | 
-| original_service | Original service object. | Optional | 
-| translated_source | Translated source object. | Optional | 
-| translated_destination | Translated destination object. | Optional | 
-| translated_service | Translated service object. | Optional | 
-| install_on | Which Gateways identified by the name or UID to install the policy on. | Optional | 
-| comments | Comments string. | Optional | 
-| enabled | Enable/Disable the rule. Possible values are: true, false. | Optional | 
-| nat_method | NAT translation method. Possible values are: static, hide, nat64, nat46, cgnat. | Optional | 
-| tags | Collection of tag identifiers. | Optional | 
-| session_id | Executes the command with the specified session ID. Default is None. | Optional | 
+| package | Name of the package. | Required |
+| position | Position in the rulebase. Possible values are: top, bottom. | Required |
+| name | Rule name. | Optional |
+| original_source | Original source object. | Optional |
+| original_destination | Original destination object. | Optional |
+| original_service | Original service object. | Optional |
+| translated_source | Translated source object. | Optional |
+| translated_destination | Translated destination object. | Optional |
+| translated_service | Translated service object. | Optional |
+| install_on | Which Gateways identified by the name or UID to install the policy on. | Optional |
+| comments | Comments string. | Optional |
+| enabled | Enable/Disable the rule. Possible values are: true, false. | Optional |
+| nat_method | NAT translation method. Possible values are: static, hide, nat64, nat46, cgnat. | Optional |
+| tags | Collection of tag identifiers. | Optional |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.NatRule.uid | String | Object unique identifier. | 
-| CheckPoint.NatRule.name | String | Object name. | 
-| CheckPoint.NatRule.type | String | Object type. | 
-| CheckPoint.NatRule.enabled | Boolean | Whether the rule is enabled. | 
-| CheckPoint.NatRule.method | String | NAT translation method. | 
-| CheckPoint.NatRule.original-source.name | String | Original source object name. | 
-| CheckPoint.NatRule.original-destination.name | String | Original destination object name. | 
-| CheckPoint.NatRule.original-service.name | String | Original service object name. | 
-| CheckPoint.NatRule.translated-source.name | String | Translated source object name. | 
-| CheckPoint.NatRule.translated-destination.name | String | Translated destination object name. | 
-| CheckPoint.NatRule.translated-service.name | String | Translated service object name. | 
-| CheckPoint.NatRule.comments | String | Comments string. | 
-| CheckPoint.NatRule.domain.name | String | Domain name. | 
-| CheckPoint.NatRule.domain.uid | String | Domain UID. | 
-| CheckPoint.NatRule.domain.domain-type | String | Domain type. | 
+| CheckPoint.NatRule.uid | String | Object unique identifier. |
+| CheckPoint.NatRule.name | String | Object name. |
+| CheckPoint.NatRule.type | String | Object type. |
+| CheckPoint.NatRule.enabled | Boolean | Whether the rule is enabled. |
+| CheckPoint.NatRule.method | String | NAT translation method. |
+| CheckPoint.NatRule.original-source.name | String | Original source object name. |
+| CheckPoint.NatRule.original-destination.name | String | Original destination object name. |
+| CheckPoint.NatRule.original-service.name | String | Original service object name. |
+| CheckPoint.NatRule.translated-source.name | String | Translated source object name. |
+| CheckPoint.NatRule.translated-destination.name | String | Translated destination object name. |
+| CheckPoint.NatRule.translated-service.name | String | Translated service object name. |
+| CheckPoint.NatRule.comments | String | Comments string. |
+| CheckPoint.NatRule.domain.name | String | Domain name. |
+| CheckPoint.NatRule.domain.uid | String | Domain UID. |
+| CheckPoint.NatRule.domain.domain-type | String | Domain type. |
 
 ### checkpoint-nat-rule-update
 
@@ -3679,39 +3681,39 @@ Update an existing NAT rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | Rule name or Rule number. | Required | 
-| package | Name of the package. | Required | 
-| original_source | Original source object. | Optional | 
-| original_destination | Original destination object. | Optional | 
-| translated_source | Translated source object. | Optional | 
-| translated_destination | Translated destination object. | Optional | 
-| original_service | Original service object. | Optional | 
-| translated_service | Translated service object. | Optional | 
-| comments | Comments string. | Optional | 
-| enabled | Enable/Disable the rule. Possible values are: true, false. | Optional | 
-| nat_method | NAT translation method. Possible values are: static, hide, nat64, nat46, cgnat. | Optional | 
-| tags | Collection of tag identifiers. | Optional | 
-| session_id | Executes the command with the specified session ID. Default is None. | Optional | 
+| identifier | Rule name or Rule number. | Required |
+| package | Name of the package. | Required |
+| original_source | Original source object. | Optional |
+| original_destination | Original destination object. | Optional |
+| translated_source | Translated source object. | Optional |
+| translated_destination | Translated destination object. | Optional |
+| original_service | Original service object. | Optional |
+| translated_service | Translated service object. | Optional |
+| comments | Comments string. | Optional |
+| enabled | Enable/Disable the rule. Possible values are: true, false. | Optional |
+| nat_method | NAT translation method. Possible values are: static, hide, nat64, nat46, cgnat. | Optional |
+| tags | Collection of tag identifiers. | Optional |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.NatRule.uid | String | Object unique identifier. | 
-| CheckPoint.NatRule.name | String | Object name. | 
-| CheckPoint.NatRule.type | String | Object type. | 
-| CheckPoint.NatRule.enabled | Boolean | Whether the rule is enabled. | 
-| CheckPoint.NatRule.method | String | NAT translation method. | 
-| CheckPoint.NatRule.original-source.name | String | Original source object name. | 
-| CheckPoint.NatRule.original-destination.name | String | Original destination object name. | 
-| CheckPoint.NatRule.original-service.name | String | Original service object name. | 
-| CheckPoint.NatRule.translated-source.name | String | Translated source object name. | 
-| CheckPoint.NatRule.translated-destination.name | String | Translated destination object name. | 
-| CheckPoint.NatRule.translated-service.name | String | Translated service object name. | 
-| CheckPoint.NatRule.comments | String | Comments string. | 
-| CheckPoint.NatRule.domain.name | String | Domain name. | 
-| CheckPoint.NatRule.domain.uid | String | Domain UID. | 
-| CheckPoint.NatRule.domain.domain-type | String | Domain type. | 
+| CheckPoint.NatRule.uid | String | Object unique identifier. |
+| CheckPoint.NatRule.name | String | Object name. |
+| CheckPoint.NatRule.type | String | Object type. |
+| CheckPoint.NatRule.enabled | Boolean | Whether the rule is enabled. |
+| CheckPoint.NatRule.method | String | NAT translation method. |
+| CheckPoint.NatRule.original-source.name | String | Original source object name. |
+| CheckPoint.NatRule.original-destination.name | String | Original destination object name. |
+| CheckPoint.NatRule.original-service.name | String | Original service object name. |
+| CheckPoint.NatRule.translated-source.name | String | Translated source object name. |
+| CheckPoint.NatRule.translated-destination.name | String | Translated destination object name. |
+| CheckPoint.NatRule.translated-service.name | String | Translated service object name. |
+| CheckPoint.NatRule.comments | String | Comments string. |
+| CheckPoint.NatRule.domain.name | String | Domain name. |
+| CheckPoint.NatRule.domain.uid | String | Domain UID. |
+| CheckPoint.NatRule.domain.domain-type | String | Domain type. |
 
 ### checkpoint-nat-rule-delete
 
@@ -3726,9 +3728,9 @@ Delete a NAT rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | Rule name or Rule number. | Required | 
-| package | Name of the package. | Required | 
-| session_id | Executes the command with the specified session ID. Default is None. | Optional | 
+| identifier | Rule name or Rule number. | Required |
+| package | Name of the package. | Required |
+| session_id | Executes the command with the specified session ID. Default is None. | Optional |
 
 #### Context Output
 
