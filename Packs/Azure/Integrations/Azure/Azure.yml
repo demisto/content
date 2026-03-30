@@ -6659,7 +6659,7 @@ script:
         description: Whether Free Tier is enabled.
         type: Boolean
       - contextPath: Azure.CosmosDB.properties.enableMultipleWriteLocations
-        description: Enables the account to write in multiple locations.
+        description: Whether to enable the account to write in multiple locations.
         type: Boolean
       - contextPath: Azure.CosmosDB.properties.enablePartitionMerge
         description: Whether Partition Merge is enabled.
@@ -6668,13 +6668,13 @@ script:
         description: Whether PerRegionPerPartitionAutoscale is enabled.
         type: Boolean
       - contextPath: Azure.CosmosDB.properties.failoverPolicies
-        description: An array that contains the regions ordered by their failover priorities.
+        description: A list of regions ordered by their failover priorities.
         type: List
       - contextPath: Azure.CosmosDB.properties.instanceId
         description: A unique identifier assigned to the database account.
         type: String
       - contextPath: Azure.CosmosDB.properties.ipRules
-        description: List of IP rules.
+        description: A list of IP rules.
         type: List
       - contextPath: Azure.CosmosDB.properties.isVirtualNetworkFilterEnabled
         description: Whether the Virtual Network ACL rules are enabled.
@@ -6683,10 +6683,10 @@ script:
         description: The URI of the key vault.
         type: String
       - contextPath: Azure.CosmosDB.properties.keysMetadata
-        description: Metadata related to each access key for the given Cosmos DB database account.
+        description: The metadata related to each access key for the given Cosmos DB database account.
         type: Dictionary
       - contextPath: Azure.CosmosDB.properties.locations
-        description: An array that contains all of the locations enabled for the Cosmos DB account.
+        description: A list of all the locations enabled for the Cosmos DB account.
         type: List
       - contextPath: Azure.CosmosDB.properties.minimalTlsVersion
         description: The minimum allowed TLS version.
@@ -6695,22 +6695,22 @@ script:
         description: Which services are allowed to bypass firewall checks.
         type: String
       - contextPath: Azure.CosmosDB.properties.networkAclBypassResourceIds
-        description: List of resource IDs that are allowed to bypass firewall checks.
+        description: A list of resource IDs that are allowed to bypass firewall checks.
         type: List
       - contextPath: Azure.CosmosDB.properties.privateEndpointConnections
-        description: List of private endpoint connections.
+        description: A list of private endpoint connections.
         type: List
       - contextPath: Azure.CosmosDB.properties.provisioningState
         description: The status of the Cosmos DB account at the time the operation was called.
         type: String
       - contextPath: Azure.CosmosDB.properties.readLocations
-        description: An array that contains the read locations enabled for the Cosmos DB account.
+        description: A list of read locations enabled for the Cosmos DB account.
         type: List
       - contextPath: Azure.CosmosDB.properties.virtualNetworkRules
-        description: List of Virtual Network ACL rules.
+        description: A list of Virtual Network ACL rules.
         type: List
       - contextPath: Azure.CosmosDB.properties.writeLocations
-        description: An array that contains the write locations enabled for the Cosmos DB account.
+        description: A list of write locations enabled for the Cosmos DB account.
         type: List
 
   - name: azure-webapp-enable-client-cert-quick-action
@@ -6738,7 +6738,7 @@ script:
       - name: name
         type: String
         required: true
-        description: Name of the Function App.
+        description: The name of the Function App.
         prettyname: AZ Webapp
         defaultValue: AZ Webapp
         prettypredefined:
@@ -6747,11 +6747,11 @@ script:
         type: Boolean
         required: false
         defaultValue: 'true'
-        description: Enable client certificate authentication.
+        description: Whether to enable client certificate authentication.
         hidden: true
     outputs:
       - contextPath: Azure.WebApp.id
-        description: Fully qualified resource ID for the web app.
+        description: The fully qualified resource ID for the web app.
         type: String
       - contextPath: Azure.WebApp.name
         description: The name of the web app.
@@ -6760,13 +6760,13 @@ script:
         description: The resource type, e.g., Microsoft.Web/sites.
         type: String
       - contextPath: Azure.WebApp.location
-        description: Geographic location of the web app.
+        description: The geographic location of the web app.
         type: String
       - contextPath: Azure.WebApp.kind
-        description: The kind of the app, e.g., app, functionapp, etc.
+        description: The type of app, for example app or functionapp.
         type: String
       - contextPath: Azure.WebApp.tags
-        description: Resource tags as key-value pairs.
+        description: The resource tags as key-value pairs.
       - contextPath: Azure.WebApp.identity.type
         description: The type of managed identity (SystemAssigned, UserAssigned, etc.).
         type: String
@@ -6777,20 +6777,20 @@ script:
         description: The tenant ID of the system-assigned identity.
         type: String
       - contextPath: Azure.WebApp.identity.userAssignedIdentities
-        description: The list of user-assigned identities associated with the web app.
+        description: A list of user-assigned identities associated with the web app.
       - contextPath: Azure.WebApp.properties.state
-        description: Current state of the web app (Running, Stopped, etc.).
+        description: The current state of the web app (for example, Running or Stopped).
         type: String
       - contextPath: Azure.WebApp.properties.enabled
         description: Whether the web app is enabled.
         type: Boolean
       - contextPath: Azure.WebApp.properties.defaultHostName
-        description: Default host name of the web app.
+        description: The default host name of the web app.
         type: String
       - contextPath: Azure.WebApp.properties.hostNames
-        description: List of host names associated with the web app.
+        description: A list of host names associated with the web app.
       - contextPath: Azure.WebApp.properties.repositorySiteName
-        description: Name of the repository site.
+        description: The name of the repository site.
         type: String
       - contextPath: Azure.WebApp.properties.clientAffinityEnabled
         description: Whether client affinity is enabled.
@@ -6799,13 +6799,13 @@ script:
         description: Whether client certificates are enabled.
         type: Boolean
       - contextPath: Azure.WebApp.properties.clientCertExclusionPaths
-        description: Paths to exclude from client certificate authentication.
+        description: A list of paths to exclude from client certificate authentication.
         type: String
       - contextPath: Azure.WebApp.properties.hostingEnvironment
-        description: App Service Environment to use for the web app.
+        description: The App Service Environment to use for the web app.
         type: String
       - contextPath: Azure.WebApp.properties.serverFarmId
-        description: Resource ID of the associated App Service plan.
+        description: The resource ID of the associated App Service plan.
         type: String
       - contextPath: Azure.WebApp.properties.reserved
         description: Whether the web app is on a Linux plan.
@@ -6817,7 +6817,7 @@ script:
         description: Whether Hyper-V is enabled for the web app.
         type: Boolean
       - contextPath: Azure.WebApp.properties.siteConfig.appSettings
-        description: List of app settings.
+        description: A list of app settings.
       - contextPath: Azure.WebApp.properties.siteConfig.metadata
         description: List of metadata settings.
       - contextPath: Azure.WebApp.properties.siteConfig.connectionStrings
