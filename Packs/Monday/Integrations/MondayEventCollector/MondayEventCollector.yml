@@ -116,3 +116,7 @@ marketplaces:
 fromversion: 8.3.0
 tests:
 - No tests (auto formatted)
+supportedModules:
+- cloud
+- cloud_runtime_security
+- xsiam
