@@ -3112,7 +3112,6 @@ class RDS:
             if "values_to_remove" in args:
                 kwargs["ValuesToRemove"] = argToList(args.get("values_to_remove"))
 
-            demisto.info(f"{kwargs=}")
             remove_nulls_from_dictionary(kwargs)
 
             response = client.modify_db_cluster_snapshot_attribute(**kwargs)
