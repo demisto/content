@@ -3085,8 +3085,6 @@ class RDS:
                         removeNull=True,
                         headerTransform=pascalToSpace,
                     )
-                    readable_output += "\n\nUpdated DB Cluster details:"
-                    readable_output += tableToMarkdown("", db_cluster)
 
                 return CommandResults(
                     readable_output=readable_output,
