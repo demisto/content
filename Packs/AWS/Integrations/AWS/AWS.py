@@ -3066,25 +3066,11 @@ class RDS:
             response = client.modify_db_cluster(**kwargs)
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
                 db_cluster = response.get("DBCluster", {})
-                readable_output = f"Successfully modified DB cluster {args.get('db_cluster_identifier')}"
+                readable_output = f"Successfully modified DB cluster {args.get('db-cluster-identifier')}"
                 if db_cluster:
                     db_cluster = convert_datetimes_to_iso_safe(db_cluster)
-                    headers = [
-                        "DBClusterIdentifier",
-                        "Status",
-                        "Engine",
-                        "EngineVersion",
-                        "Endpoint",
-                        "Port",
-                    ]
-                    readable_output += "\n\nUpdated DB Cluster details:\n"
-                    readable_output += tableToMarkdown(
-                        "",
-                        t=db_cluster,
-                        headers=headers,
-                        removeNull=True,
-                        headerTransform=pascalToSpace,
-                    )
+                    readable_output += "\n\nUpdated DB Cluster details:"
+                    readable_output += tableToMarkdown("", db_cluster)
 
                 return CommandResults(
                     readable_output=readable_output,
