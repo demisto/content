@@ -14,6 +14,9 @@ from requests.exceptions import HTTPError
 urllib3.disable_warnings()
 
 
+DEFAULT_POLLING_TIMEOUT = 600
+DEFAULT_POLLING_INTERVAL = 10
+
 FIELD_NAMES_MAP = {
     "ScanType": "Type",
     "ScanStart": "StartTime",
@@ -122,8 +125,8 @@ VENDOR = "tenable"
 PRODUCT = "io"
 CHUNK_SIZE = 5000
 ASSETS_NUMBER = 100
-MAX_CHUNKS_PER_FETCH = 2  # Reduced from 8 to ensure fetch completes within 3-4 minutes
-MAX_VULNS_CHUNKS_PER_FETCH = 2  # Reduced from 8 to ensure fetch completes within 3-4 minutes
+MAX_CHUNKS_PER_FETCH = 8
+MAX_VULNS_CHUNKS_PER_FETCH = 8
 ASSETS_FETCH_FROM = "90 days"
 VULNS_FETCH_FROM = "3 days"
 MIN_ASSETS_INTERVAL = 60
@@ -733,9 +736,12 @@ def handle_vulns_chunks(client: Client, assets_last_run):  # pragma: no cover   
     else:
         assets_last_run.pop("vulns_available_chunks", None)
         assets_last_run.pop("vuln_export_uuid", None)
-        # Reset snapshot_id when all data has been fetched (will be regenerated on next fetch cycle)
-        assets_last_run.pop("snapshot_id", None)
-        assets_last_run.pop("total_assets", None)
+        # Note: snapshot_id and total_assets are NOT cleaned up here.
+        # They belong to the assets snapshot lifecycle and must only be cleaned up
+        # in main() AFTER the snapshot has been successfully sealed with the correct items_count.
+        # Cleaning them here was causing the snapshot to never be sealed because:
+        # 1. snapshot_id would be regenerated (new ID with no matching data rows)
+        # 2. total_assets would reset to 0 (sealing path skipped since cumulative_total=0)
     return vulnerabilities, assets_last_run
 
 
@@ -1351,8 +1357,8 @@ def request_uuid_export_vulnerabilities(args: Dict[str, Any]) -> PollResult:
 
 @polling_function(
     name=demisto.command(),
-    timeout=arg_to_number(demisto.args().get("timeout", 720)),  # pylint: disable=W9017
-    interval=arg_to_number(demisto.args().get("intervalInSeconds", 15)),  # pylint: disable=W9017
+    timeout=arg_to_number(demisto.args().get("timeOut")) or DEFAULT_POLLING_TIMEOUT,
+    interval=arg_to_number(demisto.args().get("intervalInSeconds")) or DEFAULT_POLLING_INTERVAL,
     requires_polling_arg=False,
 )
 def export_assets_command(args: Dict[str, Any]) -> PollResult:
@@ -1497,8 +1503,8 @@ def validate_range(range: Optional[str]) -> tuple[Optional[float], Optional[floa
 
 @polling_function(
     name=demisto.command(),
-    timeout=arg_to_number(demisto.args().get("timeout", 600)),  # pylint: disable=W9017
-    interval=arg_to_number(demisto.args().get("intervalInSeconds", 10)),  # pylint: disable=W9017
+    timeout=arg_to_number(demisto.args().get("timeOut")) or DEFAULT_POLLING_TIMEOUT,
+    interval=arg_to_number(demisto.args().get("intervalInSeconds")) or DEFAULT_POLLING_INTERVAL,
     requires_polling_arg=False,
 )
 def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
@@ -2189,6 +2195,18 @@ def main():  # pragma: no cover   # pylint: disable=W9018
             cumulative_total = assets_last_run.get("total_assets", 0)
             if assets or not assets_fetch_in_progress:
                 demisto.updateModuleHealth({"assetsPulled": cumulative_total})
+
+            # Clean up snapshot state when the entire fetch cycle is complete
+            # (both assets and vulnerabilities are done). This must happen AFTER
+            # the snapshot has been sealed above, not in handle_vulns_chunks().
+            vulns_fetch_in_progress = is_vulns_fetch_in_progress(assets_last_run)
+            if not assets_fetch_in_progress and not vulns_fetch_in_progress:
+                demisto.debug(
+                    "Entire fetch cycle complete (assets + vulns). " "Cleaning up snapshot_id and total_assets for next cycle."
+                )
+                assets_last_run.pop("snapshot_id", None)
+                assets_last_run.pop("total_assets", None)
+                demisto.setAssetsLastRun(assets_last_run)
 
             demisto.info("Done Sending data to XSIAM.")
 
