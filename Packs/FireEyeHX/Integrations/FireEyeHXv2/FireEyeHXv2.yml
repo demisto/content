@@ -1810,9 +1810,18 @@ script:
       description: The acquisition ID.
       required: true
     outputs:
-    - contextPath: FireEyeHX.Acquisitions.Triage
-      description: A json object with triage acquisition details and MANS file.
-      type: Unknown
+    - contextPath: FireEyeHX.Acquisitions.Triage._id
+      description: The triage ID.
+      type: String
+    - contextPath: FireEyeHX.Acquisitions.Triage.state
+      description: The acquisition state.
+      type: String
+    - contextPath: FireEyeHX.Acquisitions.Triage.host._id
+      description: The host ID.
+      type: String
+    - contextPath: FireEyeHX.Acquisitions.Triage.host.hostname
+      description: The hostname.
+      type: String
   - name: fireeye-hx-triage-acquisition-get
     description: Gets information about a specified triage acquisition.
     arguments:
@@ -1820,9 +1829,18 @@ script:
       required: true
       description: the acquisition Id
     outputs:
-    - contextPath: FireEyeHX.Acquisitions.Triage
-      type: Unknown
-      description: A json object with triage acquisition details.
+    - contextPath: FireEyeHX.Acquisitions.Triage._id
+      description: The triage ID.
+      type: String
+    - contextPath: FireEyeHX.Acquisitions.Triage.state
+      description: The acquisition state.
+      type: String
+    - contextPath: FireEyeHX.Acquisitions.Triage.host._id
+      description: The host ID.
+      type: String
+    - contextPath: FireEyeHX.Acquisitions.Triage.host.hostname
+      description: The hostname.
+      type: String
   - name: fireeye-hx-triage-acquisition-delete
     description: Deletes a triage acquisition.
     arguments:
@@ -1836,9 +1854,18 @@ script:
     - name: agentId
       description: The agent ID. If the agent ID is not specified, the host name must be specified.
     outputs:
-    - contextPath: FireEyeHX.Acquisitions.Triage
-      type: Unknown
-      description: A json object with triage acquisition details.
+    - contextPath: FireEyeHX.Acquisitions.Triage._id
+      description: The triage ID.
+      type: String
+    - contextPath: FireEyeHX.Acquisitions.Triage.state
+      description: The acquisition state.
+      type: String
+    - contextPath: FireEyeHX.Acquisitions.Triage.host._id
+      description: The host ID.
+      type: String
+    - contextPath: FireEyeHX.Acquisitions.Triage.host.hostname
+      description: The hostname.
+      type: String
     description: Starts a triage acquisition
   - name: fireeye-hx-host-acquisitions-list
     description: Gets all acquisitions for a host
@@ -1848,9 +1875,18 @@ script:
     - name: agentId
       description: The agent ID. If the agent ID is not specified, the host name must be specified.
     outputs:
-    - contextPath: FireEyeHX.Host.Acquisitions.All
-      description: A json object with all acquisitions for a host.
-      type: Unknown
+    - contextPath: FireEyeHX.Host.Acquisitions.All._id
+      description: The acquisition ID.
+      type: String
+    - contextPath: FireEyeHX.Host.Acquisitions.All.state
+      description: The state of the acquisition.
+      type: String
+    - contextPath: FireEyeHX.Host.Acquisitions.All.acq_type
+      description: The type of acquisition.
+      type: String
+    - contextPath: FireEyeHX.Host.Acquisitions.All.request_time
+      description: The requested date of the acquisition.
+      type: Date
   isfetch: true
   script: '-'
   type: python
