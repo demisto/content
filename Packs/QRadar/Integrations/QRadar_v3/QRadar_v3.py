@@ -7,6 +7,9 @@ from ipaddress import ip_address
 from urllib import parse
 from collections.abc import Callable
 from deepmerge import always_merger
+import json
+import re
+from typing import Any
 
 
 import pytz
@@ -83,7 +86,7 @@ MAXIMUM_OFFENSES_PER_FETCH = 50
 DEFAULT_OFFENSES_PER_FETCH = 20
 DEFAULT_MIRRORING_DIRECTION = "No Mirroring"
 MIRROR_OFFENSE_AND_EVENTS = "Mirror Offense and Events"
-MIRROR_DIRECTION: dict[str, Optional[str]] = {"No Mirroring": None, "Mirror Offense": "In", MIRROR_OFFENSE_AND_EVENTS: "In"}
+MIRROR_DIRECTION: dict[str, str | None] = {"No Mirroring": None, "Mirror Offense": "In", MIRROR_OFFENSE_AND_EVENTS: "In"}
 MIRRORED_OFFENSES_QUERIED_CTX_KEY = "mirrored_offenses_queried"
 MIRRORED_OFFENSES_FINISHED_CTX_KEY = "mirrored_offenses_finished"
 MIRRORED_OFFENSES_FETCHED_CTX_KEY = "mirrored_offenses_fetched"
@@ -462,11 +465,11 @@ class Client(BaseClient):
         self,
         method: str,
         url_suffix: str,
-        params: Optional[dict] = None,
-        json_data: Optional[dict | list[dict]] = None,
-        data: Optional[dict] = None,
-        additional_headers: Optional[dict] = None,
-        timeout: Optional[int] = None,
+        params: dict | None = None,
+        json_data: dict | list[dict] | None = None,
+        data: dict | None = None,
+        additional_headers: dict | None = None,
+        timeout: int | None = None,
         resp_type: str = "json",
     ) -> Any:
         headers = {**additional_headers, **self.base_headers} if additional_headers else self.base_headers
@@ -534,11 +537,11 @@ class Client(BaseClient):
 
     def offenses_list(
         self,
-        range_: Optional[str] = None,
-        offense_id: Optional[int] = None,
-        filter_: Optional[str] = None,
-        fields: Optional[str] = None,
-        sort: Optional[str] = None,
+        range_: str | None = None,
+        offense_id: int | None = None,
+        filter_: str | None = None,
+        fields: str | None = None,
+        sort: str | None = None,
     ):
         id_suffix = f"/{offense_id}" if offense_id else ""
         params = assign_params(fields=fields) if offense_id else assign_params(filter=filter_, fields=fields, sort=sort)
@@ -550,12 +553,12 @@ class Client(BaseClient):
     def offense_update(
         self,
         offense_id: int,
-        protected: Optional[str] = None,
-        follow_up: Optional[str] = None,
-        status: Optional[str] = None,
-        closing_reason_id: Optional[int] = None,
-        assigned_to: Optional[str] = None,
-        fields: Optional[str] = None,
+        protected: str | None = None,
+        follow_up: str | None = None,
+        status: str | None = None,
+        closing_reason_id: int | None = None,
+        assigned_to: str | None = None,
+        fields: str | None = None,
     ):
         return self.http_request(
             method="POST",
@@ -572,12 +575,12 @@ class Client(BaseClient):
 
     def closing_reasons_list(
         self,
-        closing_reason_id: Optional[int] = None,
-        include_reserved: Optional[bool] = None,
-        include_deleted: Optional[bool] = None,
-        range_: Optional[str] = None,
-        filter_: Optional[str] = None,
-        fields: Optional[str] = None,
+        closing_reason_id: int | None = None,
+        include_reserved: bool | None = None,
+        include_deleted: bool | None = None,
+        range_: str | None = None,
+        filter_: str | None = None,
+        fields: str | None = None,
     ):
         id_suffix = f"/{closing_reason_id}" if closing_reason_id else ""
         params = (
@@ -597,9 +600,9 @@ class Client(BaseClient):
         self,
         offense_id: int,
         range_: str,
-        note_id: Optional[int] = None,
-        filter_: Optional[str] = None,
-        fields: Optional[str] = None,
+        note_id: int | None = None,
+        filter_: str | None = None,
+        fields: str | None = None,
     ):
         note_id_suffix = f"/{note_id}" if note_id else ""
         params = assign_params(fields=fields) if note_id else assign_params(filter=filter_, fields=fields)
@@ -611,7 +614,7 @@ class Client(BaseClient):
             params=params,
         )
 
-    def offense_notes_create(self, offense_id: int, note_text: str, fields: Optional[str] = None):
+    def offense_notes_create(self, offense_id: int, note_text: str, fields: str | None = None):
         return self.http_request(
             method="POST",
             url_suffix=f"/siem/offenses/{offense_id}/notes",
@@ -620,10 +623,10 @@ class Client(BaseClient):
 
     def rules_list(
         self,
-        rule_id: Optional[str] = None,
-        range_: Optional[str] = None,
-        filter_: Optional[str] = None,
-        fields: Optional[str] = None,
+        rule_id: str | None = None,
+        range_: str | None = None,
+        filter_: str | None = None,
+        fields: str | None = None,
     ):
         id_suffix = f"/{rule_id}" if rule_id else ""
         params = assign_params(fields=fields) if rule_id else assign_params(filter=filter_, fields=fields)
@@ -633,7 +636,7 @@ class Client(BaseClient):
         )
 
     def rule_groups_list(
-        self, range_: str, rule_group_id: Optional[int] = None, filter_: Optional[str] = None, fields: Optional[str] = None
+        self, range_: str, rule_group_id: int | None = None, filter_: str | None = None, fields: str | None = None
     ):
         id_suffix = f"/{rule_group_id}" if rule_group_id else ""
         additional_headers = {"Range": range_} if not rule_group_id else None
@@ -642,7 +645,7 @@ class Client(BaseClient):
             method="GET", url_suffix=f"/analytics/rule_groups{id_suffix}", additional_headers=additional_headers, params=params
         )
 
-    def assets_list(self, range_: Optional[str] = None, filter_: Optional[str] = None, fields: Optional[str] = None):
+    def assets_list(self, range_: str | None = None, filter_: str | None = None, fields: str | None = None):
         return self.http_request(
             method="GET",
             url_suffix="/asset_model/assets",
@@ -653,10 +656,10 @@ class Client(BaseClient):
     def saved_searches_list(
         self,
         range_: str,
-        timeout: Optional[int],
-        saved_search_id: Optional[str] = None,
-        filter_: Optional[str] = None,
-        fields: Optional[str] = None,
+        timeout: int | None,
+        saved_search_id: str | None = None,
+        filter_: str | None = None,
+        fields: str | None = None,
     ):
         id_suffix = f"/{saved_search_id}" if saved_search_id else ""
         params = assign_params(fields=fields) if saved_search_id else assign_params(filter=filter_, fields=fields)
@@ -669,12 +672,12 @@ class Client(BaseClient):
             timeout=timeout,
         )
 
-    def searches_list(self, range_: str, filter_: Optional[str] = None):
+    def searches_list(self, range_: str, filter_: str | None = None):
         return self.http_request(
             method="GET", url_suffix="/ariel/searches", additional_headers={"Range": range_}, params=assign_params(filter=filter_)
         )
 
-    def search_create(self, query_expression: Optional[str] = None, saved_search_id: Optional[str] = None):
+    def search_create(self, query_expression: str | None = None, saved_search_id: str | None = None):
         return self.http_request(
             method="POST",
             url_suffix="/ariel/searches",
@@ -699,7 +702,7 @@ class Client(BaseClient):
             url_suffix=f"/ariel/searches/{search_id}?status=CANCELED",
         )
 
-    def search_results_get(self, search_id: str, range_: Optional[str] = None):
+    def search_results_get(self, search_id: str, range_: str | None = None):
         return self.http_request(
             method="GET",
             url_suffix=f"/ariel/searches/{search_id}/results",
@@ -708,10 +711,10 @@ class Client(BaseClient):
 
     def reference_sets_list(
         self,
-        range_: Optional[str] = None,
-        ref_name: Optional[str] = None,
-        filter_: Optional[str] = None,
-        fields: Optional[str] = None,
+        range_: str | None = None,
+        ref_name: str | None = None,
+        filter_: str | None = None,
+        fields: str | None = None,
     ):
         name_suffix = f'/{parse.quote(ref_name, safe="")}' if ref_name else ""
         params = assign_params(filter=filter_, fields=fields)
@@ -724,9 +727,9 @@ class Client(BaseClient):
         self,
         ref_name: str,
         element_type: str,
-        timeout_type: Optional[str] = None,
-        time_to_live: Optional[str] = None,
-        fields: Optional[str] = None,
+        timeout_type: str | None = None,
+        time_to_live: str | None = None,
+        fields: str | None = None,
     ):
         return self.http_request(
             method="POST",
@@ -736,14 +739,14 @@ class Client(BaseClient):
             ),
         )
 
-    def reference_set_delete(self, ref_name: str, purge_only: Optional[str] = None, fields: Optional[str] = None):
+    def reference_set_delete(self, ref_name: str, purge_only: str | None = None, fields: str | None = None):
         return self.http_request(
             method="DELETE",
             url_suffix=f'/reference_data/sets/{parse.quote(parse.quote(ref_name, safe=""), safe="")}',
             params=assign_params(purge_only=purge_only, fields=fields),
         )
 
-    def reference_set_value_upsert(self, ref_name: str, value: str, source: Optional[str] = None, fields: Optional[str] = None):
+    def reference_set_value_upsert(self, ref_name: str, value: str, source: str | None = None, fields: str | None = None):
         return self.http_request(
             method="POST",
             url_suffix=f'/reference_data/sets/{parse.quote(ref_name, safe="")}',
@@ -759,10 +762,10 @@ class Client(BaseClient):
 
     def domains_list(
         self,
-        domain_id: Optional[int] = None,
-        range_: Optional[str] = None,
-        filter_: Optional[str] = None,
-        fields: Optional[str] = None,
+        domain_id: int | None = None,
+        range_: str | None = None,
+        filter_: str | None = None,
+        fields: str | None = None,
     ):
         id_suffix = f"/{domain_id}" if domain_id else ""
         params = assign_params(fields=fields) if domain_id else assign_params(filter=filter_, fields=fields)
@@ -774,7 +777,7 @@ class Client(BaseClient):
             params=params,
         )
 
-    def reference_set_bulk_load(self, ref_name: str, indicators: Any, fields: Optional[str] = None):
+    def reference_set_bulk_load(self, ref_name: str, indicators: Any, fields: str | None = None):
         headers = {"Content-Type": "application/json"}
         if fields:
             headers["fields"] = fields
@@ -789,9 +792,9 @@ class Client(BaseClient):
         self,
         ref_name: str,
         indicators: Any,
-        fields: Optional[str] = None,
-        source: Optional[str] = None,
-        timeout: Optional[int] = None,
+        fields: str | None = None,
+        source: str | None = None,
+        timeout: int | None = None,
     ):
         headers = {"Content-Type": "application/json"}
         if fields:
@@ -812,7 +815,27 @@ class Client(BaseClient):
     def get_reference_data_bulk_task_status(self, task_id: int):
         return self.http_request(method="GET", url_suffix=f"/reference_data_collections/set_bulk_update_tasks/{task_id}")
 
-    def geolocations_for_ip(self, filter_: Optional[str] = None, fields: Optional[str] = None):
+    def reference_data_bulk_call(self, name: str, type: str, data: str) -> dict:
+        """Calls bulk upload endpoint
+
+        Args:
+            name (str): The reference data name
+            type (str): The type of reference data (maps | map_of_sets)
+            data (str): The json formatted data to load
+
+        Returns:
+            dict: an http response object
+        """
+        headers = {"Content-Type": "application/json"}
+
+        return self.http_request(
+            method="POST",
+            url_suffix=f"/reference_data/{type}/bulk_load/{name}",
+            json_data=data,
+            additional_headers=headers,
+        )
+
+    def geolocations_for_ip(self, filter_: str | None = None, fields: str | None = None):
         return self.http_request(
             method="GET", url_suffix="/services/geolocations", params=assign_params(filter=filter_, fields=fields)
         )
@@ -822,8 +845,8 @@ class Client(BaseClient):
         qrd_encryption_algorithm: str,
         qrd_encryption_password: str,
         range_: str,
-        filter_: Optional[str] = None,
-        fields: Optional[str] = None,
+        filter_: str | None = None,
+        fields: str | None = None,
     ):
         return self.http_request(
             method="GET",
@@ -836,7 +859,7 @@ class Client(BaseClient):
             },
         )
 
-    def get_log_source(self, qrd_encryption_algorithm: str, qrd_encryption_password: str, id: str, fields: Optional[str] = None):
+    def get_log_source(self, qrd_encryption_algorithm: str, qrd_encryption_password: str, id: str, fields: str | None = None):
         return self.http_request(
             method="GET",
             url_suffix=f"/config/event_sources/log_source_management/log_sources/{id}",
@@ -847,7 +870,7 @@ class Client(BaseClient):
             },
         )
 
-    def custom_properties(self, range_: Optional[str] = None, filter_: Optional[str] = None, fields: Optional[str] = None):
+    def custom_properties(self, range_: str | None = None, filter_: str | None = None, fields: str | None = None):
         return self.http_request(
             method="GET",
             url_suffix="/config/event_sources/custom_properties/regex_properties",
@@ -855,13 +878,13 @@ class Client(BaseClient):
             additional_headers={"Range": range_} if range_ else None,
         )
 
-    def offense_types(self, filter_: Optional[str] = None, fields: Optional[str] = None):
+    def offense_types(self, filter_: str | None = None, fields: str | None = None):
         return self.http_request(
             method="GET", url_suffix="/siem/offense_types", params=assign_params(filter=filter_, fields=fields)
         )
 
     def get_addresses(
-        self, address_suffix: str, filter_: Optional[str] = None, fields: Optional[str] = None, range_: Optional[str] = None
+        self, address_suffix: str, filter_: str | None = None, fields: str | None = None, range_: str | None = None
     ):
         return self.http_request(
             method="GET",
@@ -880,7 +903,7 @@ class Client(BaseClient):
             additional_headers=headers,
         )
 
-    def get_remote_network_cidr(self, range_: Optional[str] = None, filter_: Optional[str] = None, fields: Optional[str] = None):
+    def get_remote_network_cidr(self, range_: str | None = None, filter_: str | None = None, fields: str | None = None):
         headers = {"Range": range_}
         params = assign_params(filter=filter_, fields=fields)
 
@@ -898,9 +921,9 @@ class Client(BaseClient):
         self,
         range_: str,
         endpoint: str,
-        filter_: Optional[str] = None,
-        fields: Optional[str] = None,
-        additional_headers_: Optional[dict] = None,
+        filter_: str | None = None,
+        fields: str | None = None,
+        additional_headers_: dict | None = None,
     ):
         """
         Retrieve a list of resources from a specified endpoint.
@@ -922,7 +945,7 @@ class Client(BaseClient):
             additional_headers={"Range": range_} if additional_headers_ is None else {"Range": range_, **additional_headers_},
         )
 
-    def get_resource_by_id(self, id: str, endpoint: str, fields: Optional[str] = None, additional_headers: Optional[dict] = None):
+    def get_resource_by_id(self, id: str, endpoint: str, fields: str | None = None, additional_headers: dict | None = None):
         return self.http_request(
             method="GET",
             url_suffix=endpoint + f"/{id}",
@@ -935,9 +958,9 @@ class Client(BaseClient):
         id,
         range_: str,
         endpoint: str,
-        filter_: Optional[str] = None,
-        fields: Optional[str] = None,
-        additional_headers_: Optional[dict] = None,
+        filter_: str | None = None,
+        fields: str | None = None,
+        additional_headers_: dict | None = None,
     ):
         return (
             self.get_resource_list(range_, endpoint, filter_, fields, additional_headers_)
@@ -1280,7 +1303,7 @@ def qradar_set_integration_context(context_data):
 def safely_update_context_data_partial(
     changes: dict,
     attempts: int = 5,
-    override_keys: Optional[list[str]] = None,
+    override_keys: list[str] | None = None,
 ) -> None:
     """
     Reads the current integration context+version,
@@ -1305,7 +1328,7 @@ def safely_update_context_data_partial(
     raise DemistoException(f"Failed updating context after {attempts} attempts.")
 
 
-def add_iso_entries_to_dict(dicts: List[dict]) -> List[dict]:
+def add_iso_entries_to_dict(dicts: list[dict]) -> list[dict]:
     """
     Takes list of dicts, for each dict:
     creates a new dict, and for each field in the output that
@@ -1322,7 +1345,7 @@ def add_iso_entries_to_dict(dicts: List[dict]) -> List[dict]:
     ]
 
 
-def should_get_time_parameter(k: str, v: Union[Optional[str], Optional[int]]) -> bool:
+def should_get_time_parameter(k: str, v: str | None | int | None) -> bool:
     """Checks whether the given key should be converted or not.
     The variable should be converted if the key is in the USECS_ENTRIES list and the value is valid.
 
@@ -1337,7 +1360,7 @@ def should_get_time_parameter(k: str, v: Union[Optional[str], Optional[int]]) ->
     return k in USECS_ENTRIES and valid_value
 
 
-def sanitize_outputs(outputs: Any, key_replace_dict: Optional[dict] = None) -> List[dict]:
+def sanitize_outputs(outputs: Any, key_replace_dict: dict | None = None) -> list[dict]:
     """
     Gets a list of all the outputs, and sanitizes outputs.
     - Removes empty elements.
@@ -1358,7 +1381,7 @@ def sanitize_outputs(outputs: Any, key_replace_dict: Optional[dict] = None) -> L
     return build_final_outputs(outputs, key_replace_dict) if key_replace_dict else outputs
 
 
-def get_time_parameter(arg: Union[Optional[str], Optional[int]], iso_format: bool = False, epoch_format: bool = False):
+def get_time_parameter(arg: str | None | int | None, iso_format: bool = False, epoch_format: bool = False):
     """
     parses arg into date time object with aware time zone if 'arg' exists.
     If no time zone is given, sets timezone to UTC.
@@ -1391,7 +1414,7 @@ def get_time_parameter(arg: Union[Optional[str], Optional[int]], iso_format: boo
         return arg
 
 
-def build_final_outputs(outputs: List[dict], old_new_dict: dict) -> List[dict]:
+def build_final_outputs(outputs: list[dict], old_new_dict: dict) -> list[dict]:
     """
     Receives outputs, or a single output, and a dict containing mapping of old key names to new key names.
     Returns a list of outputs containing the new names contained in old_new_dict.
@@ -1405,7 +1428,7 @@ def build_final_outputs(outputs: List[dict], old_new_dict: dict) -> List[dict]:
     return [{old_new_dict.get(k): v for k, v in output.items() if k in old_new_dict} for output in outputs]
 
 
-def build_headers(first_headers: List[str], all_headers: set[str]) -> List[str]:
+def build_headers(first_headers: list[str], all_headers: set[str]) -> list[str]:
     """
     Receives headers to be shown first in entry room, and concat all the headers after first headers.
     Args:
@@ -1427,7 +1450,7 @@ def is_valid_ip(ip: str) -> bool:
         return False
 
 
-def get_offense_types(client: Client, offenses: List[dict]) -> dict:
+def get_offense_types(client: Client, offenses: list[dict]) -> dict:
     """
     Receives list of offenses, and performs API call to QRadar service to retrieve the offense type names
     matching the offense type IDs of the offenses.
@@ -1449,7 +1472,7 @@ def get_offense_types(client: Client, offenses: List[dict]) -> dict:
         return {}
 
 
-def get_offense_closing_reasons(client: Client, offenses: List[dict]) -> dict:
+def get_offense_closing_reasons(client: Client, offenses: list[dict]) -> dict:
     """
     Receives list of offenses, and performs API call to QRadar service to retrieve the closing reason names
     matching the closing reason IDs of the offenses.
@@ -1521,7 +1544,7 @@ def get_names_with_retries(func: Callable, *args, **kwargs) -> dict:
     return {}
 
 
-def get_domain_names(client: Client, outputs: List[dict]) -> dict:
+def get_domain_names(client: Client, outputs: list[dict]) -> dict:
     """
     Receives list of outputs, and performs API call to QRadar service to retrieve the domain names
     matching the domain IDs of the outputs.
@@ -1551,7 +1574,7 @@ def get_domain_names(client: Client, outputs: List[dict]) -> dict:
         return {}
 
 
-def get_rules_names(client: Client, offenses: List[dict]) -> dict:
+def get_rules_names(client: Client, offenses: list[dict]) -> dict:
     """
     Receives list of offenses, and performs API call to QRadar service to retrieve the rules names
     matching the rule IDs of the offenses.
@@ -1581,7 +1604,7 @@ def get_rules_names(client: Client, offenses: List[dict]) -> dict:
         return {}
 
 
-def get_offense_addresses(client: Client, offenses: List[dict], is_destination_addresses: bool) -> dict:
+def get_offense_addresses(client: Client, offenses: list[dict], is_destination_addresses: bool) -> dict:
     """
     Receives list of offenses, and performs API call to QRadar service to retrieve the source IP values
     matching the source IPs IDs of the offenses.
@@ -1598,11 +1621,11 @@ def get_offense_addresses(client: Client, offenses: List[dict], is_destination_a
     address_list_field = f"{address_type}_address_ids"
     url_suffix = f"{address_type}_addresses"
 
-    def get_addresses_for_batch(b: List):
+    def get_addresses_for_batch(b: list):
         try:
             return client.get_addresses(url_suffix, f"""id in ({','.join(map(str, b))})""", f"id,{address_field}")
         except Exception as e:
-            demisto.error(f"Failed getting address barch with error: {e}")
+            demisto.error(f"Failed getting address batch with error: {e}")
             return []
 
     addresses_ids = [address_id for offense in offenses for address_id in offense.get(address_list_field, [])]
@@ -1619,7 +1642,7 @@ def get_offense_addresses(client: Client, offenses: List[dict], is_destination_a
 
 def create_single_asset_for_offense_enrichment(asset: dict) -> dict:
     """
-    Recieves one asset, and returns the expected asset values for enriching offense.
+    Receives one asset, and returns the expected asset values for enriching offense.
     Args:
         asset (Dict): Asset to enrich the offense with
 
@@ -1645,7 +1668,7 @@ def create_single_asset_for_offense_enrichment(asset: dict) -> dict:
     return add_iso_entries_to_asset(dict(offense_without_properties, **properties, **interfaces))
 
 
-def enrich_offense_with_assets(client: Client, offense_ips: List[str], assets_limit: int | None = 100) -> List[dict]:
+def enrich_offense_with_assets(client: Client, offense_ips: list[str], assets_limit: int | None = 100) -> list[dict]:
     """
     Receives list of offense's IPs, and performs API call to QRadar service to retrieve assets correlated to IPs given.
     Args:
@@ -1656,7 +1679,7 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str], assets_li
         (List[Dict]): List of all the correlated assets.
     """
 
-    def get_assets_for_ips_batch(b: List):
+    def get_assets_for_ips_batch(b: list):
         filter_query = " or ".join([f'interfaces contains ip_addresses contains value="{ip}"' for ip in b])
         try:
             return client.assets_list(filter_=filter_query)
@@ -1666,7 +1689,7 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str], assets_li
 
     offense_ips = [offense_ip for offense_ip in offense_ips if is_valid_ip(offense_ip)]
     # Submit addresses in batches to avoid overloading QRadar service
-    assets: List = []
+    assets: list = []
     for b in batch(offense_ips[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE)):
         assets.extend(get_assets_for_ips_batch(b))
         if assets_limit and len(assets) >= assets_limit:
@@ -1678,7 +1701,7 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str], assets_li
 
 def enrich_offenses_result(
     client: Client, offenses: Any, enrich_ip_addresses: bool, enrich_assets: bool, assets_limit: int | None = None
-) -> List[dict]:
+) -> list[dict]:
     """
     Receives list of offenses, and enriches the offenses with the following:
     - Changes offense_type value from the offense type ID to the offense type name.
@@ -1760,9 +1783,9 @@ def enrich_offenses_result(
         )
 
         if enrich_assets:
-            source_ips: List = source_addresses_enrich.get("source_address_ids", [])
-            destination_ips: List = destination_addresses_enrich.get("local_destination_address_ids", [])
-            all_ips: List = source_ips + destination_ips
+            source_ips: list = source_addresses_enrich.get("source_address_ids", [])
+            destination_ips: list = destination_addresses_enrich.get("local_destination_address_ids", [])
+            all_ips: list = source_ips + destination_ips
             asset_enrich = {"assets": enrich_offense_with_assets(client, all_ips, assets_limit)}
         else:
             asset_enrich = {}
@@ -1782,7 +1805,7 @@ def enrich_offenses_result(
     return result
 
 
-def enrich_asset_properties(properties: List, properties_to_enrich_dict: dict) -> dict:
+def enrich_asset_properties(properties: list, properties_to_enrich_dict: dict) -> dict:
     """
     Receives list of properties of an asset, and properties to enrich, and returns a dict containing the enrichment
     Args:
@@ -1838,7 +1861,7 @@ def add_iso_entries_to_asset(asset: dict) -> dict:
     return {k: get_asset_entry(k, v) for k, v in asset.items()}
 
 
-def enrich_assets_results(client: Client, assets: Any, full_enrichment: bool) -> List[dict]:
+def enrich_assets_results(client: Client, assets: Any, full_enrichment: bool) -> list[dict]:
     """
     Receives list of assets, and enriches each asset with 'Endpoint' entry containing the following:
     - IP addresses of all interfaces.
@@ -1897,7 +1920,7 @@ def enrich_assets_results(client: Client, assets: Any, full_enrichment: bool) ->
     return [enrich_single_asset(asset) for asset in assets]
 
 
-def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str], first_fetch: str, client: Client) -> int:
+def get_minimum_id_to_fetch(highest_offense_id: int, user_query: str | None, first_fetch: str, client: Client) -> int:
     """
     Receives the highest offense ID saved from last run, and user query.
     Checks if user query has a limitation for a minimum ID.
@@ -2353,7 +2376,7 @@ def is_incident_size_acceptable(incident: dict) -> bool:
     return True
 
 
-def fetch_incidents_command() -> List[dict]:
+def fetch_incidents_command() -> list[dict]:
     """
     Fetch incidents implemented, for mapping purposes only.
     Returns list of samples saved by long running execution.
@@ -2449,7 +2472,7 @@ def poll_offense_events_with_retry(
     search_id: str,
     offense_id: int,
     max_retries: int = EVENTS_POLLING_TRIES,
-) -> tuple[List[dict], str]:
+) -> tuple[list[dict], str]:
     """
     Polls QRadar service for search ID given until status returned is within '{'CANCELED', 'ERROR', 'COMPLETED'}'.
     Afterwards, performs a call to retrieve the events returned by the search.
@@ -2503,7 +2526,7 @@ def enrich_offense_with_events(client: Client, offense: dict, fetch_mode: FetchM
     """
     offense_id = str(offense["id"])
     events_count = offense.get("event_count", 0)
-    events: List[dict] = []
+    events: list[dict] = []
     failure_message = ""
     is_success = True
     for retry in range(EVENTS_SEARCH_TRIES):
@@ -2623,12 +2646,12 @@ def get_incidents_long_running_execution(
     ip_enrich: bool,
     asset_enrich: bool,
     last_highest_id: int,
-    incident_type: Optional[str],
-    mirror_direction: Optional[str],
+    incident_type: str | None,
+    mirror_direction: str | None,
     first_fetch: str,
     mirror_options: str,
     assets_limit: int,
-) -> tuple[Optional[List[dict]], Optional[int]]:
+) -> tuple[list[dict] | None, int | None]:
     """
     Gets offenses from QRadar service, and transforms them to incidents in a long running execution.
     Args:
@@ -2726,7 +2749,7 @@ def prepare_context_for_events(offenses_with_metadata):
     safely_update_context_data_partial(partial_changes)
 
 
-def create_incidents_from_offenses(offenses: List[dict], incident_type: Optional[str]) -> List[dict]:
+def create_incidents_from_offenses(offenses: list[dict], incident_type: str | None) -> list[dict]:
     """
     Transforms list of offenses given into incidents for Demisto.
     Args:
@@ -2802,8 +2825,8 @@ def perform_long_running_loop(
     events_limit: int,
     ip_enrich: bool,
     asset_enrich: bool,
-    incident_type: Optional[str],
-    mirror_direction: Optional[str],
+    incident_type: str | None,
+    mirror_direction: str | None,
     first_fetch: str,
     mirror_options: str,
     assets_limit: int,
@@ -3347,7 +3370,7 @@ def qradar_saved_searches_list_command(client: Client, args: dict) -> CommandRes
         CommandResults.
     """
     saved_search_id = args.get("saved_search_id")
-    timeout: Optional[int] = arg_to_number(args.get("timeout", DEFAULT_TIMEOUT_VALUE))
+    timeout: int | None = arg_to_number(args.get("timeout", DEFAULT_TIMEOUT_VALUE))
     range_ = f"""items={args.get('range', DEFAULT_RANGE_VALUE)}"""
     filter_ = args.get("filter")
     fields = args.get("fields")
@@ -3740,6 +3763,40 @@ def qradar_reference_set_value_delete_command(client: Client, args: dict) -> Com
     return CommandResults(readable_output=human_readable, raw_response=response)
 
 
+def qradar_reference_data_bulk_load(client: Client, args: dict) -> CommandResults:
+    """Bulk loads reference data to a reference data map
+
+    Args:
+        client (Client): The demisto api client
+        args (dict): The demisto arguments object
+
+    Returns:
+        CommandResults: A demisto command results object
+    """
+    ## Test if we have the required arguments, if not throw value error
+    reference_data_type = args.get("reference_data_type", None)
+    reference_data_name = args.get("reference_data_name", None)
+    data = args.get("data", None)
+    if reference_data_name is None:
+        raise ValueError("reference_data_name is required")
+    if reference_data_name is None:
+        raise ValueError("reference_data_name is required")
+    if data is None:
+        raise ValueError("data is required")
+    if reference_data_type not in ["maps", "map_of_sets"]:
+        raise ValueError("invalid value for reference_data_type. Acceptable options are maps or map_of_sets")
+    # TODO: Implement API Call
+    resp = client.reference_data_bulk_call(name=reference_data_name, type=reference_data_type, data=data)
+
+    return CommandResults(
+        readable_output="Set updates",
+        outputs_prefix="QRadar.Reference",
+        outputs_key_field="Name",
+        outputs=resp,
+        raw_response=resp,
+    )
+
+
 def qradar_domains_list_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves list of domains sets from QRadar service.
@@ -3803,7 +3860,7 @@ def qradar_indicators_upload_command(args: dict, client: Client, params: dict) -
     return insert_values_to_reference_set_polling(client, params.get("api_version", ""), args, from_indicators=True)
 
 
-def flatten_nested_geolocation_values(geolocation_dict: dict, dict_key: str, nested_value_keys: List[str]) -> dict:
+def flatten_nested_geolocation_values(geolocation_dict: dict, dict_key: str, nested_value_keys: list[str]) -> dict:
     """
     Receives output from geolocation IPs command, and does:
     1) flattens output, takes nested keys values.
@@ -3994,12 +4051,12 @@ def perform_ips_command_request(client: Client, args: dict[str, Any], is_destina
         - Request response.
     """
     range_: str = f"""items={args.get('range', DEFAULT_RANGE_VALUE)}"""
-    filter_: Optional[str] = args.get("filter")
-    fields: Optional[str] = args.get("fields")
+    filter_: str | None = args.get("filter")
+    fields: str | None = args.get("fields")
 
     address_type = "local_destination" if is_destination_addresses else "source"
     ips_arg_name: str = f"{address_type}_ip"
-    ips: List[str] = argToList(args.get(ips_arg_name, []))
+    ips: list[str] = argToList(args.get(ips_arg_name, []))
 
     if ips and filter_:
         raise DemistoException(f"Both filter and {ips_arg_name} have been supplied. Please supply only one.")
@@ -4204,14 +4261,14 @@ def qradar_get_mapping_fields_command(client: Client) -> dict:
 
 
 def update_events_mirror_message(
-    mirror_options: Optional[Any],
+    mirror_options: Any | None,
     events_limit: int,
     events_count: int,
     events_mirrored: int,
     events_mirrored_collapsed: int,
     fetch_mode: str,
     offense_id: int,
-    failure_message: Optional[str] = None,
+    failure_message: str | None = None,
 ) -> str:
     """Return the offense's events' mirror error message.
 
@@ -4613,7 +4670,7 @@ def qradar_search_retrieve_events_command(
         print_debug_msg("Its the last run of the polling, will cancel the query request. ")
         client.search_cancel(search_id=search_id)
         return CommandResults(
-            readable_output="Got polling timeout. Quary got cancelled.",
+            readable_output="Got polling timeout. Query got cancelled.",
         )
     if is_last_run and args.get("success") and not events:
         # if last run, we want to get the events that were fetched in the previous calls
@@ -5260,7 +5317,7 @@ def qradar_log_source_create_command(client: Client, args: dict) -> CommandResul
       for this argument should follow: protocol_parameters="name_1=value_1,name_2=value_2,...,name_n=value_n" where each name
       should correspond to a name of a protocol parameter from the protocol type and each value should fit the type of the
       protocol parameter.
-    - descrption: The description of the log source
+    - description: The description of the log source
     - coalesce_events: Determines if events collected by this log source are coalesced based on common properties.
       If each individual event is stored, then the condition is set to false. Defaults to true.
     - enabled: Determines if the log source is enabled. Defaults to true.
@@ -5325,7 +5382,7 @@ def qradar_log_source_update_command(client: Client, args: dict) -> CommandResul
       for this argument should follow: protocol_parameters="name_1=value_1,name_2=value_2,...,name_n=value_n" where each name
       should correspond to a name of a protocol parameter from the protocol type and each value should fit the type of the
       protocol parameter.
-    - descrption: The description of the log source
+    - description: The description of the log source
     - coalesce_events: Determines if events collected by this log source are coalesced based on common properties.
       If each individual event is stored, then the condition is set to false. Defaults to true.
     - enabled: Determines if the log source is enabled. Defaults to true.
@@ -5704,6 +5761,9 @@ def main() -> None:  # pragma: no cover
 
         elif command == "qradar-print-context":
             return_results(qradar_print_context_command())
+
+        elif command == "qradar-reference-data-bulk-load":
+            return_results(qradar_reference_data_bulk_load(client, args))
 
         else:
             raise NotImplementedError(f"""Command '{command}' is not implemented.""")
