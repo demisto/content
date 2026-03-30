@@ -1907,6 +1907,47 @@ def test_send_assets_and_vulnerabilities_to_xsiam(
     assert not send_data_to_xsiam_vulns_kwargs["should_update_health_module"]
 
 
+def test_send_assets_and_vulnerabilities_to_xsiam_empty_last_page(mocker: MockerFixture):
+    """
+    Given:
+        - Empty assets and vulnerabilities lists on the closing snapshot (has_next_page=False).
+        - Cumulative counts of 500 assets and 200 vulnerabilities from previous pages.
+
+    When:
+        - Calling send_assets_and_vulnerabilities_to_xsiam with empty data and has_next_page=False.
+
+    Then:
+        - Ensure close_snapshot_if_empty replaces empty lists with [{}] and increments items_count by 1.
+        - Ensure send_data_to_xsiam is called with data=[{}] and items_count=str(count + 1) for both datasets.
+    """
+    cumulative_assets_count = 500
+    cumulative_vulns_count = 200
+
+    mock_send_data_to_xsiam = mocker.patch("Qualysv2.send_data_to_xsiam")
+
+    send_assets_and_vulnerabilities_to_xsiam(
+        assets=[],
+        vulnerabilities=[],
+        cumulative_assets_count=cumulative_assets_count,
+        cumulative_vulns_count=cumulative_vulns_count,
+        has_next_page=False,
+        snapshot_id=SNAPSHOT_ID,
+    )
+
+    send_data_to_xsiam_assets_kwargs = mock_send_data_to_xsiam.mock_calls[0].kwargs
+    send_data_to_xsiam_vulns_kwargs = mock_send_data_to_xsiam.mock_calls[1].kwargs
+
+    # Assets: empty list replaced with [{}], items_count incremented by 1
+    assert send_data_to_xsiam_assets_kwargs["data"] == [{}]
+    assert send_data_to_xsiam_assets_kwargs["items_count"] == str(cumulative_assets_count + 1)
+    assert send_data_to_xsiam_assets_kwargs["snapshot_id"] == SNAPSHOT_ID
+
+    # Vulnerabilities: empty list replaced with [{}], items_count incremented by 1
+    assert send_data_to_xsiam_vulns_kwargs["data"] == [{}]
+    assert send_data_to_xsiam_vulns_kwargs["items_count"] == str(cumulative_vulns_count + 1)
+    assert send_data_to_xsiam_vulns_kwargs["snapshot_id"] == SNAPSHOT_ID
+
+
 @pytest.fixture
 def mock_client():
     client = Mock()
@@ -1978,3 +2019,52 @@ def test_get_qid_for_cve_multiple_qids(mock_client):
     result = get_qid_for_cve(mock_client, "CVE-2024-9999")
 
     assert result.outputs == ["12345", "67890"]
+
+
+@freeze_time("2025-01-01 00:00:00 UTC")
+def test_fetch_assets_and_vulnerabilities_by_date_last_page_empty(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - Qualys client and last run dictionary with fetch stage, total assets count, and snapshot ID.
+        - The last page of assets returns 0 assets (empty list) but no next page (pagination complete).
+
+    When:
+        - Calling fetch_assets_and_vulnerabilities_by_date with the "assets" stage.
+
+    Then:
+        - Ensure a snapshot closing signal is sent to XSIAM with a placeholder [{}] and the correct items_count.
+        - Ensure the stage transitions to "vulnerabilities".
+    """
+    from contextlib import nullcontext
+
+    mocker.patch("Qualysv2.ExecutionTimeout", return_value=nullcontext(), create=True)
+
+    last_total_assets = 500
+    last_run = {"stage": "assets", "total_assets": last_total_assets, "snapshot_id": SNAPSHOT_ID}
+
+    # Last page returns 0 assets, no next page, no limit reduction needed
+    empty_assets, next_page, set_new_limit = [], "", False
+    mocker.patch("Qualysv2.get_host_list_detections_events", return_value=(empty_assets, next_page, set_new_limit))
+
+    mock_send_data_to_xsiam = mocker.patch("Qualysv2.send_data_to_xsiam")
+    mock_set_assets_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
+
+    fetch_assets_and_vulnerabilities_by_date(client, last_run)
+
+    send_data_to_xsiam_kwargs: dict = mock_send_data_to_xsiam.call_args.kwargs
+    next_run = mock_set_assets_last_run.call_args[0][0]
+
+    # Should send an empty JSON [{}] to close the snapshot since assets is empty
+    assert send_data_to_xsiam_kwargs["data"] == [{}]
+    assert send_data_to_xsiam_kwargs["vendor"] == VENDOR
+    assert send_data_to_xsiam_kwargs["product"] == "assets"
+    assert send_data_to_xsiam_kwargs["snapshot_id"] == SNAPSHOT_ID
+    assert send_data_to_xsiam_kwargs["items_count"] == str(
+        last_total_assets + 1
+    )  # total_assets + 1 to account for the empty JSON row
+    assert not send_data_to_xsiam_kwargs["should_update_health_module"]
+
+    assert next_run["next_page"] == ""
+    assert next_run["stage"] == "vulnerabilities"
+    assert next_run["total_assets"] == last_total_assets
+    assert next_run["snapshot_id"] == SNAPSHOT_ID
