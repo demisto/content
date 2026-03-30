@@ -2691,6 +2691,7 @@ def fetch_incidents(client: Client) -> list:
         )
         count += 1
 
+    new_limit = len(last_run.get('found_incident_ids', [])) + len(incidents) + client.sys_param_limit # Override commonserverpython logic for testing
     last_run = update_last_run_object(
         last_run=last_run,
         incidents=incidents,
@@ -2702,6 +2703,7 @@ def fetch_incidents(client: Client) -> list:
         id_field="sys_id",
         date_format=DATE_FORMAT,
     )
+    last_run["limit"] = new_limit # Override commonserverpython logic for testing
 
     demisto.debug(f"ServiceNowV2 - Last run after incidents fetching: {json.dumps(last_run)}")
     demisto.debug(f"ServiceNowV2 - Number of incidents before filtering: {len(tickets_response)}")
