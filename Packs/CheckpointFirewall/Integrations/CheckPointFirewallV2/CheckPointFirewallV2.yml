@@ -1859,32 +1859,20 @@ script:
     - contextPath: CheckPoint.Network.type
       description: Object type.
       type: String
-    - contextPath: CheckPoint.Network.domain-name
+    - contextPath: CheckPoint.Network.domain.name
       description: Domain name.
       type: String
-    - contextPath: CheckPoint.Network.domain-uid
+    - contextPath: CheckPoint.Network.domain.uid
       description: Domain UID.
-      type: String
-    - contextPath: CheckPoint.Network.ipv4-address
-      description: Network IPv4 address.
-      type: String
-    - contextPath: CheckPoint.Network.ipv6-address
-      description: Network IPv6 address.
       type: String
     - contextPath: CheckPoint.Network.read-only
       description: Indicates if the object is read-only.
       type: Boolean
-    - contextPath: CheckPoint.Network.creator
+    - contextPath: CheckPoint.Network.meta-info.creator
       description: The creator of the object.
       type: String
-    - contextPath: CheckPoint.Network.last-modifier
+    - contextPath: CheckPoint.Network.meta-info.last-modifier
       description: The user that last modified the object.
-      type: String
-    - contextPath: CheckPoint.Network.groups-name
-      description: The name of the group object linked to the current network object.
-      type: String
-    - contextPath: CheckPoint.Network.groups-uid
-      description: The UID of the group object linked to the current network object.
       type: String
   - arguments:
     - defaultValue: '50'
@@ -1914,12 +1902,6 @@ script:
       type: String
     - contextPath: CheckPoint.Network.type
       description: Object type.
-      type: String
-    - contextPath: CheckPoint.Network.ipv4-address
-      description: Network IPv4 address.
-      type: String
-    - contextPath: CheckPoint.Network.ipv6-address
-      description: Network IPv6 address.
       type: String
   - arguments:
     - description: Object name. Must be unique in the domain.
@@ -2022,27 +2004,24 @@ script:
     - contextPath: CheckPoint.Network.type
       description: Object type.
       type: String
-    - contextPath: CheckPoint.Network.domain-name
+    - contextPath: CheckPoint.Network.domain.name
       description: Domain name.
       type: String
-    - contextPath: CheckPoint.Network.domain-uid
+    - contextPath: CheckPoint.Network.domain.uid
       description: Domain UID.
       type: String
-    - contextPath: CheckPoint.Network.domain-type
+    - contextPath: CheckPoint.Network.domain.domain-type
       description: Domain type.
       type: String
-    - contextPath: CheckPoint.Network.creator
+    - contextPath: CheckPoint.Network.meta-info.creator
       description: The creator of the object.
       type: String
-    - contextPath: CheckPoint.Network.last-modifier
+    - contextPath: CheckPoint.Network.meta-info.last-modifier
       description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.Network.read-only
       description: Indicates if the object is read-only.
       type: Boolean
-    - contextPath: CheckPoint.Network.groups
-      description: Collection of group identifiers.
-      type: String
   - arguments:
     - description: Object unique identifier (UID) or name.
       name: identifier
@@ -2143,19 +2122,19 @@ script:
     - contextPath: CheckPoint.Network.type
       description: Object type.
       type: String
-    - contextPath: CheckPoint.Network.domain-name
+    - contextPath: CheckPoint.Network.domain.name
       description: Domain name.
       type: String
-    - contextPath: CheckPoint.Network.domain-uid
+    - contextPath: CheckPoint.Network.domain.uid
       description: Domain UID.
       type: String
-    - contextPath: CheckPoint.Network.domain-type
+    - contextPath: CheckPoint.Network.domain.domain-type
       description: Domain type.
       type: String
-    - contextPath: CheckPoint.Network.creator
+    - contextPath: CheckPoint.Network.meta-info.creator
       description: The creator of the object.
       type: String
-    - contextPath: CheckPoint.Network.last-modifier
+    - contextPath: CheckPoint.Network.meta-info.last-modifier
       description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.Network.read-only
@@ -2163,9 +2142,6 @@ script:
       type: Boolean
     - contextPath: CheckPoint.Network.comments
       description: Comments string.
-      type: String
-    - contextPath: CheckPoint.Network.groups
-      description: Collection of group identifiers.
       type: String
   - arguments:
     - description: Object unique identifier (UID) or name.
@@ -2211,20 +2187,23 @@ script:
     - contextPath: CheckPoint.TCPService.type
       description: Object type.
       type: String
-    - contextPath: CheckPoint.TCPService.domain-name
+    - contextPath: CheckPoint.TCPService.domain.name
       description: Domain name.
       type: String
-    - contextPath: CheckPoint.TCPService.domain-uid
+    - contextPath: CheckPoint.TCPService.domain.uid
       description: Domain UID.
       type: String
     - contextPath: CheckPoint.TCPService.read-only
       description: Indicates if the object is read-only.
       type: Boolean
-    - contextPath: CheckPoint.TCPService.creator
+    - contextPath: CheckPoint.TCPService.meta-info.creator
       description: The creator of the object.
       type: String
-    - contextPath: CheckPoint.TCPService.last-modifier
+    - contextPath: CheckPoint.TCPService.meta-info.last-modifier
       description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.TCPService.port
+      description: The number of the port used to provide this service.
       type: String
     - contextPath: CheckPoint.UDPService.name
       description: Object name.
@@ -2235,20 +2214,23 @@ script:
     - contextPath: CheckPoint.UDPService.type
       description: Object type.
       type: String
-    - contextPath: CheckPoint.UDPService.domain-name
+    - contextPath: CheckPoint.UDPService.domain.name
       description: Domain name.
       type: String
-    - contextPath: CheckPoint.UDPService.domain-uid
+    - contextPath: CheckPoint.UDPService.domain.uid
       description: Domain UID.
       type: String
     - contextPath: CheckPoint.UDPService.read-only
       description: Indicates if the object is read-only.
       type: Boolean
-    - contextPath: CheckPoint.UDPService.creator
+    - contextPath: CheckPoint.UDPService.meta-info.creator
       description: The creator of the object.
       type: String
-    - contextPath: CheckPoint.UDPService.last-modifier
+    - contextPath: CheckPoint.UDPService.meta-info.last-modifier
       description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.UDPService.port
+      description: The number of the port used to provide this service.
       type: String
     - contextPath: CheckPoint.ICMPService.name
       description: Object name.
@@ -2259,21 +2241,27 @@ script:
     - contextPath: CheckPoint.ICMPService.type
       description: Object type.
       type: String
-    - contextPath: CheckPoint.ICMPService.domain-name
+    - contextPath: CheckPoint.ICMPService.domain.name
       description: Domain name.
       type: String
-    - contextPath: CheckPoint.ICMPService.domain-uid
+    - contextPath: CheckPoint.ICMPService.domain.uid
       description: Domain UID.
       type: String
     - contextPath: CheckPoint.ICMPService.read-only
       description: Indicates if the object is read-only.
       type: Boolean
-    - contextPath: CheckPoint.ICMPService.creator
+    - contextPath: CheckPoint.ICMPService.meta-info.creator
       description: The creator of the object.
       type: String
-    - contextPath: CheckPoint.ICMPService.last-modifier
+    - contextPath: CheckPoint.ICMPService.meta-info.last-modifier
       description: The user that last modified the object.
       type: String
+    - contextPath: CheckPoint.ICMPService.icmp-type
+      description: ICMP type as listed in RFC 792.
+      type: Number
+    - contextPath: CheckPoint.ICMPService.icmp-code
+      description: ICMP code as listed in RFC 792.
+      type: Number
   - arguments:
     - description: Object unique identifier (UID) or name. When provided, calls the single-object endpoint instead of the list endpoint.
       name: identifier
@@ -2306,6 +2294,18 @@ script:
     - contextPath: CheckPoint.TCPService.type
       description: Object type.
       type: String
+    - contextPath: CheckPoint.TCPService.port
+      description: The number of the port used to provide this service.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain.name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain.uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain.domain-type
+      description: Domain type.
+      type: String
     - contextPath: CheckPoint.UDPService.name
       description: Object name.
       type: String
@@ -2315,6 +2315,18 @@ script:
     - contextPath: CheckPoint.UDPService.type
       description: Object type.
       type: String
+    - contextPath: CheckPoint.UDPService.port
+      description: The number of the port used to provide this service.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain.name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain.uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain.domain-type
+      description: Domain type.
+      type: String
     - contextPath: CheckPoint.ICMPService.name
       description: Object name.
       type: String
@@ -2323,6 +2335,21 @@ script:
       type: String
     - contextPath: CheckPoint.ICMPService.type
       description: Object type.
+      type: String
+    - contextPath: CheckPoint.ICMPService.icmp-type
+      description: ICMP type as listed in RFC 792.
+      type: Number
+    - contextPath: CheckPoint.ICMPService.icmp-code
+      description: ICMP code as listed in RFC 792.
+      type: Number
+    - contextPath: CheckPoint.ICMPService.domain.name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.ICMPService.domain.uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.ICMPService.domain.domain-type
+      description: Domain type.
       type: String
   - arguments:
     - description: Object name. Must be unique in the domain.
@@ -2393,26 +2420,26 @@ script:
     - contextPath: CheckPoint.TCPService.type
       description: Object type.
       type: String
-    - contextPath: CheckPoint.TCPService.domain-name
+    - contextPath: CheckPoint.TCPService.domain.name
       description: Domain name.
       type: String
-    - contextPath: CheckPoint.TCPService.domain-uid
+    - contextPath: CheckPoint.TCPService.domain.uid
       description: Domain UID.
       type: String
-    - contextPath: CheckPoint.TCPService.domain-type
+    - contextPath: CheckPoint.TCPService.domain.domain-type
       description: Domain type.
       type: String
-    - contextPath: CheckPoint.TCPService.creator
+    - contextPath: CheckPoint.TCPService.meta-info.creator
       description: The creator of the object.
       type: String
-    - contextPath: CheckPoint.TCPService.last-modifier
+    - contextPath: CheckPoint.TCPService.meta-info.last-modifier
       description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.TCPService.read-only
       description: Indicates if the object is read-only.
       type: Boolean
-    - contextPath: CheckPoint.TCPService.groups
-      description: Collection of group identifiers.
+    - contextPath: CheckPoint.TCPService.port
+      description: The number of the port used to provide this service.
       type: String
   - arguments:
     - description: Object name. Must be unique in the domain.
@@ -2483,26 +2510,26 @@ script:
     - contextPath: CheckPoint.UDPService.type
       description: Object type.
       type: String
-    - contextPath: CheckPoint.UDPService.domain-name
+    - contextPath: CheckPoint.UDPService.domain.name
       description: Domain name.
       type: String
-    - contextPath: CheckPoint.UDPService.domain-uid
+    - contextPath: CheckPoint.UDPService.domain.uid
       description: Domain UID.
       type: String
-    - contextPath: CheckPoint.UDPService.domain-type
+    - contextPath: CheckPoint.UDPService.domain.domain-type
       description: Domain type.
       type: String
-    - contextPath: CheckPoint.UDPService.creator
+    - contextPath: CheckPoint.UDPService.meta-info.creator
       description: The creator of the object.
       type: String
-    - contextPath: CheckPoint.UDPService.last-modifier
+    - contextPath: CheckPoint.UDPService.meta-info.last-modifier
       description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.UDPService.read-only
       description: Indicates if the object is read-only.
       type: Boolean
-    - contextPath: CheckPoint.UDPService.groups
-      description: Collection of group identifiers.
+    - contextPath: CheckPoint.UDPService.port
+      description: The number of the port used to provide this service.
       type: String
   - arguments:
     - description: Object name. Must be unique in the domain.
@@ -2573,27 +2600,30 @@ script:
     - contextPath: CheckPoint.ICMPService.type
       description: Object type.
       type: String
-    - contextPath: CheckPoint.ICMPService.domain-name
+    - contextPath: CheckPoint.ICMPService.domain.name
       description: Domain name.
       type: String
-    - contextPath: CheckPoint.ICMPService.domain-uid
+    - contextPath: CheckPoint.ICMPService.domain.uid
       description: Domain UID.
       type: String
-    - contextPath: CheckPoint.ICMPService.domain-type
+    - contextPath: CheckPoint.ICMPService.domain.domain-type
       description: Domain type.
       type: String
-    - contextPath: CheckPoint.ICMPService.creator
+    - contextPath: CheckPoint.ICMPService.meta-info.creator
       description: The creator of the object.
       type: String
-    - contextPath: CheckPoint.ICMPService.last-modifier
+    - contextPath: CheckPoint.ICMPService.meta-info.last-modifier
       description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.ICMPService.read-only
       description: Indicates if the object is read-only.
       type: Boolean
-    - contextPath: CheckPoint.ICMPService.groups
-      description: Collection of group identifiers.
-      type: String
+    - contextPath: CheckPoint.ICMPService.icmp-type
+      description: ICMP type as listed in RFC 792.
+      type: Number
+    - contextPath: CheckPoint.ICMPService.icmp-code
+      description: ICMP code as listed in RFC 792.
+      type: Number
   - arguments:
     - description: Object unique identifier (UID) or name.
       name: identifier
@@ -2663,19 +2693,19 @@ script:
     - contextPath: CheckPoint.TCPService.type
       description: Object type.
       type: String
-    - contextPath: CheckPoint.TCPService.domain-name
+    - contextPath: CheckPoint.TCPService.domain.name
       description: Domain name.
       type: String
-    - contextPath: CheckPoint.TCPService.domain-uid
+    - contextPath: CheckPoint.TCPService.domain.uid
       description: Domain UID.
       type: String
-    - contextPath: CheckPoint.TCPService.domain-type
+    - contextPath: CheckPoint.TCPService.domain.domain-type
       description: Domain type.
       type: String
-    - contextPath: CheckPoint.TCPService.creator
+    - contextPath: CheckPoint.TCPService.meta-info.creator
       description: The creator of the object.
       type: String
-    - contextPath: CheckPoint.TCPService.last-modifier
+    - contextPath: CheckPoint.TCPService.meta-info.last-modifier
       description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.TCPService.read-only
@@ -2684,8 +2714,8 @@ script:
     - contextPath: CheckPoint.TCPService.comments
       description: Comments string.
       type: String
-    - contextPath: CheckPoint.TCPService.groups
-      description: Collection of group identifiers.
+    - contextPath: CheckPoint.TCPService.port
+      description: The number of the port used to provide this service.
       type: String
   - arguments:
     - description: Object unique identifier (UID) or name.
@@ -2756,19 +2786,19 @@ script:
     - contextPath: CheckPoint.UDPService.type
       description: Object type.
       type: String
-    - contextPath: CheckPoint.UDPService.domain-name
+    - contextPath: CheckPoint.UDPService.domain.name
       description: Domain name.
       type: String
-    - contextPath: CheckPoint.UDPService.domain-uid
+    - contextPath: CheckPoint.UDPService.domain.uid
       description: Domain UID.
       type: String
-    - contextPath: CheckPoint.UDPService.domain-type
+    - contextPath: CheckPoint.UDPService.domain.domain-type
       description: Domain type.
       type: String
-    - contextPath: CheckPoint.UDPService.creator
+    - contextPath: CheckPoint.UDPService.meta-info.creator
       description: The creator of the object.
       type: String
-    - contextPath: CheckPoint.UDPService.last-modifier
+    - contextPath: CheckPoint.UDPService.meta-info.last-modifier
       description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.UDPService.read-only
@@ -2777,8 +2807,8 @@ script:
     - contextPath: CheckPoint.UDPService.comments
       description: Comments string.
       type: String
-    - contextPath: CheckPoint.UDPService.groups
-      description: Collection of group identifiers.
+    - contextPath: CheckPoint.UDPService.port
+      description: The number of the port used to provide this service.
       type: String
   - arguments:
     - description: Object unique identifier (UID) or name.
@@ -2851,19 +2881,19 @@ script:
     - contextPath: CheckPoint.ICMPService.type
       description: Object type.
       type: String
-    - contextPath: CheckPoint.ICMPService.domain-name
+    - contextPath: CheckPoint.ICMPService.domain.name
       description: Domain name.
       type: String
-    - contextPath: CheckPoint.ICMPService.domain-uid
+    - contextPath: CheckPoint.ICMPService.domain.uid
       description: Domain UID.
       type: String
-    - contextPath: CheckPoint.ICMPService.domain-type
+    - contextPath: CheckPoint.ICMPService.domain.domain-type
       description: Domain type.
       type: String
-    - contextPath: CheckPoint.ICMPService.creator
+    - contextPath: CheckPoint.ICMPService.meta-info.creator
       description: The creator of the object.
       type: String
-    - contextPath: CheckPoint.ICMPService.last-modifier
+    - contextPath: CheckPoint.ICMPService.meta-info.last-modifier
       description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.ICMPService.read-only
@@ -2872,9 +2902,12 @@ script:
     - contextPath: CheckPoint.ICMPService.comments
       description: Comments string.
       type: String
-    - contextPath: CheckPoint.ICMPService.groups
-      description: Collection of group identifiers.
-      type: String
+    - contextPath: CheckPoint.ICMPService.icmp-type
+      description: ICMP type as listed in RFC 792.
+      type: Number
+    - contextPath: CheckPoint.ICMPService.icmp-code
+      description: ICMP code as listed in RFC 792.
+      type: Number
   - arguments:
     - description: Object unique identifier (UID) or name.
       name: identifier
@@ -2928,30 +2961,36 @@ script:
     - contextPath: CheckPoint.NatRule.method
       description: NAT translation method.
       type: String
-    - contextPath: CheckPoint.NatRule.original-source
-      description: Original source object.
+    - contextPath: CheckPoint.NatRule.original-source.name
+      description: Original source object name.
       type: String
-    - contextPath: CheckPoint.NatRule.original-destination
-      description: Original destination object.
+    - contextPath: CheckPoint.NatRule.original-destination.name
+      description: Original destination object name.
       type: String
-    - contextPath: CheckPoint.NatRule.original-service
-      description: Original service object.
+    - contextPath: CheckPoint.NatRule.original-service.name
+      description: Original service object name.
       type: String
-    - contextPath: CheckPoint.NatRule.translated-source
-      description: Translated source object.
+    - contextPath: CheckPoint.NatRule.translated-source.name
+      description: Translated source object name.
       type: String
-    - contextPath: CheckPoint.NatRule.translated-destination
-      description: Translated destination object.
+    - contextPath: CheckPoint.NatRule.translated-destination.name
+      description: Translated destination object name.
       type: String
-    - contextPath: CheckPoint.NatRule.translated-service
-      description: Translated service object.
+    - contextPath: CheckPoint.NatRule.translated-service.name
+      description: Translated service object name.
       type: String
     - contextPath: CheckPoint.NatRule.comments
       description: Comments string.
       type: String
-    - contextPath: CheckPoint.NatRule.rule-number
-      description: Rule number.
-      type: Number
+    - contextPath: CheckPoint.NatRule.domain.name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.NatRule.domain.uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.NatRule.domain.domain-type
+      description: Domain type.
+      type: String
   - arguments:
     - description: Name of the package.
       name: package
@@ -2976,39 +3015,6 @@ script:
     - contextPath: CheckPoint.NatRule.name
       description: Object name.
       type: String
-    - contextPath: CheckPoint.NatRule.type
-      description: Object type.
-      type: String
-    - contextPath: CheckPoint.NatRule.enabled
-      description: Whether the rule is enabled.
-      type: Boolean
-    - contextPath: CheckPoint.NatRule.method
-      description: NAT translation method.
-      type: String
-    - contextPath: CheckPoint.NatRule.original-source
-      description: Original source object.
-      type: String
-    - contextPath: CheckPoint.NatRule.original-destination
-      description: Original destination object.
-      type: String
-    - contextPath: CheckPoint.NatRule.original-service
-      description: Original service object.
-      type: String
-    - contextPath: CheckPoint.NatRule.translated-source
-      description: Translated source object.
-      type: String
-    - contextPath: CheckPoint.NatRule.translated-destination
-      description: Translated destination object.
-      type: String
-    - contextPath: CheckPoint.NatRule.translated-service
-      description: Translated service object.
-      type: String
-    - contextPath: CheckPoint.NatRule.comments
-      description: Comments string.
-      type: String
-    - contextPath: CheckPoint.NatRule.rule-number
-      description: Rule number.
-      type: Number
   - arguments:
     - description: Name of the package.
       name: package
@@ -3078,30 +3084,36 @@ script:
     - contextPath: CheckPoint.NatRule.method
       description: NAT translation method.
       type: String
-    - contextPath: CheckPoint.NatRule.original-source
-      description: Original source object.
+    - contextPath: CheckPoint.NatRule.original-source.name
+      description: Original source object name.
       type: String
-    - contextPath: CheckPoint.NatRule.original-destination
-      description: Original destination object.
+    - contextPath: CheckPoint.NatRule.original-destination.name
+      description: Original destination object name.
       type: String
-    - contextPath: CheckPoint.NatRule.original-service
-      description: Original service object.
+    - contextPath: CheckPoint.NatRule.original-service.name
+      description: Original service object name.
       type: String
-    - contextPath: CheckPoint.NatRule.translated-source
-      description: Translated source object.
+    - contextPath: CheckPoint.NatRule.translated-source.name
+      description: Translated source object name.
       type: String
-    - contextPath: CheckPoint.NatRule.translated-destination
-      description: Translated destination object.
+    - contextPath: CheckPoint.NatRule.translated-destination.name
+      description: Translated destination object name.
       type: String
-    - contextPath: CheckPoint.NatRule.translated-service
-      description: Translated service object.
+    - contextPath: CheckPoint.NatRule.translated-service.name
+      description: Translated service object name.
       type: String
     - contextPath: CheckPoint.NatRule.comments
       description: Comments string.
       type: String
-    - contextPath: CheckPoint.NatRule.rule-number
-      description: Rule number.
-      type: Number
+    - contextPath: CheckPoint.NatRule.domain.name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.NatRule.domain.uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.NatRule.domain.domain-type
+      description: Domain type.
+      type: String
   - arguments:
     - description: Rule name or Rule number.
       name: identifier
@@ -3162,30 +3174,36 @@ script:
     - contextPath: CheckPoint.NatRule.method
       description: NAT translation method.
       type: String
-    - contextPath: CheckPoint.NatRule.original-source
-      description: Original source object.
+    - contextPath: CheckPoint.NatRule.original-source.name
+      description: Original source object name.
       type: String
-    - contextPath: CheckPoint.NatRule.original-destination
-      description: Original destination object.
+    - contextPath: CheckPoint.NatRule.original-destination.name
+      description: Original destination object name.
       type: String
-    - contextPath: CheckPoint.NatRule.original-service
-      description: Original service object.
+    - contextPath: CheckPoint.NatRule.original-service.name
+      description: Original service object name.
       type: String
-    - contextPath: CheckPoint.NatRule.translated-source
-      description: Translated source object.
+    - contextPath: CheckPoint.NatRule.translated-source.name
+      description: Translated source object name.
       type: String
-    - contextPath: CheckPoint.NatRule.translated-destination
-      description: Translated destination object.
+    - contextPath: CheckPoint.NatRule.translated-destination.name
+      description: Translated destination object name.
       type: String
-    - contextPath: CheckPoint.NatRule.translated-service
-      description: Translated service object.
+    - contextPath: CheckPoint.NatRule.translated-service.name
+      description: Translated service object name.
       type: String
     - contextPath: CheckPoint.NatRule.comments
       description: Comments string.
       type: String
-    - contextPath: CheckPoint.NatRule.rule-number
-      description: Rule number.
-      type: Number
+    - contextPath: CheckPoint.NatRule.domain.name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.NatRule.domain.uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.NatRule.domain.domain-type
+      description: Domain type.
+      type: String
   - arguments:
     - description: Rule name or Rule number.
       name: identifier

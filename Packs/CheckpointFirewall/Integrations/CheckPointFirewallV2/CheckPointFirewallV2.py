@@ -2565,7 +2565,7 @@ def checkpoint_network_get_command(client: Client, identifier: str, details_leve
         outputs_prefix="CheckPoint.Network",
         outputs_key_field="uid",
         readable_output=readable_output,
-        outputs=printable_result,
+        outputs=result,
         raw_response=result,
     )
 
@@ -2609,7 +2609,7 @@ def checkpoint_network_list_command(
         outputs_prefix="CheckPoint.Network",
         outputs_key_field="uid",
         readable_output=readable_output,
-        outputs=printable_result,
+        outputs=result.get("objects", []) if result else [],
         raw_response=result,
     )
 
@@ -2691,7 +2691,7 @@ def checkpoint_network_add_command(
         outputs_prefix="CheckPoint.Network",
         outputs_key_field="uid",
         readable_output=readable_output,
-        outputs=printable_result,
+        outputs=result,
         raw_response=result,
     )
 
@@ -2775,7 +2775,7 @@ def checkpoint_network_update_command(
         outputs_prefix="CheckPoint.Network",
         outputs_key_field="uid",
         readable_output=readable_output,
-        outputs=printable_result,
+        outputs=result,
         raw_response=result,
     )
 
@@ -2829,7 +2829,7 @@ def checkpoint_service_get_command(client: Client, identifier: str, service_type
         outputs_prefix=SERVICE_TYPE_CONTEXT_MAP[service_type],
         outputs_key_field="uid",
         readable_output=readable_output,
-        outputs=printable_result,
+        outputs=result,
         raw_response=result,
     )
 
@@ -2860,7 +2860,7 @@ def checkpoint_service_list_command(
             outputs_prefix=SERVICE_TYPE_CONTEXT_MAP[service_type],
             outputs_key_field="uid",
             readable_output=readable_output,
-            outputs=printable_result,
+            outputs=result,
             raw_response=result,
         )
 
@@ -2891,7 +2891,7 @@ def checkpoint_service_list_command(
         outputs_prefix=SERVICE_TYPE_CONTEXT_MAP[service_type],
         outputs_key_field="uid",
         readable_output=readable_output,
-        outputs=printable_results,
+        outputs=result.get("objects", []) if result else [],
         raw_response=result,
     )
 
@@ -2950,7 +2950,7 @@ def checkpoint_tcp_service_add_command(
         outputs_prefix="CheckPoint.TCPService",
         outputs_key_field="uid",
         readable_output=readable_output,
-        outputs=printable_result,
+        outputs=result,
         raw_response=result,
     )
 
@@ -3009,7 +3009,7 @@ def checkpoint_udp_service_add_command(
         outputs_prefix="CheckPoint.UDPService",
         outputs_key_field="uid",
         readable_output=readable_output,
-        outputs=printable_result,
+        outputs=result,
         raw_response=result,
     )
 
@@ -3068,7 +3068,7 @@ def checkpoint_icmp_service_add_command(
         outputs_prefix="CheckPoint.ICMPService",
         outputs_key_field="uid",
         readable_output=readable_output,
-        outputs=printable_result,
+        outputs=result,
         raw_response=result,
     )
 
@@ -3127,7 +3127,7 @@ def checkpoint_tcp_service_update_command(
         outputs_prefix="CheckPoint.TCPService",
         outputs_key_field="uid",
         readable_output=readable_output,
-        outputs=printable_result,
+        outputs=result,
         raw_response=result,
     )
 
@@ -3186,7 +3186,7 @@ def checkpoint_udp_service_update_command(
         outputs_prefix="CheckPoint.UDPService",
         outputs_key_field="uid",
         readable_output=readable_output,
-        outputs=printable_result,
+        outputs=result,
         raw_response=result,
     )
 
@@ -3249,7 +3249,7 @@ def checkpoint_icmp_service_update_command(
         outputs_prefix="CheckPoint.ICMPService",
         outputs_key_field="uid",
         readable_output=readable_output,
-        outputs=printable_result,
+        outputs=result,
         raw_response=result,
     )
 
