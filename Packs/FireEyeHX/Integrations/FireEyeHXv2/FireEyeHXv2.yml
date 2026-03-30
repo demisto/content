@@ -1,5 +1,8 @@
 category: Endpoint
 provider: Trellix
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: FireEyeHX v2
   version: -1
