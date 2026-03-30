@@ -100,7 +100,6 @@ To obtain your API credentials:
 | **Max incidents per fetch** | No | 10000 | Maximum incidents per fetch cycle |
 | **First fetch time** | No | 3 days | Initial time range for first fetch |
 | **Fetch Interval (Minutes)** | No | 1 | Time window for subsequent fetches |
-| **Show Content** | No | False | Show Alarm Content Field |
 
 ### Filtering Options
 
@@ -211,16 +210,11 @@ Change the status of one or more alarms.
   - `DUPLICATE`, `PROCESSED_INTERNALLY`, `MITIGATED`, `NOT_APPLICABLE`
 - `comments` (Optional): Status change comments
 - `company_id` (Optional): Override default company ID
-- `update_related_finding_status` (Optional, boolean): If set to true, also update related finding status.
-- `email` (Conditionally Required): Email of action owner. **Required if `update_related_finding_status` is true.**
-
-**Relational Logic:**
-If you select `update_related_finding_status`, you must provide the `email` field.
 
 **Example:**
 
 ```
-!socradar-change-alarm-status alarm_ids="81171696" status_reason="INVESTIGATING" comments="Under review" update_related_finding_status=true email="analyst@company.com"
+!socradar-change-alarm-status alarm_ids="81171696" status_reason="INVESTIGATING" comments="Under review"
 ```
 
 **From Incident Context:**
@@ -373,7 +367,7 @@ Using REVERSE PAGINATION (page 10 → page 1)
 Sample incidents:
 - [81171696] HIGH | OPEN | example.com
   Company: 789 | Type: Brand Protection / Impersonating Domain
-
+  
 - [81171697] CRITICAL | OPEN | admin@company.com
   Company: 789 | Type: Cyber Threat Intelligence / Stolen Credentials
 ```
@@ -644,3 +638,7 @@ SOCRadar is a leading Extended Threat Intelligence (XTI) platform that helps org
 - Ensure supply chain security
 
 Learn more: [www.socradar.io](https://www.socradar.io)
+
+---
+
+**Made with ❤️ by the SOCRadar Integration Team and XSOAR teams**
