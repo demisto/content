@@ -1,5 +1,5 @@
 {
-  "ip_command_response": {"asn": "15169", "ip": "8.8.8.8", "prefix": "8.8.8.0/24", "cc": "US", "owner": "GOOGLE, US", "key": "8.8.8.8"},
+  "ip_command_response": {"asn": "15169", "ip": "8.8.8.8", "prefix": "8.8.8.0/24", "cc": "US", "owner": "GOOGLE - Google LLC, US", "key": "8.8.8.8"},
   "mock_output": {"ASN": "15169",
                   "ASOwner": "GOOGLE, US",
                   "Address": "8.8.8.8",
