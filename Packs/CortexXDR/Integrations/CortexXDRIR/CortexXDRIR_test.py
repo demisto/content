@@ -1731,7 +1731,7 @@ def test_headers_with_forward_user_run_rbac(mocker):
     mocker.patch("CortexXDRIR.FORWARD_USER_RUN_RBAC", new=True)
     from CortexXDRIR import Client
 
-    client = Client(base_url=f'{XDR_URL}/public_api/v1', proxy=False, verify=False, timeout=120, params={})
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", proxy=False, verify=False, timeout=120, params={})
     assert client.headers == {}
 
 
@@ -1749,13 +1749,15 @@ def test_headers_without_forward_user_run_rbac(mocker):
     from CortexXDRIR import Client
 
     params = {"apikey": "test_key", "apikey_id": "1"}
-    client = Client(base_url=f'{XDR_URL}/public_api/v1', proxy=False, verify=False, timeout=120, params=params)
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", proxy=False, verify=False, timeout=120, params=params)
+    # Reset the mock since get_headers is also called during __init__ (passed to super().__init__ as headers=self.headers)
+    mock_get_headers.reset_mock()
     headers = client.headers
     mock_get_headers.assert_called_once_with(params)
     assert headers == {"Authorization": "test"}
 
 
-def test_test_module_calls_list_users(mocker):
+def test_test_module_calls_list_users(mocker, capfd):
     """
     Given:
         - FORWARD_USER_RUN_RBAC is True.
@@ -1767,9 +1769,11 @@ def test_test_module_calls_list_users(mocker):
     mocker.patch("CortexXDRIR.FORWARD_USER_RUN_RBAC", new=True)
     from CortexXDRIR import Client
 
-    client = Client(base_url=f'{XDR_URL}/public_api/v1', proxy=False, verify=False, timeout=120, params={})
-    mocker.patch.object(client, 'list_users', return_value=[])
-    client.test_module()
+    # Overcoming expected non-empty stdout from Client init (JSON decoding errors from demisto.internalHttpRequest mock).
+    with capfd.disabled():
+        client = Client(base_url=f"{XDR_URL}/public_api/v1", proxy=False, verify=False, timeout=120, params={})
+        mocker.patch.object(client, "list_users", return_value=[])
+        client.test_module()
     client.list_users.assert_called_once()
 
 
@@ -1785,7 +1789,7 @@ def test_main_url_construction_with_rbac(mocker):
     from CortexXDRIR import main
 
     mocker.patch("CortexXDRIR.FORWARD_USER_RUN_RBAC", new=True)
-    mocker.patch.object(demisto, "params", return_value={"url": "https://should-not-be-used.com"})
+    mocker.patch.object(demisto, "params", return_value={"url": XDR_URL})
     mocker.patch.object(demisto, "command", return_value="test-module")
     mock_client_class = mocker.patch("CortexXDRIR.Client", autospec=True)
     mock_client_class.return_value.test_module.return_value = "ok"
