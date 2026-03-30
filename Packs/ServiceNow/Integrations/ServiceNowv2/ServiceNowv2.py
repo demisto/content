@@ -2649,11 +2649,11 @@ def fetch_incidents(client: Client) -> list:
         tickets_response = format_incidents_response_with_display_values(incidents_res=tickets_response)
 
     # remove duplicate incidents which were already fetched
-    tickets_response = filter_incidents_by_duplicates_and_limit(
+    filtered_tickets_response = filter_incidents_by_duplicates_and_limit(
         incidents_res=tickets_response, last_run=last_run, fetch_limit=client.sys_param_limit, id_field="sys_id"
     )
 
-    for ticket in tickets_response:
+    for ticket in filtered_tickets_response:
         ticket.update(get_mirroring())
 
         if client.timestamp_field not in ticket:
