@@ -1919,6 +1919,7 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
                     tags = tagsstr + params.get("work_notes_tag_from_servicenow", "WorkNoteFromServiceNow")
                     tags = argToList(tags)
 
+            #empty change
             entries.append(
                 {
                     "Type": note.get("type", 1),
