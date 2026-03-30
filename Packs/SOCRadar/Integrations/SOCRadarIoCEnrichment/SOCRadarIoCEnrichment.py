@@ -4,7 +4,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 import traceback
-from typing import Any, List, Dict, Optional
+from typing import Any, Optional
 import re
 from json.decoder import JSONDecodeError
 

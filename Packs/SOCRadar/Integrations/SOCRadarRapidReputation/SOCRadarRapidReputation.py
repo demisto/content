@@ -4,7 +4,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 import traceback
-from typing import Any, Optional
+from typing import Any
 import re
 from json.decoder import JSONDecodeError
 import time
