@@ -175,8 +175,19 @@ configuration:
   hidden:
   - marketplacev2
   - platform
+  supportedModules:
+  - "agentix"
+  - "xsiam"
+  - "edr"
+  - "cloud"
+  - "cloud_runtime_security"
 - display: Fetch events
   name: isFetchEvents
+  supportedModules:
+  - "xsiam"
+  - "edr"
+  - "cloud"
+  - "cloud_runtime_security"
   type: 8
   section: Collect
   required: false

@@ -87,6 +87,9 @@ configuration:
   hidden:
     - marketplacev2
     - platform
+  supportedModules:
+  - "agentix"
+  - "xsiam"
 - display: Incident type
   name: incidentType
   type: 13
@@ -113,6 +116,8 @@ configuration:
   section: Collect
   hidden:
     - xsoar
+  supportedModules:
+  - "xsiam"
 - name: max_events_fetch
   display: Maximum number of events per fetch
   defaultvalue: '1000'

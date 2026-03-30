@@ -37,6 +37,9 @@ configuration:
   hidden:
   - marketplacev2
   - platform
+  supportedModules:
+  - "agentix"
+  - "xsiam"
 - display: Fetch events
   name: isFetchEvents
   type: 8
@@ -44,6 +47,8 @@ configuration:
   required: false
   hidden:
   - xsoar
+  supportedModules:
+  - "xsiam"
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19

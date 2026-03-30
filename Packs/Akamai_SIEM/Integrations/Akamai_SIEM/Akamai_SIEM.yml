@@ -88,6 +88,9 @@ configuration:
   type: 8
   required: false
   section: Collect
+  supportedModules:
+  - "agentix"
+  - "xsiam"
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -123,6 +126,8 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  supportedModules:
+  - "xsiam"
   additionalinfo: Make sure this feature is not used with long running configured in the integration params and that there's no config ID used for 2 different instances / features.
 - display: Skip events decoding
   name: should_skip_decode_events
