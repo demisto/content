@@ -1,6 +1,3 @@
-import base64
-import hashlib
-import hmac
 import json
 import math
 import traceback
@@ -9,6 +6,7 @@ from typing import Any
 
 import dateparser
 import demistomock as demisto  # noqa: F401
+import jwt
 import urllib3
 from ContentClientApiModule import *
 from CommonServerPython import *  # noqa: F401
@@ -103,20 +101,15 @@ def parse_date_or_use_current(date_string: str | None) -> datetime:
     return parsed_datetime
 
 
-def _base64url_encode(data: bytes) -> str:
-    """Base64url encode without padding, as required by JWT spec."""
-    return base64.urlsafe_b64encode(data).rstrip(b"=").decode("utf-8")
-
-
 def generate_jwt_token(api_key: str, api_secret: str, role_id: str | None = None, security_zone_id: str | None = None) -> str:
-    """Generate a JWT token for Uptycs API authentication.
+    """Generate a JWT token for Uptycs API authentication using PyJWT.
 
     Creates an HS256-signed JWT with the API key as issuer and optional
-    role/security zone claims.
+    role/security zone claims. Uses the PyJWT library for token encoding.
 
     Args:
         api_key: The Uptycs API key (used as JWT 'iss' claim).
-        api_secret: The Uptycs API secret (used as HMAC signing key).
+        api_secret: The Uptycs API secret (used as the HS256 signing key).
         role_id: Optional role ID to include in the token.
         security_zone_id: Optional security zone ID to include in the token.
 
@@ -127,7 +120,6 @@ def generate_jwt_token(api_key: str, api_secret: str, role_id: str | None = None
 
     now = math.floor(datetime.now(timezone.utc).timestamp())  # noqa: UP017
 
-    header = {"alg": "HS256", "typ": "JWT"}
     payload: dict[str, Any] = {
         "iss": api_key,
         "iat": now,
@@ -139,19 +131,7 @@ def generate_jwt_token(api_key: str, api_secret: str, role_id: str | None = None
     if security_zone_id:
         payload["securityZoneId"] = security_zone_id
 
-    header_b64 = _base64url_encode(json.dumps(header, separators=(",", ":")).encode("utf-8"))
-    payload_b64 = _base64url_encode(json.dumps(payload, separators=(",", ":")).encode("utf-8"))
-
-    unsigned_token = f"{header_b64}.{payload_b64}"
-
-    signature = hmac.new(
-        api_secret.encode("utf-8"),
-        unsigned_token.encode("utf-8"),
-        hashlib.sha256,
-    ).digest()
-    signature_b64 = _base64url_encode(signature)
-
-    token = f"{unsigned_token}.{signature_b64}"
+    token = jwt.encode(payload, api_secret, algorithm="HS256")
     demisto.debug("[JWT] Token generated successfully")
     return token
 

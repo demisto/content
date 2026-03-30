@@ -10,6 +10,7 @@ import re
 from datetime import datetime, timezone  # noqa: UP017
 from typing import Any
 
+import jwt
 import pytest
 from CommonServerPython import *
 from ContentClientApiModule import ContentClientAuthenticationError
@@ -20,7 +21,6 @@ from UptycsEventCollector import (  # noqa: E402
     APIValues,
     Client,
     Config,
-    _base64url_encode,
     deduplicate_events,
     determine_entry_status,
     enrich_events_for_xsiam,
@@ -120,15 +120,6 @@ def test_get_formatted_utc_time(date_input: str | None, expected_format_pattern:
     assert re.match(expected_format_pattern, result)
 
 
-def test_base64url_encode():
-    """Tests _base64url_encode returns base64url encoded string without padding."""
-    result = _base64url_encode(b"test data")
-    assert isinstance(result, str)
-    assert "=" not in result
-    assert "+" not in result
-    assert "/" not in result
-
-
 # ========================================
 # Tests: JWT Token Generation
 # ========================================
@@ -141,29 +132,10 @@ def test_generate_jwt_token_structure():
     assert len(parts) == 3, "JWT must have 3 parts: header.payload.signature"
 
 
-JWT_HEADER_INDEX = 0
-JWT_PAYLOAD_INDEX = 1
-
-
-def _decode_jwt_part(token: str, part: int) -> dict[str, Any]:
-    """Helper to decode a base64url-encoded JWT part.
-
-    Args:
-        token: The full JWT token string.
-        part: JWT_HEADER_INDEX (0) for header, JWT_PAYLOAD_INDEX (1) for payload.
-    """
-    import base64
-
-    part_b64 = token.split(".")[part]
-    padding = 4 - len(part_b64) % 4
-    part_b64 += "=" * padding
-    return json.loads(base64.urlsafe_b64decode(part_b64))
-
-
 def test_generate_jwt_token_header():
     """Tests generate_jwt_token includes correct header claims."""
     token = generate_jwt_token(MOCK_API_KEY, MOCK_API_SECRET)
-    header = _decode_jwt_part(token, JWT_HEADER_INDEX)
+    header = jwt.get_unverified_header(token)
 
     assert header["alg"] == "HS256"
     assert header["typ"] == "JWT"
@@ -191,7 +163,7 @@ def test_generate_jwt_token_payload_claims(
 ):
     """Tests generate_jwt_token includes correct payload claims based on optional parameters."""
     token = generate_jwt_token(MOCK_API_KEY, MOCK_API_SECRET, role_id=role_id, security_zone_id=security_zone_id)
-    payload = _decode_jwt_part(token, JWT_PAYLOAD_INDEX)
+    payload = jwt.decode(token, MOCK_API_SECRET, algorithms=["HS256"])
 
     # Verify standard time claims
     assert "iat" in payload
