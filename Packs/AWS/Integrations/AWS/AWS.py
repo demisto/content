@@ -3109,9 +3109,10 @@ class RDS:
             if "values_to_add" in args:
                 kwargs["ValuesToAdd"] = argToList(args.get("values_to_add"))
 
-            if "values-to-remove" in args:
+            if "values_to_remove" in args:
                 kwargs["ValuesToRemove"] = argToList(args.get("values_to_remove"))
 
+            demisto.info(f"{kwargs=}")
             remove_nulls_from_dictionary(kwargs)
 
             response = client.modify_db_cluster_snapshot_attribute(**kwargs)
@@ -3123,7 +3124,7 @@ class RDS:
                     readable_output = (
                         f"Successfully modified DB cluster snapshot attribute for {args.get('db_cluster_snapshot_identifier')}"
                     )
-                    readable_output += "\n\nUpdated DB Cluster Snapshot Attributes:"
+                    readable_output += "\n\nUpdated DB Cluster Snapshot Attributes:\n"
                     readable_output += tableToMarkdown("", attributes)
 
                 return CommandResults(
