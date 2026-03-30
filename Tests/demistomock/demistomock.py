@@ -1515,3 +1515,13 @@ def _platformAPICall(path=None, method=None, params=None, data=None, timeout=Non
         dict: The response of the api call
     """
     return {}
+
+
+def _Demisto__do(*args, **kwargs):
+    """
+    Mock for the internal _Demisto__do function.
+
+    Returns:
+        dict: An empty mock response object, for consistency with other internal call mocks.
+    """
+    return {}

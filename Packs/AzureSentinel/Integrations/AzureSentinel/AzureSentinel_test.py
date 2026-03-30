@@ -2461,3 +2461,76 @@ def test_statuses_to_fetch_parameter_multiple_statuses(mocker):
             "$orderby": "properties/createdTimeUtc asc",
         }
     }
+
+
+def test_main_uses_new_separate_client_id(mocker):
+    """
+    Given
+    - The new 'creds_client_id' param is provided with a Client ID value.
+    - The legacy 'credentials' param is NOT provided.
+
+    When
+    - main() is called.
+
+    Then
+    - AzureSentinelClient is instantiated with client_id taken from 'creds_client_id'.
+    """
+    import AzureSentinel
+    from AzureSentinel import main
+
+    params = {
+        "creds_client_id": {"password": "new-client-id"},
+        "credentials": {"password": "client-secret"},
+        "creds_tenant_id": {"password": "tenant-id"},
+        "subscriptionID": "sub-id",
+        "resourceGroupName": "rg-name",
+        "workspaceName": "ws-name",
+        "azure_cloud": "Worldwide",
+    }
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mock_client_cls = mocker.patch("AzureSentinel.AzureSentinelClient", autospec=True)
+    mocker.patch.object(AzureSentinel, "return_results")
+    mocker.patch("AzureSentinel.test_module", return_value="ok")
+
+    main()
+
+    call_kwargs = mock_client_cls.call_args[1]
+    assert call_kwargs["client_id"] == "new-client-id"
+
+
+def test_main_falls_back_to_legacy_client_id_when_new_param_absent(mocker):
+    """
+    Given
+    - The new 'creds_client_id' param is NOT provided.
+    - The legacy 'credentials' param IS provided with both identifier (client_id) and password (client_secret).
+
+    When
+    - main() is called.
+
+    Then
+    - AzureSentinelClient is instantiated with client_id taken from 'credentials.identifier' (legacy fallback).
+    """
+    import AzureSentinel
+    from AzureSentinel import main
+
+    params = {
+        "credentials": {"identifier": "legacy-client-id", "password": "legacy-client-secret"},
+        "creds_tenant_id": {"password": "tenant-id"},
+        "subscriptionID": "sub-id",
+        "resourceGroupName": "rg-name",
+        "workspaceName": "ws-name",
+        "azure_cloud": "Worldwide",
+    }
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mock_client_cls = mocker.patch("AzureSentinel.AzureSentinelClient", autospec=True)
+    mocker.patch.object(AzureSentinel, "return_results")
+    mocker.patch("AzureSentinel.test_module", return_value="ok")
+
+    main()
+
+    call_kwargs = mock_client_cls.call_args[1]
+    assert call_kwargs["client_id"] == "legacy-client-id"

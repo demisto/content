@@ -3,29 +3,36 @@ provider: Jamf
 commonfields:
   id: jamf v2
   version: -1
+sectionorder:
+- Connect
 configuration:
 - display: Server URL
   name: url
   required: true
   type: 0
   additionalinfo: 'Your server URL (e.g., https://yourdomain.jamfcloud.com)'
+  section: Connect
 - display: Username
   name: credentials
   required: false
   type: 9
+  section: Connect
 - display: Client ID
   name: client_credentials
   type: 9
   required: false
   displaypassword: Client Secret
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 description: Enterprise Mobility Management (EMM) for Apple devices (Mac, iPhone, Apple TV, iPad). Can be used to control various configurations via different policies, install and uninstall applications, lock devices, smart groups searches, and more.
 display: JAMF v2
 name: jamf v2
@@ -81,12 +88,6 @@ script:
     - contextPath: JAMF.Computer.model
       description: The computer model.
       type: String
-    - contextPath: JAMF.Computer.department
-      description: The computer department.
-      type: String
-    - contextPath: JAMF.Computer.building
-      description: The computer building.
-      type: String
     - contextPath: JAMF.Computer.mac_address
       description: The computer MAC address.
       type: String
@@ -96,12 +97,6 @@ script:
     - contextPath: JAMF.Computer.serial_number
       description: The computer serial number.
       type: String
-    - contextPath: JAMF.Computer.report_date_utc
-      description: The computer report date in UTC format.
-      type: Date
-    - contextPath: JAMF.Computer.report_date_epoch
-      description: The computer report date in epoch format.
-      type: Number
   - arguments:
     - description: |-
         The computer ID.
@@ -171,59 +166,8 @@ script:
     - contextPath: JAMF.Computer.mdm_capable_users
       description: The computer has MDM capable users.
       type: Boolean
-    - contextPath: JAMF.Computer.report_date
-      description: The computer report date.
-      type: Date
-    - contextPath: JAMF.Computer.report_date_epoch
-      description: The computer report date in epoch format.
-      type: Date
-    - contextPath: JAMF.Computer.report_date_utc
-      description: The computer report date in UTC format.
-      type: Date
-    - contextPath: JAMF.Computer.last_contact_time
-      description: The computer last contact time.
-      type: Date
-    - contextPath: JAMF.Computer.last_contact_time_epoch
-      description: The computer last contact time in epoch format.
-      type: Date
-    - contextPath: JAMF.Computer.last_contact_time_utc
-      description: The computer last contact time in UTC format.
-      type: Date
-    - contextPath: JAMF.Computer.initial_entry_date
-      description: The computer initial entry date.
-      type: Date
-    - contextPath: JAMF.Computer.initial_entry_date_epoch
-      description: The computer initial entry date in epoch format.
-      type: Date
-    - contextPath: JAMF.Computer.initial_entry_date_utc
-      description: The computer initial entry date in UTC format.
-      type: Date
-    - contextPath: JAMF.Computer.last_cloud_backup_date_epoch
-      description: The computer last cloud backup date in epoch format.
-      type: Number
-    - contextPath: JAMF.Computer.last_cloud_backup_date_utc
-      description: The computer last cloud backup date in UTC format.
-      type: String
-    - contextPath: JAMF.Computer.last_enrolled_date_epoch
-      description: The computer last enrolled date in epoch format.
-      type: Date
-    - contextPath: JAMF.Computer.last_enrolled_date_utc
-      description: The computer last enrolled date in UTC format.
-      type: Date
-    - contextPath: JAMF.Computer.mdm_profile_expiration_epoch
-      description: The computer MDM profile expiration in epoch format.
-      type: Number
-    - contextPath: JAMF.Computer.mdm_profile_expiration_utc
-      description: The computer MDM profile expiration in UTC format.
-      type: String
     - contextPath: JAMF.Computer.distribution_point
       description: The computer distribution point.
-      type: String
-    - contextPath: JAMF.Computer.sus
-      description: The computer software updated service (SUS).
-      type: String
-    - contextPath: JAMF.Computer.netboot_server
-      description: The computer netbbot server.
       type: String
     - contextPath: JAMF.Computer.site.id
       description: The computer site ID.
@@ -241,10 +185,10 @@ script:
     - defaultValue: '0'
       description: The number of the requested page.
       name: page
-    - description: 'Match computers by specific characteristics (supports wildcards) such as: name, UDID, serial_number, mac_address, username, realname, email. e.g.: “match=john*”, “match=C52F72FACB9T”.'
-      name: match
+    - description: 'The filter query for the Pro API (supports RSQL). For example, general.name=="Computer 1*", userAndLocation.email=="user@email.com".'
+      name: filter
       required: true
-    description: Matches computers by specific characteristics and returns general data on each of the computers.
+    description: Returns general data for computers that match specific characteristics defined by a filter query.
     name: jamf-get-computer-by-match
     outputs:
     - contextPath: JAMF.Computer.id
@@ -268,10 +212,10 @@ script:
     - contextPath: JAMF.Computer.asset_tag
       description: The computer asset tag.
       type: String
-    - contextPath: JAMF.Computer.bar_code_1
+    - contextPath: JAMF.Computer.barcode_1
       description: The computer barcode 1.
       type: String
-    - contextPath: JAMF.Computer.bar_code_2
+    - contextPath: JAMF.Computer.barcode_2
       description: The computer barcode 2.
       type: String
     - contextPath: JAMF.Computer.username
@@ -291,18 +235,6 @@ script:
       type: String
     - contextPath: JAMF.Computer.position
       description: The computer position.
-      type: String
-    - contextPath: JAMF.Computer.building
-      description: The computer building.
-      type: String
-    - contextPath: JAMF.Computer.building_name
-      description: The computer building name.
-      type: String
-    - contextPath: JAMF.Computer.department
-      description: The computer department.
-      type: String
-    - contextPath: JAMF.Computer.department_name
-      description: The computer department name.
       type: String
     - contextPath: JAMF.Computer.Paging.total_results
       description: The number of computers returned in this specific search.
@@ -330,136 +262,79 @@ script:
     description: Returns the general subset for a specific computer according to the given arguments.
     name: jamf-get-computer-general-subset
     outputs:
-    - contextPath: JAMF.ComputerSubset.general.id
+    - contextPath: JAMF.ComputerSubset.Computer.general.id
       description: The computer ID.
       type: Number
-    - contextPath: JAMF.ComputerSubset.general.name
+    - contextPath: JAMF.ComputerSubset.Computer.general.name
       description: The computer name.
       type: String
-    - contextPath: JAMF.ComputerSubset.general.network_adapter_type
+    - contextPath: JAMF.ComputerSubset.Computer.general.network_adapter_type
       description: The computer network adapter type.
       type: String
-    - contextPath: JAMF.ComputerSubset.general.mac_address
+    - contextPath: JAMF.ComputerSubset.Computer.general.mac_address
       description: The computer MAC address.
       type: Date
-    - contextPath: JAMF.ComputerSubset.general.alt_network_adapter_type
+    - contextPath: JAMF.ComputerSubset.Computer.general.alt_network_adapter_type
       description: The computer alt network adapter type.
       type: String
-    - contextPath: JAMF.ComputerSubset.general.alt_mac_address
+    - contextPath: JAMF.ComputerSubset.Computer.general.alt_mac_address
       description: The computer alt MAC address.
       type: String
-    - contextPath: JAMF.ComputerSubset.general.ip_address
+    - contextPath: JAMF.ComputerSubset.Computer.general.ip_address
       description: The computer IP address.
       type: String
-    - contextPath: JAMF.ComputerSubset.general.last_reported_ip
+    - contextPath: JAMF.ComputerSubset.Computer.general.last_reported_ip
       description: The computer last reported IP address.
       type: String
-    - contextPath: JAMF.ComputerSubset.general.serial_number
+    - contextPath: JAMF.ComputerSubset.Computer.general.serial_number
       description: The computer serial number.
       type: String
-    - contextPath: JAMF.ComputerSubset.general.udid
+    - contextPath: JAMF.ComputerSubset.Computer.general.udid
       description: The computer UDID.
       type: String
-    - contextPath: JAMF.ComputerSubset.general.jamf_version
+    - contextPath: JAMF.ComputerSubset.Computer.general.jamf_version
       description: The computer Jamf version.
       type: String
-    - contextPath: JAMF.ComputerSubset.general.platform
+    - contextPath: JAMF.ComputerSubset.Computer.general.platform
       description: The computer platform.
       type: String
-    - contextPath: JAMF.ComputerSubset.general.barcode_1
+    - contextPath: JAMF.ComputerSubset.Computer.general.barcode_1
       description: The computer barcode 1.
       type: String
-    - contextPath: JAMF.ComputerSubset.general.barcode_2
+    - contextPath: JAMF.ComputerSubset.Computer.general.barcode_2
       description: The computer barcode 2.
       type: String
-    - contextPath: JAMF.ComputerSubset.general.asset_tag
+    - contextPath: JAMF.ComputerSubset.Computer.general.asset_tag
       description: The computer asset tag.
       type: String
-    - contextPath: JAMF.ComputerSubset.general.remote_management.managed
+    - contextPath: JAMF.ComputerSubset.Computer.general.remote_management.managed
       description: Whether the computer is remotely managed.
       type: Boolean
-    - contextPath: JAMF.ComputerSubset.general.remote_management.management_username
+    - contextPath: JAMF.ComputerSubset.Computer.general.remote_management.management_username
       description: The computer managment username.
       type: String
-    - contextPath: JAMF.ComputerSubset.general.supervised
+    - contextPath: JAMF.ComputerSubset.Computer.general.supervised
       description: Whether the computer is supervised.
       type: Boolean
-    - contextPath: JAMF.ComputerSubset.general.mdm_capable
+    - contextPath: JAMF.ComputerSubset.Computer.general.mdm_capable
       description: Whether the computer is MDM capable.
       type: Boolean
-    - contextPath: JAMF.Computer.general.mdm_capable_users
+    - contextPath: JAMF.ComputerSubset.Computer.general.mdm_capable_users
       description: Whether the computer has MDM capable users.
       type: Boolean
-    - contextPath: JAMF.Computer.general.management_status.enrolled_via_dep
-      description: Whether the computer was enrolled via DEP.
-      type: Boolean
-    - contextPath: JAMF.Computer.general.management_status.user_approved_enrollment
-      description: Whether the enrollment is user-approved.
-      type: Boolean
-    - contextPath: JAMF.Computer.general.management_status.user_approved_mdm
+    - contextPath: JAMF.ComputerSubset.Computer.general.management_status.user_approved_mdm
       description: Whether the MDM is user-approved.
       type: Boolean
-    - contextPath: JAMF.ComputerSubset.general.report_date
-      description: The computer report date.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.general.report_date_epoch
-      description: The computer report date in epoch format.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.general.report_date_utc
-      description: The computer report date in UTC format.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.general.last_contact_time
-      description: The computer last contact time.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.general.last_contact_time_epoch
-      description: The computer last contact time in epoch format.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.general.last_contact_time_utc
-      description: The computer last contact time in UTC format.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.general.initial_entry_date
-      description: The computer initial entry date.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.general.initial_entry_date_epoch
-      description: The computer initial entry date in epoch format.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.general.initial_entry_date_utc
-      description: The computer initial entry date in UTC format.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.general.last_cloud_backup_date_epoch
-      description: The computer last cloud backup date in epoch format.
-      type: Number
-    - contextPath: JAMF.ComputerSubset.general.last_cloud_backup_date_utc
-      description: The computer last cloud backup date in UTC format.
-      type: String
-    - contextPath: JAMF.ComputerSubset.general.last_enrolled_date_epoch
-      description: The computer last enrolled date in epoch format.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.general.last_enrolled_date_utc
-      description: The computer last enrolled date in UTC format.
-      type: Date
-    - contextPath: JAMF.ComputerSubset.general.mdm_profile_expiration_epoch
-      description: The computer MDM profile expiration in epoch format.
-      type: Number
-    - contextPath: JAMF.ComputerSubset.general.mdm_profile_expiration_utc
-      description: The computer MDM profile expiration in UTC format.
-      type: String
-    - contextPath: JAMF.ComputerSubset.general.distribution_point
+    - contextPath: JAMF.ComputerSubset.Computer.general.distribution_point
       description: The computer distribution point format.
       type: String
-    - contextPath: JAMF.ComputerSubset.general.sus
-      description: The computer SUS.
-      type: String
-    - contextPath: JAMF.ComputerSubset.general.netboot_server
-      description: The computer netbbot server.
-      type: String
-    - contextPath: JAMF.ComputerSubset.general.site.id
+    - contextPath: JAMF.ComputerSubset.Computer.general.site.id
       description: The computer site ID.
       type: Number
-    - contextPath: JAMF.ComputerSubset.general.site.name
+    - contextPath: JAMF.ComputerSubset.Computer.general.site.name
       description: The computer site name.
       type: String
-    - contextPath: JAMF.ComputerSubset.general.itunes_store_account_is_active
+    - contextPath: JAMF.ComputerSubset.Computer.general.itunes_store_account_is_active
       description: The computer iTunes store account.
       type: Boolean
   - arguments:
@@ -479,37 +354,31 @@ script:
     description: Returns the location subset for a specific computer according to the given arguments.
     name: jamf-get-computer-location-subset
     outputs:
-    - contextPath: JAMF.ComputerSubset.location.username
+    - contextPath: JAMF.ComputerSubset.Computer.location.username
       description: The computer username.
       type: String
-    - contextPath: JAMF.ComputerSubset.location.realname
+    - contextPath: JAMF.ComputerSubset.Computer.location.realname
       description: The computer real name.
       type: String
-    - contextPath: JAMF.ComputerSubset.location.real_name
+    - contextPath: JAMF.ComputerSubset.Computer.location.real_name
       description: The computer real name.
       type: String
-    - contextPath: JAMF.ComputerSubset.location.email_address
+    - contextPath: JAMF.ComputerSubset.Computer.location.email_address
       description: The computer email address.
       type: String
-    - contextPath: JAMF.ComputerSubset.location.position
+    - contextPath: JAMF.ComputerSubset.Computer.location.position
       description: The computer position.
       type: String
-    - contextPath: JAMF.ComputerSubset.location.phone
+    - contextPath: JAMF.ComputerSubset.Computer.location.phone
       description: The computer phone number.
       type: String
-    - contextPath: JAMF.ComputerSubset.location.phone_number
+    - contextPath: JAMF.ComputerSubset.Computer.location.phone_number
       description: The computer phone number.
       type: String
-    - contextPath: JAMF.ComputerSubset.location.department
-      description: The computer department.
-      type: String
-    - contextPath: JAMF.ComputerSubset.location.building
-      description: The computer building.
-      type: String
-    - contextPath: JAMF.ComputerSubset.location.room
+    - contextPath: JAMF.ComputerSubset.Computer.location.room
       description: The computer room.
       type: String
-    - contextPath: JAMF.ComputerSubset.id
+    - contextPath: JAMF.ComputerSubset.Computer.id
       description: The computer ID.
       type: Number
   - arguments:
@@ -529,67 +398,34 @@ script:
     description: Returns the purchasing subset for a specific computer according to the given arguments.
     name: jamf-get-computer-purchasing-subset
     outputs:
-    - contextPath: JAMF.ComputerSubset.purchasing.is_purchased
+    - contextPath: JAMF.ComputerSubset.Computer.purchasing.is_purchased
       description: If the computer is purchased.
       type: Boolean
-    - contextPath: JAMF.ComputerSubset.purchasing.is_leased
+    - contextPath: JAMF.ComputerSubset.Computer.purchasing.is_leased
       description: If the computer is leased.
       type: Boolean
-    - contextPath: JAMF.ComputerSubset.purchasing.po_number
+    - contextPath: JAMF.ComputerSubset.Computer.purchasing.po_number
       description: The computer PO number.
       type: String
-    - contextPath: JAMF.ComputerSubset.purchasing.vendor
+    - contextPath: JAMF.ComputerSubset.Computer.purchasing.vendor
       description: The computer vendor.
       type: String
-    - contextPath: JAMF.ComputerSubset.purchasing.applecare_id
+    - contextPath: JAMF.ComputerSubset.Computer.purchasing.applecare_id
       description: The computer AppleCare ID.
       type: String
-    - contextPath: JAMF.ComputerSubset.purchasing.purchase_price
+    - contextPath: JAMF.ComputerSubset.Computer.purchasing.purchase_price
       description: The computer purchase price.
       type: String
-    - contextPath: JAMF.ComputerSubset.purchasing.purchasing_account
+    - contextPath: JAMF.ComputerSubset.Computer.purchasing.purchasing_account
       description: The computer purchase account.
       type: String
-    - contextPath: JAMF.ComputerSubset.purchasing.po_date
-      description: The computer PO date.
-      type: String
-    - contextPath: JAMF.ComputerSubset.purchasing.po_date_epoch
-      description: The computer PO date in epoch format.
-      type: Number
-    - contextPath: JAMF.ComputerSubset.purchasing.po_date_utc
-      description: The computer PO date in UTC format.
-      type: String
-    - contextPath: JAMF.ComputerSubset.purchasing.warranty_expires
-      description: The computer warranty expiration date.
-      type: String
-    - contextPath: JAMF.ComputerSubset.purchasing.warranty_expires_epoch
-      description: The computer warranty expiration date in epoch format.
-      type: Number
-    - contextPath: JAMF.ComputerSubset.purchasing.warranty_expires_utc
-      description: The computer warranty expiration date in UTC format.
-      type: String
-    - contextPath: JAMF.ComputerSubset.purchasing.lease_expires
-      description: The computer warranty lease expiration date.
-      type: String
-    - contextPath: JAMF.ComputerSubset.purchasing.lease_expires_epoch
-      description: The computer warranty lease expiration date in epoch time.
-      type: Number
-    - contextPath: JAMF.ComputerSubset.purchasing.lease_expires_utc
-      description: The computer warranty lease expiration date in UTC format.
-      type: String
-    - contextPath: JAMF.ComputerSubset.purchasing.life_expectancy
+    - contextPath: JAMF.ComputerSubset.Computer.purchasing.life_expectancy
       description: The computer life expectancy.
       type: Number
-    - contextPath: JAMF.ComputerSubset.purchasing.purchasing_contact
+    - contextPath: JAMF.ComputerSubset.Computer.purchasing.purchasing_contact
       description: The computer purchasing contact.
       type: String
-    - contextPath: JAMF.ComputerSubset.purchasing.os_applecare_id
-      description: The computer operating system AppleCare ID.
-      type: String
-    - contextPath: JAMF.ComputerSubset.purchasing.os_maintenance_expires
-      description: The computer operating system maintenance expiration date.
-      type: String
-    - contextPath: JAMF.ComputerSubset.id
+    - contextPath: JAMF.ComputerSubset.Computer.id
       description: The computer ID.
       type: Number
   - arguments:
@@ -608,11 +444,12 @@ script:
       required: true
     description: Returns the peripherals subset for a specific computer according to the given arguments.
     name: jamf-get-computer-peripherals-subset
+    deprecated: true
     outputs:
-    - contextPath: JAMF.ComputerSubset.peripherals
+    - contextPath: JAMF.ComputerSubset.Computer.peripherals
       description: The computer peripherals.
       type: Number
-    - contextPath: JAMF.ComputerSubset.id
+    - contextPath: JAMF.ComputerSubset.Computer.id
       description: The computer ID.
       type: Number
   - arguments:
@@ -632,175 +469,100 @@ script:
     description: Returns the hardware subset for a specific computer according to the given arguments.
     name: jamf-get-computer-hardware-subset
     outputs:
-    - contextPath: JAMF.ComputerSubset.hardware.make
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.make
       description: The computer maker.
       type: String
-    - contextPath: JAMF.ComputerSubset.hardware.model
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.model
       description: The computer model.
       type: String
-    - contextPath: JAMF.ComputerSubset.hardware.model_identifier
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.model_identifier
       description: The computer model ID.
       type: String
-    - contextPath: JAMF.ComputerSubset.hardware.os_name
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.os_name
       description: The computer operating system name.
       type: String
-    - contextPath: JAMF.ComputerSubset.hardware.os_version
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.os_version
       description: The computer operating system version.
       type: String
-    - contextPath: JAMF.ComputerSubset.hardware.os_build
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.os_build
       description: The computer operating system build.
       type: String
-    - contextPath: JAMF.ComputerSubset.hardware.master_password_set
-      description: Whether the master password is set for the computer.
-      type: Boolean
-    - contextPath: JAMF.ComputerSubset.hardware.active_directory_status
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.active_directory_status
       description: The computer active directory status.
       type: String
-    - contextPath: JAMF.ComputerSubset.hardware.service_pack
-      description: The computer service pack.
-      type: String
-    - contextPath: JAMF.ComputerSubset.hardware.processor_type
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.processor_type
       description: The computer processor type.
       type: String
-    - contextPath: JAMF.ComputerSubset.hardware.processor_architecture
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.processor_architecture
       description: The computer processor architecture.
       type: String
-    - contextPath: JAMF.ComputerSubset.hardware.processor_speed
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.processor_speed
       description: The computer processor speed.
       type: Number
-    - contextPath: JAMF.ComputerSubset.hardware.processor_speed_mhz
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.processor_speed_mhz
       description: The computer processor speed in MHz.
       type: Number
-    - contextPath: JAMF.ComputerSubset.hardware.number_processors
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.number_processors
       description: The number of processors in the computer.
       type: Number
-    - contextPath: JAMF.ComputerSubset.hardware.number_cores
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.number_cores
       description: The number of cores in the computer.
       type: Number
-    - contextPath: JAMF.ComputerSubset.hardware.total_ram
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.total_ram
       description: The amount of RAM in the computer.
       type: Number
-    - contextPath: JAMF.ComputerSubset.hardware.total_ram_mb
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.total_ram_mb
       description: The amount of RAM in the computer in MB.
       type: Number
-    - contextPath: JAMF.ComputerSubset.hardware.boot_rom
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.boot_rom
       description: The computer boot ROM.
       type: String
-    - contextPath: JAMF.ComputerSubset.hardware.bus_speed
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.bus_speed
       description: The computer bus speed.
       type: Number
-    - contextPath: JAMF.ComputerSubset.hardware.bus_speed_mhz
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.bus_speed_mhz
       description: The computer bus speed in MHz.
       type: Number
-    - contextPath: JAMF.ComputerSubset.hardware.battery_capacity
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.battery_capacity
       description: The computer battery capacity.
       type: Number
-    - contextPath: JAMF.ComputerSubset.hardware.cache_size
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.cache_size
       description: The computer cache size.
       type: Number
-    - contextPath: JAMF.ComputerSubset.hardware.cache_size_kb
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.cache_size_kb
       description: The computer cache size in KB.
       type: Number
-    - contextPath: JAMF.ComputerSubset.hardware.available_ram_slots
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.available_ram_slots
       description: The number of available RAM slots.
       type: Number
-    - contextPath: JAMF.ComputerSubset.hardware.optical_drive
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.optical_drive
       description: The computer optical drive.
       type: String
-    - contextPath: JAMF.ComputerSubset.hardware.nic_speed
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.nic_speed
       description: The computer NIC speed.
       type: String
-    - contextPath: JAMF.ComputerSubset.hardware.smc_version
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.smc_version
       description: The compute SMC version.
       type: String
-    - contextPath: JAMF.ComputerSubset.hardware.ble_capable
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.ble_capable
       description: Whether the computer is BLE capable.
       type: Boolean
-    - contextPath: JAMF.ComputerSubset.hardware.supports_ios_app_installs
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.supports_ios_app_installs
       description: If the computer supports iOS app installations.
       type: Boolean
-    - contextPath: JAMF.ComputerSubset.hardware.sip_status
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.sip_status
       description: The computer SIP status.
       type: String
-    - contextPath: JAMF.ComputerSubset.hardware.gatekeeper_status
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.gatekeeper_status
       description: The computer gatekeeper status.
       type: String
-    - contextPath: JAMF.ComputerSubset.hardware.xprotect_version
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.xprotect_version
       description: The computer xprotect version.
       type: String
-    - contextPath: JAMF.ComputerSubset.hardware.institutional_recovery_key
-      description: The computer institutional recovery key.
-      type: String
-    - contextPath: JAMF.ComputerSubset.hardware.disk_encryption_configuration
+    - contextPath: JAMF.ComputerSubset.Computer.hardware.disk_encryption_configuration
       description: The computer disk encryption configuration.
       type: String
-    - contextPath: JAMF.ComputerSubset.hardware.storage.disk
-      description: The computer disk storage.
-      type: String
-    - contextPath: JAMF.ComputerSubset.hardware.storage.model
-      description: The computer model storage.
-      type: String
-    - contextPath: JAMF.ComputerSubset.hardware.storage.revision
-      description: The computer revision storage.
-      type: String
-    - contextPath: JAMF.ComputerSubset.hardware.storage.serial_number
-      description: The computer storage serial number.
-      type: String
-    - contextPath: JAMF.ComputerSubset.hardware.storage.size
-      description: The computer storage size.
-      type: Number
-    - contextPath: JAMF.ComputerSubset.hardware.storage.drive_capacity_mb
-      description: The computer storage drive capacity in MB.
-      type: Number
-    - contextPath: JAMF.ComputerSubset.hardware.storage.connection_type
-      description: The computer storage connection type.
-      type: String
-    - contextPath: JAMF.ComputerSubset.hardware.storage.smart_status
-      description: The computer storage smart status.
-      type: String
-    - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.name
-      description: The computer storage partition name.
-      type: String
-    - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.size
-      description: The computer storage partition size.
-      type: Number
-    - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.type
-      description: The computer storage partition type.
-      type: String
-    - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.partition_capacity_mb
-      description: The computer storage partition capacity in MB.
-      type: Number
-    - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.percentage_full
-      description: The percentage of the storage partition that is full.
-      type: Number
-    - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.available_mb
-      description: The amount of computer storage partition available in MB.
-      type: Number
-    - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.filevault_status
-      description: The computer storage partition filevault status.
-      type: String
-    - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.filevault_percent
-      description: The computer storage partition filevault percent.
-      type: Number
-    - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.filevault2_status
-      description: The computer storage partition second filevault status.
-      type: String
-    - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.filevault2_percent
-      description: The computer storage partition second filevault percent.
-      type: Number
-    - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.boot_drive_available_mb
-      description: The available space on the computer storage partition boot drive in MB.
-      type: Number
-    - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.lvgUUID
-      description: The computer storage partition logical volume group (lvg) UUID.
-      type: String
-    - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.lvUUID
-      description: The computer storage partition logical volume (lv) UUID.
-      type: String
-    - contextPath: JAMF.ComputerSubset.hardware.storage.partitions.pvUUID
-      description: The computer storage partition physical volume (pv) UUID.
-      type: String
-    - contextPath: JAMF.ComputerSubset.id
+    - contextPath: JAMF.ComputerSubset.Computer.id
       description: The computer ID.
       type: Number
   - arguments:
@@ -820,22 +582,19 @@ script:
     description: Returns the certificates subset for a specific computer according to the given arguments.
     name: jamf-get-computer-certificates-subset
     outputs:
-    - contextPath: JAMF.ComputerSubset.certificates.common_name
+    - contextPath: JAMF.ComputerSubset.Computer.certificates.common_name
       description: The certificat common name.
       type: String
-    - contextPath: JAMF.ComputerSubset.certificates.identity
+    - contextPath: JAMF.ComputerSubset.Computer.certificates.identity
       description: The certificat identity.
       type: Boolean
-    - contextPath: JAMF.ComputerSubset.certificates.expires_utc
+    - contextPath: JAMF.ComputerSubset.Computer.certificates.expires_utc
       description: The certificat expiration date in UTC format.
       type: Date
-    - contextPath: JAMF.ComputerSubset.certificates.expires_epoch
+    - contextPath: JAMF.ComputerSubset.Computer.certificates.expires_epoch
       description: The certificat expiration date in epoch format.
       type: Number
-    - contextPath: JAMF.ComputerSubset.certificates.name
-      description: The certificat name.
-      type: String
-    - contextPath: JAMF.ComputerSubset.id
+    - contextPath: JAMF.ComputerSubset.Computer.id
       description: The computer ID.
       type: Number
   - arguments:
@@ -855,16 +614,16 @@ script:
     description: Returns the security subset for a specific computer according to the given arguments.
     name: jamf-get-computer-security-subset
     outputs:
-    - contextPath: JAMF.ComputerSubset.security.activation_lock
+    - contextPath: JAMF.ComputerSubset.Computer.security.activation_lock
       description: The computer activation lock.
       type: Boolean
-    - contextPath: JAMF.ComputerSubset.security.secure_boot_level
+    - contextPath: JAMF.ComputerSubset.Computer.security.secure_boot_level
       description: The computer secure boot level.
       type: String
-    - contextPath: JAMF.ComputerSubset.security.external_boot_level
+    - contextPath: JAMF.ComputerSubset.Computer.security.external_boot_level
       description: The computer external boot level.
       type: String
-    - contextPath: JAMF.ComputerSubset.id
+    - contextPath: JAMF.ComputerSubset.Computer.id
       description: The computer ID.
       type: Number
   - arguments:
@@ -884,67 +643,34 @@ script:
     description: Returns the software subset for a specific computer according to the given arguments.
     name: jamf-get-computer-software-subset
     outputs:
-    - contextPath: JAMF.ComputerSubset.software.unix_executables
-      description: The computer software's Unix executables.
-      type: String
-    - contextPath: JAMF.ComputerSubset.software.licensed_software.name
+    - contextPath: JAMF.ComputerSubset.Computer.software.licensed_software.name
       description: The computer software's licensed software name.
       type: String
-    - contextPath: JAMF.ComputerSubset.software.installed_by_casper.package
-      description: The computer software that was installed by Jamf PRO.
-      type: String
-    - contextPath: JAMF.ComputerSubset.software.installed_by_installer_swu.package
+    - contextPath: JAMF.ComputerSubset.Computer.software.installed_by_installer_swu
       description: The computer software that was installed either by an installer, an app or a software update.
       type: String
-    - contextPath: JAMF.ComputerSubset.software.cached_by_casper.package
-      description: The computer software that was cached by Jamf PRO.
-      type: String
-    - contextPath: JAMF.ComputerSubset.software.available_software_updates.name
-      description: The name of the available software updates.
-      type: String
-    - contextPath: JAMF.ComputerSubset.software.available_updates.name
+    - contextPath: JAMF.ComputerSubset.Computer.software.available_updates.name
       description: The name of the available updates.
       type: String
-    - contextPath: JAMF.ComputerSubset.software.available_updates.package_name
-      description: The name of the available update package.
-      type: String
-    - contextPath: JAMF.ComputerSubset.software.available_updates.version
+    - contextPath: JAMF.ComputerSubset.Computer.software.available_updates.version
       description: The version of the available update.
       type: String
-    - contextPath: JAMF.ComputerSubset.software.running_services.name
+    - contextPath: JAMF.ComputerSubset.Computer.software.running_services.name
       description: The computer running service name.
       type: String
-    - contextPath: JAMF.ComputerSubset.software.applications.name
+    - contextPath: JAMF.ComputerSubset.Computer.software.applications.name
       description: The computer application name.
       type: String
-    - contextPath: JAMF.ComputerSubset.software.applications.path
+    - contextPath: JAMF.ComputerSubset.Computer.software.applications.path
       description: The computer application path.
       type: String
-    - contextPath: JAMF.ComputerSubset.software.applications.version
+    - contextPath: JAMF.ComputerSubset.Computer.software.applications.version
       description: The computer application version.
       type: String
-    - contextPath: JAMF.ComputerSubset.software.applications.bundle_id
+    - contextPath: JAMF.ComputerSubset.Computer.software.applications.bundleId
       description: The computer application bundle ID.
       type: String
-    - contextPath: JAMF.ComputerSubset.software.fonts.name
-      description: The computer font name.
-      type: String
-    - contextPath: JAMF.ComputerSubset.software.fonts.path
-      description: The computer font path.
-      type: String
-    - contextPath: JAMF.ComputerSubset.software.fonts.version
-      description: The computer font version.
-      type: String
-    - contextPath: JAMF.ComputerSubset.software.plugins.name
-      description: The computer plugin name.
-      type: String
-    - contextPath: JAMF.ComputerSubset.software.plugins.path
-      description: The computer plugin path.
-      type: String
-    - contextPath: JAMF.ComputerSubset.software.plugins.version
-      description: The computer plugin version.
-      type: String
-    - contextPath: JAMF.ComputerSubset.id
+    - contextPath: JAMF.ComputerSubset.Computer.id
       description: The computer ID.
       type: Number
   - arguments:
@@ -964,22 +690,19 @@ script:
     description: Returns the extension attributes subset for a specific computer according to the given arguments.
     name: jamf-get-computer-extension-attributes-subset
     outputs:
-    - contextPath: JAMF.ComputerSubset.extension_attributes.id
+    - contextPath: JAMF.ComputerSubset.Computer.extension_attributes.id
       description: The computer extension attributes ID.
       type: Number
-    - contextPath: JAMF.ComputerSubset.extension_attributes.name
+    - contextPath: JAMF.ComputerSubset.Computer.extension_attributes.name
       description: The computer extension attributes name.
       type: String
-    - contextPath: JAMF.ComputerSubset.extension_attributes.type
-      description: The computer extension attributes type.
-      type: String
-    - contextPath: JAMF.ComputerSubset.extension_attributes.multi_value
+    - contextPath: JAMF.ComputerSubset.Computer.extension_attributes.multi_value
       description: The computer extension attributes multi value.
       type: Boolean
-    - contextPath: JAMF.ComputerSubset.extension_attributes.value
+    - contextPath: JAMF.ComputerSubset.Computer.extension_attributes.value
       description: The computer extension attributes value.
       type: String
-    - contextPath: JAMF.ComputerSubset.id
+    - contextPath: JAMF.ComputerSubset.Computer.id
       description: The computer ID.
       type: Number
   - arguments:
@@ -999,55 +722,19 @@ script:
     description: Returns the groups accounts subset for a specific computer according to the given arguments.
     name: jamf-get-computer-groups-accounts-subset
     outputs:
-    - contextPath: JAMF.ComputerSubset.groups_accounts.computer_group_memberships
+    - contextPath: JAMF.ComputerSubset.Computer.groups_accounts.computer_group_memberships
       description: The computer group memberships.
       type: String
-    - contextPath: JAMF.ComputerSubset.groups_accounts.local_accounts.name
-      description: The computer local account name.
-      type: String
-    - contextPath: JAMF.ComputerSubset.groups_accounts.local_accounts.realname
-      description: The computer local account real name.
-      type: String
-    - contextPath: JAMF.ComputerSubset.groups_accounts.local_accounts.uid
+    - contextPath: JAMF.ComputerSubset.Computer.groups_accounts.local_accounts.uid
       description: The computer local account UID.
       type: String
-    - contextPath: JAMF.ComputerSubset.groups_accounts.local_accounts.home
+    - contextPath: JAMF.ComputerSubset.Computer.groups_accounts.local_accounts.homeDirectory
       description: The computer local account home.
       type: String
-    - contextPath: JAMF.ComputerSubset.groups_accounts.local_accounts.home_size
-      description: The computer local account name size.
-      type: String
-    - contextPath: JAMF.ComputerSubset.groups_accounts.local_accounts.home_size_mb
-      description: The computer local account size in MB.
-      type: Number
-    - contextPath: JAMF.ComputerSubset.groups_accounts.local_accounts.administrator
+    - contextPath: JAMF.ComputerSubset.Computer.groups_accounts.local_accounts.admin
       description: Whether the computer is the local account administrator.
       type: Boolean
-    - contextPath: JAMF.ComputerSubset.groups_accounts.local_accounts.filevault_enabled
-      description: Whether the computer filevault is enabled.
-      type: Boolean
-    - contextPath: JAMF.ComputerSubset.groups_accounts.user_inventories.disable_automatic_login
-      description: Whether automatic login is disabled.
-      type: Boolean
-    - contextPath: JAMF.ComputerSubset.groups_accounts.user_inventories.user.username
-      description: The computer user inventories user's username.
-      type: String
-    - contextPath: JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_history_depth
-      description: Number of unique passcodes before reuse.
-      type: String
-    - contextPath: JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_min_length
-      description: Smallest number of passcode characters allowed.
-      type: String
-    - contextPath: JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_max_age
-      description: Number of days until the passcode must be changed.
-      type: String
-    - contextPath: JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_min_complex_characters
-      description: Smallest number of non-alphanumeric characters allowed.
-      type: String
-    - contextPath: JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_require_alphanumeric
-      description: Passcode rule (must contain at least one letter and one number).
-      type: String
-    - contextPath: JAMF.ComputerSubset.id
+    - contextPath: JAMF.ComputerSubset.Computer.id
       description: The computer ID.
       type: Number
   - arguments:
@@ -1066,11 +753,12 @@ script:
       required: true
     description: Returns the iPhones subset for a specific computer according to the given arguments.
     name: jamf-get-computer-iphones-subset
+    deprecated: true
     outputs:
-    - contextPath: JAMF.ComputerSubset.iphones
+    - contextPath: JAMF.ComputerSubset.Computer.iphones
       description: The commputer related iPhones.
       type: String
-    - contextPath: JAMF.ComputerSubset.id
+    - contextPath: JAMF.ComputerSubset.Computer.id
       description: The computer ID.
       type: Number
   - arguments:
@@ -1090,21 +778,66 @@ script:
     description: Returns the configuration profiles subset for a specific computer according to the given arguments.
     name: jamf-get-computer-configuration-profiles-subset
     outputs:
-    - contextPath: JAMF.ComputerSubset.configuration_profiles.id
+    - contextPath: JAMF.ComputerSubset.Computer.configuration_profiles.id
       description: The configuration profile ID.
       type: Number
-    - contextPath: JAMF.ComputerSubset.configuration_profiles.name
-      description: The configuration profile name.
-      type: String
-    - contextPath: JAMF.ComputerSubset.configuration_profiles.uuid
-      description: The configuration profile UUID.
-      type: String
-    - contextPath: JAMF.ComputerSubset.configuration_profiles.is_removable
+    - contextPath: JAMF.ComputerSubset.Computer.configuration_profiles.removable
       description: If the configuration profile is removable.
       type: Boolean
-    - contextPath: JAMF.ComputerSubset.id
+    - contextPath: JAMF.ComputerSubset.Computer.id
       description: The computer ID.
       type: Number
+  - arguments:
+    - auto: PREDEFINED
+      description: 'The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress".'
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serialnumber
+      - macaddress
+      required: true
+    - description: The value of the specified identifier. For example, if "id" is selected as the identifier, provide the computer ID. If "macaddress" is selected, provide the computer's MAC address.
+      name: identifier_value
+      required: true
+    - auto: PREDEFINED
+      description: The section of the computer to retrieve.
+      name: section
+      predefined:
+      - GENERAL
+      - HARDWARE
+      - OPERATING_SYSTEM
+      - USER_AND_LOCATION
+      - PURCHASING
+      - DISK_ENCRYPTION
+      - SECURITY
+      - SOFTWARE_UPDATES
+      - APPLICATIONS
+      - STORAGE
+      - CONFIGURATION_PROFILES
+      - PRINTERS
+      - SERVICES
+      - LOCAL_USER_ACCOUNTS
+      - CERTIFICATES
+      - ATTACHMENTS
+      - PACKAGE_RECEIPTS
+      - LICENSED_SOFTWARE
+      - IBEACONS
+      - EXTENSION_ATTRIBUTES
+      - CONTENT_CACHING
+      - GROUP_MEMBERSHIPS
+      required: false
+      defaultValue: GENERAL
+    description: Returns the requested section for a specific computer according to the given arguments.
+    name: jamf-get-computer-subset
+    outputs:
+    - contextPath: JAMF.Computer.id
+      description: The computer's ID.
+      type: Number
+    - contextPath: JAMF.Computer.udid
+      description: The computer's UDID.
+      type: String
   - arguments:
     - description: A 6-digit passcode to be used to unlock the computer after it was locked.
       name: passcode
@@ -2674,7 +2407,7 @@ script:
     - contextPath: JAMF.OSX.ProfileConfiguration.self_service
       description: Self-service object of the configuration profile.
       type: String
-  dockerimage: demisto/btfl-soup:1.0.1.3150379
+  dockerimage: demisto/btfl-soup:1.0.1.7742802
   runonce: false
   script: '-'
   subtype: python3

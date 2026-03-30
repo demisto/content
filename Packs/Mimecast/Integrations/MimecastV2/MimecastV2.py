@@ -2935,8 +2935,8 @@ def change_user_status_removed_in_context(user_info, group_id):
             [groups_entry_in_context] if isinstance(groups_entry_in_context, dict) else groups_entry_in_context
         )
         for group in groups_entry_in_context:
-            if group["ID"] == group_id:
-                for user in group["Users"]:
+            if group.get("ID") == group_id:
+                for user in group.get("Users", []):
                     if user["EmailAddress"] == user_info.get("EmailAddress", ""):
                         user["IsRemoved"] = True
                 return groups_entry_in_context
