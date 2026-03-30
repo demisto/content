@@ -16,7 +16,7 @@ configuration:
 - display: AppID as configured in AIM
   name: app_id
   type: 0
-  required: true
+  required: false
   section: Connect
 - display: Folder to search in safe
   name: folder

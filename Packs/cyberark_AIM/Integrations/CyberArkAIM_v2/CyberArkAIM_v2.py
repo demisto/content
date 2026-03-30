@@ -77,7 +77,7 @@ class Client(BaseClient):
             "Object": creds_object,
         }
 
-        return self._http_request("POST", url_suffix, data=body, auth=self.auth, cert=self.crt)
+        return self._http_request("POST", url_suffix, json=body, auth=self.auth, cert=self.crt)
 
     def list_credentials(self):
         credential_result = [self.get_credentials(credentials) for credentials in self._credentials_list]
@@ -160,8 +160,12 @@ def main():
     proxy = params.get("proxy", False)
 
     app_id = params.get("app_id")
-    folder = params.get("folder") or ""
-    safe = params.get("safe") or ""
+
+    if not app_id:
+        raise return_error("app_id is required")
+
+    folder = params.get("folder")
+    safe = params.get("safe")
     credentials_object = params.get("credential_names") or ""
 
     cert_text = params.get("cert_text") or ""
