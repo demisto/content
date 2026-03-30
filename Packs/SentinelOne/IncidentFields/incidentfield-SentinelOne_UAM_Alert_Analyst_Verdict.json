@@ -22,6 +22,11 @@
     "system": false,
     "threshold": 72,
     "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
     "selectValues": [
         "False positive - Benign",
         "False positive - Benign but suspicious",
@@ -43,10 +48,5 @@
         "True positive - Unauthorized access",
         "True positive - Undefined",
         "Undefined"
-    ],
-    "unmapped": false,
-    "unsearchable": true,
-    "useAsKpi": false,
-    "version": -1,
-    "fromVersion": "6.10.0"
+    ]
 }

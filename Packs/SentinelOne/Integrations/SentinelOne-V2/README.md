@@ -8,7 +8,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g., https://usea1.sentinelone.net) |  | True |
+| Server URL (e.g., <https://usea1.sentinelone.net>) |  | True |
 | API Token |  | False |
 | API Version |  | True |
 | Fetch incidents |  | False |
