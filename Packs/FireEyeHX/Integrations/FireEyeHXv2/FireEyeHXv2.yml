@@ -1811,6 +1811,7 @@ script:
       description: A json object with triage acquisition details and MANS file.
       type: Unknown
   - name: fireeye-hx-triage-acquisition-get
+    description: Gets information about a specified triage acquisition.
     arguments:
     - name: acquisitionId
       required: true
