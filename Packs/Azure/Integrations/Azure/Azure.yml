@@ -6569,7 +6569,7 @@ script:
       - name: account_name
         type: String
         required: true
-        description: Cosmos DB database account name.
+        description: The Cosmos DB database account name.
         prettyname: CosmosDB Name
         defaultValue: CosmosDB Name
         prettypredefined:
@@ -6578,7 +6578,7 @@ script:
         type: Boolean
         required: false
         defaultValue: 'true'
-        description: Disable write operations on metadata resources via account keys.
+        description: Whether to disable write operations on metadata resources via account keys.
         hidden: true
     outputs:
       - contextPath: Azure.CosmosDB.id
@@ -6603,15 +6603,15 @@ script:
         description: The analytical storage schema types.
         type: String
       - contextPath: Azure.CosmosDB.properties.apiProperties
-        description: API specific properties.
+        description: The API specific properties.
         type: Dictionary
       - contextPath: Azure.CosmosDB.properties.backupPolicy
         description: The policy for taking backups on an account.
       - contextPath: Azure.CosmosDB.properties.capabilities
-        description: List of Cosmos DB capabilities for the account.
+        description: A list of Cosmos DB capabilities for the account.
         type: List
       - contextPath: Azure.CosmosDB.properties.capacity
-        description: Properties related to capacity enforcement on an account.
+        description: The properties related to capacity enforcement on an account.
         type: Integer
       - contextPath: Azure.CosmosDB.properties.connectorOffer
         description: The Cassandra connector offer type for the Cosmos DB database account.
@@ -6626,7 +6626,7 @@ script:
         description: The mode of account creation.
         type: String
       - contextPath: Azure.CosmosDB.properties.customerManagedKeyStatus
-        description: Status of the Customer Managed Key feature on the account.
+        description: The status of the Customer Managed Key feature on the account.
         type: String
       - contextPath: Azure.CosmosDB.properties.databaseAccountOfferType
         description: The offer type for the Cosmos DB database account.
@@ -6647,13 +6647,13 @@ script:
         description: Whether storage analytics are enabled.
         type: Boolean
       - contextPath: Azure.CosmosDB.properties.enableAutomaticFailover
-        description: Enables automatic failover of the write region.
+        description: Whether automatic failover of the write region is enabled.
         type: Boolean
       - contextPath: Azure.CosmosDB.properties.enableBurstCapacity
         description: Whether Burst Capacity is enabled.
         type: Boolean
       - contextPath: Azure.CosmosDB.properties.enableCassandraConnector
-        description: Enables the Cassandra connector on the Cosmos DB account.
+        description: Whether the Cassandra connector on the Cosmos DB account is enabled.
         type: Boolean
       - contextPath: Azure.CosmosDB.properties.enableFreeTier
         description: Whether Free Tier is enabled.
@@ -6819,9 +6819,9 @@ script:
       - contextPath: Azure.WebApp.properties.siteConfig.appSettings
         description: A list of app settings.
       - contextPath: Azure.WebApp.properties.siteConfig.metadata
-        description: List of metadata settings.
+        description: A list of metadata settings.
       - contextPath: Azure.WebApp.properties.siteConfig.connectionStrings
-        description: List of connection strings.
+        description: A list of connection strings.
       - contextPath: Azure.WebApp.properties.siteConfig.localMySqlEnabled
         description: Whether local MySQL is enabled.
         type: Boolean
@@ -6832,25 +6832,25 @@ script:
         description: Whether HTTP/2 is enabled.
         type: Boolean
       - contextPath: Azure.WebApp.properties.siteConfig.minTlsVersion
-        description: Minimum TLS version required.
+        description: The minimum required TLS version.
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.ftpsState
-        description: FTPS state (Disabled, AllAllowed, etc.).
+        description: The FTPS state (for example Disabled or AllAllowed).
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.linuxFxVersion
-        description: Runtime stack for Linux apps.
+        description: The runtime stack for Linux apps.
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.windowsFxVersion
-        description: Runtime stack for Windows apps.
+        description: The runtime stack for Windows apps.
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.numberOfWorkers
-        description: Number of workers allocated.
+        description: The number of workers allocated.
         type: Number
       - contextPath: Azure.WebApp.properties.siteConfig.webSocketsEnabled
         description: Whether WebSockets are enabled.
         type: Boolean
       - contextPath: Azure.WebApp.properties.siteConfig.preWarmedInstanceCount
-        description: Number of pre-warmed instances.
+        description: The number of pre-warmed instances.
         type: Number
       - contextPath: Azure.WebApp.properties.siteConfig.acrUseManagedIdentityCreds
         description: Whether ACR uses managed identity credentials.
