@@ -1,0 +1,201 @@
+{
+    "name": "GravityZone - Incoming Mapper",
+    "description": "Maps GravityZone incident fields to Cortex XSOAR incident fields.",
+    "feed": false,
+    "id": "GravityZone - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "mapping": {
+        "GravityZone EDR": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "occurred": {
+                    "simple": "created"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorId": {
+                    "simple": "incidentId"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorTags": {
+                    "simple": "mirror_tags"
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severityScore",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "map_from": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "0-49,50-79,80-100"
+                                        }
+                                    },
+                                    "map_to": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "low,medium,high"
+                                        }
+                                    },
+                                    "sep": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "MapRangeValues"
+                            }
+                        ]
+                    }
+                },
+                "GravityZone Incident ID": {
+                    "simple": "incidentId"
+                },
+                "GravityZone Incident Type": {
+                    "simple": "incidentType"
+                },
+                "GravityZone Incident Severity Score": {
+                    "simple": "severityScore"
+                },
+                "GravityZone Incident Priority": {
+                    "simple": "priority"
+                },
+                "GravityZone Incident Assigned User ID": {
+                    "simple": "assignee"
+                },
+                "GravityZone Incident Action Taken": {
+                    "simple": "mainAction"
+                },
+                "GravityZone Company ID": {
+                    "simple": "company.id"
+                },
+                "GravityZone Company Name": {
+                    "simple": "company.name"
+                },
+                "GravityZone Incident Number": {
+                    "simple": "incidentNumber"
+                },
+                "GravityZone Incident Link": {
+                    "simple": "incidentLink"
+                },
+                "GravityZone Computer ID": {
+                    "simple": "details.computerId"
+                },
+                "GravityZone Computer Name": {
+                    "simple": "details.computerName"
+                },
+                "GravityZone Computer FQDN": {
+                    "simple": "details.computerFqdn"
+                },
+                "GravityZone Computer IP": {
+                    "simple": "details.computerIp"
+                },
+                "Incident Link": {
+                    "simple": "incidentLink"
+                },
+                "Source Create time": {
+                    "simple": "created"
+                },
+                "Last Update Time": {
+                    "simple": "lastProcessed"
+                }
+            }
+        },
+        "GravityZone XDR": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "occurred": {
+                    "simple": "created"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorId": {
+                    "simple": "incidentId"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorTags": {
+                    "simple": "mirror_tags"
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severityScore",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "map_from": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "0-49,50-79,80-100"
+                                        }
+                                    },
+                                    "map_to": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "low,medium,high"
+                                        }
+                                    },
+                                    "sep": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "MapRangeValues"
+                            }
+                        ]
+                    }
+                },
+                "GravityZone Incident ID": {
+                    "simple": "incidentId"
+                },
+                "GravityZone Incident Type": {
+                    "simple": "incidentType"
+                },
+                "GravityZone Incident Severity Score": {
+                    "simple": "severityScore"
+                },
+                "GravityZone Incident Priority": {
+                    "simple": "priority"
+                },
+                "GravityZone Incident Assigned User ID": {
+                    "simple": "assignee"
+                },
+                "GravityZone Incident Action Taken": {
+                    "simple": "mainAction"
+                },
+                "GravityZone Company ID": {
+                    "simple": "company.id"
+                },
+                "GravityZone Company Name": {
+                    "simple": "company.name"
+                },
+                "GravityZone Incident Number": {
+                    "simple": "incidentNumber"
+                },
+                "GravityZone Incident Link": {
+                    "simple": "incidentLink"
+                },
+                "Incident Link": {
+                    "simple": "incidentLink"
+                },
+                "Source Create time": {
+                    "simple": "created"
+                },
+                "Last Update Time": {
+                    "simple": "lastProcessed"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {}
+        }
+    }
+}

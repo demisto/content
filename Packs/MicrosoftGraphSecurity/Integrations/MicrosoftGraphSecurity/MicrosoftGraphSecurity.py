@@ -627,6 +627,8 @@ class MsGraphClient:
         assigned_to: Optional[str],
         classification: Optional[str],
         determination: Optional[str],
+        severity: Optional[str],
+        resolving_comment: Optional[str],
         custom_tags: Optional[List[str]],
         timeout: int,
     ) -> dict:
@@ -639,6 +641,11 @@ class MsGraphClient:
              classification (str): Specification of the alert. Possible values are: Unknown, FalsePositive, TruePositive.
              determination (str):  Specifies the determination of the alert. Possible values are: NotAvailable, Apt,
                                   Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, Other.
+             severity (str): Indicates the possible impact on assets. The higher the severity, the bigger the impact.
+                 Typically, higher severity items require the most immediate attention. The possible values are: unknown,
+                 informational, low, medium, high, unknownFutureValue.
+             resolving_comment (str): User input that explains the resolution of the incident and the classification choice.
+                 It contains free editable text.
              tags (list): Custom tags associated with an incident. Separated by commas without spaces (CSV)
                   for example: tag1,tag2,tag3.
              timeout (int): The amount of time (in seconds) that a request will wait for a client to
@@ -655,6 +662,8 @@ class MsGraphClient:
             assignedTo=assigned_to,
             classification=classification,
             determination=determination,
+            severity=severity,
+            resolvingComment=resolving_comment,
             customTags=custom_tags,
         )
 
@@ -2330,6 +2339,11 @@ def update_incident_command(client: MsGraphClient, args: dict) -> CommandResults
               - classification (str) - Specification of the alert. Possible values are: Unknown, FalsePositive, TruePositive.
               - determination (str) -  Specifies the determination of the alert. Possible values are: NotAvailable, Apt,
                                  Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, Other.
+              - severity (str): Indicates the possible impact on assets. The higher the severity, the bigger the impact.
+                 Typically, higher severity items require the most immediate attention. The possible values are: unknown,
+                 informational, low, medium, high, unknownFutureValue.
+              - resolving_comment (str): User input that explains the resolution of the incident and the classification choice.
+                 It contains free editable text.
               - custom_tags - Custom tags associated with an incident. Separated by commas without spaces (CSV)
                        for example: tag1,tag2,tag3.
 
@@ -2340,6 +2354,8 @@ def update_incident_command(client: MsGraphClient, args: dict) -> CommandResults
     assigned_to = args.get("assigned_to")
     determination = args.get("determination")
     classification = args.get("classification")
+    severity = args.get("severity")
+    resolving_comment = args.get("resolving_comment")
     custom_tags = argToList(args.get("custom_tags"))
     timeout = arg_to_number(args["timeout"])  # default value is defined
     updated_incident = client.update_incident_request(
@@ -2348,6 +2364,8 @@ def update_incident_command(client: MsGraphClient, args: dict) -> CommandResults
         assigned_to=assigned_to,
         classification=classification,
         determination=determination,
+        severity=severity,
+        resolving_comment=resolving_comment,
         custom_tags=custom_tags,
         timeout=timeout,  # type:ignore[arg-type]
     )
