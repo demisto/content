@@ -335,7 +335,7 @@ def detect_indicator_type(indicator: str) -> str:
     """Detect indicator type"""
     indicator = indicator.strip()
 
-    if indicator.startswith('http://') or indicator.startswith('https://'):
+    if indicator.startswith(('http://', 'https://')):
         return 'url'
 
     if Validator.validate_ipv4(indicator) or Validator.validate_ipv6(indicator):
@@ -653,6 +653,9 @@ def socradar_ioc_enrichment_command(client: Client, args: dict[str, Any]) -> lis
             confidence = raw_response.get("cross_source_confidence")
 
             dbot_score_value = calculate_dbot_score(score, signal_strength, confidence)
+
+            # Initialize common_object
+            common_object: Common.IP | Common.Domain | Common.URL | Common.File | None = None
 
             # Determine DBot type based on detected type
             if indicator_type == "ip":

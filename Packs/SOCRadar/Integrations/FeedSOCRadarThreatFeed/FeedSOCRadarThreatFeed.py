@@ -341,7 +341,7 @@ def fetch_indicators(client: Client, collection_uuids: list, limit: int = None) 
     :return: Fetched indicators list.
     :rtype: ``list[Dict]``
     """
-    indicators = []
+    indicators: list[dict] = []
     for collection_uuid in collection_uuids:
         collection_uuid = collection_uuid.strip()
         if not collection_uuid:

@@ -221,7 +221,7 @@ def detect_entity_type(entity: str) -> str:
     entity = entity.strip()
 
     # Check if it's a URL (starts with http:// or https://)
-    if entity.startswith('http://') or entity.startswith('https://'):
+    if entity.startswith(('http://', 'https://')):
         return 'url'
 
     # Check if it's an IP address
@@ -611,7 +611,8 @@ def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> list[Co
             f"💡 **Tip:** For faster results, use smaller batches (10-20 indicators)."
         )
         command_results_list.append(CommandResults(readable_output=warning_msg))
-    summary_data = {
+
+    summary_data: dict[str, Any] = {
         "total": len(indicator_list),
         "processed": 0,
         "failed": 0,
@@ -784,6 +785,26 @@ def socradar_reputation_command(client: Client, args: dict[str, Any]) -> list[Co
                 reliability=demisto.params().get("integrationReliability"),
             )
 
+            # Create appropriate indicator object based on entity type
+            if entity_type == "ip":
+                indicator_object = Common.IP(ip=entity_value, dbot_score=dbot_score)
+            elif entity_type == "hostname":
+                indicator_object = Common.Domain(domain=entity_value, dbot_score=dbot_score)
+            elif entity_type == "url":
+                indicator_object = Common.URL(url=entity_value, dbot_score=dbot_score)
+            elif entity_type == "hash":
+                indicator_object = Common.File(dbot_score=dbot_score)
+                # Set appropriate hash field based on hash length
+                hash_len = len(entity_value)
+                if hash_len == 64:
+                    indicator_object.sha256 = entity_value
+                elif hash_len == 40:
+                    indicator_object.sha1 = entity_value
+                elif hash_len == 32:
+                    indicator_object.md5 = entity_value
+            else:
+                indicator_object = None
+
             command_results_list.append(
                 CommandResults(
                     outputs_prefix="SOCRadarRapidReputation.Reputation",
@@ -791,7 +812,7 @@ def socradar_reputation_command(client: Client, args: dict[str, Any]) -> list[Co
                     readable_output=human_readable,
                     raw_response=raw_response,
                     outputs=context_entry,
-                    indicator=dbot_score,
+                    indicator=indicator_object,
                 )
             )
         else:
