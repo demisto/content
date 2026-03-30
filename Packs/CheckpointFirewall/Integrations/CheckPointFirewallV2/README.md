@@ -3097,8 +3097,8 @@ Retrieve a list of network objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. Default is 50. Max is 500. Default is 50. | Optional |
-| offset | Number of results to initially skip. Default is 0. Default is 0. | Optional |
+| limit | The maximum number of results to return. Default is 50. Max is 500. | Optional |
+| offset | Number of results to initially skip. Default is 0.| Optional |
 | session_id | Executes the command with the specified session ID. Default is None. | Optional |
 | details_level | The level of detail for some of the fields in the response can vary from showing only the UID value of the object to a fully detailed representation of the object. Possible values are: standard, full, uid. | Optional |
 
@@ -3283,7 +3283,7 @@ Retrieve a list of service objects. When identifier is provided, returns a singl
 | session_id | Executes the command with the specified session ID. Default is None. | Optional |
 | service_type | The type of service to retrieve. Possible values are: tcp, udp, icmp. | Required |
 | limit | The maximum number of results to return. Default is 50. Max is 500. Default is 50. | Optional |
-| offset | Number of results to initially skip. Default is 0. Default is 0. | Optional |
+| offset | Number of results to initially skip. Default is 0. | Optional |
 
 #### Context Output
 
@@ -3608,7 +3608,7 @@ Retrieve a list of NAT rules from the rulebase.
 | --- | --- | --- |
 | package | Name of the package. | Required |
 | limit | The maximum number of results to return. Default is 50. Max is 500. Default is 50. | Optional |
-| offset | Number of results to initially skip. Default is 0. Default is 0. | Optional |
+| offset | Number of results to initially skip. Default is 0. | Optional |
 | filter | Search expression to filter the rulebase. The provided text should be exactly the same as it would be given in Smart Console. The logical operators in the expression (AND, OR) should be provided in capital letters. Default operator is OR. | Optional |
 | session_id | Executes the command with the specified session ID. Default is None. | Optional |
 

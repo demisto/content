@@ -510,13 +510,15 @@ class Client(BaseClient):
     def add_service_udp(
         self,
         identifier: str,
-        port: str,
+        port: Optional[str] = None,
         comments: Optional[str] = None,
         color: Optional[str] = None,
         session_timeout: Optional[int] = None,
         tags: Optional[list] = None,
     ):
-        body: dict = {"name": identifier, "port": port}
+        body: dict = {"name": identifier}
+        if port:
+            body["port"] = port
         if comments:
             body["comments"] = comments
         if color:
@@ -537,7 +539,9 @@ class Client(BaseClient):
         color: Optional[str] = None,
         tags: Optional[list] = None,
     ):
-        body: dict = {"name": identifier, "icmp-type": icmp_type}
+        body: dict = {"name": identifier}
+        if icmp_type is not None:
+            body["icmp-type"] = icmp_type
         if icmp_code is not None:
             body["icmp-code"] = icmp_code
         if comments:
@@ -2535,7 +2539,7 @@ def build_nat_settings(
     nat_settings_ip: Optional[str],
 ) -> Optional[dict]:
     """Helper function. Builds the nat-settings dict from individual arguments."""
-    if not any([nat_settings_auto_rule, nat_method, nat_hide_behind, nat_install_on, nat_settings_ip]):
+    if all(v is None for v in [nat_settings_auto_rule, nat_method, nat_hide_behind, nat_install_on, nat_settings_ip]):
         return None
 
     # nat_hide_behind is forbidden when nat_method is 'static'
@@ -2856,6 +2860,7 @@ def checkpoint_service_get_command(client: Client, identifier: str, service_type
         headers=DEFAULT_LIST_FIELD,
         removeNull=True,
     )
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
 
     demisto.debug("checkpoint-service-get command completed successfully")
     return CommandResults(
@@ -2890,6 +2895,7 @@ def checkpoint_service_list_command(
             headers=DEFAULT_LIST_FIELD,
             removeNull=True,
         )
+        demisto.debug("checkpoint-service-list command completed successfully")
         return CommandResults(
             outputs_prefix=SERVICE_TYPE_CONTEXT_MAP[service_type],
             outputs_key_field="uid",
@@ -2995,7 +3001,7 @@ def checkpoint_tcp_service_add_command(
 def checkpoint_udp_service_add_command(
     client: Client,
     identifier: str,
-    port: str,
+    port: str = None,
     comments: str = None,
     color: str = None,
     session_timeout: str = None,
@@ -3540,7 +3546,6 @@ def checkpoint_nat_rule_delete_command(client: Client, identifier: str, package:
         client (Client): CheckPoint client.
         identifier (str): Object unique identifier or name.
         package (str): Name of the package.
-        ignore_warnings (bool): Whether to ignore warnings when deleting the NAT rule.
     """
     demisto.debug(f"checkpoint-nat-rule-delete command called with args: {demisto.args()}")
     client.delete_nat_rule(
