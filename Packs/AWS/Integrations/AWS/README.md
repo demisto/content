@@ -308,7 +308,7 @@ Returns a list of EKS clusters.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EKS.Cluster | String | A list of all of the clusters for your account in the specified Region. |
+| AWS.EKS.Clusters | String | A list of all of the clusters for your account in the specified Region. |
 | AWS.EKS.ClustersNextToken | String | The nextToken value to include in a future ListClusters request. When the results of a ListClusters request exceed maxResults, you can use this value to retrieve the next page of results. |
 
 #### Command Example
