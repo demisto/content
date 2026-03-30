@@ -214,16 +214,7 @@ var sendRequest = function(method, uri, body, raw, timeout = default_timeout) {
     var maxTries = 3;
 
     do {
-        logDebug(
-            'Calling http() from sendRequest, try number ' + tries +
-            ', requestUrl = ' + requestUrl +
-            ', method = ' + method +
-            ', body = ' + JSON.stringify(body) +
-            ', SaveToFile = ' + raw +
-            ', insecure = ' + params.insecure +
-            ', proxy = ' + params.proxy +
-            ', timeout = ' + timeout
-        );
+        logDebug('Calling http() from sendRequest, try number ' + tries);
 
         res = http(
             requestUrl,
@@ -242,9 +233,7 @@ var sendRequest = function(method, uri, body, raw, timeout = default_timeout) {
 
         logDebug(
             'Result of http() requestUrl = ' + requestUrl +
-            ' status = ' + res.Status +
-            ' response = ' + JSON.stringify(res)
-        );
+            ' status = ' + res.Status);
 
         tries++;
 
