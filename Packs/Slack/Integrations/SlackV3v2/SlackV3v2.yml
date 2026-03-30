@@ -1,7 +1,7 @@
 sectionorder:
 - Connect
 - Collect
-- Agentic assistant
+- Agentic Assistant
 category: Messaging and Conferencing
 provider: Slack
 commonfields:
@@ -152,7 +152,7 @@ configuration:
   display: Enabled AI assistant
   name: enabled_ai_assistant
   type: 8
-  section: Agentic assistant
+  section: Agentic Assistant
   required: false
   additionalinfo: Enable Cortex Assistant AI integration in Slack. When enabled, users can mention the bot to interact with AI agents for security analysis, threat intelligence, and automated responses.
 - display: Number of objects to return in each paginated call
