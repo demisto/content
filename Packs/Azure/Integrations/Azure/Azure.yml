@@ -6898,27 +6898,27 @@ script:
         description: Load balancing settings.
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.experiments
-        description: Experiments configuration.
+        description: The experiments configuration.
       - contextPath: Azure.WebApp.properties.siteConfig.limits
-        description: Site limits configuration.
+        description: The site limits configuration.
       - contextPath: Azure.WebApp.properties.siteConfig.autoSwapSlotName
-        description: Auto-swap slot name.
+        description: The auto-swap slot name.
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.ipSecurityRestrictions
-        description: IP security restrictions.
+        description: The IP security restrictions.
       - contextPath: Azure.WebApp.properties.siteConfig.scmIpSecurityRestrictions
-        description: SCM IP security restrictions.
+        description: The SCM IP security restrictions.
       - contextPath: Azure.WebApp.properties.siteConfig.scmIpSecurityRestrictionsUseMain
         description: Whether SCM IP restrictions use main settings.
         type: Boolean
       - contextPath: Azure.WebApp.properties.siteConfig.cors
-        description: CORS settings.
+        description: The CORS settings.
       - contextPath: Azure.WebApp.properties.siteConfig.push
-        description: Push settings.
+        description: The push settings.
       - contextPath: Azure.WebApp.properties.siteConfig.apiDefinition
-        description: API definition settings.
+        description: The API definition settings.
       - contextPath: Azure.WebApp.properties.siteConfig.apiManagementConfig
-        description: API management configuration.
+        description: The API management configuration.
 
   - arguments:
     - name: subscription_id
