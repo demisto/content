@@ -6090,7 +6090,7 @@ script:
     quickaction: true
     arguments:
       - name: subscription_id
-        type: string
+        type: String
         required: true
         description: The subscription ID.
         prettyname: Subscription ID
@@ -6098,7 +6098,7 @@ script:
         prettypredefined:
           Subscription ID: ${asset.xdm.asset.realm}
       - name: resource_group_name
-        type: string
+        type: String
         required: true
         description: The resource group name.
         prettyname: Resource Group
@@ -6106,7 +6106,7 @@ script:
         prettypredefined:
           Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
       - name: db_name
-        type: string
+        type: String
         required: true
         description: The database name.
         prettyname: DB Name
@@ -6114,7 +6114,7 @@ script:
         prettypredefined:
           DB Name: ${asset.xdm.asset.raw_fields.Platform Discovery.sqlDatabase.name}
       - name: server_name
-        type: string
+        type: String
         required: true
         description: The server name.
         prettyname: Server Name
@@ -6183,7 +6183,7 @@ script:
     quickaction: true
     arguments:
       - name: subscription_id
-        type: string
+        type: String
         required: true
         description: The subscription ID.
         prettyname: Subscription ID
@@ -6191,7 +6191,7 @@ script:
         prettypredefined:
           Subscription ID: ${asset.xdm.asset.realm}
       - name: resource_group_name
-        type: string
+        type: String
         required: true
         description: The resource group name.
         prettyname: Resource Group
@@ -6229,7 +6229,7 @@ script:
     quickaction: true
     arguments:
       - name: subscription_id
-        type: string
+        type: String
         required: true
         description: The subscription ID.
         prettyname: Subscription ID
@@ -6237,7 +6237,7 @@ script:
         prettypredefined:
           Subscription ID: ${asset.xdm.asset.realm}
       - name: vault_name
-        type: string
+        type: String
         required: true
         description: The key vault name.
         prettyname: Key Vault Name
@@ -6245,7 +6245,7 @@ script:
         prettypredefined:
           Key Vault Name: ${asset.xdm.asset.name}
       - name: resource_group_name
-        type: string
+        type: String
         required: true
         description: The name of the resource group.
         prettyname: Resource Group
@@ -6344,7 +6344,7 @@ script:
     quickaction: true
     arguments:
       - name: subscription_id
-        type: string
+        type: String
         required: true
         description: The subscription ID.
         prettyname: Subscription ID
@@ -6352,7 +6352,7 @@ script:
         prettypredefined:
           Subscription ID: ${asset.xdm.asset.realm}
       - name: resource_group_name
-        type: string
+        type: String
         required: true
         description: The resource group name.
         prettyname: Resource Group
@@ -6551,7 +6551,7 @@ script:
     quickaction: true
     arguments:
       - name: subscription_id
-        type: string
+        type: String
         required: true
         description: The subscription ID.
         prettyname: Subscription ID
@@ -6559,7 +6559,7 @@ script:
         prettypredefined:
           Subscription ID: ${asset.xdm.asset.realm}
       - name: resource_group_name
-        type: string
+        type: String
         required: true
         description: The resource group name.
         prettyname: Resource Group
@@ -6720,7 +6720,7 @@ script:
     quickaction: true
     arguments:
       - name: subscription_id
-        type: string
+        type: String
         required: true
         description: The subscription ID.
         prettyname: Subscription ID
@@ -6728,7 +6728,7 @@ script:
         prettypredefined:
           Subscription ID: ${asset.xdm.asset.realm}
       - name: resource_group_name
-        type: string
+        type: String
         required: true
         description: The resource group name.
         prettyname: Resource Group
