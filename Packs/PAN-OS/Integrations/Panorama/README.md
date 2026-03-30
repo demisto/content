@@ -6331,6 +6331,256 @@ Get the HA state and associated details from the given device and any other deta
 >| true | 11111111111111 | HA Not enabled. |
 >| true | 192.168.1.145 | HA Not enabled. |
 
+### pan-os-platform-ha-sync-config
+
+***
+Forces the active firewall to synchronize its running configuration with the passive peer.
+
+#### Base Command
+
+`pan-os-platform-ha-sync-config`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | The serial number, or IP address, of the target firewall. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.HASync.HostID | String | The host ID. |
+| PANOS.HASync.SyncType | String | The type of synchronization performed. |
+| PANOS.HASync.Message | String | Human-readable status message. |
+
+### pan-os-platform-ha-sync-state
+
+***
+Forces the active firewall to synchronize its state (session table) with the passive peer.
+
+#### Base Command
+
+`pan-os-platform-ha-sync-state`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | The serial number, or IP address, of the target firewall. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.HASync.HostID | String | The host ID. |
+| PANOS.HASync.SyncType | String | The type of synchronization performed. |
+| PANOS.HASync.Message | String | Human-readable status message. |
+
+### pan-os-platform-get-ha-config
+
+***
+Retrieves the current High Availability configuration from a firewall.
+
+#### Base Command
+
+`pan-os-platform-get-ha-config`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | The string by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | The serial number, or IP address, of the target firewall. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.HAConfig.HostID | String | The host ID. |
+| PANOS.HAConfig.Enabled | String | Whether HA is enabled on the device. |
+| PANOS.HAConfig.GroupID | String | The Group ID for the HA pair. |
+| PANOS.HAConfig.Mode | String | The HA mode (e.g., Active/Passive). |
+| PANOS.HAConfig.PeerIP | String | The IP address of the HA peer. |
+| PANOS.HAConfig.PeerIPBackup | String | The backup IP address of the HA peer. |
+| PANOS.HAConfig.HA1Port | String | The interface port for the HA1 (Control) link. |
+| PANOS.HAConfig.HA1IP | String | The IP address for the HA1 (Control) link. |
+| PANOS.HAConfig.HA1BackupPort | String | The interface port for the HA1-Backup link. |
+| PANOS.HAConfig.HA1BackupIP | String | The IP address for the HA1-Backup link. |
+| PANOS.HAConfig.HA2Port | String | The interface port for the HA2 (Data) link. |
+| PANOS.HAConfig.HA2IP | String | The IP address for the HA2 (Data) link. |
+| PANOS.HAConfig.HA2BackupPort | String | The interface port for the HA2-Backup link. |
+| PANOS.HAConfig.HA2BackupIP | String | The IP address for the HA2-Backup link. |
+| PANOS.HAConfig.LinkMonitoring | Unknown | A list of Link Monitoring group configurations (each with Name, Enabled, FailureCondition, Interfaces). |
+
+### pan-os-platform-ha-configure
+
+***
+Enables and configures a detailed High Availability setup on a firewall.
+
+#### Base Command
+
+`pan-os-platform-ha-configure`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | The serial number, or IP address, of the target firewall. | Required |
+| peer_ip | The IP address of the peer firewall's primary HA1 control link. | Required |
+| group_id | The HA Group ID (1-255). Default is 1. | Optional |
+| peer_ip_backup | The IP address of the peer firewall's backup HA1 control link. | Optional |
+| passive_link_state | For Active/Passive mode, specifies the link state of the passive device. Possible values are: auto, shutdown. Default is auto. | Optional |
+| device_priority | Device priority for HA election (0-255). Higher priority becomes active. Default is 100. | Optional |
+| heartbeat_backup | Enable backup heartbeat monitoring (recommended for production HA). Possible values are: true, false. Default is false. | Optional |
+| ha1_port | The primary control link (HA1) interface port (e.g., ha1-a, ethernet1/1). | Optional |
+| ha1_ip_address | The IP address for the primary control link (HA1) interface. | Optional |
+| ha1_netmask | The netmask for the primary control link (HA1) interface. | Optional |
+| ha1_gateway | The gateway for the primary control link (HA1) interface. | Optional |
+| ha1_backup_port | The backup control link (HA1-Backup) interface port. | Optional |
+| ha1_backup_ip_address | The IP address for the backup control link (HA1-Backup) interface. | Optional |
+| ha1_backup_netmask | The netmask for the backup control link (HA1-Backup) interface. | Optional |
+| ha2_port | The primary data link (HA2) interface port for session synchronization. | Optional |
+| ha2_ip_address | The IP address for the primary data link (HA2) interface. | Optional |
+| ha2_netmask | The netmask for the primary data link (HA2) interface. | Optional |
+| ha2_backup_port | The backup data link (HA2-Backup) interface port. | Optional |
+| ha2_backup_ip_address | The IP address for the backup data link (HA2-Backup) interface. | Optional |
+| ha2_backup_netmask | The netmask for the backup data link (HA2-Backup) interface. | Optional |
+| state_sync | Enable state (session) synchronization over the HA2 data link. Possible values are: true, false. Default is false. | Optional |
+| ha2_keepalive | Enable HA2 keep-alive monitoring to detect failures on the HA2 data link. Possible values are: true, false. Default is false. | Optional |
+| ha2_keepalive_threshold | HA2 keep-alive threshold in milliseconds (5000-60000). Default is 10000. | Optional |
+| ha2_keepalive_action | Action to take when HA2 keep-alive fails. Possible values are: log-only, log-and-reboot. Default is log-only. | Optional |
+| commit | Commit the configuration change immediately. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.HAConfigure.HostID | String | The host ID. |
+| PANOS.HAConfigure.Message | String | Human-readable status message. |
+| PANOS.HAConfigure.Committed | Boolean | Whether the configuration was committed. |
+
+### pan-os-platform-ha-enable
+
+***
+Enables the HA functionality on a firewall from previous configuration.
+
+#### Base Command
+
+`pan-os-platform-ha-enable`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | The serial number, or IP address, of the target firewall. | Required |
+| commit | Set to true to automatically commit the configuration changes. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.HAEnabledState.HostID | String | The host ID. |
+| PANOS.HAEnabledState.Enabled | Boolean | Whether HA has been enabled or disabled. |
+| PANOS.HAEnabledState.Message | String | Human-readable status message. |
+| PANOS.HAEnabledState.Committed | Boolean | Whether the configuration was committed. |
+
+### pan-os-platform-ha-disable
+
+***
+Disables the HA functionality on a firewall.
+
+#### Base Command
+
+`pan-os-platform-ha-disable`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | The serial number, or IP address, of the target firewall. | Required |
+| commit | Set to true to automatically commit the configuration changes. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.HAEnabledState.HostID | String | The host ID. |
+| PANOS.HAEnabledState.Enabled | Boolean | Whether HA has been enabled or disabled. |
+| PANOS.HAEnabledState.Message | String | Human-readable status message. |
+| PANOS.HAEnabledState.Committed | Boolean | Whether the configuration was committed. |
+
+### pan-os-platform-ha-list-interfaces
+
+***
+Lists all available network interfaces on the firewall.
+
+#### Base Command
+
+`pan-os-platform-ha-list-interfaces`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | The string by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | The serial number, or IP address, of the target firewall. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.HAInterfaces.HostID | String | The host ID. |
+| PANOS.HAInterfaces.InterfaceCount | Number | Total number of interfaces found. |
+| PANOS.HAInterfaces.Interfaces | Unknown | List of all available interface names. |
+
+### pan-os-platform-ha-validate-interfaces
+
+***
+Validates that specified interfaces exist on the firewall before HA configuration.
+
+#### Base Command
+
+`pan-os-platform-ha-validate-interfaces`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | The serial number, or IP address, of the target firewall. | Required |
+| interfaces | Comma-separated list of interface names to validate (e.g., ha1-a,ha2-a,ethernet1/1). | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.HAInterfaceValidation.HostID | String | The host ID. |
+| PANOS.HAInterfaceValidation.AllValid | Boolean | Whether all specified interfaces were found. |
+| PANOS.HAInterfaceValidation.ValidatedInterfaces | Unknown | List of interface names that were validated. |
+| PANOS.HAInterfaceValidation.MissingInterfaces | Unknown | List of interface names that were not found on the device. |
+
+### pan-os-panorama-ha-reconfigure
+
+***
+Issues a revert to running HA state command to a Panorama device.
+
+#### Base Command
+
+`pan-os-panorama-ha-reconfigure`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | The serial number, or IP address, of the target Panorama device. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.PanoramaHAReconfigure.hostid | String | The host ID. |
+| PANOS.PanoramaHAReconfigure.message | String | Human-readable status message. |
+
 ### pan-os-platform-get-jobs
 
 ***

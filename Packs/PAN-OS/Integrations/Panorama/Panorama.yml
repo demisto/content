@@ -8775,13 +8775,13 @@ script:
     description: Forces the active firewall to synchronize its running configuration with the passive peer.
     name: pan-os-platform-ha-sync-config
     outputs:
-    - contextPath: PANOS.HASync.hostid
+    - contextPath: PANOS.HASync.HostID
       description: The host ID.
       type: String
-    - contextPath: PANOS.HASync.sync_type
+    - contextPath: PANOS.HASync.SyncType
       description: The type of synchronization performed.
       type: String
-    - contextPath: PANOS.HASync.message
+    - contextPath: PANOS.HASync.Message
       description: Human-readable status message.
       type: String
   - arguments:
@@ -8791,66 +8791,67 @@ script:
     description: Forces the active firewall to synchronize its state (session table) with the passive peer.
     name: pan-os-platform-ha-sync-state
     outputs:
-    - contextPath: PANOS.HASync.hostid
+    - contextPath: PANOS.HASync.HostID
       description: The host ID.
       type: String
-    - contextPath: PANOS.HASync.sync_type
+    - contextPath: PANOS.HASync.SyncType
       description: The type of synchronization performed.
       type: String
-    - contextPath: PANOS.HASync.message
+    - contextPath: PANOS.HASync.Message
       description: Human-readable status message.
       type: String
   - arguments:
+    - description: The string by which to filter the results to only show specific hostnames or serial numbers.
+      name: device_filter_string
     - description: The serial number, or IP address, of the target firewall.
       name: target
-      required: true
     description: Retrieves the current High Availability configuration from a firewall.
     name: pan-os-platform-get-ha-config
     outputs:
-    - contextPath: PANOS.HAConfig.hostid
+    - contextPath: PANOS.HAConfig.HostID
       description: The host ID.
       type: String
-    - contextPath: PANOS.HAConfig.enabled
+    - contextPath: PANOS.HAConfig.Enabled
       description: Whether HA is enabled on the device.
       type: String
-    - contextPath: PANOS.HAConfig.group_id
+    - contextPath: PANOS.HAConfig.GroupID
       description: The Group ID for the HA pair.
       type: String
-    - contextPath: PANOS.HAConfig.mode
+    - contextPath: PANOS.HAConfig.Mode
       description: The HA mode (e.g., Active/Passive).
       type: String
-    - contextPath: PANOS.HAConfig.peer_ip
+    - contextPath: PANOS.HAConfig.PeerIP
       description: The IP address of the HA peer.
       type: String
-    - contextPath: PANOS.HAConfig.peer_ip_backup
+    - contextPath: PANOS.HAConfig.PeerIPBackup
       description: The backup IP address of the HA peer.
       type: String
-    - contextPath: PANOS.HAConfig.ha1_port
+    - contextPath: PANOS.HAConfig.HA1Port
       description: The interface port for the HA1 (Control) link.
       type: String
-    - contextPath: PANOS.HAConfig.ha1_ip
+    - contextPath: PANOS.HAConfig.HA1IP
       description: The IP address for the HA1 (Control) link.
       type: String
-    - contextPath: PANOS.HAConfig.ha1_backup_port
+    - contextPath: PANOS.HAConfig.HA1BackupPort
       description: The interface port for the HA1-Backup link.
       type: String
-    - contextPath: PANOS.HAConfig.ha1_backup_ip
+    - contextPath: PANOS.HAConfig.HA1BackupIP
       description: The IP address for the HA1-Backup link.
       type: String
-    - contextPath: PANOS.HAConfig.ha2_port
+    - contextPath: PANOS.HAConfig.HA2Port
       description: The interface port for the HA2 (Data) link.
       type: String
-    - contextPath: PANOS.HAConfig.ha2_ip
+    - contextPath: PANOS.HAConfig.HA2IP
       description: The IP address for the HA2 (Data) link.
       type: String
-    - contextPath: PANOS.HAConfig.ha2_backup_port
+    - contextPath: PANOS.HAConfig.HA2BackupPort
       description: The interface port for the HA2-Backup link.
       type: String
-    - contextPath: PANOS.HAConfig.ha2_backup_ip
+    - contextPath: PANOS.HAConfig.HA2BackupIP
       description: The IP address for the HA2-Backup link.
       type: String
-    - contextPath: PANOS.HAConfig.link_monitoring
-      description: A list of Link Monitoring group configurations.
+    - contextPath: PANOS.HAConfig.LinkMonitoring
+      description: A list of Link Monitoring group configurations (each with Name, Enabled, FailureCondition, Interfaces).
       type: Unknown
   - arguments:
     - description: The serial number, or IP address, of the target firewall.
@@ -8941,13 +8942,13 @@ script:
     description: Enables and configures a detailed High Availability setup on a firewall.
     name: pan-os-platform-ha-configure
     outputs:
-    - contextPath: PANOS.HAConfigure.hostid
+    - contextPath: PANOS.HAConfigure.HostID
       description: The host ID.
       type: String
-    - contextPath: PANOS.HAConfigure.message
+    - contextPath: PANOS.HAConfigure.Message
       description: Human-readable status message.
       type: String
-    - contextPath: PANOS.HAConfigure.committed
+    - contextPath: PANOS.HAConfigure.Committed
       description: Whether the configuration was committed.
       type: Boolean
   - arguments:
@@ -8964,16 +8965,16 @@ script:
     description: Enables the HA functionality on a firewall from previous configuration.
     name: pan-os-platform-ha-enable
     outputs:
-    - contextPath: PANOS.HAEnabledState.hostid
+    - contextPath: PANOS.HAEnabledState.HostID
       description: The host ID.
       type: String
-    - contextPath: PANOS.HAEnabledState.enabled
+    - contextPath: PANOS.HAEnabledState.Enabled
       description: Whether HA has been enabled or disabled.
       type: Boolean
-    - contextPath: PANOS.HAEnabledState.message
+    - contextPath: PANOS.HAEnabledState.Message
       description: Human-readable status message.
       type: String
-    - contextPath: PANOS.HAEnabledState.committed
+    - contextPath: PANOS.HAEnabledState.Committed
       description: Whether the configuration was committed.
       type: Boolean
   - arguments:
@@ -8990,32 +8991,33 @@ script:
     description: Disables the HA functionality on a firewall.
     name: pan-os-platform-ha-disable
     outputs:
-    - contextPath: PANOS.HAEnabledState.hostid
+    - contextPath: PANOS.HAEnabledState.HostID
       description: The host ID.
       type: String
-    - contextPath: PANOS.HAEnabledState.enabled
+    - contextPath: PANOS.HAEnabledState.Enabled
       description: Whether HA has been enabled or disabled.
       type: Boolean
-    - contextPath: PANOS.HAEnabledState.message
+    - contextPath: PANOS.HAEnabledState.Message
       description: Human-readable status message.
       type: String
-    - contextPath: PANOS.HAEnabledState.committed
+    - contextPath: PANOS.HAEnabledState.Committed
       description: Whether the configuration was committed.
       type: Boolean
   - arguments:
+    - description: The string by which to filter the results to only show specific hostnames or serial numbers.
+      name: device_filter_string
     - description: The serial number, or IP address, of the target firewall.
       name: target
-      required: true
     description: Lists all available network interfaces on the firewall.
     name: pan-os-platform-ha-list-interfaces
     outputs:
-    - contextPath: PANOS.HAInterfaces.hostid
+    - contextPath: PANOS.HAInterfaces.HostID
       description: The host ID.
       type: String
-    - contextPath: PANOS.HAInterfaces.interface_count
+    - contextPath: PANOS.HAInterfaces.InterfaceCount
       description: Total number of interfaces found.
       type: Number
-    - contextPath: PANOS.HAInterfaces.interfaces
+    - contextPath: PANOS.HAInterfaces.Interfaces
       description: List of all available interface names.
       type: Unknown
   - arguments:
@@ -9028,17 +9030,17 @@ script:
     description: Validates that specified interfaces exist on the firewall before HA configuration.
     name: pan-os-platform-ha-validate-interfaces
     outputs:
-    - contextPath: PANOS.HAInterfaceValidation.hostid
+    - contextPath: PANOS.HAInterfaceValidation.HostID
       description: The host ID.
       type: String
-    - contextPath: PANOS.HAInterfaceValidation.all_valid
+    - contextPath: PANOS.HAInterfaceValidation.AllValid
       description: Whether all specified interfaces were found.
       type: Boolean
-    - contextPath: PANOS.HAInterfaceValidation.validated_interfaces
-      description: List of interfaces that were validated.
+    - contextPath: PANOS.HAInterfaceValidation.ValidatedInterfaces
+      description: List of interface names that were validated.
       type: Unknown
-    - contextPath: PANOS.HAInterfaceValidation.missing_interfaces
-      description: List of interfaces that were not found on the device.
+    - contextPath: PANOS.HAInterfaceValidation.MissingInterfaces
+      description: List of interface names that were not found on the device.
       type: Unknown
   - arguments:
     - description: The serial number, or IP address, of the target Panorama device.
