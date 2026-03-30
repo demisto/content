@@ -41,11 +41,19 @@ configuration:
   section: Connect
   required: false
   hidden: true
-- display: Client ID
+- displaypassword: Client ID
+  name: creds_client_id
+  hiddenusername: true
+  type: 9
+  section: Connect
+  required: false
+  additionalinfo: The Application (Client) ID of the Azure app registration.
+- displaypassword: Client Secret
   name: credentials
   type: 9
   section: Connect
   required: false
+  hiddenusername: true
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: creds_certificate
@@ -2503,7 +2511,7 @@ script:
     - contextPath: AzureSentinel.Incident.Etag
       description: The Etag of the incident.
       type: String
-  dockerimage: demisto/crypto:1.0.0.4834757
+  dockerimage: demisto/crypto:1.0.0.7704170
   isfetch: true
   runonce: false
   script: '-'
