@@ -6465,25 +6465,25 @@ script:
         description: Runtime stack for Linux apps.
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.windowsFxVersion
-        description: Runtime stack for Windows apps.
+        description: The runtime stack for Windows apps.
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.numberOfWorkers
-        description: Number of workers allocated.
+        description: The number of allocated workers.
         type: Number
       - contextPath: Azure.WebApp.properties.siteConfig.webSocketsEnabled
         description: Whether WebSockets are enabled.
         type: Boolean
       - contextPath: Azure.WebApp.properties.siteConfig.preWarmedInstanceCount
-        description: Number of pre-warmed instances.
+        description: The number of pre-warmed instances.
         type: Number
       - contextPath: Azure.WebApp.properties.siteConfig.acrUseManagedIdentityCreds
         description: Whether ACR uses managed identity credentials.
         type: Boolean
       - contextPath: Azure.WebApp.properties.siteConfig.acrUserManagedIdentityID
-        description: User-assigned identity ID for ACR.
+        description: The user-assigned identity ID for ACR.
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.scmType
-        description: Source control management type.
+        description: The source control management type.
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.use32BitWorkerProcess
         description: Whether to use 32-bit worker process.
@@ -6492,15 +6492,15 @@ script:
         description: Whether auto-heal is enabled.
         type: Boolean
       - contextPath: Azure.WebApp.properties.siteConfig.autoHealRules
-        description: Auto-heal rules configuration.
+        description: The auto-heal rules configuration.
       - contextPath: Azure.WebApp.properties.siteConfig.tracingOptions
-        description: Tracing options.
+        description: The tracing options.
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled
         description: Whether remote debugging is enabled.
         type: Boolean
       - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingVersion
-        description: Remote debugging version.
+        description: The remote debugging version.
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.detailedErrorLoggingEnabled
         description: Whether detailed error logging is enabled.
@@ -6512,37 +6512,37 @@ script:
         description: Whether request tracing is enabled.
         type: Boolean
       - contextPath: Azure.WebApp.properties.siteConfig.requestTracingExpirationTime
-        description: Request tracing expiration time.
+        description: The request tracing expiration time.
         type: DateTime
       - contextPath: Azure.WebApp.properties.siteConfig.defaultDocuments
-        description: List of default documents.
+        description: A list of default documents.
       - contextPath: Azure.WebApp.properties.siteConfig.virtualApplications
-        description: List of virtual applications.
+        description: A list of virtual applications.
       - contextPath: Azure.WebApp.properties.siteConfig.loadBalancing
-        description: Load balancing settings.
+        description: The load balancing settings.
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.experiments
-        description: Experiments configuration.
+        description: The experiments configuration.
       - contextPath: Azure.WebApp.properties.siteConfig.limits
-        description: Site limits configuration.
+        description: The site limits configuration.
       - contextPath: Azure.WebApp.properties.siteConfig.autoSwapSlotName
-        description: Auto-swap slot name.
+        description: The auto-swap slot name.
         type: String
       - contextPath: Azure.WebApp.properties.siteConfig.ipSecurityRestrictions
-        description: IP security restrictions.
+        description: The IP security restrictions.
       - contextPath: Azure.WebApp.properties.siteConfig.scmIpSecurityRestrictions
-        description: SCM IP security restrictions.
+        description: The SCM IP security restrictions.
       - contextPath: Azure.WebApp.properties.siteConfig.scmIpSecurityRestrictionsUseMain
         description: Whether SCM IP restrictions use main settings.
         type: Boolean
       - contextPath: Azure.WebApp.properties.siteConfig.cors
-        description: CORS settings.
+        description: The CORS settings.
       - contextPath: Azure.WebApp.properties.siteConfig.push
-        description: Push settings.
+        description: The push settings.
       - contextPath: Azure.WebApp.properties.siteConfig.apiDefinition
-        description: API definition settings.
+        description: The API definition settings.
       - contextPath: Azure.WebApp.properties.siteConfig.apiManagementConfig
-        description: API management configuration.
+        description: The API management configuration.
 
   - name: azure-cosmos-db-disable-key-quick-action
     description: Disables key-based write access for Cosmos DB metadata to enhance security.
