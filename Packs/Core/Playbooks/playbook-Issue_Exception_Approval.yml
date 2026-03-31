@@ -60,7 +60,6 @@ tasks:
             Do you approve this exception?
         options: []
         optionsarg:
-        - {}
         - simple: Yes, approve this exception
         - simple: No, reject this exception
         placeholder: ""
