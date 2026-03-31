@@ -1,0 +1,36 @@
+{
+    "name": "MetaDefender Aether",
+    "description": "Next-generation unified Zero-Day detection solution",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "OPSWAT",
+    "url": "https://www.opswat.com/products/metadefender/aether",
+    "email": "threatintel@opswat.com",
+    "created": "2026-04-01T00:00:00Z",
+    "categories": [
+        "Forensics & Malware Analysis"
+    ],
+    "tags": [
+        "Malware",
+        "Simulation",
+        "Threat Intelligence",
+        "New",
+        "MITRE ATT&CK"
+    ],
+    "useCases": [
+        "Threat Intelligence Management",
+        "Malware",
+        "Hunting"
+    ],
+    "keywords": [
+        "scan",
+        "adaptive",
+        "threat analysis",
+        "zero-day",
+        "IOC",
+        "sandbox"
+    ],
+    "marketplaces": [
+        "xsoar"
+    ]
+}
