@@ -12181,7 +12181,10 @@ class FirewallCommand:
         pushed_config_cmd = "<show><config><pushed-shared-policy/></config></show>"
         pushed_config_response = run_op_command(firewall, cmd=pushed_config_cmd, cmd_xml=False)
         pushed_config_response_result = pushed_config_response.find("result")
-        pushed_config_response_result_str = ET.tostring(pushed_config_response_result, encoding="unicode")
+        if pushed_config_response_result is not None:
+            pushed_config_response_result_str = ET.tostring(pushed_config_response_result, encoding="unicode")
+        else:
+            pushed_config_response_result_str = ""
 
         demisto.debug(f"[get_pushed_shared_policy_rules] Pushed config response:\n{pushed_config_response_result_str}")
 
