@@ -396,17 +396,6 @@ class Client(BaseClient):
         return self._http_request(method="POST", url_suffix="", json_data=payload, timeout=HTTP_TIMEOUT)
 
     # YARA Rules API Methods
-    def list_yara_rules(self, environment: str, page_size: int | None = None, page_token: str | None = None) -> dict[str, Any]:
-        """List all YARA rules in an environment."""
-        params: dict[str, Any] = {}
-        if page_size:
-            params["pageSize"] = page_size
-        if page_token:
-            params["pageToken"] = page_token
-        return self._http_request(
-            method="GET", url_suffix=f"environments/{environment}/yaraRules", params=params, timeout=HTTP_TIMEOUT
-        )
-
     def create_yara_rule(self, environment: str, rule_definition: str, metadata: dict[str, Any] | None = None) -> dict[str, Any]:
         """Create a new YARA rule."""
         json_data: dict[str, Any] = {"definition": rule_definition}
@@ -423,42 +412,6 @@ class Client(BaseClient):
             params["matchCountEnvs"] = match_count_envs
         return self._http_request(
             method="GET", url_suffix=f"environments/{environment}/yaraRules/{yara_rule}", params=params, timeout=HTTP_TIMEOUT
-        )
-
-    def delete_yara_rule(self, environment: str, yara_rule: str, force: bool = False) -> dict[str, Any]:
-        """Delete a YARA rule."""
-        params: dict[str, Any] = {}
-        if force:
-            params["force"] = "true"
-        return self._http_request(
-            method="DELETE", url_suffix=f"environments/{environment}/yaraRules/{yara_rule}", params=params, timeout=HTTP_TIMEOUT
-        )
-
-    def update_yara_rule(
-        self,
-        environment: str,
-        yara_rule: str,
-        rule_definition: str | None = None,
-        update_mask: str | None = None,
-        metadata: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Update a YARA rule."""
-        json_data: dict[str, Any] = {}
-        if rule_definition:
-            json_data["definition"] = rule_definition
-        if metadata:
-            json_data.update(metadata)
-
-        params: dict[str, Any] = {}
-        if update_mask:
-            params["updateMask"] = update_mask
-
-        return self._http_request(
-            method="PATCH",
-            url_suffix=f"environments/{environment}/yaraRules/{yara_rule}",
-            json_data=json_data,
-            params=params,
-            timeout=HTTP_TIMEOUT,
         )
 
     def query_yara_matches(
@@ -1341,7 +1294,7 @@ def utilities_canonicalize_url_command(client: Client, url: str) -> CommandResul
 
 
 def intake_preflight_and_upload(
-    client: Any | None = None,
+    client: Any,
     asset_id: str | None = None,
     entry_id: str | None = None,
     url: str | None = None,
@@ -1421,14 +1374,7 @@ def intake_preflight_and_upload(
         proxies = handle_proxy() if use_proxy else None
 
         try:
-            if client is not None:
-                preflight = client.intake_preflight(payload)
-            else:
-                # Fallback: direct session POST (no auth)
-                session = _create_session_with_retries()
-                resp = session.post(INTAKE_PREFLIGHT_URL, json=payload, verify=verify, proxies=proxies, timeout=HTTP_TIMEOUT)
-                resp.raise_for_status()
-                preflight = resp.json() if resp.content else {}
+            preflight = client.intake_preflight(payload)
         except requests.exceptions.Timeout:
             return CommandResults(
                 readable_output=f"Intake preflight timed out after {HTTP_TIMEOUT}s. Try again later.",

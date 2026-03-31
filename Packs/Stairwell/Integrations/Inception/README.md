@@ -42,7 +42,7 @@ Enrich files using file hash (MD5, SHA1, or SHA256). Returns hash details, seen 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fileHash | File hash (MD5, SHA1, or SHA256) to lookup. | Required |
+| file_hash | File hash (MD5, SHA1, or SHA256) to lookup. | Required |
 
 **Context Output**
 
@@ -57,7 +57,7 @@ Enrich files using file hash (MD5, SHA1, or SHA256). Returns hash details, seen 
 **Command Example**
 
 ```
-!stairwell-file-enrichment fileHash=9fe1ac46f0cdebf03156a6232d771c14559f8daf
+!stairwell-file-enrichment file_hash=9fe1ac46f0cdebf03156a6232d771c14559f8daf
 ```
 
 ---
@@ -98,7 +98,7 @@ Get AI-generated summary for a file including threat analysis, IOCs, malicious l
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| objectId | Object identifier (SHA256 hash or object ID). | Required |
+| object_id | Object identifier (SHA256 hash or object ID). | Required |
 
 **Context Output**
 
@@ -114,7 +114,7 @@ Get AI-generated summary for a file including threat analysis, IOCs, malicious l
 **Command Example**
 
 ```
-!stairwell-ai-triage-summarize objectId=357d2eac00ed810e597703ef2a4dfe7c57d528944e337d7f780c2d5d3ddd6283
+!stairwell-ai-triage-summarize object_id=357d2eac00ed810e597703ef2a4dfe7c57d528944e337d7f780c2d5d3ddd6283
 ```
 
 ---
@@ -131,16 +131,16 @@ Upload files to Stairwell for analysis with automatic preflight checks, SHA256 c
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| assetId | Asset ID for the upload. | Required |
-| entryID | Entry ID of the file from the War Room context (XSOAR file entry). One of entryID, url, or filePath must be provided. | Optional |
-| url | HTTP/HTTPS URL to download the file from. One of entryID, url, or filePath must be provided. | Optional |
-| filePath | Direct file path (for development/testing). One of entryID, url, or filePath must be provided. | Optional |
+| asset_id | Asset ID for the upload. | Required |
+| entry_id | Entry ID of the file from the War Room context (XSOAR file entry). One of entry_id, url, or file_path must be provided. | Optional |
+| url | HTTP/HTTPS URL to download the file from. One of entry_id, url, or file_path must be provided. | Optional |
+| file_path | Direct file path (for development/testing). One of entry_id, url, or file_path must be provided. | Optional |
 | sha256 | File hash (SHA256) - Optional, will be auto-calculated if not provided. | Optional |
-| detonationPlan | Detonation plan name. | Optional |
-| originType | Origin type (web or unspecified). | Optional |
-| originReferrerUrl | HTTP referer URL. | Optional |
-| originHostUrl | Original host URL. | Optional |
-| originZoneId | Zone ID (integer). | Optional |
+| detonation_plan | Detonation plan name. | Optional |
+| origin_type | Origin type (web or unspecified). | Optional |
+| origin_referrer_url | HTTP referer URL. | Optional |
+| origin_host_url | Original host URL. | Optional |
+| origin_zone_id | Zone ID (integer). | Optional |
 
 **Context Output**
 
@@ -154,19 +154,19 @@ Upload files to Stairwell for analysis with automatic preflight checks, SHA256 c
 ```
 # Upload from War Room (recommended for production)
 
-!stairwell-intake-upload assetId=VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6 entryID=${File.EntryID}
+!stairwell-intake-upload asset_id=VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6 entry_id=${File.EntryID}
 
 # Upload from URL
 
-!stairwell-intake-upload assetId=VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6 url=https://example.com/malware.exe
+!stairwell-intake-upload asset_id=VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6 url=https://example.com/malware.exe
 
 # Upload from file path (backward compatibility)
 
-!stairwell-intake-upload assetId=VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6 filePath=/path/to/file.exe
+!stairwell-intake-upload asset_id=VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6 file_path=/path/to/file.exe
 
 # Upload with metadata
 
-!stairwell-intake-upload assetId=VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6 entryID=${File.EntryID} originType=web originHostUrl=https://malicious-site.com
+!stairwell-intake-upload asset_id=VPNB84-P9L3H4-QDTEFJ-JCJ2U8A6 entry_id=${File.EntryID} origin_type=web origin_host_url=https://malicious-site.com
 ```
 
 ---
@@ -183,7 +183,7 @@ List all sightings for a specific object across your organization's assets.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| objectId | Object identifier (SHA256 hash or object ID). | Required |
+| object_id | Object identifier (SHA256 hash or object ID). | Required |
 
 **Context Output**
 
@@ -195,7 +195,7 @@ List all sightings for a specific object across your organization's assets.
 **Command Example**
 
 ```
-!stairwell-object-sightings objectId=357d2eac00ed810e597703ef2a4dfe7c57d528944e337d7f780c2d5d3ddd6283
+!stairwell-object-sightings object_id=357d2eac00ed810e597703ef2a4dfe7c57d528944e337d7f780c2d5d3ddd6283
 ```
 
 ---
@@ -210,7 +210,7 @@ Trigger a detonation for an object in Stairwell's sandbox environment.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| objectId | Object identifier (SHA256 hash or object ID). | Required |
+| object_id | Object identifier (SHA256 hash or object ID). | Required |
 
 **Context Output**
 
@@ -221,7 +221,7 @@ Trigger a detonation for an object in Stairwell's sandbox environment.
 **Command Example**
 
 ```
-!stairwell-object-detonation-trigger objectId=357d2eac00ed810e597703ef2a4dfe7c57d528944e337d7f780c2d5d3ddd6283
+!stairwell-object-detonation-trigger object_id=357d2eac00ed810e597703ef2a4dfe7c57d528944e337d7f780c2d5d3ddd6283
 ```
 
 ---
@@ -236,7 +236,7 @@ Get detonation details for an object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| objectId | Object identifier (SHA256 hash or object ID). | Required |
+| object_id | Object identifier (SHA256 hash or object ID). | Required |
 
 **Context Output**
 
@@ -248,7 +248,7 @@ Get detonation details for an object.
 **Command Example**
 
 ```
-!stairwell-object-detonation-get objectId=357d2eac00ed810e597703ef2a4dfe7c57d528944e337d7f780c2d5d3ddd6283
+!stairwell-object-detonation-get object_id=357d2eac00ed810e597703ef2a4dfe7c57d528944e337d7f780c2d5d3ddd6283
 ```
 
 ---
@@ -263,7 +263,7 @@ List opinions for an object from Stairwell's threat intelligence.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| objectId | Object identifier (SHA256 hash or object ID). | Required |
+| object_id | Object identifier (SHA256 hash or object ID). | Required |
 
 **Context Output**
 
@@ -275,7 +275,7 @@ List opinions for an object from Stairwell's threat intelligence.
 **Command Example**
 
 ```
-!stairwell-object-opinions objectId=357d2eac00ed810e597703ef2a4dfe7c57d528944e337d7f780c2d5d3ddd6283
+!stairwell-object-opinions object_id=357d2eac00ed810e597703ef2a4dfe7c57d528944e337d7f780c2d5d3ddd6283
 ```
 
 ---
@@ -290,7 +290,7 @@ Generate comprehensive Run-To-Ground analysis for one or more objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| objectIds | Comma-separated list of object IDs or hashes. | Required |
+| object_ids | Comma-separated list of object IDs or hashes. | Required |
 
 **Context Output**
 
@@ -301,7 +301,7 @@ Generate comprehensive Run-To-Ground analysis for one or more objects.
 **Command Example**
 
 ```
-!stairwell-run-to-ground-generate objectIds=357d2eac00ed810e597703ef2a4dfe7c57d528944e337d7f780c2d5d3ddd6283,e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d
+!stairwell-run-to-ground-generate object_ids=357d2eac00ed810e597703ef2a4dfe7c57d528944e337d7f780c2d5d3ddd6283,e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d
 ```
 
 ---
@@ -321,7 +321,7 @@ Create a new YARA rule in your Stairwell environment.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | environment | Environment ID. | Required |
-| ruleDefinition | YARA rule definition text. Use backticks for multi-line rules. | Required |
+| rule_definition | YARA rule definition text. Use backticks for multi-line rules. | Required |
 
 **Context Output**
 
@@ -333,11 +333,11 @@ Create a new YARA rule in your Stairwell environment.
 ```
 # Simple rule (single line)
 
-!stairwell-yara-create-rule environment=YOUR_ENV_ID ruleDefinition="rule simple_rule { condition: true }"
+!stairwell-yara-create-rule environment=YOUR_ENV_ID rule_definition="rule simple_rule { condition: true }"
 
 # Complex rule (multi-line with backticks)
 
-!stairwell-yara-create-rule environment=YOUR_ENV_ID ruleDefinition=`rule Malware_Detection
+!stairwell-yara-create-rule environment=YOUR_ENV_ID rule_definition=`rule Malware_Detection
 {
     meta:
         author = "Security Team"
@@ -362,8 +362,8 @@ Get a specific YARA rule by ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | environment | Environment ID. | Required |
-| yaraRule | YARA rule ID. | Required |
-| matchCountEnvs | Comma-separated list of environment IDs for match counts. | Optional |
+| yara_rule | YARA rule ID. | Required |
+| match_count_envs | Comma-separated list of environment IDs for match counts. | Optional |
 
 **Context Output**
 
@@ -374,7 +374,7 @@ Get a specific YARA rule by ID.
 **Command Example**
 
 ```
-!stairwell-yara-get-rule environment=YOUR_ENV_ID yaraRule=YOUR_RULE_ID
+!stairwell-yara-get-rule environment=YOUR_ENV_ID yara_rule=YOUR_RULE_ID
 ```
 
 ---
@@ -390,10 +390,10 @@ Query objects matching a YARA rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | environment | Environment ID. | Required |
-| yaraRule | YARA rule ID. | Required |
-| includedEnvironments | Comma-separated list of environments to search. | Optional |
-| pageSize | Maximum number of matches to return. | Optional |
-| pageToken | Token for pagination. | Optional |
+| yara_rule | YARA rule ID. | Required |
+| included_environments | Comma-separated list of environments to search. | Optional |
+| page_size | Maximum number of matches to return. | Optional |
+| page_token | Token for pagination. | Optional |
 
 **Context Output**
 
@@ -404,7 +404,7 @@ Query objects matching a YARA rule.
 **Command Example**
 
 ```
-!stairwell-yara-query-matches environment=YOUR_ENV_ID yaraRule=YOUR_RULE_ID includedEnvironments=env1,env2 pageSize=100
+!stairwell-yara-query-matches environment=YOUR_ENV_ID yara_rule=YOUR_RULE_ID included_environments=env1,env2 page_size=100
 ```
 
 ---
@@ -449,7 +449,7 @@ Get hostname entity with DNS resolution data.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | hostname | Hostname to lookup. | Required |
-| recordType | DNS record type filter (A, AAAA, or MX). | Optional |
+| record_type | DNS record type filter (A, AAAA, or MX). | Optional |
 
 **Context Output**
 
@@ -461,7 +461,7 @@ Get hostname entity with DNS resolution data.
 **Command Example**
 
 ```
-!stairwell-hostname-get hostname="google.com" recordType="A"
+!stairwell-hostname-get hostname="google.com" record_type="A"
 ```
 
 ---
@@ -477,8 +477,8 @@ Get all addresses resolved to by a hostname over a time range.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | hostname | Hostname to lookup. | Required |
-| startTime | Start time for resolution range (ISO 8601 format). | Optional |
-| endTime | End time for resolution range (ISO 8601 format). | Optional |
+| start_time | Start time for resolution range (ISO 8601 format). | Optional |
+| end_time | End time for resolution range (ISO 8601 format). | Optional |
 
 **Context Output**
 
@@ -506,10 +506,10 @@ Get resolution summaries for multiple hostnames.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | hostnames | Comma-separated list of hostnames. | Required |
-| startTime | Start time for resolution range (ISO 8601 format). | Optional |
-| endTime | End time for resolution range (ISO 8601 format). | Optional |
-| recordTypes | Comma-separated DNS record types (A, AAAA, MX). | Optional |
-| includeErrors | Include DNS error responses (true/false). | Optional |
+| start_time | Start time for resolution range (ISO 8601 format). | Optional |
+| end_time | End time for resolution range (ISO 8601 format). | Optional |
+| record_types | Comma-separated DNS record types (A, AAAA, MX). | Optional |
+| include_errors | Include DNS error responses (true/false). | Optional |
 
 **Context Output**
 
@@ -520,7 +520,7 @@ Get resolution summaries for multiple hostnames.
 **Command Example**
 
 ```
-!stairwell-hostname-batch-get-resolutions hostnames=www.google.com,www.stairwell.com recordTypes=A,AAAA
+!stairwell-hostname-batch-get-resolutions hostnames=www.google.com,www.stairwell.com record_types=A,AAAA
 ```
 
 ---
@@ -535,7 +535,7 @@ Get IP address entity with enrichment data.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ipAddress | IP address to lookup. | Required |
+| ip_address | IP address to lookup. | Required |
 
 **Context Output**
 
@@ -547,7 +547,7 @@ Get IP address entity with enrichment data.
 **Command Example**
 
 ```
-!stairwell-ipaddress-get ipAddress=8.8.8.8
+!stairwell-ipaddress-get ip_address=8.8.8.8
 ```
 
 ---
@@ -562,7 +562,7 @@ Check if an IP address belongs to a known cloud provider.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ipAddress | IP address to check. | Required |
+| ip_address | IP address to check. | Required |
 
 **Context Output**
 
@@ -574,7 +574,7 @@ Check if an IP address belongs to a known cloud provider.
 **Command Example**
 
 ```
-!stairwell-ipaddress-lookup-cloud-provider ipAddress=8.8.8.8
+!stairwell-ipaddress-lookup-cloud-provider ip_address=8.8.8.8
 ```
 
 ---
@@ -589,9 +589,9 @@ Get all hostnames resolved to by an IP address over a time interval.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ipAddress | IP address to lookup. | Required |
-| startTime | Start time for resolution range (ISO 8601 format). | Optional |
-| endTime | End time for resolution range (ISO 8601 format). | Optional |
+| ip_address | IP address to lookup. | Required |
+| start_time | Start time for resolution range (ISO 8601 format). | Optional |
+| end_time | End time for resolution range (ISO 8601 format). | Optional |
 
 **Context Output**
 
@@ -603,7 +603,7 @@ Get all hostnames resolved to by an IP address over a time interval.
 **Command Example**
 
 ```
-!stairwell-ipaddress-get-hostnames-resolving-to-ip ipAddress=8.8.8.8
+!stairwell-ipaddress-get-hostnames-resolving-to-ip ip_address=8.8.8.8
 ```
 
 ---
@@ -618,7 +618,7 @@ Get WHOIS information for an IP address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ipAddress | IP address to lookup. | Required |
+| ip_address | IP address to lookup. | Required |
 
 **Context Output**
 
@@ -630,7 +630,7 @@ Get WHOIS information for an IP address.
 **Command Example**
 
 ```
-!stairwell-ipaddress-get-whois ipAddress=8.8.8.8
+!stairwell-ipaddress-get-whois ip_address=8.8.8.8
 ```
 
 ---
@@ -830,8 +830,8 @@ List all assets in an environment.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | environment | Environment ID. | Required |
-| pageSize | Maximum number of assets to return. | Optional |
-| pageToken | Token for pagination. | Optional |
+| page_size | Maximum number of assets to return. | Optional |
+| page_token | Token for pagination. | Optional |
 
 **Context Output**
 
@@ -842,7 +842,7 @@ List all assets in an environment.
 **Command Example**
 
 ```
-!stairwell-asset-list environment=YOUR_ENV_ID pageSize=50
+!stairwell-asset-list environment=YOUR_ENV_ID page_size=50
 ```
 
 ---
@@ -859,10 +859,10 @@ Create a new asset in an environment.
 | --- | --- | --- |
 | environment | Environment ID. | Required |
 | label | Human-readable identifier (typically hostname). | Required |
-| idempotencyKey | Client-generated key for idempotent asset creation. | Optional |
+| idempotency_key | Client-generated key for idempotent asset creation. | Optional |
 | os | Operating system (Windows, macOS, Linux). | Optional |
-| osVersion | OS version string. | Optional |
-| forwarderVersion | Forwarder version string. | Optional |
+| os_version | OS version string. | Optional |
+| forwarder_version | Forwarder version string. | Optional |
 
 **Context Output**
 
@@ -873,7 +873,7 @@ Create a new asset in an environment.
 **Command Example**
 
 ```
-!stairwell-asset-create environment=YOUR_ENV_ID label=xSOAR os=Windows osVersion="10.0.19041"
+!stairwell-asset-create environment=YOUR_ENV_ID label=xSOAR os=Windows os_version="10.0.19041"
 ```
 
 ---
@@ -926,7 +926,7 @@ Get a specific asset by ID.
 6. Retrieve results → `stairwell-object-detonation-get`
 
 **File Upload & Analysis Workflow:**
-1. Upload file from War Room → `stairwell-intake-upload entryID=${File.EntryID}`
+1. Upload file from War Room → `stairwell-intake-upload entry_id=${File.EntryID}`
 2. Wait for processing (files are analyzed automatically)
 3. Query for matches → `stairwell-yara-query-matches`
 4. Generate Run-To-Ground → `stairwell-run-to-ground-generate`
