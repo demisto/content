@@ -12180,9 +12180,9 @@ class FirewallCommand:
         # Operational command to retrieve the full configuration of policies pushed from Panorama
         pushed_config_cmd = "<show><config><pushed-shared-policy/></config></show>"
         pushed_config_response = run_op_command(firewall, cmd=pushed_config_cmd, cmd_xml=False)
-        pushed_config_response_result = pushed_config_response.find('result')
-        pushed_config_response_result_str = ET.tostring(pushed_config_response_result, encoding='unicode')
-        
+        pushed_config_response_result = pushed_config_response.find("result")
+        pushed_config_response_result_str = ET.tostring(pushed_config_response_result, encoding="unicode")
+
         demisto.debug(f"[get_pushed_shared_policy_rules] Pushed config response:\n{pushed_config_response_result_str}")
 
         # Panorama rules can exist in pre-rulebase or post-rulebase
