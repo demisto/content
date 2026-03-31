@@ -132,9 +132,9 @@ class Client(BaseClient):
 
         tenant_url = tenant_url_response.get(TENANT_URL).rstrip('/')
         demisto.debug(f"[Tenant URL Request] Success. tenant URL: {tenant_url}.")
-        cached_context = get_integration_context()
-        cached_context.update({TENANT_URL: tenant_url})
-        update_integration_context(cached_context)
+        cached_context = get_integration_context() or {}
+        cached_context[TENANT_URL] = tenant_url
+        set_integration_context(cached_context)
 
         return tenant_url
 
@@ -194,11 +194,11 @@ class Client(BaseClient):
 
         return response_json
 
-    def get_sets(self) -> dict:
-        return self.http_request("GET", url_suffix="Sets")
-
 
 """ HELPER FUNCTIONS """
+def get_sets(client: Client) -> list:
+    sets_response = client.http_request("GET", url_suffix="Sets")
+    return sets_response.get("Sets", [])
 
 
 def search_endpoints(endpoint_name: str, external_ip: str, client: Client) -> list:
@@ -215,16 +215,16 @@ def search_endpoints(endpoint_name: str, external_ip: str, client: Client) -> li
     search_filter = f"name CONTAINS {endpoint_name}{f' and ip EQ {external_ip}' if external_ip else ''}"
     demisto.info(f"Endpoint Search filter: {search_filter}")
     data = {"filter": search_filter}
-    sets = client.get_sets()
+    sets = get_sets(client=client)
     set_ids = [set["Id"] for set in sets.get("Sets", [])]
     for set_id in set_ids:
         url_suffix = f"Sets/{set_id}/Endpoints/Search"
         result = client.http_request("POST", url_suffix=url_suffix, json_data=data)
         if result.get("endpoints"):
             endpoint_ids = [endpoint.get("id") for endpoint in result.get("endpoints")]
-            cached_context = get_integration_context()
-            cached_context.update({"set_id": set_id})
-            update_integration_context(cached_context)
+            cached_context = get_integration_context() or {}
+            cached_context["set_id"] = set_id
+            set_integration_context(cached_context)
             return endpoint_ids
     return []
 
@@ -241,7 +241,7 @@ def search_endpoint_group_id(group_name: str, client: Client) -> str:
     """
     group_id = ""
     data = {"filter": f"name CONTAINS {group_name}"}
-    context = get_integration_context().get(CONTEXT_KEY, {})
+    context = get_integration_context() or {}
     set_id = context.get("set_id")
     url_suffix = f"Sets/{set_id}/Endpoints/Groups/Search"
     result = client.http_request("POST", url_suffix=url_suffix, json_data=data)
@@ -260,7 +260,7 @@ def add_endpoint_to_group(endpoint_ids: list[str], endpoint_group_id: str, clien
         client (Client): The CyberArk EPM client.
     """
     data = {"membersIds": endpoint_ids}
-    context = get_integration_context().get(CONTEXT_KEY, {})
+    context = get_integration_context() or {}
     set_id = context.get("set_id")
     url_suffix = f"Sets/{set_id}/Endpoints/Groups/{endpoint_group_id}/Members/ids"
     return client.http_request("POST", url_suffix=url_suffix, json_data=data)
@@ -275,7 +275,7 @@ def remove_endpoint_from_group(endpoint_ids: list[str], endpoint_group_id: str, 
         client (Client): The CyberArk EPM client.
     """
     data = {"membersIds": endpoint_ids}
-    context = get_integration_context().get(CONTEXT_KEY, {})
+    context = get_integration_context() or {}
     set_id = context.get("set_id")
     url_suffix = f"Sets/{set_id}/Endpoints/Groups/{endpoint_group_id}/Members/ids/remove"
     return client.http_request("POST", url_suffix=url_suffix, json_data=data)
@@ -330,7 +330,7 @@ def test_module(client: Client) -> str:
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-    client.get_sets()
+    get_sets(client=client)
     return "ok"
 
 
