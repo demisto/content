@@ -121,6 +121,7 @@ script:
     - description: Domain to enrich.
       name: domain
       required: true
+      default: true
       isArray: true
     description: Enrich a domain with Unit 42 threat intelligence context.
     name: domain
@@ -180,6 +181,7 @@ script:
     - description: URL to enrich.
       name: url
       required: true
+      default: true
       isArray: true
     description: Enrich a URL with Unit 42 threat intelligence context.
     name: url
@@ -239,6 +241,7 @@ script:
     - description: File hash to enrich (SHA256).
       name: file
       required: true
+      default: true
       isArray: true
     description: Enrich a file hash with Unit 42 threat intelligence context.
     name: file
