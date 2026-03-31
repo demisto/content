@@ -1,47 +1,39 @@
 # Superna Zero Trust
 
-This content pack provides a **Superna Zero Trust** integration and supporting playbooks for ransomware containment workflows.
+## Overview
 
-## Integration Instance Configuration
+The **Superna Zero Trust** pack integrates Cortex XSOAR with Superna's Zero Trust ransomware detection and containment platform. It enables automated ransomware response by triggering critical path snapshots and enforcing NAS user lockout/unlock actions through the Superna SERA API.
 
-Create an instance of **Superna Zero Trust** and set:
+## Use Cases
 
-- **API URL**: Base URL of your Superna SERA/Zero Trust server (for example `https://sera.example.local`)
-- **API Key**: Stored securely using the **Authentication** parameter type (credentials store)
+- **Ransomware Containment**: Immediately lock out a suspected compromised user from all NAS storage access to stop lateral spread
+- **Data Preservation**: Trigger a critical path snapshot at the moment ransomware is detected to preserve a clean recovery point
+- **Automated Recovery**: Unlock users after investigation or remediation is complete
 
-## Commands
+## What's in This Pack
 
-- `!superna-zt-snapshot-critical-paths`
-- `!superna-zt-lockout-user username=<user>`
-- `!superna-zt-unlock-user username=<user>`
+### Integrations
 
-## Playbooks included
+- **Superna Zero Trust** — Connects to the Superna SERA API to execute containment and recovery commands
 
-- Superna Zero Trust Snapshot
-- Superna Zero Trust Request User Storage Lockout
-- Superna Zero Trust Request User Storage UnLockout
-- Superna Zero Trust User Lockout
+### Playbooks
 
-### Pack Contributors:
+| Playbook | Description |
+|----------|-------------|
+| Superna Zero Trust Snapshot | Creates a critical path snapshot for ransomware rapid recovery |
+| Superna Zero Trust User Lockout | Locks a user out of NAS storage access |
+| Superna Zero Trust Request User Storage Lockout | Requests and confirms NAS storage lockout for a user |
+| Superna Zero Trust Request User Storage UnLockout | Requests and confirms NAS storage unlock for a user |
 
----
+## Configuration
 
-- Superna
+To use this pack, configure the **Superna Zero Trust** integration instance with:
 
-Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
+- **API URL**: The base URL of your Superna Zero Trust / SERA server
+- **API Key**: An API key generated from the Superna management interface
 
-### Pack Contributors:
+See the [integration README](Integrations/SupernaZeroTrust/README.md) for full setup instructions.
 
----
+## Support
 
-- Superna
-
-Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
-
-### Pack Contributors:
-
----
-
-- Superna
-
-Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
+For support, contact [support@superna.io](mailto:support@superna.io) or visit [https://www.superna.io](https://www.superna.io).

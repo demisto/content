@@ -1,36 +1,110 @@
-## Superna Zero Trust Integration
+## Superna Zero Trust
 
-Integrates Cortex XSOAR with **Superna Zero Trust** to automate ransomware containment and recovery actions.
+Integrates Cortex XSOAR with **Superna Zero Trust** to automate ransomware containment and recovery actions via the Superna SERA API.
 
-### Configure Superna Zero Trust on Cortex XSOAR
+## Configure Superna Zero Trust on Cortex XSOAR
 
-1. Go to **Settings → Integrations → Servers & Services**
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**
 2. Search for **Superna Zero Trust**
-3. Click **Add instance**
-4. Configure the following parameters:
-   - **API URL**: Base URL of your Superna Zero Trust / SERA server (e.g. `https://172.31.1.102`)
-   - **API Key**: API key stored securely using Cortex XSOAR credentials
-   - **Trust any certificate**: Enable only if using self-signed certificates
-   - **Use system proxy**: Optional
+3. Click **Add instance** and configure the following parameters:
 
-5. Click **Test** to validate connectivity
+| Parameter | Description | Required |
+|-----------|-------------|----------|
+| API URL | Base URL of your Superna Zero Trust / SERA server (e.g. `https://sera.example.local`) | True |
+| API Key | API key for authenticating to the Superna SERA API | True |
+| Trust any certificate (not secure) | Skip TLS certificate verification. Enable only for self-signed certificates. | False |
+| Use system proxy settings | Route API calls through the system proxy | False |
 
-### Commands
+4. Click **Test** to validate connectivity.
 
-| Command | Description |
-|--------|-------------|
-| `superna-zt-snapshot-critical-paths` | Snapshot Superna critical paths for ransomware recovery |
-| `superna-zt-lockout-user` | Lock out a user from NAS storage access |
-| `superna-zt-unlock-user` | Unlock a user from NAS storage access |
+## Commands
 
-### Use Cases
+### superna-zt-snapshot-critical-paths
 
-- Ransomware containment
-- Insider threat response
-- Zero Trust enforcement
-- NAS data protection
+Create a snapshot of Superna critical paths for ransomware rapid recovery.
 
-### Security Notes
+#### Base Command
 
-- API keys are stored using Cortex XSOAR’s secure credentials store
-- No secrets or IP addresses are embedded in playbooks
+`superna-zt-snapshot-critical-paths`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| Path | Type | Description |
+|------|------|-------------|
+| SupernaZeroTrust.Snapshot.Status | String | Result status: `Success` or `AlreadyExists` |
+| SupernaZeroTrust.Snapshot.Message | String | Human-readable result message |
+| SupernaZeroTrust.Snapshot.Result | Unknown | Raw API response from the snapshot operation |
+
+#### Command Example
+
+```
+!superna-zt-snapshot-critical-paths
+```
+
+#### Human Readable Output
+
+```
+✅ Snapshot created successfully
+```
+
+---
+
+### superna-zt-lockout-user
+
+Lock out a user from NAS storage access.
+
+#### Base Command
+
+`superna-zt-lockout-user`
+
+#### Input
+
+| Argument Name | Description | Required |
+|---------------|-------------|----------|
+| username | The username to lock out from NAS storage access | Required |
+
+#### Context Output
+
+| Path | Type | Description |
+|------|------|-------------|
+| SupernaZeroTrust.Lockout.Username | String | The username that was locked out |
+| SupernaZeroTrust.Lockout.Result | Unknown | Raw API response from the lockout operation |
+
+#### Command Example
+
+```
+!superna-zt-lockout-user username="jsmith"
+```
+
+---
+
+### superna-zt-unlock-user
+
+Unlock a user from NAS storage access.
+
+#### Base Command
+
+`superna-zt-unlock-user`
+
+#### Input
+
+| Argument Name | Description | Required |
+|---------------|-------------|----------|
+| username | The username to unlock from NAS storage access | Required |
+
+#### Context Output
+
+| Path | Type | Description |
+|------|------|-------------|
+| SupernaZeroTrust.Unlock.Username | String | The username that was unlocked |
+| SupernaZeroTrust.Unlock.Result | Unknown | Raw API response from the unlock operation |
+
+#### Command Example
+
+```
+!superna-zt-unlock-user username="jsmith"
+```

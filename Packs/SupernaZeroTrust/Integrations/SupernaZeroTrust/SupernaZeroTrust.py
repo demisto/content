@@ -47,7 +47,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def snapshot_cmd(client: Client) -> CommandResults:
+def snapshot_critical_paths_command(client: Client) -> CommandResults:
     try:
         res = client.snapshot_critical_paths()
         return CommandResults(
@@ -77,7 +77,7 @@ def snapshot_cmd(client: Client) -> CommandResults:
             raise
 
 
-def lockout_cmd(client: Client, args: Dict[str, Any]) -> CommandResults:
+def lockout_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     username = args.get("username")
     if not username:
         raise DemistoException("Missing required argument: username")
@@ -89,7 +89,7 @@ def lockout_cmd(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def unlock_cmd(client: Client, args: Dict[str, Any]) -> CommandResults:
+def unlock_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     username = args.get("username")
     if not username:
         raise DemistoException("Missing required argument: username")
@@ -121,11 +121,11 @@ def main():  # pragma: no cover
         if cmd == "test-module":
             return_results(test_module(client))
         elif cmd == "superna-zt-snapshot-critical-paths":
-            return_results(snapshot_cmd(client))
+            return_results(snapshot_critical_paths_command(client))
         elif cmd == "superna-zt-lockout-user":
-            return_results(lockout_cmd(client, demisto.args()))
+            return_results(lockout_user_command(client, demisto.args()))
         elif cmd == "superna-zt-unlock-user":
-            return_results(unlock_cmd(client, demisto.args()))
+            return_results(unlock_user_command(client, demisto.args()))
         else:
             raise NotImplementedError(f"Command not implemented: {cmd}")
     except Exception as e:

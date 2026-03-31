@@ -8,9 +8,9 @@ def test_client_initialization():
     """Test that client initializes correctly"""
     client = Client(
         base_url='https://test.example.com',
+        api_key='test-key',
         verify=False,
         proxy=False,
-        headers={'api_key': 'test-key'}
     )
     assert client._base_url == 'https://test.example.com/'
 
@@ -24,8 +24,9 @@ def test_snapshot_command(mocker):
 
     result = snapshot_critical_paths_command(mock_client)
 
-    assert result.outputs == {'status': 'success'}
-    assert 'SupernaZeroTrust.Snapshot.Result' in result.outputs_prefix
+    assert result.outputs_prefix == 'SupernaZeroTrust.Snapshot'
+    assert result.outputs['Status'] == 'Success'
+    assert result.outputs['Result'] == {'status': 'success'}
 
 
 def test_lockout_command(mocker):
@@ -37,8 +38,9 @@ def test_lockout_command(mocker):
 
     result = lockout_user_command(mock_client, {'username': 'testuser'})
 
-    assert result.outputs == {'status': 'success'}
-    assert 'SupernaZeroTrust.Lockout.Result' in result.outputs_prefix
+    assert result.outputs_prefix == 'SupernaZeroTrust.Lockout'
+    assert result.outputs['Username'] == 'testuser'
+    assert result.outputs['Result'] == {'status': 'success'}
 
 
 def test_unlock_command(mocker):
@@ -50,5 +52,6 @@ def test_unlock_command(mocker):
 
     result = unlock_user_command(mock_client, {'username': 'testuser'})
 
-    assert result.outputs == {'status': 'success'}
-    assert 'SupernaZeroTrust.Unlock.Result' in result.outputs_prefix
+    assert result.outputs_prefix == 'SupernaZeroTrust.Unlock'
+    assert result.outputs['Username'] == 'testuser'
+    assert result.outputs['Result'] == {'status': 'success'}
