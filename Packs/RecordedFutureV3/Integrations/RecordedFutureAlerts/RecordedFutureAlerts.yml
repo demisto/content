@@ -231,10 +231,10 @@ script:
           description: Current status of the alert.
           type: string
         - contextPath: RecordedFutureAlerts.Alert.created
-          description: Timestamp when the alert was created.
+          description: Timestamp when the alert was created (ex. "2025-05-17T16:06:00Z").
           type: date
         - contextPath: RecordedFutureAlerts.Alert.updated
-          description: Timestamp when the alert was last updated. For Classic Alerts this equals the created timestamp.
+          description: Timestamp when the alert was last updated (ex. "2025-05-17T16:06:00Z"). For Classic Alerts this equals the created timestamp.
           type: date
         - contextPath: RecordedFutureAlerts.Alert.markdown
           description: Markdown-formatted summary of the alert details.
@@ -294,7 +294,7 @@ script:
           description: (Playbook Alert) Log entries associated with the alert.
           type: unknown
         - contextPath: RecordedFutureAlerts.Alert.log_entries.created
-          description: (Playbook Alert) Timestamp when the log entry was created.
+          description: (Playbook Alert) Timestamp when the log entry was created (ex. "2025-05-17T16:06:00Z").
           type: date
         - contextPath: RecordedFutureAlerts.Alert.log_entries.author_name
           description: (Playbook Alert) Name of the log entry author.
