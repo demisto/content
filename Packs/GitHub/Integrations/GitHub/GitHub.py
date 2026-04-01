@@ -2037,6 +2037,53 @@ def github_trigger_workflow_command():
     ))
 
 
+def github_get_workflow_run_command():
+    """Gets a specific workflow run (dispatched event) in a repository.
+
+    Args:
+        owner (str): The GitHub owner (organization or username) of the repository.
+        repository (str): The GitHub repository name.
+        run_id (str): The unique identifier of the workflow run.
+
+    Returns:
+        CommandResults with the workflow run details.
+    """
+    args = demisto.args()
+    owner = args.get("owner") or USER
+    repository = args.get("repository") or REPOSITORY
+    run_id = args.get("run_id")
+
+    suffix = f"/repos/{owner}/{repository}/actions/runs/{run_id}"
+    headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2026-03-10"}
+
+    response = http_request("GET", url_suffix=suffix, headers=headers)
+
+    output = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "head_branch": response.get("head_branch"),
+        "head_sha": response.get("head_sha"),
+        "display_title": response.get("display_title"),
+        "run_number": response.get("run_number"),
+        "event": response.get("event"),
+        "status": response.get("status"),
+        "conclusion": response.get("conclusion"),
+        "workflow_id": response.get("workflow_id"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at"),
+        "url": response.get("url"),
+        "html_url": response.get("html_url"),
+    }
+
+    return_results(
+        CommandResults(
+            outputs_prefix="GitHub.WorkflowRun",
+            outputs_key_field="id",
+            outputs=output,
+            raw_response=response,
+            readable_output=tableToMarkdown(f"Workflow Run {run_id}", output, removeNull=True),
+        )
+    )
 
 
 def github_cancel_workflow_command():
@@ -2175,6 +2222,7 @@ COMMANDS = {
     "GitHub-trigger-workflow": github_trigger_workflow_command,
     "GitHub-cancel-workflow": github_cancel_workflow_command,
     "GitHub-list-workflows": github_list_workflows_command,
+    "GitHub-get-workflow-run": github_get_workflow_run_command,
     "GitHub-delete-file": github_delete_file_command,
     # New lowercase kebab-case commands (canonical names)
     "github-create-issue": create_command,
@@ -2221,6 +2269,7 @@ COMMANDS = {
     "github-trigger-workflow": github_trigger_workflow_command,
     "github-cancel-workflow": github_cancel_workflow_command,
     "github-list-workflows": github_list_workflows_command,
+    "github-get-workflow-run": github_get_workflow_run_command,
     "github-delete-file": github_delete_file_command,
 }
 

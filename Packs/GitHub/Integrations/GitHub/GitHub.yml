@@ -3724,6 +3724,60 @@ script:
       type: Date
     deprecated: true
   - arguments:
+    - description: The GitHub owner (organization or username) of the repository.
+      name: owner
+    - description: The GitHub repository name.
+      name: repository
+    - description: The unique identifier of the workflow run.
+      name: run_id
+      required: true
+    description: Deprecated. Use ***github-get-workflow-run*** instead. Gets a specific workflow run (dispatched event) in a repository.
+    name: GitHub-get-workflow-run
+    outputs:
+    - contextPath: GitHub.WorkflowRun.id
+      description: The workflow run ID.
+      type: Number
+    - contextPath: GitHub.WorkflowRun.name
+      description: The workflow run name.
+      type: String
+    - contextPath: GitHub.WorkflowRun.head_branch
+      description: The branch the workflow run was triggered on.
+      type: String
+    - contextPath: GitHub.WorkflowRun.head_sha
+      description: The commit SHA that triggered the run.
+      type: String
+    - contextPath: GitHub.WorkflowRun.display_title
+      description: The display title of the workflow run.
+      type: String
+    - contextPath: GitHub.WorkflowRun.run_number
+      description: The sequential run number for the workflow.
+      type: Number
+    - contextPath: GitHub.WorkflowRun.event
+      description: The event that triggered the workflow run (e.g. workflow_dispatch).
+      type: String
+    - contextPath: GitHub.WorkflowRun.status
+      description: The status of the workflow run (queued, in_progress, completed).
+      type: String
+    - contextPath: GitHub.WorkflowRun.conclusion
+      description: The conclusion of the workflow run (success, failure, cancelled, etc.).
+      type: String
+    - contextPath: GitHub.WorkflowRun.workflow_id
+      description: The ID of the parent workflow.
+      type: Number
+    - contextPath: GitHub.WorkflowRun.created_at
+      description: Datetime the workflow run was created.
+      type: Date
+    - contextPath: GitHub.WorkflowRun.updated_at
+      description: Datetime the workflow run was last updated.
+      type: Date
+    - contextPath: GitHub.WorkflowRun.url
+      description: The workflow run API URL.
+      type: String
+    - contextPath: GitHub.WorkflowRun.html_url
+      description: The workflow run HTML URL.
+      type: String
+    deprecated: true
+  - arguments:
     - description: The full path to the file in the repository (e.g., path/to/file.txt).
       name: path_to_file
       required: true
@@ -7326,6 +7380,59 @@ script:
     - contextPath: GitHub.Workflow.updated_at
       description: Datetime the GitHub workflow was updated at.
       type: Date
+  - arguments:
+    - description: The GitHub owner (organization or username) of the repository.
+      name: owner
+    - description: The GitHub repository name.
+      name: repository
+    - description: The unique identifier of the workflow run.
+      name: run_id
+      required: true
+    description: Gets a specific workflow run (dispatched event) in a repository.
+    name: github-get-workflow-run
+    outputs:
+    - contextPath: GitHub.WorkflowRun.id
+      description: The workflow run ID.
+      type: Number
+    - contextPath: GitHub.WorkflowRun.name
+      description: The workflow run name.
+      type: String
+    - contextPath: GitHub.WorkflowRun.head_branch
+      description: The branch the workflow run was triggered on.
+      type: String
+    - contextPath: GitHub.WorkflowRun.head_sha
+      description: The commit SHA that triggered the run.
+      type: String
+    - contextPath: GitHub.WorkflowRun.display_title
+      description: The display title of the workflow run.
+      type: String
+    - contextPath: GitHub.WorkflowRun.run_number
+      description: The sequential run number for the workflow.
+      type: Number
+    - contextPath: GitHub.WorkflowRun.event
+      description: The event that triggered the workflow run (e.g. workflow_dispatch).
+      type: String
+    - contextPath: GitHub.WorkflowRun.status
+      description: The status of the workflow run (queued, in_progress, completed).
+      type: String
+    - contextPath: GitHub.WorkflowRun.conclusion
+      description: The conclusion of the workflow run (success, failure, cancelled, etc.).
+      type: String
+    - contextPath: GitHub.WorkflowRun.workflow_id
+      description: The ID of the parent workflow.
+      type: Number
+    - contextPath: GitHub.WorkflowRun.created_at
+      description: Datetime the workflow run was created.
+      type: Date
+    - contextPath: GitHub.WorkflowRun.updated_at
+      description: Datetime the workflow run was last updated.
+      type: Date
+    - contextPath: GitHub.WorkflowRun.url
+      description: The workflow run API URL.
+      type: String
+    - contextPath: GitHub.WorkflowRun.html_url
+      description: The workflow run HTML URL.
+      type: String
   - arguments:
     - description: The full path to the file in the repository (e.g., path/to/file.txt).
       name: path_to_file

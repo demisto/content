@@ -9,6 +9,7 @@ from GitHub import (
     add_issue_to_project_board_command,
     get_branch_command,
     get_path_data,
+    github_get_workflow_run_command,
     github_releases_list_command,
     http_request,
     list_all_projects_command,
@@ -449,6 +450,39 @@ def test_github_trigger_workflow(mocker):
 
     mocker_results.assert_called_once()
     assert mocker_results.call_args[0][0].readable_output == "Workflow triggered successfully."
+
+
+def test_github_get_workflow_run(mocker):
+    """
+    Given:
+      - A workflow run ID.
+    When:
+      - Calling the 'github_get_workflow_run_command' function
+    Then:
+      - Ensure the correct workflow run details are returned.
+    """
+    GitHub.BASE_URL = "https://github.com"
+    GitHub.USE_SSL = True
+    GitHub.TOKEN = "123456"
+    GitHub.USER = "demisto"
+    GitHub.REPOSITORY = "test"
+    mock_args = {"owner": "demisto", "repository": "test", "run_id": "1212121"}
+    mocker.patch.object(demisto, "args", return_value=mock_args)
+    mocker_results = mocker.patch("GitHub.return_results")
+    json_response = load_test_data("test_data/get_workflow_run_response.json")
+
+    with requests_mock.Mocker() as m:
+        m.get("https://github.com/repos/demisto/test/actions/runs/1212121", json=json_response)
+        GitHub.github_get_workflow_run_command()
+
+    mocker_results.assert_called_once()
+    result: CommandResults = mocker_results.call_args[0][0]
+    assert result.outputs_prefix == "GitHub.WorkflowRun"
+    assert result.outputs["id"] == 1212121
+    assert result.outputs["status"] == "completed"
+    assert result.outputs["conclusion"] == "success"
+    assert result.outputs["event"] == "workflow_dispatch"
+    assert result.outputs["head_branch"] == "master"
 
 
 def test_github_cancel_workflow(mocker):
