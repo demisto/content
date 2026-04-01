@@ -2032,13 +2032,13 @@ def github_trigger_workflow_command():
     # http_request returns a dict for 200 (JSON body) and a Response object for 204 No Content.
     if isinstance(response, dict):
         outputs = {
-            "workflow_run_id": response.get("workflow_run_id") or response.get("id"),
-            "run_url": response.get("run_url") or response.get("url"),
-            "html_url": response.get("html_url"),
+            "WorkflowRunID": response.get("workflow_run_id") or response.get("id"),
+            "RunUrl": response.get("run_url") or response.get("url"),
+            "HtmlUrl": response.get("html_url"),
         }
         return_results(CommandResults(
             outputs_prefix="GitHub.WorkflowRun",
-            outputs_key_field="workflow_run_id",
+            outputs_key_field="WorkflowRunID",
             outputs=outputs,
             raw_response=response,
             readable_output=tableToMarkdown("Triggered Workflow Run", outputs, removeNull=True),
@@ -2069,26 +2069,26 @@ def github_get_workflow_run_command():
     response = http_request("GET", url_suffix=suffix, headers=headers)
 
     output = {
-        "id": response.get("id"),
-        "name": response.get("name"),
-        "head_branch": response.get("head_branch"),
-        "head_sha": response.get("head_sha"),
-        "display_title": response.get("display_title"),
-        "run_number": response.get("run_number"),
-        "event": response.get("event"),
-        "status": response.get("status"),
-        "conclusion": response.get("conclusion"),
-        "workflow_id": response.get("workflow_id"),
-        "created_at": response.get("created_at"),
-        "updated_at": response.get("updated_at"),
-        "url": response.get("url"),
-        "html_url": response.get("html_url"),
+        "ID": response.get("id"),
+        "Name": response.get("name"),
+        "HeadBranch": response.get("head_branch"),
+        "HeadSha": response.get("head_sha"),
+        "DisplayTitle": response.get("display_title"),
+        "RunNumber": response.get("run_number"),
+        "Event": response.get("event"),
+        "Status": response.get("status"),
+        "Conclusion": response.get("conclusion"),
+        "WorkflowID": response.get("workflow_id"),
+        "CreatedAt": response.get("created_at"),
+        "UpdatedAt": response.get("updated_at"),
+        "Url": response.get("url"),
+        "HtmlUrl": response.get("html_url"),
     }
 
     return_results(
         CommandResults(
             outputs_prefix="GitHub.WorkflowRun",
-            outputs_key_field="id",
+            outputs_key_field="ID",
             outputs=output,
             raw_response=response,
             readable_output=tableToMarkdown(f"Workflow Run {run_id}", output, removeNull=True),
