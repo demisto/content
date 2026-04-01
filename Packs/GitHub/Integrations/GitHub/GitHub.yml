@@ -7368,10 +7368,10 @@ script:
       description: The ID of the parent workflow.
       type: Number
     - contextPath: GitHub.WorkflowRun.CreatedAt
-      description: Datetime the workflow run was created.
+      description: Datetime the workflow run was created. (ISO8601 format: 2020-01-01T00:11:22Z)
       type: Date
     - contextPath: GitHub.WorkflowRun.UpdatedAt
-      description: Datetime the workflow run was last updated.
+      description: Datetime the workflow run was last updated. (ISO8601 format: 2020-01-01T00:11:22Z)
       type: Date
     - contextPath: GitHub.WorkflowRun.Url
       description: The workflow run API URL.
