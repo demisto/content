@@ -2232,7 +2232,6 @@ COMMANDS = {
     "GitHub-trigger-workflow": github_trigger_workflow_command,
     "GitHub-cancel-workflow": github_cancel_workflow_command,
     "GitHub-list-workflows": github_list_workflows_command,
-    "GitHub-get-workflow-run": github_get_workflow_run_command,
     "GitHub-delete-file": github_delete_file_command,
     # New lowercase kebab-case commands (canonical names)
     "github-create-issue": create_command,
