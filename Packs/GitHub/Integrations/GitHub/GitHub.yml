@@ -3639,6 +3639,16 @@ script:
       name: inputs
     description: Deprecated. Use ***github-trigger-workflow*** instead. Triggers a GitHub workflow on a given repository and workflow.
     name: GitHub-trigger-workflow
+    outputs:
+    - contextPath: GitHub.WorkflowRun.workflow_run_id
+      description: The ID of the triggered workflow run.
+      type: Number
+    - contextPath: GitHub.WorkflowRun.run_url
+      description: The API URL of the triggered workflow run.
+      type: String
+    - contextPath: GitHub.WorkflowRun.html_url
+      description: The HTML URL of the triggered workflow run.
+      type: String
     deprecated: true
   - arguments:
     - description: The GitHub owner (organization or username) of the repository.
@@ -7235,6 +7245,16 @@ script:
       name: inputs
     description: Triggers a GitHub workflow on a given repository and workflow.
     name: github-trigger-workflow
+    outputs:
+    - contextPath: GitHub.WorkflowRun.workflow_run_id
+      description: The ID of the triggered workflow run.
+      type: Number
+    - contextPath: GitHub.WorkflowRun.run_url
+      description: The API URL of the triggered workflow run.
+      type: String
+    - contextPath: GitHub.WorkflowRun.html_url
+      description: The HTML URL of the triggered workflow run.
+      type: String
   - arguments:
     - description: The GitHub owner (organization or username) of the repository.
       name: owner

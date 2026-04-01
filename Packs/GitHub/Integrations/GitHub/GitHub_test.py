@@ -429,7 +429,7 @@ def test_github_trigger_workflow(mocker):
     When:
       - Calling the 'github_trigger_workflow_command' function
     Then:
-      - Ensure workflow triggerd successfully.
+      - Ensure the workflow run details are returned in the CommandResults outputs.
     """
     GitHub.BASE_URL = "https://github.com"
     GitHub.USE_SSL = True

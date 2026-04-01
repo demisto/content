@@ -2015,7 +2015,7 @@ def github_trigger_workflow_command():
             inputs (str): The inputs of the workflow.
 
         Returns:
-            CommandResults object with informative printout if trigger the workflow succeeded or not.
+            CommandResults with the workflow run details returned by the API.
     """
     args = demisto.args()
     owner = args.get("owner") or USER
@@ -2025,16 +2025,18 @@ def github_trigger_workflow_command():
     inputs = json.loads(args.get("inputs", "{}"), strict=False)
 
     suffix = f"/repos/{owner}/{repository}/actions/workflows/{workflow}/dispatches"
-    headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github.v3+json"}
+    headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2026-03-10"}
     data = assign_params(ref=branch, inputs=inputs)
     response = http_request("POST", url_suffix=suffix, headers=headers, data=data)
+    return_results(CommandResults(
+        outputs_prefix="GitHub.WorkflowRun",
+        outputs_key_field="workflow_run_id",
+        outputs=response,
+        raw_response=response,
+        readable_output=tableToMarkdown("Triggered Workflow Run", response, removeNull=True),
+    ))
 
-    if response.status_code == 204:
-        return_results(CommandResults(readable_output="Workflow triggered successfully."))
-    else:
-        return_results(
-            CommandResults(raw_response=response, readable_output=f"Failed to trigger workflow. {response.json().get('message')}")
-        )
+
 
 
 def github_cancel_workflow_command():
