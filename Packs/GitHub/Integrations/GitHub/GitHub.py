@@ -2015,7 +2015,8 @@ def github_trigger_workflow_command():
             inputs (str): The inputs of the workflow.
 
         Returns:
-            CommandResults with the workflow run details returned by the API.
+            CommandResults with the workflow run details when the API returns a JSON body,
+            or a plain success message when the API returns 204 No Content.
     """
     args = demisto.args()
     owner = args.get("owner") or USER
@@ -2028,13 +2029,22 @@ def github_trigger_workflow_command():
     headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2026-03-10"}
     data = assign_params(ref=branch, inputs=inputs)
     response = http_request("POST", url_suffix=suffix, headers=headers, data=data)
-    return_results(CommandResults(
-        outputs_prefix="GitHub.WorkflowRun",
-        outputs_key_field="workflow_run_id",
-        outputs=response,
-        raw_response=response,
-        readable_output=tableToMarkdown("Triggered Workflow Run", response, removeNull=True),
-    ))
+    # http_request returns a dict for 200 (JSON body) and a Response object for 204 No Content.
+    if isinstance(response, dict):
+        outputs = {
+            "workflow_run_id": response.get("workflow_run_id") or response.get("id"),
+            "run_url": response.get("run_url") or response.get("url"),
+            "html_url": response.get("html_url"),
+        }
+        return_results(CommandResults(
+            outputs_prefix="GitHub.WorkflowRun",
+            outputs_key_field="workflow_run_id",
+            outputs=outputs,
+            raw_response=response,
+            readable_output=tableToMarkdown("Triggered Workflow Run", outputs, removeNull=True),
+        ))
+    else:
+        return_results(CommandResults(readable_output="Workflow triggered successfully."))
 
 
 def github_get_workflow_run_command():
