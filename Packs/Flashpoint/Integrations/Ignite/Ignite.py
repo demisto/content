@@ -1,13 +1,12 @@
 """Ignite Main File."""
 
-from copy import deepcopy
 import ipaddress
-
-import requests
-import urllib3
 import re
+from copy import deepcopy
 
 import demistomock as demisto
+import requests
+import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
@@ -323,15 +322,17 @@ class Client(BaseClient):
 
         return resp_json
 
-    def get_indicator(self, indicator_value: str, indicator_type: str):
+    def get_indicator(self, indicator_value: str, indicator_type: str, exact_match: bool = False):
         """
         Get an indicator by its type and value.
 
         :param indicator_type: The indicator type.
         :param indicator_value: The indicator value.
+        :param exact_match: Whether to perform an exact match. If true, the indicator value is enclosed in quotes.
 
         :return: The indicator response.
         """
+        indicator_value = f'"{indicator_value}"' if exact_match else indicator_value
         params = {"ioc_types": indicator_type, "ioc_value": indicator_value, "embed": "all"}
 
         return self.http_request("GET", URL_SUFFIX["LIST_INDICATORS"], params=params)
@@ -1696,7 +1697,7 @@ def filename_lookup_command(client: Client, filename: str) -> CommandResults:
     )
 
 
-def ip_lookup_command(client: Client, ip: str) -> CommandResults:
+def ip_lookup_command(client: Client, ip: str, exact_match: bool = False) -> CommandResults:
     """
     Lookup a particular ip-address.
 
@@ -1705,6 +1706,7 @@ def ip_lookup_command(client: Client, ip: str) -> CommandResults:
 
     : param client: object of client class
     : param ip: ip-address
+    : param exact_match: Whether to perform an exact match. If true, the indicator value is enclosed in quotes.
     : return: command output
     """
     if not is_ip_valid(ip, True):
@@ -1714,9 +1716,9 @@ def ip_lookup_command(client: Client, ip: str) -> CommandResults:
         return CommandResults(readable_output=f"Skipping internal IP: {ip}")
 
     if is_ipv6_valid(ip):
-        response = client.get_indicator(ip, "ipv6")
+        response = client.get_indicator(ip, "ipv6", exact_match)
     else:
-        response = client.get_indicator(ip, "ipv4")
+        response = client.get_indicator(ip, "ipv4", exact_match)
     items = response.get("items", [])
 
     if items:
@@ -2116,16 +2118,16 @@ def indicator_get_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def url_lookup_command(client: Client, url: str) -> CommandResults:
+def url_lookup_command(client: Client, url: str, exact_match: bool = False) -> CommandResults:
     """
     Lookup a particular url.
 
     :param client: object of client class
     :param url: url as indicator
-
+    :param exact_match: Whether to perform an exact match. If true, the indicator value is enclosed in quotes.
     :return: command output
     """
-    response = client.get_indicator(url, "url")
+    response = client.get_indicator(url, "url", exact_match)
     items = response.get("items", [])
 
     if items:
@@ -2236,16 +2238,17 @@ def url_lookup_command(client: Client, url: str) -> CommandResults:
     return command_results
 
 
-def domain_lookup_command(client: Client, domain: str) -> CommandResults:
+def domain_lookup_command(client: Client, domain: str, exact_match: bool = False) -> CommandResults:
     """
     Lookup a particular domain.
 
     :param client: object of client class
     :param domain: domain
+    :param exact_match: Whether to perform an exact match. If true, the indicator value is enclosed in quotes.
     :return: command output
     """
 
-    response = client.get_indicator(domain, "domain")
+    response = client.get_indicator(domain, "domain", exact_match)
     items = response.get("items", [])
 
     if items:
@@ -2350,16 +2353,17 @@ def domain_lookup_command(client: Client, domain: str) -> CommandResults:
     return CommandResults(indicator=domain_ioc, readable_output=human_readable, raw_response=response)
 
 
-def file_lookup_command(client: Client, file: str) -> CommandResults:
+def file_lookup_command(client: Client, file: str, exact_match: bool = False) -> CommandResults:
     """
     Lookup a particular file hash.
 
     :param client: object of client class
     :param file: file as indicator
+    :param exact_match: Whether to perform an exact match. If true, the indicator value is enclosed in quotes.
     :return: command output
     """
 
-    response = client.get_indicator(file, "file")
+    response = client.get_indicator(file, "file", exact_match)
     items = response.get("items", [])
 
     if items:
@@ -2977,11 +2981,15 @@ def main():
                 raise ValueError(MESSAGES["MISSING_REQUIRED_ARGS"].format(command))
             indicator_list = argToList(args.get(command))
             indicator_list = [indicator.strip() for indicator in indicator_list if indicator.strip()]
+            exact_match = argToBoolean(args.get("exact_match", False))
             results = []
             if not indicator_list:
                 raise ValueError(MESSAGES["MISSING_REQUIRED_ARGS"].format(command))
             for indicator in indicator_list:
-                results.append(REPUTATION_COMMAND_TO_FUNCTION[command](client, indicator))
+                arguments = (client, indicator)
+                if exact_match:
+                    arguments += (exact_match,)  # type: ignore
+                results.append(REPUTATION_COMMAND_TO_FUNCTION[command](*arguments))
             return_results(results)
 
         elif COMMAND_TO_FUNCTION.get(command):

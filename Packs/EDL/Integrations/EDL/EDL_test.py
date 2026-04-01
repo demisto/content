@@ -845,6 +845,71 @@ class TestHelperFunctions:
         assert res.collapse_ips == COLLAPSE_TO_RANGES
         assert res.add_comment_if_empty == request_args["ce"]
 
+    @pytest.mark.parametrize(
+        "ip_networks, expected_output",
+        [
+            pytest.param(["192.168.1.1/32"], {"192.168.1.1"}, id="single_ip_without_suffix"),
+            pytest.param(["192.168.1.0/24"], {"192.168.1.0/24"}, id="small_cidr_block"),
+            pytest.param(["10.0.0.0/24", "172.16.0.0/16"], {"10.0.0.0/24", "172.16.0.0/16"}, id="multiple_cidr_blocks"),
+            pytest.param(["192.168.1.1/32", "10.0.0.0/8"], {"192.168.1.1", "10.0.0.0/8"}, id="mix_single_ip_and_cidr"),
+            pytest.param(["0.0.0.0/0"], {"0.0.0.0/0"}, id="very_large_cidr_entire_ipv4_space"),
+        ],
+    )
+    def test_ip_groups_to_cidrs(self, ip_networks, expected_output):
+        """
+        Given:
+            - An iterable of IPNetwork objects representing IP addresses or CIDR blocks
+        When:
+            - Calling ip_groups_to_cidrs to collapse IP groups to CIDR notation
+        Then:
+            - Returns a set of CIDR strings with single IPs without /32 suffix
+            - Handles very large CIDR blocks without raising IndexError
+        """
+        from netaddr import IPNetwork
+        from EDL import ip_groups_to_cidrs
+
+        # Convert string CIDRs to IPNetwork objects
+        ip_network_objects = [IPNetwork(cidr) for cidr in ip_networks]
+
+        result = ip_groups_to_cidrs(ip_network_objects)
+
+        assert result == expected_output
+
+    @pytest.mark.parametrize(
+        "ip_ranges, expected_output",
+        [
+            pytest.param(["192.168.1.1"], {"192.168.1.1"}, id="single_ip"),
+            pytest.param(
+                ["192.168.1.1", "192.168.1.2", "192.168.1.3"], {"192.168.1.1-192.168.1.3"}, id="consecutive_ips_to_range"
+            ),
+            pytest.param(["192.168.1.1", "192.168.1.5"], {"192.168.1.1", "192.168.1.5"}, id="non_consecutive_ips"),
+            pytest.param(
+                ["10.0.0.1", "10.0.0.2", "172.16.0.1"], {"10.0.0.1-10.0.0.2", "172.16.0.1"}, id="mix_range_and_single_ip"
+            ),
+            pytest.param(["0.0.0.0/0"], {"0.0.0.0-255.255.255.255"}, id="very_large_range_entire_ipv4_space"),
+        ],
+    )
+    def test_ip_groups_to_ranges(self, ip_ranges, expected_output):
+        """
+        Given:
+            - An iterable of IP addresses or CIDR blocks
+        When:
+            - Calling ip_groups_to_ranges to collapse IP groups to range notation
+        Then:
+            - Returns a set of IP range strings (e.g., '192.168.1.1-192.168.1.3')
+            - Single IPs are returned as-is without range notation
+            - Handles very large IP ranges without raising IndexError
+        """
+        from netaddr import IPSet
+        from EDL import ip_groups_to_ranges
+
+        # Convert IPs to IPRange objects using IPSet
+        ip_range_objects = IPSet(ip_ranges).iter_ipranges()
+
+        result = ip_groups_to_ranges(ip_range_objects)
+
+        assert result == expected_output
+
 
 def test_initialize_edl_context():
     """

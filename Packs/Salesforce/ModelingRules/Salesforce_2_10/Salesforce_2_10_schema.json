@@ -1,0 +1,321 @@
+{
+
+    "salesforce_realtime_raw": {
+        "api_object_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "salesforce_domain": {
+            "type": "string",
+            "is_array": false
+        },
+        "UserId": {
+            "type": "string",
+            "is_array": false
+        },
+        "Username": {
+            "type": "string",
+            "is_array": false
+        },
+        "EventIdentifier": {
+            "type": "string",
+            "is_array": false
+        },
+        "LoginKey": {
+            "type": "string",
+            "is_array": false
+        },
+        "ConnectedAppId": {
+            "type": "string",
+            "is_array": false
+        },
+        "Application": {
+            "type": "string",
+            "is_array": false
+        },
+        "Query": {
+            "type": "string",
+            "is_array": false
+        },
+        "UserAgent": {
+            "type": "string",
+            "is_array": false
+        },
+        "SourceIp": {
+            "type": "string",
+            "is_array": false
+        },
+        "Client": {
+            "type": "string",
+            "is_array": false
+        },
+        "Platform": {
+            "type": "string",
+            "is_array": false
+        },
+        "PolicyId": {
+            "type": "string",
+            "is_array": false
+        },
+        "PolicyOutcome": {
+            "type": "string",
+            "is_array": false
+        },
+        "SessionKey": {
+            "type": "string",
+            "is_array": false
+        },
+        "EventUuid": {
+            "type": "string",
+            "is_array": false
+        },
+        "UserType": {
+            "type": "string",
+            "is_array": false
+        },
+        "DelegatedUsername": {
+            "type": "string",
+            "is_array": false
+        },
+        "Browser": {
+            "type": "string",
+            "is_array": false
+        },
+        "TargetUrl": {
+            "type": "string",
+            "is_array": false
+        },
+        "FileAction": {
+            "type": "string",
+            "is_array": false
+        },
+        "FileName": {
+            "type": "string",
+            "is_array": false
+        },
+        "ContentSize": {
+            "type": "int",
+            "is_array": false
+        },
+        "FileType": {
+            "type": "string",
+            "is_array": false
+        },
+        "PageUrl": {
+            "type": "string",
+            "is_array": false
+        },
+        "Operation": {
+            "type": "string",
+            "is_array": false
+        },
+        "AppName": {
+            "type": "string",
+            "is_array": false
+        },
+        "DeviceId": {
+            "type": "string",
+            "is_array": false
+        },
+        "DeviceModel": {
+            "type": "string",
+            "is_array": false
+        },
+        "DeviceSessionId": {
+            "type": "string",
+            "is_array": false
+        },
+        "Duration": {
+            "type": "float",
+            "is_array": false
+        },
+        "EffectivePageTimeDeviationReason": {
+            "type": "string",
+            "is_array": false
+        },
+        "OsName": {
+            "type": "string",
+            "is_array": false
+        },
+        "ReportId": {
+            "type": "string",
+            "is_array": false
+        },
+        "Name": {
+            "type": "string",
+            "is_array": false
+        },
+        "ExportFileFormat": {
+            "type": "string",
+            "is_array": false
+        },
+        "Status": {
+            "type": "string",
+            "is_array": false
+        },
+        "ListViewId": {
+            "type": "string",
+            "is_array": false
+        },
+        "OperationStatus": {
+            "type": "string",
+            "is_array": false
+        },
+        "Message": {
+            "type": "string",
+            "is_array": false
+        },
+        "RecordId": {
+            "type": "string",
+            "is_array": false
+        },
+        "QueriedEntities": {
+            "type": "string",
+            "is_array": false
+        },
+        "PermissionList": {
+            "type": "string",
+            "is_array": false
+        },
+        "ParentIdList": {
+            "type": "string",
+            "is_array": false
+        },
+        "Activity": {
+            "type": "string",
+            "is_array": false
+        },
+        "City": {
+            "type": "string",
+            "is_array": false
+        },
+        "Country": {
+            "type": "string",
+            "is_array": false
+        },
+        "Latitude": {
+            "type": "float",
+            "is_array": false
+        },
+        "Longitude": {
+            "type": "float",
+            "is_array": false
+        },
+        "IdentityUsed": {
+            "type": "string",
+            "is_array": false
+        },
+        "AuthSessionId": {
+            "type": "string",
+            "is_array": false
+        },
+        "ErrorCode": {
+            "type": "string",
+            "is_array": false
+        },
+        "InitiatedBy": {
+            "type": "string",
+            "is_array": false
+        },
+        "AppId": {
+            "type": "string",
+            "is_array": false
+        },
+        "SamlEntityUrl": {
+            "type": "string",
+            "is_array": false
+        },
+        "LoginUrl": {
+            "type": "string",
+            "is_array": false
+        },
+        "Summary": {
+            "type": "string",
+            "is_array": false
+        },
+        "Uri": {
+            "type": "string",
+            "is_array": false
+        },
+        "Report": {
+            "type": "string",
+            "is_array": false
+        },
+        "EmailAddress": {
+            "type": "string",
+            "is_array": false
+        },
+        "AppPackageIdentifier": {
+            "type": "string",
+            "is_array": false
+        },
+        "AppVersion": {
+            "type": "string",
+            "is_array": false
+        },
+        "DeviceIdentifier": {
+            "type": "string",
+            "is_array": false
+        },
+        "EventDescription": {
+            "type": "string",
+            "is_array": false
+        },
+        "EnforcedAction": {
+            "type": "string",
+            "is_array": false
+        },
+        "ScreenDescription": {
+            "type": "string",
+            "is_array": false
+        },
+        "SoqlCommands": {
+            "type": "string",
+            "is_array": false
+        },
+        "ForwardedForIp": {
+            "type": "string",
+            "is_array": false
+        },
+        "LoginLatitude": {
+            "type": "string",
+            "is_array": false
+        },
+        "LoginLongitude": {
+            "type": "string",
+            "is_array": false
+        },
+        "EventDate": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "PreviousPlatform":{
+            "type": "string",
+            "is_array": false
+        },
+        "CurrentPlatform":{
+            "type": "string",
+            "is_array": false
+        },
+        "PreviousUserAgent":{
+            "type": "string",
+            "is_array": false
+        },
+        "CurrentUserAgent":{
+            "type": "string",
+            "is_array": false
+        },
+        "CurrentIp":{
+            "type": "string",
+            "is_array": false
+        },
+        "Subdivision":{
+            "type": "string",
+            "is_array": false
+        },
+        "LoginType":{
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
