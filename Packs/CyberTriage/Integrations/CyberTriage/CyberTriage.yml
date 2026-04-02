@@ -52,11 +52,11 @@ script:
     - name: scan_options
       description: >
         Comma-separated list of data types for Cyber Triage to collect.
-        Valid options: Processes (pr), Network (nw), Network Caches (nc),
-        Startup Items (st), Scheduled Tasks (sc), Program Run (ru),
-        System Config (co), User Logins (lo), Network Shares (ns),
-        Web Artifacts (wb), Full File System Scan (fs).
-      defaultValue: pr,nw,nc,st,sc,ru,co,lo,ns,wb,fs
+        Valid options: Accounts (us), Logons (lo), Network Shares (ns), 
+        Web Artifacts (wb), Data Accessed (ud), Triggered Tasks (sc), 
+        Processes (pr), Network (nw), Network Caches (nc), OS Settings (co),
+        Full file system scan (fs).
+      defaultValue: us,lo,ns,wb,ud,sc,pr,nw,nc,co,fs
     - name: malware_scan_requested
       auto: PREDEFINED
       predefined:
