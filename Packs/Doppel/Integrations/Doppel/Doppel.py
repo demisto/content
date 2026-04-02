@@ -602,12 +602,32 @@ def fetch_incidents_command(client: Client, args: dict[str, Any]) -> None:
         demisto.info("No incidents to create. Exiting fetch_incidents_command.")
 
 
-def get_modified_remote_data_command(client: Client, args: dict[str, Any]):
-    demisto.debug("Command get-modified-remote-data is not implemented")
-    raise NotImplementedError(
-        'The command "get-modified-remote-data" is not implemented, \
-        as Doppel does provide the API to fetch updated alerts.'
-    )
+def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> GetModifiedRemoteDataResponse:
+    """
+    Checks for remote modifications since the last update timestamp
+    and returns a list of modified incident IDs.
+    """
+    remote_last_update = args.get("last_update")
+    demisto.debug(f"Checking for remote modifications since: {remote_last_update}")
+
+    last_update_formatted = format_datetime(remote_last_update)
+
+    query_params = {
+        "last_activity_timestamp": last_update_formatted,
+    }
+
+    try:
+        results = client.get_alerts(params=query_params)
+        alerts = results.get("alerts", [])
+
+        modified_incident_ids = [str(alert.get("id")) for alert in alerts if alert.get("id")]
+
+        demisto.debug(f"Found {len(modified_incident_ids)} modified remote incidents.")
+        return GetModifiedRemoteDataResponse(modified_incident_ids)
+
+    except Exception as e:
+        demisto.error(f"Error in get_modified_remote_data_command: {e}")
+        return GetModifiedRemoteDataResponse([])
 
 
 def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDataResponse:
