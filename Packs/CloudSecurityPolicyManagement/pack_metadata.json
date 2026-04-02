@@ -15,5 +15,19 @@
     "marketplaces": [
         "platform"
     ],
-    "firstCreated": "2026-04-02T11:25:26Z"
+    "firstCreated": "2026-04-02T11:25:26Z",
+    "dependencies": {
+        "AWS": {
+            "mandatory": true,
+            "display_name": "AWS"
+        },
+        "Azure": {
+            "mandatory": true,
+            "display_name": "Azure"
+        }
+    },
+    "displayedImages": [
+        "AWS",
+        "Azure"
+    ]
 }
