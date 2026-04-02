@@ -1,9 +1,13 @@
 import json
-from unittest.mock import patch
+import re
+import pytest
+from unittest.mock import patch, MagicMock
 from datetime import datetime, UTC
+from urllib.parse import parse_qs, urlparse
 
 from CTIXv3 import (
     Client,
+    DemistoException,
     _epoch_to_iso,
     add_analyst_score_command,
     add_analyst_tlp_command,
@@ -19,6 +23,7 @@ from CTIXv3 import (
     deprecate_ioc_command,
     domain,
     enrich_indicators_bulk,
+    execute_with_retry,
     fetch_incidents,
     fetch_indicators,
     file,
@@ -1732,6 +1737,35 @@ class TestFetchIncidents:
         # Allow a small tolerance for clock drift between fetch and assertion
         assert abs(next_run["last_fetch_time"] - int(datetime.now(UTC).timestamp())) <= 5
 
+    def test_first_run_uses_first_fetch_minutes_in_cql(self, requests_mock):
+        """Empty LastRun: CQL lower bound is now - first_fetch minutes, not epoch 0."""
+        mock_response = util_load_json("test_data/fetch_incidents_reports.json")
+        requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
+
+        client = Client(
+            base_url=BASE_URL,
+            access_id=ACCESS_ID,
+            secret_key=SECRET_KEY,
+            verify=False,
+            timeout=15,
+            proxies={},
+        )
+
+        params = {"first_fetch": "60"}
+        last_run = {}
+
+        fetch_incidents(client, params, last_run)
+
+        raw_body = requests_mock.request_history[0].body
+        if isinstance(raw_body, bytes):
+            raw_body = raw_body.decode()
+        body = json.loads(raw_body)
+        query = body["query"]
+        match = re.search(r'ctix_modified >= "(\d+)"', query)
+        assert match is not None
+        expected_low = int(datetime.now(UTC).timestamp()) - 60 * 60
+        assert abs(int(match.group(1)) - expected_low) <= 5
+
     def test_no_legacy_deduplication(self, requests_mock):
         mock_response = util_load_json("test_data/fetch_incidents_reports.json")
         requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
@@ -1782,7 +1816,7 @@ class TestFetchIncidents:
         assert isinstance(next_run.get("last_fetch_time"), int)
         assert abs(next_run["last_fetch_time"] - int(datetime.now(UTC).timestamp())) <= 5
 
-    def test_ignores_removed_max_fetch(self, requests_mock):
+    def test_max_fetch_limits_incidents_and_page_size(self, requests_mock):
         mock_response = util_load_json("test_data/fetch_incidents_reports.json")
         requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
 
@@ -1800,8 +1834,83 @@ class TestFetchIncidents:
 
         next_run, incidents = fetch_incidents(client, params, last_run)
 
-        # max_fetch was removed from runtime behavior; all mocked reports are returned.
-        assert len(incidents) == 3
+        assert len(incidents) == 2
+        req = requests_mock.request_history[0]
+        qs = parse_qs(urlparse(req.url).query)
+        assert qs.get("page_size") == ["2"]
+
+    def test_fetch_incidents_next_page_stores_checkpoint(self, requests_mock):
+        """One page per run: API `next` is set → LastRun advances page_number for the next interval."""
+        full = util_load_json("test_data/fetch_incidents_reports.json")
+        page1 = {
+            **full,
+            "results": full["results"][:1],
+            "next": "https://example.com/ctixapi/ingestion/threat-data/list/?page=2&page_size=100",
+        }
+        requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=page1)
+
+        client = Client(
+            base_url=BASE_URL,
+            access_id=ACCESS_ID,
+            secret_key=SECRET_KEY,
+            verify=False,
+            timeout=15,
+            proxies={},
+        )
+
+        params = {"first_fetch": "4320"}
+        next_run, incidents = fetch_incidents(client, params, {})
+
+        assert len(incidents) == 1
+        assert next_run.get("page_number") == 2
+
+    def test_fetch_incidents_second_interval_completes_when_no_next(self, requests_mock):
+        """Resuming at page 2 with no `next` completes the sweep and clears page_number."""
+        full = util_load_json("test_data/fetch_incidents_reports.json")
+        page2 = {**full, "results": full["results"][1:2], "next": None}
+        requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=page2)
+
+        client = Client(
+            base_url=BASE_URL,
+            access_id=ACCESS_ID,
+            secret_key=SECRET_KEY,
+            verify=False,
+            timeout=15,
+            proxies={},
+        )
+
+        params = {"first_fetch": "4320"}
+        last_run = {"page_number": 2, "last_run_date": 1700000000}
+
+        next_run, incidents = fetch_incidents(client, params, last_run)
+
+        assert len(incidents) == 1
+        assert next_run.get("page_number") == 0
+        req = requests_mock.request_history[0]
+        qs = parse_qs(urlparse(req.url).query)
+        assert qs.get("page") == ["2"]
+
+    def test_fetch_incidents_empty_results_with_next_advances_page(self, requests_mock):
+        """Empty `results` but truthy `next` must not complete the sweep (avoid stuck pagination)."""
+        requests_mock.post(
+            f"{BASE_URL}ingestion/threat-data/list/",
+            json={"results": [], "next": "https://example.com/ctixapi/ingestion/threat-data/list/?page=2", "total": 0},
+        )
+
+        client = Client(
+            base_url=BASE_URL,
+            access_id=ACCESS_ID,
+            secret_key=SECRET_KEY,
+            verify=False,
+            timeout=15,
+            proxies={},
+        )
+
+        params = {"first_fetch": "4320"}
+        next_run, incidents = fetch_incidents(client, params, {})
+
+        assert len(incidents) == 0
+        assert next_run.get("page_number") == 2
 
     def test_custom_cql_query_used_as_base(self, requests_mock):
         """incident_fetch_query replaces the default base query; time-window is appended."""
@@ -1937,6 +2046,36 @@ class TestFetchIndicators:
         assert indicators[2]["score"] == 1  # severity LOW -> GOOD (1)
         assert next_run["last_indicator_time"] is not None
 
+    def test_first_run_passes_from_timestamp_from_first_fetch(self, requests_mock):
+        """Empty LastRun: saved_result_set gets from_timestamp = now - first_fetch minutes."""
+        mock_response = util_load_json("test_data/fetch_indicators_result_set.json")
+        requests_mock.get(f"{BASE_URL}ingestion/rules/save_result_set/", json=mock_response)
+
+        client = Client(
+            base_url=BASE_URL,
+            access_id=ACCESS_ID,
+            secret_key=SECRET_KEY,
+            verify=False,
+            timeout=15,
+            proxies={},
+        )
+
+        params = {
+            "first_fetch": "60",
+            "retrieve_enriched_data": False,
+            "integrationReliability": "C - Fairly reliable",
+        }
+
+        fetch_indicators(client, params, {})
+
+        req = requests_mock.request_history[0]
+        parsed = urlparse(req.url)
+        qs = parse_qs(parsed.query)
+        assert "from_timestamp" in qs
+        from_ts = int(qs["from_timestamp"][0])
+        expected_low = int(datetime.now(UTC).timestamp()) - 60 * 60
+        assert abs(from_ts - expected_low) <= 5
+
     def test_deduplication(self, requests_mock):
         """Test that duplicate indicators from the saved result set are preserved.
 
@@ -1999,9 +2138,10 @@ class TestFetchIndicators:
     def test_with_enrichment(self, requests_mock):
         mock_result_set = util_load_json("test_data/fetch_indicators_result_set.json")
         mock_enrichment = util_load_json("test_data/enrichment_bulk_lookup.json")
+        lookup_url = re.compile(f"{BASE_URL}ingestion/openapi/bulk-lookup/.*")
 
         requests_mock.get(f"{BASE_URL}ingestion/rules/save_result_set/", json=mock_result_set)
-        requests_mock.post(f"{BASE_URL}ingestion/openapi/bulk-lookup/indicator/", json=mock_enrichment)
+        requests_mock.post(lookup_url, json=mock_enrichment)
 
         client = Client(
             base_url=BASE_URL,
@@ -2053,7 +2193,9 @@ class TestEnrichIndicatorsBulk:
         assert enrichment_map["evil.example.com"]["name"] == "evil.example.com"
         assert enrichment_map["1.2.3.4"]["confidence_score"] == 90
 
-    def test_partial_failure(self):
+    @patch("CTIXv3.time.sleep", return_value=None)
+    @patch("CTIXv3.demisto.error")
+    def test_partial_failure(self, _mock_demisto_error, _mock_sleep):
         """Test that partial API failures are handled gracefully."""
         client = Client(
             base_url=BASE_URL,
@@ -2069,8 +2211,8 @@ class TestEnrichIndicatorsBulk:
         ]
 
         # Mock at the client method level to avoid SystemExit from return_error
-        with patch.object(client, "bulk_ioc_lookup_advanced", side_effect=Exception("API Error")):
-            # Should not raise, returns empty map on failure
+        with patch.object(client, "bulk_ioc_lookup_advanced", side_effect=DemistoException("API Error")):
+            # Should not raise, returns empty map on failure (after execute_with_retry retry path)
             enrichment_map = enrich_indicators_bulk(client, indicators)
         assert len(enrichment_map) == 0
 
@@ -2086,3 +2228,135 @@ class TestEnrichIndicatorsBulk:
 
         enrichment_map = enrich_indicators_bulk(client, [])
         assert len(enrichment_map) == 0
+
+
+class TestRetryLogic:
+    """Test execute_with_retry helper."""
+
+    def setup_method(self):
+        """Reset global RETRY_COUNT before each test."""
+        import CTIXv3
+
+        CTIXv3.RETRY_COUNT = 0
+
+    def test_execute_with_retry_success(self):
+        """Test success on first try."""
+        mock_func = MagicMock(return_value="success")
+        result = execute_with_retry(mock_func, "arg1", kwarg1="val1")
+        assert result == "success"
+        mock_func.assert_called_once_with("arg1", kwarg1="val1")
+
+    @patch("CTIXv3.time.sleep", return_value=None)
+    @patch("CTIXv3.demisto.error")
+    def test_execute_with_retry_after_one_failure(self, _mock_demisto_error, mock_sleep):
+        """Test success after one failure."""
+        mock_func = MagicMock(side_effect=[DemistoException("First failure"), "success"])
+        result = execute_with_retry(mock_func, "arg1")
+        assert result == "success"
+        assert mock_func.call_count == 2
+        mock_sleep.assert_called_once_with(60)
+
+    @patch("CTIXv3.time.sleep", return_value=None)
+    @patch("CTIXv3.demisto.error")
+    def test_execute_with_retry_persistent_failure(self, _mock_demisto_error, mock_sleep):
+        """Test that second failure is raised (per-call single retry)."""
+        mock_func = MagicMock(side_effect=[DemistoException("First failure"), DemistoException("Second failure")])
+        with pytest.raises(DemistoException, match="Second failure"):
+            execute_with_retry(mock_func, "arg1")
+        assert mock_func.call_count == 2
+        mock_sleep.assert_called_once_with(60)
+
+    @patch("CTIXv3.time.sleep", return_value=None)
+    @patch("CTIXv3.demisto.error")
+    def test_execute_with_retry_global_limit(self, _mock_demisto_error, mock_sleep):
+        """Test that global RETRY_COUNT stops execution after 3 total failures."""
+        mock_func = MagicMock(side_effect=DemistoException("failure"))
+
+        # 1st call to execute_with_retry (fails twice: initial + retry)
+        with pytest.raises(DemistoException):
+            execute_with_retry(mock_func)
+        # RETRY_COUNT should be 2 now (increments on EACH DemistoException caught in execute_with_retry)
+        # Wait, if initial call fails, RETRY_COUNT becomes 1. Then it retries.
+        # If retry fails, it's NOT caught in the same execute_with_retry call's except block.
+        # Let's re-examine execute_with_retry:
+        # try: return func()
+        # except DemistoException: RETRY_COUNT += 1; sleep(60); return func()
+        # So it increments ONLY on the first failure of each call.
+
+        import CTIXv3
+
+        assert CTIXv3.RETRY_COUNT == 1
+
+        # 2nd call
+        with pytest.raises(DemistoException):
+            execute_with_retry(mock_func)
+        assert CTIXv3.RETRY_COUNT == 2
+
+        # 3rd call
+        with pytest.raises(DemistoException):
+            execute_with_retry(mock_func)
+        assert CTIXv3.RETRY_COUNT == 3
+
+        # 4th call should immediately raise without retrying because RETRY_COUNT > 3 check happens in except
+        # Actually it's 'if RETRY_COUNT > 3: raise e' AFTER increment.
+        # So on 4th call: fails -> RETRY_COUNT becomes 4 -> 4 > 3 is True -> raises without sleep/retry.
+        with pytest.raises(DemistoException):
+            execute_with_retry(mock_func)
+
+        assert CTIXv3.RETRY_COUNT == 4
+        assert mock_sleep.call_count == 3  # Only first 3 calls slept and retried
+
+
+class TestFetchIncidentsRateLimit:
+    """Test fetch_incidents with Rate Limit handling."""
+
+    def setup_method(self):
+        """Reset global RETRY_COUNT before each test."""
+        import CTIXv3
+
+        CTIXv3.RETRY_COUNT = 0
+
+    @patch("CTIXv3.demisto.error")
+    @patch("CTIXv3.time.sleep", return_value=None)
+    @patch("CTIXv3.execute_with_retry")
+    def test_fetch_incidents_rate_limit_initial_call(self, mock_execute, mock_sleep, mock_demisto_error, requests_mock):
+        """Test that fetch_incidents returns partial results if initial call fails after retry."""
+        client = Client(BASE_URL, ACCESS_ID, SECRET_KEY, 15, False, {})
+        params = {"first_fetch": "4320"}
+        last_run = {}
+
+        # Mock initial get_threat_data failing twice with 429
+        mock_execute.side_effect = DemistoException("status-> 429")
+
+        next_run, incidents = fetch_incidents(client, params, last_run)
+
+        assert len(incidents) == 0
+        assert next_run.get("page_number") == 1
+        mock_demisto_error.assert_called()
+
+    @patch("CTIXv3.demisto.error")
+    @patch("CTIXv3.time.sleep", return_value=None)
+    def test_fetch_incidents_rate_limit_during_loop(self, mock_sleep, mock_demisto_error, requests_mock):
+        """Test that fetch_incidents returns partial results if rate limit hit during relations fetch."""
+        mock_response = util_load_json("test_data/fetch_incidents_reports.json")
+        requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
+
+        # Mock relations call to fail with 429
+        # First call to get_threat_data succeeds (via requests_mock)
+        # We need to mock execute_with_retry to fail for get_indicator_relations
+        client = Client(BASE_URL, ACCESS_ID, SECRET_KEY, 15, False, {})
+
+        from CTIXv3 import execute_with_retry as real_execute_with_retry
+
+        def side_effect(func, *args, **kwargs):
+            if func.__name__ == "get_indicator_relations":
+                raise DemistoException("status-> 429")
+            return real_execute_with_retry(func, *args, **kwargs)
+
+        with patch("CTIXv3.execute_with_retry", side_effect=side_effect):
+            params = {"first_fetch": "4320"}
+            next_run, incidents = fetch_incidents(client, params, {})
+
+        # Should have stopped after first report failure
+        assert len(incidents) == 0  # It breaks before appending the incident if it fails
+        assert "Rate limit hit again" in mock_demisto_error.call_args[0][0]

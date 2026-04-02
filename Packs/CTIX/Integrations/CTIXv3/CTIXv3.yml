@@ -65,7 +65,7 @@ configuration:
   type: 13
   section: Connect
   required: false
-  defaultvalue: CTIX Report
+  defaultvalue: CTIX Intel
 - display: Classifier
   name: classifier
   type: 13
@@ -98,12 +98,12 @@ configuration:
   required: false
   additionalinfo: The label name of the Saved Result Set to pull indicators from.
 - display: Maximum number of incidents per fetch
+  additionalinfo: Allowed Range is 1-200. Default is 10
   name: max_fetch
   type: 0
   section: Collect
   defaultvalue: '10'
   required: false
-  hidden: true
 - display: Saved Result Set Version
   name: saved_result_set_version
   type: 15

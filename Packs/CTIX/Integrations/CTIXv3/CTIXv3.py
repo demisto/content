@@ -226,6 +226,7 @@ _STIX_SDO_TO_XSOAR_ENTITY_TYPE: dict[str, str] = {
 ENRICHMENT_BATCH_SIZE = 100
 FETCH_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DELTA_TIME_DIFF = 2
+FIRST_FETCH_DEFAULT_MINUTES = 4320
 
 # API page-size limits (per CTIX API documentation)
 PAGE_SIZE = 100
@@ -236,6 +237,8 @@ PAGE_SIZE_BULK_LOOKUP = 100
 FETCH_INCIDENTS_STATE_PREFIX = "fetch_incidents"
 FETCH_INDICATORS_STATE_PREFIX = "fetch_indicators"
 
+RATE_LIMIT_STATUS_ERR = "status-> 429"
+RETRY_COUNT = 0
 """ CLIENT CLASS """
 
 
@@ -952,13 +955,30 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
+def execute_with_retry(func: Callable, *args, **kwargs) -> Any:
+    """
+    Executes a function with a single retry after 60 seconds if it fails.
+    """
+    global RETRY_COUNT
+    try:
+        return func(*args, **kwargs)
+    except DemistoException as e:
+        RETRY_COUNT += 1
+        if RETRY_COUNT > 3:
+            demisto.error(f"CTIX: RETRY_COUNT exceeded {RETRY_COUNT}. Error: {e}")
+            raise e
+        demisto.error(f"CTIX: Hit an error: {e}. Waiting 60 seconds before retrying... (Retry {RETRY_COUNT})")
+        time.sleep(60)  # pylint: disable=E9003
+        return func(*args, **kwargs)
+
+
 def to_dbot_score(ctix_score: int) -> int:
     """
     Maps CTIX Score to DBotScore
     """
     if isinstance(ctix_score, str):
         try:
-            ctix_score = float(ctix_score)
+            ctix_score = int(ctix_score)
         except (ValueError, TypeError):
             ctix_score = 0
     if ctix_score == 0:
@@ -1612,6 +1632,16 @@ def build_next_page_url(next_url: str) -> str:
     return normalized
 
 
+def _resolve_initial_fetch_from_timestamp(from_timestamp: int, page_number: int, params: dict) -> int:
+    """When LastRun has no watermark (0) and we start at page 1, use first_fetch minutes from params."""
+    if from_timestamp != 0 or page_number != 1:
+        return from_timestamp
+    minutes = arg_to_number(params.get("first_fetch"))
+    if minutes is None or minutes <= 0:
+        minutes = FIRST_FETCH_DEFAULT_MINUTES
+    return int(datetime.now(UTC).timestamp()) - int(minutes) * 60
+
+
 def _load_fetch_state(last_run: dict, prefix: str) -> tuple[int, int, dict]:
     """Read resumable pagination state from LastRun."""
     page_key = _state_key(prefix, "page_number")
@@ -1620,8 +1650,6 @@ def _load_fetch_state(last_run: dict, prefix: str) -> tuple[int, int, dict]:
     from_timestamp = arg_to_number(last_run.get(ts_key))
     if from_timestamp is None:
         from_timestamp = arg_to_number(last_run.get("last_run_date"))
-    if from_timestamp is None:
-        from_timestamp = 0
 
     page_number = arg_to_number(last_run.get(page_key))
     if page_number is None:
@@ -1675,45 +1703,40 @@ def fetch_incidents(client: Client, params: dict, last_run: dict) -> tuple[dict,
     """
     source_reliability = params.get("integrationReliability", "")
 
+    max_fetch = arg_to_number(params.get("max_fetch"))
+    if max_fetch is None:
+        max_fetch = 100
+    max_fetch = min(max(1, int(max_fetch)), 200)
+
     from_timestamp, page_number, state_keys = _load_fetch_state(
         last_run=last_run,
         prefix=FETCH_INCIDENTS_STATE_PREFIX,
     )
-    fetch_interval_minutes = _parse_fetch_interval_to_minutes(params.get("feedFetchInterval"))
-    iteration_threshold = _derive_iteration_threshold(fetch_interval_minutes)
+    from_timestamp = _resolve_initial_fetch_from_timestamp(from_timestamp, page_number, params)
 
-    demisto.debug(
-        f"CTIX fetch_incidents: from_timestamp={from_timestamp}, page_number={page_number}, "
-        f"iteration_threshold={iteration_threshold}"
-    )
+    demisto.debug(f"CTIX fetch_incidents: from_timestamp={from_timestamp}, page_number={page_number}, max_fetch={max_fetch}")
 
     incidents: list[dict] = []
-    current_page_number = page_number
-    pages_processed = 0
-    next_page_val: str | None = None
 
     custom_query = (params.get("incident_fetch_query") or "").strip() or 'type = "report"'
     final_query = f'{custom_query} AND ctix_modified >= "{from_timestamp}"'
     report_query = final_query
     demisto.debug(f"CTIX fetch_incidents: using CQL query: {report_query}")
 
-    page_size = PAGE_SIZE
-    report_payload = {"query": report_query}
-
     try:
-        response = client.get_threat_data(page=current_page_number, page_size=page_size, query=report_query)
+        response = execute_with_retry(client.get_threat_data, page=page_number, page_size=max_fetch, query=report_query)
     except DemistoException as e:
         demisto.error(f"CTIX fetch_incidents: DemistoException while fetching incidents: {e}")
-        return _store_partial_fetch_state(last_run, state_keys, current_page_number, from_timestamp), incidents
+        return _store_partial_fetch_state(last_run, state_keys, page_number, from_timestamp), incidents
 
-    while response and pages_processed < iteration_threshold:
-        data = response.get("data", {}) if response else {}
-        results = data.get("results", [])
+    data = response.get("data", {}) if response else {}
+    results = data.get("results", []) or []
+    results = results[:max_fetch]
+    next_page_val: str | None = data.get("next") if isinstance(data.get("next"), str) else None
 
-        if not results:
-            demisto.debug("CTIX fetch_incidents: No more results")
-            break
-
+    if not results:
+        demisto.debug("CTIX fetch_incidents: No results on this page")
+    else:
         for report in results:
             report_id = report.get("id", "")
             # Fetch relations for this report via the get-relations-of-threat-data endpoint
@@ -1721,42 +1744,23 @@ def fetch_incidents(client: Client, params: dict, last_run: dict) -> tuple[dict,
             if report_id:
                 sdo_type = report.get("type")
                 try:
-                    relations_resp = client.get_indicator_relations(sdo_type, report_id, {"page": 1, "page_size": PAGE_SIZE})
+                    relations_resp = execute_with_retry(
+                        client.get_indicator_relations, sdo_type, report_id, {"page": 1, "page_size": PAGE_SIZE}
+                    )
                     if relations_resp:
                         relations_data = relations_resp.get("data", {}).get("results", {}) or {}
                 except Exception as e:
+                    if RATE_LIMIT_STATUS_ERR in str(e):
+                        demisto.error(f"CTIX fetch_incidents: Rate limit hit again after retry: {e}")
+                        return _store_partial_fetch_state(last_run, state_keys, page_number, from_timestamp), incidents
                     demisto.debug(f"CTIX fetch_incidents: Could not fetch relations for report {report_id}: {e}")
 
             incident = map_report_to_incident(report, relations=relations_data, source_reliability=source_reliability)
             incidents.append(incident)
 
-        # Follow the next URL for pagination
-        next_page_val = data.get("next") if isinstance(data.get("next"), str) else None
-        pages_processed += 1
-        if not next_page_val:
-            break
+    if next_page_val:
+        return _store_partial_fetch_state(last_run, state_keys, page_number + 1, from_timestamp), incidents
 
-        current_page_number += 1
-        if pages_processed >= iteration_threshold:
-            demisto.debug(
-                f"CTIX fetch_incidents: Iteration threshold reached at page_number={current_page_number}, "
-                "saving checkpoint for next run"
-            )
-            return _store_partial_fetch_state(last_run, state_keys, current_page_number, from_timestamp), incidents
-
-        try:
-            next_url = build_next_page_url(next_page_val)
-            if not next_url:
-                break
-            response = client.follow_next_page(next_url, payload=report_payload, method="POST")
-        except DemistoException as e:
-            demisto.error(f"CTIX fetch_incidents: Error following next page: {e}")
-            return _store_partial_fetch_state(last_run, state_keys, current_page_number, from_timestamp), incidents
-
-    demisto.debug(
-        f"CTIX fetch_incidents: Full sweep completed, incidents={len(incidents)}, "
-        f"last_page={current_page_number}, next={next_page_val}"
-    )
     return _store_completed_fetch_state(last_run, state_keys), incidents
 
 
@@ -1782,7 +1786,8 @@ def _collect_saved_result_set_indicators(
     pages_processed = 0
 
     try:
-        response = client.saved_result_set(
+        response = execute_with_retry(
+            client.saved_result_set,
             page=current_page_number,
             page_size=page_size,
             label_name=label_name,
@@ -1824,8 +1829,11 @@ def _collect_saved_result_set_indicators(
             return all_indicators, current_page_number, False
 
         try:
-            response = client.follow_next_page(build_next_page_url(next_url), method="GET")
+            response = execute_with_retry(client.follow_next_page, build_next_page_url(next_url), method="GET")
         except DemistoException as e:
+            if RATE_LIMIT_STATUS_ERR in str(e):
+                demisto.error(f"CTIX fetch_indicators: Rate limit hit again during pagination: {e}")
+                return all_indicators, current_page_number, False
             demisto.error(f"CTIX fetch_indicators: Error following next page: {e}")
             return all_indicators, current_page_number, False
 
@@ -1895,6 +1903,7 @@ def fetch_indicators(client: Client, params: dict, last_run: dict) -> tuple[dict
         last_run=last_run,
         prefix=FETCH_INDICATORS_STATE_PREFIX,
     )
+    from_timestamp = _resolve_initial_fetch_from_timestamp(from_timestamp, page_number, params)
     fetch_interval_minutes = _parse_fetch_interval_to_minutes(params.get("feedFetchInterval"))
     iteration_threshold = _derive_iteration_threshold(fetch_interval_minutes)
 
@@ -1967,7 +1976,8 @@ def enrich_indicators_bulk(client: Client, indicators: list[dict]) -> dict[str, 
         for i in range(0, len(values), ENRICHMENT_BATCH_SIZE):
             batch_values = values[i : i + ENRICHMENT_BATCH_SIZE]
             try:
-                response = client.bulk_ioc_lookup_advanced(
+                response = execute_with_retry(
+                    client.bulk_ioc_lookup_advanced,
                     object_type=object_type,
                     values=batch_values,
                     object_ids=[],
@@ -1989,7 +1999,12 @@ def enrich_indicators_bulk(client: Client, indicators: list[dict]) -> dict[str, 
                     name = enriched.get("name", "")
                     if name:
                         enrichment_map[name] = enriched
-            except Exception as e:
+            except DemistoException as e:
+                if RATE_LIMIT_STATUS_ERR in str(e):
+                    demisto.error(
+                        f"CTIX enrich_indicators_bulk: Rate limit hit again after retry. Returning partial results. Error: {e}"
+                    )
+                    return enrichment_map
                 demisto.debug(f"CTIX enrich_indicators_bulk: Partial failure for batch of {object_type}: {e}")
                 continue
 

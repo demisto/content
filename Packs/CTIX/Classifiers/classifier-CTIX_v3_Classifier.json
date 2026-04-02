@@ -1,10 +1,10 @@
 {
-    "defaultIncidentType": "CTIX Report",
-    "description": "Classifier for Cyware Intel Exchange fetched reports.",
+    "defaultIncidentType": "CTIX Intel",
+    "description": "Classifier for Cyware Intel Exchange fetched Incidents.",
     "feed": false,
     "id": "CTIX v3 Classifier",
     "keyTypeMap": {
-        "report": "CTIX Report"
+        "report": "CTIX Intel"
     },
     "name": "CTIX v3 Classifier",
     "transformer": {

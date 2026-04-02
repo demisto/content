@@ -14,7 +14,7 @@ The Cyware Intel Exchange integration allows users to fetch threat intelligence 
 | Fetch incidents | Enable to fetch CTIX reports as Cortex XSOAR incidents. | False |
 | Fetch indicators | Enable to fetch CTIX indicators from Saved Result Sets. | False |
 | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
-| Incident type | The incident type to assign to fetched CTIX reports. Default is "CTIX Report". | False |
+| Incident type | The incident type to assign to fetched CTIX reports. Default is "CTIX Intel". | False |
 | First fetch time | How far back to fetch on the first run (e.g., 3 days, 7 days, 1 month). Default is "3 days". | False |
 | Incident Fetch CQL Query | Custom CQL query used when fetching incidents. Updates the default CQL query. For example, type = "report" AND severity = "HIGH". | False |
 | Saved Result Set Label | The label name of the Saved Result Set to pull indicators from. | False |
@@ -24,6 +24,7 @@ The Cyware Intel Exchange integration allows users to fetch threat intelligence 
 | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
 | Tags | Tags to apply to fetched indicators. Supports CSV values. | False |
 | Traffic Light Protocol Color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. Possible values are: RED, AMBER, GREEN, WHITE. | False |
+| Max Fetch | Maximum number of incidents to return per fetch run. Allowed Range is 1-200. Default is 10. | False |
 
 ## Commands
 

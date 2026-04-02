@@ -3,9 +3,22 @@
     "feed": false,
     "id": "CTIX v3 Incoming Mapper",
     "mapping": {
-        "CTIX Report": {
+        "CTIX Intel": {
             "dontMapEventToLabels": false,
-            "internalMapping": {}
+            "internalMapping": {
+                "CTIX Custom Scores": {
+                    "complex": null,
+                    "simple": "custom_scores"
+                },
+                "CTIX Custom Attributes": {
+                    "complex": null,
+                    "simple": "custom_attributes"
+                },
+                "CTIX Relations": {
+                    "complex": null,
+                    "simple": "relations"
+                }
+            }
         }
     },
     "name": "CTIX v3 Incoming Mapper",
