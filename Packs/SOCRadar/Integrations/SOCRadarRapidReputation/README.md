@@ -69,27 +69,31 @@ This powerful command allows you to check reputation for a mixed list of IPs, do
 #### Command Example
 
 ```
-!socradar-bulk-check indicators="1.1.1.1,malicious.example.com,https://phishing-site.com/login,44d88612fea8a8f36de82e1278abb02f"
+!socradar-bulk-check indicators="1.1.1.1,malicious.example.com"
 ```
 
 #### Use Cases for Bulk Check
 
 1. **Incident Response**: Quickly check all IOCs extracted from a security incident
+
    ```
-   !socradar-bulk-check indicators="192.168.1.100,malware.example.com,http://c2.malicious.net/config,3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792"
+   !socradar-bulk-check indicators="192.168.1.100,malware.example.com,3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792"
    ```
 
 2. **Threat Intel Feed Processing**: Validate a list of indicators from threat intelligence feeds
+
    ```
    !socradar-bulk-check indicators="${File.Name}"
    ```
 
 3. **Automated Playbooks**: Use in playbooks to process multiple indicators in one step
+
    ```
    !socradar-bulk-check indicators="${inputs.indicators}"
    ```
 
 4. **Daily Security Monitoring**: Check a list of suspicious entities identified during monitoring
+
    ```
    !socradar-bulk-check indicators="suspicious_ip1,suspicious_domain1,suspicious_url1"
    ```
@@ -186,7 +190,7 @@ Checks reputation of provided IP entities using SOCRadar Rapid Reputation API.
 #### Command Example
 
 ```
-!ip ip="37.46.210.230"
+!ip ip="1.1.1.1"
 ```
 
 #### Human Readable Output
@@ -362,7 +366,6 @@ Checks reputation of any entity type using SOCRadar Rapid Reputation API. This i
 ```
 !socradar-reputation entity_value="37.46.210.230" entity_type="ip"
 !socradar-reputation entity_value="malicious.example.com" entity_type="hostname"
-!socradar-reputation entity_value="https://malicious.site/payload" entity_type="url"
 !socradar-reputation entity_value="3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792" entity_type="hash"
 ```
 
@@ -388,6 +391,7 @@ Whitelisted entities are always assigned a DBot score of 1 (Good), regardless of
 ### Threat Intelligence Sources
 
 The Rapid Reputation API aggregates data from multiple threat intelligence sources, including:
+
 - CTU AIPP Blacklist
 - Abuse.ch URLhaus
 - Malware feeds

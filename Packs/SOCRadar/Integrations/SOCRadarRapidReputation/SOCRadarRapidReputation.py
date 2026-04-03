@@ -4,7 +4,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 import traceback
-from typing import Any, Optional
+from typing import Any
 import re
 from json.decoder import JSONDecodeError
 import time
@@ -57,7 +57,7 @@ class Client(BaseClient):
             headers=headers,
             timeout=60,
             error_handler=self.handle_error_response,
-            resp_type='json'
+            resp_type="json",
         )
         return response
 
@@ -150,12 +150,14 @@ class Validator:
     def validate_url(url_to_validate):
         """Validate URL format"""
         url_regex = re.compile(
-            r'^https?://'  # http:// or https://
-            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|'  # domain
-            r'localhost|'  # localhost
-            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # or IP
-            r'(?::\d+)?'  # optional port
-            r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+            r"^https?://"  # http:// or https://
+            r"(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|"  # domain
+            r"localhost|"  # localhost
+            r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"  # or IP
+            r"(?::\d+)?"  # optional port
+            r"(?:/?|[/?]\S+)$",
+            re.IGNORECASE,
+        )
         return url_regex.match(url_to_validate) is not None
 
     @staticmethod
@@ -197,7 +199,7 @@ def build_entry_context(raw_response: dict, entity_value: str, entity_type: str)
         "EntityType": entity_type,
         "Score": score,
         "IsWhitelisted": data.get("is_whitelisted", False),
-        "FindingSources": []
+        "FindingSources": [],
     }
 
     # Process finding sources
@@ -209,7 +211,7 @@ def build_entry_context(raw_response: dict, entity_value: str, entity_type: str)
             "MaintainerName": source.get("maintainer_name"),
             "FirstSeenDate": source.get("first_seen_date"),
             "LastSeenDate": source.get("last_seen_date"),
-            "SeenCount": source.get("seen_count")
+            "SeenCount": source.get("seen_count"),
         }
         context_entry["FindingSources"].append(source_entry)
 
@@ -221,23 +223,23 @@ def detect_entity_type(entity: str) -> str:
     entity = entity.strip()
 
     # Check if it's a URL (starts with http:// or https://)
-    if entity.startswith(('http://', 'https://')):
-        return 'url'
+    if entity.startswith(("http://", "https://")):
+        return "url"
 
     # Check if it's an IP address
     if Validator.validate_ipv4(entity) or Validator.validate_ipv6(entity):
-        return 'ip'
+        return "ip"
 
     # Check if it's a hash
     if Validator.validate_hash(entity):
-        return 'hash'
+        return "hash"
 
     # Check if it's a domain
     if Validator.validate_domain(entity):
-        return 'hostname'
+        return "hostname"
 
     # If nothing matches, raise an error
-    raise ValueError(f'Unable to determine entity type for: {entity}')
+    raise ValueError(f"Unable to determine entity type for: {entity}")
 
 
 def process_entity_by_type(client: Client, entity: str, entity_type: str) -> dict:
@@ -263,7 +265,7 @@ def process_entity_by_type(client: Client, entity: str, entity_type: str) -> dic
             "success": True,
             "context": context_entry,
             "raw_response": raw_response,
-            "dbot_score": score
+            "dbot_score": score,
         }
     else:
         return {
@@ -271,7 +273,7 @@ def process_entity_by_type(client: Client, entity: str, entity_type: str) -> dic
             "entity_type": entity_type,
             "success": False,
             "error": raw_response.get("message", "Unknown error"),
-            "raw_response": raw_response
+            "raw_response": raw_response,
         }
 
 
@@ -340,10 +342,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
                     reliability=demisto.params().get("integrationReliability"),
                 )
 
-                ip_object = Common.IP(
-                    ip=ip_to_score,
-                    dbot_score=dbot_score
-                )
+                ip_object = Common.IP(ip=ip_to_score, dbot_score=dbot_score)
 
                 command_results_list.append(
                     CommandResults(
@@ -365,9 +364,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
 
     if not command_results_list:
         command_results_list = [
-            CommandResults(
-                readable_output="SOCRadar Rapid Reputation could not find any results for the given IP(s)."
-            )
+            CommandResults(readable_output="SOCRadar Rapid Reputation could not find any results for the given IP(s).")
         ]
 
     return command_results_list
@@ -409,10 +406,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
                     reliability=demisto.params().get("integrationReliability"),
                 )
 
-                domain_object = Common.Domain(
-                    domain=domain_to_score,
-                    dbot_score=dbot_score
-                )
+                domain_object = Common.Domain(domain=domain_to_score, dbot_score=dbot_score)
 
                 command_results_list.append(
                     CommandResults(
@@ -434,9 +428,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
 
     if not command_results_list:
         command_results_list = [
-            CommandResults(
-                readable_output="SOCRadar Rapid Reputation could not find any results for the given domain(s)."
-            )
+            CommandResults(readable_output="SOCRadar Rapid Reputation could not find any results for the given domain(s).")
         ]
 
     return command_results_list
@@ -478,10 +470,7 @@ def url_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
                     reliability=demisto.params().get("integrationReliability"),
                 )
 
-                url_object = Common.URL(
-                    url=url_to_score,
-                    dbot_score=dbot_score
-                )
+                url_object = Common.URL(url=url_to_score, dbot_score=dbot_score)
 
                 command_results_list.append(
                     CommandResults(
@@ -503,9 +492,7 @@ def url_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
 
     if not command_results_list:
         command_results_list = [
-            CommandResults(
-                readable_output="SOCRadar Rapid Reputation could not find any results for the given URL(s)."
-            )
+            CommandResults(readable_output="SOCRadar Rapid Reputation could not find any results for the given URL(s).")
         ]
 
     return command_results_list
@@ -578,9 +565,7 @@ def file_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
 
     if not command_results_list:
         command_results_list = [
-            CommandResults(
-                readable_output="SOCRadar Rapid Reputation could not find any results for the given file hash(es)."
-            )
+            CommandResults(readable_output="SOCRadar Rapid Reputation could not find any results for the given file hash(es).")
         ]
 
     return command_results_list
@@ -608,8 +593,8 @@ def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> list[Co
             f"**Solution:** Split into batches of {MAX_BULK_CHECK_INDICATORS} or less\n\n"
             f"**Example:**\n"
             f"```\n"
-            f"Batch 1: !socradar-bulk-check indicators=\"[first {MAX_BULK_CHECK_INDICATORS} indicators]\"\n"
-            f"Batch 2: !socradar-bulk-check indicators=\"[next {MAX_BULK_CHECK_INDICATORS} indicators]\"\n"
+            f'Batch 1: !socradar-bulk-check indicators="[first {MAX_BULK_CHECK_INDICATORS} indicators]"\n'
+            f'Batch 2: !socradar-bulk-check indicators="[next {MAX_BULK_CHECK_INDICATORS} indicators]"\n'
             f"```\n\n"
             f"**Recommended:** Use 10-20 indicators per batch for best performance."
         )
@@ -634,13 +619,7 @@ def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> list[Co
         "failed": 0,
         "failed_details": [],
         "by_type": {"ip": 0, "hostname": 0, "url": 0, "hash": 0},
-        "by_score_range": {
-            "0-25": 0,
-            "26-50": 0,
-            "51-75": 0,
-            "76-100": 0,
-            "whitelisted": 0
-        }
+        "by_score_range": {"0-25": 0, "26-50": 0, "51-75": 0, "76-100": 0, "whitelisted": 0},
     }
 
     for idx, indicator in enumerate(indicator_list):
@@ -681,7 +660,7 @@ def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> list[Co
                     "Score": score,
                     "ScoreRange": score_range,
                     "IsWhitelisted": context.get("IsWhitelisted", False),
-                    "Sources": len(context.get("FindingSources", []))
+                    "Sources": len(context.get("FindingSources", [])),
                 }
 
                 human_readable = tableToMarkdown(title, summary_dict)
@@ -697,21 +676,15 @@ def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> list[Co
                 )
             else:
                 summary_data["failed"] += 1
-                error_reason = result.get('error', 'Unknown error')
-                summary_data["failed_details"].append({
-                    "Entity": indicator,
-                    "Reason": error_reason
-                })
+                error_reason = result.get("error", "Unknown error")
+                summary_data["failed_details"].append({"Entity": indicator, "Reason": error_reason})
                 error_msg = f"❌ Failed: {indicator} - {error_reason}"
                 command_results_list.append(CommandResults(readable_output=error_msg))
 
         except Exception as e:
             summary_data["failed"] += 1
             error_reason = str(e)
-            summary_data["failed_details"].append({
-                "Entity": indicator,
-                "Reason": error_reason
-            })
+            summary_data["failed_details"].append({"Entity": indicator, "Reason": error_reason})
             error_msg = f"❌ Error: {indicator} - {error_reason}"
             command_results_list.append(CommandResults(readable_output=error_msg))
 
@@ -737,18 +710,15 @@ def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> list[Co
 
     # Add failed details if any
     if summary_data["failed_details"]:
-        failed_table = tableToMarkdown(
-            "❌ Failed Indicators",
-            summary_data["failed_details"],
-            headers=["Entity", "Reason"]
-        )
+        failed_table = tableToMarkdown("❌ Failed Indicators", summary_data["failed_details"], headers=["Entity", "Reason"])
         summary_table += "\n\n" + failed_table
 
-    command_results_list.insert(0, CommandResults(
-        outputs_prefix="SOCRadarRapidReputation.BulkCheckSummary",
-        readable_output=summary_table,
-        outputs=summary_data
-    ))
+    command_results_list.insert(
+        0,
+        CommandResults(
+            outputs_prefix="SOCRadarRapidReputation.BulkCheckSummary", readable_output=summary_table, outputs=summary_data
+        ),
+    )
 
     return command_results_list
 
