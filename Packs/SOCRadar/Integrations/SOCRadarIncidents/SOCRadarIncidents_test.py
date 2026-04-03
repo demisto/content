@@ -2,7 +2,12 @@ import json
 
 import pytest
 
-from CommonServerPython import arg_to_datetime, DemistoException, IncidentSeverity, CommandResults
+from CommonServerPython import (
+    arg_to_datetime,
+    DemistoException,
+    IncidentSeverity,
+    CommandResults,
+)
 
 SOCRADAR_API_ENDPOINT = "https://platform.socradar.com/api"
 
@@ -43,7 +48,9 @@ def test_test_module_handles_authorization_error(requests_mock):
     mock_socradar_company_id = "0"
     suffix = f"company/{mock_socradar_company_id}/incidents/check/auth?key={mock_socradar_api_key}"
     mock_response = util_load_json("test_data/check_auth_response_auth_error.json")
-    requests_mock.get(f"{SOCRADAR_API_ENDPOINT}/{suffix}", json=mock_response, status_code=401)
+    requests_mock.get(
+        f"{SOCRADAR_API_ENDPOINT}/{suffix}", json=mock_response, status_code=401
+    )
     client = Client(
         base_url=SOCRADAR_API_ENDPOINT,
         api_key=mock_socradar_api_key,
@@ -158,7 +165,9 @@ def test_mark_incident_as_fp(requests_mock):
     mock_comment = "Mock Comment"
     mock_socradar_api_key = "APIKey"
     mock_response = util_load_json("test_data/mark_incident_fp_response.json")
-    suffix = f"company/{mock_socradar_company_id}/incidents/fp?key={mock_socradar_api_key}"
+    suffix = (
+        f"company/{mock_socradar_company_id}/incidents/fp?key={mock_socradar_api_key}"
+    )
     requests_mock.post(f"{SOCRADAR_API_ENDPOINT}/{suffix}", json=mock_response)
 
     mock_args = {"socradar_incident_id": mock_incident_id, "comments": mock_comment}
@@ -193,7 +202,9 @@ def test_mark_incident_as_fp_handles_error(requests_mock):
     mock_comment = "Mock Comment"
     mock_socradar_api_key = "APIKey"
     mock_response = util_load_json("test_data/mark_incident_fp_response_error.json")
-    suffix = f"company/{mock_socradar_company_id}/incidents/fp?key={mock_socradar_api_key}"
+    suffix = (
+        f"company/{mock_socradar_company_id}/incidents/fp?key={mock_socradar_api_key}"
+    )
     requests_mock.post(f"{SOCRADAR_API_ENDPOINT}/{suffix}", json=mock_response)
 
     mock_args = {"socradar_incident_id": mock_incident_id, "comments": mock_comment}
@@ -239,7 +250,9 @@ def test_mark_incident_as_resolved(requests_mock):
 
     response = mark_incident_as_resolved_command(client=client, args=mock_args)
 
-    expected_output = util_load_json("test_data/mark_incident_resolved_expected_output.json")
+    expected_output = util_load_json(
+        "test_data/mark_incident_resolved_expected_output.json"
+    )
 
     assert isinstance(response, CommandResults)
     assert response.raw_response == expected_output
@@ -253,7 +266,9 @@ def test_mark_incident_as_resolved_handles_error(requests_mock):
     mock_incident_id = 0
     mock_comment = "Mock Comment"
     mock_socradar_api_key = "APIKey"
-    mock_response = util_load_json("test_data/mark_incident_resolved_response_error.json")
+    mock_response = util_load_json(
+        "test_data/mark_incident_resolved_response_error.json"
+    )
     suffix = f"company/{mock_socradar_company_id}/incidents/resolve?key={mock_socradar_api_key}"
     requests_mock.post(f"{SOCRADAR_API_ENDPOINT}/{suffix}", json=mock_response)
 
@@ -280,7 +295,9 @@ CONVERT_DEMISTO_SEVERITY_INPUTS = [
 ]
 
 
-@pytest.mark.parametrize("incident_severity, demisto_severity", CONVERT_DEMISTO_SEVERITY_INPUTS)
+@pytest.mark.parametrize(
+    "incident_severity, demisto_severity", CONVERT_DEMISTO_SEVERITY_INPUTS
+)
 def test_convert_to_demisto_severity(incident_severity, demisto_severity):
     from SOCRadarIncidents import convert_to_demisto_severity
 

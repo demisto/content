@@ -48,7 +48,9 @@ def convert_to_demisto_severity(severity: str) -> int | float:
 
 
 class Client(BaseClient):
-    def __init__(self, base_url: str, api_key: str, company_id: str, verify: bool, proxy: bool):
+    def __init__(
+        self, base_url: str, api_key: str, company_id: str, verify: bool, proxy: bool
+    ):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self.api_key = api_key
         self.company_id = company_id
@@ -142,7 +144,12 @@ class Client(BaseClient):
 
         try:
             response = self._http_request(
-                method="GET", url_suffix=url_suffix, params=params, headers=self._get_headers(), timeout=60, resp_type="json"
+                method="GET",
+                url_suffix=url_suffix,
+                params=params,
+                headers=self._get_headers(),
+                timeout=60,
+                resp_type="json",
             )
 
             demisto.debug(f"[SOCRadar] Response type: {type(response)}")
@@ -161,13 +168,21 @@ class Client(BaseClient):
                 total_pages = data_obj.get("total_pages", 1)
                 total_records = data_obj.get("total_records", len(alarms))
 
-                demisto.debug(f"[SOCRadar] Received {len(alarms)} alarms from page {page}")
-                demisto.debug(f"[SOCRadar] Total records: {total_records}, Total pages: {total_pages}")
+                demisto.debug(
+                    f"[SOCRadar] Received {len(alarms)} alarms from page {page}"
+                )
+                demisto.debug(
+                    f"[SOCRadar] Total records: {total_records}, Total pages: {total_pages}"
+                )
 
                 if alarms and len(alarms) > 0:
                     sample = alarms[0]
-                    demisto.debug(f"[SOCRadar] Sample alarm keys: {list(sample.keys())}")
-                    demisto.debug(f"[SOCRadar] Sample alarm_id: {sample.get('alarm_id')}")
+                    demisto.debug(
+                        f"[SOCRadar] Sample alarm keys: {list(sample.keys())}"
+                    )
+                    demisto.debug(
+                        f"[SOCRadar] Sample alarm_id: {sample.get('alarm_id')}"
+                    )
                     demisto.debug(f"[SOCRadar] Sample status: {sample.get('status')}")
 
                 return {
@@ -203,7 +218,9 @@ class Client(BaseClient):
 
         effective_company_id = company_id or self.company_id
         if not effective_company_id:
-            raise ValueError("company_id must be provided either as a parameter or set on the client")
+            raise ValueError(
+                "company_id must be provided either as a parameter or set on the client"
+            )
 
         url_suffix = f"/company/{effective_company_id}/alarms/status/change"
         json_data = {
@@ -228,16 +245,28 @@ class Client(BaseClient):
             raise DemistoException(f"API Error: {response.get('message')}")
         return response
 
-    def add_alarm_comment(self, alarm_id: int, user_email: str, comment: str, company_id: str | None = None) -> dict[str, Any]:
+    def add_alarm_comment(
+        self,
+        alarm_id: int,
+        user_email: str,
+        comment: str,
+        company_id: str | None = None,
+    ) -> dict[str, Any]:
         """Add comment to an alarm"""
         effective_company_id = company_id or self.company_id
         if not effective_company_id:
-            raise ValueError("company_id must be provided either as a parameter or set on the client")
+            raise ValueError(
+                "company_id must be provided either as a parameter or set on the client"
+            )
 
         url_suffix = f"/company/{effective_company_id}/alarm/add/comment/v2"
         json_data = {"alarm_id": alarm_id, "user_email": user_email, "comment": comment}
         return self._http_request(
-            method="POST", url_suffix=url_suffix, json_data=json_data, headers=self._get_headers(), timeout=60
+            method="POST",
+            url_suffix=url_suffix,
+            json_data=json_data,
+            headers=self._get_headers(),
+            timeout=60,
         )
 
     def add_alarm_assignee(
@@ -250,7 +279,9 @@ class Client(BaseClient):
         """Add assignee(s) to an alarm"""
         effective_company_id = company_id or self.company_id
         if not effective_company_id:
-            raise ValueError("company_id must be provided either as a parameter or set on the client")
+            raise ValueError(
+                "company_id must be provided either as a parameter or set on the client"
+            )
 
         url_suffix = f"/company/{effective_company_id}/alarm/{alarm_id}/assignee"
         json_data: dict[str, Any] = {}
@@ -261,19 +292,31 @@ class Client(BaseClient):
             json_data["user_emails"] = user_emails
 
         return self._http_request(
-            method="POST", url_suffix=url_suffix, json_data=json_data, headers=self._get_headers(), timeout=60
+            method="POST",
+            url_suffix=url_suffix,
+            json_data=json_data,
+            headers=self._get_headers(),
+            timeout=60,
         )
 
-    def add_remove_tag(self, alarm_id: int, tag: str, company_id: str | None = None) -> dict[str, Any]:
+    def add_remove_tag(
+        self, alarm_id: int, tag: str, company_id: str | None = None
+    ) -> dict[str, Any]:
         """Add or remove a tag from an alarm"""
         effective_company_id = company_id or self.company_id
         if not effective_company_id:
-            raise ValueError("company_id must be provided either as a parameter or set on the client")
+            raise ValueError(
+                "company_id must be provided either as a parameter or set on the client"
+            )
 
         url_suffix = f"/company/{effective_company_id}/alarm/tag"
         json_data = {"alarm_id": alarm_id, "tag": tag}
         return self._http_request(
-            method="POST", url_suffix=url_suffix, json_data=json_data, headers=self._get_headers(), timeout=60
+            method="POST",
+            url_suffix=url_suffix,
+            json_data=json_data,
+            headers=self._get_headers(),
+            timeout=60,
         )
 
 
@@ -374,7 +417,9 @@ def format_value(value, indent=0):
 # FIX: Added show_content parameter. Previously the function referenced a
 # variable 'show_content' that was never defined in scope, causing a NameError
 # at runtime. Now it is explicitly passed in from the YAML checkbox parameter.
-def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[str, Any]:
+def alarm_to_incident(
+    alarm: dict[str, Any], show_content: bool = True
+) -> dict[str, Any]:
     """
     Convert SOCRadar alarm to Demisto incident
 
@@ -474,7 +519,9 @@ def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[
 
     incident = {
         "name": incident_name,
-        "occurred": occurred_time.isoformat() + "Z" if occurred_time else datetime.now().isoformat() + "Z",
+        "occurred": occurred_time.isoformat() + "Z"
+        if occurred_time
+        else datetime.now().isoformat() + "Z",
         "rawJSON": json.dumps(alarm),
         "severity": convert_to_demisto_severity(alarm_risk_level),
         "details": full_details,
@@ -488,7 +535,9 @@ def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[
         },
     }
 
-    demisto.debug(f"[SOCRadar] Created incident: Alarm {alarm_id} - {alarm_main_type} (Risk: {alarm_risk_level})")
+    demisto.debug(
+        f"[SOCRadar] Created incident: Alarm {alarm_id} - {alarm_main_type} (Risk: {alarm_risk_level})"
+    )
 
     return incident
 
@@ -567,13 +616,19 @@ def fetch_incidents(
 
     if last_fetch_str:
         try:
-            start_datetime = datetime.fromisoformat(last_fetch_str) - timedelta(minutes=fetch_interval_minutes)
-            demisto.debug(f"[SOCRadar] Subsequent fetch: Using last_fetch datetime {start_datetime.isoformat()}")
+            start_datetime = datetime.fromisoformat(last_fetch_str) - timedelta(
+                minutes=fetch_interval_minutes
+            )
+            demisto.debug(
+                f"[SOCRadar] Subsequent fetch: Using last_fetch datetime {start_datetime.isoformat()}"
+            )
         except Exception:
             start_datetime = current_time - timedelta(minutes=fetch_interval_minutes)
             demisto.debug("[SOCRadar] Failed to parse last_fetch, fallback to interval")
     else:
-        start_datetime_temp = arg_to_datetime(first_fetch_time, arg_name="first_fetch", required=True)
+        start_datetime_temp = arg_to_datetime(
+            first_fetch_time, arg_name="first_fetch", required=True
+        )
         if not start_datetime_temp:
             raise ValueError("Failed to parse first_fetch_time")
         start_datetime = start_datetime_temp
@@ -597,7 +652,9 @@ def fetch_incidents(
 
     try:
         while True:
-            demisto.debug(f"[SOCRadar] Fetching page {current_page}/{total_pages if total_pages else '?'}")
+            demisto.debug(
+                f"[SOCRadar] Fetching page {current_page}/{total_pages if total_pages else '?'}"
+            )
 
             response = client.search_incidents(
                 status=status,
@@ -618,9 +675,13 @@ def fetch_incidents(
             total_records = response.get("total_records", 0)
             total_pages = response.get("total_pages", 0)
 
-            demisto.debug(f"[SOCRadar] Page {current_page}: Received {len(alarms)} alarms")
+            demisto.debug(
+                f"[SOCRadar] Page {current_page}: Received {len(alarms)} alarms"
+            )
             if current_page == 1:
-                demisto.debug(f"[SOCRadar] Total available in time window: {total_records} records across {total_pages} pages")
+                demisto.debug(
+                    f"[SOCRadar] Total available in time window: {total_records} records across {total_pages} pages"
+                )
                 demisto.debug(f"[SOCRadar] Will fetch ALL {total_pages} pages")
 
             total_pages_fetched += 1
@@ -645,7 +706,9 @@ def fetch_incidents(
                     last_alarm_ids.add(alarm.get("alarm_id"))
                     page_new += 1
 
-            demisto.debug(f"[SOCRadar] Page {current_page}: Created {page_new} incidents, skipped {page_dup} duplicates")
+            demisto.debug(
+                f"[SOCRadar] Page {current_page}: Created {page_new} incidents, skipped {page_dup} duplicates"
+            )
 
             all_incidents.extend(page_incidents)
 
@@ -662,11 +725,15 @@ def fetch_incidents(
                 break
             next_run_incidents_to_skip = 0
             if current_page >= total_pages:
-                demisto.debug(f"[SOCRadar] Reached last page ({current_page}/{total_pages})")
+                demisto.debug(
+                    f"[SOCRadar] Reached last page ({current_page}/{total_pages})"
+                )
                 break
 
             if len(alarms) < per_page:
-                demisto.debug(f"[SOCRadar] Partial page ({len(alarms)} < {per_page}), probably last page")
+                demisto.debug(
+                    f"[SOCRadar] Partial page ({len(alarms)} < {per_page}), probably last page"
+                )
                 break
 
             current_page += 1
@@ -674,12 +741,20 @@ def fetch_incidents(
         demisto.debug("[SOCRadar] ========== FETCH SUMMARY ==========")
         demisto.debug(f"[SOCRadar] Time window: {start_date} to {end_date}")
         demisto.debug(f"[SOCRadar] Fetch interval: {fetch_interval_minutes} minutes")
-        demisto.debug(f"[SOCRadar] Pages fetched: {total_pages_fetched}/{total_pages if total_pages else 'unknown'}")
-        demisto.debug(f"[SOCRadar] Incidents created: {total_incidents_created} (max: {max_results})")
+        demisto.debug(
+            f"[SOCRadar] Pages fetched: {total_pages_fetched}/{total_pages if total_pages else 'unknown'}"
+        )
+        demisto.debug(
+            f"[SOCRadar] Incidents created: {total_incidents_created} (max: {max_results})"
+        )
         demisto.debug(f"[SOCRadar] Alarm Type IDs filter: {alarm_type_ids}")
         demisto.debug(f"[SOCRadar] Excluded Alarm Type IDs: {excluded_alarm_type_ids}")
-        demisto.debug(f"[SOCRadar] Excluded Alarm Sub Types: {excluded_alarm_sub_types}")
-        demisto.debug(f"[SOCRadar] Excluded Alarm Main Types: {excluded_alarm_main_types}")
+        demisto.debug(
+            f"[SOCRadar] Excluded Alarm Sub Types: {excluded_alarm_sub_types}"
+        )
+        demisto.debug(
+            f"[SOCRadar] Excluded Alarm Main Types: {excluded_alarm_main_types}"
+        )
         demisto.debug("[SOCRadar] ====================================")
 
         # FIX: Use a new variable name 'next_fetch_time' to avoid shadowing
@@ -723,7 +798,9 @@ def change_status_command(client: Client, args: dict[str, str]) -> CommandResult
     company_id = args.get("company_id")
     update_related_finding_status_str = args.get("update_related_finding_status")
     update_related_finding_status: bool | None = (
-        argToBoolean(update_related_finding_status_str) if update_related_finding_status_str else None
+        argToBoolean(update_related_finding_status_str)
+        if update_related_finding_status_str
+        else None
     )
     email = args.get("email")
 
@@ -731,7 +808,9 @@ def change_status_command(client: Client, args: dict[str, str]) -> CommandResult
         raise ValueError("alarm_ids and status_reason are required")
 
     if update_related_finding_status and not email:
-        raise ValueError("Argument 'email' is required when 'update_related_finding_status' is set to true.")
+        raise ValueError(
+            "Argument 'email' is required when 'update_related_finding_status' is set to true."
+        )
 
     alarm_ids = [int(aid.strip()) for aid in alarm_ids_str.split(",")]
     response = client.change_alarm_status(
@@ -743,10 +822,15 @@ def change_status_command(client: Client, args: dict[str, str]) -> CommandResult
         email,
     )
 
-    return CommandResults(readable_output=f"Status changed for {len(alarm_ids)} alarm(s)", raw_response=response)
+    return CommandResults(
+        readable_output=f"Status changed for {len(alarm_ids)} alarm(s)",
+        raw_response=response,
+    )
 
 
-def mark_as_false_positive_command(client: Client, args: dict[str, str]) -> CommandResults:
+def mark_as_false_positive_command(
+    client: Client, args: dict[str, str]
+) -> CommandResults:
     """Mark alarm as false positive"""
     alarm_id = args.get("alarm_id")
     company_id = args.get("company_id")
@@ -755,10 +839,16 @@ def mark_as_false_positive_command(client: Client, args: dict[str, str]) -> Comm
         raise ValueError("alarm_id is required")
 
     response = client.change_alarm_status(
-        [int(alarm_id)], "FALSE_POSITIVE", args.get("comments", "Marked as false positive"), company_id
+        [int(alarm_id)],
+        "FALSE_POSITIVE",
+        args.get("comments", "Marked as false positive"),
+        company_id,
     )
 
-    return CommandResults(readable_output=f"Alarm {alarm_id} marked as false positive", raw_response=response)
+    return CommandResults(
+        readable_output=f"Alarm {alarm_id} marked as false positive",
+        raw_response=response,
+    )
 
 
 def mark_as_resolved_command(client: Client, args: dict[str, str]) -> CommandResults:
@@ -769,9 +859,16 @@ def mark_as_resolved_command(client: Client, args: dict[str, str]) -> CommandRes
     if not alarm_id:
         raise ValueError("alarm_id is required")
 
-    response = client.change_alarm_status([int(alarm_id)], "RESOLVED", args.get("comments", "Marked as resolved"), company_id)
+    response = client.change_alarm_status(
+        [int(alarm_id)],
+        "RESOLVED",
+        args.get("comments", "Marked as resolved"),
+        company_id,
+    )
 
-    return CommandResults(readable_output=f"Alarm {alarm_id} marked as resolved", raw_response=response)
+    return CommandResults(
+        readable_output=f"Alarm {alarm_id} marked as resolved", raw_response=response
+    )
 
 
 def add_comment_command(client: Client, args: dict[str, str]) -> CommandResults:
@@ -790,7 +887,9 @@ def add_comment_command(client: Client, args: dict[str, str]) -> CommandResults:
 
     response = client.add_alarm_comment(alarm_id, user_email, comment, company_id)
 
-    return CommandResults(readable_output=f"Comment added to alarm {alarm_id}", raw_response=response)
+    return CommandResults(
+        readable_output=f"Comment added to alarm {alarm_id}", raw_response=response
+    )
 
 
 def add_assignee_command(client: Client, args: dict[str, str]) -> CommandResults:
@@ -806,9 +905,13 @@ def add_assignee_command(client: Client, args: dict[str, str]) -> CommandResults
     if not user_emails:
         raise ValueError("user_emails is required")
 
-    response = client.add_alarm_assignee(alarm_id, user_emails=user_emails, company_id=company_id)
+    response = client.add_alarm_assignee(
+        alarm_id, user_emails=user_emails, company_id=company_id
+    )
 
-    return CommandResults(readable_output=f"Assignee added for alarm {alarm_id}", raw_response=response)
+    return CommandResults(
+        readable_output=f"Assignee added for alarm {alarm_id}", raw_response=response
+    )
 
 
 def add_tag_command(client: Client, args: dict[str, str]) -> CommandResults:
@@ -826,7 +929,10 @@ def add_tag_command(client: Client, args: dict[str, str]) -> CommandResults:
 
     response = client.add_remove_tag(alarm_id, tag, company_id)
 
-    return CommandResults(readable_output=f"Tag '{tag}' added/removed for alarm {alarm_id}", raw_response=response)
+    return CommandResults(
+        readable_output=f"Tag '{tag}' added/removed for alarm {alarm_id}",
+        raw_response=response,
+    )
 
 
 def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
@@ -840,7 +946,9 @@ def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
 
     try:
         first_fetch = args.get("first_fetch", "3 days")
-        first_fetch_datetime = arg_to_datetime(first_fetch, arg_name="first_fetch", required=True)
+        first_fetch_datetime = arg_to_datetime(
+            first_fetch, arg_name="first_fetch", required=True
+        )
         if not first_fetch_datetime:
             raise ValueError("Failed to parse first_fetch")
         start_date = first_fetch_datetime.strftime("%Y-%m-%d")
@@ -898,7 +1006,9 @@ def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
                     "Status": incident.get("status", "UNKNOWN"),
                     "Asset": incident.get("alarm_asset", "N/A"),
                     "Type": alarm_type_display,
-                    "Date": incident.get("date", "")[:19] if incident.get("date") else "N/A",
+                    "Date": incident.get("date", "")[:19]
+                    if incident.get("date")
+                    else "N/A",
                     "Extra": entity_summary,
                 }
             )
@@ -939,7 +1049,10 @@ def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
         message += f"- Date parsing (tried to parse: '{args.get('first_fetch', '3 days')}')\n\n"
         message += f"Full error:\n{traceback.format_exc()}"
 
-        return CommandResults(readable_output=message, raw_response={"error": error_msg, "traceback": traceback.format_exc()})
+        return CommandResults(
+            readable_output=message,
+            raw_response={"error": error_msg, "traceback": traceback.format_exc()},
+        )
 
 
 def main() -> None:
@@ -970,7 +1083,9 @@ def main() -> None:
         elif command == "fetch-incidents":
             max_fetch = arg_to_number(params.get("max_fetch", 100000)) or 100000
             max_fetch = min(max_fetch, MAX_INCIDENTS_TO_FETCH)
-            fetch_interval_minutes = arg_to_number(params.get("fetch_interval_minutes", 1)) or 1
+            fetch_interval_minutes = (
+                arg_to_number(params.get("fetch_interval_minutes", 1)) or 1
+            )
 
             # FIX: Read show_content from YAML checkbox parameter and pass it
             # through to fetch_incidents → alarm_to_incident. Previously the
@@ -984,9 +1099,15 @@ def main() -> None:
             alarm_type_ids = None
             if alarm_type_ids_str:
                 try:
-                    alarm_type_ids = [int(x.strip()) for x in alarm_type_ids_str.split(",") if x.strip()]
+                    alarm_type_ids = [
+                        int(x.strip())
+                        for x in alarm_type_ids_str.split(",")
+                        if x.strip()
+                    ]
                 except ValueError:
-                    demisto.error(f"[SOCRadar] Invalid alarm_type_ids format: {alarm_type_ids_str}")
+                    demisto.error(
+                        f"[SOCRadar] Invalid alarm_type_ids format: {alarm_type_ids_str}"
+                    )
 
             excluded_alarm_type_ids_str = params.get("excluded_alarm_type_ids", "")
             excluded_alarm_type_ids = None
@@ -996,25 +1117,43 @@ def main() -> None:
                     # Previously this used [x.strip() for x in ...] which produced
                     # string values, inconsistent with alarm_type_ids (int list)
                     # and the API expectation of integer IDs.
-                    excluded_alarm_type_ids = [int(x.strip()) for x in excluded_alarm_type_ids_str.split(",") if x.strip()]
+                    excluded_alarm_type_ids = [
+                        int(x.strip())
+                        for x in excluded_alarm_type_ids_str.split(",")
+                        if x.strip()
+                    ]
                 except ValueError:
-                    demisto.error(f"[SOCRadar] Invalid excluded_alarm_type_ids format: {excluded_alarm_type_ids_str}")
+                    demisto.error(
+                        f"[SOCRadar] Invalid excluded_alarm_type_ids format: {excluded_alarm_type_ids_str}"
+                    )
 
             excluded_alarm_sub_types_str = params.get("excluded_alarm_sub_types", "")
             excluded_alarm_sub_types = None
             if excluded_alarm_sub_types_str:
                 try:
-                    excluded_alarm_sub_types = [x.strip() for x in excluded_alarm_sub_types_str.split(",") if x.strip()]
+                    excluded_alarm_sub_types = [
+                        x.strip()
+                        for x in excluded_alarm_sub_types_str.split(",")
+                        if x.strip()
+                    ]
                 except ValueError:
-                    demisto.error(f"[SOCRadar] Invalid excluded_alarm_sub_types format: {excluded_alarm_sub_types_str}")
+                    demisto.error(
+                        f"[SOCRadar] Invalid excluded_alarm_sub_types format: {excluded_alarm_sub_types_str}"
+                    )
 
             excluded_alarm_main_types_str = params.get("excluded_alarm_main_types", "")
             excluded_alarm_main_types = None
             if excluded_alarm_main_types_str:
                 try:
-                    excluded_alarm_main_types = [x.strip() for x in excluded_alarm_main_types_str.split(",") if x.strip()]
+                    excluded_alarm_main_types = [
+                        x.strip()
+                        for x in excluded_alarm_main_types_str.split(",")
+                        if x.strip()
+                    ]
                 except ValueError:
-                    demisto.error(f"[SOCRadar] Invalid excluded_alarm_main_types format: {excluded_alarm_main_types_str}")
+                    demisto.error(
+                        f"[SOCRadar] Invalid excluded_alarm_main_types format: {excluded_alarm_main_types_str}"
+                    )
 
             demisto.debug(
                 f"[SOCRadar] Fetch config - max_fetch: {max_fetch}, "
@@ -1059,7 +1198,9 @@ def main() -> None:
             return_results(mark_as_resolved_command(client, demisto.args()))
         elif command == "socradar-add-comment":
             return_results(add_comment_command(client, demisto.args()))
-        elif command == "socradar-add-assignee" or command == "socradar-change-assignee":
+        elif (
+            command == "socradar-add-assignee" or command == "socradar-change-assignee"
+        ):
             return_results(add_assignee_command(client, demisto.args()))
         elif command == "socradar-add-tag":
             return_results(add_tag_command(client, demisto.args()))

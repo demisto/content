@@ -344,7 +344,7 @@ def get_indicators_command(client: Client, args: dict[str, str]) -> CommandResul
     context_entry = build_entry_context(indicators)
 
     human_readable = tableToMarkdown(
-        f'Indicators from SOCRadar Collection Based IOC Feed ({", ".join(collection_uuids)}):',
+        f"Indicators from SOCRadar Collection Based IOC Feed ({', '.join(collection_uuids)}):",
         context_entry,
         removeNull=True,
     )

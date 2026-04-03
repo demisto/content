@@ -38,7 +38,11 @@ class Client(BaseClient):
         suffix = "/threat/analysis"
         api_params = {"key": self.api_key, "entity": entity}
         response = self._http_request(
-            method="GET", url_suffix=suffix, params=api_params, timeout=60, error_handler=self.handle_error_response
+            method="GET",
+            url_suffix=suffix,
+            params=api_params,
+            timeout=60,
+            error_handler=self.handle_error_response,
         )
         return response
 
@@ -46,7 +50,10 @@ class Client(BaseClient):
         suffix = "/threat/analysis/check/auth"
         api_params = {"key": self.api_key}
         response = self._http_request(
-            method="GET", url_suffix=suffix, params=api_params, error_handler=self.handle_error_response
+            method="GET",
+            url_suffix=suffix,
+            params=api_params,
+            error_handler=self.handle_error_response,
         )
 
         return response
@@ -74,7 +81,9 @@ class Client(BaseClient):
         }
 
         if response.status_code in status_code_messages:
-            demisto.debug(f"Response Code: {response.status_code}, Reason: {status_code_messages[response.status_code]}")
+            demisto.debug(
+                f"Response Code: {response.status_code}, Reason: {status_code_messages[response.status_code]}"
+            )
             raise DemistoException(status_code_messages[response.status_code])
         else:
             raise DemistoException(response.raise_for_status())
@@ -237,7 +246,9 @@ def build_entry_context(results: Union[dict, List], indicator_type: str):
     """
 
     if isinstance(results, list):
-        return [build_entry_context(entry, indicator_type) for entry in results]  # pragma: no cover
+        return [
+            build_entry_context(entry, indicator_type) for entry in results
+        ]  # pragma: no cover
 
     result_data = results.get("data", {})
     return_context = {
@@ -256,7 +267,12 @@ def build_entry_context(results: Union[dict, List], indicator_type: str):
             # Exclude raw whois
             if key == "raw":
                 continue
-            if value and type(value) is list and key in ("creation_date", "expiration_date", "updated_date", "registrar"):
+            if (
+                value
+                and type(value) is list
+                and key
+                in ("creation_date", "expiration_date", "updated_date", "registrar")
+            ):
                 value = value[0]
             return_context["Whois Details"][key] = value
         return_context["DNS Details"] = result_data.get("dns_info", {})
@@ -265,7 +281,9 @@ def build_entry_context(results: Union[dict, List], indicator_type: str):
         geo_location_dict = {}
         if result_data.get("geo_location", []):
             geo_location = result_data["geo_location"][0]
-            geo_location_dict = {key: value for key, value in geo_location.items() if key.lower() != "ip"}
+            geo_location_dict = {
+                key: value for key, value in geo_location.items() if key.lower() != "ip"
+            }
 
         asn_code = result_data.get("whois", {}).get("asn", "")
         if not asn_code:
@@ -368,7 +386,11 @@ def ip_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
             )
             command_results_list.append(CommandResults(readable_output=message))
     if not command_results_list:
-        command_results_list = [CommandResults("SOCRadar ThreatFusion could not find any results for the given IP address(es).")]
+        command_results_list = [
+            CommandResults(
+                "SOCRadar ThreatFusion could not find any results for the given IP address(es)."
+            )
+        ]
     return command_results_list
 
 
@@ -419,14 +441,17 @@ def domain_command(client: Client, args: dict[str, Any]) -> List[CommandResults]
                 creation_date=context_entry["Whois Details"].get("creation_date"),
                 expiration_date=context_entry["Whois Details"].get("expiration_date"),
                 updated_date=context_entry["Whois Details"].get("updated_date"),
-                registrant_country=context_entry["Whois Details"].get("registrant_country"),
+                registrant_country=context_entry["Whois Details"].get(
+                    "registrant_country"
+                ),
                 registrant_name=context_entry["Whois Details"].get("registrant_name")
                 or context_entry["Whois Details"].get("name"),
                 registrar_name=context_entry["Whois Details"].get("registrar"),
                 organization=context_entry["Whois Details"].get("org"),
                 geo_country=context_entry["Whois Details"].get("country"),
                 sub_domains=context_entry["Subdomains"],
-                name_servers=context_entry["DNS Details"].get("NS") or context_entry["Whois Details"].get("name_servers"),
+                name_servers=context_entry["DNS Details"].get("NS")
+                or context_entry["Whois Details"].get("name_servers"),
             )
 
             command_results_list.append(
@@ -446,7 +471,11 @@ def domain_command(client: Client, args: dict[str, Any]) -> List[CommandResults]
             )
             command_results_list.append(CommandResults(readable_output=message))
     if not command_results_list:
-        command_results_list = [CommandResults("SOCRadar ThreatFusion could not find any results for the given domain(s).")]
+        command_results_list = [
+            CommandResults(
+                "SOCRadar ThreatFusion could not find any results for the given domain(s)."
+            )
+        ]
 
     return command_results_list
 
@@ -517,7 +546,11 @@ def file_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
             )
             command_results_list.append(CommandResults(readable_output=message))
     if not command_results_list:
-        command_results_list = [CommandResults("SOCRadar ThreatFusion could not find any results for the given file hash(es).")]
+        command_results_list = [
+            CommandResults(
+                "SOCRadar ThreatFusion could not find any results for the given file hash(es)."
+            )
+        ]
 
     return command_results_list
 
@@ -546,7 +579,9 @@ def score_ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
             score = calculate_dbot_score(score)
         title = f"SOCRadar - Analysis results for IP: {ip_to_score}"
         context_entry = build_entry_context(raw_response, "ip")
-        dbot_entry = build_dbot_entry(ip_to_score, DBotScoreType.IP, "SOCRadar ThreatFusion", score)
+        dbot_entry = build_dbot_entry(
+            ip_to_score, DBotScoreType.IP, "SOCRadar ThreatFusion", score
+        )
         human_readable = tableToMarkdown(title, context_entry)
         context_entry.update(dbot_entry)
     else:
@@ -586,7 +621,9 @@ def score_domain_command(client: Client, args: dict[str, Any]) -> CommandResults
             score = calculate_dbot_score(score)
         title = f"SOCRadar - Analysis results for domain: {domain_to_score}"
         context_entry = build_entry_context(raw_response, "domain")
-        dbot_entry = build_dbot_entry(domain_to_score, DBotScoreType.DOMAIN, "SOCRadar ThreatFusion", score)
+        dbot_entry = build_dbot_entry(
+            domain_to_score, DBotScoreType.DOMAIN, "SOCRadar ThreatFusion", score
+        )
         human_readable = tableToMarkdown(title, context_entry)
         context_entry.update(dbot_entry)
     else:
@@ -627,7 +664,9 @@ def score_hash_command(client: Client, args: dict[str, Any]) -> CommandResults:
             score = calculate_dbot_score(score)
         title = f"SOCRadar - Analysis results for hash: {hash_to_score}"
         context_entry = build_entry_context(raw_response, "hash")
-        dbot_entry = build_dbot_entry(hash_to_score, hash_type, "SOCRadar ThreatFusion", score)
+        dbot_entry = build_dbot_entry(
+            hash_to_score, hash_type, "SOCRadar ThreatFusion", score
+        )
         human_readable = tableToMarkdown(title, context_entry)
         context_entry.update(dbot_entry)
     else:
@@ -660,7 +699,9 @@ def main() -> None:
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        client = Client(base_url=base_url, api_key=api_key, verify=verify_certificate, proxy=proxy)
+        client = Client(
+            base_url=base_url, api_key=api_key, verify=verify_certificate, proxy=proxy
+        )
         command = demisto.command()
 
         commands = {
@@ -680,7 +721,9 @@ def main() -> None:
 
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
+        return_error(
+            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
+        )
 
 
 """ ENTRY POINT """
