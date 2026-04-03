@@ -963,6 +963,8 @@ def execute_with_retry(func: Callable, *args, **kwargs) -> Any:
     try:
         return func(*args, **kwargs)
     except DemistoException as e:
+        if "429" not in str(e):
+            raise e
         RETRY_COUNT += 1
         if RETRY_COUNT > 3:
             demisto.error(f"CTIX: RETRY_COUNT exceeded {RETRY_COUNT}. Error: {e}")
