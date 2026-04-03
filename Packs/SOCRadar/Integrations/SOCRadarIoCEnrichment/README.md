@@ -217,6 +217,7 @@ Similar to IP command, with `SOCRadarIoCEnrichment.File.*` prefix.
 ```
 
 **Output**:
+
 - Signal Strength: Very Strong
 - Confidence: Very High
 - Campaign: APT28 Infrastructure
@@ -281,20 +282,24 @@ Similar to IP command, with `SOCRadarIoCEnrichment.File.*` prefix.
 ### Test Module Fails
 
 **Error**: "Authorization Error"
+
 - **Solution**: Verify API key is correct and has IoC Enrichment access
 
 **Error**: "Connection failed"
+
 - **Solution**: Check network connectivity to platform.socradar.com
 
 ### No Data Returned
 
 **Issue**: Empty response for valid indicator
+
 - **Cause**: Indicator not in SOCRadar database
 - **Note**: No data doesn't mean indicator is safe, just unknown to SOCRadar
 
 ### Rate Limit Exceeded
 
 **Error**: "Rate limit has been exceeded"
+
 - **Solution**: Contact SOCRadar to increase rate limit or wait for reset
 
 ---

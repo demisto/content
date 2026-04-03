@@ -4,7 +4,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 import traceback
-from typing import Any, Optional
+from typing import Any
 import re
 from json.decoder import JSONDecodeError
 
@@ -35,9 +35,7 @@ class Client(BaseClient):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self.api_key = api_key
 
-    def get_indicator_enrichment(
-        self, indicator: str, fields: Optional[list[str]] = None
-    ):
+    def get_indicator_enrichment(self, indicator: str, fields: list[str] | None = None):
         """Get indicator enrichment from SOCRadar IoC Enrichment API
 
         Args:
@@ -102,9 +100,7 @@ class Client(BaseClient):
         }
 
         if response.status_code in status_code_messages:
-            demisto.debug(
-                f"Response Code: {response.status_code}, Reason: {status_code_messages[response.status_code]}"
-            )
+            demisto.debug(f"Response Code: {response.status_code}, Reason: {status_code_messages[response.status_code]}")
             raise DemistoException(status_code_messages[response.status_code])
         else:
             raise DemistoException(str(response.raise_for_status()))
@@ -113,9 +109,7 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def calculate_dbot_score(
-    score: float, signal_strength: str = None, confidence: str = None
-) -> int:
+def calculate_dbot_score(score: float, signal_strength: str = None, confidence: str = None) -> int:
     """Calculate DBot score from SOCRadar enrichment data
 
     Args:
@@ -223,9 +217,7 @@ def build_entry_context(raw_response: dict, indicator: str) -> dict:
     details = raw_response.get("details", {})
     summary = raw_response.get("summary", {})
     categorization = raw_response.get("categorization", {})
-    classifications = raw_response.get(
-        "top_classifications", {}
-    )  # Changed to top_classifications
+    classifications = raw_response.get("top_classifications", {})  # Changed to top_classifications
     history = raw_response.get("history", {})
     activity_labels = raw_response.get("activity_label_dict", {})
     premium_feeds = raw_response.get("premium_feeds", [])
@@ -252,10 +244,8 @@ def build_entry_context(raw_response: dict, indicator: str) -> dict:
         "CIDR": details.get("cidr"),
         "FirstSeen": details.get("first_seen_date"),
         "LastSeen": details.get("last_seen_date"),
-        "SignalStrength": details.get("ioc_signal_strength")
-        or raw_response.get("ioc_signal_strength"),
-        "Confidence": details.get("cross_source_confidence")
-        or raw_response.get("cross_source_confidence"),
+        "SignalStrength": details.get("ioc_signal_strength") or raw_response.get("ioc_signal_strength"),
+        "Confidence": details.get("cross_source_confidence") or raw_response.get("cross_source_confidence"),
         "IsWhitelisted": details.get("is_whitelisted", False),
         # Activity labels
         "Activity": {
@@ -399,9 +389,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
                 signal_strength = raw_response.get("ioc_signal_strength")
                 confidence = raw_response.get("cross_source_confidence")
 
-                dbot_score_value = calculate_dbot_score(
-                    score, signal_strength, confidence
-                )
+                dbot_score_value = calculate_dbot_score(score, signal_strength, confidence)
 
                 title = f"SOCRadar IoC Enrichment - Analysis for IP: {ip}"
 
@@ -434,9 +422,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
         except ValueError as e:
             command_results_list.append(CommandResults(readable_output=str(e)))
         except Exception as e:
-            command_results_list.append(
-                CommandResults(readable_output=f"Error processing IP {ip}: {str(e)}")
-            )
+            command_results_list.append(CommandResults(readable_output=f"Error processing IP {ip}: {str(e)}"))
 
     return command_results_list
 
@@ -460,9 +446,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
                 signal_strength = raw_response.get("ioc_signal_strength")
                 confidence = raw_response.get("cross_source_confidence")
 
-                dbot_score_value = calculate_dbot_score(
-                    score, signal_strength, confidence
-                )
+                dbot_score_value = calculate_dbot_score(score, signal_strength, confidence)
 
                 title = f"SOCRadar IoC Enrichment - Analysis for Domain: {domain}"
 
@@ -495,11 +479,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
         except ValueError as e:
             command_results_list.append(CommandResults(readable_output=str(e)))
         except Exception as e:
-            command_results_list.append(
-                CommandResults(
-                    readable_output=f"Error processing domain {domain}: {str(e)}"
-                )
-            )
+            command_results_list.append(CommandResults(readable_output=f"Error processing domain {domain}: {str(e)}"))
 
     return command_results_list
 
@@ -523,9 +503,7 @@ def url_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
                 signal_strength = raw_response.get("ioc_signal_strength")
                 confidence = raw_response.get("cross_source_confidence")
 
-                dbot_score_value = calculate_dbot_score(
-                    score, signal_strength, confidence
-                )
+                dbot_score_value = calculate_dbot_score(score, signal_strength, confidence)
 
                 title = f"SOCRadar IoC Enrichment - Analysis for URL: {url}"
 
@@ -558,9 +536,7 @@ def url_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
         except ValueError as e:
             command_results_list.append(CommandResults(readable_output=str(e)))
         except Exception as e:
-            command_results_list.append(
-                CommandResults(readable_output=f"Error processing URL {url}: {str(e)}")
-            )
+            command_results_list.append(CommandResults(readable_output=f"Error processing URL {url}: {str(e)}"))
 
     return command_results_list
 
@@ -585,9 +561,7 @@ def file_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
                 signal_strength = raw_response.get("ioc_signal_strength")
                 confidence = raw_response.get("cross_source_confidence")
 
-                dbot_score_value = calculate_dbot_score(
-                    score, signal_strength, confidence
-                )
+                dbot_score_value = calculate_dbot_score(score, signal_strength, confidence)
 
                 title = f"SOCRadar IoC Enrichment - Analysis for Hash: {hash_value}"
 
@@ -627,18 +601,12 @@ def file_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
         except ValueError as e:
             command_results_list.append(CommandResults(readable_output=str(e)))
         except Exception as e:
-            command_results_list.append(
-                CommandResults(
-                    readable_output=f"Error processing hash {hash_value}: {str(e)}"
-                )
-            )
+            command_results_list.append(CommandResults(readable_output=f"Error processing hash {hash_value}: {str(e)}"))
 
     return command_results_list
 
 
-def socradar_ioc_enrichment_command(
-    client: Client, args: dict[str, Any]
-) -> list[CommandResults]:
+def socradar_ioc_enrichment_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Generic enrichment command for any indicator type with auto-detection"""
     indicator = args.get("indicator", "").strip()
 
@@ -670,9 +638,7 @@ def socradar_ioc_enrichment_command(
             dbot_score_value = calculate_dbot_score(score, signal_strength, confidence)
 
             # Initialize common_object
-            common_object: (
-                Common.IP | Common.Domain | Common.URL | Common.File | None
-            ) = None
+            common_object: Common.IP | Common.Domain | Common.URL | Common.File | None = None
 
             # Determine DBot type based on detected type
             if indicator_type == "ip":
@@ -756,11 +722,7 @@ def socradar_ioc_enrichment_command(
     except ValueError as e:
         command_results_list.append(CommandResults(readable_output=f"Error: {str(e)}"))
     except Exception as e:
-        command_results_list.append(
-            CommandResults(
-                readable_output=f"Error processing indicator {indicator}: {str(e)}"
-            )
-        )
+        command_results_list.append(CommandResults(readable_output=f"Error processing indicator {indicator}: {str(e)}"))
 
     return command_results_list
 
@@ -778,9 +740,7 @@ def main() -> None:
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        client = Client(
-            base_url=base_url, api_key=api_key, verify=verify_certificate, proxy=proxy
-        )
+        client = Client(base_url=base_url, api_key=api_key, verify=verify_certificate, proxy=proxy)
         command = demisto.command()
 
         if command == "test-module":
@@ -809,9 +769,7 @@ def main() -> None:
 
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
-        )
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
 
 """ ENTRY POINT """

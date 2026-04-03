@@ -60,27 +60,19 @@ def build_entry_context(indicators: Union[dict, List]) -> list[dict]:
             "rawJSON": indicator_dict["rawJSON"],
             "First Seen Date": indicator_dict["fields"]["firstseenbysource"],
             "Last Seen Date": indicator_dict["fields"]["lastseenbysource"],
-            "Feed Maintainer Name": indicator_dict["fields"].get(
-                "collection_maintainer_name", ""
-            ),
-            "Seen Count": indicator_dict["fields"]
-            .get("extra_info", {})
-            .get("seen_count", 1),
+            "Feed Maintainer Name": indicator_dict["fields"].get("collection_maintainer_name", ""),
+            "Seen Count": indicator_dict["fields"].get("extra_info", {}).get("seen_count", 1),
             "Score": indicator_dict["fields"].get("extra_info", {}).get("score", 0),
         }
 
-        if indicator_type == FeedIndicatorType.IP and indicator_dict["fields"].get(
-            "extra_info", {}
-        ).get("geo_location", []):
+        if indicator_type == FeedIndicatorType.IP and indicator_dict["fields"].get("extra_info", {}).get("geo_location", []):
             geo_location_dict = indicator_dict["fields"]["extra_info"]["geo_location"]
             asn_code = geo_location_dict.get("AsnCode", "")
             asn_description = geo_location_dict.get("AsnName", "")
             asn = f"[{asn_code}] {asn_description}"
             geo_location_dict["ASN"] = asn
             geo_location_dict = {
-                key: value
-                for key, value in geo_location_dict.items()
-                if key.lower() not in ("ip", "asncode", "asnname")
+                key: value for key, value in geo_location_dict.items() if key.lower() not in ("ip", "asncode", "asnname")
             }
             indicator_context_dict["Geo Location"] = geo_location_dict
 
@@ -97,16 +89,12 @@ def date_string_to_iso_format_parsing(date_str: str) -> str:
     :return: ISO-8601 date string
     :rtype: ``str``
     """
-    parsed_date_format = dateparser.parse(
-        date_str, date_formats=[SOCRADAR_DATE_FORMAT], settings={"TIMEZONE": "UTC"}
-    )
+    parsed_date_format = dateparser.parse(date_str, date_formats=[SOCRADAR_DATE_FORMAT], settings={"TIMEZONE": "UTC"})
     assert parsed_date_format is not None, f"could not parse {date_str}"
     return parsed_date_format.strftime(DATE_FORMAT)
 
 
-def convert_to_demisto_indicator_type(
-    socradar_indicator_type: str, indicator_value: str = None
-) -> str:
+def convert_to_demisto_indicator_type(socradar_indicator_type: str, indicator_value: str = None) -> str:
     """Maps SOCRadar indicator type to Cortex XSOAR indicator type.
 
     Converts the SOCRadar indicator types ('hostname', 'domain', 'url', 'ip', 'hash') to Cortex XSOAR indicator type
@@ -125,11 +113,7 @@ def convert_to_demisto_indicator_type(
         "hostname": FeedIndicatorType.Domain,
         "domain": FeedIndicatorType.Domain,
         "url": FeedIndicatorType.URL,
-        "ip": (
-            FeedIndicatorType.ip_to_indicator_type(indicator_value)
-            if indicator_value
-            else FeedIndicatorType.IP
-        ),
+        "ip": (FeedIndicatorType.ip_to_indicator_type(indicator_value) if indicator_value else FeedIndicatorType.IP),
         "hash": FeedIndicatorType.File,
     }
     return indicator_type_mapping.get(socradar_indicator_type, FeedIndicatorType.File)
@@ -147,9 +131,7 @@ class Client(BaseClient):
         self.tags = tags
         self.tlp_color = tlp_color
 
-    def get_collection_feed(
-        self, collection_uuid: str, response_format: str = "json"
-    ) -> list:
+    def get_collection_feed(self, collection_uuid: str, response_format: str = "json") -> list:
         """Retrieve IOC feed for a specific collection UUID.
 
         :type collection_uuid: ``str``
@@ -219,12 +201,8 @@ class Client(BaseClient):
                 "value": indicator,
                 "rawJSON": {"value": indicator, "type": indicator_type},
                 "fields": {
-                    "firstseenbysource": date_string_to_iso_format_parsing(
-                        first_seen_date
-                    ),
-                    "lastseenbysource": date_string_to_iso_format_parsing(
-                        last_seen_date
-                    ),
+                    "firstseenbysource": date_string_to_iso_format_parsing(first_seen_date),
+                    "lastseenbysource": date_string_to_iso_format_parsing(last_seen_date),
                     "collection_maintainer_name": maintainer_name,
                     "extra_info": extra_info,
                 },
@@ -255,9 +233,7 @@ class Client(BaseClient):
             raw_response = self.get_collection_feed(collection_uuid)
 
             if not isinstance(raw_response, list):
-                demisto.debug(
-                    f"Unexpected response format for collection {collection_uuid}: {type(raw_response)}"
-                )
+                demisto.debug(f"Unexpected response format for collection {collection_uuid}: {type(raw_response)}")
                 return []
 
             parsed_indicators = self.parse_raw_indicators(raw_response)
@@ -268,9 +244,7 @@ class Client(BaseClient):
             return parsed_indicators
 
         except DemistoException as e:
-            demisto.debug(
-                f"Error while getting indicators for collection {collection_uuid}. Error: {e!s}"
-            )
+            demisto.debug(f"Error while getting indicators for collection {collection_uuid}. Error: {e!s}")
             return []
 
     @staticmethod
@@ -295,9 +269,7 @@ class Client(BaseClient):
         }
 
         if response.status_code in status_code_messages:
-            demisto.debug(
-                f"Response Code: {response.status_code}, Reason: {status_code_messages[response.status_code]}"
-            )
+            demisto.debug(f"Response Code: {response.status_code}, Reason: {status_code_messages[response.status_code]}")
             raise DemistoException(status_code_messages[response.status_code])
         else:
             raise DemistoException(response.raise_for_status())
@@ -359,9 +331,7 @@ def get_indicators_command(client: Client, args: dict[str, str]) -> CommandResul
     return command_results
 
 
-def fetch_indicators(
-    client: Client, collection_uuids: list, limit: int = None
-) -> list[dict]:
+def fetch_indicators(client: Client, collection_uuids: list, limit: int = None) -> list[dict]:
     """Retrieves indicators from all configured collection UUIDs.
 
     :type client: ``Client``
@@ -402,9 +372,7 @@ def reset_last_fetch_dict() -> CommandResults:
     :rtype: ``CommandResults``
     """
     demisto.setIntegrationContext({})
-    return CommandResults(
-        readable_output="Fetch history has been successfully deleted!"
-    )
+    return CommandResults(readable_output="Fetch history has been successfully deleted!")
 
 
 """ MAIN FUNCTION """
