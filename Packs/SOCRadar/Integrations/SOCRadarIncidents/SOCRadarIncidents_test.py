@@ -90,9 +90,7 @@ def test_fetch_incidents(requests_mock):
         proxy=False,
     )
 
-    last_run = {
-        "last_fetch": 1594512000  # Jul 12, 2020
-    }
+    last_run = {"last_fetch": 1594512000}  # Jul 12, 2020
 
     mock_first_fetch_time = arg_to_datetime(arg="30 days", arg_name="First fetch time")
 
@@ -129,9 +127,7 @@ def test_fetch_incidents_handles_incorrect_severity():
         proxy=False,
     )
 
-    last_run = {
-        "last_fetch": 1594512000  # Jul 12, 2020
-    }
+    last_run = {"last_fetch": 1594512000}  # Jul 12, 2020
 
     mock_first_fetch_time = arg_to_datetime(arg="30 days", arg_name="First fetch time")
 

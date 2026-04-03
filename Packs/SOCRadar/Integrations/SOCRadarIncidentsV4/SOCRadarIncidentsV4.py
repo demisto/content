@@ -519,9 +519,11 @@ def alarm_to_incident(
 
     incident = {
         "name": incident_name,
-        "occurred": occurred_time.isoformat() + "Z"
-        if occurred_time
-        else datetime.now().isoformat() + "Z",
+        "occurred": (
+            occurred_time.isoformat() + "Z"
+            if occurred_time
+            else datetime.now().isoformat() + "Z"
+        ),
         "rawJSON": json.dumps(alarm),
         "severity": convert_to_demisto_severity(alarm_risk_level),
         "details": full_details,
@@ -1006,9 +1008,9 @@ def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
                     "Status": incident.get("status", "UNKNOWN"),
                     "Asset": incident.get("alarm_asset", "N/A"),
                     "Type": alarm_type_display,
-                    "Date": incident.get("date", "")[:19]
-                    if incident.get("date")
-                    else "N/A",
+                    "Date": (
+                        incident.get("date", "")[:19] if incident.get("date") else "N/A"
+                    ),
                     "Extra": entity_summary,
                 }
             )
