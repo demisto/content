@@ -29,7 +29,12 @@ def test_test_module(requests_mock):
     requests_mock.get(f"{SOCRADAR_API_ENDPOINT}/{feed_suffix}", json=mock_feed_response)
 
     client = Client(
-        base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, tlp_color="", tags="", verify=False, proxy=False
+        base_url=SOCRADAR_API_ENDPOINT,
+        api_key=mock_socradar_api_key,
+        tlp_color="",
+        tags="",
+        verify=False,
+        proxy=False,
     )
 
     response = test_module(client, [MOCK_COLLECTION_UUID])
@@ -44,10 +49,17 @@ def test_test_module_handles_authorization_error(requests_mock):
     mock_socradar_api_key = "WrongAPIKey"
     suffix = f"threat/intelligence/check/auth?key={mock_socradar_api_key}"
     mock_response = util_load_json("test_data/check_auth_response_auth_error.json")
-    requests_mock.get(f"{SOCRADAR_API_ENDPOINT}/{suffix}", json=mock_response, status_code=401)
+    requests_mock.get(
+        f"{SOCRADAR_API_ENDPOINT}/{suffix}", json=mock_response, status_code=401
+    )
 
     client = Client(
-        base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, tlp_color="", tags="", verify=False, proxy=False
+        base_url=SOCRADAR_API_ENDPOINT,
+        api_key=mock_socradar_api_key,
+        tlp_color="",
+        tags="",
+        verify=False,
+        proxy=False,
     )
     with pytest.raises(DemistoException, match=MESSAGES["AUTHORIZATION_ERROR"]):
         test_module(client, [])
@@ -63,10 +75,17 @@ def test_fetch_indicators(requests_mock):
     requests_mock.get(f"{SOCRADAR_API_ENDPOINT}/{feed_suffix}", json=mock_response)
 
     client = Client(
-        base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, tlp_color="GREEN", tags=["TEST"], verify=False, proxy=False
+        base_url=SOCRADAR_API_ENDPOINT,
+        api_key=mock_socradar_api_key,
+        tlp_color="GREEN",
+        tags=["TEST"],
+        verify=False,
+        proxy=False,
     )
 
-    indicators = fetch_indicators(client=client, collection_uuids=[MOCK_COLLECTION_UUID], limit=1)
+    indicators = fetch_indicators(
+        client=client, collection_uuids=[MOCK_COLLECTION_UUID], limit=1
+    )
 
     expected_output = util_load_json("test_data/fetch_indicators_expected_output.json")
 
@@ -80,13 +99,24 @@ def test_fetch_indicators_handles_error(requests_mock):
 
     mock_socradar_api_key = "APIKey"
     feed_suffix = f"threat/intelligence/feed_list/{MOCK_COLLECTION_UUID}.json?key={mock_socradar_api_key}&v=2"
-    requests_mock.get(f"{SOCRADAR_API_ENDPOINT}/{feed_suffix}", json={"error": "Not Found"}, status_code=404)
-
-    client = Client(
-        base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, tlp_color="GREEN", tags=["TEST"], verify=False, proxy=False
+    requests_mock.get(
+        f"{SOCRADAR_API_ENDPOINT}/{feed_suffix}",
+        json={"error": "Not Found"},
+        status_code=404,
     )
 
-    indicators = fetch_indicators(client=client, collection_uuids=[MOCK_COLLECTION_UUID], limit=1)
+    client = Client(
+        base_url=SOCRADAR_API_ENDPOINT,
+        api_key=mock_socradar_api_key,
+        tlp_color="GREEN",
+        tags=["TEST"],
+        verify=False,
+        proxy=False,
+    )
+
+    indicators = fetch_indicators(
+        client=client, collection_uuids=[MOCK_COLLECTION_UUID], limit=1
+    )
     assert len(indicators) == 0
 
 
@@ -99,13 +129,22 @@ def test_fetch_indicators_multiple_uuids(requests_mock):
     uuid2 = "uuid-2222-2222-2222-222222222222"
     mock_response = util_load_json("test_data/feed_list_response.json")
 
-    feed_suffix1 = f"threat/intelligence/feed_list/{uuid1}.json?key={mock_socradar_api_key}&v=2"
-    feed_suffix2 = f"threat/intelligence/feed_list/{uuid2}.json?key={mock_socradar_api_key}&v=2"
+    feed_suffix1 = (
+        f"threat/intelligence/feed_list/{uuid1}.json?key={mock_socradar_api_key}&v=2"
+    )
+    feed_suffix2 = (
+        f"threat/intelligence/feed_list/{uuid2}.json?key={mock_socradar_api_key}&v=2"
+    )
     requests_mock.get(f"{SOCRADAR_API_ENDPOINT}/{feed_suffix1}", json=mock_response)
     requests_mock.get(f"{SOCRADAR_API_ENDPOINT}/{feed_suffix2}", json=mock_response)
 
     client = Client(
-        base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, tlp_color="GREEN", tags=["TEST"], verify=False, proxy=False
+        base_url=SOCRADAR_API_ENDPOINT,
+        api_key=mock_socradar_api_key,
+        tlp_color="GREEN",
+        tags=["TEST"],
+        verify=False,
+        proxy=False,
     )
 
     indicators = fetch_indicators(client=client, collection_uuids=[uuid1, uuid2])
@@ -123,16 +162,27 @@ def test_fetch_indicators_multiple_uuids_with_limit(requests_mock):
     uuid2 = "uuid-2222-2222-2222-222222222222"
     mock_response = util_load_json("test_data/feed_list_response.json")
 
-    feed_suffix1 = f"threat/intelligence/feed_list/{uuid1}.json?key={mock_socradar_api_key}&v=2"
-    feed_suffix2 = f"threat/intelligence/feed_list/{uuid2}.json?key={mock_socradar_api_key}&v=2"
+    feed_suffix1 = (
+        f"threat/intelligence/feed_list/{uuid1}.json?key={mock_socradar_api_key}&v=2"
+    )
+    feed_suffix2 = (
+        f"threat/intelligence/feed_list/{uuid2}.json?key={mock_socradar_api_key}&v=2"
+    )
     requests_mock.get(f"{SOCRADAR_API_ENDPOINT}/{feed_suffix1}", json=mock_response)
     requests_mock.get(f"{SOCRADAR_API_ENDPOINT}/{feed_suffix2}", json=mock_response)
 
     client = Client(
-        base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, tlp_color="GREEN", tags=["TEST"], verify=False, proxy=False
+        base_url=SOCRADAR_API_ENDPOINT,
+        api_key=mock_socradar_api_key,
+        tlp_color="GREEN",
+        tags=["TEST"],
+        verify=False,
+        proxy=False,
     )
 
-    indicators = fetch_indicators(client=client, collection_uuids=[uuid1, uuid2], limit=4)
+    indicators = fetch_indicators(
+        client=client, collection_uuids=[uuid1, uuid2], limit=4
+    )
 
     assert len(indicators) == 4
 
@@ -147,7 +197,12 @@ def test_get_indicators_command(requests_mock):
     requests_mock.get(f"{SOCRADAR_API_ENDPOINT}/{feed_suffix}", json=mock_response)
 
     client = Client(
-        base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, tlp_color="GREEN", tags=["TEST"], verify=False, proxy=False
+        base_url=SOCRADAR_API_ENDPOINT,
+        api_key=mock_socradar_api_key,
+        tlp_color="GREEN",
+        tags=["TEST"],
+        verify=False,
+        proxy=False,
     )
 
     mock_args = {"limit": 1, "collection_uuids": MOCK_COLLECTION_UUID}
@@ -157,7 +212,10 @@ def test_get_indicators_command(requests_mock):
     expected_context = util_load_json("test_data/get_indicators_expected_context.json")
 
     assert isinstance(result, CommandResults)
-    assert f"Indicators from SOCRadar Collection Based IOC Feed ({MOCK_COLLECTION_UUID}):" in result.readable_output
+    assert (
+        f"Indicators from SOCRadar Collection Based IOC Feed ({MOCK_COLLECTION_UUID}):"
+        in result.readable_output
+    )
     assert result.outputs == expected_context
 
 
@@ -167,10 +225,19 @@ def test_get_indicators_command_handles_error(requests_mock):
 
     mock_socradar_api_key = "APIKey"
     feed_suffix = f"threat/intelligence/feed_list/{MOCK_COLLECTION_UUID}.json?key={mock_socradar_api_key}&v=2"
-    requests_mock.get(f"{SOCRADAR_API_ENDPOINT}/{feed_suffix}", json={"error": "Not Found"}, status_code=404)
+    requests_mock.get(
+        f"{SOCRADAR_API_ENDPOINT}/{feed_suffix}",
+        json={"error": "Not Found"},
+        status_code=404,
+    )
 
     client = Client(
-        base_url=SOCRADAR_API_ENDPOINT, api_key=mock_socradar_api_key, tlp_color="GREEN", tags=["TEST"], verify=False, proxy=False
+        base_url=SOCRADAR_API_ENDPOINT,
+        api_key=mock_socradar_api_key,
+        tlp_color="GREEN",
+        tags=["TEST"],
+        verify=False,
+        proxy=False,
     )
     mock_args = {"limit": 1, "collection_uuids": MOCK_COLLECTION_UUID}
     result = get_indicators_command(client, mock_args)
@@ -194,7 +261,9 @@ def test_build_entry_context():
 
     mock_indicators = util_load_json("test_data/build_entry_context_input.json")
     context_entry = build_entry_context(mock_indicators)
-    expected_context_entry = util_load_json("test_data/build_entry_context_expected_entry.json")
+    expected_context_entry = util_load_json(
+        "test_data/build_entry_context_expected_entry.json"
+    )
 
     assert context_entry == expected_context_entry
 
@@ -218,11 +287,19 @@ CONVERT_DEMISTO_INDICATOR_TYPE_INPUTS = [
 ]
 
 
-@pytest.mark.parametrize("socradar_indicator_type, demisto_indicator_type", CONVERT_DEMISTO_INDICATOR_TYPE_INPUTS)
-def test_convert_to_demisto_indicator_type(socradar_indicator_type, demisto_indicator_type):
+@pytest.mark.parametrize(
+    "socradar_indicator_type, demisto_indicator_type",
+    CONVERT_DEMISTO_INDICATOR_TYPE_INPUTS,
+)
+def test_convert_to_demisto_indicator_type(
+    socradar_indicator_type, demisto_indicator_type
+):
     from FeedSOCRadarThreatFeed import convert_to_demisto_indicator_type
 
-    assert convert_to_demisto_indicator_type(socradar_indicator_type) == demisto_indicator_type
+    assert (
+        convert_to_demisto_indicator_type(socradar_indicator_type)
+        == demisto_indicator_type
+    )
 
 
 def test_parse_raw_indicators():
@@ -230,7 +307,12 @@ def test_parse_raw_indicators():
     from FeedSOCRadarThreatFeed import Client
 
     client = Client(
-        base_url=SOCRADAR_API_ENDPOINT, api_key="APIKey", tlp_color="GREEN", tags=["TEST"], verify=False, proxy=False
+        base_url=SOCRADAR_API_ENDPOINT,
+        api_key="APIKey",
+        tlp_color="GREEN",
+        tags=["TEST"],
+        verify=False,
+        proxy=False,
     )
 
     raw_indicators = util_load_json("test_data/feed_list_response.json")
@@ -253,7 +335,12 @@ def test_parse_raw_indicators_empty():
     from FeedSOCRadarThreatFeed import Client
 
     client = Client(
-        base_url=SOCRADAR_API_ENDPOINT, api_key="APIKey", tlp_color="", tags="", verify=False, proxy=False
+        base_url=SOCRADAR_API_ENDPOINT,
+        api_key="APIKey",
+        tlp_color="",
+        tags="",
+        verify=False,
+        proxy=False,
     )
 
     parsed = client.parse_raw_indicators([])
