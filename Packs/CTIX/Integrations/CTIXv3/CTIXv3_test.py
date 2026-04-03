@@ -2231,7 +2231,7 @@ class TestEnrichIndicatorsBulk:
 
 
 class TestRetryLogic:
-    """Test execute_with_retry helper."""
+    """Test execute_with_retry helper (retries only when the error indicates HTTP 429)."""
 
     def setup_method(self):
         """Reset global RETRY_COUNT before each test."""
@@ -2249,8 +2249,8 @@ class TestRetryLogic:
     @patch("CTIXv3.time.sleep", return_value=None)
     @patch("CTIXv3.demisto.error")
     def test_execute_with_retry_after_one_failure(self, _mock_demisto_error, mock_sleep):
-        """Test success after one failure."""
-        mock_func = MagicMock(side_effect=[DemistoException("First failure"), "success"])
+        """Test success after one rate-limit (429) failure and a single retry."""
+        mock_func = MagicMock(side_effect=[DemistoException("status-> 429"), "success"])
         result = execute_with_retry(mock_func, "arg1")
         assert result == "success"
         assert mock_func.call_count == 2
@@ -2259,8 +2259,8 @@ class TestRetryLogic:
     @patch("CTIXv3.time.sleep", return_value=None)
     @patch("CTIXv3.demisto.error")
     def test_execute_with_retry_persistent_failure(self, _mock_demisto_error, mock_sleep):
-        """Test that second failure is raised (per-call single retry)."""
-        mock_func = MagicMock(side_effect=[DemistoException("First failure"), DemistoException("Second failure")])
+        """After a 429 retry, a non-429 error from the retried call propagates (per-call single retry)."""
+        mock_func = MagicMock(side_effect=[DemistoException("status-> 429"), DemistoException("Second failure")])
         with pytest.raises(DemistoException, match="Second failure"):
             execute_with_retry(mock_func, "arg1")
         assert mock_func.call_count == 2
@@ -2269,42 +2269,30 @@ class TestRetryLogic:
     @patch("CTIXv3.time.sleep", return_value=None)
     @patch("CTIXv3.demisto.error")
     def test_execute_with_retry_global_limit(self, _mock_demisto_error, mock_sleep):
-        """Test that global RETRY_COUNT stops execution after 3 total failures."""
-        mock_func = MagicMock(side_effect=DemistoException("failure"))
-
-        # 1st call to execute_with_retry (fails twice: initial + retry)
-        with pytest.raises(DemistoException):
-            execute_with_retry(mock_func)
-        # RETRY_COUNT should be 2 now (increments on EACH DemistoException caught in execute_with_retry)
-        # Wait, if initial call fails, RETRY_COUNT becomes 1. Then it retries.
-        # If retry fails, it's NOT caught in the same execute_with_retry call's except block.
-        # Let's re-examine execute_with_retry:
-        # try: return func()
-        # except DemistoException: RETRY_COUNT += 1; sleep(60); return func()
-        # So it increments ONLY on the first failure of each call.
+        """Global RETRY_COUNT limits how many 429 retries are allowed across execute_with_retry calls."""
+        mock_func = MagicMock(side_effect=DemistoException("status-> 429"))
 
         import CTIXv3
 
+        # Each execute_with_retry: first 429 increments RETRY_COUNT and retries once; second 429 is not caught.
+        with pytest.raises(DemistoException):
+            execute_with_retry(mock_func)
         assert CTIXv3.RETRY_COUNT == 1
 
-        # 2nd call
         with pytest.raises(DemistoException):
             execute_with_retry(mock_func)
         assert CTIXv3.RETRY_COUNT == 2
 
-        # 3rd call
         with pytest.raises(DemistoException):
             execute_with_retry(mock_func)
         assert CTIXv3.RETRY_COUNT == 3
 
-        # 4th call should immediately raise without retrying because RETRY_COUNT > 3 check happens in except
-        # Actually it's 'if RETRY_COUNT > 3: raise e' AFTER increment.
-        # So on 4th call: fails -> RETRY_COUNT becomes 4 -> 4 > 3 is True -> raises without sleep/retry.
+        # Fourth top-level call: increment makes RETRY_COUNT > 3, so raise without sleep/retry.
         with pytest.raises(DemistoException):
             execute_with_retry(mock_func)
 
         assert CTIXv3.RETRY_COUNT == 4
-        assert mock_sleep.call_count == 3  # Only first 3 calls slept and retried
+        assert mock_sleep.call_count == 3  # Only first three top-level calls slept before retry
 
 
 class TestFetchIncidentsRateLimit:
