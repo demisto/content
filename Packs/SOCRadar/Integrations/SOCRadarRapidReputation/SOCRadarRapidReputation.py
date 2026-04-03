@@ -577,19 +577,18 @@ def file_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
                 elif hash_type == "md5":
                     file_object.md5 = hash_to_score
 
-                command_results_list.append(
-                    CommandResults(
-                        outputs_prefix="SOCRadarRapidReputation.File",
-                        outputs_key_field="Entity",
-                        readable_output=human_readable,
-                        raw_response=raw_response,
-                        outputs=context_entry,
-                        indicator=file_object,
-                    )
+                cmd_result = CommandResults(
+                    outputs_prefix="SOCRadarRapidReputation.File",
+                    outputs_key_field="Entity",
+                    readable_output=human_readable,
+                    raw_response=raw_response,
+                    outputs=context_entry,
+                    indicator=file_object,
                 )
+                command_results_list.append(cmd_result)
             else:
-                message = f"Error at scoring file hash {hash_to_score}: {raw_response.get('message', 'Unknown error')}"
-                command_results_list.append(CommandResults(readable_output=message))
+                error_msg = raw_response.get('message', 'Unknown error')
+                message = f"Error at scoring file hash {hash_to_score}: {error_msg}"                command_results_list.append(CommandResults(readable_output=message))
         except ValueError as e:
             command_results_list.append(CommandResults(readable_output=str(e)))
         except Exception as e:
