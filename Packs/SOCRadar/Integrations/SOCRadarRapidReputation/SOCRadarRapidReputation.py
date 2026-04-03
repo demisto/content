@@ -4,7 +4,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 import traceback
-from typing import Any
+from typing import Any, Optional
 import re
 from json.decoder import JSONDecodeError
 import time
@@ -22,9 +22,7 @@ MESSAGES: dict[str, str] = {
     "RATE_LIMIT_EXCEED_ERROR": "Rate limit has been exceeded. Please make sure your API key's rate limit is adequate.",
 }
 INTEGRATION_NAME = "SOCRadar Rapid Reputation"
-MAX_BULK_CHECK_INDICATORS = (
-    100  # Maximum indicators per bulk check to avoid XSOAR limits
-)
+MAX_BULK_CHECK_INDICATORS = 100  # Maximum indicators per bulk check to avoid XSOAR limits
 
 """ CLIENT CLASS """
 
@@ -59,7 +57,7 @@ class Client(BaseClient):
             headers=headers,
             timeout=60,
             error_handler=self.handle_error_response,
-            resp_type="json",
+            resp_type='json'
         )
         return response
 
@@ -92,9 +90,7 @@ class Client(BaseClient):
         }
 
         if response.status_code in status_code_messages:
-            demisto.debug(
-                f"Response Code: {response.status_code}, Reason: {status_code_messages[response.status_code]}"
-            )
+            demisto.debug(f"Response Code: {response.status_code}, Reason: {status_code_messages[response.status_code]}")
             raise DemistoException(status_code_messages[response.status_code])
         else:
             raise DemistoException(str(response.raise_for_status()))
@@ -154,14 +150,12 @@ class Validator:
     def validate_url(url_to_validate):
         """Validate URL format"""
         url_regex = re.compile(
-            r"^https?://"  # http:// or https://
-            r"(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|"  # domain
-            r"localhost|"  # localhost
-            r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"  # or IP
-            r"(?::\d+)?"  # optional port
-            r"(?:/?|[/?]\S+)$",
-            re.IGNORECASE,
-        )
+            r'^https?://'  # http:// or https://
+            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|'  # domain
+            r'localhost|'  # localhost
+            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # or IP
+            r'(?::\d+)?'  # optional port
+            r'(?:/?|[/?]\S+)$', re.IGNORECASE)
         return url_regex.match(url_to_validate) is not None
 
     @staticmethod
@@ -189,9 +183,7 @@ class Validator:
             raise ValueError(f'URL "{url}" is not a valid URL')
 
 
-def build_entry_context(
-    raw_response: dict, entity_value: str, entity_type: str
-) -> dict:
+def build_entry_context(raw_response: dict, entity_value: str, entity_type: str) -> dict:
     """Build context entry from API response"""
     data = raw_response.get("data", {})
 
@@ -205,7 +197,7 @@ def build_entry_context(
         "EntityType": entity_type,
         "Score": score,
         "IsWhitelisted": data.get("is_whitelisted", False),
-        "FindingSources": [],
+        "FindingSources": []
     }
 
     # Process finding sources
@@ -217,7 +209,7 @@ def build_entry_context(
             "MaintainerName": source.get("maintainer_name"),
             "FirstSeenDate": source.get("first_seen_date"),
             "LastSeenDate": source.get("last_seen_date"),
-            "SeenCount": source.get("seen_count"),
+            "SeenCount": source.get("seen_count")
         }
         context_entry["FindingSources"].append(source_entry)
 
@@ -229,23 +221,23 @@ def detect_entity_type(entity: str) -> str:
     entity = entity.strip()
 
     # Check if it's a URL (starts with http:// or https://)
-    if entity.startswith(("http://", "https://")):
-        return "url"
+    if entity.startswith(('http://', 'https://')):
+        return 'url'
 
     # Check if it's an IP address
     if Validator.validate_ipv4(entity) or Validator.validate_ipv6(entity):
-        return "ip"
+        return 'ip'
 
     # Check if it's a hash
     if Validator.validate_hash(entity):
-        return "hash"
+        return 'hash'
 
     # Check if it's a domain
     if Validator.validate_domain(entity):
-        return "hostname"
+        return 'hostname'
 
     # If nothing matches, raise an error
-    raise ValueError(f"Unable to determine entity type for: {entity}")
+    raise ValueError(f'Unable to determine entity type for: {entity}')
 
 
 def process_entity_by_type(client: Client, entity: str, entity_type: str) -> dict:
@@ -271,7 +263,7 @@ def process_entity_by_type(client: Client, entity: str, entity_type: str) -> dic
             "success": True,
             "context": context_entry,
             "raw_response": raw_response,
-            "dbot_score": score,
+            "dbot_score": score
         }
     else:
         return {
@@ -279,7 +271,7 @@ def process_entity_by_type(client: Client, entity: str, entity_type: str) -> dic
             "entity_type": entity_type,
             "success": False,
             "error": raw_response.get("message", "Unknown error"),
-            "raw_response": raw_response,
+            "raw_response": raw_response
         }
 
 
@@ -297,11 +289,7 @@ def test_module(client: Client) -> str:
             demisto.debug("Test successful")
             return "ok"
         else:
-            error_msg = (
-                response.get("message", "Unknown error")
-                if response
-                else "No response from API"
-            )
+            error_msg = response.get("message", "Unknown error") if response else "No response from API"
             demisto.error(f"Test failed: {error_msg}")
             raise DemistoException(f"API test failed: {error_msg}")
     except DemistoException:
@@ -352,7 +340,10 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
                     reliability=demisto.params().get("integrationReliability"),
                 )
 
-                ip_object = Common.IP(ip=ip_to_score, dbot_score=dbot_score)
+                ip_object = Common.IP(
+                    ip=ip_to_score,
+                    dbot_score=dbot_score
+                )
 
                 command_results_list.append(
                     CommandResults(
@@ -370,16 +361,12 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
         except ValueError as e:
             command_results_list.append(CommandResults(readable_output=str(e)))
         except Exception as e:
-            command_results_list.append(
-                CommandResults(
-                    readable_output=f"Error processing IP {ip_to_score}: {str(e)}"
-                )
-            )
+            command_results_list.append(CommandResults(readable_output=f"Error processing IP {ip_to_score}: {str(e)}"))
 
     if not command_results_list:
         command_results_list = [
             CommandResults(
-                "SOCRadar Rapid Reputation could not find any results for the given IP(s)."
+                readable_output="SOCRadar Rapid Reputation could not find any results for the given IP(s)."
             )
         ]
 
@@ -411,9 +398,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
 
                 title = f"SOCRadar Rapid Reputation - Analysis results for Domain: {domain_to_score}"
 
-                context_entry = build_entry_context(
-                    raw_response, domain_to_score, "hostname"
-                )
+                context_entry = build_entry_context(raw_response, domain_to_score, "hostname")
                 human_readable = tableToMarkdown(title, context_entry)
 
                 dbot_score = Common.DBotScore(
@@ -425,7 +410,8 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
                 )
 
                 domain_object = Common.Domain(
-                    domain=domain_to_score, dbot_score=dbot_score
+                    domain=domain_to_score,
+                    dbot_score=dbot_score
                 )
 
                 command_results_list.append(
@@ -444,16 +430,12 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
         except ValueError as e:
             command_results_list.append(CommandResults(readable_output=str(e)))
         except Exception as e:
-            command_results_list.append(
-                CommandResults(
-                    readable_output=f"Error processing domain {domain_to_score}: {str(e)}"
-                )
-            )
+            command_results_list.append(CommandResults(readable_output=f"Error processing domain {domain_to_score}: {str(e)}"))
 
     if not command_results_list:
         command_results_list = [
             CommandResults(
-                "SOCRadar Rapid Reputation could not find any results for the given domain(s)."
+                readable_output="SOCRadar Rapid Reputation could not find any results for the given domain(s)."
             )
         ]
 
@@ -496,7 +478,10 @@ def url_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
                     reliability=demisto.params().get("integrationReliability"),
                 )
 
-                url_object = Common.URL(url=url_to_score, dbot_score=dbot_score)
+                url_object = Common.URL(
+                    url=url_to_score,
+                    dbot_score=dbot_score
+                )
 
                 command_results_list.append(
                     CommandResults(
@@ -514,16 +499,12 @@ def url_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
         except ValueError as e:
             command_results_list.append(CommandResults(readable_output=str(e)))
         except Exception as e:
-            command_results_list.append(
-                CommandResults(
-                    readable_output=f"Error processing URL {url_to_score}: {str(e)}"
-                )
-            )
+            command_results_list.append(CommandResults(readable_output=f"Error processing URL {url_to_score}: {str(e)}"))
 
     if not command_results_list:
         command_results_list = [
             CommandResults(
-                "SOCRadar Rapid Reputation could not find any results for the given URL(s)."
+                readable_output="SOCRadar Rapid Reputation could not find any results for the given URL(s)."
             )
         ]
 
@@ -577,41 +558,35 @@ def file_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
                 elif hash_type == "md5":
                     file_object.md5 = hash_to_score
 
-                cmd_result = CommandResults(
-                    outputs_prefix="SOCRadarRapidReputation.File",
-                    outputs_key_field="Entity",
-                    readable_output=human_readable,
-                    raw_response=raw_response,
-                    outputs=context_entry,
-                    indicator=file_object,
+                command_results_list.append(
+                    CommandResults(
+                        outputs_prefix="SOCRadarRapidReputation.File",
+                        outputs_key_field="Entity",
+                        readable_output=human_readable,
+                        raw_response=raw_response,
+                        outputs=context_entry,
+                        indicator=file_object,
+                    )
                 )
-                command_results_list.append(cmd_result)
             else:
-                error_msg = raw_response.get('message', 'Unknown error')
-                message = f"Error at scoring file hash {hash_to_score}: {error_msg}"
+                message = f"Error at scoring file hash {hash_to_score}: {raw_response.get('message', 'Unknown error')}"
                 command_results_list.append(CommandResults(readable_output=message))
         except ValueError as e:
             command_results_list.append(CommandResults(readable_output=str(e)))
         except Exception as e:
-            command_results_list.append(
-                CommandResults(
-                    readable_output=f"Error processing hash {hash_to_score}: {str(e)}"
-                )
-            )
+            command_results_list.append(CommandResults(readable_output=f"Error processing hash {hash_to_score}: {str(e)}"))
 
     if not command_results_list:
         command_results_list = [
             CommandResults(
-                "SOCRadar Rapid Reputation could not find any results for the given file hash(es)."
+                readable_output="SOCRadar Rapid Reputation could not find any results for the given file hash(es)."
             )
         ]
 
     return command_results_list
 
 
-def socradar_bulk_check_command(
-    client: Client, args: dict[str, Any]
-) -> list[CommandResults]:
+def socradar_bulk_check_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Check reputation for a mixed list of indicators with automatic type detection."""
     indicators = args.get("indicators", "")
     indicator_list: list = argToList(indicators)
@@ -629,12 +604,12 @@ def socradar_bulk_check_command(
             f"- XSOAR has command argument size limits (~10KB)\n"
             f"- War Room output size limits (~500KB)\n"
             f"- Context data size limits (~1MB)\n"
-            f"- Rate limit: 1 request/second = {MAX_BULK_CHECK_INDICATORS} seconds (~{MAX_BULK_CHECK_INDICATORS / 60:.1f} min)\n\n"
+            f"- Rate limit: 1 request/second = {MAX_BULK_CHECK_INDICATORS} seconds (~{MAX_BULK_CHECK_INDICATORS/60:.1f} min)\n\n"
             f"**Solution:** Split into batches of {MAX_BULK_CHECK_INDICATORS} or less\n\n"
             f"**Example:**\n"
             f"```\n"
-            f'Batch 1: !socradar-bulk-check indicators="[first {MAX_BULK_CHECK_INDICATORS} indicators]"\n'
-            f'Batch 2: !socradar-bulk-check indicators="[next {MAX_BULK_CHECK_INDICATORS} indicators]"\n'
+            f"Batch 1: !socradar-bulk-check indicators=\"[first {MAX_BULK_CHECK_INDICATORS} indicators]\"\n"
+            f"Batch 2: !socradar-bulk-check indicators=\"[next {MAX_BULK_CHECK_INDICATORS} indicators]\"\n"
             f"```\n\n"
             f"**Recommended:** Use 10-20 indicators per batch for best performance."
         )
@@ -664,8 +639,8 @@ def socradar_bulk_check_command(
             "26-50": 0,
             "51-75": 0,
             "76-100": 0,
-            "whitelisted": 0,
-        },
+            "whitelisted": 0
+        }
     }
 
     for idx, indicator in enumerate(indicator_list):
@@ -706,7 +681,7 @@ def socradar_bulk_check_command(
                     "Score": score,
                     "ScoreRange": score_range,
                     "IsWhitelisted": context.get("IsWhitelisted", False),
-                    "Sources": len(context.get("FindingSources", [])),
+                    "Sources": len(context.get("FindingSources", []))
                 }
 
                 human_readable = tableToMarkdown(title, summary_dict)
@@ -722,19 +697,21 @@ def socradar_bulk_check_command(
                 )
             else:
                 summary_data["failed"] += 1
-                error_reason = result.get("error", "Unknown error")
-                summary_data["failed_details"].append(
-                    {"Entity": indicator, "Reason": error_reason}
-                )
+                error_reason = result.get('error', 'Unknown error')
+                summary_data["failed_details"].append({
+                    "Entity": indicator,
+                    "Reason": error_reason
+                })
                 error_msg = f"❌ Failed: {indicator} - {error_reason}"
                 command_results_list.append(CommandResults(readable_output=error_msg))
 
         except Exception as e:
             summary_data["failed"] += 1
             error_reason = str(e)
-            summary_data["failed_details"].append(
-                {"Entity": indicator, "Reason": error_reason}
-            )
+            summary_data["failed_details"].append({
+                "Entity": indicator,
+                "Reason": error_reason
+            })
             error_msg = f"❌ Error: {indicator} - {error_reason}"
             command_results_list.append(CommandResults(readable_output=error_msg))
 
@@ -753,10 +730,7 @@ def socradar_bulk_check_command(
         {"Metric": "Score 51-75", "Count": summary_data["by_score_range"]["51-75"]},
         {"Metric": "Score 26-50", "Count": summary_data["by_score_range"]["26-50"]},
         {"Metric": "Score 0-25", "Count": summary_data["by_score_range"]["0-25"]},
-        {
-            "Metric": "Whitelisted",
-            "Count": summary_data["by_score_range"]["whitelisted"],
-        },
+        {"Metric": "Whitelisted", "Count": summary_data["by_score_range"]["whitelisted"]},
     ]
 
     summary_table = tableToMarkdown("📊 Bulk Check Summary", summary_table_data)
@@ -766,35 +740,26 @@ def socradar_bulk_check_command(
         failed_table = tableToMarkdown(
             "❌ Failed Indicators",
             summary_data["failed_details"],
-            headers=["Entity", "Reason"],
+            headers=["Entity", "Reason"]
         )
         summary_table += "\n\n" + failed_table
 
-    command_results_list.insert(
-        0,
-        CommandResults(
-            outputs_prefix="SOCRadarRapidReputation.BulkCheckSummary",
-            readable_output=summary_table,
-            outputs=summary_data,
-        ),
-    )
+    command_results_list.insert(0, CommandResults(
+        outputs_prefix="SOCRadarRapidReputation.BulkCheckSummary",
+        readable_output=summary_table,
+        outputs=summary_data
+    ))
 
     return command_results_list
 
 
-def socradar_reputation_command(
-    client: Client, args: dict[str, Any]
-) -> list[CommandResults]:
+def socradar_reputation_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Generic reputation check for any entity type."""
     entity_value = args.get("entity_value")
     entity_type = args.get("entity_type")
 
     if not entity_value or not entity_type:
-        return [
-            CommandResults(
-                readable_output="Both entity_value and entity_type are required."
-            )
-        ]
+        return [CommandResults(readable_output="Both entity_value and entity_type are required.")]
 
     command_results_list: list[CommandResults] = []
 
@@ -837,17 +802,13 @@ def socradar_reputation_command(
             )
 
             # Initialize indicator_object with Union type
-            indicator_object: (
-                Common.IP | Common.Domain | Common.URL | Common.File | None
-            ) = None
+            indicator_object: Common.IP | Common.Domain | Common.URL | Common.File | None = None
 
             # Create appropriate indicator object based on entity type
             if entity_type == "ip":
                 indicator_object = Common.IP(ip=entity_value, dbot_score=dbot_score)
             elif entity_type == "hostname":
-                indicator_object = Common.Domain(
-                    domain=entity_value, dbot_score=dbot_score
-                )
+                indicator_object = Common.Domain(domain=entity_value, dbot_score=dbot_score)
             elif entity_type == "url":
                 indicator_object = Common.URL(url=entity_value, dbot_score=dbot_score)
             elif entity_type == "hash":
@@ -895,9 +856,7 @@ def main() -> None:
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        client = Client(
-            base_url=base_url, api_key=api_key, verify=verify_certificate, proxy=proxy
-        )
+        client = Client(base_url=base_url, api_key=api_key, verify=verify_certificate, proxy=proxy)
         command = demisto.command()
 
         if command == "test-module":
@@ -929,9 +888,7 @@ def main() -> None:
 
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
-        )
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
 
 """ ENTRY POINT """
