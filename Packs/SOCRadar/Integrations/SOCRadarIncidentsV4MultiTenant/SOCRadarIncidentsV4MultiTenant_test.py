@@ -98,10 +98,7 @@ def test_alarm_to_incident_basic(sample_alarm):
 
     incident = alarm_to_incident(sample_alarm)
 
-    assert (
-        incident["name"]
-        == "SOCRadar Alarm 12345: Brand Protection - Impersonating Domain [test.com]"
-    )
+    assert incident["name"] == "SOCRadar Alarm 12345: Brand Protection - Impersonating Domain [test.com]"
     assert incident["severity"] == IncidentSeverity.HIGH
     assert incident["dbotMirrorId"] == "12345"
     assert "12345" in incident["details"]

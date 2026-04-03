@@ -166,9 +166,7 @@ class Client(BaseClient):
             raise DemistoException(message=message)
         return response.get("data") if response else []
 
-    def mark_incident_as_false_positive(
-        self, incident_id: int, comments: Optional[str]
-    ):
+    def mark_incident_as_false_positive(self, incident_id: int, comments: Optional[str]):
         """Sends a request that marks incident as false positive in SOCRadar platform
         using '/company/{company_id}/incidents/fp'. All the parameters are passed directly to the API as
         HTTP GET parameters in the request
@@ -243,9 +241,7 @@ class Client(BaseClient):
         }
 
         if response.status_code in status_code_messages:
-            demisto.debug(
-                f"Response Code: {response.status_code}, Reason: {status_code_messages[response.status_code]}"
-            )
+            demisto.debug(f"Response Code: {response.status_code}, Reason: {status_code_messages[response.status_code]}")
             raise DemistoException(status_code_messages[response.status_code])
         else:
             raise DemistoException(response.raise_for_status())
@@ -347,9 +343,7 @@ def fetch_incidents(
 
     # Check if severity contains allowed values, use all if default
     if severity and not all(s in SOCRADAR_SEVERITIES for s in severity):
-        raise ValueError(
-            f"severity must be a comma-separated value with the following options: {','.join(SOCRADAR_SEVERITIES)}"
-        )
+        raise ValueError(f"severity must be a comma-separated value with the following options: {','.join(SOCRADAR_SEVERITIES)}")
     alerts = client.search_incidents(
         incident_main_type=incident_main_type,
         incident_sub_type=incident_sub_type,
@@ -369,20 +363,10 @@ def fetch_incidents(
         if last_fetch and incident_created_time <= last_fetch:
             continue
 
-        incident_content = alert.get("alarm_notification_texts", {}).get(
-            "alarm_text", ""
-        )
+        incident_content = alert.get("alarm_notification_texts", {}).get("alarm_text", "")
         alert = {
-            **{
-                key: value
-                for key, value in alert.items()
-                if key not in EXCLUDED_INCIDENT_FIELDS
-            },
-            "alarm_notification_texts": {
-                "alarm_title": alert.get("alarm_notification_texts", {}).get(
-                    "alarm_title", ""
-                )
-            },
+            **{key: value for key, value in alert.items() if key not in EXCLUDED_INCIDENT_FIELDS},
+            "alarm_notification_texts": {"alarm_title": alert.get("alarm_notification_texts", {}).get("alarm_title", "")},
         }
 
         incident_name = f"{alert.get('alarm_notification_texts', {}).get('alarm_title', '')} - [#{alert.get('id', '')}]"
@@ -394,16 +378,10 @@ def fetch_incidents(
                 related_asset_dict.get("key"),
                 related_asset_dict.get("value", []),
             )
-            related_asset_value_list: List[str] = list(
-                filter(None, related_asset_value_list)
-            )
+            related_asset_value_list: List[str] = list(filter(None, related_asset_value_list))
             if related_asset_key and related_asset_value_list:
-                related_asset_value_list = [
-                    str(value) for value in related_asset_value_list
-                ]
-                alert_related_assets += (
-                    f"{related_asset_key}: {' || '.join(related_asset_value_list)}\n"
-                )
+                related_asset_value_list = [str(value) for value in related_asset_value_list]
+                alert_related_assets += f"{related_asset_key}: {' || '.join(related_asset_value_list)}\n"
 
         alert_related_entities = ""
         for related_entity_dict in alert.get("alarm_related_entities", []):
@@ -411,28 +389,18 @@ def fetch_incidents(
                 related_entity_dict.get("key"),
                 related_entity_dict.get("value", []),
             )
-            related_entity_value_list: List[str] = list(
-                filter(None, related_entity_value_list)
-            )
+            related_entity_value_list: List[str] = list(filter(None, related_entity_value_list))
             if related_entity_key and related_entity_value_list:
-                related_entity_value_list = [
-                    str(value) for value in related_entity_value_list
-                ]
-                alert_related_entities += (
-                    f"{related_entity_key}: {' || '.join(related_entity_value_list)}\n"
-                )
+                related_entity_value_list = [str(value) for value in related_entity_value_list]
+                alert_related_entities += f"{related_entity_key}: {' || '.join(related_entity_value_list)}\n"
 
         incident_link = f"https://platform.socradar.com/company/{client.socradar_company_id}/incidents/{alert.get('id', '')}"
 
         incident = {
             "name": incident_name,
-            "occurred": timestamp_to_datestring(
-                incident_created_time * 1000, is_utc=True
-            ),
+            "occurred": timestamp_to_datestring(incident_created_time * 1000, is_utc=True),
             "rawJSON": json.dumps(alert),
-            "severity": convert_to_demisto_severity(
-                alert.get("alarm_risk_level", "UNKNOWN")
-            ),
+            "severity": convert_to_demisto_severity(alert.get("alarm_risk_level", "UNKNOWN")),
             "CustomFields": {
                 "socradarincidentassets": alert_assets,
                 "socradarmitigation": alert.get("alarm_mitigation", ""),
@@ -469,9 +437,7 @@ def mark_incident_as_fp_command(client: Client, args: dict[str, str]) -> Command
     """
     incident_id = parse_int_or_raise(args.get("socradar_incident_id", ""))
     comments = args.get("comments", "")
-    raw_response = client.mark_incident_as_false_positive(
-        incident_id=incident_id, comments=comments
-    )
+    raw_response = client.mark_incident_as_false_positive(incident_id=incident_id, comments=comments)
     if raw_response.get("is_success"):
         message = f"SOCRadar API Response: {raw_response.get('message', '')}"
     else:
@@ -481,9 +447,7 @@ def mark_incident_as_fp_command(client: Client, args: dict[str, str]) -> Command
     return CommandResults(readable_output=message, raw_response=raw_response)
 
 
-def mark_incident_as_resolved_command(
-    client: Client, args: dict[str, str]
-) -> CommandResults:
+def mark_incident_as_resolved_command(client: Client, args: dict[str, str]) -> CommandResults:
     """Sends a request that marks incident as resolved in SOCRadar platform.
 
     :param client: client to use
@@ -498,9 +462,7 @@ def mark_incident_as_resolved_command(
     """
     incident_id = parse_int_or_raise(args.get("socradar_incident_id", ""))
     comments = args.get("comments", "")
-    raw_response = client.mark_incident_as_resolved(
-        incident_id=incident_id, comments=comments
-    )
+    raw_response = client.mark_incident_as_resolved(incident_id=incident_id, comments=comments)
     if raw_response.get("is_success"):
         message = f"SOCRadar API Response: {raw_response.get('message', '')}"
     else:
@@ -580,19 +542,13 @@ def main() -> None:
             demisto.incidents(incidents)
 
         elif command == "socradar-mark-incident-fp":
-            return_results(
-                mark_incident_as_fp_command(client=client, args=demisto.args())
-            )
+            return_results(mark_incident_as_fp_command(client=client, args=demisto.args()))
         elif command == "socradar-mark-incident-resolved":
-            return_results(
-                mark_incident_as_resolved_command(client=client, args=demisto.args())
-            )
+            return_results(mark_incident_as_resolved_command(client=client, args=demisto.args()))
 
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
-        )
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
 
 """ ENTRY POINT """

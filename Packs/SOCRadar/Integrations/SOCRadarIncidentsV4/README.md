@@ -271,7 +271,7 @@ Add a comment to an alarm.
 **Example:**
 
 ```
-!socradar-add-comment alarm_id="81171696" user_email="analyst@company.com" comment="Investigating with security team"
+!socradar-add-comment alarm_id="81171696" user_email="useremail" comment="Investigating with security team"
 ```
 
 #### `socradar-ask-analyst`
@@ -305,7 +305,7 @@ Change alarm assignee(s).(User must be defined the same company)
 **Example:**
 
 ```
-!socradar-add-assignee alarm_id="81171696" user_emails="analyst1@company.com,analyst2@company.com"
+!socradar-add-assignee alarm_id="81171696" user_emails="useremail"
 ```
 
 #### `socradar-add-tag`
@@ -368,8 +368,7 @@ Sample incidents:
 - [81171696] HIGH | OPEN | example.com
   Company: 789 | Type: Brand Protection / Impersonating Domain
   
-- [81171697] CRITICAL | OPEN | admin@company.com
-  Company: 789 | Type: Cyber Threat Intelligence / Stolen Credentials
+
 ```
 
 ---
@@ -446,7 +445,7 @@ domain_info = incident.get('CustomFields', {}).get('socradarcontentdns_informati
 # Take action
 demisto.executeCommand('socradar-add-assignee', {
     'alarm_id': alarm_id,
-    'user_emails': 'legal@company.com'
+    'user_emails': 'useremail'
 })
 ```
 
@@ -474,9 +473,9 @@ company_id = incident.get('CustomFields', {}).get('socradarcompanyid')
 
 # Route to appropriate team
 if company_id == "789":
-    assign_to = "team-a@company.com"
+    assign_to = "useremail"
 else:
-    assign_to = "team-b@company.com"
+    assign_to = "useremail"
 
 demisto.executeCommand('socradar-add-assignee', {
     'alarm_id': incident.get('dbotMirrorId'),
@@ -636,9 +635,3 @@ SOCRadar is a leading Extended Threat Intelligence (XTI) platform that helps org
 - Track dark web activities
 - Manage attack surface exposure
 - Ensure supply chain security
-
-Learn more: [www.socradar.io](https://www.socradar.io)
-
----
-
-**Made with ❤️ by the SOCRadar Integration Team and XSOAR teams**
