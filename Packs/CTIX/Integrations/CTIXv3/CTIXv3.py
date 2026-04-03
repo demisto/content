@@ -1705,7 +1705,7 @@ def fetch_incidents(client: Client, params: dict, last_run: dict) -> tuple[dict,
 
     max_fetch = arg_to_number(params.get("max_fetch"))
     if max_fetch is None:
-        max_fetch = 100
+        max_fetch = 10
     max_fetch = min(max(1, int(max_fetch)), 200)
 
     from_timestamp, page_number, state_keys = _load_fetch_state(

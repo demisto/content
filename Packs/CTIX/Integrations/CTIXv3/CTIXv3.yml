@@ -90,7 +90,7 @@ configuration:
   type: 0
   section: Collect
   required: false
-  additionalinfo: Custom CQL query used when fetching incidents. Updates the default CQL query.For example, type = \"report\" AND severity = \"HIGH\"
+  additionalinfo: Custom CQL query used when fetching incidents. Updates the default CQL query.For example, type = "report" AND confidence_score = "90"
 - display: Saved Result Set Label
   name: saved_result_set_label
   type: 0

@@ -16,7 +16,7 @@ The Cyware Intel Exchange integration allows users to fetch threat intelligence 
 | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
 | Incident type | The incident type to assign to fetched CTIX reports. Default is "CTIX Intel". | False |
 | First fetch time | How far back to fetch on the first run (e.g., 3 days, 7 days, 1 month). Default is "3 days". | False |
-| Incident Fetch CQL Query | Custom CQL query used when fetching incidents. Updates the default CQL query. For example, type = "report" AND severity = "HIGH". | False |
+| Incident Fetch CQL Query | Custom CQL query used when fetching incidents. Updates the default CQL query. For example, type = "report" AND confidence_score = "90". | False |
 | Saved Result Set Label | The label name of the Saved Result Set to pull indicators from. | False |
 | Saved Result Set Version | The version of Saved Result Set to use. Possible values are: v2, v3. | False |
 | Retrieve Enriched Data | If enabled, indicators will be enriched via bulk IOC lookup (with relations and enrichment data) before ingestion. | False |
