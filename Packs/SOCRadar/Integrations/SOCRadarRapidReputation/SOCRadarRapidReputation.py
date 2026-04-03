@@ -588,7 +588,8 @@ def file_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
                 command_results_list.append(cmd_result)
             else:
                 error_msg = raw_response.get('message', 'Unknown error')
-                message = f"Error at scoring file hash {hash_to_score}: {error_msg}"                command_results_list.append(CommandResults(readable_output=message))
+                message = f"Error at scoring file hash {hash_to_score}: {error_msg}"
+                command_results_list.append(CommandResults(readable_output=message))
         except ValueError as e:
             command_results_list.append(CommandResults(readable_output=str(e)))
         except Exception as e:
