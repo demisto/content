@@ -445,7 +445,7 @@ domain_info = incident.get('CustomFields', {}).get('socradarcontentdns_informati
 # Take action
 demisto.executeCommand('socradar-add-assignee', {
     'alarm_id': alarm_id,
-    'user_emails': 'useremail'
+    'user_emails': 'useremail@usermail.com'
 })
 ```
 
