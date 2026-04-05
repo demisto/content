@@ -14588,7 +14588,7 @@ def test_build_kwargs_lambda_function_config_update():
         "system_log_level": "DEBUG",
         "log_group": "/aws/lambda/my-function",
         "file_system_configs": "key=arn:aws:elasticfilesystem:us-east-1:123456789012:access-point/fsap-0123456789abcdef0,"
-                               "value=/mnt/efs",
+        "value=/mnt/efs",
     }
 
     expected_kwargs = {
