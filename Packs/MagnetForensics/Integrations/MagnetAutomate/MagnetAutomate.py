@@ -289,9 +289,9 @@ class MagnetAutomateClient(ContentClient):
         Returns:
             dict[str, Any]: A workflow run object.
         """
-        demisto.debug(f"Sending a POST Request to /cases/{case_id}/runs/{run_id}.")
+        demisto.debug(f"Sending a GET Request to /cases/{case_id}/runs/{run_id}.")
 
-        return self.post(
+        return self.get(
             url_suffix=f"/cases/{case_id}/runs/{run_id}",
         )
 
@@ -305,9 +305,9 @@ class MagnetAutomateClient(ContentClient):
         Returns:
             list[dict[str, Any]]: A list of workflow runs.
         """
-        demisto.debug(f"Sending a POST Request to /cases/{case_id}/runs.")
+        demisto.debug(f"Sending a GET Request to /cases/{case_id}/runs.")
 
-        return self.post(
+        return self.get(
             url_suffix=f"/cases/{case_id}/runs",
         )
 
