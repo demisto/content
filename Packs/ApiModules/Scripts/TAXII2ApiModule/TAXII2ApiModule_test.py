@@ -3169,3 +3169,103 @@ def test_get_ioc_value_multiple_fields():
     res = STIX2XSOARParser.get_ioc_value(ioc_id, id_to_obj)
 
     assert res == "10.0.0.1"
+
+
+class TestTLPInRawJSON:
+    """Tests that TLP color appears in both fields['trafficlightprotocol'] and rawJSON['trafficlightprotocol']."""
+
+    def test_tlp_from_marking_refs_in_rawjson_sco(self):
+        """
+        Given:
+            - An SCO indicator with object_marking_refs containing a GREEN TLP marking.
+
+        When:
+            - Parsing the SCO indicator via parse_general_sco_indicator.
+
+        Then:
+            - The resolved TLP color appears in both fields['trafficlightprotocol'] and rawJSON['trafficlightprotocol'].
+        """
+        client = Taxii2FeedClient(url="", collection_to_fetch="", proxies=[], verify=False, tlp_color=None, objects_to_fetch=[])
+        sco_object = {
+            "type": "autonomous-system",
+            "id": "autonomous-system--12345",
+            "number": 12345,
+            "object_marking_refs": ["marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"],
+        }
+        result = client.parse_sco_autonomous_system_indicator(sco_object)
+        assert result[0]["fields"]["trafficlightprotocol"] == "GREEN"
+        assert result[0]["rawJSON"]["trafficlightprotocol"] == "GREEN"
+
+    def test_tlp_from_default_color_in_rawjson_sco(self):
+        """
+        Given:
+            - An SCO indicator without object_marking_refs and a default tlp_color of 'AMBER'.
+
+        When:
+            - Parsing the SCO indicator via parse_general_sco_indicator.
+
+        Then:
+            - The default TLP color appears in both fields['trafficlightprotocol'] and rawJSON['trafficlightprotocol'].
+        """
+        client = Taxii2FeedClient(
+            url="", collection_to_fetch="", proxies=[], verify=False, tlp_color="AMBER", objects_to_fetch=[]
+        )
+        sco_object = {
+            "type": "autonomous-system",
+            "id": "autonomous-system--67890",
+            "number": 67890,
+        }
+        result = client.parse_sco_autonomous_system_indicator(sco_object)
+        assert result[0]["fields"]["trafficlightprotocol"] == "AMBER"
+        assert result[0]["rawJSON"]["trafficlightprotocol"] == "AMBER"
+
+    def test_tlp_from_marking_refs_in_rawjson_indicator(self):
+        """
+        Given:
+            - A STIX indicator with object_marking_refs containing a RED TLP marking.
+
+        When:
+            - Parsing the indicator via parse_indicator.
+
+        Then:
+            - The resolved TLP color appears in both fields['trafficlightprotocol'] and rawJSON['trafficlightprotocol'].
+        """
+        client = Taxii2FeedClient(url="", collection_to_fetch="", proxies=[], verify=False, tlp_color=None, objects_to_fetch=[])
+        indicator_obj = {
+            "id": "indicator--abc123",
+            "pattern": "[domain-name:value = 'evil.com']",
+            "type": "indicator",
+            "created": "2021-01-01T00:00:00.000Z",
+            "modified": "2021-01-01T00:00:00.000Z",
+            "pattern_type": "stix",
+            "object_marking_refs": ["marking-definition--5e57c739-391a-4eb3-b6be-7d15ca92d5ed"],
+        }
+        result = client.parse_indicator(indicator_obj)
+        assert result[0]["fields"]["trafficlightprotocol"] == "RED"
+        assert result[0]["rawJSON"]["trafficlightprotocol"] == "RED"
+
+    def test_tlp_from_default_color_in_rawjson_indicator(self):
+        """
+        Given:
+            - A STIX indicator without object_marking_refs and a default tlp_color of 'WHITE'.
+
+        When:
+            - Parsing the indicator via parse_indicator.
+
+        Then:
+            - The default TLP color appears in both fields['trafficlightprotocol'] and rawJSON['trafficlightprotocol'].
+        """
+        client = Taxii2FeedClient(
+            url="", collection_to_fetch="", proxies=[], verify=False, tlp_color="WHITE", objects_to_fetch=[]
+        )
+        indicator_obj = {
+            "id": "indicator--def456",
+            "pattern": "[domain-name:value = 'bad.com']",
+            "type": "indicator",
+            "created": "2021-01-01T00:00:00.000Z",
+            "modified": "2021-01-01T00:00:00.000Z",
+            "pattern_type": "stix",
+        }
+        result = client.parse_indicator(indicator_obj)
+        assert result[0]["fields"]["trafficlightprotocol"] == "WHITE"
+        assert result[0]["rawJSON"]["trafficlightprotocol"] == "WHITE"
