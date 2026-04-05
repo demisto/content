@@ -140,7 +140,7 @@ def test_custom_fields_list_command(mocker: MockerFixture, client: "MagnetAutoma
 
 # endregion
 
-# region ma-forensic-case-create
+# region ma-forensics-case-create
 
 
 def test_case_create_command(mocker: MockerFixture, client: "MagnetAutomateClient") -> None:
@@ -174,7 +174,7 @@ def test_case_create_command(mocker: MockerFixture, client: "MagnetAutomateClien
 
 # endregion
 
-# region ma-forensic-cases-list
+# region ma-forensics-cases-list
 
 
 def test_cases_list_command_all(mocker: MockerFixture, client: "MagnetAutomateClient") -> None:
@@ -238,7 +238,7 @@ def test_cases_list_command_single(mocker: MockerFixture, client: "MagnetAutomat
 
 # endregion
 
-# region ma-forensic-case-delete
+# region ma-forensics-case-delete
 
 
 def test_case_delete_command(mocker: MockerFixture, client: "MagnetAutomateClient") -> None:
@@ -265,7 +265,7 @@ def test_case_delete_command(mocker: MockerFixture, client: "MagnetAutomateClien
 
 # endregion
 
-# region ma-forensic-case-cancel
+# region ma-forensics-case-cancel
 
 
 def test_case_cancel_command(mocker: MockerFixture, client: "MagnetAutomateClient") -> None:

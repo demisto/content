@@ -584,7 +584,7 @@ def custom_fields_list_command(client: MagnetAutomateClient, args: CustomFieldsL
 
 # endregion
 
-# region ma-forensic-case-create
+# region ma-forensics-case-create
 
 
 class CaseCreateArgs(ContentBaseModel):
@@ -594,7 +594,7 @@ class CaseCreateArgs(ContentBaseModel):
 
 def case_create_command(client: MagnetAutomateClient, args: CaseCreateArgs) -> CommandResults:
     """
-    Executes the ma-forensic-case-create command.
+    Executes the ma-forensics-case-create command.
 
     Creates a new case in Magnet Automate with the specified case number and optional custom field values.
 
@@ -1546,7 +1546,7 @@ def main() -> None:
             case "ma-forensics-custom-fields-list":
                 return_results(custom_fields_list_command(client, execution.custom_fields_list_args))
 
-            case "ma-forensic-case-create":
+            case "ma-forensics-case-create":
                 return_results(case_create_command(client, execution.case_create_args))
 
             case "ma-forensics-cases-list":
