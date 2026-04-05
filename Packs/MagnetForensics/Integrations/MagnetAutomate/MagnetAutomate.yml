@@ -28,14 +28,14 @@ configuration:
   required: false
   type: 8
   section: Connect
-description: # TODO
-display: MagnetAutomate # TODO
-name: MagnetAutomate # TODO
+description: Magnet Automate is an orchestration and automation platform that accelerates your digital forensics investigations by automating workflows and integrating with various forensic tools.
+display: Magnet Automate
+name: MagnetAutomate
 script:
   commands:
 
   - name: ma-forensics-custom-fields-list
-    description: command_desc # TODO
+    description: Retrieves a list of custom fields for cases and evidence sources.
     execution: false
     arguments:
     - name: limit
@@ -48,58 +48,58 @@ script:
       description: Whether to return all of the results. Overrides the limit argument if used. Default value is False.
     outputs:
     - contextPath: MagnetForensics.CustomFields.id
-      description: output_desc # TODO
+      description: The unique identifier of the custom field.
       type: Number
     - contextPath: MagnetForensics.CustomFields.name
-      description: output_desc # TODO
+      description: The name of the custom field.
       type: String
     - contextPath: MagnetForensics.CustomFields.type
-      description: output_desc # TODO
+      description: The data type of the custom field.
       type: String
     - contextPath: MagnetForensics.CustomFields.elementType
-      description: output_desc # TODO
+      description: The element type of the custom field.
       type: Unknown
     - contextPath: MagnetForensics.CustomFields.description
-      description: output_desc # TODO
+      description: A description of the custom field.
       type: String
     - contextPath: MagnetForensics.CustomFields.required
-      description: output_desc # TODO
+      description: Whether the custom field is required.
       type: Boolean
     - contextPath: MagnetForensics.CustomFields.exposeInWorkflow
-      description: output_desc # TODO
+      description: Whether the custom field is exposed in workflows.
       type: Boolean
     - contextPath: MagnetForensics.CustomFields.variableName
-      description: output_desc # TODO
+      description: The variable name associated with the custom field.
       type: String
 
   - name: ma-forensic-case-create
-    description: command_desc. Use ma-forensics-custom-fields-list to get all available custom fields. # TODO
+    description: Creates a new case in Magnet Automate. Use ma-forensics-custom-fields-list to get all available custom fields.
     execution: false
     arguments:
     - name: case_number
       required: true
-      description: arg_desc # TODO
+      description: The unique case number to assign to the new case.
     - name: custom_field_values
       required: false
-      description: arg_desc # TODO
+      description: A JSON object containing custom field values for the case.
     outputs:
     - contextPath: MagnetForensics.Case.id
-      description: output_desc # TODO
+      description: The unique identifier of the created case.
       type: Number
     - contextPath: MagnetForensics.Case.caseNumber
-      description: output_desc # TODO
+      description: The case number assigned to the case.
       type: String
     - contextPath: MagnetForensics.Case.customFieldValues
-      description: output_desc # TODO
+      description: The custom field values associated with the case.
       type: Unknown
 
   - name: ma-forensics-cases-list
-    description: command_desc # TODO
+    description: Retrieves a list of all cases or information about a specific case.
     execution: false
     arguments:
     - name: case_id
       required: false
-      description: arg_desc # TODO
+      description: The unique identifier of the case to retrieve.
     - name: limit
       required: false
       defaultValue: 50
@@ -110,98 +110,98 @@ script:
       description: Whether to return all of the results. Overrides the limit argument if used. Default value is False.
     outputs:
     - contextPath: MagnetForensics.Case.id
-      description: output_desc # TODO
+      description: The unique identifier of the case.
       type: Number
     - contextPath: MagnetForensics.Case.caseNumber
-      description: output_desc # TODO
+      description: The case number.
       type: String
 
   - name: ma-forensics-case-delete
-    description: command_desc # TODO
+    description: Deletes a specific case from Magnet Automate.
     execution: false
     arguments:
     - name: case_id
       required: true
-      description: arg_desc # TODO
+      description: The unique identifier of the case to delete.
 
   - name: ma-forensics-case-cancel
-    description: command_desc # TODO
+    description: Cancels an ongoing case in Magnet Automate.
     execution: false
     arguments:
     - name: case_id
       required: true
-      description: arg_desc # TODO
+      description: The unique identifier of the case to cancel.
 
   - name: ma-forensics-workflow-run-start
-    description: command_desc # TODO
+    description: Starts a new workflow run and associates it with a specific case.
     execution: false
     arguments:
     - name: case_id
       required: true
-      description: arg_desc # TODO
+      description: The unique identifier of the case to associate the workflow run with.
     - name: evidence_number
       required: true
-      description: arg_desc # TODO
+      description: An evidence number to apply to the evidence source.
     - name: type
       required: true
-      description: arg_desc # TODO
+      description: A JSON object defining the evidence type and its parameters (e.g., ImageSource path).
     - name: workflow_id
       required: false
-      description: arg_desc # TODO
+      description: The unique identifier of the workflow to run.
     - name: output_path
       required: false
-      description: arg_desc # TODO
+      description: The directory path where the workflow output will be stored.
     - name: platform
       required: false
-      description: arg_desc # TODO
+      description: The platform associated with the evidence.
     - name: decryption_type
       required: false
-      description: arg_desc # TODO
+      description: The type of decryption to use (e.g., Password, RecoveryKey).
     - name: decryption_value
       required: false
-      description: arg_desc # TODO
+      description: The decryption key or password.
     - name: continue_on_decryption_fail
       required: false
-      description: arg_desc # TODO
+      description: Whether to continue the workflow if decryption fails.
     - name: custom_field_values
       required: false
-      description: arg_desc # TODO
+      description: A JSON object containing custom field values for the workflow run.
     - name: assigned_node_name
       required: false
-      description: arg_desc # TODO
+      description: The name of the specific node to assign the workflow run to.
     outputs:
     - contextPath: MagnetForensics.WorkflowRun.id
-      description: output_desc # TODO
+      description: The unique identifier of the started workflow run.
       type: Number
     - contextPath: MagnetForensics.WorkflowRun.path
-      description: output_desc # TODO
+      description: The path to the workflow run data.
       type: String
     - contextPath: MagnetForensics.WorkflowRun.version
-      description: output_desc # TODO
+      description: The version of the workflow run.
       type: Number
     - contextPath: MagnetForensics.WorkflowRun.caseId
-      description: output_desc # TODO
+      description: The identifier of the associated case.
       type: Number
     - contextPath: MagnetForensics.WorkflowRun.caseTypeId
-      description: output_desc # TODO
+      description: The identifier of the case type.
       type: Number
     - contextPath: MagnetForensics.WorkflowRun.basePath
-      description: output_desc # TODO
+      description: The base path for the workflow run.
       type: String
     - contextPath: MagnetForensics.WorkflowRun.automateVersion
-      description: output_desc # TODO
+      description: The version of Magnet Automate used for the run.
       type: String
 
   - name: ma-forensics-workflow-run-list
-    description: command_desc # TODO
+    description: Retrieves a list of all workflow runs for a specific case or details of a specific run.
     execution: false
     arguments:
     - name: case_id
       required: true
-      description: arg_desc # TODO
+      description: The unique identifier of the case to retrieve workflow runs for.
     - name: run_id
       required: false
-      description: arg_desc # TODO
+      description: The unique identifier of a specific workflow run to retrieve.
     - name: limit
       required: false
       defaultValue: 50
@@ -212,109 +212,109 @@ script:
       description: Whether to return all of the results. Overrides the limit argument if used. Default value is False.
     outputs:
     - contextPath: MagnetForensics.WorkflowRun.id
-      description: output_desc # TODO
+      description: The unique identifier of the workflow run.
       type: Number
     - contextPath: MagnetForensics.WorkflowRun.evidence
-      description: output_desc # TODO
+      description: Details about the evidence associated with the run.
       type: Unknown
     - contextPath: MagnetForensics.WorkflowRun.status
-      description: output_desc # TODO
+      description: The current status of the workflow run.
       type: String
     - contextPath: MagnetForensics.WorkflowRun.workflowId
-      description: output_desc # TODO
+      description: The identifier of the workflow being run.
       type: Number
     - contextPath: MagnetForensics.WorkflowRun.currentStage
-      description: output_desc # TODO
+      description: Information about the current stage of the workflow run.
       type: Unknown
     - contextPath: MagnetForensics.WorkflowRun.outputPath
-      description: output_desc # TODO
+      description: The output path for the workflow run.
       type: String
     - contextPath: MagnetForensics.WorkflowRun.startDateTime
-      description: output_desc # TODO
+      description: The date and time when the workflow run started.
       type: Date
     - contextPath: MagnetForensics.WorkflowRun.endDateTime
-      description: output_desc # TODO
+      description: The date and time when the workflow run ended.
       type: Date
     - contextPath: MagnetForensics.WorkflowRun.automateVersion
-      description: output_desc # TODO
+      description: The version of Magnet Automate used.
       type: String
     - contextPath: MagnetForensics.WorkflowRun.createdBy
-      description: output_desc # TODO
+      description: Information about the user who created the workflow run.
       type: Unknown
     - contextPath: MagnetForensics.WorkflowRun.duration
-      description: output_desc # TODO
+      description: The duration of the workflow run in seconds.
       type: Number
     - contextPath: MagnetForensics.WorkflowRun.completedStages
-      description: output_desc # TODO
+      description: A list of completed stages in the workflow run.
       type: Unknown
 
   - name: ma-forensics-workflow-run-delete
-    description: command_desc # TODO
+    description: Deletes a specific workflow run from a case.
     execution: false
     arguments:
     - name: case_id
       required: true
-      description: arg_desc # TODO
+      description: The unique identifier of the case.
     - name: run_id
       required: true
-      description: arg_desc # TODO
-  
+      description: The unique identifier of the workflow run to delete.
+
   - name: ma-forensics-workflow-run-cancel
-    description: command_desc # TODO
+    description: Cancels a specific workflow run.
     execution: false
     arguments:
     - name: case_id
       required: true
-      description: arg_desc # TODO
+      description: The unique identifier of the case.
     - name: run_id
       required: true
-      description: arg_desc # TODO
+      description: The unique identifier of the workflow run to cancel.
 
   - name: ma-forensics-merge-workflow-run-start
-    description: command_desc # TODO
+    description: Starts a merge workflow run for multiple existing workflow runs.
     execution: false
     arguments:
     - name: case_id
       required: true
-      description: arg_desc # TODO
+      description: The unique identifier of the case.
     - name: run_ids
       required: true
       isArray: true
-      description: arg_desc # TODO
+      description: A list of workflow run identifiers to merge.
     - name: workflow_id
       required: true
-      description: arg_desc # TODO
+      description: The unique identifier of the merge workflow to run.
     - name: output_path
       required: false
-      description: arg_desc # TODO
+      description: The directory path where the merged output will be stored.
     - name: assigned_node_name
       required: false
-      description: arg_desc # TODO
+      description: The name of the specific node to assign the merge workflow run to.
     outputs:
     - contextPath: MagnetForensics.WorkflowRun.id
-      description: output_desc # TODO
+      description: The unique identifier of the started merge workflow run.
       type: Number
     - contextPath: MagnetForensics.WorkflowRun.path
-      description: output_desc # TODO
+      description: The path to the merge workflow run data.
       type: String
     - contextPath: MagnetForensics.WorkflowRun.version
-      description: output_desc # TODO
+      description: The version of the workflow run.
       type: Number
     - contextPath: MagnetForensics.WorkflowRun.caseId
-      description: output_desc # TODO
+      description: The identifier of the associated case.
       type: Number
     - contextPath: MagnetForensics.WorkflowRun.caseTypeId
-      description: output_desc # TODO
+      description: The identifier of the case type.
       type: Number
     - contextPath: MagnetForensics.WorkflowRun.basePath
-      description: output_desc # TODO
+      description: The base path for the workflow run.
       type: String
     - contextPath: MagnetForensics.WorkflowRun.automateVersion
-      description: output_desc # TODO
+      description: The version of Magnet Automate used.
       type: String
 
   - name: ma-forensics-workflow-list
-    description: command_desc # TODO
+    description: Retrieves a list of all available workflows.
     execution: false
     arguments:
     - name: limit
@@ -327,115 +327,115 @@ script:
       description: Whether to return all of the results. Overrides the limit argument if used. Default value is False.
     outputs:
     - contextPath: MagnetForensics.Workflow.id
-      description: output_desc # TODO
+      description: The unique identifier of the workflow.
       type: Number
     - contextPath: MagnetForensics.Workflow.name
-      description: output_desc # TODO
+      description: The name of the workflow.
       type: String
     - contextPath: MagnetForensics.Workflow.type.name
-      description: output_desc # TODO
+      description: The name of the workflow type.
       type: String
     - contextPath: MagnetForensics.Workflow.description
-      description: output_desc # TODO
+      description: A description of the workflow.
       type: String
     - contextPath: MagnetForensics.Workflow.outputPath
-      description: output_desc # TODO
+      description: The default output path for the workflow.
       type: String
 
   - name: ma-forensics-workflow-delete
-    description: command_desc # TODO
+    description: Deletes a specific workflow from Magnet Automate.
     execution: false
     arguments:
     - name: workflow_id
       required: true
-      description: arg_desc # TODO
+      description: The unique identifier of the workflow to delete.
 
   - name: ma-forensics-workflow-get
-    description: command_desc. Use ma-forensics-workflow-list to get all available workflows. # TODO
+    description: Retrieves detailed information and export data for a specific workflow. Use ma-forensics-workflow-list to get all available workflows.
     execution: false
     arguments:
     - name: workflow_id
       required: true
-      description: arg_desc # TODO
+      description: The unique identifier of the workflow to retrieve.
     outputs:
     - contextPath: MagnetForensics.Workflow.id
-      description: output_desc # TODO
+      description: The unique identifier of the workflow.
       type: Number
     - contextPath: MagnetForensics.Workflow.automateVersion
-      description: output_desc # TODO
+      description: The version of Magnet Automate the workflow was created in.
       type: String
     - contextPath: MagnetForensics.Workflow.name
-      description: output_desc # TODO
+      description: The name of the workflow.
       type: String
     - contextPath: MagnetForensics.Workflow.description
-      description: output_desc # TODO
+      description: A description of the workflow.
       type: String
     - contextPath: MagnetForensics.Workflow.sourceType
-      description: output_desc # TODO
+      description: The type of evidence source the workflow accepts.
       type: String
     - contextPath: MagnetForensics.Workflow.sourceConfig
-      description: output_desc # TODO
+      description: Configuration details for the evidence source.
       type: Unknown
     - contextPath: MagnetForensics.Workflow.outputPath
-      description: output_desc # TODO
+      description: The output path for the workflow.
       type: String
     - contextPath: MagnetForensics.Workflow.keylistPath
-      description: output_desc # TODO
+      description: The path to the keylist used by the workflow.
       type: String
     - contextPath: MagnetForensics.Workflow.passwordListPath
-      description: output_desc # TODO
+      description: The path to the password list used by the workflow.
       type: String
     - contextPath: MagnetForensics.Workflow.continueOnDecryptionFail
-      description: output_desc # TODO
+      description: Whether the workflow continues if decryption fails.
       type: String
     - contextPath: MagnetForensics.Workflow.distribution
-      description: output_desc # TODO
+      description: The distribution settings for the workflow.
       type: String
     - contextPath: MagnetForensics.Workflow.localMode
-      description: output_desc # TODO
+      description: Whether the workflow runs in local mode.
       type: Boolean
     - contextPath: MagnetForensics.Workflow.timeExported
-      description: output_desc # TODO
+      description: The date and time when the workflow was exported.
       type: Date
 
   - name: ma-forensics-node-create
-    description: command_desc # TODO
+    description: Creates a new node (agent) in Magnet Automate.
     execution: false
     arguments:
     - name: name
       required: false
-      description: arg_desc # TODO
+      description: The name of the node.
     - name: address
       required: false
-      description: arg_desc # TODO
+      description: The network address or hostname of the node.
     - name: working_directory
       required: false
-      description: arg_desc # TODO
+      description: The working directory for the node.
     - name: applications_json
       required: false
-      description: arg_desc # TODO
+      description: A JSON array of applications installed on the node.
     outputs:
     - contextPath: MagnetForensics.Node.id
-      description: output_desc # TODO
+      description: The unique identifier of the created node.
       type: Number
     - contextPath: MagnetForensics.Node.name
-      description: output_desc # TODO
+      description: The name of the node.
       type: String
     - contextPath: MagnetForensics.Node.status
-      description: output_desc # TODO
+      description: The current status of the node.
       type: String
     - contextPath: MagnetForensics.Node.workingDirectory
-      description: output_desc # TODO
+      description: The working directory of the node.
       type: String
     - contextPath: MagnetForensics.Node.address
-      description: output_desc # TODO
+      description: The network address of the node.
       type: String
     - contextPath: MagnetForensics.Node.applications
-      description: output_desc # TODO
+      description: A list of applications installed on the node.
       type: Unknown
 
   - name: ma-forensics-nodes-list
-    description: command_desc # TODO
+    description: Retrieves a list of all available nodes (agents).
     execution: false
     arguments:
     - name: limit
@@ -448,48 +448,48 @@ script:
       description: Whether to return all of the results. Overrides the limit argument if used. Default value is False.
     outputs:
     - contextPath: MagnetForensics.Node.id
-      description: output_desc # TODO
+      description: The unique identifier of the node.
       type: Number
     - contextPath: MagnetForensics.Node.name
-      description: output_desc # TODO
+      description: The name of the node.
       type: String
     - contextPath: MagnetForensics.Node.status
-      description: output_desc # TODO
+      description: The current status of the node.
       type: String
     - contextPath: MagnetForensics.Node.workingDirectory
-      description: output_desc # TODO
+      description: The working directory of the node.
       type: String
     - contextPath: MagnetForensics.Node.address
-      description: output_desc # TODO
+      description: The network address of the node.
       type: String
     - contextPath: MagnetForensics.Node.applications
-      description: output_desc # TODO
+      description: A list of applications installed on the node.
       type: Unknown
 
   - name: ma-forensics-node-update
-    description: command_desc # TODO
+    description: Updates the configuration of an existing node.
     execution: false
     arguments:
     - name: node_id
       required: true
-      description: arg_desc # TODO
+      description: The unique identifier of the node to update.
     - name: address
       required: false
-      description: arg_desc # TODO
+      description: The new network address or hostname of the node.
     - name: working_directory
       required: false
-      description: arg_desc # TODO
+      description: The new working directory for the node.
     - name: applications_json
       required: false
-      description: arg_desc # TODO
+      description: A JSON array of applications installed on the node.
 
   - name: ma-forensics-node-delete
-    description: command_desc # TODO
+    description: Deletes a specific node from Magnet Automate.
     execution: false
     arguments:
     - name: node_id
       required: false
-      description: arg_desc # TODO
+      description: The unique identifier of the node to delete.
 
   isfetch: false
   runonce: false
