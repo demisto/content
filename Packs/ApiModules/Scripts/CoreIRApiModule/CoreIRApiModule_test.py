@@ -5410,6 +5410,52 @@ class TestFilterBuilder:
         # Assert
         mock_prepare_time_range.assert_called_once_with(None, None)
         mock_add_field.assert_not_called()
+    
+    @pytest.mark.parametrize(
+        "start_time_str, end_time_str, expected_start_ms, expected_end_ms",
+        [
+            (
+                "2026-03-02T21:59:54Z",
+                "2026-03-03T21:59:54Z",
+                1741046394000,
+                1741132794000,
+            ),
+            (
+                "2026-03-02T21:59:54+00:00",
+                "2026-03-03T21:59:54+00:00",
+                1741046394000,
+                1741132794000,
+            ),
+            # Malformed:
+            (
+                "2026-03-02T21:59:54+00:00Z",
+                "2026-03-03T21:59:54+00:00Z",
+                1741046394000,
+                1741132794000,
+            ),
+        ],
+    )
+    def test_prepare_time_range_normalizes_timestamps(
+        self,
+        start_time_str: str,
+        end_time_str: str,
+        expected_start_ms: int,
+        expected_end_ms: int,
+    ):
+        """
+        Given: Various ISO 8601 timestamp strings, including the malformed +00:00Z variant
+               that AI agents generate (combining a UTC offset with a trailing Z).
+        When: _prepare_time_range is called with both start and end times.
+        Then: The method should successfully parse all variants and return the correct
+              epoch-millisecond values. The +00:00Z format must be normalized before
+              parsing so that dateparser does not return None and raise a ValueError.
+        """
+        from CoreIRApiModule import FilterBuilder
+
+        start_ms, end_ms = FilterBuilder._prepare_time_range(start_time_str, end_time_str)
+
+        assert start_ms == expected_start_ms
+        assert end_ms == expected_end_ms
 
     def test_to_dict_empty_filter_fields(self):
         """
