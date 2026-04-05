@@ -14463,8 +14463,8 @@ def test_build_kwargs_lambda_function_config_update():
         "application_log_level": "INFO",
         "system_log_level": "DEBUG",
         "log_group": "/aws/lambda/my-function",
-        "file_system_configs": "key=/mnt/efs,value=arn:aws:elasticfilesystem:us-east-1:123456789012:access-point"
-        "/fsap-0123456789abcdef0",
+        "file_system_configs": "key=arn:aws:elasticfilesystem:us-east-1:123456789012:access-point/fsap-0123456789abcdef0,"
+                               "value=/mnt/efs",
     }
 
     expected_kwargs = {
@@ -14505,8 +14505,8 @@ def test_build_kwargs_lambda_function_config_update():
         "DurableConfig": {"RetentionPeriodInDays": None, "ExecutionTimeout": None},
         "FileSystemConfigs": [
             {
-                "Arn": "/mnt/efs",
-                "LocalMountPath": "arn:aws:elasticfilesystem:us-east-1:123456789012:access-point/fsap-0123456789abcdef0",
+                "Arn": "arn:aws:elasticfilesystem:us-east-1:123456789012:access-point/fsap-0123456789abcdef0",
+                "LocalMountPath": "/mnt/efs",
             }
         ],
     }
@@ -14540,7 +14540,6 @@ def test_rds_describe_db_instances_command_success(mocker):
         "ResponseMetadata": {"HTTPStatusCode": 200},
     }
     mock_client.describe_db_instances.return_value = response
-    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=response)
 
     args = {"db_instance_identifier": "test-instance"}
     result = RDS.describe_db_instances_command(mock_client, args)
@@ -14600,10 +14599,11 @@ def test_rds_describe_db_instances_command_pagination(mocker):
     mock_client.describe_db_instances.return_value = response
     mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=response)
 
-    result = RDS.describe_db_instances_command(mock_client, {"limit": "20"})
+    result = RDS.describe_db_instances_command(mock_client, {"limit": "20", "next_token": "test-token"})
     assert result.outputs["AWS.RDS(true)"]["DBInstancesNextToken"] == "next-page-token"
     calling_args = mock_client.describe_db_instances.call_args[1]
     assert calling_args["MaxRecords"] == 20
+    assert calling_args["Marker"] == "test-token"
 
 
 def test_redshift_modify_cluster_command_success(mocker):
@@ -14631,7 +14631,6 @@ def test_redshift_modify_cluster_command_success(mocker):
         "ResponseMetadata": {"HTTPStatusCode": 200},
     }
     mock_client.modify_cluster.return_value = response
-    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=response)
 
     args = {"cluster_identifier": "test-cluster", "node_type": "dc2.large"}
     result = Redshift.modify_cluster_command(mock_client, args)
@@ -14663,9 +14662,9 @@ def test_redshift_modify_cluster_command_failure(mocker):
     mocker.patch("AWS.AWSErrorHandler.handle_response_error")
     mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=response)
 
-    args = {"cluster_identifier": "test-cluster", "node_type": "dc2.large"}
+    args = {"cluster_identifier": "test-cluster", "node_type": "dc2.large", "account_id": "11111111"}
     Redshift.modify_cluster_command(mock_client, args)
-    AWSErrorHandler.handle_response_error.assert_called()
+    AWSErrorHandler.handle_response_error.assert_called_once_with(response, "11111111")
 
 
 def test_redshift_modify_cluster_command_remove_master_password(mocker):

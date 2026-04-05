@@ -1908,7 +1908,7 @@ script:
       description: GCP project ID.
     - name: dataset_id
       required: true
-      description: Dataset ID.
+      description: Dataset ID of the requested dataset.
     - name: user_email
       description: The email address of the user to add or remove from the dataset access list.
       required: false
@@ -2032,6 +2032,12 @@ script:
         type: String
       - contextPath: GCP.BigQuery.Datasets.resourceTags
         description: The tags attached to this dataset.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.storageBillingModel
+        description: Indicates the billing model that will be applied to the dataset.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.catalogSource
+        description: The origin of the dataset.
         type: String
 
 # The command is currently unsupported.

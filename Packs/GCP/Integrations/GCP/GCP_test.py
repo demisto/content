@@ -5610,6 +5610,47 @@ def test_bq_dataset_policy_update_command_remove_user(mocker):
     )
 
 
+def test_bq_dataset_policy_update_command_remove_group(mocker):
+    """
+    Given:
+        - Valid arguments to remove an existing group.
+    When:
+        - Calling bq_dataset_policy_update_command.
+    Then:
+        - Ensure the patch API is called with the correct body excluding the removed group.
+    """
+    from GCP import bq_dataset_policy_update_command
+
+    creds = MagicMock()
+    args = {"project_id": "test_project", "dataset_id": "test_dataset", "group_email": "test@test.com", "action": "remove"}
+
+    mock_bigquery = MagicMock()
+    mock_datasets = MagicMock()
+    mock_get = MagicMock()
+    mock_get.execute.return_value = {
+        "access": [{"role": "READER", "groupByEmail": "test@test.com"}, {"role": "WRITER", "userByEmail": "other@test.com"}]
+    }
+    mock_datasets.get.return_value = mock_get
+
+    mock_patch = MagicMock()
+    mock_patch.execute.return_value = {
+        "id": "test_dataset",
+        "datasetReference": {},
+        "access": [{"role": "WRITER", "userByEmail": "other@test.com"}],
+    }
+    mock_datasets.patch.return_value = mock_patch
+
+    mock_bigquery.datasets.return_value = mock_datasets
+
+    mocker.patch("GCP.GCPServices.BIGQUERY.build", return_value=mock_bigquery)
+
+    bq_dataset_policy_update_command(creds, args)
+
+    mock_datasets.patch.assert_called_once_with(
+        projectId="test_project", datasetId="test_dataset", body={"access": [{"role": "WRITER", "userByEmail": "other@test.com"}]}
+    )
+
+
 def test_bq_dataset_policy_update_command_remove_user_not_found(mocker):
     """
     Given:
@@ -5637,6 +5678,192 @@ def test_bq_dataset_policy_update_command_remove_user_not_found(mocker):
 
     result = bq_dataset_policy_update_command(creds, args)
 
-    assert result.readable_output == "No changes to apply for dataset test_dataset"
+    assert (
+        result.readable_output
+        == "No changes to apply for dataset test_dataset or the provided email wasn't found in access list."
+    )
     mock_datasets.patch.assert_not_called()
     mock_debug.assert_called_with("[GCP] Email not found in access list for dataset test_dataset")
+
+
+def test_bq_dataset_policy_update_command_update_existing_user(mocker):
+    """
+    Given: A BigQuery dataset with an existing user policy
+    When: bq_dataset_policy_update_command is called to update the role for that user
+    Then: The function should update the existing policy entry instead of appending a new one
+    """
+    from GCP import bq_dataset_policy_update_command
+
+    # Mock arguments
+    args = {
+        "project_id": "test-project",
+        "dataset_id": "test_dataset",
+        "user_email": "testuser@example.com",
+        "role": "OWNER",
+        "action": "add",
+    }
+
+    # Mock current dataset access list
+    current_dataset = {
+        "access": [
+            {"role": "WRITER", "userByEmail": "testuser@example.com"},
+            {"role": "READER", "userByEmail": "otheruser@example.com"},
+        ]
+    }
+
+    # Mock response
+    mock_response = {
+        "id": "test-project:test_dataset",
+        "datasetReference": {"datasetId": "test_dataset", "projectId": "test-project"},
+    }
+
+    # Use MagicMock for BigQuery
+    mock_bigquery = MagicMock()
+    mock_bigquery.datasets().get().execute.return_value = current_dataset
+    mock_bigquery.datasets().patch().execute.return_value = mock_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=mock_bigquery)
+    mocker.patch("GCP.tableToMarkdown", return_value="mocked markdown")
+
+    # Execute the function
+    bq_dataset_policy_update_command(mock_creds, args)
+
+    # Verify patch was called with correct parameters
+    _, call_kwargs = mock_bigquery.datasets().patch.call_args
+
+    assert call_kwargs["projectId"] == "test-project"
+    assert call_kwargs["datasetId"] == "test_dataset"
+
+    # Check that the existing user's role was updated and no duplicate was added
+    body = call_kwargs["body"]
+    access_list = body["access"]
+
+    assert len(access_list) == 2
+
+    updated_user_policy = next(p for p in access_list if p.get("userByEmail") == "testuser@example.com")
+    assert updated_user_policy["role"] == "OWNER"
+
+    other_user_policy = next(p for p in access_list if p.get("userByEmail") == "otheruser@example.com")
+    assert other_user_policy["role"] == "READER"
+
+
+def test_bq_dataset_policy_update_command_update_existing_group(mocker):
+    """
+    Given: A BigQuery dataset with an existing group policy
+    When: bq_dataset_policy_update_command is called to update the role for that group
+    Then: The function should update the existing policy entry instead of appending a new one
+    """
+    from GCP import bq_dataset_policy_update_command
+
+    # Mock arguments
+    args = {
+        "project_id": "test-project",
+        "dataset_id": "test_dataset",
+        "group_email": "testgroup@example.com",
+        "role": "READER",
+        "action": "add",
+    }
+
+    # Mock current dataset access list
+    current_dataset = {
+        "access": [
+            {"role": "OWNER", "groupByEmail": "testgroup@example.com"},
+            {"role": "OWNER", "userByEmail": "otheruser@example.com"},
+        ]
+    }
+
+    # Mock response
+    mock_response = {
+        "id": "test-project:test_dataset",
+        "datasetReference": {"datasetId": "test_dataset", "projectId": "test-project"},
+    }
+
+    # Use MagicMock for BigQuery
+    mock_bigquery = MagicMock()
+    mock_bigquery.datasets().get().execute.return_value = current_dataset
+    mock_bigquery.datasets().patch().execute.return_value = mock_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=mock_bigquery)
+    mocker.patch("GCP.tableToMarkdown", return_value="mocked markdown")
+
+    # Execute the function
+    bq_dataset_policy_update_command(mock_creds, args)
+
+    # Verify patch was called with correct parameters
+    call_args, call_kwargs = mock_bigquery.datasets().patch.call_args
+
+    assert call_kwargs["projectId"] == "test-project"
+    assert call_kwargs["datasetId"] == "test_dataset"
+
+    # Check that the existing group's role was updated and no duplicate was added
+    body = call_kwargs["body"]
+    access_list = body["access"]
+
+    assert len(access_list) == 2
+
+    updated_group_policy = next(p for p in access_list if p.get("groupByEmail") == "testgroup@example.com")
+    assert updated_group_policy["role"] == "READER"
+
+    other_user_policy = next(p for p in access_list if p.get("userByEmail") == "otheruser@example.com")
+    assert other_user_policy["role"] == "OWNER"
+
+
+@pytest.mark.parametrize(
+    "current_dataset_access, email, email_type, role, expected_index, expected_policy",
+    [
+        (
+            [{"role": "READER", "userByEmail": "test1@example.com"}, {"role": "WRITER", "userByEmail": "test2@example.com"}],
+            "test2@example.com",
+            "userByEmail",
+            "OWNER",
+            1,
+            {"role": "OWNER", "userByEmail": "test2@example.com"},
+        ),
+        (
+            [{"role": "READER", "userByEmail": "test1@example.com"}, {"role": "WRITER", "userByEmail": "test2@example.com"}],
+            "test3@example.com",
+            "userByEmail",
+            "OWNER",
+            -1,
+            {},
+        ),
+        ([], "test1@example.com", "userByEmail", "OWNER", -1, {}),
+        (
+            [{"role": "READER", "groupByEmail": "group1@example.com"}, {"role": "WRITER", "userByEmail": "test2@example.com"}],
+            "group1@example.com",
+            "groupByEmail",
+            "OWNER",
+            0,
+            {"role": "OWNER", "groupByEmail": "group1@example.com"},
+        ),
+    ],
+)
+def test_check_dataset_policy_email_exists(current_dataset_access, email, email_type, role, expected_index, expected_policy):
+    """
+    Given:
+        - A list of current dataset access policies.
+        - An email to check for.
+        - The type of the email (e.g., 'userByEmail', 'groupByEmail').
+        - The new role to assign.
+    When:
+        - Calling check_dataset_policy_email_exists function.
+    Then:
+        - Ensure the function returns the correct index of the email in the policy list (or -1 if not found).
+        - Ensure the function returns the correct new role policy dictionary.
+    Use Cases:
+        1. Email exists in the policy: The function should return the index of the email and the new role policy.
+        2. Email does not exist in the policy: The function should return -1 and an empty dictionary.
+        3. Empty policy list: The function should return -1 and an empty dictionary.
+        4. Different email type: The function should correctly identify the email based on the provided email_type and return
+            the index and new role policy.
+    """
+    from GCP import check_dataset_policy_email_exists
+
+    index, new_role_policy = check_dataset_policy_email_exists(current_dataset_access, email, email_type, role)
+
+    assert index == expected_index
+    assert new_role_policy == expected_policy

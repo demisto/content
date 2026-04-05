@@ -4530,8 +4530,24 @@ def test_network_interface_update_command_success(mocker):
             "dnsSettings": {"internalDnsNameLabel": "test-label", "dnsServers": ["1.1.1.1"]},
         },
     }
+    assert result.outputs_prefix == "Azure.VirtualNetwork.NetworkInterfaces"
+    assert result.outputs_key_field == "id"
     client.get_network_interface_request.assert_called_once_with("sub1", "rg1", "test-nic")
-    client.update_network_interface_request.assert_called_once()
+    client.update_network_interface_request.assert_called_once_with(
+        subscription_id="sub1",
+        resource_group_name="rg1",
+        interface_name="test-nic",
+        network_interface_data={
+            "id": "nic1",
+            "name": "test-nic",
+            "location": "eastus",
+            "properties": {
+                "enableIPForwarding": True,
+                "enableAcceleratedNetworking": False,
+                "dnsSettings": {"internalDnsNameLabel": "test-label", "dnsServers": ["1.1.1.1"]},
+            },
+        },
+    )
 
 
 def test_network_interface_update_command_add_nsg(mocker):
@@ -4628,7 +4644,17 @@ def test_network_interface_update_command_remove_nsg(mocker):
 
     assert "networkSecurityGroup" not in result.outputs.get("properties", {})
     client.get_network_interface_request.assert_called_once_with("sub1", "rg1", "test-nic")
-    client.update_network_interface_request.assert_called_once()
+    client.update_network_interface_request.assert_called_once_with(
+        subscription_id="sub1",
+        resource_group_name="rg1",
+        interface_name="test-nic",
+        network_interface_data={
+            "id": "nic1",
+            "name": "test-nic",
+            "location": "eastus",
+            "properties": {},
+        },
+    )
 
 
 def test_network_interface_update_command_conflict_nsg(mocker):
@@ -4651,7 +4677,7 @@ def test_network_interface_update_command_conflict_nsg(mocker):
         "resource_group_name": "rg1",
         "network_interface_name": "test-nic",
         "network_security_group_name": "nsg1",
-        "remove_network_security_group": "true",
+        "remove_network_security_group": "yes",
     }
     params = {}
 

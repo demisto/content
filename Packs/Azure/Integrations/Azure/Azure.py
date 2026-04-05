@@ -2656,8 +2656,8 @@ def update_nic_properties(args: dict, params: dict, properties: dict):
         else properties.get("enableIPForwarding")
     )
     properties["enableAcceleratedNetworking"] = (
-        argToBoolean(args.get("accelerate_networking"))
-        if args.get("accelerate_networking") is not None
+        argToBoolean(args.get("enable_accelerate_networking"))
+        if args.get("enable_accelerate_networking") is not None
         else properties.get("enableAcceleratedNetworking")
     )
     properties["auxiliaryMode"] = args.get("auxiliary_mode") or properties.get("auxiliaryMode")
@@ -4624,7 +4624,7 @@ def network_interface_update_command(client: AzureClient, params: dict[str, Any]
             - resource_group_name: Resource group containing the network interface
             - location: The location of the network security group.
             - enable_ip_forwarding: Enable or disable IP forwarding (true/false)
-            - accelerate_networking: If the network interface is configured for accelerated networking.
+            - enable_accelerate_networking: If the network interface is configured for accelerated networking.
             - auxiliary_mode: Auxiliary mode of Network Interface resource.
             - auxiliary_sku: Auxiliary sku of Network Interface resource.
             - dns_servers: Comma-separated list of DNS server IP addresses
