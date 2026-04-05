@@ -1,5 +1,8 @@
 category: Data Enrichment & Threat Intelligence
 provider: Audax Private Equity
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: TeamCymru
   version: -1
@@ -7,6 +10,8 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  section: Connect
+  advanced: true
   required: false
 - display: Use system proxy settings
   name: proxy
@@ -35,6 +40,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  section: Collect
   required: false
 description: Team Cymru provides various service options dedicated to mapping IP numbers to BGP prefixes and ASNs. Each of the services is based on the same BGP feeds from 50+ BGP peers and is updated at 4-hour intervals.
 display: 'Team Cymru'
