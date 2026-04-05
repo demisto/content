@@ -248,11 +248,11 @@ class TestFetchEventsWithPagination:
         page_response = {
             "checkpoint": "checkpoint_1",
             "additional_results": True,
-            "results": [{"id": f"event-{i}", "created_at": f"2024-06-15T{i:02d}:00:00Z"} for i in range(100)],
+            "results": [{"id": f"event-{i}", "created_at": f"2024-06-15T{i:02d}:00:00Z"} for i in range(50)],
         }
 
         client = create_mock_client(mocker)
-        mocker.patch.object(client, "list_events", return_value=page_response)
+        mock_list = mocker.patch.object(client, "list_events", return_value=page_response)
 
         events, checkpoint = fetch_events_with_pagination(
             client=client,
@@ -261,8 +261,9 @@ class TestFetchEventsWithPagination:
             max_fetch=50,
         )
 
-        # Should stop after first call since we already have >= max_fetch
-        assert len(events) == 100  # Gets full page but stops pagination
+        # Should request limit=50 and return 50 events
+        mock_list.assert_called_once_with(limit=50, created_after="2024-06-15T00:00:00Z")
+        assert len(events) == 50
         assert checkpoint == "checkpoint_1"
 
     def test_uses_checkpoint_over_created_after(self, mocker):

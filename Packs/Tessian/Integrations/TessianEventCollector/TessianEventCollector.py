@@ -254,6 +254,7 @@ def get_events_command(
         A tuple of (events, CommandResults).
     """
     limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
+    limit = max(1, min(limit, DEFAULT_MAX_FETCH))
     created_after = args.get("created_after")
     should_push_events = argToBoolean(args.get("should_push_events", False))
 
@@ -350,6 +351,7 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
+    max_fetch = max(1, min(max_fetch, DEFAULT_MAX_FETCH))
 
     demisto.debug(f"Command being called is {command}")
 
