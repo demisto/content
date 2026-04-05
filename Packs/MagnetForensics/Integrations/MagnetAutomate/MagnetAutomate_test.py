@@ -123,7 +123,7 @@ def test_custom_fields_list_command(mocker: MockerFixture, client: "MagnetAutoma
     mock_response = load_mock_response("custom_fields_list.json")
     mocker.patch.object(client, "custom_fields_list", return_value=mock_response)
 
-    args = CustomFieldsListArgs(workflow_id=1)
+    args = CustomFieldsListArgs()
 
     response = custom_fields_list_command(client, args)
 

@@ -108,25 +108,18 @@ class MagnetAutomateClient(ContentClient):
             client_name="MagnetAutomateClient",
         )
 
-    def custom_fields_list(self, workflow_id: int | None = None) -> list[dict[str, Any]]:
+    def custom_fields_list(self) -> list[dict[str, Any]]:
         """
         Gets custom fields for cases and evidence sources.
-
-        Args:
-            workflow_id (int | None): An optional filter to return only custom fields used in the specified workflow.
 
         Returns:
             list[dict[str, Any]]: A list of custom fields.
         """
-        params = {}
-        if workflow_id:
-            params["workflowId"] = workflow_id
 
-        demisto.debug(f"Sending a GET Request to /customFields with {params=}.")
+        demisto.debug("Sending a GET Request to /customFields.")
 
         return self.get(
             url_suffix="/customFields",
-            params=params,
         )
 
     def case_create(self, case_number: str, custom_field_values: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -538,7 +531,6 @@ def test_module(client: MagnetAutomateClient) -> str:
 
 # region ma-forensics-custom-fields-list
 class CustomFieldsListArgs(ContentBaseModel):
-    workflow_id: int | None = None
     limit: int | None = 50
     all_results: bool = False
 
@@ -557,7 +549,7 @@ def custom_fields_list_command(client: MagnetAutomateClient, args: CustomFieldsL
     Returns:
         CommandResults: The results of the command execution, including the list of custom fields.
     """
-    results = client.custom_fields_list(workflow_id=args.workflow_id)
+    results = client.custom_fields_list()
     paginated_results = truncate_results(results, limit=args.limit, all_results=args.all_results)
 
     readable_output = tableToMarkdown(
