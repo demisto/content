@@ -250,6 +250,12 @@ class MagnetAutomateClient(ContentClient):
 
         demisto.debug(f"Sending a POST Request to /cases/{case_id}/runs with {json_data=}.")
 
+        if decryption and "value" in decryption and hasattr(decryption["value"], "get_secret_value"):
+            # remove obfuscation from payload before http post method
+            raw_decryption_dict = decryption.copy()
+            raw_decryption_dict["value"] = decryption["value"].get_secret_value()
+            evidence_source["decryption"] = raw_decryption_dict
+
         return self.post(
             url_suffix=f"/cases/{case_id}/runs",
             json=json_data,
@@ -782,7 +788,7 @@ class WorkflowRunStartArgs(ContentBaseModel):
     output_path: str | None = Field(None, alias="output_path")
     platform: str | None = Field(None, alias="platform")
     decryption_type: str | None = Field(None, alias="decryption_type")
-    decryption_value: str | None = Field(None, alias="decryption_value")
+    decryption_value: SecretStr | None = Field(None, alias="decryption_value")
     continue_on_decryption_fail: bool | None = Field(None, alias="continue_on_decryption_fail")
     custom_field_values: dict[str, Any] | None = Field(None, alias="custom_field_values")
     assigned_node_name: str | None = Field(None, alias="assigned_node_name")

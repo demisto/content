@@ -157,6 +157,7 @@ script:
       description: The type of decryption to use (e.g., Password, RecoveryKey).
     - name: decryption_value
       required: false
+      secret: true
       description: The decryption key or password.
     - name: continue_on_decryption_fail
       required: false

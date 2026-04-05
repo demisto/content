@@ -305,6 +305,7 @@ def test_workflow_run_start_command(mocker: MockerFixture, client: "MagnetAutoma
         - Assert the client's workflow_run_start method is called with all provided arguments.
         - Assert the response is correctly processed into CommandResults with expected workflow run details.
     """
+    from pydantic import SecretStr
     from MagnetAutomate import workflow_run_start_command, WorkflowRunStartArgs
 
     mock_response = load_mock_response("workflow_run_start.json")
@@ -318,7 +319,7 @@ def test_workflow_run_start_command(mocker: MockerFixture, client: "MagnetAutoma
         output_path="C:\\testdata\\output",
         platform="windows",
         decryption_type="password",
-        decryption_value="MySecretPassword",
+        decryption_value=SecretStr("MySecretPassword"),
         continue_on_decryption_fail=False,
         custom_field_values={"5": "Evidence Value A"},
         assigned_node_name="AGENT1",
@@ -343,7 +344,7 @@ def test_workflow_run_start_command(mocker: MockerFixture, client: "MagnetAutoma
         workflow_id=3,
         output_path="C:\\testdata\\output",
         platform="windows",
-        decryption={"type": "password", "value": "MySecretPassword", "continueOnDecryptionFail": False},
+        decryption={"type": "password", "value": SecretStr("MySecretPassword"), "continueOnDecryptionFail": False},
         custom_field_values={"5": "Evidence Value A"},
         assigned_node_name="AGENT1",
     )
