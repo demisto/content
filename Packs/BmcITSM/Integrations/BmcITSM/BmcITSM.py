@@ -428,7 +428,7 @@ class AuthClient(BaseClient):
         try:
             token = self._http_request(
                 method="POST",
-                url_suffix=urljoin(self._server_url, "api/jwt/login"),
+                full_url=urljoin(self._server_url, "api/jwt/login"),
                 data={"username": self._username, "password": self._password},
                 resp_type="text",
             )
@@ -484,7 +484,7 @@ class AuthClient(BaseClient):
 
                 try:
                     response = self._http_request(
-                        method="POST", url_suffix=token_url, headers=headers, data=data, resp_type="json"
+                        method="POST", full_url=token_url, headers=headers, data=data, resp_type="json"
                     )
                     self.store_oauth_tokens(integration_context, response)
                     demisto.debug("[get_oauth_token] - Access token refreshed successfully.")
@@ -506,7 +506,7 @@ class AuthClient(BaseClient):
                 }
                 try:
                     response = self._http_request(
-                        method="POST", url_suffix=token_url, headers=headers, data=data, resp_type="json"
+                        method="POST", full_url=token_url, headers=headers, data=data, resp_type="json"
                     )
                     self.store_oauth_tokens(integration_context, response)
                     demisto.debug("[get_oauth_token] - Authorization code exchanged successfully.")
