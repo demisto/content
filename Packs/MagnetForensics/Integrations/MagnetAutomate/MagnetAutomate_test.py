@@ -54,32 +54,6 @@ def client() -> "MagnetAutomateClient":
 
 
 @pytest.mark.parametrize(
-    "results, page, page_size, expected",
-    [
-        pytest.param([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 2, 5, [6, 7, 8, 9, 10], id="standard_pagination"),
-        pytest.param([1, 2, 3], None, None, [1, 2, 3], id="default_behavior_no_page_no_size"),
-        pytest.param([1, 2, 3], 1, None, [1, 2, 3], id="default_behavior_page_1_no_size"),
-        pytest.param([1, 2, 3], None, 10, [1, 2, 3], id="default_behavior_no_page_with_size"),
-        pytest.param([1, 2, 3], 2, 5, [], id="page_exceeds_total_results"),
-        pytest.param([], 1, 5, [], id="empty_input_list"),
-        pytest.param([1, 2, 3, 4, 5, 6, 7], 2, 5, [6, 7], id="partial_last_page"),
-    ],
-)
-def test_paginate(results: list, page: int | None, page_size: int | None, expected: list) -> None:
-    """
-    Given:
-        - A list of results and pagination parameters (page and page_size).
-    When:
-        - Calling the paginate helper function.
-    Then:
-        - Assert the list is sliced correctly according to the page and page_size.
-    """
-    from MagnetAutomate import paginate
-
-    assert paginate(results, page, page_size) == expected
-
-
-@pytest.mark.parametrize(
     "results, limit, all_results, expected",
     [
         pytest.param([1, 2, 3, 4, 5], 2, True, [1, 2, 3, 4, 5], id="all_results_true"),

@@ -18,27 +18,6 @@ BASE_CONTEXT_OUTPUT_PREFIX = "MagnetForensics"
 # region Helpers
 
 
-def paginate(results: list[Any], page: int | None = None, page_size: int | None = None) -> list[Any]:
-    """
-    Paginates a list of results.
-
-    Args:
-        results (list[Any]): The list of results to paginate.
-        page (int | None): The page number to retrieve (1-indexed).
-        page_size (int | None): The number of results per page.
-
-    Returns:
-        list[Any]: The paginated slice of results.
-    """
-    if not page or not page_size:
-        return results
-
-    start = (page - 1) * page_size
-    end = start + page_size
-
-    return results[start:end]
-
-
 def truncate_results(results: list[Any], limit: int | None = None, all_results: bool = False) -> list[Any]:
     """
     Truncates a list of results based on a limit or an override flag.
