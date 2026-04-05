@@ -97,7 +97,7 @@ def test_custom_fields_list_command(mocker: MockerFixture, client: "MagnetAutoma
     mock_response = load_mock_response("custom_fields_list.json")
     mocker.patch.object(client, "custom_fields_list", return_value=mock_response)
 
-    args = CustomFieldsListArgs()
+    args = CustomFieldsListArgs(limit=None, all_results=False)
 
     response = custom_fields_list_command(client, args)
 
@@ -166,7 +166,7 @@ def test_cases_list_command_all(mocker: MockerFixture, client: "MagnetAutomateCl
     mock_response = load_mock_response("cases_list.json")
     mocker.patch.object(client, "cases_list", return_value=mock_response)
 
-    args = CasesListArgs(case_id=None)
+    args = CasesListArgs(case_id=None, limit=None, all_results=False)
 
     response = cases_list_command(client, args)
 
@@ -196,7 +196,7 @@ def test_cases_list_command_single(mocker: MockerFixture, client: "MagnetAutomat
     mock_response = load_mock_response("case_get.json")
     mocker.patch.object(client, "cases_list", return_value=mock_response)
 
-    args = CasesListArgs(case_id="1")
+    args = CasesListArgs(case_id=1, limit=None, all_results=False)
 
     response = cases_list_command(client, args)
 
@@ -229,12 +229,12 @@ def test_case_delete_command(mocker: MockerFixture, client: "MagnetAutomateClien
 
     mocker.patch.object(client, "case_delete", return_value=None)
 
-    args = CaseDeleteArgs(case_id="123")
+    args = CaseDeleteArgs(case_id=123)
 
     response = case_delete_command(client, args)
 
     assert response.readable_output == "Case 123 deleted successfully"
-    client.case_delete.assert_called_once_with(case_id="123")  # type: ignore
+    client.case_delete.assert_called_once_with(case_id=123)  # type: ignore
 
 
 # endregion
@@ -256,12 +256,12 @@ def test_case_cancel_command(mocker: MockerFixture, client: "MagnetAutomateClien
 
     mocker.patch.object(client, "case_cancel", return_value=None)
 
-    args = CaseCancelArgs(case_id="123")
+    args = CaseCancelArgs(case_id=123)
 
     response = case_cancel_command(client, args)
 
     assert response.readable_output == "Case 123 cancelled successfully"
-    client.case_cancel.assert_called_once_with(case_id="123")  # type: ignore
+    client.case_cancel.assert_called_once_with(case_id=123)  # type: ignore
 
 
 # endregion
@@ -286,7 +286,7 @@ def test_workflow_run_start_command(mocker: MockerFixture, client: "MagnetAutoma
     mocker.patch.object(client, "workflow_run_start", return_value=mock_response)
 
     args = WorkflowRunStartArgs(
-        case_id="10",
+        case_id=10,
         evidence_number="ExhibitA",
         type={"ImageSource": {"path": "C:\\testdata\\image\\image123.001"}},
         workflow_id=3,
@@ -312,7 +312,7 @@ def test_workflow_run_start_command(mocker: MockerFixture, client: "MagnetAutoma
     assert "Workflow Run Started" in response.readable_output
 
     client.workflow_run_start.assert_called_once_with(  # type: ignore
-        case_id="10",
+        case_id=10,
         evidence_number="ExhibitA",
         evidence_type={"ImageSource": {"path": "C:\\testdata\\image\\image123.001"}},
         workflow_id=3,
@@ -345,7 +345,7 @@ def test_workflow_run_list_command_specific(mocker: MockerFixture, client: "Magn
     mock_response = load_mock_response("workflow_run_list_specific.json")
     mocker.patch.object(client, "workflow_run_list_specific", return_value=mock_response)
 
-    args = WorkflowRunListArgs(case_id="10", run_id="23")
+    args = WorkflowRunListArgs(case_id=10, run_id=23, limit=None, all_results=False)
 
     response = workflow_run_list_command(client, args)
 
@@ -356,7 +356,7 @@ def test_workflow_run_list_command_specific(mocker: MockerFixture, client: "Magn
 
     assert output.get("id") == 23
     assert "Workflow Run 23 Details" in response.readable_output
-    client.workflow_run_list_specific.assert_called_once_with(case_id="10", run_id="23")  # type: ignore
+    client.workflow_run_list_specific.assert_called_once_with(case_id=10, run_id=23)  # type: ignore
 
 
 def test_workflow_run_list_command_all(mocker: MockerFixture, client: "MagnetAutomateClient") -> None:
@@ -374,7 +374,7 @@ def test_workflow_run_list_command_all(mocker: MockerFixture, client: "MagnetAut
     mock_response = load_mock_response("workflow_run_list_all.json")
     mocker.patch.object(client, "workflow_run_list_all", return_value=mock_response)
 
-    args = WorkflowRunListArgs(case_id="10", run_id=None)
+    args = WorkflowRunListArgs(case_id=10, run_id=None, limit=None, all_results=False)
 
     response = workflow_run_list_command(client, args)
 
@@ -387,7 +387,7 @@ def test_workflow_run_list_command_all(mocker: MockerFixture, client: "MagnetAut
     assert outputs[0].get("id") == 23
     assert outputs[1].get("id") == 42
     assert "Workflow Runs for Case 10" in response.readable_output
-    client.workflow_run_list_all.assert_called_once_with(case_id="10")  # type: ignore
+    client.workflow_run_list_all.assert_called_once_with(case_id=10)  # type: ignore
 
 
 # endregion
@@ -410,12 +410,12 @@ def test_workflow_run_delete_command(mocker: MockerFixture, client: "MagnetAutom
 
     mocker.patch.object(client, "workflow_run_delete", return_value=None)
 
-    args = WorkflowRunDeleteArgs(case_id="123", run_id="456")
+    args = WorkflowRunDeleteArgs(case_id=123, run_id=456)
 
     response = workflow_run_delete_command(client, args)
 
     assert response.readable_output == "Workflow run 456 for case 123 deleted successfully"
-    client.workflow_run_delete.assert_called_once_with(case_id="123", run_id="456")  # type: ignore
+    client.workflow_run_delete.assert_called_once_with(case_id=123, run_id=456)  # type: ignore
 
 
 # endregion
@@ -437,12 +437,12 @@ def test_workflow_run_cancel_command(mocker: MockerFixture, client: "MagnetAutom
 
     mocker.patch.object(client, "workflow_run_cancel", return_value=None)
 
-    args = WorkflowRunCancelArgs(case_id="123", run_id="456")
+    args = WorkflowRunCancelArgs(case_id=123, run_id=456)
 
     response = workflow_run_cancel_command(client, args)
 
     assert response.readable_output == "Workflow run 456 for case 123 cancelled successfully"
-    client.workflow_run_cancel.assert_called_once_with(case_id="123", run_id="456")  # type: ignore
+    client.workflow_run_cancel.assert_called_once_with(case_id=123, run_id=456)  # type: ignore
 
 
 # endregion
@@ -467,8 +467,8 @@ def test_merge_workflow_run_start_command(mocker: MockerFixture, client: "Magnet
     mocker.patch.object(client, "merge_workflow_run_start", return_value=mock_response)
 
     args = MergeWorkflowRunStartArgs(
-        case_id="10",
-        run_ids=["11", "12"],
+        case_id=10,
+        run_ids=[11, 12],
         workflow_id=5,
         output_path="C:\\testdata\\output",
         assigned_node_name="AGENT1",
@@ -486,8 +486,8 @@ def test_merge_workflow_run_start_command(mocker: MockerFixture, client: "Magnet
     assert "Merge Workflow Run Started" in response.readable_output
 
     client.merge_workflow_run_start.assert_called_once_with(  # type: ignore
-        case_id="10",
-        run_ids=["11", "12"],
+        case_id=10,
+        run_ids=[11, 12],
         workflow_id=5,
         output_path="C:\\testdata\\output",
         assigned_node_name="AGENT1",
@@ -515,7 +515,7 @@ def test_workflow_list_command(mocker: MockerFixture, client: "MagnetAutomateCli
     mock_response = load_mock_response("workflows_list.json")
     mocker.patch.object(client, "workflows_list", return_value=mock_response)
 
-    args = WorkflowListArgs()
+    args = WorkflowListArgs(limit=None, all_results=False)
 
     response = workflow_list_command(client, args)
 
@@ -551,12 +551,12 @@ def test_workflow_delete_command(mocker: MockerFixture, client: "MagnetAutomateC
 
     mocker.patch.object(client, "workflow_delete", return_value=None)
 
-    args = WorkflowDeleteArgs(workflow_id="9")
+    args = WorkflowDeleteArgs(workflow_id=9)
 
     response = workflow_delete_command(client, args)
 
     assert response.readable_output == "Workflow 9 deleted successfully"
-    client.workflow_delete.assert_called_once_with(workflow_id="9")  # type: ignore
+    client.workflow_delete.assert_called_once_with(workflow_id=9)  # type: ignore
 
 
 # endregion
@@ -580,7 +580,7 @@ def test_workflow_get_command(mocker: MockerFixture, client: "MagnetAutomateClie
     mock_response = load_mock_response("workflow_get.json")
     mocker.patch.object(client, "workflow_get", return_value=mock_response)
 
-    args = WorkflowGetArgs(workflow_id="1")
+    args = WorkflowGetArgs(workflow_id=1)
 
     response = workflow_get_command(client, args)
 
@@ -591,9 +591,9 @@ def test_workflow_get_command(mocker: MockerFixture, client: "MagnetAutomateClie
 
     assert outputs.get("name") == "Process - Image"
     assert outputs.get("automateVersion") == "1.2.3.0000"
-    assert outputs.get("id") == "1"
+    assert outputs.get("id") == 1
     assert "Workflow 1 Export" in response.readable_output
-    client.workflow_get.assert_called_once_with(workflow_id="1")  # type: ignore
+    client.workflow_get.assert_called_once_with(workflow_id=1)  # type: ignore
 
 
 # endregion
@@ -670,7 +670,7 @@ def test_nodes_list_command(mocker: MockerFixture, client: "MagnetAutomateClient
     mock_response = load_mock_response("nodes_list.json")
     mocker.patch.object(client, "nodes_list", return_value=mock_response)
 
-    args = NodesListArgs()
+    args = NodesListArgs(limit=None, all_results=False)
 
     response = nodes_list_command(client, args)
 
@@ -707,7 +707,7 @@ def test_node_update_command(mocker: MockerFixture, client: "MagnetAutomateClien
     mocker.patch.object(client, "node_update", return_value=None)
 
     args = NodeUpdateArgs(
-        node_id="1",
+        node_id=1,
         address="automate-node-2",
         working_directory="C:\\automate\\updatedTemp",
         applications_json='[{"applicationName": "AXIOM Process", "applicationVersion": "7.0.0", "applicationPath": "C:\\\\Program Files\\\\Magnet Forensics\\\\Magnet AUTOMATE\\\\agent\\\\AXIOM Process\\\\AXIOMProcess.CLI.exe"}]',  # noqa: E501
@@ -718,7 +718,7 @@ def test_node_update_command(mocker: MockerFixture, client: "MagnetAutomateClien
     assert "Node 1 was updated successfully" in response.readable_output
 
     client.node_update.assert_called_once_with(  # type: ignore
-        node_id="1",
+        node_id=1,
         address="automate-node-2",
         working_directory="C:\\automate\\updatedTemp",
         applications=[
@@ -751,12 +751,12 @@ def test_node_delete_command(mocker: MockerFixture, client: "MagnetAutomateClien
 
     mocker.patch.object(client, "node_delete", return_value=None)
 
-    args = NodeDeleteArgs(node_id="123")
+    args = NodeDeleteArgs(node_id=123)
 
     response = node_delete_command(client, args)
 
     assert response.readable_output == "The Node 123 was deleted successfully"
-    client.node_delete.assert_called_once_with(node_id="123")  # type: ignore
+    client.node_delete.assert_called_once_with(node_id=123)  # type: ignore
 
 
 # endregion

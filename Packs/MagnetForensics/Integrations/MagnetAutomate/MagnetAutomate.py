@@ -125,12 +125,12 @@ class MagnetAutomateClient(ContentClient):
             json=json_data,
         )
 
-    def cases_list(self, case_id: str | None = None) -> list[dict[str, Any]] | dict[str, Any]:
+    def cases_list(self, case_id: int | None = None) -> list[dict[str, Any]] | dict[str, Any]:
         """
         Gets a list of all cases or information about a specific case.
 
         Args:
-            case_id (str | None): The ID of the case to get.
+            case_id (int | None): The ID of the case to get.
 
         Returns:
             list[dict[str, Any]] | dict[str, Any]: A list of cases or a specific case.
@@ -145,12 +145,12 @@ class MagnetAutomateClient(ContentClient):
             url_suffix=url_suffix,
         )
 
-    def case_delete(self, case_id: str) -> None:
+    def case_delete(self, case_id: int) -> None:
         """
         Deletes a case.
 
         Args:
-            case_id (str): The ID of the case to delete.
+            case_id (int): The ID of the case to delete.
         """
         demisto.debug(f"Sending a DELETE Request to /cases/{case_id}.")
 
@@ -159,12 +159,12 @@ class MagnetAutomateClient(ContentClient):
             resp_type="text",
         )
 
-    def case_cancel(self, case_id: str) -> None:
+    def case_cancel(self, case_id: int) -> None:
         """
         Cancels a case.
 
         Args:
-            case_id (str): The ID of the case to cancel.
+            case_id (int): The ID of the case to cancel.
         """
         demisto.debug(f"Sending a PUT Request to /cases/{case_id}/cancel.")
 
@@ -175,7 +175,7 @@ class MagnetAutomateClient(ContentClient):
 
     def workflow_run_start(
         self,
-        case_id: str,
+        case_id: int,
         evidence_number: str,
         evidence_type: dict[str, Any],
         workflow_id: int,
@@ -189,7 +189,7 @@ class MagnetAutomateClient(ContentClient):
         Starts a workflow run and assigns it to a case.
 
         Args:
-            case_id (str): The ID of the case to associate the workflow run with.
+            case_id (int): The ID of the case to associate the workflow run with.
             evidence_number (str): An evidence number to apply to the evidence source.
             evidence_type (dict[str, Any]): The evidence type (e.g., {"ImageSource": {"path": "..."}}).
             workflow_id (int): The ID of the workflow to run.
@@ -233,13 +233,13 @@ class MagnetAutomateClient(ContentClient):
             json=json_data,
         )
 
-    def workflow_run_delete(self, case_id: str, run_id: str) -> None:
+    def workflow_run_delete(self, case_id: int, run_id: int) -> None:
         """
         Deletes a workflow run.
 
         Args:
-            case_id (str): The ID of the case.
-            run_id (str): The ID of the workflow run to delete.
+            case_id (int): The ID of the case.
+            run_id (int): The ID of the workflow run to delete.
         """
         demisto.debug(f"Sending a DELETE Request to /cases/{case_id}/runs/{run_id}.")
 
@@ -248,13 +248,13 @@ class MagnetAutomateClient(ContentClient):
             resp_type="text",
         )
 
-    def workflow_run_cancel(self, case_id: str, run_id: str) -> None:
+    def workflow_run_cancel(self, case_id: int, run_id: int) -> None:
         """
         Cancels a workflow run.
 
         Args:
-            case_id (str): The ID of the case.
-            run_id (str): The ID of the workflow run to cancel.
+            case_id (int): The ID of the case.
+            run_id (int): The ID of the workflow run to cancel.
         """
         demisto.debug(f"Sending a PUT Request to /cases/{case_id}/runs/{run_id}/cancel.")
 
@@ -263,13 +263,13 @@ class MagnetAutomateClient(ContentClient):
             resp_type="text",
         )
 
-    def workflow_run_list_specific(self, case_id: str, run_id: str) -> dict[str, Any]:
+    def workflow_run_list_specific(self, case_id: int, run_id: int) -> dict[str, Any]:
         """
         Gets a specific workflow run from a specific case.
 
         Args:
-            case_id (str): The ID of the case to get workflow runs for.
-            run_id (str): The ID of the specific workflow run.
+            case_id (int): The ID of the case to get workflow runs for.
+            run_id (int): The ID of the specific workflow run.
 
         Returns:
             dict[str, Any]: A workflow run object.
@@ -280,12 +280,12 @@ class MagnetAutomateClient(ContentClient):
             url_suffix=f"/cases/{case_id}/runs/{run_id}",
         )
 
-    def workflow_run_list_all(self, case_id: str) -> list[dict[str, Any]]:
+    def workflow_run_list_all(self, case_id: int) -> list[dict[str, Any]]:
         """
         Gets a list of all workflow runs for a specific case.
 
         Args:
-            case_id (str): The ID of the case to get workflow runs for.
+            case_id (int): The ID of the case to get workflow runs for.
 
         Returns:
             list[dict[str, Any]]: A list of workflow runs.
@@ -298,8 +298,8 @@ class MagnetAutomateClient(ContentClient):
 
     def merge_workflow_run_start(
         self,
-        case_id: str,
-        run_ids: list[str],
+        case_id: int,
+        run_ids: list[int],
         workflow_id: int,
         output_path: str | None = None,
         assigned_node_name: str | None = None,
@@ -308,8 +308,8 @@ class MagnetAutomateClient(ContentClient):
         Starts a merge workflow run for multiple existing workflow runs.
 
         Args:
-            case_id (str): The ID of the case.
-            run_ids (list[str]): The IDs of the workflow runs to merge.
+            case_id (int): The ID of the case.
+            run_ids (list[int]): The IDs of the workflow runs to merge.
             workflow_id (int): The ID of the workflow to run.
             output_path (str | None): Optional output path.
             assigned_node_name (str | None): Optional assigned node name.
@@ -346,12 +346,12 @@ class MagnetAutomateClient(ContentClient):
             url_suffix="/workflows",
         )
 
-    def workflow_delete(self, workflow_id: str) -> None:
+    def workflow_delete(self, workflow_id: int) -> None:
         """
         Deletes a workflow.
 
         Args:
-            workflow_id (str): The ID of the workflow to delete.
+            workflow_id (int): The ID of the workflow to delete.
         """
         demisto.debug(f"Sending a DELETE Request to /workflows/{workflow_id}.")
 
@@ -360,12 +360,12 @@ class MagnetAutomateClient(ContentClient):
             resp_type="text",
         )
 
-    def workflow_get(self, workflow_id: str) -> dict[str, Any]:
+    def workflow_get(self, workflow_id: int) -> dict[str, Any]:
         """
         Gets workflow export.
 
         Args:
-            workflow_id (str): The ID of the workflow to export.
+            workflow_id (int): The ID of the workflow to export.
 
         Returns:
             dict[str, Any]: The exported workflow.
@@ -427,7 +427,7 @@ class MagnetAutomateClient(ContentClient):
 
     def node_update(
         self,
-        node_id: str,
+        node_id: int,
         address: str | None = None,
         working_directory: str | None = None,
         applications: list[dict[str, Any]] | None = None,
@@ -436,7 +436,7 @@ class MagnetAutomateClient(ContentClient):
         Updates an existing node.
 
         Args:
-            node_id (str): The ID of the node to update.
+            node_id (int): The ID of the node to update.
             address (str | None): The address of the node.
             working_directory (str | None): The working directory of the node.
             applications (list[dict[str, Any]] | None): Information about the applications installed on the node.
@@ -459,12 +459,12 @@ class MagnetAutomateClient(ContentClient):
             json=json_data,
         )
 
-    def node_delete(self, node_id: str) -> None:
+    def node_delete(self, node_id: int) -> None:
         """
         Deletes an existing node.
 
         Args:
-            node_id (str): The ID of the node to delete.
+            node_id (int): The ID of the node to delete.
         """
         demisto.debug(f"Sending a DELETE Request to /nodes/{node_id}.")
 
@@ -510,8 +510,18 @@ def test_module(client: MagnetAutomateClient) -> str:
 
 # region ma-forensics-custom-fields-list
 class CustomFieldsListArgs(ContentBaseModel):
-    limit: int | None = 50
-    all_results: bool = False
+    limit: int | None = Field(50, alias="limit")
+    all_results: bool = Field(False, alias="all_results")
+
+    @validator("limit", pre=True)
+    @classmethod
+    def validate_limit(cls, v):
+        return arg_to_number(v)
+
+    @validator("all_results", pre=True)
+    @classmethod
+    def validate_all_results(cls, v):
+        return argToBoolean(v)
 
 
 def custom_fields_list_command(client: MagnetAutomateClient, args: CustomFieldsListArgs) -> CommandResults:
@@ -575,6 +585,16 @@ class CaseCreateArgs(ContentBaseModel):
     case_number: str = Field(alias="case_number")
     custom_field_values: dict[str, Any] | None = Field(None, alias="custom_field_values")
 
+    @validator("custom_field_values", pre=True)
+    @classmethod
+    def validate_custom_field_values(cls, v):
+        if isinstance(v, str) and v:
+            try:
+                return json.loads(v)
+            except json.JSONDecodeError:
+                return v
+        return v
+
 
 def case_create_command(client: MagnetAutomateClient, args: CaseCreateArgs) -> CommandResults:
     """
@@ -618,9 +638,24 @@ def case_create_command(client: MagnetAutomateClient, args: CaseCreateArgs) -> C
 
 
 class CasesListArgs(ContentBaseModel):
-    case_id: str | None = Field(None, alias="case_id")
-    limit: int | None = 50
-    all_results: bool = False
+    case_id: int | None = Field(None, alias="case_id")
+    limit: int | None = Field(50, alias="limit")
+    all_results: bool = Field(False, alias="all_results")
+
+    @validator("case_id", pre=True)
+    @classmethod
+    def validate_case_id(cls, v):
+        return arg_to_number(v)
+
+    @validator("limit", pre=True)
+    @classmethod
+    def validate_limit(cls, v):
+        return arg_to_number(v)
+
+    @validator("all_results", pre=True)
+    @classmethod
+    def validate_all_results(cls, v):
+        return argToBoolean(v)
 
 
 def cases_list_command(client: MagnetAutomateClient, args: CasesListArgs) -> CommandResults:
@@ -698,7 +733,12 @@ def cases_list_command(client: MagnetAutomateClient, args: CasesListArgs) -> Com
 
 
 class CaseDeleteArgs(ContentBaseModel):
-    case_id: str = Field(alias="case_id")
+    case_id: int = Field(alias="case_id")
+
+    @validator("case_id", pre=True)
+    @classmethod
+    def validate_case_id(cls, v):
+        return arg_to_number(v, required=True)
 
 
 def case_delete_command(client: MagnetAutomateClient, args: CaseDeleteArgs) -> CommandResults:
@@ -725,7 +765,12 @@ def case_delete_command(client: MagnetAutomateClient, args: CaseDeleteArgs) -> C
 
 
 class CaseCancelArgs(ContentBaseModel):
-    case_id: str = Field(alias="case_id")
+    case_id: int = Field(alias="case_id")
+
+    @validator("case_id", pre=True)
+    @classmethod
+    def validate_case_id(cls, v):
+        return arg_to_number(v, required=True)
 
 
 def case_cancel_command(client: MagnetAutomateClient, args: CaseCancelArgs) -> CommandResults:
@@ -752,7 +797,7 @@ def case_cancel_command(client: MagnetAutomateClient, args: CaseCancelArgs) -> C
 
 
 class WorkflowRunStartArgs(ContentBaseModel):
-    case_id: str = Field(alias="case_id")
+    case_id: int = Field(alias="case_id")
     evidence_number: str = Field(alias="evidence_number")
     evidence_type: dict[str, Any] = Field(alias="type")
     workflow_id: int = Field(alias="workflow_id")
@@ -763,6 +808,31 @@ class WorkflowRunStartArgs(ContentBaseModel):
     continue_on_decryption_fail: bool | None = Field(None, alias="continue_on_decryption_fail")
     custom_field_values: dict[str, Any] | None = Field(None, alias="custom_field_values")
     assigned_node_name: str | None = Field(None, alias="assigned_node_name")
+
+    @validator("case_id", pre=True)
+    @classmethod
+    def validate_case_id(cls, v):
+        return arg_to_number(v, required=True)
+
+    @validator("workflow_id", pre=True)
+    @classmethod
+    def validate_workflow_id(cls, v):
+        return arg_to_number(v, required=True)
+
+    @validator("continue_on_decryption_fail", pre=True)
+    @classmethod
+    def validate_continue_on_decryption_fail(cls, v):
+        return arg_to_bool_or_none(v)
+
+    @validator("custom_field_values", pre=True)
+    @classmethod
+    def validate_custom_field_values(cls, v):
+        if isinstance(v, str) and v:
+            try:
+                return json.loads(v)
+            except json.JSONDecodeError:
+                return v
+        return v
 
 
 def workflow_run_start_command(client: MagnetAutomateClient, args: WorkflowRunStartArgs) -> CommandResults:
@@ -838,10 +908,30 @@ def workflow_run_start_command(client: MagnetAutomateClient, args: WorkflowRunSt
 
 
 class WorkflowRunListArgs(ContentBaseModel):
-    case_id: str = Field(alias="case_id")
-    run_id: str | None = Field(None, alias="run_id")
-    limit: int | None = 50
-    all_results: bool = False
+    case_id: int = Field(alias="case_id")
+    run_id: int | None = Field(None, alias="run_id")
+    limit: int | None = Field(50, alias="limit")
+    all_results: bool = Field(False, alias="all_results")
+
+    @validator("case_id", pre=True)
+    @classmethod
+    def validate_case_id(cls, v):
+        return arg_to_number(v, required=True)
+
+    @validator("run_id", pre=True)
+    @classmethod
+    def validate_run_id(cls, v):
+        return arg_to_number(v)
+
+    @validator("limit", pre=True)
+    @classmethod
+    def validate_limit(cls, v):
+        return arg_to_number(v)
+
+    @validator("all_results", pre=True)
+    @classmethod
+    def validate_all_results(cls, v):
+        return argToBoolean(v)
 
 
 def workflow_run_list_markdown(results: list[dict[str, Any]], title: str) -> str:
@@ -943,8 +1033,18 @@ def workflow_run_list_command(client: MagnetAutomateClient, args: WorkflowRunLis
 
 
 class WorkflowRunDeleteArgs(ContentBaseModel):
-    case_id: str = Field(alias="case_id")
-    run_id: str = Field(alias="run_id")
+    case_id: int = Field(alias="case_id")
+    run_id: int = Field(alias="run_id")
+
+    @validator("case_id", pre=True)
+    @classmethod
+    def validate_case_id(cls, v):
+        return arg_to_number(v, required=True)
+
+    @validator("run_id", pre=True)
+    @classmethod
+    def validate_run_id(cls, v):
+        return arg_to_number(v, required=True)
 
 
 def workflow_run_delete_command(client: MagnetAutomateClient, args: WorkflowRunDeleteArgs) -> CommandResults:
@@ -971,8 +1071,18 @@ def workflow_run_delete_command(client: MagnetAutomateClient, args: WorkflowRunD
 
 
 class WorkflowRunCancelArgs(ContentBaseModel):
-    case_id: str = Field(alias="case_id")
-    run_id: str = Field(alias="run_id")
+    case_id: int = Field(alias="case_id")
+    run_id: int = Field(alias="run_id")
+
+    @validator("case_id", pre=True)
+    @classmethod
+    def validate_case_id(cls, v):
+        return arg_to_number(v, required=True)
+
+    @validator("run_id", pre=True)
+    @classmethod
+    def validate_run_id(cls, v):
+        return arg_to_number(v, required=True)
 
 
 def workflow_run_cancel_command(client: MagnetAutomateClient, args: WorkflowRunCancelArgs) -> CommandResults:
@@ -999,16 +1109,26 @@ def workflow_run_cancel_command(client: MagnetAutomateClient, args: WorkflowRunC
 
 
 class MergeWorkflowRunStartArgs(ContentBaseModel):
-    case_id: str = Field(alias="case_id")
-    run_ids: list[str] = Field(alias="run_ids")
+    case_id: int = Field(alias="case_id")
+    run_ids: list[int] = Field(alias="run_ids")
     workflow_id: int = Field(alias="workflow_id")
     output_path: str | None = Field(None, alias="output_path")
     assigned_node_name: str | None = Field(None, alias="assigned_node_name")
 
+    @validator("case_id", pre=True)
+    @classmethod
+    def validate_case_id(cls, v):
+        return arg_to_number(v, required=True)
+
     @validator("run_ids", pre=True)
     @classmethod
     def validate_run_ids(cls, v):
-        return argToList(v)
+        return argToList(v, transform=lambda x: arg_to_number(x, required=True))
+
+    @validator("workflow_id", pre=True)
+    @classmethod
+    def validate_workflow_id(cls, v):
+        return arg_to_number(v, required=True)
 
 
 def merge_workflow_run_start_command(client: MagnetAutomateClient, args: MergeWorkflowRunStartArgs) -> CommandResults:
@@ -1071,8 +1191,18 @@ def merge_workflow_run_start_command(client: MagnetAutomateClient, args: MergeWo
 
 
 class WorkflowListArgs(ContentBaseModel):
-    limit: int | None = 50
-    all_results: bool = False
+    limit: int | None = Field(50, alias="limit")
+    all_results: bool = Field(False, alias="all_results")
+
+    @validator("limit", pre=True)
+    @classmethod
+    def validate_limit(cls, v):
+        return arg_to_number(v)
+
+    @validator("all_results", pre=True)
+    @classmethod
+    def validate_all_results(cls, v):
+        return argToBoolean(v)
 
 
 def workflow_list_markdown(results: list[dict[str, Any]]) -> str:
@@ -1141,7 +1271,12 @@ def workflow_list_command(client: MagnetAutomateClient, args: WorkflowListArgs) 
 
 
 class WorkflowDeleteArgs(ContentBaseModel):
-    workflow_id: str = Field(alias="workflow_id")
+    workflow_id: int = Field(alias="workflow_id")
+
+    @validator("workflow_id", pre=True)
+    @classmethod
+    def validate_workflow_id(cls, v):
+        return arg_to_number(v, required=True)
 
 
 def workflow_delete_command(client: MagnetAutomateClient, args: WorkflowDeleteArgs) -> CommandResults:
@@ -1168,16 +1303,21 @@ def workflow_delete_command(client: MagnetAutomateClient, args: WorkflowDeleteAr
 
 
 class WorkflowGetArgs(ContentBaseModel):
-    workflow_id: str = Field(alias="workflow_id")
+    workflow_id: int = Field(alias="workflow_id")
+
+    @validator("workflow_id", pre=True)
+    @classmethod
+    def validate_workflow_id(cls, v):
+        return arg_to_number(v, required=True)
 
 
-def workflow_get_markdown(results: dict[str, Any], workflow_id: str) -> str:
+def workflow_get_markdown(results: dict[str, Any], workflow_id: int) -> str:
     """
     Converts a workflow export object into a markdown table.
 
     Args:
         results (dict[str, Any]): The workflow export data.
-        workflow_id (str): The ID of the workflow being exported.
+        workflow_id (int): The ID of the workflow being exported.
 
     Returns:
         str: A markdown table representing the workflow export details, including version,
@@ -1253,8 +1393,8 @@ def workflow_get_command(client: MagnetAutomateClient, args: WorkflowGetArgs) ->
 
 
 class NodeCreateArgs(ContentBaseModel):
-    name: str | None = None
-    address: str | None = None
+    name: str | None = Field(None, alias="name")
+    address: str | None = Field(None, alias="address")
     working_directory: str | None = Field(None, alias="working_directory")
     applications_json: Any | None = Field(None, alias="applications_json")
 
@@ -1307,8 +1447,18 @@ def node_create_command(client: MagnetAutomateClient, args: NodeCreateArgs) -> C
 
 
 class NodesListArgs(ContentBaseModel):
-    limit: int | None = 50
-    all_results: bool = False
+    limit: int | None = Field(50, alias="limit")
+    all_results: bool = Field(False, alias="all_results")
+
+    @validator("limit", pre=True)
+    @classmethod
+    def validate_limit(cls, v):
+        return arg_to_number(v)
+
+    @validator("all_results", pre=True)
+    @classmethod
+    def validate_all_results(cls, v):
+        return argToBoolean(v)
 
 
 def nodes_list_command(client: MagnetAutomateClient, args: NodesListArgs) -> CommandResults:
@@ -1356,10 +1506,15 @@ def nodes_list_command(client: MagnetAutomateClient, args: NodesListArgs) -> Com
 
 
 class NodeUpdateArgs(ContentBaseModel):
-    node_id: str = Field(alias="node_id")
+    node_id: int = Field(alias="node_id")
     address: str | None = Field(None, alias="address")
     working_directory: str | None = Field(None, alias="working_directory")
     applications_json: Any | None = Field(None, alias="applications_json")
+
+    @validator("node_id", pre=True)
+    @classmethod
+    def validate_node_id(cls, v):
+        return arg_to_number(v, required=True)
 
     @validator("applications_json", pre=True)
     @classmethod
@@ -1401,7 +1556,12 @@ def node_update_command(client: MagnetAutomateClient, args: NodeUpdateArgs) -> C
 
 
 class NodeDeleteArgs(ContentBaseModel):
-    node_id: str = Field(alias="node_id")
+    node_id: int = Field(alias="node_id")
+
+    @validator("node_id", pre=True)
+    @classmethod
+    def validate_node_id(cls, v):
+        return arg_to_number(v, required=True)
 
 
 def node_delete_command(client: MagnetAutomateClient, args: NodeDeleteArgs) -> CommandResults:
