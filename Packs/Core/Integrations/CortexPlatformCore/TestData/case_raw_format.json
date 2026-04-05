@@ -21,9 +21,7 @@
         }
     ],
     "DESCRIPTION": "Test Description",
-    "EXTENDED_FIELDS": {
-        "custom_field1": "value1"
-    },
+    "CUSTOM_FIELD1": "value1",
     "HIGH_SEVERITY_ALERTS": 3,
     "HOSTS": [
         "host1",
