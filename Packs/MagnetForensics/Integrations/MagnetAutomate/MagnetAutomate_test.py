@@ -616,6 +616,7 @@ def test_workflow_get_command(mocker: MockerFixture, client: "MagnetAutomateClie
 
     assert outputs.get("name") == "Process - Image"
     assert outputs.get("automateVersion") == "1.2.3.0000"
+    assert outputs.get("id") == "1"
     assert "Workflow 1 Export" in response.readable_output
     client.workflow_get.assert_called_once_with(workflow_id="1")  # type: ignore
 

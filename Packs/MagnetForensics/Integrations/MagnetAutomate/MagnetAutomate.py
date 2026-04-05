@@ -1257,7 +1257,7 @@ def workflow_get_command(client: MagnetAutomateClient, args: WorkflowGetArgs) ->
     return CommandResults(
         outputs_prefix=f"{BASE_CONTEXT_OUTPUT_PREFIX}.Workflow",
         outputs_key_field="id",
-        outputs=results,
+        outputs=context_output,
         readable_output=readable_output,
         raw_response=results,
     )
