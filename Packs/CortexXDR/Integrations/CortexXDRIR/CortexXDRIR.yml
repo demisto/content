@@ -5105,7 +5105,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.EndpointTriage.UNSUCCESSFUL_AGENT_IDS
       description: A list of agent IDs where the triage action failed to initiate.
       type: Array
-  dockerimage: demisto/python3:3.12.12.7019815
+  dockerimage: demisto/python3:3.12.13.7444307
   isfetch: true
   isfetch:xpanse: false
   script: ''
