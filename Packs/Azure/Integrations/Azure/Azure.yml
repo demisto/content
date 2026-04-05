@@ -6223,7 +6223,7 @@ script:
     outputs: []
 
   - name: azure-key-vault-purge-and-soft-delete-enable-quick-action
-    description: Enables soft delete and purge protection for the Key Vault to prevent the permanent loss of keys and secrets.
+    description: Enables soft delete and purge protection for the Key Vault to prevent the permanent loss of keys and secrets. Note: Once purge-protection and soft-delete is enabled for a key vault, the action is irreversible.
     prettyname: Enable KeyVault Purge & Soft-delete features
     hidden: true
     quickaction: true
@@ -6338,8 +6338,8 @@ script:
         description: The list of virtual network rules.
 
   - name: azure-webapp-set-webapp-to-https-only-quick-action
-    description: Enforces HTTPS-only traffic for the web app.
-    prettyname: Set Webapp to HTTPS only
+    description: Enforces HTTPS-only traffic for the App Service.
+    prettyname: Set App Service to HTTPS only
     hidden: true
     quickaction: true
     arguments:
@@ -6363,10 +6363,10 @@ script:
         type: String
         required: true
         description: The name of the app.
-        prettyname: AZ Webapp
-        defaultValue: AZ Webapp
+        prettyname: AZ App
+        defaultValue: AZ App
         prettypredefined:
-          AZ Webapp: ${asset.xdm.asset.name}
+          AZ App: ${asset.xdm.asset.name}
       - name: https_only
         type: Boolean
         required: false
@@ -6714,7 +6714,7 @@ script:
         type: List
 
   - name: azure-webapp-enable-client-cert-quick-action
-    description: Enables client certificate authentication for the Web App to secure incoming requests.
+    description: Enables client certificate authentication for the App Service to secure incoming requests. Only clients that have a valid certificate will be able to reach the app.
     prettyname: Enable Client Certs on Azure App
     hidden: true
     quickaction: true
@@ -6738,11 +6738,11 @@ script:
       - name: name
         type: String
         required: true
-        description: The name of the Function App.
-        prettyname: AZ Webapp
-        defaultValue: AZ Webapp
+        description: The name of the App.
+        prettyname: AZ App
+        defaultValue: AZ App
         prettypredefined:
-          AZ Webapp: ${asset.xdm.asset.name}
+          AZ App: ${asset.xdm.asset.name}
       - name: client_cert_enabled
         type: Boolean
         required: false
