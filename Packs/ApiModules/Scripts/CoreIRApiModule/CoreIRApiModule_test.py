@@ -5414,24 +5414,26 @@ class TestFilterBuilder:
     @pytest.mark.parametrize(
         "start_time_str, end_time_str, expected_start_ms, expected_end_ms",
         [
+            # Standard UTC with Z — should parse normally
             (
                 "2026-03-02T21:59:54Z",
                 "2026-03-03T21:59:54Z",
-                1741046394000,
-                1741132794000,
+                1772488794000,
+                1772575194000,
             ),
+            # Standard UTC with offset — should parse normally
             (
                 "2026-03-02T21:59:54+00:00",
                 "2026-03-03T21:59:54+00:00",
-                1741046394000,
-                1741132794000,
+                1772488794000,
+                1772575194000,
             ),
-            # Malformed:
+            # Malformed: UTC offset AND trailing Z — agent-generated format that previously failed
             (
                 "2026-03-02T21:59:54+00:00Z",
                 "2026-03-03T21:59:54+00:00Z",
-                1741046394000,
-                1741132794000,
+                1772488794000,
+                1772575194000,
             ),
         ],
     )
