@@ -1827,7 +1827,7 @@ script:
     arguments:
     - name: acquisitionId
       required: true
-      description: the acquisition Id
+      description: The acquisition ID.
     outputs:
     - contextPath: FireEyeHX.Acquisitions.Triage._id
       description: The triage ID.
@@ -1846,7 +1846,7 @@ script:
     arguments:
     - name: acquisitionId
       required: true
-      description: acquisitionId
+      description: The acquisition ID.
   - name: fireeye-hx-triage-acquisition-start
     arguments:
     - name: hostName
