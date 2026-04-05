@@ -2346,9 +2346,10 @@ script:
           type: Date
         - contextPath: Core.CasesMetadata.returned_count
           description: The actual number of cases that match all filter criteria and returned in this specific response.
-          type: String
+          type: Number
         - contextPath: Core.CasesMetadata.filtered_count
           description: The total number of cases in the system that match all filter criteria.
+          type: Number
     - name: core-get-appsec-issues
       description: "Retrieves application security issues based on specified filters."
       arguments:
