@@ -55,6 +55,7 @@
     ],
     "predicted_score": 92,
     "resolve_comment": "Issue resolved successfully",
+    "resolve_reason": "false_positive",
     "resolved_timestamp": "2023-01-03T00:00:00Z",
     "rule_based_score": 85,
     "severity": "high",

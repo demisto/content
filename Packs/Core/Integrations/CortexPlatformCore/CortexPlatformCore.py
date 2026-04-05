@@ -198,10 +198,12 @@ class CaseManagement:
         "known_issue": "STATUS_040_RESOLVED_KNOWN_ISSUE",
         "duplicate": "STATUS_050_RESOLVED_DUPLICATE",
         "false_positive": "STATUS_060_RESOLVED_FALSE_POSITIVE",
+        "other": "STATUS_070_RESOLVED_OTHER",
         "true_positive": "STATUS_090_TRUE_POSITIVE",
         "security_testing": "STATUS_100_SECURITY_TESTING",
-        "other": "STATUS_070_RESOLVED_OTHER",
     }
+
+    STATUS_RESOLVED_REASON_OUTPUT = {v: k for k, v in STATUS_RESOLVED_REASON.items()}
 
     FIELDS = {
         "case_id_list": "CASE_ID",
@@ -1755,6 +1757,10 @@ def map_case_format(case_list):
             "modification_time": case_data.get("LAST_UPDATE_TIME"),
             "resolved_timestamp": case_data.get("RESOLVED_TIMESTAMP"),
             "status": str(case_data.get("STATUS", case_data.get("STATUS_PROGRESS"))).split("_")[-1].lower(),
+            "resolve_comment": case_data.get("RESOLVED_COMMENT"),
+            "resolve_reason": CaseManagement.STATUS_RESOLVED_REASON_OUTPUT.get(
+                case_data.get("RESOLVE_REASON"), case_data.get("RESOLVE_REASON")
+            ),
             "severity": str(case_data.get("SEVERITY")).split("_")[-1].lower(),
             "case_domain": case_data.get("INCIDENT_DOMAIN"),
             "original_tags": [tag.get("tag_name") for tag in case_data.get("ORIGINAL_TAGS", [])],
@@ -1771,7 +1777,6 @@ def map_case_format(case_list):
             "wildfire_hits": case_data.get("WF_HITS"),
             "assigned_user_pretty_name": case_data.get("ASSIGNED_USER_PRETTY"),
             "assigned_user_mail": case_data.get("ASSIGNED_USER"),
-            "resolve_comment": case_data.get("RESOLVED_COMMENT"),
             "issues_grouping_status": str(case_data.get("CASE_GROUPING_STATUS")).split("_")[-1],
             "starred": case_data.get("CASE_STARRED"),
             "case_sources": case_data.get("INCIDENT_SOURCES"),

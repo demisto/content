@@ -2266,6 +2266,9 @@ script:
         - contextPath: Core.Case.resolve_comment
           description: Comments added when resolving the case. May be null.
           type: String
+        - contextPath: Core.Case.resolve_reason
+          description: The reason for resolving the case (e.g. known_issue, duplicate, false_positive, other, true_positive, security_testing). May be null.
+          type: String
         - contextPath: Core.Case.resolved_timestamp
           description: Timestamp when the case was resolved.
           type: Number
