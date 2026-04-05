@@ -34,6 +34,7 @@ PASSWORD = "password"
 END_TIME_BUFFER = 30  # seconds
 
 # Last run
+LAST_RUN_KEY = "last_run"
 START_TIMESTAMP_KEY = "start_timestamp"
 LAST_IDS_KEY = "last_ids"
 LOCAL_LAST_RUN: dict[str, Any] = {}  # In memory last run object during long running execution
@@ -467,16 +468,15 @@ def is_reset_triggered() -> bool:
     if ctx and RESET_KEY in ctx:
         print_debug_msg("Reset fetch-incidents.")
         set_integration_context({"samples": "[]"})
-        set_last_run({})
         return True
     return False
 
 
-def get_last_run() -> dict[str, Any]:
+def get_last_run_from_context(integration_context: dict[str, Any]) -> dict[str, Any]:
     """
     Get the last run state for incident fetching.
     Uses in-memory `LOCAL_LAST_RUN` during long running execution for performance and consistency.
-    Falls back to `demisto.getLastRun()` if container is freshly deployed.
+    Falls back to `demisto.getIntegrationContext()` if container is freshly deployed.
 
     Returns:
         dict[str, Any]: Dictionary containing optional start_timestamp and last_ids from previous fetch.
@@ -485,7 +485,8 @@ def get_last_run() -> dict[str, Any]:
         demisto.debug(f"Returning in-memory last_run={LOCAL_LAST_RUN} .")
         return LOCAL_LAST_RUN
 
-    if server_last_run := demisto.getLastRun():
+    if integration_context:
+        server_last_run = integration_context.get(LAST_RUN_KEY) or {}
         demisto.debug(f"Returning server-stored last_run={server_last_run}.")
         return server_last_run
 
@@ -493,22 +494,26 @@ def get_last_run() -> dict[str, Any]:
     return {}
 
 
-def set_last_run(last_run: dict[str, Any]) -> None:
+def update_context_with_last_run(last_run: dict[str, Any], integration_context: dict[str, Any]) -> dict[str, Any]:
     """
     Set the last run state for incident fetching.
-    Updates both in-memory `LOCAL_LAST_RUN` and persisted state via `demisto.setLastRun()`.
+    Updates both in-memory `LOCAL_LAST_RUN` and persisted state in the integration context.
     The persisted state serves as a backup in case long running execution gets interrupted.
 
     Args:
         last_run (dict[str, Any]): Dictionary containing start_timestamp and last_ids for next fetch.
-    """
-    global LOCAL_LAST_RUN
+        integration_context (dict[str, Any]): The current integration context.
 
+    Returns:
+        dict[str, Any]: The updated integration context.
+    """
     demisto.debug(f"Updating in-memory {last_run=}.")
+    global LOCAL_LAST_RUN
     LOCAL_LAST_RUN = last_run
 
     demisto.debug(f"Updating server-stored {last_run=}.")
-    demisto.setLastRun(last_run)
+    integration_context[LAST_RUN_KEY] = last_run
+    return integration_context
 
 
 def compute_next_run(incident_ids_committed_timestamps: dict[str, int], last_run: dict[str, Any]) -> dict[str, Any]:
@@ -576,7 +581,7 @@ def fetch_notifications(
     - Formats and deduplicates incidents.
     - Tracks the latest committedAt timestamp.
     - Creates incidents via demisto.createIncidents().
-    - Updates last run state via set_last_run().
+    - Updates last run state via update_context_with_last_run().
     - Updates integration context with access token and sample incidents.
 
     Args:
@@ -585,19 +590,17 @@ def fetch_notifications(
         first_fetch_timestamp (int): Timestamp to use for first fetch (unix epoch seconds).
         incident_type (str): Type of incident to create (default: "Data Loss Prevention").
     """
-    last_run = get_last_run()
-    demisto.debug(f"Got {last_run=}.")
-
-    last_incident_ids = last_run.get(LAST_IDS_KEY) or []
-    start_timestamp = last_run.get(START_TIMESTAMP_KEY) or first_fetch_timestamp
-
-    # Provide buffer to account for minor indexing delays
-    end_timestamp = int(datetime.now(tz=UTC).timestamp()) - END_TIME_BUFFER
-
     integration_context = demisto.getIntegrationContext()
     access_token = integration_context.get(ACCESS_TOKEN)
     if access_token:
         client.set_access_token(access_token)
+
+    last_run = get_last_run_from_context(integration_context)
+    demisto.debug(f"Got from integration context {last_run=}.")
+    last_incident_ids = last_run.get(LAST_IDS_KEY) or []
+    start_timestamp = last_run.get(START_TIMESTAMP_KEY) or first_fetch_timestamp
+    # Provide buffer to account for minor indexing delays
+    end_timestamp = int(datetime.now(tz=UTC).timestamp()) - END_TIME_BUFFER
 
     new_incidents = []
     fetched_incident_ids_committed_timestamps: dict[str, int] = {
@@ -635,12 +638,12 @@ def fetch_notifications(
         demisto.debug(f"Creating {len(new_incidents)} incidents: {[inc.get('name') for inc in new_incidents]}.")
         demisto.createIncidents(new_incidents)
 
-        demisto.debug(f"Setting {next_run=}.")
-        set_last_run(next_run)
+        demisto.debug(f"Updating integration context with {next_run=}.")
+        integration_context = update_context_with_last_run(next_run, integration_context)
 
         demisto.debug(f"Updating integration context with access token and {len(new_incidents)} sample incidents.")
-        new_ctx = {ACCESS_TOKEN: client.access_token, "samples": new_incidents}
-        demisto.setIntegrationContext(new_ctx)
+        integration_context.update({ACCESS_TOKEN: client.access_token, "samples": new_incidents})
+        demisto.setIntegrationContext(integration_context)
 
     elif new_incidents:
         print_debug_msg(f"Skipped {len(new_incidents)} incidents because of reset")
