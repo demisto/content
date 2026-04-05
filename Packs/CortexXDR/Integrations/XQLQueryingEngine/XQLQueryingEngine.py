@@ -12,6 +12,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 DEFAULT_LIMIT = 100
+FORWARD_USER_RUN_RBAC = False
 
 """ CLIENT CLASS """
 

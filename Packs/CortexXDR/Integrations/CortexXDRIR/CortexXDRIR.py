@@ -8,6 +8,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
 
+FORWARD_USER_RUN_RBAC = False
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 NONCE_LENGTH = 64
 API_KEY_LENGTH = 128
@@ -241,16 +242,13 @@ class Client(CoreClient):
 
     @property
     def headers(self):
-        if FORWARD_USER_RUN_RBAC:
-            return {}
         return get_headers(self._params)
 
-    def test_module(self):
+    def test_module(self, first_fetch_time):
         """
-        Performs basic request to verify connectivity and authentication.
-        Uses list_users() (RBAC endpoint) which is available on all Cortex platforms
-        without requiring an XDR-specific license, matching the CortexCoreIR pattern.
+        Performs basic get request to get item samples
         """
+        last_one_day, _ = parse_date_range(first_fetch_time, TIME_FORMAT)
         try:
             self.list_users()
         except Exception as err:
@@ -2941,10 +2939,7 @@ def main():  # pragma: no cover
     LOG(f"Command being called is {command}")
     # using two different credentials object as they both fields need to be encrypted
     first_fetch_time = params.get("fetch_time", "3 days")
-    if FORWARD_USER_RUN_RBAC:
-        base_url = "/api/webapp/public_api/v1"
-    else:
-        base_url = urljoin(params.get("url"), "/public_api/v1")
+    base_url = urljoin(params.get("url"), "/public_api/v1")
     proxy = params.get("proxy")
     verify_cert = not params.get("insecure", False)
     statuses = params.get("status")
@@ -2972,7 +2967,7 @@ def main():  # pragma: no cover
     args["integration_name"] = INTEGRATION_NAME
     try:
         if command == "test-module":
-            client.test_module()
+            client.test_module(first_fetch_time)
             demisto.results("ok")
 
         elif command == "fetch-incidents":
