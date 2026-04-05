@@ -1563,7 +1563,8 @@ def test_oauth2_follows_multiple_redirect_types():
         return_value=Response(301, headers={"Location": "https://auth.example.com/v2/token"})
     )
 
-    respx.post("https://auth.example.com/v2/token").mock(
+    # HTTP 301 changes POST to GET (standard redirect behavior)
+    respx.get("https://auth.example.com/v2/token").mock(
         return_value=Response(200, json={"access_token": "token_301", "expires_in": 3600})
     )
 
