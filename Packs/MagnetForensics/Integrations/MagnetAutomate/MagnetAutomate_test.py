@@ -41,11 +41,11 @@ def client() -> "MagnetAutomateClient":
         MagnetAutomateClient: An instance of the Magnet Automate API client.
     """
     from pydantic import SecretStr
-    from MagnetAutomate import MagnetAutomateClient, MagnetAutomateParams
+    from MagnetAutomate import MagnetAutomateClient, MagnetAutomateParams, Credentials
 
     params = MagnetAutomateParams(
         url="https://test.com",  # type: ignore[arg-type]
-        api_key=SecretStr("test-key"),
+        credentials=Credentials(password=SecretStr("test-key")),
     )
     return MagnetAutomateClient(params)
 

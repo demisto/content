@@ -65,15 +65,22 @@ def truncate_results(results: list[Any], limit: int | None = None, all_results: 
 # region Parameters
 
 
+class Credentials(ContentBaseModel):
+    """Credentials model for API authentication."""
+
+    # username field omitted because `hiddenusername: true` in YML
+    password: SecretStr
+
+
 class MagnetAutomateParams(BaseParams):
     """Integration parameters for Magnet Automate."""
 
     url: AnyUrl
-    api_key: SecretStr = Field(alias="api_key")
+    credentials: Credentials
 
     @property
-    def key(self) -> str:
-        return self.api_key.get_secret_value()
+    def api_key(self):
+        return self.credentials.password
 
 
 # endregion
@@ -84,15 +91,15 @@ class MagnetAutomateParams(BaseParams):
 class MagnetAutomateAuthHandler(APIKeyAuthHandler):
     """Custom authentication handler for Magnet Automate."""
 
-    def __init__(self, api_key: str):
-        super().__init__(key=api_key, header_name="X-API-KEY")
+    def __init__(self, api_key: SecretStr):
+        super().__init__(key=api_key.get_secret_value(), header_name="X-API-KEY")
 
 
 class MagnetAutomateClient(ContentClient):
     """Client for Magnet Automate API."""
 
     def __init__(self, params: MagnetAutomateParams):
-        auth_handler = MagnetAutomateAuthHandler(params.key)
+        auth_handler = MagnetAutomateAuthHandler(params.api_key)
         super().__init__(
             base_url=params.url,
             verify=params.verify,
