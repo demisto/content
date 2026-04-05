@@ -5410,7 +5410,7 @@ class TestFilterBuilder:
         # Assert
         mock_prepare_time_range.assert_called_once_with(None, None)
         mock_add_field.assert_not_called()
-    
+
     @pytest.mark.parametrize(
         "start_time_str, end_time_str, expected_start_ms, expected_end_ms",
         [

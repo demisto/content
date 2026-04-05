@@ -1460,11 +1460,13 @@ class AlertFilterArg:
 
         return value
 
+
 def normalize_ts(ts: str) -> str:
     # Strip trailing Z when a UTC offset (+HH:MM/-HH:MM) is already present
-    if re.search(r'[+-]\d{2}:\d{2}Z$', ts):
+    if re.search(r"[+-]\d{2}:\d{2}Z$", ts):
         return ts[:-1]
     return ts
+
 
 class FilterBuilder:
     """
