@@ -10,6 +10,51 @@ The Docusign Admin API provides access to user data, which is information about 
 
 ---
 
+## Configure DocuSign new application
+
+Follow the steps below to create and configure a DocuSign application for use with this integration:
+
+1. **Access DocuSign Developer Portal**
+   - Open the DocuSign web UI and log in.
+   - Navigate to **Account**.
+   - From the left sidebar, click **Apps and Keys**.
+
+2. **Create a New Application**
+   - Click **Add App**.
+   - Provide a name for your application.
+   - Copy the **Integration Key**.
+
+3. **Setting Integration Type**
+    Select your App integration type.
+![configureNewAppPart1](../../doc_files/configureNewApp1.png)
+
+4. **Configure Application Settings**
+   - Under **User Application**, select **Yes**.
+   - Under **Authentication Method for your App**, leave the default option, **Authorization Code Grant**
+
+5. **Generate a Secret Key**
+    Click **Add Secret Key** and generate a new secret key.
+
+6. **Generate RSA Key Pair**
+   - Under **Service Untegration** Click **Generate RSA**.
+   - Copy the **Private Key**. (The public key is not used by the integration)
+
+![configureNewAppPart2](../../doc_files/configureNewApp2.png)
+
+7. **Set Redirect URI**
+   - Under **Additional settings** ,set **Redirect URI** to ```https://localhost```.
+
+8. **Save the Application**
+    Click **Save**.
+
+![configureNewAppPart3](../../doc_files/configureNewApp3.png)
+
+9. **Retrieve Organization ID**
+   - Navigate to the **Organization** tab from the left sidebar.
+   - Copy the **Organization ID** from the URL.
+
+---
+
 ## Go-Live - Customer events data type
 
 When you are ready to launch your app in production, you will need to promote your application’s integration key from your developer account to a production Docusign account by passing a Go-Live review, similar to the [Go-Live](https://developers.docusign.com/docs/esign-rest-api/go-live/) process for the eSignature REST API.
@@ -113,7 +158,7 @@ There is no context output for this command.
 
 #### Command Example
 
-```!monday-generate-login-url```
+```!docusign-generate-login-url```
 
 #### Human Readable Output
 
