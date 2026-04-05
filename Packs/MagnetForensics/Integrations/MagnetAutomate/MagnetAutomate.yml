@@ -1,53 +1,496 @@
 category: Forensics & Malware Analysis
+sectionOrder:
+- Connect
 commonfields:
   id: MagnetAutomate
   version: -1
-provider: BaseIntegration
+provider: BaseIntegration # TODO doesn't appear on xsoar.pan.dev
 configuration:
-- defaultvalue: https://example.com/
+- defaultvalue: https://127.0.0.1:8080/
   display: Your server URL
   name: url
   required: true
   type: 0
+  section: Connect
 - display: API Key
   additionalinfo: The API Key to use for the connection
   name: apikey
   required: true
   type: 4
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: MagnetAutomate
-name: MagnetAutomate
+  section: Connect
+description: # TODO
+display: MagnetAutomate # TODO
+name: MagnetAutomate # TODO
 script:
   commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy2
-      required: false
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+
+  - name: ma-forensics-custom-fields-list
+    description: command_desc # TODO
     execution: false
-    name: baseintegration-dummy
+    arguments:
+    - name: limit
+      required: false
+      defaultValue: 50
+      description: The maximum number of results to return. Default value is 50.
+    - name: all_results
+      required: false
+      defaultValue: false
+      description: Whether to return all of the results. Overrides the limit argument if used. Default value is False.
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: MagnetForensics.CustomFields.id
+      description: output_desc # TODO
+      type: Number
+    - contextPath: MagnetForensics.CustomFields.name
+      description: output_desc # TODO
       type: String
+    - contextPath: MagnetForensics.CustomFields.type
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.CustomFields.elementType
+      description: output_desc # TODO
+      type: Unknown
+    - contextPath: MagnetForensics.CustomFields.description
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.CustomFields.required
+      description: output_desc # TODO
+      type: Boolean
+    - contextPath: MagnetForensics.CustomFields.exposeInWorkflow
+      description: output_desc # TODO
+      type: Boolean
+    - contextPath: MagnetForensics.CustomFields.variableName
+      description: output_desc # TODO
+      type: String
+
+  - name: ma-forensic-case-create
+    description: command_desc. Use ma-forensics-custom-fields-list to get all available custom fields. # TODO
+    execution: false
+    arguments:
+    - name: case_number
+      required: true
+      description: arg_desc # TODO
+    - name: custom_field_values
+      required: false
+      description: arg_desc # TODO
+    outputs:
+    - contextPath: MagnetForensics.Case.id
+      description: output_desc # TODO
+      type: Number
+    - contextPath: MagnetForensics.Case.caseNumber
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.Case.customFieldValues
+      description: output_desc # TODO
+      type: Unknown
+
+  - name: ma-forensics-cases-list
+    description: command_desc # TODO
+    execution: false
+    arguments:
+    - name: case_id
+      required: false
+      description: arg_desc # TODO
+    - name: limit
+      required: false
+      defaultValue: 50
+      description: The maximum number of results to return. Default value is 50.
+    - name: all_results
+      required: false
+      defaultValue: false
+      description: Whether to return all of the results. Overrides the limit argument if used. Default value is False.
+    outputs:
+    - contextPath: MagnetForensics.Case.id
+      description: output_desc # TODO
+      type: Number
+    - contextPath: MagnetForensics.Case.caseNumber
+      description: output_desc # TODO
+      type: String
+
+  - name: ma-forensics-case-delete
+    description: command_desc # TODO
+    execution: false
+    arguments:
+    - name: case_id
+      required: true
+      description: arg_desc # TODO
+
+  - name: ma-forensics-case-cancel
+    description: command_desc # TODO
+    execution: false
+    arguments:
+    - name: case_id
+      required: true
+      description: arg_desc # TODO
+
+  - name: ma-forensics-workflow-run-start
+    description: command_desc # TODO
+    execution: false
+    arguments:
+    - name: case_id
+      required: true
+      description: arg_desc # TODO
+    - name: evidence_number
+      required: true
+      description: arg_desc # TODO
+    - name: type
+      required: true
+      description: arg_desc # TODO
+    - name: workflow_id
+      required: false
+      description: arg_desc # TODO
+    - name: output_path
+      required: false
+      description: arg_desc # TODO
+    - name: platform
+      required: false
+      description: arg_desc # TODO
+    - name: decryption_type
+      required: false
+      description: arg_desc # TODO
+    - name: decryption_value
+      required: false
+      description: arg_desc # TODO
+    - name: continue_on_decryption_fail
+      required: false
+      description: arg_desc # TODO
+    - name: custom_field_values
+      required: false
+      description: arg_desc # TODO
+    - name: assigned_node_name
+      required: false
+      description: arg_desc # TODO
+    outputs:
+    - contextPath: MagnetForensics.WorkflowRun.id
+      description: output_desc # TODO
+      type: Number
+    - contextPath: MagnetForensics.WorkflowRun.path
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.WorkflowRun.version
+      description: output_desc # TODO
+      type: Number
+    - contextPath: MagnetForensics.WorkflowRun.caseId
+      description: output_desc # TODO
+      type: Number
+    - contextPath: MagnetForensics.WorkflowRun.caseTypeId
+      description: output_desc # TODO
+      type: Number
+    - contextPath: MagnetForensics.WorkflowRun.basePath
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.WorkflowRun.automateVersion
+      description: output_desc # TODO
+      type: String
+
+  - name: ma-forensics-workflow-run-list
+    description: command_desc # TODO
+    execution: false
+    arguments:
+    - name: case_id
+      required: true
+      description: arg_desc # TODO
+    - name: run_id
+      required: false
+      description: arg_desc # TODO
+    - name: limit
+      required: false
+      defaultValue: 50
+      description: The maximum number of results to return. Default value is 50.
+    - name: all_results
+      required: false
+      defaultValue: false
+      description: Whether to return all of the results. Overrides the limit argument if used. Default value is False.
+    outputs:
+    - contextPath: MagnetForensics.WorkflowRun.id
+      description: output_desc # TODO
+      type: Number
+    - contextPath: MagnetForensics.WorkflowRun.evidence
+      description: output_desc # TODO
+      type: Unknown
+    - contextPath: MagnetForensics.WorkflowRun.status
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.WorkflowRun.workflowId
+      description: output_desc # TODO
+      type: Number
+    - contextPath: MagnetForensics.WorkflowRun.currentStage
+      description: output_desc # TODO
+      type: Unknown
+    - contextPath: MagnetForensics.WorkflowRun.outputPath
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.WorkflowRun.startDateTime
+      description: output_desc # TODO
+      type: Date
+    - contextPath: MagnetForensics.WorkflowRun.endDateTime
+      description: output_desc # TODO
+      type: Date
+    - contextPath: MagnetForensics.WorkflowRun.automateVersion
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.WorkflowRun.createdBy
+      description: output_desc # TODO
+      type: Unknown
+    - contextPath: MagnetForensics.WorkflowRun.duration
+      description: output_desc # TODO
+      type: Number
+    - contextPath: MagnetForensics.WorkflowRun.completedStages
+      description: output_desc # TODO
+      type: Unknown
+
+  - name: ma-forensics-workflow-run-delete
+    description: command_desc # TODO
+    execution: false
+    arguments:
+    - name: case_id
+      required: true
+      description: arg_desc # TODO
+    - name: run_id
+      required: true
+      description: arg_desc # TODO
+  
+  - name: ma-forensics-workflow-run-cancel
+    description: command_desc # TODO
+    execution: false
+    arguments:
+    - name: case_id
+      required: true
+      description: arg_desc # TODO
+    - name: run_id
+      required: true
+      description: arg_desc # TODO
+
+  - name: ma-forensics-merge-workflow-run-start
+    description: command_desc # TODO
+    execution: false
+    arguments:
+    - name: case_id
+      required: true
+      description: arg_desc # TODO
+    - name: run_ids
+      required: true
+      isArray: true
+      description: arg_desc # TODO
+    - name: workflow_id
+      required: true
+      description: arg_desc # TODO
+    - name: output_path
+      required: false
+      description: arg_desc # TODO
+    - name: assigned_node_name
+      required: false
+      description: arg_desc # TODO
+    outputs:
+    - contextPath: MagnetForensics.WorkflowRun.id
+      description: output_desc # TODO
+      type: Number
+    - contextPath: MagnetForensics.WorkflowRun.path
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.WorkflowRun.version
+      description: output_desc # TODO
+      type: Number
+    - contextPath: MagnetForensics.WorkflowRun.caseId
+      description: output_desc # TODO
+      type: Number
+    - contextPath: MagnetForensics.WorkflowRun.caseTypeId
+      description: output_desc # TODO
+      type: Number
+    - contextPath: MagnetForensics.WorkflowRun.basePath
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.WorkflowRun.automateVersion
+      description: output_desc # TODO
+      type: String
+
+  - name: ma-forensics-workflow-list
+    description: command_desc # TODO
+    execution: false
+    arguments:
+    - name: limit
+      required: false
+      defaultValue: 50
+      description: The maximum number of results to return. Default value is 50.
+    - name: all_results
+      required: false
+      defaultValue: false
+      description: Whether to return all of the results. Overrides the limit argument if used. Default value is False.
+    outputs:
+    - contextPath: MagnetForensics.Workflow.id
+      description: output_desc # TODO
+      type: Number
+    - contextPath: MagnetForensics.Workflow.name
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.Workflow.type.name
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.Workflow.description
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.Workflow.outputPath
+      description: output_desc # TODO
+      type: String
+
+  - name: ma-forensics-workflow-delete
+    description: command_desc # TODO
+    execution: false
+    arguments:
+    - name: workflow_id
+      required: true
+      description: arg_desc # TODO
+
+  - name: ma-forensics-workflow-get
+    description: command_desc. Use ma-forensics-workflow-list to get all available workflows. # TODO
+    execution: false
+    arguments:
+    - name: workflow_id
+      required: true
+      description: arg_desc # TODO
+    outputs:
+    - contextPath: MagnetForensics.Workflow.id
+      description: output_desc # TODO
+      type: Number
+    - contextPath: MagnetForensics.Workflow.automateVersion
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.Workflow.name
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.Workflow.description
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.Workflow.sourceType
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.Workflow.sourceConfig
+      description: output_desc # TODO
+      type: Unknown
+    - contextPath: MagnetForensics.Workflow.outputPath
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.Workflow.keylistPath
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.Workflow.passwordListPath
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.Workflow.continueOnDecryptionFail
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.Workflow.distribution
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.Workflow.localMode
+      description: output_desc # TODO
+      type: Boolean
+    - contextPath: MagnetForensics.Workflow.timeExported
+      description: output_desc # TODO
+      type: Date
+
+  - name: ma-forensics-node-create
+    description: command_desc # TODO
+    execution: false
+    arguments:
+    - name: name
+      required: false
+      description: arg_desc # TODO
+    - name: address
+      required: false
+      description: arg_desc # TODO
+    - name: working_directory
+      required: false
+      description: arg_desc # TODO
+    - name: applications_json
+      required: false
+      description: arg_desc # TODO
+    outputs:
+    - contextPath: MagnetForensics.Node.id
+      description: output_desc # TODO
+      type: Number
+    - contextPath: MagnetForensics.Node.name
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.Node.status
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.Node.workingDirectory
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.Node.address
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.Node.applications
+      description: output_desc # TODO
+      type: Unknown
+
+  - name: ma-forensics-nodes-list
+    description: command_desc # TODO
+    execution: false
+    arguments:
+    - name: limit
+      required: false
+      defaultValue: 50
+      description: The maximum number of results to return. Default value is 50.
+    - name: all_results
+      required: false
+      defaultValue: false
+      description: Whether to return all of the results. Overrides the limit argument if used. Default value is False.
+    outputs:
+    - contextPath: MagnetForensics.Node.id
+      description: output_desc # TODO
+      type: Number
+    - contextPath: MagnetForensics.Node.name
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.Node.status
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.Node.workingDirectory
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.Node.address
+      description: output_desc # TODO
+      type: String
+    - contextPath: MagnetForensics.Node.applications
+      description: output_desc # TODO
+      type: Unknown
+
+  - name: ma-forensics-node-update
+    description: command_desc # TODO
+    execution: false
+    arguments:
+    - name: node_id
+      required: true
+      description: arg_desc # TODO
+    - name: address
+      required: false
+      description: arg_desc # TODO
+    - name: working_directory
+      required: false
+      description: arg_desc # TODO
+    - name: applications_json
+      required: false
+      description: arg_desc # TODO
+
+  - name: ma-forensics-node-delete
+    description: command_desc # TODO
+    execution: false
+    arguments:
+    - name: node_id
+      required: false
+      description: arg_desc # TODO
+
   isfetch: false
   runonce: false
   script: '-'
