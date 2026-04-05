@@ -1775,7 +1775,7 @@ def map_case_format(case_list):
             "issues_grouping_status": str(case_data.get("CASE_GROUPING_STATUS")).split("_")[-1],
             "starred": case_data.get("CASE_STARRED"),
             "case_sources": case_data.get("INCIDENT_SOURCES"),
-            "custom_fields": case_data.get("EXTENDED_FIELDS"),
+            "custom_fields": {k.removeprefix("CUSTOM_"): v for k, v in case_data.items() if k.startswith("CUSTOM")},
             "hosts": case_data.get("HOSTS") or [],
             "users": case_data.get("USERS") or [],
             "host_count": len(case_data.get("HOSTS", []) or []),
