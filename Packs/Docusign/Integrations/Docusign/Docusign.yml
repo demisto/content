@@ -88,6 +88,19 @@ script:
     description: Generates the Docusign Admin consent URL based on the configured parameters and environment.
     arguments: []
     execution: false
+  - name: docusign-get-events
+    description: Fetches events from Docusign. Used for debugging purposes on failures.
+    arguments:
+    - name: event_type
+      required: true
+      description: The type of events to fetch.
+      predefined:
+      - Customer events
+      - Audit Users
+    - name: limit
+      required: true
+      description: Maximum number of events to fetch.
+    execution: false
   - name: docusign-reset-access-token
     description: Resets the access token stored in the integration context.
     arguments: []

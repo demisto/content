@@ -166,6 +166,38 @@ There is no context output for this command.
 >
 >[Click here to authorize]
 
+### docusign-get-events
+
+***
+Fetches events from Docusign. Used for debugging purposes on failures.
+
+#### Base Command
+
+`docusign-get-events`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| event_type | The type of events to fetch. Possible values are: Customer events, Audit Users. | Required |
+| limit | Maximum number of events to fetch. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!docusign-get-events event_type="Customer events" limit=10```
+
+#### Human Readable Output
+
+>### Docusign Customer events (fetched 10)
+>
+>| eventId | timestamp | accountId |
+>|---|---|---|
+>| 11111111-1111-1111-1111-111111111111 | 2024-06-30T07:08:06Z | 11111111-1111-1111-1111-111111111111 |
+
 ### docusign-reset-access-token
 
 ***
