@@ -1544,9 +1544,10 @@ def test_oauth2_follows_redirects():
     client = ContentClient(base_url="https://api.example.com", auth_handler=handler)
 
     # Should successfully follow redirect and get token
-    result = client.get("/v1/data")
+    response = client.get("/v1/data")
 
-    assert result == {"result": "success"}
+    assert response.status_code == 200
+    assert response.json() == {"result": "success"}
     assert redirect_route.called
     assert final_route.called
     assert api_route.called
@@ -1573,9 +1574,10 @@ def test_oauth2_follows_multiple_redirect_types():
     )
 
     client = ContentClient(base_url="https://api.example.com", auth_handler=handler)
-    result = client.get("/v1/data")
+    response = client.get("/v1/data")
 
-    assert result == {"result": "success"}
+    assert response.status_code == 200
+    assert response.json() == {"result": "success"}
     client.close()
 
 
@@ -1601,9 +1603,10 @@ def test_content_client_follows_api_redirects():
     )
 
     client = ContentClient(base_url="https://api.example.com", auth_handler=handler)
-    result = client.get("/v1/data")
+    response = client.get("/v1/data")
 
-    assert result == {"result": "redirected_success"}
+    assert response.status_code == 200
+    assert response.json() == {"result": "redirected_success"}
     assert redirect_route.called
     assert final_route.called
 
