@@ -5840,6 +5840,158 @@ class EKS:
             outputs_key_field="clusterName",
         )
 
+    @staticmethod
+    def update_access_entry_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Updates an existing Access Entry for an Amazon EKS cluster.
+
+        Args:
+            client (BotoClient): The boto3 client for EKS service
+            args (Dict[str, Any]): Command arguments including cluster_name, principal_arn,
+                kubernetes_groups, client_request_token, and user_name
+
+        Returns:
+            CommandResults: Results containing the updated access entry details
+        """
+        cluster_name = args.get("cluster_name", "")
+        principal_arn = args.get("principal_arn", "")
+
+        kwargs: Dict[str, Any] = {
+            "clusterName": cluster_name,
+            "principalArn": principal_arn,
+            "kubernetesGroups": argToList(args.get("kubernetes_groups")),
+            "clientRequestToken": args.get("client_request_token"),
+            "username": args.get("user_name"),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(
+            client, f"Updating EKS access entry for cluster: {cluster_name}, principal: {principal_arn}, kwargs: {kwargs}"
+        )
+
+        response = client.update_access_entry(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        access_entry = serialize_response_with_datetime_encoding(response.get("accessEntry", {}))
+
+        headers = ["clusterName", "principalArn", "username", "type", "createdAt"]
+        readable_output = tableToMarkdown(
+            name="The AWS EKS Access Entry was updated successfully",
+            t=access_entry,
+            headers=headers,
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="AWS.EKS.AccessEntry",
+            outputs_key_field=["clusterName", "principalArn"],
+            outputs=access_entry,
+            raw_response=access_entry,
+        )
+
+    @staticmethod
+    def create_access_entry_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates a new Access Entry for an Amazon EKS cluster.
+
+        Args:
+            client (BotoClient): The boto3 client for EKS service
+            args (Dict[str, Any]): Command arguments including cluster_name, principal_arn,
+                kubernetes_groups, client_request_token, and type
+
+        Returns:
+            CommandResults: Results containing the created access entry details
+        """
+        cluster_name = args.get("cluster_name", "")
+        principal_arn = args.get("principal_arn", "")
+
+        kwargs: Dict[str, Any] = {
+            "clusterName": cluster_name,
+            "principalArn": principal_arn,
+            "kubernetesGroups": argToList(args.get("kubernetes_groups")),
+            "clientRequestToken": args.get("client_request_token"),
+            "username": args.get("user_name"),
+            "type": args.get("type"),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Creating EKS access entry for cluster: {cluster_name}, principal: {principal_arn}, {kwargs=}")
+
+        response = client.create_access_entry(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        access_entry = serialize_response_with_datetime_encoding(response.get("accessEntry", {}))
+
+        headers = ["clusterName", "principalArn", "username", "type", "createdAt"]
+        readable_output = tableToMarkdown(
+            name="The AWS EKS Access Entry was created successfully",
+            t=access_entry,
+            headers=headers,
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="AWS.EKS.AccessEntry",
+            outputs_key_field=["clusterName", "principalArn"],
+            outputs=access_entry,
+            raw_response=access_entry,
+        )
+
+    @staticmethod
+    def list_clusters_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Returns a list of EKS clusters owned by the authenticated sender of the request.
+
+        Args:
+            client (BotoClient): The boto3 client for EKS service
+            args (Dict[str, Any]): Command arguments including account_id, region, limit, next_token, include
+
+        Returns:
+            CommandResults: Results containing the list of EKS cluster names
+        """
+        kwargs = build_pagination_kwargs(args, max_limit=100, limit_name="maxResults", next_token_name="nextToken")
+
+        if include := argToList(args.get("include")):
+            kwargs["include"] = include
+
+        print_debug_logs(client, f"Listing EKS clusters with parameters: {kwargs}")
+        response = client.list_clusters(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        clusters = response.get("clusters", [])
+        next_token = response.get("nextToken")
+
+        if not clusters:
+            return CommandResults(readable_output="There aren't any clusters.")
+
+        clusters_data = [{"ClusterName": cluster} for cluster in clusters]
+
+        readable_output = tableToMarkdown(
+            name="AWS EKS Clusters",
+            t=clusters_data,
+            headers=["ClusterName"],
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+
+        outputs: Dict[str, Any] = {"AWS.EKS.Clusters": clusters, "AWS.EKS(true)": {"ClustersNextToken": next_token}}
+
+        return CommandResults(
+            readable_output=readable_output,
+            outputs=outputs,
+            raw_response=response,
+        )
+
 
 class RDS:
     service = AWSServices.RDS
@@ -5932,7 +6084,7 @@ class RDS:
             if "values_to_add" in args:
                 kwargs["ValuesToAdd"] = argToList(args.get("values_to_add"))
 
-            if "values-to-remove" in args:
+            if "values_to_remove" in args:
                 kwargs["ValuesToRemove"] = argToList(args.get("values_to_remove"))
 
             remove_nulls_from_dictionary(kwargs)
@@ -5946,7 +6098,7 @@ class RDS:
                     readable_output = (
                         f"Successfully modified DB cluster snapshot attribute for {args.get('db_cluster_snapshot_identifier')}"
                     )
-                    readable_output += "\n\nUpdated DB Cluster Snapshot Attributes:"
+                    readable_output += "\n\nUpdated DB Cluster Snapshot Attributes:\n"
                     readable_output += tableToMarkdown("", attributes)
 
                 return CommandResults(
@@ -8129,6 +8281,9 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-ec2-security-group-delete": EC2.delete_security_group_command,
     "aws-ec2-security-groups-describe": EC2.describe_security_groups_command,
     "aws-ec2-security-group-egress-authorize": EC2.authorize_security_group_egress_command,
+    "aws-eks-clusters-list": EKS.list_clusters_command,
+    "aws-eks-access-entry-create": EKS.create_access_entry_command,
+    "aws-eks-access-entry-update": EKS.update_access_entry_command,
     "aws-ec2-images-describe": EC2.describe_images_command,
     "aws-ec2-image-create": EC2.create_image_command,
     "aws-ec2-image-deregister": EC2.deregister_image_command,
@@ -8288,8 +8443,11 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:DeleteSnapshot",
     "ec2:CopySnapshot",
     "ec2:DescribeRegions",
+    "eks:ListClusters",
     "eks:DescribeCluster",
     "eks:AssociateAccessPolicy",
+    "eks:CreateAccessEntry",
+    "eks:UpdateAccessEntry",
     "ec2:CreateSecurityGroup",
     "ec2:CreateNetworkAcl",
     "ec2:GetIpamDiscoveredPublicAddresses",
