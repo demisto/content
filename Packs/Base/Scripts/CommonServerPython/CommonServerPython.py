@@ -7748,11 +7748,11 @@ class CommandResults:
 
         indicators = [self.indicator] if self.indicator else self.indicators
 
-        if indicators:
-            # Get InsightCacheSize from demisto.callingContext (in KB, default 3 MB = 3072 KB)
-            insight_cache_size_kb = demisto.callingContext.get("context", {}).get("InsightCacheSize", DEFAULT_INSIGHT_CACHE_SIZE)
-            insight_cache_size_bytes = insight_cache_size_kb * 1024
+        # Get InsightCacheSize from demisto.callingContext (in KB, default 3 MB = 3072 KB)
+        insight_cache_size_kb = demisto.callingContext.get("context", {}).get("InsightCacheSize", DEFAULT_INSIGHT_CACHE_SIZE)
+        insight_cache_size_bytes = insight_cache_size_kb * 1024
 
+        if indicators:
             virtual_outputs = {}
             for indicator in indicators:
                 context_outputs = indicator.to_context()
@@ -7762,10 +7762,11 @@ class CommandResults:
                         virtual_outputs[key] = []
                     virtual_outputs[key].append(value)
 
+            outputs_size = len(json.dumps(self.outputs, default=str, separators=JSON_SEPARATORS, ensure_ascii=False)) if self.outputs else 0
             context_size = len(json.dumps(virtual_outputs, default=str, separators=JSON_SEPARATORS, ensure_ascii=False))
 
             # If the context size exceeds the limit, use to_minimum_context() instead
-            if context_size > insight_cache_size_bytes:
+            if context_size + outputs_size > insight_cache_size_bytes:
                 # Measure performance of to_minimum_context() - minimal context generation
                 for indicator in indicators:
                     context_outputs = indicator.to_minimum_context()
@@ -7776,19 +7777,23 @@ class CommandResults:
 
                         outputs[key].append(value)
 
-                if human_readable:
-                    human_readable += "\nNote! some of the context data was not included because it went over the {}KB limit.".format(insight_cache_size_kb)
+                # If even with minimum indicator context we are still over the limit, drop the outputs
+                min_context_size = len(json.dumps(outputs, default=str, separators=JSON_SEPARATORS, ensure_ascii=False))
+                if min_context_size + outputs_size > insight_cache_size_bytes:
+                    self.outputs = None
+                    note = "\nNote! the command outputs were excluded because they went over the {}KB limit.".format(insight_cache_size_kb)
                 else:
-                    human_readable = "Note! some of the context data was not included because it went over the {}KB limit.".format(insight_cache_size_kb)
+                    note = "\nNote! some of the context data was not included because it went over the {}KB limit.".format(insight_cache_size_kb)
 
-                demisto.debug(
-                    "Context size ({} chars) exceeded limit ({} bytes). Will use the minimum context.".format(context_size, insight_cache_size_bytes)
+                human_readable = (human_readable or "") + note
+                demisto.info(
+                    "Context size ({} chars) exceeded limit ({} bytes). Will use the minimum context.".format(context_size + outputs_size, insight_cache_size_bytes)
                 )
             else:
                 # Use the already calculated full context
                 outputs = virtual_outputs
                 demisto.debug(
-                    "Using full context ({} chars within {} bytes limit). ".format(context_size, insight_cache_size_bytes)
+                    "Using full context ({} chars within {} bytes limit). ".format(context_size + outputs_size, insight_cache_size_bytes)
                 )
 
         if self.tags:
