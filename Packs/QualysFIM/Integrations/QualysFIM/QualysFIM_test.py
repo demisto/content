@@ -287,31 +287,52 @@ def test_fetch_incidents_command(requests_mock, authenticated_client: Client) ->
 
 
 @pytest.mark.parametrize(
-    "fetch_filter, expected_filter",
+    "last_run, fetch_filter, expected_filter",
     [
-        pytest.param(None, "createdBy.date: ['1613205600000'..'1613469600000']", id="Empty filter"),
-        pytest.param("status: OPEN", "createdBy.date: ['1613205600000'..'1613469600000'] and status: OPEN", id="With filter"),
+        pytest.param(
+            {"last_fetch": 1613205600},  # 10 digits - seconds format
+            None,
+            "createdBy.date: ['1613205600000'..'1613469600000']",
+            id="Seconds timestamp, empty filter",
+        ),
+        pytest.param(
+            {"last_fetch": 1613205600},  # 10 digits - seconds format
+            "status: OPEN",
+            "createdBy.date: ['1613205600000'..'1613469600000'] and status: OPEN",
+            id="Seconds timestamp, with filter",
+        ),
+        pytest.param(
+            {"last_fetch": 1613205600000},  # 13 digits - milliseconds format
+            None,
+            "createdBy.date: ['1613205600000'..'1613469600000']",
+            id="Milliseconds timestamp, empty filter",
+        ),
+        pytest.param(
+            {"last_fetch": 1613205600000},  # 13 digits - milliseconds format
+            "status: OPEN",
+            "createdBy.date: ['1613205600000'..'1613469600000'] and status: OPEN",
+            id="Milliseconds timestamp, with filter",
+        ),
     ],
 )
 @freeze_time("2021-02-16 10:00:00", tz_offset=0)
 def test_fetch_incidents_filter_construction(
-    mocker, authenticated_client: Client, fetch_filter: str | None, expected_filter: str
+    mocker, authenticated_client: Client, last_run: dict, fetch_filter: str | None, expected_filter: str
 ) -> None:
     """
     Given:
+        - last_run with timestamp in seconds (10 digits) or milliseconds (13 digits)
         - fetch_filter parameter (empty or with value)
     When:
         - fetch_incidents is called
     Then:
-        - Assert the filter string sent to the API is correctly constructed
+        - Assert the filter string sent to the API is correctly constructed with 13-digit millisecond timestamps
+        - Assert backward compatibility: both seconds and milliseconds input formats produce correct output
     """
     from QualysFIM import fetch_incidents
 
     # Mocking incidents_list to capture the params
     mock_incidents_list = mocker.patch.object(Client, "incidents_list", return_value=[])
-
-    # Arrange
-    last_run = {"last_fetch": 1613205600}  # 2021-02-13 10:00:00
 
     # Act
     fetch_incidents(
