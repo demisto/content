@@ -19,7 +19,6 @@ Further information is available from CyberArk at:
 2. Search for CyberArkCCP.
 3. Click **Add instance** to create and configure a new integration instance.
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- |--------------|
 | Server URL and Port (e.g., https://example.net:1234) |  | True         |
@@ -34,7 +33,6 @@ Further information is available from CyberArk at:
 | Fetch credentials |  | False        |
 | Trust any certificate (not secure) |  | False        |
 | Use system proxy settings |  | False        |
-
 
 ## Commands
 
