@@ -5225,7 +5225,7 @@ def main():  # pragma: no cover
             "azure-cosmos-db-update": cosmosdb_update_command,
             "azure-nsg-security-groups-list": nsg_security_groups_list_command,
             "azure-nsg-security-rule-get": nsg_security_rule_get_command,
-            "azure-nsg-security-group-create": nsg_security_group_create_command,
+            "azure-vn-security-group-create": nsg_security_group_create_command,
             "azure-nsg-security-rules-list": nsg_security_rules_list_command,
             "azure-nsg-security-rule-create": nsg_security_rule_create_command,
             "azure-nsg-security-rule-delete": nsg_security_rule_delete_command,

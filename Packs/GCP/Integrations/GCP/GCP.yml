@@ -1902,7 +1902,7 @@ script:
       required: true
     outputs: []
   - name: gcp-bq-dataset-policy-update
-    description: Updates the policy of an existing dataset.
+    description: Updates the access policy of an existing dataset.
     arguments:
     - name: project_id
       required: true

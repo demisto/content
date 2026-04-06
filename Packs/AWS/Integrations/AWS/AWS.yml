@@ -2751,7 +2751,7 @@ script:
         type: String
       - contextPath: AWS.RDS.DBInstances.MultiAZ
         description: Indicates whether the DB instance is a Multi-AZ deployment. This setting doesn’t apply to RDS Custom DB instances.
-        type: String
+        type: Boolean
       - contextPath: AWS.RDS.DBInstances.EngineVersion
         description: The version of the database engine.
         type: String
@@ -2876,7 +2876,7 @@ script:
         description: The mode of Database Insights that is enabled for the instance.
         type: String
       - contextPath: AWS.RDS.DBInstances.PerformanceInsightsEnabled
-        description: ndicates whether Performance Insights is enabled for the DB instance.
+        description: Indicates whether Performance Insights is enabled for the DB instance.
         type: Boolean
       - contextPath: AWS.RDS.DBInstances.PerformanceInsightsKMSKeyId
         description: The Amazon Web Services KMS key identifier for encryption of Performance Insights data.

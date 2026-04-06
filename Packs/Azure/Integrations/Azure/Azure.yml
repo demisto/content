@@ -6667,8 +6667,8 @@ script:
         description: Azure Resource Manager metadata containing createdBy and modifiedBy information.
         type: Unknown
       - contextPath: Azure.Compute.VirtualMachines.zones
-        description: Specifies information about the marketplace image used to create the virtual machine.
-        type: The availability zones.
+        description: The availability zones.
+        type: Unknown.
       - contextPath: Azure.Compute.VirtualMachines.properties.vmId
         description: The unique ID of the virtual machine.
         type: String
