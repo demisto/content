@@ -494,7 +494,6 @@ def test_similar_issue_finder_preprocess_args():
         "fields_to_display": "name, status",
         "from_date": "2023-01-01",
         "to_date": "2023-12-31",
-        "aggregate_issues_different_date": "True",
         "include_indicators_similarity": "False",
         "min_number_of_indicators": "2",
         "indicators_types": "IP, Domain",
@@ -514,7 +513,6 @@ def test_similar_issue_finder_preprocess_args():
     assert finder.fields_to_display == "name, status"
     assert finder.from_date == "2023-01-01"
     assert finder.to_date == "2023-12-31"
-    assert finder.aggregate_objects_different_date == "True"
     assert finder.include_indicators_similarity == "False"
     assert finder.min_number_of_indicators == "2"
     assert finder.indicators_types == "IP, Domain"
@@ -535,7 +533,7 @@ def test_similar_issue_finder_load_current_entity(mocker):
 
     mock_execute_command = mocker.patch.object(demisto, "executeCommand")
     mock_execute_command.return_value = [
-        {"Type": 1, "Contents": {"alerts": [{"alert_fields": {"internal_id": "123", "issue_name": "test"}}]}}
+        {"Type": 1, "Contents": [{"internal_id": "123", "issue_name": "test"}]}
     ]
 
     issue, entity_id = finder.load_current_entity("123", [], [], [], [], [], "2023-01-01", "2023-12-31")
@@ -543,7 +541,7 @@ def test_similar_issue_finder_load_current_entity(mocker):
     assert issue == {"internal_id": "123", "issue_name": "test"}
     assert entity_id == "123"
     mock_execute_command.assert_called_once_with(
-        "core-get-issues", {"issue_id": "123", "start_time": "2023-01-01", "end_time": "2023-12-31", "time_frame": "custom"}
+        "core-get-issues", {"issue_id": "123"}
     )
 
 
@@ -553,7 +551,7 @@ def test_similar_issue_finder_get_all_entities(mocker):
 
     mock_execute_command_batch = mocker.patch.object(demisto, "executeCommandBatch")
     mock_execute_command_batch.return_value = [
-        [{"Type": 1, "Contents": {"alerts": [{"alert_fields": {"internal_id": "456", "issue_name": "test2"}}]}}]
+        [{"Type": 1, "Contents": [{"internal_id": "456", "issue_name": "test2"}]}]
     ]
 
     entity = {"internal_id": "123", "issue_name": "test", "status": "Open"}

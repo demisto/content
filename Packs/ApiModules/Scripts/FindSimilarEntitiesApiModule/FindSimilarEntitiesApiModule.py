@@ -459,7 +459,9 @@ class Model:
             ],
         ]
         self.entities_df[f"similarity {self.entity_name}"] = np.round(col.mean(axis=1), 2)
-        demisto.debug(f"Final similarity scores for {self.entity_name}: {self.entities_df[f'similarity {self.entity_name}'].tolist()}")
+        demisto.debug(
+            f"Final similarity scores for {self.entity_name}: {self.entities_df[f'similarity {self.entity_name}'].tolist()}"
+        )
 
     def prepare_for_display(self):
         """
@@ -1536,9 +1538,7 @@ class SimilarIssueFinder(BaseSimilarEntityFinder):
         :return: Tuple of (issue_dict, entity_id)
         """
         demisto.debug(f"Calling core-get-issues for {entity_id=}")
-        args = remove_empty_elements(
-            {"issue_id": entity_id}
-        )
+        args = remove_empty_elements({"issue_id": entity_id})
 
         res = demisto.executeCommand("core-get-issues", args)
         if is_error(res):
@@ -1586,11 +1586,7 @@ class SimilarIssueFinder(BaseSimilarEntityFinder):
         :return: Tuple of (issues_list, message)
         """
         msg = ""
-        base_args = {
-            "start_time": from_date,
-            "end_time": to_date,
-            "time_frame": "custom"
-        }
+        base_args = {"start_time": from_date, "end_time": to_date, "time_frame": "custom"}
 
         custom_filter = self.custom_filter
         if custom_filter:
@@ -1610,7 +1606,7 @@ class SimilarIssueFinder(BaseSimilarEntityFinder):
         page_size = 100
         limit = limit + 1
         current_issue_id = str(entity.get("internal_id"))
-        
+
         commands = []
         for page in range(0, (limit // page_size) + (1 if limit % page_size else 0)):
             args = {**base_args, "page": page, "page_size": page_size}
@@ -1632,11 +1628,7 @@ class SimilarIssueFinder(BaseSimilarEntityFinder):
                 if not batch_issues:
                     continue
 
-                filtered_batch = [
-                    i
-                    for i in batch_issues
-                    if str(i.get("internal_id")) != current_issue_id
-                ]
+                filtered_batch = [i for i in batch_issues if str(i.get("internal_id")) != current_issue_id]
 
                 all_issues.extend(filtered_batch)
 
@@ -1649,7 +1641,7 @@ class SimilarIssueFinder(BaseSimilarEntityFinder):
             return None, msg
 
         if len(all_issues) >= limit:
-            all_issues = all_issues[:limit - 2]
+            all_issues = all_issues[: limit - 2]
 
         return all_issues, msg
 
