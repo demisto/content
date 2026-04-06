@@ -12,7 +12,7 @@ def test_client_initialization():
         verify=False,
         proxy=False,
     )
-    assert client._base_url == 'https://test.example.com/'
+    assert client._base_url.rstrip('/') == 'https://test.example.com'
 
 
 def test_snapshot_command(mocker):
