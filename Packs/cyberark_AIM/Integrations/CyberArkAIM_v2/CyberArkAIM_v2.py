@@ -162,7 +162,7 @@ def main():
     app_id = params.get("app_id")
 
     if not app_id:
-        raise return_error("app_id is required")
+        raise DemistoException("The 'AppID' parameter is required")
 
     folder = params.get("folder")
     safe = params.get("safe")
