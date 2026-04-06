@@ -3,12 +3,12 @@ This integration was integrated and tested with version xx of MagnetAutomate.
 
 ## Configure Magnet Automate in Cortex
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| Your server URL |  | True |
-| API Key | The API Key to use for the connection | True |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Your server URL | True |
+| API Key | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
 ## Commands
 
@@ -146,7 +146,7 @@ Starts a new workflow run and associates it with a specific case.
 | case_id | The unique identifier of the case to associate the workflow run with. | Required |
 | evidence_number | An evidence number to apply to the evidence source. | Required |
 | type | A JSON object defining the evidence type and its parameters (e.g., ImageSource path). | Required |
-| workflow_id | The unique identifier of the workflow to run. | Optional |
+| workflow_id | The unique identifier of the workflow to run. | Required |
 | output_path | The directory path where the workflow output will be stored. | Optional |
 | platform | The platform associated with the evidence. | Optional |
 | decryption_type | The type of decryption to use (e.g., Password, RecoveryKey). | Optional |
@@ -442,7 +442,7 @@ Deletes a specific node from Magnet Automate.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| node_id | The unique identifier of the node to delete. | Optional |
+| node_id | The unique identifier of the node to delete. | Required |
 
 #### Context Output
 
