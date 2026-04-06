@@ -6287,10 +6287,10 @@ script:
         type: String
       - contextPath: Azure.KeyVault.Vault.properties.accessPolicies
         description: A list of up to 16 identities that have access to the key vault. All identities must use the same tenant ID as the key vault.
-      - contextPath: Azure.KeyVault.properties.accessPolicies.tenantId
+      - contextPath: Azure.KeyVault.Vault.properties.accessPolicies.tenantId
         description: The Entra ID tenant ID to use for authenticating requests to the key vault.
         type: String
-      - contextPath: Azure.KeyVault.properties.enabledForDeployment
+      - contextPath: Azure.KeyVault.Vault.properties.enabledForDeployment
         description: Whether Azure Virtual Machines are allowed to retrieve certificates stored as secrets from the key vault.
         type: Boolean
       - contextPath: Azure.KeyVault.Vault.properties.enabledForDiskEncryption
