@@ -35,7 +35,7 @@ class Config:
     DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
     DEFAULT_LIMIT = 10000
-    DEFAULT_FROM_TIME = "now"
+    DEFAULT_FROM_TIME = "1 minute ago"
     MAX_PAGE_SIZE = 1000
     TOKEN_EXPIRY_SECONDS = 3600
 
