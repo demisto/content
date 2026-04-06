@@ -144,7 +144,7 @@ script:
       required: true
       description: A JSON object defining the evidence type and its parameters (e.g., ImageSource path).
     - name: workflow_id
-      required: false
+      required: true
       description: The unique identifier of the workflow to run.
     - name: output_path
       required: false
@@ -487,7 +487,7 @@ script:
     execution: false
     arguments:
     - name: node_id
-      required: false
+      required: true
       description: The unique identifier of the node to delete.
 
   isfetch: false
