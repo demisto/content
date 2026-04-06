@@ -1,6 +1,5 @@
 id: Google Drive Permissions Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Google Drive Permissions Test
 starttaskid: "0"
 tasks:
@@ -438,10 +437,7 @@ tasks:
       id: 630ccd9e-b44e-4a43-8b89-b20fdea661f5
       version: -1
       name: google-drive-file-delete
-      description: Permanently deletes a file owned by the user without moving it
-        to the trash. If the file belongs to a shared drive the user must be an organizer
-        on the parent. If the target is a folder, all descendants owned by the user
-        are also deleted.
+      description: Permanently deletes a file owned by the user without moving it to the trash. If the file belongs to a shared drive the user must be an organizer on the parent. If the target is a folder, all descendants owned by the user are also deleted.
       script: GoogleDrive|||google-drive-file-delete
       type: regular
       iscommand: true
@@ -662,4 +658,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: A test playbook to test GoogleDrive file permissions
+description: A test playbook to test GoogleDrive file permissions.
