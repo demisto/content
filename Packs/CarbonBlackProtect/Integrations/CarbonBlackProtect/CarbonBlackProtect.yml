@@ -1478,7 +1478,7 @@ script:
       description: Is this rule "reporting only" or is it also "enforcing".
       type: String
   - arguments:
-    - description: ID of the user to disable. Retrieved from cbp-retrieve-user-data.
+    - description: ID of the user to disable. Retrieved from cbp-user-data-retrieve.
       name: user_id
       required: true
     description: Sends request to disable user account.
