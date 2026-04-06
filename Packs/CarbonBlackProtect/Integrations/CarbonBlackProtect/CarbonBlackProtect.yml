@@ -1482,13 +1482,13 @@ script:
       name: user_id
       required: true
     description: Sends request to disable user account.
-    name: cbp-disable-user
+    name: cbp-user-disable
   - arguments:
     - description: Email address of user account to retrieve data for.
       name: user_email
       required: true
     description: Retrieve all user account data.
-    name: cbp-retrieve-user-data
+    name: cbp-user-data-retrieve
   dockerimage: demisto/python3:3.12.13.7444307
   dockerimage: demisto/python3:3.12.12.5490952
   subtype: python3
