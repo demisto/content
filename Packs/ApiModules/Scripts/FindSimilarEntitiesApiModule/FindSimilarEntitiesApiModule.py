@@ -501,9 +501,7 @@ class EntityArgs:
         "from_date": ["fromDate", "from_date"],
         "to_date": ["toDate", "to_date"],
         "aggregate_objects_different_date": [
-            "aggregateIncidentsDifferentDate",
             "aggreagateIncidentsDifferentDate",
-            "aggregate_issues_different_date",
         ],
         "include_indicators_similarity": ["includeIndicatorsSimilarity", "include_indicators_similarity"],
         "min_number_of_indicators": ["minNumberOfIndicators", "min_number_of_indicators"],
@@ -1437,6 +1435,9 @@ class SimilarIssueFinder(BaseSimilarEntityFinder):
         Preprocess arguments for issues.
         :return: None
         """
+        if not (self.similar_text_field or self.similar_categorical_field or self.similar_json_field):
+            self.similar_categorical_field = self.field_exact_match
+
         fields_to_check = ["similar_text_field", "field_exact_match", "similar_categorical_field"]
 
         for key in fields_to_check:
@@ -1492,7 +1493,7 @@ class SimilarIssueFinder(BaseSimilarEntityFinder):
         :param display_fields: Fields to display.
         :return: List of fields to check.
         """
-        return list(set(similar_text_field) | set(similar_json_field) | set(similar_categorical_field))
+        return list(set(similar_text_field) | set(similar_json_field) | set(similar_categorical_field) | set(display_fields))
 
     def remove_incorrect_fields(
         self, display_fields, similar_text_field, similar_json_field, similar_categorical_field, incorrect_fields
@@ -1534,9 +1535,9 @@ class SimilarIssueFinder(BaseSimilarEntityFinder):
         :param to_date: End date.
         :return: Tuple of (issue_dict, entity_id)
         """
-        demisto.debug(f"Calling core-get-issues for {entity_id=} between {from_date=} and {to_date=}")
+        demisto.debug(f"Calling core-get-issues for {entity_id=}")
         args = remove_empty_elements(
-            {"issue_id": entity_id, "start_time": from_date, "end_time": to_date, "time_frame": "custom"}
+            {"issue_id": entity_id}
         )
 
         res = demisto.executeCommand("core-get-issues", args)
@@ -1546,16 +1547,13 @@ class SimilarIssueFinder(BaseSimilarEntityFinder):
         issues_res: list = []
         if res and isinstance(res, list):
             for entry in res:
-                if (
-                    isinstance(entry, dict)
-                    and (contents := entry.get("Contents"))
-                    and isinstance(contents, dict)
-                    and (alerts := contents.get("alerts"))
-                ):
-                    issues_res = alerts if alerts is not None else []
-                    break
+                if isinstance(entry, dict):
+                    contents = entry.get("Contents") or entry.get("contents")
+                    if isinstance(contents, list):
+                        issues_res = contents
+                        break
 
-        issue = issues_res[0].get("alert_fields") if issues_res else None
+        issue = issues_res[0] if issues_res else None
         if not issue:
             return None, entity_id
 
@@ -1609,13 +1607,13 @@ class SimilarIssueFinder(BaseSimilarEntityFinder):
 
         demisto.debug(f"Base args sent to core-get-issues to filter by: {base_args}")
         all_issues: list[dict] = []
-        page_size = 50
+        page_size = 100
+        limit = limit + 1
         current_issue_id = str(entity.get("internal_id"))
-
+        
         commands = []
-        for offset in range(0, limit, page_size):
-            current_batch_limit = min(limit, offset + page_size)
-            args = {**base_args, "offset": offset, "limit": current_batch_limit}
+        for page in range(0, (limit // page_size) + (1 if limit % page_size else 0)):
+            args = {**base_args, "page": page, "page_size": page_size}
             commands.append({"core-get-issues": args})
 
         demisto.debug(f"Calling core-get-issues in batch with {len(commands)} commands.")
@@ -1627,22 +1625,17 @@ class SimilarIssueFinder(BaseSimilarEntityFinder):
                     return_error(get_error(res))
 
                 batch_issues: list = []
-                if (
-                    res
-                    and isinstance(res, dict)
-                    and (contents := res.get("Contents"))
-                    and isinstance(contents, dict)
-                    and (alerts := contents.get("alerts"))
-                ):
-                    batch_issues = alerts if alerts is not None else []
+                if res and isinstance(res, dict) and (contents := res.get("Contents")):
+                    if isinstance(contents, list):
+                        batch_issues = contents
 
                 if not batch_issues:
                     continue
 
                 filtered_batch = [
-                    i.get("alert_fields")
+                    i
                     for i in batch_issues
-                    if str(i.get("alert_fields", {}).get("internal_id")) != current_issue_id
+                    if str(i.get("internal_id")) != current_issue_id
                 ]
 
                 all_issues.extend(filtered_batch)
@@ -1655,8 +1648,8 @@ class SimilarIssueFinder(BaseSimilarEntityFinder):
             msg += f"- 0 {self.entity_name}s fetched with these exact match for the given dates. \n"
             return None, msg
 
-        if len(all_issues) == limit:
-            all_issues.pop()
+        if len(all_issues) >= limit:
+            all_issues = all_issues[:limit - 2]
 
         return all_issues, msg
 
