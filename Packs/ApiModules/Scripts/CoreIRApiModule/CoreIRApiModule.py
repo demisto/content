@@ -1461,13 +1461,6 @@ class AlertFilterArg:
         return value
 
 
-def normalize_ts(ts: str) -> str:
-    # Strip trailing Z when a UTC offset (+HH:MM/-HH:MM) is already present
-    if re.search(r"[+-]\d{2}:\d{2}Z$", ts):
-        return ts[:-1]
-    return ts
-
-
 class FilterBuilder:
     """
     Filter class for creating filter dictionary objects.
@@ -1632,19 +1625,19 @@ class FilterBuilder:
     @staticmethod
     def _prepare_time_range(start_time_str: str | None, end_time_str: str | None) -> tuple[int | None, int | None]:
         """Prepare start and end time from args, parsing relative time strings."""
-        if end_time_str and not start_time_str:
-            raise DemistoException("When 'end_time' is provided, 'start_time' must be provided as well.")
-
         start_time, end_time = None, None
 
+        if end_time_str and not start_time_str:
+            start_time = 0
+
         if start_time_str:
-            if start_dt := dateparser.parse(normalize_ts(str(start_time_str))):
+            if start_dt := dateparser.parse(str(start_time_str)):
                 start_time = int(start_dt.timestamp() * 1000)
             else:
                 raise ValueError(f"Could not parse start_time: {start_time_str}")
 
         if end_time_str:
-            if end_dt := dateparser.parse(normalize_ts(str(end_time_str))):
+            if end_dt := dateparser.parse(str(end_time_str)):
                 end_time = int(end_dt.timestamp() * 1000)
             else:
                 raise ValueError(f"Could not parse end_time: {end_time_str}")

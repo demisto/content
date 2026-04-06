@@ -5411,54 +5411,6 @@ class TestFilterBuilder:
         mock_prepare_time_range.assert_called_once_with(None, None)
         mock_add_field.assert_not_called()
 
-    @pytest.mark.parametrize(
-        "start_time_str, end_time_str, expected_start_ms, expected_end_ms",
-        [
-            # Standard UTC with Z — should parse normally
-            (
-                "2026-03-02T21:59:54Z",
-                "2026-03-03T21:59:54Z",
-                1772488794000,
-                1772575194000,
-            ),
-            # Standard UTC with offset — should parse normally
-            (
-                "2026-03-02T21:59:54+00:00",
-                "2026-03-03T21:59:54+00:00",
-                1772488794000,
-                1772575194000,
-            ),
-            # Malformed: UTC offset AND trailing Z — agent-generated format that previously failed
-            (
-                "2026-03-02T21:59:54+00:00Z",
-                "2026-03-03T21:59:54+00:00Z",
-                1772488794000,
-                1772575194000,
-            ),
-        ],
-    )
-    def test_prepare_time_range_normalizes_timestamps(
-        self,
-        start_time_str: str,
-        end_time_str: str,
-        expected_start_ms: int,
-        expected_end_ms: int,
-    ):
-        """
-        Given: Various ISO 8601 timestamp strings, including the malformed +00:00Z variant
-               that AI agents generate (combining a UTC offset with a trailing Z).
-        When: _prepare_time_range is called with both start and end times.
-        Then: The method should successfully parse all variants and return the correct
-              epoch-millisecond values. The +00:00Z format must be normalized before
-              parsing so that dateparser does not return None and raise a ValueError.
-        """
-        from CoreIRApiModule import FilterBuilder
-
-        start_ms, end_ms = FilterBuilder._prepare_time_range(start_time_str, end_time_str)
-
-        assert start_ms == expected_start_ms
-        assert end_ms == expected_end_ms
-
     def test_to_dict_empty_filter_fields(self):
         """
         Given: A FilterBuilder instance with no filter fields.
@@ -5779,21 +5731,6 @@ class TestFilterBuilder:
 
         assert start_time is None
         assert end_time is None
-
-    def test_prepare_time_range_end_time_without_start_time_raises_exception(self):
-        """
-        Given: None as start_time_str and a valid end_time_str.
-        When: _prepare_time_range is called with end_time but no start_time.
-        Then: A DemistoException should be raised with appropriate error message.
-        """
-        from CoreIRApiModule import FilterBuilder
-        from CommonServerPython import DemistoException
-
-        with pytest.raises(
-            DemistoException,
-            match="When 'end_time' is provided, 'start_time' must be provided as well.",
-        ):
-            FilterBuilder._prepare_time_range(None, "2023-01-02T15:30:00")
 
     def test_prepare_time_range_invalid_start_time_raises_value_error(self, mocker: MockerFixture):
         """
