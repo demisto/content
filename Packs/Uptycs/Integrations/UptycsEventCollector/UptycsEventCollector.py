@@ -76,9 +76,18 @@ def get_formatted_utc_time(date_input: str | None) -> str:
 
 
 def parse_date_or_use_current(date_string: str | None) -> datetime:
-    """Parse a date string or return current UTC datetime if parsing fails.
+    """Parse a date string or return current UTC datetime if no input is provided.
 
     Ensures the result is always a timezone-aware UTC datetime object.
+
+    Args:
+        date_string: Date string to parse (e.g., '3 days ago', '2024-01-01'), or None/empty for current UTC time.
+
+    Returns:
+        Timezone-aware UTC datetime object.
+
+    Raises:
+        DemistoException: If the provided date string cannot be parsed.
     """
     if not date_string:
         current_time = datetime.now(timezone.utc)  # noqa: UP017
@@ -91,8 +100,7 @@ def parse_date_or_use_current(date_string: str | None) -> datetime:
     )
 
     if not parsed_datetime:
-        demisto.debug(f"[Date Helper] Failed to parse '{date_string}'. Fallback to current UTC.")
-        return datetime.now(timezone.utc)  # noqa: UP017
+        raise DemistoException(f"Failed to parse date string: '{date_string}'")
 
     if parsed_datetime.tzinfo != timezone.utc:  # noqa: UP017
         parsed_datetime = parsed_datetime.astimezone(timezone.utc)  # noqa: UP017
@@ -153,6 +161,7 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     base_url = (params.get("url", "")).strip().rstrip("/")
     if not base_url:
         raise DemistoException("Server URL is required.")
+    base_url += "/"
 
     api_key = params.get("api_key", "").strip() or None
     if not api_key:
@@ -299,7 +308,7 @@ class Client(ContentClient):
         )
         auth_handler = BearerTokenAuthHandler(token=token)
         super().__init__(
-            base_url=base_url.rstrip("/") + "/",
+            base_url=base_url,
             verify=verify,
             proxy=proxy,
             auth_handler=auth_handler,
@@ -311,26 +320,25 @@ class Client(ContentClient):
     def get_alerts(
         self,
         created_after: str,
-        created_before: str | None = None,
+        created_before: str,
         offset: int = 0,
         limit: int = Config.MAX_PAGE_SIZE,
-    ) -> tuple[list[dict[str, Any]], int]:
+    ) -> list[dict[str, Any]]:
         """Retrieve a page of alerts from Uptycs alertsReporting endpoint.
 
         Args:
             created_after: Start time string (UTC, format: %Y-%m-%dT%H:%M:%S).
-            created_before: End time string (UTC) or None for current time.
+            created_before: End time string (UTC, format: %Y-%m-%dT%H:%M:%S).
             offset: Pagination offset (0-based).
             limit: Number of results per page.
 
         Returns:
-            Tuple of (list of alert events, total count from response).
+            List of alert event dictionaries.
         """
         url_suffix = APIValues.ALERTS_ENDPOINT.format(customer_id=self.customer_id)
 
         # Build time filter
-        end_time = created_before or datetime.now(timezone.utc).strftime(Config.DATE_FORMAT)  # noqa: UP017
-        filters = json.dumps({"lastOccurredAt": {"between": [created_after, end_time]}})
+        filters = json.dumps({"lastOccurredAt": {"between": [created_after, created_before]}})
 
         request_params: dict[str, Any] = {
             APIKeys.SORT: APIValues.DEFAULT_SORT,
@@ -339,7 +347,9 @@ class Client(ContentClient):
             APIKeys.LIMIT: limit,
         }
 
-        demisto.debug(f"[API Fetch] Fetching alerts | From: {created_after} | To: {end_time} | Offset: {offset} | Limit: {limit}")
+        demisto.debug(
+            f"[API Fetch] Fetching alerts | From: {created_after} | To: {created_before} | Offset: {offset} | Limit: {limit}"
+        )
 
         response = self._http_request(method="GET", url_suffix=url_suffix, params=request_params)
 
@@ -347,7 +357,7 @@ class Client(ContentClient):
 
         demisto.debug(f"[API Fetch] Page fetched. Count: {len(items)}.")
 
-        return items, len(items)
+        return items
 
 
 # endregion
@@ -395,24 +405,28 @@ def fetch_events_with_pagination(
     """Fetch events with offset/limit pagination support.
 
     Fetches pages until the limit is reached or no more results exist.
+    If created_before is not provided, the current UTC time is used and pinned for all pages.
 
     Args:
         client: Configured Uptycs API client.
         created_after: Start time (UTC formatted string).
-        created_before: End time (UTC formatted string) or None.
+        created_before: End time (UTC formatted string) or None for current time.
         max_events: Maximum total events to retrieve.
 
     Returns:
         List of alert event dictionaries, sorted by lastOccurredAt ascending (oldest first) as returned by the API.
     """
+    if not created_before:
+        created_before = datetime.now(timezone.utc).strftime(Config.DATE_FORMAT)  # noqa: UP017
+
     events: list[dict[str, Any]] = []
     offset = 0
     page_size = min(Config.MAX_PAGE_SIZE, max_events)
 
-    demisto.debug(f"[Pagination Loop] Start. Goal: {max_events}. Time: {created_after} -> {created_before or 'Now'}")
+    demisto.debug(f"[Pagination Loop] Start. Goal: {max_events}. Time: {created_after} -> {created_before}")
 
     while len(events) < max_events:
-        page_events, page_count = client.get_alerts(
+        page_events = client.get_alerts(
             created_after=created_after,
             created_before=created_before,
             offset=offset,
@@ -427,7 +441,7 @@ def fetch_events_with_pagination(
         demisto.debug(f"[Pagination Loop] Offset {offset}: +{len(page_events)} events. Total: {len(events)}")
 
         # If we got fewer results than the page size, there are no more pages
-        if page_count < page_size:
+        if len(page_events) < page_size:
             demisto.debug("[Pagination Loop] Last page reached (partial page). Stopping.")
             break
 
@@ -534,18 +548,18 @@ def fetch_events_command(client: Client) -> None:
 
         # Update Last Run state
         last_event = events[-1]
-        new_last_run_time = last_event.get("createdAt")
+        new_last_run_time = last_event.get("lastOccurredAt")
 
         if new_last_run_time:
             # Collect IDs at the high-water mark timestamp for deduplication
             ids_at_last_timestamp = [
-                event.get("id") for event in events if event.get("createdAt") == new_last_run_time and event.get("id")
+                event.get("id") for event in events if event.get("lastOccurredAt") == new_last_run_time and event.get("id")
             ]
 
             demisto.setLastRun({"last_fetch": new_last_run_time, "last_fetched_ids": ids_at_last_timestamp})
             demisto.debug(f"[Fetch] State updated. New HWM: {new_last_run_time}")
         else:
-            demisto.debug("[Fetch] Warning: Last event missing createdAt. State not updated.")
+            demisto.debug("[Fetch] Warning: Last event missing lastOccurredAt. State not updated.")
     else:
         demisto.debug("[Fetch] All events were duplicates.")
 
