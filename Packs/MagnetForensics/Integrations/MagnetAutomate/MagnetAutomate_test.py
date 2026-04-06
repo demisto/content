@@ -170,6 +170,7 @@ class TestMagnetAutomateParams:
         Then:
             - The url field is set and contains the expected host.
         """
+        from urllib.parse import urlparse
         from pydantic import SecretStr
         from MagnetAutomate import MagnetAutomateParams, Credentials
 
@@ -178,7 +179,7 @@ class TestMagnetAutomateParams:
             credentials=Credentials(password=SecretStr("key")),
         )
 
-        assert "automate.example.com" in str(params.url)
+        assert urlparse(str(params.url)).hostname == "automate.example.com"
 
 
 # endregion
