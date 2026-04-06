@@ -193,10 +193,14 @@ PERMISSIONS_TO_COMMANDS = {
     ],
     "Microsoft.KeyVault/vaults/read": ["azure-key-vault-update", "azure-key-vault-purge-and-soft-delete-enable-quick-action"],
     "Microsoft.KeyVault/vaults/write": ["azure-key-vault-update", "azure-key-vault-purge-and-soft-delete-enable-quick-action"],
-    "Microsoft.Sql/servers/databases/securityAlertPolicies/read": ["azure-sql-db-threat-policy-update",
-                                                                   "azure-sql-db-threat-policy-update-quick-action"],
-    "Microsoft.Sql/servers/databases/securityAlertPolicies/write": ["azure-sql-db-threat-policy-update",
-                                                                    "azure-sql-db-threat-policy-update-quick-action"],
+    "Microsoft.Sql/servers/databases/securityAlertPolicies/read": [
+        "azure-sql-db-threat-policy-update",
+        "azure-sql-db-threat-policy-update-quick-action",
+    ],
+    "Microsoft.Sql/servers/databases/securityAlertPolicies/write": [
+        "azure-sql-db-threat-policy-update",
+        "azure-sql-db-threat-policy-update-quick-action",
+    ],
     "Microsoft.DocumentDB/databaseAccounts/read": ["azure-cosmos-db-update", "azure-cosmos-db-disable-key-quick-action"],
     "Microsoft.DocumentDB/databaseAccounts/write": ["azure-cosmos-db-update", "azure-cosmos-db-disable-key-quick-action"],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/read": [
