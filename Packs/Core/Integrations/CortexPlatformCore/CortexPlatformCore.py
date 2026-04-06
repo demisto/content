@@ -3,7 +3,6 @@ from typing import Any
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
-import dateparser
 import copy
 
 
@@ -71,6 +70,7 @@ WEBAPP_COMMANDS = [
     "core-list-scripts",
     "core-run-script-agentix",
     "core-list-endpoints",
+    "core-get-issues",
     "core-list-exception-rules",
     "core-get-endpoint-update-version",
     "core-update-endpoint-version",
@@ -198,10 +198,12 @@ class CaseManagement:
         "known_issue": "STATUS_040_RESOLVED_KNOWN_ISSUE",
         "duplicate": "STATUS_050_RESOLVED_DUPLICATE",
         "false_positive": "STATUS_060_RESOLVED_FALSE_POSITIVE",
+        "other": "STATUS_070_RESOLVED_OTHER",
         "true_positive": "STATUS_090_TRUE_POSITIVE",
         "security_testing": "STATUS_100_SECURITY_TESTING",
-        "other": "STATUS_070_RESOLVED_OTHER",
     }
+
+    STATUS_RESOLVED_REASON_OUTPUT = {v: k for k, v in STATUS_RESOLVED_REASON.items()}
 
     FIELDS = {
         "case_id_list": "CASE_ID",
@@ -608,15 +610,11 @@ def preprocess_get_case_extra_data_outputs(outputs: list | dict):
     return process(outputs)
 
 
-def filter_context_fields(output_keys: list, context: list):
+def filter_context_fields(output_keys: list, context: list) -> list:
     """
-    Filters only specific keys from the context dictionary based on provided output_keys.
+    Filters only specific keys from the context dictionary where values are not None.
     """
-    filtered_context = []
-    for alert in context:
-        filtered_context.append({key: alert.get(key) for key in output_keys})
-
-    return filtered_context
+    return [{k: v for k in output_keys if (v := alert.get(k)) is not None} for alert in context]
 
 
 class Client(CoreClient):
@@ -1759,10 +1757,14 @@ def map_case_format(case_list):
             "modification_time": case_data.get("LAST_UPDATE_TIME"),
             "resolved_timestamp": case_data.get("RESOLVED_TIMESTAMP"),
             "status": str(case_data.get("STATUS", case_data.get("STATUS_PROGRESS"))).split("_")[-1].lower(),
+            "resolve_comment": case_data.get("RESOLVED_COMMENT"),
+            "resolve_reason": CaseManagement.STATUS_RESOLVED_REASON_OUTPUT.get(
+                case_data.get("RESOLVE_REASON"), case_data.get("RESOLVE_REASON")
+            ),
             "severity": str(case_data.get("SEVERITY")).split("_")[-1].lower(),
             "case_domain": case_data.get("INCIDENT_DOMAIN"),
-            "original_tags": [tag.get("tag_name") for tag in case_data.get("ORIGINAL_TAGS", [])],
-            "tags": [tag.get("tag_name") for tag in case_data.get("CURRENT_TAGS", [])],
+            "original_tags": [tag.get("tag_name") for tag in (case_data.get("ORIGINAL_TAGS") or [])],
+            "tags": [tag.get("tag_name") for tag in (case_data.get("CURRENT_TAGS") or [])],
             "issue_count": case_data.get("ACC_ALERT_COUNT"),
             "critical_severity_issue_count": case_data.get("CRITICAL_SEVERITY_ALERTS"),
             "high_severity_issue_count": case_data.get("HIGH_SEVERITY_ALERTS"),
@@ -1775,11 +1777,10 @@ def map_case_format(case_list):
             "wildfire_hits": case_data.get("WF_HITS"),
             "assigned_user_pretty_name": case_data.get("ASSIGNED_USER_PRETTY"),
             "assigned_user_mail": case_data.get("ASSIGNED_USER"),
-            "resolve_comment": case_data.get("RESOLVED_COMMENT"),
             "issues_grouping_status": str(case_data.get("CASE_GROUPING_STATUS")).split("_")[-1],
             "starred": case_data.get("CASE_STARRED"),
             "case_sources": case_data.get("INCIDENT_SOURCES"),
-            "custom_fields": case_data.get("EXTENDED_FIELDS"),
+            "custom_fields": {k.removeprefix("CUSTOM_").lower(): v for k, v in case_data.items() if k.startswith("CUSTOM_")},
             "hosts": case_data.get("HOSTS") or [],
             "users": case_data.get("USERS") or [],
             "host_count": len(case_data.get("HOSTS", []) or []),
@@ -3814,6 +3815,18 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
         outputs=data,
         raw_response=data,
     )
+
+
+def get_issues_command(client: Client, args: dict) -> list[CommandResults]:
+    response: list[CommandResults] = get_issues_by_filter_command(client, args)
+    output_keys = argToList(args.pop("output_keys", []))
+    if isinstance(response[0].outputs, list) and response[0].outputs:
+        response[0].outputs = [alert_to_issue(output) for output in response[0].outputs]
+
+        if output_keys:
+            response[0].outputs = filter_context_fields(output_keys, response[0].outputs)
+
+    return response
 
 
 def parse_frequency(day: str | None, time: str | None) -> str:
@@ -6051,31 +6064,7 @@ def main():  # pragma: no cover
             return_results(search_asset_groups_command(client, args))
 
         elif command == "core-get-issues":
-            # replace all dict keys that contain issue with alert
-            args = issue_to_alert(args)
-            # Extract output_keys before calling get_alerts_by_filter_command
-            output_keys = argToList(args.pop("output_keys", []))
-            assignees = argToList(args.get("assignee", "").lower())
-            if "assigned" in assignees or "unassigned" in assignees:
-                if len(assignees) > 1:
-                    raise DemistoException(
-                        f"The assigned/unassigned options can not be used with additional assignees. Received: {assignees}"
-                    )
-
-                # Swap assignee arg with the requested special operation
-                assignee_filter_option = args.pop("assignee", "")
-                args[assignee_filter_option] = True
-
-            issues_command_results: CommandResults = get_alerts_by_filter_command(client, args)
-            # Convert alert keys to issue keys
-            if issues_command_results.outputs:
-                issues_command_results.outputs = [alert_to_issue(output) for output in issues_command_results.outputs]  # type: ignore[attr-defined,arg-type]
-
-            # Apply output_keys filtering if specified
-            if output_keys and issues_command_results.outputs:
-                issues_command_results.outputs = filter_context_fields(output_keys, issues_command_results.outputs)  # type: ignore[attr-defined,arg-type]
-
-            return_results(issues_command_results)
+            return_results(get_issues_command(client, args))
 
         elif command == "core-get-cases":
             return_results(get_cases_command(client, args))
