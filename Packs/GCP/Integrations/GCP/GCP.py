@@ -460,34 +460,6 @@ def _validate_bucket_policy_for_set(policy: dict[str, Any], add_mode: bool) -> N
                     raise DemistoException("Policy with IAM Conditions requires 'version' to be 3 or greater.")
 
 
-def check_dataset_policy_email_exists(current_dataset_access: list, email: str, email_type: str, role: str) -> tuple[int, dict]:
-    """
-    Checks if an email exists in the current dataset access policy and returns its index and the new role policy.
-
-    Args:
-        current_dataset_access (list): The current dataset access policy list.
-        email (str): The email to check for.
-        email_type (str): The type of the email (e.g., 'userByEmail', 'groupByEmail').
-        role (str): The new role to assign.
-
-    Returns:
-        tuple[int, dict]: A tuple containing the index of the email in the policy list (or -1 if not found)
-                          and the new role policy dictionary.
-    """
-    index = -1
-    new_role_policy = {}
-    for i, policy in enumerate(current_dataset_access):
-        if policy.get(email_type) == email:
-            demisto.debug(f"[GCP] {email=}, {email_type=}, has the current {policy=}, updating {role=}, in {i=}")
-            new_role_policy = {
-                "role": role,
-                email_type: email,
-            }
-            index = i
-            break
-    return index, new_role_policy
-
-
 ##########
 
 
@@ -2291,7 +2263,6 @@ def bq_dataset_policy_update_command(creds: Credentials, args: dict[str, Any]) -
     dataset_id = args.get("dataset_id")
     user_email = args.get("user_email", "")
     group_email = args.get("group_email", "")
-    role = args.get("role")
     action = args.get("action")
     body: dict[str, Any] = {}
 
@@ -2321,32 +2292,6 @@ def bq_dataset_policy_update_command(creds: Credentials, args: dict[str, Any]) -
         else:
             body["access"] = new_access
             demisto.debug(f"[GCP] Removed emails from access list for dataset {dataset_id}, {new_access=}")
-    else:
-        demisto.debug(f"[GCP] Adding emails to access list for dataset {dataset_id}")
-
-        if not role:
-            raise DemistoException("To add a new user or group to the policy, select the role you want to assign.")
-
-        # Verify whether the email already exists or not
-        if user_email:
-            index, new_role_policy = check_dataset_policy_email_exists(current_dataset_access, user_email, "userByEmail", role)
-        else:
-            index, new_role_policy = check_dataset_policy_email_exists(current_dataset_access, group_email, "groupByEmail", role)
-
-        if not new_role_policy:
-            new_role_policy = {
-                "role": role,
-                "userByEmail": user_email,
-                "groupByEmail": group_email,
-            }
-            remove_nulls_from_dictionary(new_role_policy)
-            current_dataset_access.append(new_role_policy)
-        else:
-            demisto.debug(f"[GCP] {new_role_policy=} updating the old policy {current_dataset_access[index]=}")
-            current_dataset_access[index] = new_role_policy
-
-        demisto.debug(f"[GCP] {new_role_policy=} {current_dataset_access=}")
-        body["access"] = current_dataset_access
 
     demisto.debug(f"BigQuery dataset policy update body for {dataset_id} in project {project_id}: {body}")
     response = bigquery.datasets().patch(projectId=project_id, datasetId=dataset_id, body=body).execute()

@@ -1916,21 +1916,13 @@ script:
     - name: group_email
       description: The email address of the group to add or remove from the dataset access list.
       required: false
-    - name: role
-      description: The IAM role ID that should be granted to the user.
-      required: false
-      auto: PREDEFINED
-      predefined:
-        - OWNER
-        - WRITER
-        - READER
     - name: action
       description: Whether to add or remove a user from the Dataset policy.
       required: true
       auto: PREDEFINED
       predefined:
-        - add
         - remove
+      defaultValue: remove
     outputs:
       - contextPath: GCP.BigQuery.Datasets.kind
         description: The type of the resource.
