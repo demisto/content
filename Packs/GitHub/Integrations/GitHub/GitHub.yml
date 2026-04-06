@@ -3886,18 +3886,18 @@ script:
       description: The repository organization.
       type: String
   - arguments:
-    - description: The state of the issues to return. Can be 'open', 'closed' or 'all'. Default is 'open'.
-      name: state
-      required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
       defaultValue: open
+      description: The state of the issues to return. Can be 'open', 'closed' or 'all'. Default is 'open'.
+      name: state
       predefined:
       - open
       - closed
       - all
-    - description: The number of issues to return. Default is 50. Maximum is 100.
+      required: true
+    - defaultValue: '50'
+      description: The number of issues to return. Default is 50. Maximum is 100.
       name: limit
-      defaultValue: '50'
     description: Lists all issues that the user has access to view.
     name: github-list-all-issues
     outputs:
@@ -3983,7 +3983,14 @@ script:
     - contextPath: GitHub.CodeSearchResults.repository.commits_url
       description: The URL to the commits of the repository.
       type: String
-  - description: Searches for and returns issues that match a given query.
+  - arguments:
+    - description: The query line for the search. For more information see the GitHub documentation at https://help.github.com/en/articles/searching-issues-and-pull-requests.
+      name: query
+      required: true
+    - defaultValue: '50'
+      description: The number of issues to return. Default is 50. Maximum is 100.
+      name: limit
+    description: Searches for and returns issues that match a given query.
     name: github-search-issues
     outputs:
     - contextPath: GitHub.Issue.ID
@@ -4022,15 +4029,7 @@ script:
     - contextPath: GitHub.Issue.Organization
       description: The repository organization.
       type: String
-    arguments:
-    - description: The query line for the search. For more information see the GitHub documentation at https://help.github.com/en/articles/searching-issues-and-pull-requests.
-      name: query
-      required: true
-    - defaultValue: '50'
-      description: The number of issues to return. Default is 50. Maximum is 100.
-      name: limit
-  - arguments: []
-    description: Returns the total number of downloads for all releases for the specified repository.
+  - description: Returns the total number of downloads for all releases for the specified repository.
     name: github-get-download-count
     outputs:
     - contextPath: GitHub.Release.ID
@@ -4051,12 +4050,13 @@ script:
     - contextPath: GitHub.Release.Published_at
       description: The date when the release was published.
       type: Date
+    arguments: []
   - arguments:
-    - description: Time of inactivity after which a PR is considered stale.
+    - default: true
+      defaultValue: 3 days
+      description: Time of inactivity after which a PR is considered stale.
       name: stale_time
       required: true
-      default: true
-      defaultValue: 3 days
     - description: The label used to identify PRs of interest.
       name: label
     description: Gets inactive pull requests.
@@ -4135,9 +4135,9 @@ script:
       name: pull_number
       required: true
     - description: A CSV list of GitHub users to request review from for a pull request.
+      isArray: true
       name: reviewers
       required: true
-      isArray: true
     description: Requests reviews from GitHub users for a given pull request.
     name: github-request-review
     outputs:
@@ -4163,7 +4163,7 @@ script:
     - description: The number of the issue to comment on.
       name: issue_number
       required: true
-    - description: 'The contents of the comment.'
+    - description: The contents of the comment.
       name: body
       required: true
     description: Creates a comment for a given issue.
@@ -4358,8 +4358,8 @@ script:
       name: issue_number
       required: true
     - description: A CSV list of labels to add to an issue.
-      name: labels
       isArray: true
+      name: labels
       required: true
     description: Adds labels to an issue.
     name: github-add-label
@@ -4983,7 +4983,7 @@ script:
     - description: The issue number of the pull request to modify.
       name: pull_number
       required: true
-    description: 'Updates a pull request in a repository.'
+    description: Updates a pull request in a repository.
     name: github-update-pull-request
     outputs:
     - contextPath: GitHub.PR.ID
@@ -6011,9 +6011,9 @@ script:
     - description: Git Repository Name.
       name: repository
       required: true
-    - description: 'Check Run ID.'
+    - description: Check Run ID.
       name: run_id
-    - description: 'Head Commit ID.'
+    - description: Head Commit ID.
       name: commit_id
     description: Gets a check run details.
     name: github-get-check-run
@@ -6037,22 +6037,22 @@ script:
       description: Check Run ID.
       type: String
   - arguments:
-    - description: The path of the file.
+    - default: true
+      description: The path of the file.
       name: file_path
-      default: true
       required: true
     - description: The branch name to get the file from.
       name: branch_name
-    - description: 'The media type in which the file contents will be fetched. Possible values are: "raw" and "html". Default value is "raw".'
+    - defaultValue: raw
+      description: 'The media type in which the file contents will be fetched. Possible values are: "raw" and "html". Default value is "raw".'
       name: media_type
-      defaultValue: raw
       predefined:
       - raw
       - html
       auto: PREDEFINED
-    - description: 'Whether to create a file entry in the War Room with the file contents. Possible values are: "true" and "false". Default value is "false".'
+    - defaultValue: 'false'
+      description: 'Whether to create a file entry in the War Room with the file contents. Possible values are: "true" and "false". Default value is "false".'
       name: create_file_from_content
-      defaultValue: 'false'
       predefined:
       - 'true'
       - 'false'
@@ -6113,9 +6113,9 @@ script:
     - description: Team name.
       name: team_slug
       required: true
-    - description: Miximum number of users to return.
+    - defaultValue: '30'
+      description: Miximum number of users to return.
       name: maximum_users
-      defaultValue: '30'
     description: Lists team members.
     name: github-list-team-members
     outputs:
@@ -6872,12 +6872,12 @@ script:
       description: Indicates whether the assignee is a site admin.
       type: Boolean
   - arguments:
-    - description: 'Only list projects with the following numbers.'
-      name: project_filter
+    - description: Only list projects with the following numbers.
       isArray: true
-    - description: The number of projects to return. Default is 20. Maximum is 100.
+      name: project_filter
+    - defaultValue: '20'
+      description: The number of projects to return. Default is 20. Maximum is 100.
       name: limit
-      defaultValue: '20'
     description: Lists all issues that the user has access to view.
     name: github-list-all-projects
     outputs:
@@ -6912,15 +6912,15 @@ script:
     - description: Issue unique ID.
       name: issue_unique_id
       required: true
-    - description: Content type of the project card.
+    - defaultValue: Issue
+      description: Content type of the project card.
       name: content_type
-      defaultValue: Issue
     description: Adds an Issue as a card in column of a spesific project.
     name: github-add-issue-to-project-board
   - arguments:
-    - description: Relative path to retrieve its data.
+    - default: true
+      description: Relative path to retrieve its data.
       name: relative_path
-      default: true
       required: true
     - description: The branch name from which to get the file data. Default is master.
       name: branch_name
@@ -7158,8 +7158,8 @@ script:
       name: pull_request_number
       required: true
     - description: Users to assign, can be a list of users.
-      name: assignee
       isArray: true
+      name: assignee
       required: true
     description: Adds up to 10 assignees to an issue/PR. Users already assigned to an issue are not replaced.
     name: github-add-assignee
@@ -7249,11 +7249,11 @@ script:
     - description: The GitHub owner (organization or username) of the repository.
       name: owner
     - description: The GitHub repository name.
+      isArray: true
       name: repository
-      isArray: true
     - description: The name of your workflow file.
-      name: workflow
       isArray: true
+      name: workflow
       required: true
     - description: The number of workflows to return. Default is 100.
       isArray: true
