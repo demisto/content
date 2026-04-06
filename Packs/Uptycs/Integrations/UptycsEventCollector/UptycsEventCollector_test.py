@@ -326,6 +326,11 @@ def test_determine_entry_status(created_at: str, updated_at: str, expected_statu
             "updated",
         ),
         (
+            {"id": "1", "createdAt": "2024-01-01T00:00:00Z"},
+            "2024-01-01T00:00:00Z",
+            None,
+        ),
+        (
             {"id": "1", "updatedAt": "2024-01-02T00:00:00Z"},
             "2024-01-02T00:00:00Z",
             None,
@@ -689,6 +694,26 @@ def test_fetch_events_with_pagination_date_parameters(mocker, client: Client, cr
         assert call_kwargs["created_before"] is not None
 
 
+def test_fetch_events_with_pagination_pins_created_before(mocker, client: Client):
+    """Tests fetch_events_with_pagination uses the same created_before across all pages when None is passed."""
+    mocker.patch.object(Config, "MAX_PAGE_SIZE", 2)
+    page1 = [{"id": "event1"}, {"id": "event2"}]
+    page2 = [{"id": "event3"}]
+
+    mock_get_alerts = mocker.patch.object(client, "get_alerts", side_effect=[page1, page2])
+
+    fetch_events_with_pagination(client, "2024-01-01T00:00:00", None, 10)
+
+    # Verify get_alerts was called twice (two pages)
+    assert mock_get_alerts.call_count == 2
+
+    # Verify the same created_before was used for both calls
+    first_call_created_before = mock_get_alerts.call_args_list[0][1]["created_before"]
+    second_call_created_before = mock_get_alerts.call_args_list[1][1]["created_before"]
+    assert first_call_created_before == second_call_created_before
+    assert first_call_created_before is not None
+
+
 # ========================================
 # Tests: test_module Command
 # ========================================
@@ -803,6 +828,13 @@ def test_get_events_command_no_push_when_empty(mocker, client: Client):
 
     assert isinstance(result, CommandResults)
     mock_send.assert_not_called()
+
+
+def test_get_events_command_invalid_start_time(client: Client):
+    """Tests get_events_command raises DemistoException for an unparseable start_time."""
+    args = {"start_time": "not_a_valid_date_12345", "limit": "10"}
+    with pytest.raises(DemistoException, match="Failed to parse date string"):
+        get_events_command(client, args)
 
 
 # ========================================
@@ -968,7 +1000,7 @@ def test_fetch_events_command_no_events_first_run_saves_state(mocker, client: Cl
 
 
 def test_fetch_events_command_multiple_events_same_last_occurred_at(mocker, client: Client):
-    """Tests fetch_events_command collects IDs at high-water mark timestamp."""
+    """Tests fetch_events_command collects IDs at the last_fetch timestamp."""
     mock_events = [
         {
             "id": "1",
@@ -1002,6 +1034,61 @@ def test_fetch_events_command_multiple_events_same_last_occurred_at(mocker, clie
     call_args = demisto.setLastRun.call_args[0][0]  # type: ignore[attr-defined]
     assert call_args["last_fetch"] == "2024-01-01T00:00:00Z"
     assert sorted(call_args["last_fetched_ids"]) == ["1", "2", "3"]
+
+
+def test_fetch_events_command_missing_last_occurred_at_no_state_update(mocker, client: Client):
+    """Tests fetch_events_command does not update state when last event is missing lastOccurredAt."""
+    mock_events = [
+        {"id": "1", "createdAt": "2024-01-01T00:00:00Z", "updatedAt": "2024-01-01T00:00:00Z"},
+    ]
+
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": 100})
+    mocker.patch.object(UptycsEventCollector, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(UptycsEventCollector, "enrich_events_for_xsiam")
+    mocker.patch.object(UptycsEventCollector, "send_events_to_xsiam")
+
+    fetch_events_command(client)
+
+    # Events should still be sent to XSIAM
+    UptycsEventCollector.send_events_to_xsiam.assert_called_once()  # type: ignore[attr-defined]
+
+    # setLastRun should NOT be called since lastOccurredAt is missing
+    demisto.setLastRun.assert_not_called()  # type: ignore[attr-defined]
+
+
+def test_fetch_events_command_last_fetch_uses_last_occurred_at_not_created_at(mocker, client: Client):
+    """Tests fetch_events_command sets last_fetch from lastOccurredAt, not createdAt, when they differ."""
+    mock_events = [
+        {
+            "id": "1",
+            "createdAt": "2024-01-01T00:00:00Z",
+            "lastOccurredAt": "2024-01-10T00:00:00Z",
+            "updatedAt": "2024-01-10T00:00:00Z",
+        },
+        {
+            "id": "2",
+            "createdAt": "2024-01-05T00:00:00Z",
+            "lastOccurredAt": "2024-01-15T00:00:00Z",
+            "updatedAt": "2024-01-15T00:00:00Z",
+        },
+    ]
+
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": 100})
+    mocker.patch.object(UptycsEventCollector, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(UptycsEventCollector, "enrich_events_for_xsiam")
+    mocker.patch.object(UptycsEventCollector, "send_events_to_xsiam")
+
+    fetch_events_command(client)
+
+    call_args = demisto.setLastRun.call_args[0][0]  # type: ignore[attr-defined]
+    # last_fetch should be from lastOccurredAt of the last event, NOT createdAt
+    assert call_args["last_fetch"] == "2024-01-15T00:00:00Z"
+    assert call_args["last_fetch"] != "2024-01-05T00:00:00Z"  # createdAt of last event
+    assert call_args["last_fetched_ids"] == ["2"]
 
 
 # ========================================

@@ -551,13 +551,13 @@ def fetch_events_command(client: Client) -> None:
         new_last_run_time = last_event.get("lastOccurredAt")
 
         if new_last_run_time:
-            # Collect IDs at the high-water mark timestamp for deduplication
+            # Collect IDs at the last_fetch timestamp for deduplication
             ids_at_last_timestamp = [
                 event.get("id") for event in events if event.get("lastOccurredAt") == new_last_run_time and event.get("id")
             ]
 
             demisto.setLastRun({"last_fetch": new_last_run_time, "last_fetched_ids": ids_at_last_timestamp})
-            demisto.debug(f"[Fetch] State updated. New HWM: {new_last_run_time}")
+            demisto.debug(f"[Fetch] State updated. New last_fetch: {new_last_run_time}")
         else:
             demisto.debug("[Fetch] Warning: Last event missing lastOccurredAt. State not updated.")
     else:
