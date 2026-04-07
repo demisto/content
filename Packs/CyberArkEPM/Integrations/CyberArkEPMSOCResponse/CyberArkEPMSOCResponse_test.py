@@ -22,7 +22,7 @@ def client(mocker):
     # Mock the methods that make HTTP requests to prevent actual network calls
     mocker.patch.object(client_instance, "_get_access_token", return_value="mock_access_token")
     mocker.patch.object(client_instance, "_get_tenant_url", return_value="https://mock-tenant.cyberark.cloud")
-    mocker.patch.object(client_instance, "get_sets", return_value={"Sets": [{"Id": "id1", "Name": "set_name1"}]})
+    mocker.patch("CyberArkEPMSOCResponse.get_sets", return_value={"Sets": [{"Id": "id1", "Name": "set_name1"}]})
 
     return client_instance
 
@@ -30,7 +30,7 @@ def client(mocker):
 def test_activate_risk_plan_command(client, mocker):
     """
     Given:
-        - A CyberArkEPMSOCResponse client, a risk plan, an endpoint name, and an external IP.
+        - A CyberArkEPMSOCResponse client, a risk plan, an endpoint name, and a logged-in user.
 
     When:
         - activate_risk_plan_command function is running.
@@ -46,7 +46,7 @@ def test_activate_risk_plan_command(client, mocker):
 
     mock_response_search_endpoints = {
         "endpoints": [
-            {"id": "endpoint_id1", "external_ip": "1.1.1.1", "connectionStatus": "Connected"},
+            {"id": "endpoint_id1", "logged_in_user": "tester", "connectionStatus": "Connected"},
         ]
     }
 
@@ -60,7 +60,7 @@ def test_activate_risk_plan_command(client, mocker):
         ],
     )
 
-    args = {"risk_plan": "risk_plan1", "action": "add", "endpoint_name": "endpoint1", "external_ip": "1.1.1.1"}
+    args = {"risk_plan": "risk_plan1", "action": "add", "endpoint_name": "endpoint1", "logged_in_user": "tester"}
 
     result = change_risk_plan_command(client, args)
     expected_outputs = {"EndpointIDs": "endpoint_id1", "RiskPlan": "risk_plan1", "Action": "add"}
@@ -70,7 +70,7 @@ def test_activate_risk_plan_command(client, mocker):
 def test_activate_multiple_endpoint_risk_plan_command(client, mocker):
     """
     Given:
-        - A CyberArkEPMSOCResponse client, a risk plan, an endpoint name, and an external IP.
+        - A CyberArkEPMSOCResponse client, a risk plan, an endpoint name, and a logged-in user.
 
     When:
         - activate_risk_plan_command function is running.
@@ -86,8 +86,8 @@ def test_activate_multiple_endpoint_risk_plan_command(client, mocker):
 
     mock_response_search_endpoints = {
         "endpoints": [
-            {"id": "endpoint_id2", "external_ip": "2.2.2.2", "connectionStatus": "Connected"},
-            {"id": "endpoint_id2", "external_ip": "2.2.2.2", "connectionStatus": "Disconnected"},
+            {"id": "endpoint_id2", "logged_in_user": "tester2", "connectionStatus": "Connected"},
+            {"id": "endpoint_id2", "logged_in_user": "tester2", "connectionStatus": "Disconnected"},
         ]
     }
 
@@ -105,7 +105,7 @@ def test_activate_multiple_endpoint_risk_plan_command(client, mocker):
         "risk_plan": "risk_plan1",
         "action": "add",
         "endpoint_name": "endpoint2",
-        "external_ip": "2.2.2.2",
+        "logged_in_user": "tester2",
     }
 
     result = change_risk_plan_command(client, args)
@@ -133,7 +133,7 @@ def test_deactivate_risk_plan_command(client, mocker):
 
     mock_response_search_endpoints = {
         "endpoints": [
-            {"id": "endpoint_id1", "external_ip": "1.1.1.1", "connectionStatus": "Connected"},
+            {"id": "endpoint_id1", "logged_in_user": "tester", "connectionStatus": "Connected"},
         ]
     }
 
@@ -147,7 +147,7 @@ def test_deactivate_risk_plan_command(client, mocker):
         ],
     )
 
-    args = {"risk_plan": "risk_plan1", "action": "remove", "endpoint_name": "endpoint1", "external_ip": "1.1.1.1"}
+    args = {"risk_plan": "risk_plan1", "action": "remove", "endpoint_name": "endpoint1", "logged_in_user": "tester"}
 
     result = change_risk_plan_command(client, args)
     expected_outputs = {"EndpointIDs": "endpoint_id1", "RiskPlan": "risk_plan1", "Action": "remove"}
@@ -166,7 +166,7 @@ def test_change_risk_plan_no_endpoints_found(client, mocker):
 
     mocker.patch.object(client, "http_request", return_value={"endpoints": []})
 
-    args = {"risk_plan": "risk_plan1", "action": "add", "endpoint_name": "nonexistent", "external_ip": "9.9.9.9"}
+    args = {"risk_plan": "risk_plan1", "action": "add", "endpoint_name": "nonexistent", "logged_in_user": "tester9"}
 
     with pytest.raises(DemistoException, match=r"(?i)no endpoints found"):
         change_risk_plan_command(client, args)
@@ -191,7 +191,7 @@ def test_change_risk_plan_no_group_found(client, mocker):
         ],
     )
 
-    args = {"risk_plan": "nonexistent_plan", "action": "add", "endpoint_name": "endpoint1", "external_ip": "1.1.1.1"}
+    args = {"risk_plan": "nonexistent_plan", "action": "add", "endpoint_name": "endpoint1", "logged_in_user": "tester"}
 
     with pytest.raises(DemistoException, match=r"(?i)no endpoint group found"):
         change_risk_plan_command(client, args)
@@ -216,14 +216,14 @@ def test_change_risk_plan_invalid_action(client, mocker):
         ],
     )
 
-    args = {"risk_plan": "risk_plan1", "action": "invalid_action", "endpoint_name": "endpoint1", "external_ip": "1.1.1.1"}
+    args = {"risk_plan": "risk_plan1", "action": "invalid_action", "endpoint_name": "endpoint1", "logged_in_user": "tester"}
 
     with pytest.raises(DemistoException, match=r"(?i)invalid action"):
         change_risk_plan_command(client, args)
 
 
-def test_search_endpoints_without_external_ip(client, mocker):
-    """Tests search_endpoints works without external_ip parameter."""
+def test_search_endpoints_without_logged_in_user(client, mocker):
+    """Tests search_endpoints works without logged_in_user parameter."""
     from CyberArkEPMSOCResponse import search_endpoints
 
     mocker.patch(

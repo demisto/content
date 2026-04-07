@@ -24,10 +24,10 @@ This playbook does not use any integrations.
 
 ---
 
-| **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
-| endpoint_name | FQDN of target endpoint |  | Optional |
-| endpoint_external_ip | External IP of target endpoint |  | Optional |
+| **Name**      | **Description**                        | **Default Value** | **Required** |
+|---------------|----------------------------------------| --- |--------------|
+| endpoint_name | Hostname of target endpoint            |  | Required     |
+| logged_in_user     | Logged in user name of target endpoint |  | Required     |
 
 ## Playbook Outputs
 

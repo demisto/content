@@ -50,8 +50,8 @@ script:
     - description: The name of the endpoint to target.
       name: endpoint_name
       required: true
-    - description: The external IP address of the endpoint.
-      name: external_ip
+    - description: Logged in user name.
+      name: logged_in_user
       required: false
     description: Activates a CyberArk EPM risk plan for a specified endpoint.
     name: cyberarkepm-activate-risk-plan
@@ -72,8 +72,8 @@ script:
     - description: The name of the endpoint to target.
       name: endpoint_name
       required: true
-    - description: The external IP address of the endpoint.
-      name: external_ip
+    - description: Logged in user name.
+      name: logged_in_user
       required: false
     description: Deactivates a CyberArk EPM risk plan for a specified endpoint.
     name: cyberarkepm-deactivate-risk-plan
