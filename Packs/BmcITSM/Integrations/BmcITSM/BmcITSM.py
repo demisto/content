@@ -483,9 +483,7 @@ class AuthClient(BaseClient):
                 }
 
                 try:
-                    response = self._http_request(
-                        method="POST", full_url=token_url, headers=headers, data=data, resp_type="json"
-                    )
+                    response = self._http_request(method="POST", full_url=token_url, headers=headers, data=data, resp_type="json")
                     self.store_oauth_tokens(integration_context, response)
                     demisto.debug("[get_oauth_token] - Access token refreshed successfully.")
                     return integration_context["oauth_access_token"]
@@ -505,15 +503,18 @@ class AuthClient(BaseClient):
                     "redirect_uri": self._redirect_uri,
                 }
                 try:
-                    response = self._http_request(
-                        method="POST", full_url=token_url, headers=headers, data=data, resp_type="json"
-                    )
+                    response = self._http_request(method="POST", full_url=token_url, headers=headers, data=data, resp_type="json")
                     self.store_oauth_tokens(integration_context, response)
                     demisto.debug("[get_oauth_token] - Authorization code exchanged successfully.")
                     return integration_context["oauth_access_token"]
                 except Exception as e:
                     demisto.debug(f"[get_oauth_token] - Authorization code exchange failed:\n{str(e)}")
-                    raise DemistoException(f"Failed to exchange authorization code for access token.\n{str(e)}")
+                    raise DemistoException(
+                        f"Failed to exchange authorization code for access token.\n{str(e)}\n"
+                        "The authorization code may have already been used or expired. "
+                        "Please run !bmc-itsm-generate-login-url to obtain a new authorization code, "
+                        "then paste it into the 'Authorization Code' field in the instance configuration."
+                    )
 
             # 4. No auth code and no valid tokens
             raise DemistoException(
@@ -4415,8 +4416,8 @@ def check_auth_params(auth_client: AuthClient):
     if auth_client._use_oauth:
         if not auth_client._rsso_url or not auth_client._client_id or not auth_client._redirect_uri or not auth_client._auth_code:
             return_error(
-                "OAuth is enabled but some required parameters are missing"
-                "Please provide Client ID, OpenID Issuer URL, Redirect URI and Authorization code."
+                "OAuth is enabled but some required parameters are missing. "
+                "Please provide Client ID, OpenID Issuer URL, Redirect URI and Authorization code. "
                 "Retrieve Authorization code by running bmc-itsm-generate-login-url"
             )
     else:
@@ -4433,7 +4434,6 @@ def test_module(client: Client, auth_client: AuthClient) -> None:
         client (Client): BMC ITSM API client.
     """
     check_auth_params(auth_client)
-    auth_client.get_authorization_header()
     client.list_request("COM:Company")
     return_results("ok")
 

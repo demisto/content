@@ -1751,7 +1751,7 @@ class TestIsTokenExpired:
         assert AuthClient.is_token_expired("not-a-date") is True
 
 
-class test_getOAuthToken:
+class TestGetOAuthToken:
     """Tests for the Client.get_oauth_token method."""
 
     @staticmethod
