@@ -9,7 +9,6 @@ from GitHub import (
     add_issue_to_project_board_command,
     get_branch_command,
     get_path_data,
-    github_get_workflow_run_command,
     github_releases_list_command,
     http_request,
     list_all_projects_command,
@@ -486,7 +485,6 @@ def test_github_trigger_workflow_with_run_details(mocker):
     result: CommandResults = mocker_results.call_args[0][0]
     assert result.outputs_prefix == "GitHub.WorkflowRun"
     assert result.outputs["WorkflowRunID"] == 9876
-
 
 
 def test_github_get_workflow_run(mocker):

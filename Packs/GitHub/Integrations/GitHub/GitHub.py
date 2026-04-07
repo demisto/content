@@ -2036,13 +2036,15 @@ def github_trigger_workflow_command():
             "RunUrl": response.get("run_url") or response.get("url"),
             "HtmlUrl": response.get("html_url"),
         }
-        return_results(CommandResults(
-            outputs_prefix="GitHub.WorkflowRun",
-            outputs_key_field="WorkflowRunID",
-            outputs=outputs,
-            raw_response=response,
-            readable_output=tableToMarkdown("Triggered Workflow Run", outputs, removeNull=True),
-        ))
+        return_results(
+            CommandResults(
+                outputs_prefix="GitHub.WorkflowRun",
+                outputs_key_field="WorkflowRunID",
+                outputs=outputs,
+                raw_response=response,
+                readable_output=tableToMarkdown("Triggered Workflow Run", outputs, removeNull=True),
+            )
+        )
     else:
         return_results(CommandResults(readable_output="Workflow triggered successfully."))
 
