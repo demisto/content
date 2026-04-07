@@ -37,11 +37,6 @@
                         {
                             "SEARCH_FIELD": "matching_service_rule_id",
                             "SEARCH_TYPE": "CONTAINS",
-                            "SEARCH_VALUE": "InsecureOpenSSH"
-                        },
-                        {
-                            "SEARCH_FIELD": "matching_service_rule_id",
-                            "SEARCH_TYPE": "CONTAINS",
                             "SEARCH_VALUE": "KubernetesControlPlaneComponent"
                         },
                         {
@@ -58,11 +53,6 @@
                             "SEARCH_FIELD": "matching_service_rule_id",
                             "SEARCH_TYPE": "CONTAINS",
                             "SEARCH_VALUE": "NfsRpcBindServer"
-                        },
-                        {
-                            "SEARCH_FIELD": "matching_service_rule_id",
-                            "SEARCH_TYPE": "CONTAINS",
-                            "SEARCH_VALUE": "OpenSSH"
                         },
                         {
                             "SEARCH_FIELD": "matching_service_rule_id",
@@ -118,16 +108,6 @@
                             "SEARCH_FIELD": "matching_service_rule_id",
                             "SEARCH_TYPE": "CONTAINS",
                             "SEARCH_VALUE": "TftpServer"
-                        },
-                        {
-                            "SEARCH_FIELD": "matching_service_rule_id",
-                            "SEARCH_TYPE": "CONTAINS",
-                            "SEARCH_VALUE": "Libssh"
-                        },
-                        {
-                            "SEARCH_FIELD": "matching_service_rule_id",
-                            "SEARCH_TYPE": "CONTAINS",
-                            "SEARCH_VALUE": "InsecureBitviseSSHServer"
                         },
                         {
                             "SEARCH_FIELD": "matching_service_rule_id",
