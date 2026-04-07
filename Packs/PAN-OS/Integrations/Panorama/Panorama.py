@@ -12286,6 +12286,7 @@ class FirewallCommand:
         :param device_filter_str: If provided, filters this command to only the devices specified.
         :param target: Single serial number to target with this command.
         """
+
         def _find_text(el, path, default="N/A"):
             if el is None:
                 return default
@@ -12331,23 +12332,25 @@ class FirewallCommand:
                         }
                     )
 
-            result.append(HAConfigResult(
-                HostID=host_id,
-                Enabled=_find_text(ha_config, "enabled", "no"),
-                GroupID=_find_text(group, "group-id"),
-                Mode=mode,
-                PeerIP=_find_text(group, "peer-ip"),
-                PeerIPBackup=_find_text(group, "peer-ip-backup"),
-                HA1Port=_find_text(interface, "ha1/port"),
-                HA1IP=_find_text(interface, "ha1/ip-address"),
-                HA1BackupPort=_find_text(interface, "ha1-backup/port"),
-                HA1BackupIP=_find_text(interface, "ha1-backup/ip-address"),
-                HA2Port=_find_text(interface, "ha2/port"),
-                HA2IP=_find_text(interface, "ha2/ip-address"),
-                HA2BackupPort=_find_text(interface, "ha2-backup/port"),
-                HA2BackupIP=_find_text(interface, "ha2-backup/ip-address"),
-                LinkMonitoring=link_monitoring_data or None,
-            ))
+            result.append(
+                HAConfigResult(
+                    HostID=host_id,
+                    Enabled=_find_text(ha_config, "enabled", "no"),
+                    GroupID=_find_text(group, "group-id"),
+                    Mode=mode,
+                    PeerIP=_find_text(group, "peer-ip"),
+                    PeerIPBackup=_find_text(group, "peer-ip-backup"),
+                    HA1Port=_find_text(interface, "ha1/port"),
+                    HA1IP=_find_text(interface, "ha1/ip-address"),
+                    HA1BackupPort=_find_text(interface, "ha1-backup/port"),
+                    HA1BackupIP=_find_text(interface, "ha1-backup/ip-address"),
+                    HA2Port=_find_text(interface, "ha2/port"),
+                    HA2IP=_find_text(interface, "ha2/ip-address"),
+                    HA2BackupPort=_find_text(interface, "ha2-backup/port"),
+                    HA2BackupIP=_find_text(interface, "ha2-backup/ip-address"),
+                    LinkMonitoring=link_monitoring_data or None,
+                )
+            )
 
         if len(result) == 1:
             return result[0]
@@ -12365,12 +12368,21 @@ class FirewallCommand:
         """
         # HA-dedicated interfaces available on PAN-OS firewalls
         ha_interfaces = [
-            "ha1", "ha1-a", "ha1-b", "ha1-backup",
-            "ha2", "ha2-a", "ha2-backup",
-            "hsci", "hsci-a", "hsci-b",
+            "ha1",
+            "ha1-a",
+            "ha1-b",
+            "ha1-backup",
+            "ha2",
+            "ha2-a",
+            "ha2-backup",
+            "hsci",
+            "hsci-a",
+            "hsci-b",
             "ha3",
-            "ha4", "ha4-backup",
-            "aux-1", "aux-2",
+            "ha4",
+            "ha4-backup",
+            "aux-1",
+            "aux-2",
         ]
 
         result: List[HAInterfaceListResult] = []
@@ -12408,11 +12420,13 @@ class FirewallCommand:
 
             interface_list.extend(ha_interfaces)
 
-            result.append(HAInterfaceListResult(
-                HostID=host_id,
-                InterfaceCount=len(interface_list),
-                Interfaces=sorted(interface_list),
-            ))
+            result.append(
+                HAInterfaceListResult(
+                    HostID=host_id,
+                    InterfaceCount=len(interface_list),
+                    Interfaces=sorted(interface_list),
+                )
+            )
 
         if len(result) == 1:
             return result[0]
