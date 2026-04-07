@@ -42,7 +42,6 @@ from panos.ha import HighAvailability, HA1, HA2, HA1Backup, HA2Backup
 from urllib.error import HTTPError
 
 import shutil
-import xml.etree.ElementTree as ET
 
 """ IMPORTS """
 import uuid
