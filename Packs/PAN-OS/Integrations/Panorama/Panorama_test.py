@@ -9668,7 +9668,7 @@ class TestGetAvailableInterfaces:
         result = FirewallCommand.get_available_interfaces(mock_firewall_topology, MOCK_FIREWALL_1_SERIAL)
         # Still has HA dedicated interfaces
         assert "ha1-a" in result.Interfaces
-        assert result.InterfaceCount == 5  # 5 HA interfaces
+        assert result.InterfaceCount == 15  # 15 HA dedicated interfaces
 
     def test_none_response(self, mock_firewall_topology):
         from Panorama import FirewallCommand
@@ -9679,7 +9679,7 @@ class TestGetAvailableInterfaces:
 
         result = FirewallCommand.get_available_interfaces(mock_firewall_topology, MOCK_FIREWALL_1_SERIAL)
         # Still has HA dedicated interfaces
-        assert result.InterfaceCount == 5
+        assert result.InterfaceCount == 15
 
 
 class TestValidateInterfaces:

@@ -12366,7 +12366,7 @@ class FirewallCommand:
         # HA-dedicated interfaces available on PAN-OS firewalls
         ha_interfaces = [
             "ha1", "ha1-a", "ha1-b", "ha1-backup",
-            "ha2", "ha2-backup",
+            "ha2", "ha2-a", "ha2-backup",
             "hsci", "hsci-a", "hsci-b",
             "ha3",
             "ha4", "ha4-backup",
