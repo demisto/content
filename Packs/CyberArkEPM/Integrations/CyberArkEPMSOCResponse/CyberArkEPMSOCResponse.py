@@ -201,22 +201,22 @@ def get_sets(client: Client) -> list:
     return sets_response.get("Sets", [])
 
 
-def search_endpoints(endpoint_name: str, external_ip: str, client: Client) -> list:
+def search_endpoints(endpoint_name: str, logged_in_user: str, client: Client) -> list:
     """Searches for endpoints by name and IP address.
 
     Args:
         endpoint_name (str): The name of the endpoint to search for.
-        external_ip (str): The external IP address of the endpoint.
+        logged_in_user (str): The logged-in username of the endpoint.
         client (Client): The CyberArk EPM client.
 
     Returns:
         list: A list of endpoint IDs that match the search criteria.
     """
-    search_filter = f"name CONTAINS {endpoint_name}{f' and ip EQ {external_ip}' if external_ip else ''}"
+    search_filter = f"name CONTAINS {endpoint_name}{f' and loggedInUser CONTAINS {logged_in_user}' if logged_in_user else ''}"
     demisto.info(f"Endpoint Search filter: {search_filter}")
     data = {"filter": search_filter}
     sets = get_sets(client=client)
-    set_ids = [set["Id"] for set in sets.get("Sets", [])]
+    set_ids = [set["Id"] for set in sets]
     for set_id in set_ids:
         url_suffix = f"Sets/{set_id}/Endpoints/Search"
         result = client.http_request("POST", url_suffix=url_suffix, json_data=data)
@@ -287,14 +287,14 @@ def remove_endpoint_from_group(endpoint_ids: list[str], endpoint_group_id: str, 
 def change_risk_plan_command(client: Client, args: dict[str, Any]) -> CommandResults:
     risk_plan = args.get("risk_plan", "")
     endpoint_name = args.get("endpoint_name", "")
-    external_ip = args.get("external_ip", "")
+    logged_in_user = args.get("logged_in_user", "")
     action = args.get("action", RISK_PLAN_ACTION_ADD)
 
     # Search for endpoints
-    endpoint_ids = search_endpoints(endpoint_name=endpoint_name, external_ip=external_ip, client=client)
+    endpoint_ids = search_endpoints(endpoint_name=endpoint_name, logged_in_user=logged_in_user, client=client)
 
     if not endpoint_ids:
-        raise DemistoException(f"No Endpoints found matching the name: {endpoint_name} and External IP: {external_ip}")
+        raise DemistoException(f"No Endpoints found matching the name: {endpoint_name} and Logged-in username: {logged_in_user}")
 
     # Search for endpoint group by risk plan name
     endpoint_group_id = search_endpoint_group_id(risk_plan, client)
