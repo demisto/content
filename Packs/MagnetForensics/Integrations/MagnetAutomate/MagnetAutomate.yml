@@ -2,7 +2,7 @@ category: Forensics & Malware Analysis
 commonfields:
   id: MagnetAutomate
   version: -1
-provider: BaseIntegration # TODO doesn't appear on xsoar.pan.dev
+provider: Magnet Forensics
 configuration:
 - defaultvalue: https://127.0.0.1:8080/
   display: Server URL
