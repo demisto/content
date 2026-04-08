@@ -1969,6 +1969,138 @@ class TestClientOAuthInit:
         assert auth_header["Authorization"] == f"AR-JWT {TOKEN}"
 
 
+class TestFullUrlFix:
+    """Tests that AuthClient uses full_url (not url_suffix) to avoid the leading '/' bug.
+
+    The custom urljoin in CommonServerPython concatenates base_url + suffix.
+    When base_url="" (as in AuthClient), it becomes "/" + suffix = "/https://..."
+    which causes: 'No connection adapters were found for /https://...'
+    Using full_url= bypasses base_url concatenation entirely.
+    """
+
+    def test_retrieve_jwt_token_uses_full_url(self, requests_mock):
+        """
+        Given:
+            - An AuthClient configured with a server URL (JWT mode, use_oauth=False).
+        When:
+            - retrieve_jwt_token is called.
+        Then:
+            - The HTTP request is made to the correct full URL (https://example.com:443/api/jwt/login)
+              without a leading '/' prefix that would cause InvalidSchema.
+        """
+        from BmcITSM import AuthClient
+
+        expected_url = f"{BASE_URL}/api/jwt/login"
+        requests_mock.post(expected_url, text="mock-jwt-token-123")
+
+        auth_client = AuthClient(
+            server_url=BASE_URL,
+            verify=False,
+            proxy=False,
+            username=USERNAME,
+            password=PASSWORD,
+        )
+
+        with patch("BmcITSM.get_integration_context", return_value={}), patch("BmcITSM.set_integration_context"):
+            token = auth_client.retrieve_jwt_token()
+
+        assert token == "mock-jwt-token-123"
+        assert requests_mock.called
+        # Verify the actual URL does NOT start with '/' (the original bug)
+        actual_url = requests_mock.last_request.url
+        assert not actual_url.startswith("/"), f"URL should not start with '/': {actual_url}"
+        assert actual_url == expected_url
+
+    def test_get_oauth_token_uses_full_url_for_auth_code_exchange(self, requests_mock):
+        """
+        Given:
+            - An AuthClient configured for OAuth with an authorization code.
+        When:
+            - get_oauth_token is called and exchanges the auth code.
+        Then:
+            - The HTTP request is made to the correct full URL (rsso_url/oauth2/token)
+              without a leading '/' prefix.
+        """
+        from BmcITSM import AuthClient
+
+        expected_url = f"{RSSO_URL}/oauth2/token"
+        token_response = {
+            "access_token": "new-access-token",
+            "refresh_token": "new-refresh-token",
+            "expires_in": 3600,
+        }
+        requests_mock.post(expected_url, json=token_response)
+
+        auth_client = AuthClient(
+            server_url=BASE_URL,
+            verify=False,
+            proxy=False,
+            use_oauth=True,
+            client_id="test-client-id",
+            redirect_uri="https://oauth.pstmn.io/v1/callback",
+            auth_code="test-auth-code",
+            rsso_url=RSSO_URL,
+        )
+
+        with patch("BmcITSM.get_integration_context", return_value={}), patch("BmcITSM.set_integration_context"):
+            token = auth_client.get_oauth_token()
+
+        assert token == "new-access-token"
+        assert requests_mock.called
+        actual_url = requests_mock.last_request.url
+        assert not actual_url.startswith("/"), f"URL should not start with '/': {actual_url}"
+        assert actual_url == expected_url
+
+    def test_get_oauth_token_uses_full_url_for_refresh_flow(self, requests_mock):
+        """
+        Given:
+            - An AuthClient configured for OAuth with an expired access token but valid refresh token.
+        When:
+            - get_oauth_token is called and uses the refresh token.
+        Then:
+            - The HTTP request is made to the correct full URL (rsso_url/oauth2/token)
+              without a leading '/' prefix.
+        """
+        from BmcITSM import AuthClient
+
+        expected_url = f"{RSSO_URL}/oauth2/token"
+        token_response = {
+            "access_token": "refreshed-access-token",
+            "refresh_token": "new-refresh-token",
+            "expires_in": 3600,
+        }
+        requests_mock.post(expected_url, json=token_response)
+
+        past_time = (datetime.now(UTC) - timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        future_time = (datetime.now(UTC) + timedelta(hours=12)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        mock_context = {
+            "oauth_access_token": "expired-access-token",
+            "oauth_access_token_expires_in": past_time,
+            "oauth_refresh_token": "valid-refresh-token",
+            "oauth_refresh_token_expires_in": future_time,
+        }
+
+        auth_client = AuthClient(
+            server_url=BASE_URL,
+            verify=False,
+            proxy=False,
+            use_oauth=True,
+            client_id="test-client-id",
+            redirect_uri="https://oauth.pstmn.io/v1/callback",
+            auth_code="",
+            rsso_url=RSSO_URL,
+        )
+
+        with patch("BmcITSM.get_integration_context", return_value=mock_context), patch("BmcITSM.set_integration_context"):
+            token = auth_client.get_oauth_token()
+
+        assert token == "refreshed-access-token"
+        assert requests_mock.called
+        actual_url = requests_mock.last_request.url
+        assert not actual_url.startswith("/"), f"URL should not start with '/': {actual_url}"
+        assert actual_url == expected_url
+
+
 class TestAddAttachmentCommand:
     """Tests for the bmc-itsm-add-attachment command (add_attachment_command)."""
 
