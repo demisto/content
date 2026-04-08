@@ -123,11 +123,10 @@ class MagnetAutomateClient(ContentClient):
         Returns:
             dict[str, Any]: The created case.
         """
-        json_data: dict[str, Any] = {
-            "caseNumber": case_number,
-        }
-        if custom_field_values:
-            json_data["customFieldValues"] = custom_field_values
+        json_data: dict[str, Any] = assign_params(
+            caseNumber=case_number,
+            customFieldValues=custom_field_values
+        )
 
         demisto.debug(f"Sending a POST Request to /cases with {json_data=}.")
 
@@ -213,21 +212,16 @@ class MagnetAutomateClient(ContentClient):
         Returns:
             list[dict[str, Any]]: The started workflow runs.
         """
-        evidence_source: dict[str, Any] = {
-            "evidenceNumber": evidence_number,
-            "type": evidence_type,
-            "workflowId": workflow_id,
-        }
-        if output_path:
-            evidence_source["outputPath"] = output_path
-        if platform:
-            evidence_source["platform"] = platform
-        if decryption:
-            evidence_source["decryption"] = decryption
-        if custom_field_values:
-            evidence_source["customFieldValues"] = custom_field_values
-        if assigned_node_name:
-            evidence_source["assignedNodeName"] = assigned_node_name
+        evidence_source: dict[str, Any] = assign_params(
+            evidenceNumber=evidence_number,
+            type=evidence_type,
+            workflowId=workflow_id,
+            outputPath=output_path,
+            platform=platform,
+            decryption=decryption,
+            customFieldValues=custom_field_values,
+            assignedNodeName=assigned_node_name
+        )
 
         json_data = {"evidenceSources": [evidence_source]}
 
@@ -328,14 +322,12 @@ class MagnetAutomateClient(ContentClient):
         Returns:
             dict[str, Any]: The started merge workflow run.
         """
-        json_data: dict[str, Any] = {
-            "runIds": run_ids,
-            "workflowId": workflow_id,
-        }
-        if output_path:
-            json_data["outputPath"] = output_path
-        if assigned_node_name:
-            json_data["assignedNodeName"] = assigned_node_name
+        json_data: dict[str, Any] = assign_params(
+            runIds=run_ids,
+            workflowId=workflow_id,
+            outputPath=output_path,
+            assignedNodeName=assigned_node_name
+        )
 
         demisto.debug(f"Sending a POST Request to /cases/{case_id}/merge with {json_data=}.")
 
@@ -406,15 +398,12 @@ class MagnetAutomateClient(ContentClient):
         Returns:
             dict[str, Any]: The created node.
         """
-        json_data: dict[str, Any] = {}
-        if name:
-            json_data["name"] = name
-        if address:
-            json_data["address"] = address
-        if working_directory:
-            json_data["workingDirectory"] = working_directory
-        if applications:
-            json_data["applications"] = applications
+        json_data: dict[str, Any] = assign_params(
+            name=name,
+            address=address,
+            workingDirectory=working_directory,
+            applications=applications
+        )
 
         demisto.debug(f"Sending a POST Request to /nodes with {json_data=}.")
 
@@ -455,13 +444,11 @@ class MagnetAutomateClient(ContentClient):
         Returns:
             dict[str, Any]: The updated node.
         """
-        json_data: dict[str, Any] = {}
-        if address:
-            json_data["address"] = address
-        if working_directory:
-            json_data["workingDirectory"] = working_directory
-        if applications:
-            json_data["applications"] = applications
+        json_data: dict[str, Any] = assign_params(
+            address=address,
+            workingDirectory=working_directory,
+            applications=applications
+        )
 
         demisto.debug(f"Sending a PUT Request to /nodes/{node_id} with {json_data=}.")
 
