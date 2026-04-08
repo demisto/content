@@ -1,6 +1,6 @@
 {
     "name": "Magnet Forensics",
-    "description": "## FILL MANDATORY FIELD ##",
+    "description": "Magnet Automate is a workflow orchestration platform by Magnet Forensics that automates digital forensic investigations. This pack enables Cortex XSOAR to integrate with Magnet Automate to manage cases, start and monitor workflow runs against evidence sources, manage processing nodes, and control forensic workflows — all through the Magnet Automate REST API.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

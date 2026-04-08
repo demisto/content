@@ -1,14 +1,5 @@
 # Magnet Automate
 
-## Overview
-Magnet Automate is an enterprise-level digital forensics orchestration and automation platform designed to streamline and accelerate the processing of forensic evidence. By integrating Magnet Automate with Cortex XSOAR, labs can eliminate manual hand-offs, reduce backlogs, and ensure consistent, repeatable workflows across their entire forensic toolkit.
-
-## Key Features
-*   **Automate Forensic Workflows**: Orchestrate complex forensic processes from acquisition to reporting.
-*   **Manage Cases**: Programmatically create and manage cases within the Magnet Automate environment.
-*   **Scale Lab Capacity**: Maximize hardware utilization and scale processing power to handle increasing data volumes.
-*   **Standardized Processing**: Ensure every case follows a defined, defensible procedure.
-
 ## Setup Instructions
 
 ### Prerequisites
@@ -26,9 +17,6 @@ To configure this integration, you will need:
 The Server URL must be provided in the following format:
 `https://{hostName}:{port}`
 Example: `https://automate.example.com:5000`
-
-## Authentication
-The integration uses API Key authentication. All requests include the API Key in the `X-API-KEY` HTTP header.
 
 ## Usage Notes
 ### Custom Fields
