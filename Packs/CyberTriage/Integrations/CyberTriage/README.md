@@ -57,7 +57,7 @@ Initiates a Cyber Triage forensic collection on a Windows endpoint.
 #### Command Example
 
 ```
-!ct-triage-endpoint endpoint=ct-win10-01 scan_options=pr,nw,st malware_scan_requested=yes send_content=no incident_name=MyIncident
+!ct-triage-endpoint host_name=ct-win10-01 scan_options=pr,nw,st malware_scan_requested=yes send_content=no incident_name=MyIncident
 ```
 
 #### Human Readable Output
