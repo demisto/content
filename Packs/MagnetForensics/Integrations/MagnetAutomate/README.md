@@ -1,5 +1,5 @@
 Magnet Automate is an orchestration and automation platform that accelerates your digital forensics investigations by automating workflows and integrating with various forensic tools.
-This integration was integrated and tested with version xx of MagnetAutomate.
+This integration was integrated and tested with version 0.2.0 of Magnet Automate API.
 
 ## Configure Magnet Automate in Cortex
 
