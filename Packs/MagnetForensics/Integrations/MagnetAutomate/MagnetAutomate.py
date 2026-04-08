@@ -39,6 +39,17 @@ def truncate_results(results: list[Any], limit: int | None = None, all_results: 
     return results
 
 
+def validate_json(value):
+    if isinstance(value, str) and value:
+        try:
+            return json.loads(value)
+        except json.JSONDecodeError as e:
+            # not logging json value as it might contain sensitive information
+            demisto.debug(f"[VALIDATION FAILED] Could not parse json from provided value with exception {e.msg}.")
+            return value
+    return value
+
+
 # endregion
 
 # region Parameters
@@ -588,12 +599,7 @@ class CaseCreateArgs(ContentBaseModel):
     @validator("custom_field_values", pre=True)
     @classmethod
     def validate_custom_field_values(cls, v):
-        if isinstance(v, str) and v:
-            try:
-                return json.loads(v)
-            except json.JSONDecodeError:
-                return v
-        return v
+        return validate_json(v)
 
 
 def case_create_command(client: MagnetAutomateClient, args: CaseCreateArgs) -> CommandResults:
@@ -827,12 +833,7 @@ class WorkflowRunStartArgs(ContentBaseModel):
     @validator("custom_field_values", pre=True)
     @classmethod
     def validate_custom_field_values(cls, v):
-        if isinstance(v, str) and v:
-            try:
-                return json.loads(v)
-            except json.JSONDecodeError:
-                return v
-        return v
+        return validate_json(v)
 
 
 def workflow_run_start_command(client: MagnetAutomateClient, args: WorkflowRunStartArgs) -> CommandResults:
@@ -1401,12 +1402,7 @@ class NodeCreateArgs(ContentBaseModel):
     @validator("applications_json", pre=True)
     @classmethod
     def validate_applications_json(cls, v):
-        if isinstance(v, str) and v:
-            try:
-                return json.loads(v)
-            except json.JSONDecodeError:
-                return v
-        return v
+        return validate_json(v)
 
 
 def node_create_command(client: MagnetAutomateClient, args: NodeCreateArgs) -> CommandResults:
@@ -1519,12 +1515,7 @@ class NodeUpdateArgs(ContentBaseModel):
     @validator("applications_json", pre=True)
     @classmethod
     def validate_applications_json(cls, v):
-        if isinstance(v, str) and v:
-            try:
-                return json.loads(v)
-            except json.JSONDecodeError:
-                return v
-        return v
+        return validate_json(v)
 
 
 def node_update_command(client: MagnetAutomateClient, args: NodeUpdateArgs) -> CommandResults:
