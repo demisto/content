@@ -110,6 +110,21 @@ class TestCredentials:
         assert isinstance(creds.password, SecretStr)
         assert creds.password.get_secret_value() == password
 
+    def test_credentials_missing_password(self):
+        """
+        Given:
+            - No password provided.
+        When:
+            - Initializing Credentials model.
+        Then:
+            - Assert DemistoException is raised.
+        """
+        from CommonServerPython import DemistoException
+        from MagnetAutomate import Credentials
+
+        with pytest.raises(DemistoException, match="password"):
+            Credentials()  # type: ignore[call-arg]
+
 
 class TestMagnetAutomateParams:
     """Tests for the MagnetAutomateParams pydantic model."""
@@ -180,6 +195,36 @@ class TestMagnetAutomateParams:
         )
 
         assert urlparse(str(params.url)).hostname == "automate.example.com"
+
+    def test_params_missing_url(self):
+        """
+        Given:
+            - No URL provided.
+        When:
+            - Initializing MagnetAutomateParams.
+        Then:
+            - Assert DemistoException is raised.
+        """
+        from CommonServerPython import DemistoException
+        from MagnetAutomate import MagnetAutomateParams
+
+        with pytest.raises(DemistoException, match="url"):
+            MagnetAutomateParams(credentials={"password": "secret"})  # type: ignore[call-arg]
+
+    def test_params_missing_credentials(self):
+        """
+        Given:
+            - No credentials provided.
+        When:
+            - Initializing MagnetAutomateParams.
+        Then:
+            - Assert DemistoException is raised.
+        """
+        from CommonServerPython import DemistoException
+        from MagnetAutomate import MagnetAutomateParams
+
+        with pytest.raises(DemistoException, match="credentials"):
+            MagnetAutomateParams(url="https://automate.example.com")  # type: ignore[call-arg,arg-type]
 
 
 # endregion
