@@ -230,6 +230,32 @@ class TestMagnetAutomateParams:
 # endregion
 
 
+# region test-module
+
+
+def test_module_authentication_error(mocker: MockerFixture, client: "MagnetAutomateClient"):
+    """
+    Given:
+        - Client that raises ContentClientAuthenticationError.
+    When:
+        - Running test_module.
+    Then:
+        - Assert appropriate error message is returned.
+    """
+    from ContentClientApiModule import ContentClientAuthenticationError
+    from MagnetAutomate import test_module
+
+    mocker.patch.object(client, "custom_fields_list", side_effect=ContentClientAuthenticationError("Unauthorized"))
+
+    result = test_module(client)
+
+    assert result.startswith("AuthenticationError: Connection failed.")
+    assert "Unauthorized" in result
+
+
+# endregion
+
+
 # region ma-forensics-custom-fields-list
 
 
