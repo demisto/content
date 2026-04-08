@@ -807,6 +807,11 @@ class WorkflowRunStartArgs(ContentBaseModel):
     def validate_case_id(cls, v):
         return arg_to_number(v, required=True)
 
+    @validator("evidence_type", pre=True)
+    @classmethod
+    def validate_evidence_type(cls, v):
+        return validate_json(v)
+
     @validator("workflow_id", pre=True)
     @classmethod
     def validate_workflow_id(cls, v):

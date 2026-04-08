@@ -658,6 +658,82 @@ class TestWorkflowRunStartArgs:
         assert args.evidence_type == evidence
 
     @pytest.mark.parametrize(
+        "evidence_input, expected",
+        [
+            pytest.param(
+                '{"ImageSource": {"path": "/some/path"}}',
+                {"ImageSource": {"path": "/some/path"}},
+                id="json_string_parsed",
+            ),
+            pytest.param(
+                '{"ImageSource": {"path": "C:\\\\testdata\\\\image\\\\image123.001"}}',
+                {"ImageSource": {"path": "C:\\testdata\\image\\image123.001"}},
+                id="json_string_with_backslashes_parsed",
+            ),
+            pytest.param(
+                {"ImageSource": {"path": "C:\\image.001"}},
+                {"ImageSource": {"path": "C:\\image.001"}},
+                id="dict_passthrough",
+            ),
+        ],
+    )
+    def test_evidence_type_coercion(self, evidence_input: str | dict, expected: dict) -> None:
+        """
+        Given:
+            - evidence_type as a JSON string or dict.
+        When:
+            - Constructing WorkflowRunStartArgs.
+        Then:
+            - evidence_type is parsed from JSON string or passed through as dict.
+        """
+        from MagnetAutomate import WorkflowRunStartArgs
+
+        args = WorkflowRunStartArgs(  # type: ignore[arg-type]
+            case_id=1,
+            evidence_number="E001",
+            type=evidence_input,
+            workflow_id=2,
+        )
+
+        assert args.evidence_type == expected
+
+    def test_evidence_type_invalid_json_raises(self) -> None:
+        """
+        Given:
+            - evidence_type as an invalid JSON string.
+        When:
+            - Constructing WorkflowRunStartArgs.
+        Then:
+            - The validator returns the original string (validate_json does not raise),
+              but ContentBaseModel raises a DemistoException because evidence_type expects dict[str, Any].
+        """
+        from CommonServerPython import DemistoException
+        from MagnetAutomate import WorkflowRunStartArgs
+
+        with pytest.raises(DemistoException, match="type"):
+            WorkflowRunStartArgs(  # type: ignore[arg-type]
+                case_id=1,
+                evidence_number="E001",
+                type="not-valid-json{",
+                workflow_id=2,
+            )
+
+    def test_evidence_type_empty_string_passthrough(self) -> None:
+        """
+        Given:
+            - evidence_type as an empty string.
+        When:
+            - Constructing WorkflowRunStartArgs.
+        Then:
+            - validate_json returns the empty string unchanged (empty string is falsy,
+              so the JSON parsing branch is skipped).
+        """
+        from MagnetAutomate import validate_json
+
+        result = validate_json("")
+        assert result == ""
+
+    @pytest.mark.parametrize(
         "case_id_input, workflow_id_input, expected_case_id, expected_workflow_id",
         [
             pytest.param("42", "7", 42, 7, id="both_strings_coerced"),
