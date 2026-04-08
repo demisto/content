@@ -41,7 +41,7 @@ Initiates a Cyber Triage forensic collection on a Windows endpoint.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_name | IP address or hostname of the Windows endpoint to triage. | Required |
-| scan_options | Comma-separated list of data types to collect. Valid values: pr (Processes), nw (Network), nc (Network Caches), st (Startup Items), sc (Scheduled Tasks), ru (Program Run), co (System Config), lo (User Logins), ns (Network Shares), wb (Web Artifacts), fs (Full File System Scan). Default: pr,nw,nc,st,sc,ru,co,lo,ns,wb,fs | Optional |
+| scan_options | Comma-separated list of data types for Cyber Triage to collect. Valid options: Accounts (us), Logons (lo), Network Shares (ns), Web Artifacts (wb), Data Accessed (ud), Triggered Tasks (sc), Processes (pr), Network (nw), Network Caches (nc), OS Settings (co), Full file system scan (fs). Default: us,lo,ns,wb,ud,sc,pr,nw,nc,co,fs | Optional |
 | malware_scan_requested | Send MD5 hashes to an external malware analysis service. Possible values: yes, no. Default: yes | Optional |
 | send_content | Send unknown files to an external malware analysis service. Hash upload must be enabled. Possible values: yes, no. Default: no | Optional |
 | incident_name | Cyber Triage incident name that the collection will be grouped under. Default: Default | Optional |
@@ -57,7 +57,7 @@ Initiates a Cyber Triage forensic collection on a Windows endpoint.
 #### Command Example
 
 ```
-!ct-triage-endpoint host_name=ct-win10-01 scan_options=pr,nw,st malware_scan_requested=yes send_content=no incident_name=MyIncident
+!ct-triage-endpoint host_name=ct-win10-01 scan_options=pr,nw malware_scan_requested=yes send_content=no incident_name=MyIncident
 ```
 
 #### Human Readable Output
