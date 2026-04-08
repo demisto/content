@@ -59,7 +59,7 @@ def test_triage_endpoint_command(client: CyberTriageClient):
     mock_response.raise_for_status.return_value = None
     client.triage_endpoint = MagicMock(return_value=mock_response)
     triage_endpoint_command(client, args)
-    client.triage_endpoint.assert_called_once_with(True, False, "made-up-endpoint", "", "MADEUP", "")
+    client.triage_endpoint.assert_called_once_with(True, False, "made-up-endpoint", "", "MADEUP")
 
 
 is_2xx_test_data = [

@@ -17,7 +17,7 @@ Documentation can be found at [https://docs.cybertriage.com/](https://docs.cyber
 | --- | --- | --- |
 | Cyber Triage Server Hostname | IP address or hostname of the Cyber Triage server (e.g. 192.168.1.2) | True |
 | REST Port | REST API port of the Cyber Triage server. Default: 9443 | True |
-| API Key | Bearer token found in Options > Deployment Mode > REST API Key | True |
+| API Key | Bearer token found in Options → User Accounts.  Click the three dots next to *api-user* and select *View Details*. Under *API Authentication Token*, copy or create a new authentication token. | True |
 | Windows Admin Credentials | Administrative Windows account used to push the collector to endpoints | True |
 | Trust any certificate (not secure) | Skip SSL certificate verification | False |
 | Use system proxy settings | Route requests through system proxy | False |
