@@ -5,7 +5,7 @@ commonfields:
 provider: BaseIntegration # TODO doesn't appear on xsoar.pan.dev
 configuration:
 - defaultvalue: https://127.0.0.1:8080/
-  display: Your server URL
+  display: Server URL
   name: url
   required: true
   type: 0
