@@ -486,6 +486,7 @@ view: |-
       }
     }
   }
+isInternal: true
 tests:
 - No tests (auto formatted)
 fromversion: 8.14.0
