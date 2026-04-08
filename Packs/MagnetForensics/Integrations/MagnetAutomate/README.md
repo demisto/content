@@ -5,7 +5,7 @@ This integration was integrated and tested with version 0.2.0 of Magnet Automate
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Your server URL | True |
+| Server URL | True |
 | API Key | True |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
@@ -44,6 +44,10 @@ Retrieves a list of custom fields for cases and evidence sources.
 | MagnetForensics.CustomFields.exposeInWorkflow | Boolean | Whether the custom field is exposed in workflows. |
 | MagnetForensics.CustomFields.variableName | String | The variable name associated with the custom field. |
 
+#### Command Example
+
+`!ma-forensics-custom-fields-list limit=10`
+
 ### ma-forensic-case-create
 
 ***
@@ -67,6 +71,10 @@ Creates a new case in Magnet Automate. Use ma-forensics-custom-fields-list to ge
 | MagnetForensics.Case.id | Number | The unique identifier of the created case. |
 | MagnetForensics.Case.caseNumber | String | The case number assigned to the case. |
 | MagnetForensics.Case.customFieldValues | Unknown | The custom field values associated with the case. |
+
+#### Command Example
+
+`!ma-forensics-case-create case_number="CASE-2024-001" custom_field_values="{\"2\": \"Civil\", \"3\": \"Magnet Forensics\"}"`
 
 ### ma-forensics-cases-list
 
@@ -92,6 +100,14 @@ Retrieves a list of all cases or information about a specific case.
 | MagnetForensics.Case.id | Number | The unique identifier of the case. |
 | MagnetForensics.Case.caseNumber | String | The case number. |
 
+#### Command Example
+
+`!ma-forensics-cases-list limit=5`
+
+#### Command Example
+
+`!ma-forensics-cases-list case_id=10`
+
 ### ma-forensics-case-delete
 
 ***
@@ -111,6 +127,10 @@ Deletes a specific case from Magnet Automate.
 
 There is no context output for this command.
 
+#### Command Example
+
+`!ma-forensics-case-delete case_id=10`
+
 ### ma-forensics-case-cancel
 
 ***
@@ -129,6 +149,10 @@ Cancels an ongoing case in Magnet Automate.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+`!ma-forensics-case-cancel case_id=10`
 
 ### ma-forensics-workflow-run-start
 
@@ -167,6 +191,10 @@ Starts a new workflow run and associates it with a specific case.
 | MagnetForensics.WorkflowRun.basePath | String | The base path for the workflow run. |
 | MagnetForensics.WorkflowRun.automateVersion | String | The version of Magnet Automate used for the run. |
 
+#### Command Example
+
+`!ma-forensics-workflow-run-start case_id=10 evidence_number="ExhibitA" type="{\"ImageSource\": {\"path\": \"C:\\\\testdata\\\\image\\\\image123.001\"}}" workflow_id=3 output_path="C:\\testdata\\output" platform="windows" decryption_type="password" decryption_value="MySecretPassword" continue_on_decryption_fail=false custom_field_values="{\"5\": \"Evidence Value A\", \"7\": \"Evidence Value B\"}" assigned_node_name="AGENT1"`
+
 ### ma-forensics-workflow-run-list
 
 ***
@@ -202,6 +230,14 @@ Retrieves a list of all workflow runs for a specific case or details of a specif
 | MagnetForensics.WorkflowRun.duration | Number | The duration of the workflow run in seconds. |
 | MagnetForensics.WorkflowRun.completedStages | Unknown | A list of completed stages in the workflow run. |
 
+#### Command Example
+
+`!ma-forensics-workflow-run-list case_id=10`
+
+#### Command Example
+
+`!ma-forensics-workflow-run-list case_id=10 run_id=11`
+
 ### ma-forensics-workflow-run-delete
 
 ***
@@ -222,6 +258,10 @@ Deletes a specific workflow run from a case.
 
 There is no context output for this command.
 
+#### Command Example
+
+`!ma-forensics-workflow-run-delete case_id=10 run_id=11`
+
 ### ma-forensics-workflow-run-cancel
 
 ***
@@ -241,6 +281,10 @@ Cancels a specific workflow run.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+`!ma-forensics-workflow-run-cancel case_id=10 run_id=11`
 
 ### ma-forensics-merge-workflow-run-start
 
@@ -273,6 +317,10 @@ Starts a merge workflow run for multiple existing workflow runs.
 | MagnetForensics.WorkflowRun.basePath | String | The base path for the workflow run. |
 | MagnetForensics.WorkflowRun.automateVersion | String | The version of Magnet Automate used. |
 
+#### Command Example
+
+`!ma-forensics-merge-workflow-run-start case_id=10 run_ids="1,2,3" workflow_id=3 output_path="C:\\testdata\\output" assigned_node_name="AGENT1"`
+
 ### ma-forensics-workflow-list
 
 ***
@@ -299,6 +347,10 @@ Retrieves a list of all available workflows.
 | MagnetForensics.Workflow.description | String | A description of the workflow. |
 | MagnetForensics.Workflow.outputPath | String | The default output path for the workflow. |
 
+#### Command Example
+
+`!ma-forensics-workflow-list limit=10`
+
 ### ma-forensics-workflow-delete
 
 ***
@@ -317,6 +369,10 @@ Deletes a specific workflow from Magnet Automate.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+`!ma-forensics-workflow-delete workflow_id=5`
 
 ### ma-forensics-workflow-get
 
@@ -351,6 +407,10 @@ Retrieves detailed information and export data for a specific workflow. Use ma-f
 | MagnetForensics.Workflow.localMode | Boolean | Whether the workflow runs in local mode. |
 | MagnetForensics.Workflow.timeExported | Date | The date and time when the workflow was exported. |
 
+#### Command Example
+
+`!ma-forensics-workflow-get workflow_id=5`
+
 ### ma-forensics-node-create
 
 ***
@@ -380,6 +440,10 @@ Creates a new node (agent) in Magnet Automate.
 | MagnetForensics.Node.address | String | The network address of the node. |
 | MagnetForensics.Node.applications | Unknown | A list of applications installed on the node. |
 
+#### Command Example
+
+`!ma-forensics-node-create name="NODE-002" address="automate-node-2" working_directory="C:\\automate\\temp" applications_json="[{\"applicationName\": \"AXIOM Process\", \"applicationVersion\": \"7.0.0\", \"applicationPath\": \"C:\\\\Program Files\\\\Magnet Forensics\\\\Magnet AUTOMATE\\\\agent\\\\AXIOM Process\\\\AXIOMProcess.CLI.exe\"}]"`
+
 ### ma-forensics-nodes-list
 
 ***
@@ -407,6 +471,10 @@ Retrieves a list of all available nodes (agents).
 | MagnetForensics.Node.address | String | The network address of the node. |
 | MagnetForensics.Node.applications | Unknown | A list of applications installed on the node. |
 
+#### Command Example
+
+`!ma-forensics-nodes-list limit=10`
+
 ### ma-forensics-node-update
 
 ***
@@ -429,6 +497,10 @@ Updates the configuration of an existing node.
 
 There is no context output for this command.
 
+#### Command Example
+
+`!ma-forensics-node-update node_id=1 address="automate-node-updated" working_directory="C:\\automate\\updatedTemp" applications_json="[{\"applicationName\": \"AXIOM Process\", \"applicationVersion\": \"7.1.0\"}]"`
+
 ### ma-forensics-node-delete
 
 ***
@@ -447,3 +519,7 @@ Deletes a specific node from Magnet Automate.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+`!ma-forensics-node-delete node_id=1`
