@@ -1,0 +1,337 @@
+{
+    "items": [
+        {
+            "id": "1fad43dd-9f4e-4400-aec2-9f87af2bf539",
+            "file": {
+                "name": "bad_file.exe",
+                "mime_type": "application/x-dosexec",
+                "short_type": "peexe",
+                "sha256": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                "link": null
+            },
+            "scan_init": {
+                "id": "69d63d50799d5bf325f266ed"
+            },
+            "state": "success",
+            "verdict": "malicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "peexe",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "4a8b021bd52a49a9908259658e9e099e718dd8c87ca181bc754ed3986b3a2b69",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "YARA_RULE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "pup",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "anti-debug",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "packed",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "installer",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "CONTENT_PARSE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "installer",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "DIE_OUTPUT",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "microsoft_visual_cc",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "INTERNAL",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "installer-heuristic",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                }
+            ],
+            "date": "2026-04-08T11:34:42.790000",
+            "uploader": {
+                "email": null
+            },
+            "updated_date": "04/08/2026, 11:35:14"
+        },
+        {
+            "id": "ebadf780-410d-4a7c-a535-7a657259c766",
+            "file": {
+                "name": "InstallBC201401.exe",
+                "mime_type": "application/x-dosexec",
+                "short_type": "peexe",
+                "sha256": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                "link": null
+            },
+            "scan_init": {
+                "id": "69ca0dce972c219c8d71c06c"
+            },
+            "state": "success",
+            "verdict": "malicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "peexe",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "3f6e2d704ef3c19cafef46cacac33cbf56707775be49ae714fcc43180652256b",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "OSINT_LOOKUP",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "tag": {
+                        "name": "unsafe",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "LIKELY_MALICIOUS",
+                            "threatLevel": 0.75,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "YARA_RULE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "pup",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "anti-debug",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "packed",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "installer",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.25,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "CONTENT_PARSE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "installer",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "DIE_OUTPUT",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "microsoft_visual_cc",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "INTERNAL",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "installer-heuristic",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                }
+            ],
+            "date": "2026-03-30T05:44:47.956000",
+            "uploader": {
+                "email": null
+            },
+            "updated_date": "03/30/2026, 05:45:23"
+        }
+    ],
+    "count": 2,
+    "count_search_params": null,
+    "earliest_dates_covered": null,
+    "method": "or",
+    "dbs_sync": null
+}
