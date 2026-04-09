@@ -532,17 +532,13 @@ def test_similar_issue_finder_load_current_entity(mocker):
     finder = SimilarIssueFinder(EntityArgs(args))
 
     mock_execute_command = mocker.patch.object(demisto, "executeCommand")
-    mock_execute_command.return_value = [
-        {"Type": 1, "Contents": [{"internal_id": "123", "issue_name": "test"}]}
-    ]
+    mock_execute_command.return_value = [{"Type": 1, "Contents": [{"internal_id": "123", "issue_name": "test"}]}]
 
     issue, entity_id = finder.load_current_entity("123", [], [], [], [], [], "2023-01-01", "2023-12-31")
 
     assert issue == {"internal_id": "123", "issue_name": "test"}
     assert entity_id == "123"
-    mock_execute_command.assert_called_once_with(
-        "core-get-issues", {"issue_id": "123"}
-    )
+    mock_execute_command.assert_called_once_with("core-get-issues", {"issue_id": "123"})
 
 
 def test_similar_issue_finder_get_all_entities(mocker):
@@ -550,9 +546,7 @@ def test_similar_issue_finder_get_all_entities(mocker):
     finder = SimilarIssueFinder(EntityArgs(args))
 
     mock_execute_command_batch = mocker.patch.object(demisto, "executeCommandBatch")
-    mock_execute_command_batch.return_value = [
-        [{"Type": 1, "Contents": [{"internal_id": "456", "issue_name": "test2"}]}]
-    ]
+    mock_execute_command_batch.return_value = [[{"Type": 1, "Contents": [{"internal_id": "456", "issue_name": "test2"}]}]]
 
     entity = {"internal_id": "123", "issue_name": "test", "status": "Open"}
     exact_match_fields = ["status"]
