@@ -16,6 +16,7 @@ urllib3.disable_warnings()
 
 """ GLOBALS/PARAMS """
 MAX_ATTEMPTS = 3
+MAX_FETCH = 50  # "soft" upper limit
 DEFAULT_BASE_URL = "https://api.dlp.paloaltonetworks.com/v1/"
 DEFAULT_AUTH_URL = "https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token"
 REPORT_URL = "public/report/{}"
@@ -512,6 +513,7 @@ def update_context_with_last_run(last_run: dict[str, Any], integration_context: 
     LOCAL_LAST_RUN = last_run
 
     demisto.debug(f"Updating server-stored {last_run=}.")
+    integration_context = integration_context or {}
     integration_context[LAST_RUN_KEY] = last_run
     return integration_context
 
@@ -628,7 +630,7 @@ def fetch_notifications(
                 new_incidents.append(incident)
                 fetched_incident_ids_committed_timestamps[incident_id] = incident_committed_timestamp
 
-        if len(new_incidents) >= 100:
+        if len(new_incidents) >= MAX_FETCH:
             demisto.debug(f"Reached or exceeded fetch limit. Fetched {len(new_incidents)} incidents. Breaking...")
             break
 
