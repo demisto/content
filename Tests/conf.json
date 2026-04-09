@@ -5902,7 +5902,8 @@
             ],
             "instance_names": [
                 "virus_total_v3"
-            ]
+            ],
+            "marketplaces": "xsoar_saas"
         },
         {
             "playbookID": "DomainEnrichment-Test",
@@ -6145,7 +6146,8 @@
         "SaasSecurity-Test": "blocked by SCA-8028",
         "Mail-Listener Test Playbook": " invalid creds CRTX-171878",
         "DbotPredictOufOfTheBoxTest": "Script DBotPredictOutOfTheBox is deprecated",
-        "Gmail Single User - Test": "CIAC-11417"
+        "Gmail Single User - Test": "CIAC-11417",
+        "AWS-securityhub Test": "The creds were expired CRTX-237114"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
