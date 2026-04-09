@@ -51,7 +51,8 @@ def remove_empty_string_values(args: dict) -> dict:
         if key in NUMERIC_ARGS:
             return str(value).strip().isdigit()
         if key in NUMERIC_LIST_ARGS:
-            return all(part.strip().isdigit() for part in str(value).split(","))
+            parts = argToList(value)
+            return bool(parts) and all(str(part).strip().isdigit() for part in parts)
         return True
 
     return {key: value for key, value in args.items() if is_valid(key, value)}
