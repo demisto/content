@@ -1,990 +1,990 @@
-Integration Name,Support Level,Provider
-6437c006-1d86-4cdc-89d5-23305f207e3a,partner,Proofpoint
-Abnormal Security,partner,Abnormal Security
-Abnormal Security Event Collector,partner,Abnormal Security
-Absolute,xsoar,Absolute Software
-abuse.ch SSL Blacklist Feed,xsoar,SANS Institute
-AbuseIPDB,xsoar,AbuseDB
-Acalvio ShadowPlex,partner,Acalvio
-ACTI Indicator Feed,partner,Accenture
-ACTI Indicator Query,partner,Accenture
-ACTI Vulnerability Query,partner,Accenture
-Active Directory Query v2,xsoar,Microsoft
-ActiveMQ,xsoar,Open Source
-AdminByRequest,xsoar,Admin By Request
-Agari Phishing Defense,partner,Fortra
-Aha,xsoar,Aha Labs Inc.
-Akamai WAF,xsoar,Akamai Technologies
-Akamai WAF SIEM,xsoar,Akamai Technologies
-AlgoSec,xsoar,AlgoSec
-Alibaba Action Trail Event Collector,xsoar,Alibaba Group
-AlienVault OTX TAXII Feed,xsoar,AT&T Cybersecurity
-AlienVault OTX v2,xsoar,AT&T Cybersecurity
-AlienVault Reputation Feed,xsoar,AT&T Cybersecurity
-AlienVault USM Anywhere,xsoar,AT&T Cybersecurity
-AlphaSOC Network Behavior Analytics,partner,AlphaSOC
-AlphaSOC Wisdom,partner,AlphaSOC
-Amazon DynamoDB,xsoar,Amazon
-AMPv2,xsoar,Cisco Systems
-Analyst1,partner,Analyst1
-Anomali Enterprise,xsoar,Anomali
-Anomali ThreatStream Feed,xsoar,Anomali
-Anomali ThreatStream v3,xsoar,Anomali
-AnomaliSecurityAnalyticsAlerts,partner,Anomali
-AnsibleACME,xsoar,IBM
-AnsibleAlibabaCloud,xsoar,Alibaba Group
-AnsibleAzure,xsoar,IBM
-AnsibleCiscoIOS,xsoar,IBM
-AnsibleCiscoNXOS,xsoar,IBM
-AnsibleDNS,xsoar,IBM
-AnsibleHCloud,xsoar,IBM
-AnsibleKubernetes,xsoar,IBM
-AnsibleLinux,xsoar,IBM
-AnsibleMicrosoftWindows,xsoar,IBM
-AnsibleOpenSSL,xsoar,Open Source
-AnsibleTower,xsoar,IBM
-AnsibleVMware,xsoar,IBM
-ANY.RUN Cloud Sandbox,partner,AnyRun
-ANY.RUN TI Feed,partner,AnyRun
-ANY.RUN TI Lookup,partner,AnyRun
-ANYRUN,partner,AnyRun
-APIVoid,xsoar,APIVoid
-appNovi,partner,Fenix24
-AppSentinels.ai,xsoar,AppSentinels Ai
-Arcanna.AI,partner,Arcanna.ai INC
-ArcSight ESM v2,xsoar,OpenText
-ArcSight Logger,xsoar,OpenText
-ArcusTeam,partner,ArcusTeam
-ArgusManagedDefence,partner,mnemonic
-ARIA Packet Intelligence,partner,AriaNetworks
-Arkime,xsoar,Open Source
-Armis,partner,Insight Partners
-ArmisEventCollector,partner,Armis
-Armorblox,partner,Cisco Systems
-Asimily Insight,partner,Asimily
-Ataya Harmony,partner,Atayalan Inc
-Atlassian Cloud MCP,xsoar,Atlassian
-Atlassian Confluence Cloud,xsoar,Atlassian
-Atlassian Confluence Server,xsoar,Atlassian
-Atlassian IAM,xsoar,Atlassian
-AtlassianJiraServiceManagement,xsoar,Atlassian
-AttackIQFireDrill,xsoar,AttackIQ
-AttackSurfaceManagement,partner,Google
-Attivo Botsink,partner,SentinelOne
-Autofocus,xsoar,Palo Alto Networks
-AutoFocus Daily Feed,xsoar,Palo Alto Networks
-AutoFocus Feed,xsoar,Palo Alto Networks
-AutoFocus V2,xsoar,Palo Alto Networks
-AutoFocusTagsFeed,xsoar,Palo Alto Networks
-Automox,partner,Automox Inc
-Awake Security,xsoar,Arista Networks
-AWS,xsoar,Amazon
-AWS - AccessAnalyzer,xsoar,Amazon
-AWS - ACM,xsoar,Amazon
-AWS - Athena - Beta,xsoar,Amazon
-AWS - CloudTrail,xsoar,Amazon
-AWS - CloudWatchLogs,xsoar,Amazon
-AWS - EC2,xsoar,Amazon
-AWS - GuardDuty,xsoar,Amazon
-AWS - GuardDuty Event Collector,xsoar,Amazon
-AWS - IAM,xsoar,Amazon
-AWS - IAM Identity Center,xsoar,Amazon
-AWS - Lambda,xsoar,Amazon
-AWS - Organizations,xsoar,Amazon
-AWS - Route53,xsoar,Amazon
-AWS - S3,xsoar,Amazon
-AWS - Security Hub,xsoar,Amazon
-AWS - SNS,xsoar,Amazon
-AWS - SQS,xsoar,Amazon
-AWS - System Manager,xsoar,Amazon
-AWS Feed,xsoar,Amazon
-AWS Network Firewall,xsoar,Amazon
-AWS Sagemaker,xsoar,Amazon
-AWS Security Hub Event Collector,xsoar,Amazon
-AWS Security Lake,xsoar,Amazon
-AWS-EKS,xsoar,Amazon
-AWS-ILM,xsoar,Amazon
-AWS-SNS-Listener,xsoar,Amazon
-AWS-WAF,xsoar,Amazon
-AwsSecretsManager,xsoar,Amazon
-Axonius,partner,Axonius
-Azure,xsoar,Microsoft
-Azure AD Connect Health Feed,xsoar,Microsoft
-Azure Compute v2,xsoar,Microsoft
-Azure Firewall,xsoar,Microsoft
-Azure Kubernetes Services,xsoar,Microsoft
-Azure Log Analytics,xsoar,Microsoft
-Azure Network Security Groups,xsoar,Microsoft
-Azure Resource Graph,xsoar,Microsoft
-Azure Security Center v2,xsoar,Microsoft
-Azure Sentinel,xsoar,Microsoft
-Azure SQL Management,xsoar,Microsoft
-Azure Storage,xsoar,Microsoft
-Azure Storage Container,xsoar,Microsoft
-Azure Storage FileShare,xsoar,Microsoft
-Azure Storage Queue,xsoar,Microsoft
-Azure Storage Table,xsoar,Microsoft
-AzureDataExplorer,xsoar,Microsoft
-AzureDevOps,xsoar,Microsoft
-AzureFeed,xsoar,Microsoft
-AzureKeyVault,xsoar,Microsoft
-AzureRiskyUsers,xsoar,Microsoft
-AzureWAF,xsoar,Microsoft
-Bambenek Consulting Feed,partner,Netenrich
-Bastille Networks,partner,Bastille Networks
-BeyondTrust Password Safe,xsoar,BeyondTrust
-BeyondTrust Privilege Management Cloud,xsoar,
-BigFix,xsoar,HCL Technologies
-Binalyze AIR,partner,Binalyze
-Bitbucket,xsoar,Atlassian
-BitSight Event Collector,partner,BitSight
-BitSight for Security Performance Management,partner,BitSight
-Bitwarden Password Manager,xsoar,Bitwarden
-Blocklist_de Feed,xsoar,Open Source
-BloodHoundEnterprise,partner,Specter Ops Inc
-BluecatAddressManager,xsoar,BlueCat Networks
-BMC Discovery,partner,BMC Software Inc
-BMCHelixRemedyforce,xsoar,BMC Software
-BmcITSM,xsoar,BMC Software
-BotDefender,partner,HUMAN
-Box v2,xsoar,Box
-BoxEventsCollector,xsoar,Box
-BreachRx,partner,BreachRx
-BruteForceBlocker Feed,xsoar,Open Source
-C2sec irisk,xsoar,C2Sec
-CadoResponse,partner,Darktrace
-CapeSandbox,xsoar,Open Source
-Carbon Black Defense,xsoar,VMware
-Carbon Black Endpoint Standard v3,xsoar,Broadcom
-Carbon Black Enterprise EDR,xsoar,Broadcom
-carbonblack-v2,xsoar,Broadcom
-CarbonBlackEndpointStandardEventCollector,xsoar,Broadcom
-carbonblackliveresponse,xsoar,Broadcom
-CarbonBlackLiveResponseCloud,xsoar,Broadcom
-CarbonBlackProtectionV2,xsoar,Broadcom
-CelonisEventCollector,xsoar,Celonis
-CensysV2,xsoar,Censys
-Centreon,xsoar,Centreon
-Check Point,xsoar,CheckPoint Software Technologies
-CheckPhish,xsoar,BolsterAI
-checkpointdome9,xsoar,CheckPoint Software Technologies
-CheckPointFirewall_v2,xsoar,CheckPoint Software Technologies
-CheckPointHarmonyEndpoint,xsoar,CheckPoint Software Technologies
-CheckPointHEC,partner,CheckPoint Software Technologies Ltd.
-CheckPointNDR,partner,CheckPoint Software Technologies
-CheckPointSandBlast,xsoar,CheckPoint Software Technologies
-CheckPointXDR,partner,CheckPoint Software Technologies
-Cherwell,xsoar,Ivanti
-CimTrak,partner,Cimcor Inc
-CipherTrust,xsoar,Thales
-CIRCL,xsoar,LHC
-CIRCL CVE Search,xsoar,Open Source
-CircleCI,xsoar,CircleCI
-Cisco AppDynamics,xsoar,Cisco Systems
-Cisco ASA,xsoar,Cisco Systems
-Cisco CloudLock,xsoar,Cisco Systems
-Cisco Email Security Appliance (IronPort),xsoar,Cisco Systems
-Cisco Firepower,xsoar,Cisco Systems
-Cisco ISE,xsoar,Cisco Systems
-Cisco Meraki v2,xsoar,Cisco Systems
-Cisco Secure Malware Analytics,xsoar,Cisco Systems
-Cisco Spark,xsoar,Cisco Systems
-Cisco Stealthwatch,xsoar,Cisco Systems
-Cisco Umbrella Cloud Security v2,xsoar,Cisco Systems
-Cisco Umbrella Enforcement,xsoar,Cisco Systems
-Cisco Umbrella Investigate,xsoar,Cisco Systems
-Cisco Umbrella Reporting,xsoar,Cisco Systems
-Cisco WebEx Feed,xsoar,Cisco Systems
-CiscoAMPEventCollector,xsoar,Cisco Systems
-CiscoESA,xsoar,Cisco Systems
-CiscoSMA,xsoar,Cisco Systems
-CiscoThousandEyes,xsoar,Cisco Systems
-CiscoWebexEventCollector,xsoar,Cisco Systems
-CiscoWSAv2,xsoar,Cisco Systems
-CitrixCloud,xsoar,Cloud Software Group
-CitrixDaas,xsoar,Cloud Software Group
-Clarizen IAM,xsoar,Planview
-Claroty,partner,Claroty
-Cloaken,xsoar,Cloaken
-CloudConvert,xsoar,Lunaweb GmbH
-Cloudflare Feed,xsoar,Cloudflare
-Cloudflare MCP,xsoar,Cloudflare
-Cloudflare Zero Trust,xsoar,Cloudflare
-CloudflareWAF,xsoar,Cloudflare
-CloudShark,partner,QA Cafe LLC
-Code42,partner,Permira
-Code42 Event Collector,partner,Permira
-Cofense Feed,partner,Cofense
-Cofense Triage v3,partner,Cofense
-Cofense Vision,partner,Cofense
-CofenseIntelligenceV2,partner,Cofense
-Cognni,partner,Cognni
-Cohesity Helios Event Collector,partner,Cohesity
-CohesityHelios,partner,Cohesity
-CommvaultSecurityIQ,partner,Commvault
-ConcentricAI,partner,Concentric AI
-Confluera,partner,XM Cyber
-Coralogix,partner,Coralogix
-Core Lock,xsoar,Palo Alto Networks
-Core REST API,xsoar,Palo Alto Networks
-Cortex Attack Surface Management,xsoar,Palo Alto Networks
-Cortex Core - IOC,xsoar,Open Source
-Cortex Core - IR,xsoar,Palo Alto Networks
-Cortex Core - Platform,xsoar,Palo Alto Networks
-Cortex Data Lake,xsoar,Palo Alto Networks
-Cortex XDR - IOC,xsoar,Palo Alto Networks
-Cortex XDR - IR,xsoar,Palo Alto Networks
-Cortex XDR - IR CTF,xsoar,Palo Alto Networks
-Cortex XDR - XQL Query Engine,xsoar,Palo Alto Networks
-Cortex Xpanse,xsoar,Palo Alto Networks
-CounterCraft Deception Director,partner,CounterCraft
-CounterTack,xsoar,SparkCognition
-Covalence For Security Providers,partner,Cobalt Strike
-Covalence Managed Security,partner,Field Effect Software Inc
-CriminalIP,partner,AI Spera
-CrowdSec,partner,CrowdSec
-Crowdstrike Falcon Intel Feed,xsoar,CrowdStrike
-CrowdStrike Falcon Intel v2,xsoar,CrowdStrike
-CrowdStrike Falcon Sandbox V2,xsoar,CrowdStrike
-CrowdStrike Falcon Streaming v2,xsoar,CrowdStrike
-CrowdStrike Falcon X,xsoar,CrowdStrike
-CrowdStrike Indicator Feed,xsoar,CrowdStrike
-CrowdStrike OpenAPI,xsoar,CrowdStrike
-CrowdstrikeFalcon,xsoar,CrowdStrike
-CrowdStrikeMalquery,xsoar,CrowdStrike
-Cryptocurrency,xsoar,Open Source
-Cryptosim,partner,CRYPTTECH
-CSCDomainManager,partner,WMB Holdings Inc
-CSVFeed,xsoar,Open Source
-CTIX v3,partner,EclecticIQ
-CTM360_CyberBlindspot,partner,CTM360
-CTM360_HackerView,partner,CTM360
-Cuckoo Sandbox,xsoar,Open Source
-CybelAngel,partner,CybelAngel
-CybelAngel Event Collector,partner,CybelAngel
-Cyber Triage,xsoar,Basis Technology
-CyberArk Identity Event Collector,xsoar,CyberArk
-CyberArkAIM v2,partner,Palo Alto Networks
-CyberArkEPMEventCollector,xsoar,CyberArk
-CyberArkEPMSOCResponse,xsoar,CyberArk
-CyberArkISP,partner,CyberArk
-CyberArkPAS,partner,CyberArk
-Cybereason,partner,LevelBlue
-cyberint,partner,Check Point Software Technologies
-Cyberint Feed,partner,Check Point Software Technologies
-Cyberint Takedowns,partner,Check Point Software Technologies
-Cyberpion,partner,IONIX
-Cybersixgill_Actionable_Alerts,partner,Bitsight
-Cybersixgill_DVE_Enrichment,partner,BitSight
-CyberTotal,partner,CyCraft Technology
-Cyberwatch,partner,Framatome
-cybleeventsv2,partner,Cyble
-CybleThreatIntel,partner,Cyble
-CyCognito,partner,CyCognito
-Cyjax Feed,partner,Cyjax
-Cylance Protect v2,xsoar,Arctic Wolf
-Cymptom,partner,Tenable
-Cymulate,partner,Cymulate
-cymulate_v3,partner,Cymulate
-Cyren Inbox Security,partner,Data443
-Darktrace,partner,Thoma Bravo
-Darktrace ASM,partner,Darktrace
-Darktrace Event Collector,partner,Thoma Bravo
-DarktraceAdmin,partner,Thoma Bravo
-DarktraceAIA,partner,Thoma Bravo
-DarktraceEmail,partner,Thoma Bravo
-DarktraceMBs,partner,Darktrace
-DataBee,partner,Comcast Corporation
-DatadogCloudSIEMV2,partner,Datadog
-Dataminr Pulse,partner,Dataminr
-Dataminr Pulse ReGenAI,partner,Dataminr
-DBot Truth Bombs,xsoar,Open Source
-decyfir,partner,CYFIRMA
-DeCYFIR Feed,partner,CYFIRMA
-DecyfirEventCollector,partner,CYFIRMA
-Deep Instinct,partner,Deep Instinct
-DeepInstinct v3,partner,Deep Instinct
-DeHashed,xsoar,DeHashed
-DelineaDSV,partner,Delinea
-DelineaSS,partner,Delinea
-Dell Secureworks,partner,Sophos
-Demisto Lock,xsoar,Palo Alto Networks
-Demisto REST API,xsoar,Palo Alto Networks
-Devo_v2,partner,Devo Technology
-DHS Feed v2,xsoar,DHS
-Digital Defense FrontlineVM,partner,Fortra
-Digital Guardian,partner,Fortra
-Digital Shadows,partner,ReliaQuest
-DigitalGuardianARCEventCollector,partner,Fortra
-DNSDB_v2,partner,DomainTools
-dnstwist,xsoar,Open Source
-Docusign,xsoar,Docusign
-DomainTools Iris,partner,DomainTools
-DomainToolsIrisDetect,partner,DomainTools
-Doppel,partner,Doppel
-DropboxEventsCollector,xsoar,Dropbox
-Druva Ransomware Response,partner,DruvaInc
-DruvaEventCollector,partner,Druva
-DShield Feed,xsoar,Open Source
-DSPM,xsoar,Palo Alto Networks
-DUO Admin,xsoar,Cisco Systems
-Duo Event Collector,xsoar,Cisco Systems
-EasyVista,xsoar,EasyVista
-EclecticIQ Intelligence Center v3,partner,EclecticIQ
-EclecticIQ Platform v2,partner,EclecticIQ
-EDL,xsoar,Palo Alto Networks
-Elasticsearch v2,xsoar,Elastic
-ElasticsearchEventCollector,xsoar,Elastic
-ElasticsearchFeed,xsoar,ElasticNV
-Email Hippo,xsoar,EmailHippo
-EmailRepIO,xsoar,Sublime Security
-Endace,partner,Endace
-Endgame,xsoar,Elastic
-Envoy IAM,xsoar,BeyondTrust
-epo,xsoar,Trellix
-EWS Extension Online Powershell v3,xsoar,Microsoft
-EWS Mail Sender,xsoar,Microsoft
-EWS v2,xsoar,Microsoft
-EwsExtension,xsoar,Microsoft
-EWSO365,xsoar,Microsoft
-Exabeam,xsoar,Exabeam
-Exabeam Data Lake,xsoar,Exabeam
-ExabeamSecOpsPlatform,xsoar,Exabeam
-ExceedLMS IAM,xsoar,Intellum
-Exodus Intelligence Vulnerabilities,partner,Exodus Intelligence
-Exterro FTK,partner,Exterro
-ExtraHop v2,partner,Bain Capital Private Equity
-ExtrahopRevealXEventCollector,partner,Bain Capital Private Equity
-F5 ASM,xsoar,F5
-F5 firewall,xsoar,F5
-F5Silverline,xsoar,F5
-FalconIntel,xsoar,CrowdStrike
-Farsight DNSDB,partner,DomainTools
-Fastly Feed,xsoar,Fastly
-FeedCyCognito,partner,CyCognito
-FeedDomainTools,partner,Battery Ventures
-Feedly Feed,partner,Feedly Inc
-FeedMandiantThreatIntelligence,partner,Google
-FeedMISPThreatActors,xsoar,Open Source
-FeedNVDv2,xsoar,NIST
-FeedSOCRadarThreatFeed,partner,SOCRadar
-FeedURLhaus,xsoar,Open Source
-FeedUstaThreatStream,partner,Anomali
-Feodo Tracker Hashes Feed,xsoar,Open Source
-Feodo Tracker IP Blocklist Feed,xsoar,Abusech
-Fidelis EDR,xsoar,Skyview Capital
-Fidelis Elevate Network,xsoar,Skyview Capital
-FileOrbis,partner,FileOrbis
-fireeye,xsoar,Trellix
-FireEye Central Management,xsoar,Trellix
-FireEye Detection on Demand,partner,Trellix
-FireEye Email Security,xsoar,Trellix
-FireEye ETP,xsoar,Trellix
-FireEye ETP Event Collector,xsoar,Trellix
-FireEye HX,xsoar,Trellix
-FireEye HX Event Collector,xsoar,Trellix
-FireEye iSIGHT,xsoar,Google
-FireEyeFeed,xsoar,Google
-FireEyeHelix,xsoar,Trellix
-FireEyeHX v2,xsoar,Trellix
-FireEyeNX,xsoar,Trellix
-Flashpoint,partner,Flashpoint
-FlashpointFeed,partner,Flashpoint
-Forcepoint,xsoar,Francisco Partners
-Forcepoint DLP Event Collector,xsoar,Francisco Partners
-Forcepoint Security Management Center,xsoar,Francisco Partners
-Forescout,xsoar,Advent International
-ForescoutEyeInspect,xsoar,Advent International
-Fortanix DSM,partner,Fortanix
-FortiGate,xsoar,Fortinet
-fortimail,xsoar,Fortinet
-FortiManager,xsoar,Fortinet
-FortiSandboxv2,xsoar,Fortinet
-FortiSIEMV2,xsoar,Fortinet
-fortiweb_vm,xsoar,Fortinet
-FraudWatch,xsoar,Netcraft
-Freshdesk,xsoar,Freshworks Inc.
-FreshworksFreshservice,xsoar,Freshworks Inc.
-G Suite Security Alert Center,xsoar,Google
-Gamma,xsoar,Gamma
-GCenter,partner,Gatewatcher
-GCenter 103,partner,Gatewatcher
-GCP,xsoar,Google
-GCP Whitelist Feed,xsoar,Google
-GCP-IAM,xsoar,Google
-Gem,partner,Wiz
-Generic MCP,xsoar,Open Source
-Generic SQL,xsoar,Microsoft
-Generic Webhook,xsoar,Open Source
-GenericAPIEventCollector,xsoar,Open Source
-GenesysCloud,xsoar,Genesys
-Genetec Security Center Event Collector,xsoar,Genetec
-Genians,partner,Genians
-Giphy,xsoar,Shutterstock
-GitGuardianEventCollector,xsoar,GitGuardian
-GitHub,xsoar,Microsoft
-Github Event Collector,xsoar,Microsoft
-Github Feed,xsoar,Microsoft
-GitHub IAM,xsoar,Microsoft
-GitHub MCP,xsoar,Microsoft
-GitLab Event Collector,xsoar,GitLab Inc
-GitLabv2,xsoar,GitLab Inc.
-GLIMPS_Detect,partner,GLIMPS Detect Technologies
-GLPI,partner,Open Source
-Gmail,xsoar,Google
-Gmail Single User,xsoar,Google
-Google Apigee,xsoar,Google
-Google BigQuery,xsoar,Google
-Google Chronicle Backstory,partner,Google
-Google Chronicle Backstory Streaming API,partner,Google
-Google Cloud Compute,xsoar,Google
-Google Cloud Functions,xsoar,Google
-Google Cloud Storage,xsoar,Google
-Google IP Ranges Feed,xsoar,Google
-Google Key Management Service,xsoar,Google
-Google Resource Manager,xsoar,Google
-Google Safe Browsing v2,xsoar,Google
-Google Threat Intelligence IoC Stream Feed,partner,Google
-Google Threat Intelligence Threat Lists,partner,Google
-Google Vision AI,xsoar,Google
-google-vault,xsoar,Google
-GoogleCalendar,xsoar,Google
-GoogleCloudLogging,xsoar,Google
-GoogleCloudSCC,partner,Google
-GoogleCloudTranslate,xsoar,Google
-GoogleDocs,xsoar,Google
-GoogleDrive,xsoar,Google
-GoogleGemini,xsoar,Google
-GoogleKubernetesEngine,xsoar,Google
-GoogleMaps,xsoar,Google
-GooglePubSub,xsoar,Google
-GoogleSafeBrowsing,xsoar,Google
-GoogleSecOps,partner,Google
-GoogleSheets,xsoar,Google
-GoogleThreatIntelligence,partner,Google
-GoogleThreatIntelligenceASMIssues,partner,Google
-GoogleThreatIntelligenceDTMAlerts,partner,Google
-Grafana,xsoar,Grafana Labs
-GraphQL,xsoar,Open Source
-GravityZone,partner,
-GreatHorn,partner,SF2 GH Holdings
-GreyNoise,partner,GreyNoise
-GreyNoise Community,partner,GreyNoise
-GreyNoise Indicator Feed,partner,GreyNoise
-Group-IB Digital Risk Protection,partner,
-Group-IB TDS Polygon,partner,Polygon Labs
-Group-IB Threat Intelligence & Attribution,partner,Group IB
-Group-IB Threat Intelligence & Attribution Feed,partner,Group IB
-GRR,xsoar,Open Source
-GSuiteAdmin,xsoar,Google
-GSuiteAuditor,xsoar,Google
-GuardiCore v2,xsoar,Akamai Technologies
-Guidance Encase Endpoint,xsoar,OpenText
-Gurucul-GRA,partner,Gurucul
-HackerOne,partner,HackerOne
-Hackuity,partner,Hackuity
-Halcyon,xsoar,Halcyon
-HashiCorp Vault,xsoar,IBM
-HashicorpTerraform,xsoar,IBM
-Hatching Triage,partner,Recorded Future
-Have I Been Pwned? V2,xsoar,Troy Hunt
-Hello IAM World,xsoar,Open Source
-HostIo,xsoar,Access2IT Group BV
-Hoxhunt v2,partner,Hoxhunt
-HPEArubaCentralEventCollector,xsoar,HPE
-HPEArubaClearPass,xsoar,HPE
-Humio,partner,CrowdStrike
-Hurukai,partner,HarfangLab
-HYAS Insight,partner,Silent Push
-HYAS Protect,partner,threatER
-IBM Resilient Systems,xsoar,IBM
-IBM Storage Scale,xsoar,IBM
-IBMMaaS360Security,xsoar,IBM
-IBMSecurityGuardium,xsoar,IBM
-IBMSecurityVerify,xsoar,IBM
-iboss,partner,Iboss
-icebrg,xsoar,Gigamon
-Ignite,partner,Flashpoint
-IgniteFeedV2,partner,
-iLert,partner,Ilert GmbH
-illuminate,partner,Renaissance Learning
-IllumioCore,partner,Illumio
-IllusiveNetworks,partner,Proofpoint Inc
-Image OCR,xsoar,Open Source
-iManageThreatManager,xsoar,iManage
-Imperva Skyfence,xsoar,Forcepoint
-Imperva WAF,xsoar,Thales Group
-Incapsula,xsoar,Imperva
-Inception,partner,Stairwell
-Indeni,partner,BlueCat Networks
-Infinipoint,partner,Infinipoint
-InfoArmor VigilanteATI,xsoar,Allstate Identity Protection
-Infoblox,partner,Infoblox
-Infoblox BloxOne Threat Defense Event Collector,partner,Infoblox
-InfobloxBloxOneThreatDefense,partner,Infoblox
-InfobloxThreatIntelligenceFeed,partner,Infoblox
-Infocyte,partner,Kaseya
-Intel471 Actors Feed,partner,Intel 471
-Intel471 Malware Feed,partner,Intel 471
-Intel471 Malware Indicator Feed,partner,Thoma Bravo
-Intel471 Watcher Alerts,partner,Intel 471
-Intezer v2,partner,Symphony Talent Group
-IntSights,partner,Rapid7
-Inventa,partner,InventaCapitalPLC
-ipinfo_v2,xsoar,IPinfo
-IPQualityScore,partner,IPQualityScore
-Ipstack,xsoar,Idera Inc.
-IronDefense,partner,IronNet Cybersecurity
-Ironscales,partner,PSG Equity
-Ironscales Event Collector,xsoar,Ironscales
-IsItPhishing,xsoar,Open Source
-Ivanti Heat,xsoar,Ivanti
-Jamf Protect Event Collector,xsoar,Jamf
-jamf v2,xsoar,Jamf
-Jira Event Collector,xsoar,Atlassian
-Jira V3,xsoar,Atlassian
-jira-v2,xsoar,Atlassian
-JizoM,partner,CYBERDYNE inc
-Joe Security,xsoar,Joe Security LLC
-JoeSecurityV2,xsoar,Joe Security GmbH
-JSON Feed,xsoar,Open Source
-JsonWhoIs,xsoar,JsonWhois
-KafkaV3,xsoar,Open Source
-Kaspersky Security Center,xsoar,Kaspersky Lab
-KeeperSecretsManager,partner,Keeper Security Inc.
-KeeperSecurity,xsoar,Keeper Security Inc.
-Kennav2,xsoar,Cisco Systems
-KnowBe4 KMSAT Event Collector,partner,Vista Equity Partners
-KnowBe4_KMSAT,partner,Vista Equity Partners
-Koodous,xsoar,VirusTotal
-Lansweeper,partner,Insight Partners
-LastInfoSec,partner,Gatewatcher
-Lastline v2,xsoar,Broadcom
-Linkshadow,partner,LinkShadow
-Lockpath KeyLight v2,xsoar,Navex Global
-LogPoint SIEM Integration,partner,Logpoint
-LogRhythmRest V2,xsoar,Exabeam
-LogsignSiem,partner,Logsign
-Logz.io,partner,Logz.io
-LOLBAS Feed,xsoar,Open Source
-Looker,xsoar,Google
-LookoutMobileEndpointSecurity,xsoar,Lookout Inc.
-Luminar_IOCs_and_leaked_credentials,partner,Cognyte
-Lumu,partner,Lumu
-Mail Listener v2,xsoar,Open Source
-Mail Sender (New),xsoar,Open Source
-MailListener - POP3,xsoar,Open Source
-Majestic Million,xsoar,Majestic-12 Limited
-Maltiverse,xsoar,Maltiverse
-MalwareBazaar,xsoar,Open Source
-MalwareBazaar Feed,xsoar,AbuseCh
-Malwarebytes,partner,Malwarebytes
-ManageEngine,xsoar,Zoho Corporation
-ManageEngine PAM360,partner,Zoho Corporation
-Mandiant,partner,Google
-Mandiant Advantage Threat Intelligence,partner,Google
-MattermostV2,xsoar,Mattermost Inc
-MaxMind GeoIP2,xsoar,MaxMind Inc
-McAfee Active Response,xsoar,Trellix
-McAfee Advanced Threat Defense,xsoar,Trellix
-McAfee DXL,xsoar,Trellix
-McAfee ePO v2,xsoar,Trellix
-McAfee ESM v2,xsoar,Trellix
-McAfee NSM,xsoar,Trellix
-McAfee Threat Intelligence Exchange V2,xsoar,Trellix
-McAfee Web Gateway,xsoar,Skyhigh Security
-McAfeeDAM,xsoar,STG
-McAfeeNSMv2,xsoar,Trellix
-MetaDefender Sandbox,partner,OPSWAT
-Microsoft 365 Defender,xsoar,Microsoft
-Microsoft 365 Defender Event Collector,xsoar,Microsoft
-Microsoft Advanced Threat Analytics,xsoar,Microsoft
-Microsoft Defender Advanced Threat Protection,xsoar,Microsoft
-Microsoft Defender for Cloud Apps Event Collector,xsoar,Microsoft
-Microsoft Defender for Cloud Event Collector,xsoar,Microsoft
-Microsoft Endpoint Configuration Manager,xsoar,Microsoft
-Microsoft Graph,xsoar,Microsoft
-Microsoft Graph API,xsoar,Microsoft
-Microsoft Graph Calendar,xsoar,Microsoft
-Microsoft Graph Device Management,xsoar,Microsoft
-Microsoft Graph Groups,xsoar,Microsoft
-Microsoft Graph Mail Single User,xsoar,Microsoft
-Microsoft Graph User,xsoar,Microsoft
-Microsoft Intune Feed,xsoar,Microsoft
-Microsoft Management Activity API (O365 Azure Events),xsoar,Microsoft
-Microsoft Teams,xsoar,Microsoft
-Microsoft Teams Management,xsoar,Microsoft
-Microsoft Teams via Webhook,xsoar,Microsoft
-Microsoft_Graph_Files,xsoar,Microsoft
-MicrosoftCloudAppSecurity,xsoar,Microsoft
-MicrosoftDefenderThreatIntelligence,xsoar,Microsoft
-MicrosoftGraphApplications,xsoar,Microsoft
-MicrosoftGraphIdentityandAccess,xsoar,Microsoft
-MicrosoftGraphMail,xsoar,Microsoft
-MicrosoftPolicyAndComplianceAuditLog,xsoar,Microsoft
-Mimecast Event Collector v2,xsoar,Permira
-MimecastV2,xsoar,Permira
-MISP Feed,xsoar,OpenSource
-MISP V3,xsoar,Open Source
-MITRE ATT&CK v2,xsoar,MITRE Corporation
-MobileIronCLOUD,partner,Ivanti
-MobileIronCORE,partner,Ivanti
-MondayEventCollector,xsoar,Monday.com
-MongoDB,xsoar,MongoDB Inc.
-MongoDB Key Value Store,xsoar,MongoDB Inc.
-MongoDB Log,xsoar,MongoDB Inc.
-MongoDBAtlasEventCollector,xsoar,MongoDB Inc.
-MxToolBox,xsoar,ZiffDavis
-Ncurion,partner,Ncurion
-Neosec,partner,Akamai Technologies
-Nessus,xsoar,Tenable
-NetBox Event Collector,xsoar,NetBoxLabs
-Netcraft V2,xsoar,Netcraft
-Netmiko,xsoar,Open Source
-NetQuestOMX,xsoar,NetQuest Corporation
-NetscoutAED,partner,Netscout Systems
-NetscoutArborSightline,partner,Netscout Systems
-Netskope,xsoar,Netskope
-netskope_api_v2,xsoar,Netskope
-NetskopeAPIv1,xsoar,Netskope
-NetskopeEventCollector_v2,xsoar,Netskope
-nmap,xsoar,Open Source
-Nozomi Networks,partner,Mitsubishi Electric
-NucleonCyberFeed,partner,NucleonCyber
-Nutanix Hypervisor,xsoar,Nutanix
-O365 Defender SafeLinks,xsoar,Microsoft
-O365 Defender SafeLinks - Single User,xsoar,Microsoft
-OctoxLabs,partner,OctoXLabs
-Office 365 Feed,xsoar,Microsoft
-OHMYVT_CTF,xsoar,Open Source
-okta,xsoar,Okta
-Okta Event Collector,xsoar,Okta
-Okta IAM,xsoar,Okta
-Okta v2,xsoar,Okta
-OktaASA,xsoar,Okta
-OktaAuth0EventCollector,xsoar,Okta
-OnboardingIntegration,xsoar,Open Source
-OneLogin Event Collector,xsoar,OneIdentity
-OnePassword,xsoar,1Password Inc.
-OpenAI,xsoar,OpenAI
-OpenAi ChatGPT v3,xsoar,OpenAI
-OpenCTI,xsoar,Filigran
-OpenCTI Feed,xsoar,Filigran
-OpenCTI Feed 4.X,xsoar,Filigran
-OpenCVE,xsoar,Amber Security SAS
-OpenLDAP,xsoar,Open Source
-OpenPhish_v2,xsoar,OpenPhish
-OPNSense,partner,Deciso B.V.
-OpsGenieV3,xsoar,Atlassian
-OPSWAT-Metadefender V2,xsoar,OPSWAT Inc
-OracleCloudInfrastructureEventCollector,xsoar,Oracle
-OracleIAM,xsoar,Oracle
-Orca,partner,Orca Security
-Orca Event Collector,partner,Orca Security
-OTRS,partner,EasyVista
-PacketMail,xsoar,Wireless Innovation
-Packetsled,xsoar,Mixmode
-PagerDuty v2,xsoar,PagerDuty
-Palo Alto Networks - Prisma SASE,xsoar,Palo Alto Networks
-Palo Alto Networks AIOps,xsoar,Palo Alto Networks
-Palo Alto Networks Enterprise DLP,xsoar,Palo Alto Networks
-Palo Alto Networks IoT,xsoar,Palo Alto Networks
-Palo Alto Networks Security Advisories,xsoar,Palo Alto Networks
-Palo Alto Networks Threat Vault v2,xsoar,Palo Alto Networks
-Palo Alto Networks Threat Vault v2 Feed,xsoar,Palo Alto Networks
-PaloAltoNetworks_PrismaCloudCompute,xsoar,Palo Alto Networks
-Panorama,xsoar,Palo Alto Networks
-PATHelpdeskAdvanced,xsoar,PATServicesLTD
-Penfield,partner,PenfieldAI
-Pentera,partner,Pentera
-PerceptionPoint,partner,Fortinet
-Perch,xsoar,Razor Group
-Phisher,partner,Vista Equity Partners
-PhishLabs IOC,xsoar,Fortra
-PhishLabs IOC DRP,xsoar,Fortra
-PhishLabs IOC EIR,xsoar,Fortra
-PhishTank V2,xsoar,Open Source
-Picus,partner,Picus Security
-PicusNG,partner,Picus Security
-PingOne,partner,Thoma Bravo
-Pipl,xsoar,Pipl
-Plain Text Feed,xsoar,Open Source
-PolySwarmV2,partner,PolySwarm
-PowerShell Remoting,xsoar,Microsoft
-Prisma Access,xsoar,Palo Alto Networks
-Prisma Access Egress IP feed,xsoar,Palo Alto Networks
-PrismaCloud IAM,xsoar,Palo Alto Networks
-PrismaCloud v2,xsoar,Palo Alto Networks
-Proofpoint Email Security Event Collector,xsoar,Thoma Bravo
-Proofpoint Protection Server v2,xsoar,Thoma Bravo
-Proofpoint Server Protection,xsoar,Thoma Bravo
-Proofpoint TAP v2,xsoar,Thoma Bravo
-Proofpoint Threat Protection,xsoar,Thoma Bravo
-Proofpoint Threat Response,xsoar,Thoma Bravo
-ProofpointFeed,xsoar,Thoma Bravo
-ProofpointIsolationEventCollector,xsoar,Thoma Bravo
-ProofpointThreatResponseEventCollector,xsoar,Thoma Bravo
-ProtectWise,xsoar,Verizon Communications
-Public DNS Feed,xsoar,Open Source
-QintelPMI,partner,Qintel
-QintelQSentry,partner,Qintel
-QintelQWatch,partner,Qintel
-QRadar v3,xsoar,Palo Alto Networks
-QSS,partner,Open Source
-qualys_fim,xsoar,Qualys
-QualysV2,xsoar,Qualys
-Query.AI,partner,QueryAI Inc.
-QuestKace,xsoar,Quest Software
-QutteraWebsiteMalwareScanner,partner,Quttera
-RaDark,partner,KELA
-Radware Cloud DDoS Protection Services,xsoar,Radware
-Rapid7 InsightIDR,xsoar,Rapid7
-Rapid7 Nexpose,xsoar,Rapid7
-rapid7_threat_command,partner,Rapid7
-rapid7appsec,xsoar,Rapid7
-Rasterize,xsoar,Open Source
-RDAP,xsoar,Open Source
-Reco,partner,Reco AI
-Recorded Future Feed,xsoar,Mastercard
-Recorded Future Identity,partner,Mastercard
-Recorded Future v2,partner,Mastercard
-RecordedFutureAlerts,partner,Mastercard
-RecordedFutureASI,partner,Mastercard
-RecordedFutureEventCollector,partner,Mastercard
-RecordedFutureLists,partner,Mastercard
-RecordedFuturePlaybookAlerts,partner,Mastercard
-RedCanary,xsoar,Zscaler
-RedLock,xsoar,Palo Alto Networks
-Redmine,xsoar,Open Source
-ReliaQuest GreyMatter DRP Event Collector,partner,ReliaQuest
-ReliaQuest GreyMatter DRP Incidents,partner,ReliaQuest
-ReliaquestTakedown,partner,ReliaQuest
-Remedy AR,xsoar,BMC Software
-RemoteAccess v2,xsoar,Axis Communications
-ResecurityMonitoring,partner,Resecurity
-Respond_Analyst,partner,Google
-Retarus Secure Email Gateway,xsoar,Retarus GmbH
-ReversingLabs A1000 v2,partner,ReversingLabs
-ReversingLabs Ransomware and Related Tools Feed,partner,ReversingLabs
-ReversingLabs Titanium Cloud,partner,ReversingLabs
-ReversingLabs TitaniumCloud v2,partner,ReversingLabs
-ReversingLabs TitaniumScale,partner,ReversingLabs
-RiskSense,partner,Ivanti
-RSA Archer v2,xsoar,RSAsecurity
-RSA NetWitness Endpoint,xsoar,PartnerOne
-RSA NetWitness Packets and Logs,partner,PartnerOne
-RSA NetWitness Security Analytics,xsoar,PartnerOne
-RSA NetWitness v11.1,partner,PartnerOne
-RSANetWitnessv115,partner,PartnerOne
-RSS Feed,xsoar,Open Source
-RST Cloud - Threat Feed API,partner,RSTCloud
-RTIR,xsoar,Open Source
-RubrikPolaris,partner,Rubrik
-Rundeck,xsoar,PagerDuty
-RunZero,xsoar,runZero
-RunZero Event Collector,xsoar,runZero
-SaaS Security Event Collector,xsoar,Palo Alto Networks
-SaasSecurity,xsoar,Palo Alto Networks
-Safebreach,partner,SafeBreach
-SafeBreach v2,partner,SafeBreach
-SafeNet Trusted Access,partner,Thales
-SafeNetTrustedAccessEventCollector,partner,Thales
-SafewalkManagement,partner,InWebo Group
-SafewalkReports,partner,Protectimus
-SailPointIdentityIQ,partner,SailPoint Technologies
-SailPointIdentityNow,partner,SailPoint Technologies
-SailPointIdentityNowEventCollector,partner,SailPoint Technologies
-Salesforce,xsoar,Salesforce
-Salesforce Event Collector,xsoar,Salesforce
-Salesforce Fusion IAM,xsoar,Salesforce
-Salesforce IAM,xsoar,Salesforce
-Sample Incident Generator,xsoar,Open Source
-SAP-IAM,xsoar,SAP
-SAPBTP,xsoar,SAP
-SAPCloudForCustomerC4C,xsoar,SAP
-SaviyntEICEventCollector,xsoar,Saviynt
-SCADAfence CNM,partner,Rapid7
-SecBI,partner,LogPoint
-Secneurx Analysis,partner,SecneurX
-Secneurx Threat Feeds,partner,SecneurX
-SecurityAndComplianceV2,xsoar,Microsoft
-SecurityScorecard,partner,SecurityScorecard
-Securonix,partner,Securonix
-Sekoia XDR,partner,Sekoia
-SEKOIAIntelligenceCenter,partner,Sekoia
-SentinelOne V2,partner,SentinelOne
-SentinelOneEventCollector,partner,SentinelOne
-Sepio,partner,Sepio
-Serenety,partner,XM Cyber
-Server Message Block (SMB) v2,xsoar,Microsoft
-Service Manager,xsoar,OpenText
-ServiceDeskPlus,xsoar,Zoho Corporation
-ServiceNow CMDB,xsoar,ServiceNow
-ServiceNow Event Collector,xsoar,ServiceNow
-ServiceNow IAM,xsoar,ServiceNow
-ServiceNow v2,xsoar,ServiceNow
-ShiftLeft CORE,partner,QwietAI
-Shodan_v2,xsoar,Shodan
-Signal Sciences WAF,xsoar,Fastly
-SIGNL4,partner,Derdack GmbH
-SilentPush,partner,Silent Push Inc.
-Silverfort,partner,Silverfort
-SingleConnect,partner,Vectra AI
-Sixgill_Darkfeed,partner,Bitsight
-Sixgill_Darkfeed_Enrichment,partner,Bitsight
-Sixgill_DVE_Feed v2,partner,BitSight
-Skyhigh Secure Web Gateway (On Prem),xsoar,Skyhigh Security
-Skyhigh Security,xsoar,STG
-Slack Event Collector,xsoar,Slack
-Slack IAM,xsoar,Slack
-SlackV3,xsoar,Slack
-SMIME Messaging,xsoar,Open Source
-Smokescreen IllusionBLACK,partner,Zscaler
-Snowflake,xsoar,Snowflake
-SOCRadarIncidentsMultiTenant,partner,SOCRadar
-SOCRadarIncidentsV4,partner,SOCRadar
-SOCRadarThreatFusion,partner,SOCRadar
-SolarWinds,xsoar,SolarWinds Corporation
-Sophos Central,xsoar,Thoma Bravo
-sophos_firewall,xsoar,Thoma Bravo
-SpamhausFeed,xsoar,Spamhaus Project
-SplunkPy v2,xsoar,Cisco Systems
-SpurContextAPI,partner,GoAhead Inc
-SpyCloudEnterpriseProtectionEnrichment,partner,SpyCloud
-SpyCloudEnterpriseProtectionFeed,partner,SpyCloud
-Stamus,partner,Stamus Networks
-Stealthwatch Cloud,xsoar,Cisco Systems
-StellarCyber,partner,Stellar Cyber
-SumoLogic,xsoar,Francisco Partners
-SumoLogicSEC,partner,Francisco Partners
-Symantec Blue Coat Content and Malware Analysis,xsoar,Broadcom
-Symantec Cloud Secure Web Gateway Event Collector,xsoar,Broadcom
-Symantec Data Loss Prevention v2,xsoar,Broadcom
-Symantec Email Security Cloud,xsoar,Broadcom
-Symantec Endpoint Protection V2,xsoar,Broadcom
-Symantec Endpoint Security,xsoar,Broadcom
-Symantec Management Center,xsoar,Broadcom
-Symantec Messaging Gateway,xsoar,Broadcom
-Symantec MSS,xsoar,Broadcom
-SymantecCloudSOCEventCollector,xsoar,Broadcom
-SymantecEDR,xsoar,Broadcom
-SysAid,xsoar,SysAid Technologies
-SysdigResponseActions,partner,Sysdig
-Syslog Sender,xsoar,Open Source
-Syslog v2,xsoar,Open Source
-TaegisXDRv2,partner,Sophos
-Tanium Threat Response v2,xsoar,Tanium
-Tanium v2,xsoar,Tanium
-TAXII 2 Feed,xsoar,Open Source
-TAXII Server,xsoar,Open Source
-TAXII2 Server,xsoar,Open Source
-TAXIIFeed,xsoar,Open Source
-Team Cymru Scout,partner,Audax Private Equity
-TeamCymru,partner,Audax Private Equity
-TeamViewer Event Collector,xsoar,TeamViewer
-Telegram_Beta,xsoar,Telegram FZ-LLC
-Tenable.io,xsoar,Tenable
-Tenable.sc,xsoar,Tenable
-Tessian,partner,Proofpoint
-TheHive Project,xsoar,StrangeBee
-Thinkst Canary,xsoar,Thinkst Canary
-Threat Grid,xsoar,Cisco Systems
-ThreatConnect Feed,xsoar,Dataminr
-ThreatConnect v3,xsoar,Dataminr
-ThreatExchange v2,xsoar,Meta
-ThreatFox Feed,xsoar,AbuseCh
-ThreatGridv2,xsoar,Cisco Systems
-ThreatMiner,xsoar,ThreatConnect
-ThreatQ v2,xsoar,Securonix
-ThreatQ_Beta,xsoar,Securonix
-ThreatX,xsoar,A10 Networks
-ThreatZone,partner,MCT
-Tidy,xsoar,Tidy Building Services
-TOPdesk,xsoar,TOPdesk
-Tor Exit Addresses Feed,xsoar,Open Source
-Traceable,partner,Harness
-Trend Micro Apex,xsoar,Trend Micro
-Trend Micro Deep Discovery Analyzer,xsoar,Trend Micro
-Trend Micro Deep Security,xsoar,Trend Micro
-Trend Micro Email Security Event Collector,xsoar,Trend Micro
-Trend Micro Vision One V3,partner,TrendAI™
-TrendMicro Cloud App Security,xsoar,Trend Micro
-TrendMicroVisionOneEventCollector,partner,Trend Micro
-Tripwire,xsoar,Fortra
-trustwave secure email gateway,xsoar,LevelBlue
-TrustwaveFusion,partner,LevelBlue
-Tufin,partner,Turn River Capital
-Twilio,xsoar,Twilio
-Twilio SendGrid,xsoar,Twilio
-Twinwave,partner,CrowdStrike
-Twitter v2,xsoar,X Corp
-UBIRCH,partner,UBIRCH GmbH
-Unit 42 Feed,xsoar,Palo Alto Networks
-Unit 42 Intelligence,xsoar,Palo Alto Networks
-Uptycs,partner,Uptycs
-URLhaus,xsoar,Open Source
-urlscan.io,partner,Urlscan io
-USTA Account Takeover Prevention,partner,PRODAFT
-USTA Stolen Credit Cards,partner,PRODAFT
-VaronisDataSecurityPlatform,partner,Varonis
-VaronisSaaS,partner,Varonis
-VBR REST API,partner,Veeam
-Vectra_Detect,partner,Vectra AI
-VectraAIEventCollector,partner,Vectra AI
-VectraXDR,partner,Vectra AI
-Veeam ONE REST API,partner,Veeam
-Venafi,xsoar,CyberArk
-VenafiTLSProtect,xsoar,CyberArk
-VercaraUltraDNS,xsoar,DigiCert
-Verodin,xsoar,Trellix
-VersaDirector,xsoar,Versa Networks
-Vertica,xsoar,OpenText
-VirusTotal,partner,Google
-VirusTotal (API v3),partner,Google
-VirusTotal - Premium (API v3),partner,Google
-VirusTotal Livehunt Feed,partner,Google
-VirusTotal Retrohunt Feed,partner,Google
-vmray,partner,VMRay
-VMware,xsoar,Broadcom
-VMware Carbon Black EDR v2,xsoar,Broadcom
-VMware Workspace ONE UEM (AirWatch MDM),xsoar,Omnissa
-VulnDB,xsoar,Cyberint
-VxStream,xsoar,CrowdStrike
-WALLIX Bastion,partner,WALLIX Group
-WhatsMyBrowser,xsoar,WhatIsMyBrowserLimited
-Whois,xsoar,Open Source
-WildFire-Reports,xsoar,Palo Alto Networks
-WildFire-v2,xsoar,Palo Alto Networks
-Windows Remote Management,xsoar,Microsoft
-WithSecureEventCollector,xsoar,WithSecure Corporation
-Wiz,partner,Google
-WizDefend,partner,Google
-WootCloud,partner,Netskope
-Workday,xsoar,Workday
-Workday Event Collector,xsoar,Workday
-Workday IAM,xsoar,Workday
-Workday Sign On Event Collector,xsoar,Workday
-Workday_IAM_Event_Generator,xsoar,Workday
-WorkdaySignonEventGenerator,xsoar,Workday
-XDome,partner,Claroty
-XFE_v2,xsoar,IBM
-xMatters,partner,Thoma Bravo
-XMCyber,partner,Schwarz Group
-Xpanse Feed,xsoar,Palo Alto Networks
-XQL Query Engine,xsoar,Palo Alto Networks
-XSOAR Mirroring,xsoar,Palo Alto Networks
-Zafran API,partner,Zafran Security
-Zendesk v2,xsoar,Zendesk
-ZeroFox,partner,Haveli Investments
-ZeroFoxKeyIncidents,partner,Haveli Investments
-Zerohack XDR,partner,Zerohack
-ZeroNetworksSegmentEventCollector,xsoar,Zero Networks
-ZeroTrustAnalyticsPlatform,partner,Zscaler
-Zimperium v2,xsoar,Liberty Strategic Capital
-Zoom,xsoar,Zoom
-Zoom Feed,xsoar,ZoomInfo
-Zoom Mail,xsoar,Zoom
-Zoom_IAM,xsoar,Zoom
-ZoomEventCollector,xsoar,Zoom
-Zscaler,xsoar,Zscaler
-ZscalerZIdentity,xsoar,Zscaler
+Integration Name,Support Level,Provider,Auth Types,Auth Requirement,Auth Params
+6437c006-1d86-4cdc-89d5-23305f207e3a,partner,Proofpoint,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Abnormal Security,partner,Abnormal Security,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type4,required)"
+Abnormal Security Event Collector,partner,Abnormal Security,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"token[BEARER_TOKEN](type9,required)"
+Absolute,xsoar,Absolute Software,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+abuse.ch SSL Blacklist Feed,xsoar,SANS Institute,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+AbuseIPDB,xsoar,AbuseDB,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); apikey[API_KEY](type4,optional); hunting_credentials[CREDENTIALS](type9,optional)"
+Acalvio ShadowPlex,partner,Acalvio,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+ACTI Indicator Feed,partner,Accenture,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"api_token[BEARER_TOKEN](type9,required)"
+ACTI Indicator Query,partner,Accenture,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"api_token[BEARER_TOKEN](type9,required)"
+ACTI Vulnerability Query,partner,Accenture,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"api_token[BEARER_TOKEN](type9,required)"
+Active Directory Query v2,xsoar,Microsoft,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+ActiveMQ,xsoar,Open Source,CERTIFICATE | CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(CERTIFICATE, CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","client-id[OAUTH_CLIENT_CREDENTIALS](type0,optional); credentials[CREDENTIALS](type9,optional); client_cert[CERTIFICATE](type14,optional); client_key[CERTIFICATE](type14,optional); root_ca[CERTIFICATE](type12,optional)"
+AdminByRequest,xsoar,Admin By Request,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Agari Phishing Defense,partner,Fortra,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required); apisecret[API_KEY](type4,required)"
+Aha,xsoar,Aha Labs Inc.,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type9,required)"
+Akamai WAF,xsoar,Akamai Technologies,BEARER_TOKEN | CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","clientToken[BEARER_TOKEN](type4,optional); accessToken[BEARER_TOKEN](type4,optional); clientSecret[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials_client_token[OAUTH_CLIENT_CREDENTIALS](type9,optional); credentials_access_token[CREDENTIALS](type9,optional); credentials_client_secret[OAUTH_CLIENT_CREDENTIALS](type9,optional)"
+Akamai WAF SIEM,xsoar,Akamai Technologies,BEARER_TOKEN | CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","clientToken[BEARER_TOKEN](type4,optional); clienttoken_creds[CREDENTIALS](type9,optional); accessToken[BEARER_TOKEN](type4,optional); accesstoken_creds[CREDENTIALS](type9,optional); clientSecret[OAUTH_CLIENT_CREDENTIALS](type4,optional); clientsecret_creds[CREDENTIALS](type9,optional)"
+AlgoSec,xsoar,AlgoSec,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Alibaba Action Trail Event Collector,xsoar,Alibaba Group,AWS_AUTH,REQUIRED(AWS_AUTH),"access_key[AWS_AUTH](type9,required)"
+AlienVault OTX TAXII Feed,xsoar,AT&T Cybersecurity,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); api_key[API_KEY](type4,optional)"
+AlienVault OTX v2,xsoar,AT&T Cybersecurity,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); api_token[BEARER_TOKEN](type4,optional)"
+AlienVault Reputation Feed,xsoar,AT&T Cybersecurity,NONE,NONE,
+AlienVault USM Anywhere,xsoar,AT&T Cybersecurity,OAUTH_CLIENT_CREDENTIALS,OPTIONAL(OAUTH_CLIENT_CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,optional); client_id_creds[OAUTH_CLIENT_CREDENTIALS](type9,optional)"
+AlphaSOC Network Behavior Analytics,partner,AlphaSOC,API_KEY,REQUIRED(API_KEY),"APIKey[API_KEY](type4,required)"
+AlphaSOC Wisdom,partner,AlphaSOC,API_KEY,REQUIRED(API_KEY),"APIKey[API_KEY](type4,required)"
+Amazon DynamoDB,xsoar,Amazon,AWS_AUTH | CREDENTIALS,"OPTIONAL(AWS_AUTH, CREDENTIALS)","roleArn[AWS_AUTH](type0,optional); roleSessionName[AWS_AUTH](type0,optional); sessionDuration[AWS_AUTH](type0,optional); credentials[CREDENTIALS](type9,optional); access_key[AWS_AUTH](type0,optional); secret_key[AWS_AUTH](type4,optional)"
+AMPv2,xsoar,Cisco Systems,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Analyst1,partner,Analyst1,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Anomali Enterprise,xsoar,Anomali,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Anomali ThreatStream Feed,xsoar,Anomali,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Anomali ThreatStream v3,xsoar,Anomali,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+AnomaliSecurityAnalyticsAlerts,partner,Anomali,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+AnsibleACME,xsoar,IBM,BASIC_AUTH | CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(BASIC_AUTH),"creds[CREDENTIALS](type9,required); become_password[BASIC_AUTH](type4,optional)"
+AnsibleAlibabaCloud,xsoar,Alibaba Group,CREDENTIALS,REQUIRED(CREDENTIALS),"creds[CREDENTIALS](type9,required)"
+AnsibleAzure,xsoar,IBM,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","subscription_id[OAUTH_CLIENT_CREDENTIALS](type0,required); creds[CREDENTIALS](type9,required)"
+AnsibleCiscoIOS,xsoar,IBM,BASIC_AUTH | CREDENTIALS,"REQUIRED(BASIC_AUTH, CREDENTIALS)","creds[CREDENTIALS](type9,required); enable_password[BASIC_AUTH](type4,required)"
+AnsibleCiscoNXOS,xsoar,IBM,CREDENTIALS,REQUIRED(CREDENTIALS),"creds[CREDENTIALS](type9,required)"
+AnsibleDNS,xsoar,IBM,CREDENTIALS,REQUIRED(CREDENTIALS),"creds[CREDENTIALS](type9,required)"
+AnsibleHCloud,xsoar,IBM,CREDENTIALS,REQUIRED(CREDENTIALS),"creds[CREDENTIALS](type9,required)"
+AnsibleKubernetes,xsoar,IBM,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","creds[CREDENTIALS](type9,optional); api_key[API_KEY](type4,optional)"
+AnsibleLinux,xsoar,IBM,BASIC_AUTH | CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(BASIC_AUTH),"creds[CREDENTIALS](type9,required); become_password[BASIC_AUTH](type4,optional)"
+AnsibleMicrosoftWindows,xsoar,IBM,CREDENTIALS,REQUIRED(CREDENTIALS),"creds[CREDENTIALS](type9,required)"
+AnsibleOpenSSL,xsoar,Open Source,BASIC_AUTH | CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(BASIC_AUTH),"creds[CREDENTIALS](type9,required); become_password[BASIC_AUTH](type4,optional)"
+AnsibleTower,xsoar,IBM,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+AnsibleVMware,xsoar,IBM,CREDENTIALS,REQUIRED(CREDENTIALS),"creds[CREDENTIALS](type9,required)"
+ANY.RUN Cloud Sandbox,partner,AnyRun,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+ANY.RUN TI Feed,partner,AnyRun,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+ANY.RUN TI Lookup,partner,AnyRun,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+ANYRUN,partner,AnyRun,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+APIVoid,xsoar,APIVoid,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); apikey[API_KEY](type4,optional)"
+appNovi,partner,Fenix24,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"appnovi_token[BEARER_TOKEN](type4,required)"
+AppSentinels.ai,xsoar,AppSentinels Ai,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Arcanna.AI,partner,Arcanna.ai INC,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); apikey[API_KEY](type4,optional)"
+ArcSight ESM v2,xsoar,OpenText,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+ArcSight Logger,xsoar,OpenText,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+ArcusTeam,partner,ArcusTeam,API_KEY | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(API_KEY, OAUTH_CLIENT_CREDENTIALS)","api_key[API_KEY](type4,required); client_id[OAUTH_CLIENT_CREDENTIALS](type0,required)"
+ArgusManagedDefence,partner,mnemonic,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type4,required)"
+ARIA Packet Intelligence,partner,AriaNetworks,NONE,NONE,
+Arkime,xsoar,Open Source,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Armis,partner,Insight Partners,API_KEY,REQUIRED(API_KEY),"secret[API_KEY](type4,required)"
+ArmisEventCollector,partner,Armis,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Armorblox,partner,Cisco Systems,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+Asimily Insight,partner,Asimily,CREDENTIALS,REQUIRED(CREDENTIALS),"asimilycred[CREDENTIALS](type9,required)"
+Ataya Harmony,partner,Atayalan Inc,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"apiToken[BEARER_TOKEN](type9,required)"
+Atlassian Cloud MCP,xsoar,Atlassian,OAUTH_AUTH_CODE,OPTIONAL(OAUTH_AUTH_CODE),"auth_code[OAUTH_AUTH_CODE](type9,optional)"
+Atlassian Confluence Cloud,xsoar,Atlassian,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","username[CREDENTIALS](type9,optional); client_credentials[OAUTH_CLIENT_CREDENTIALS](type9,optional)"
+Atlassian Confluence Server,xsoar,Atlassian,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); personal_access_token[BEARER_TOKEN](type9,optional)"
+Atlassian IAM,xsoar,Atlassian,BEARER_TOKEN,OPTIONAL(BEARER_TOKEN),"access_token[BEARER_TOKEN](type4,optional); access_token_creds[BEARER_TOKEN](type9,optional)"
+AtlassianJiraServiceManagement,xsoar,Atlassian,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+AttackIQFireDrill,xsoar,AttackIQ,BEARER_TOKEN,OPTIONAL(BEARER_TOKEN),"token[BEARER_TOKEN](type4,optional); token_creds[BEARER_TOKEN](type9,optional)"
+AttackSurfaceManagement,partner,Google,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Attivo Botsink,partner,SentinelOne,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Autofocus,xsoar,Palo Alto Networks,API_KEY,REQUIRED(API_KEY),"apiKey[API_KEY](type4,required)"
+AutoFocus Daily Feed,xsoar,Palo Alto Networks,API_KEY,OPTIONAL(API_KEY),"api_key[API_KEY](type4,optional)"
+AutoFocus Feed,xsoar,Palo Alto Networks,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); api_key[API_KEY](type4,optional)"
+AutoFocus V2,xsoar,Palo Alto Networks,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); api_key[API_KEY](type4,optional)"
+AutoFocusTagsFeed,xsoar,Palo Alto Networks,API_KEY,OPTIONAL(API_KEY),"api_key[API_KEY](type9,optional)"
+Automox,partner,Automox Inc,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Awake Security,xsoar,Arista Networks,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+AWS,xsoar,Amazon,AWS_AUTH,OPTIONAL(AWS_AUTH),"secret_access_key[AWS_AUTH](type9,optional)"
+AWS - AccessAnalyzer,xsoar,Amazon,AWS_AUTH | CREDENTIALS,"OPTIONAL(AWS_AUTH, CREDENTIALS)","roleArn[AWS_AUTH](type0,optional); roleSessionName[AWS_AUTH](type0,optional); sessionDuration[AWS_AUTH](type0,optional); credentials[CREDENTIALS](type9,optional); access_key[AWS_AUTH](type0,optional); secret_key[AWS_AUTH](type4,optional)"
+AWS - ACM,xsoar,Amazon,AWS_AUTH | CREDENTIALS,"OPTIONAL(AWS_AUTH, CREDENTIALS)","roleArn[AWS_AUTH](type0,optional); roleSessionName[AWS_AUTH](type0,optional); sessionDuration[AWS_AUTH](type0,optional); credentials[CREDENTIALS](type9,optional); access_key[AWS_AUTH](type0,optional); secret_key[AWS_AUTH](type4,optional)"
+AWS - Athena - Beta,xsoar,Amazon,AWS_AUTH | CREDENTIALS,"OPTIONAL(AWS_AUTH, CREDENTIALS)","roleArn[AWS_AUTH](type0,optional); roleSessionName[AWS_AUTH](type0,optional); sessionDuration[AWS_AUTH](type0,optional); credentials[CREDENTIALS](type9,optional); access_key[AWS_AUTH](type0,optional); secret_key[AWS_AUTH](type4,optional)"
+AWS - CloudTrail,xsoar,Amazon,AWS_AUTH | CREDENTIALS,"OPTIONAL(AWS_AUTH, CREDENTIALS)","roleArn[AWS_AUTH](type0,optional); roleSessionName[AWS_AUTH](type0,optional); sessionDuration[AWS_AUTH](type0,optional); credentials[CREDENTIALS](type9,optional); access_key[AWS_AUTH](type0,optional); secret_key[AWS_AUTH](type4,optional)"
+AWS - CloudWatchLogs,xsoar,Amazon,AWS_AUTH | CREDENTIALS,"OPTIONAL(AWS_AUTH, CREDENTIALS)","roleArn[AWS_AUTH](type0,optional); roleSessionName[AWS_AUTH](type0,optional); sessionDuration[AWS_AUTH](type0,optional); credentials[CREDENTIALS](type9,optional); access_key[AWS_AUTH](type0,optional); secret_key[AWS_AUTH](type4,optional)"
+AWS - EC2,xsoar,Amazon,AWS_AUTH | CREDENTIALS,"OPTIONAL(AWS_AUTH, CREDENTIALS)","roleArn[AWS_AUTH](type0,optional); roleSessionName[AWS_AUTH](type0,optional); sessionDuration[AWS_AUTH](type0,optional); credentials[CREDENTIALS](type9,optional); access_key[AWS_AUTH](type0,optional); secret_key[AWS_AUTH](type4,optional)"
+AWS - GuardDuty,xsoar,Amazon,AWS_AUTH | CREDENTIALS,"OPTIONAL(AWS_AUTH, CREDENTIALS)","roleArn[AWS_AUTH](type0,optional); roleSessionName[AWS_AUTH](type0,optional); sessionDuration[AWS_AUTH](type0,optional); credentials[CREDENTIALS](type9,optional); access_key[AWS_AUTH](type0,optional); secret_key[AWS_AUTH](type4,optional)"
+AWS - GuardDuty Event Collector,xsoar,Amazon,AWS_AUTH | CREDENTIALS,"OPTIONAL(AWS_AUTH, CREDENTIALS)","roleArn[AWS_AUTH](type0,optional); roleSessionName[AWS_AUTH](type0,optional); sessionDuration[AWS_AUTH](type0,optional); credentials[CREDENTIALS](type9,optional)"
+AWS - IAM,xsoar,Amazon,AWS_AUTH | CREDENTIALS,"OPTIONAL(AWS_AUTH, CREDENTIALS)","roleArn[AWS_AUTH](type0,optional); roleSessionName[AWS_AUTH](type0,optional); sessionDuration[AWS_AUTH](type0,optional); credentials[CREDENTIALS](type9,optional); access_key[AWS_AUTH](type0,optional); secret_key[AWS_AUTH](type4,optional)"
+AWS - IAM Identity Center,xsoar,Amazon,AWS_AUTH | CREDENTIALS,"OPTIONAL(AWS_AUTH, CREDENTIALS)","roleArn[AWS_AUTH](type4,optional); roleArnCredentials[CREDENTIALS](type9,optional); roleSessionName[AWS_AUTH](type0,optional); sessionDuration[AWS_AUTH](type0,optional); access_key[AWS_AUTH](type4,optional); secret_key[AWS_AUTH](type4,optional); credentials[CREDENTIALS](type9,optional)"
+AWS - Lambda,xsoar,Amazon,AWS_AUTH | CREDENTIALS,"OPTIONAL(AWS_AUTH, CREDENTIALS)","roleArn[AWS_AUTH](type0,optional); roleSessionName[AWS_AUTH](type0,optional); sessionDuration[AWS_AUTH](type0,optional); credentials[CREDENTIALS](type9,optional); access_key[AWS_AUTH](type0,optional); secret_key[AWS_AUTH](type4,optional)"
+AWS - Organizations,xsoar,Amazon,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+AWS - Route53,xsoar,Amazon,AWS_AUTH | CREDENTIALS,"OPTIONAL(AWS_AUTH, CREDENTIALS)","roleArn[AWS_AUTH](type0,optional); roleSessionName[AWS_AUTH](type0,optional); sessionDuration[AWS_AUTH](type0,optional); credentials[CREDENTIALS](type9,optional); access_key[AWS_AUTH](type0,optional); secret_key[AWS_AUTH](type4,optional)"
+AWS - S3,xsoar,Amazon,AWS_AUTH | CREDENTIALS,"OPTIONAL(AWS_AUTH, CREDENTIALS)","roleArn[AWS_AUTH](type0,optional); roleSessionName[AWS_AUTH](type0,optional); sessionDuration[AWS_AUTH](type0,optional); credentials[CREDENTIALS](type9,optional); access_key[AWS_AUTH](type0,optional); secret_key[AWS_AUTH](type4,optional)"
+AWS - Security Hub,xsoar,Amazon,AWS_AUTH | CREDENTIALS,"OPTIONAL(AWS_AUTH, CREDENTIALS)","roleArn[AWS_AUTH](type0,optional); roleSessionName[AWS_AUTH](type0,optional); sessionDuration[AWS_AUTH](type0,optional); credentials[CREDENTIALS](type9,optional); access_key[AWS_AUTH](type0,optional); secret_key[AWS_AUTH](type4,optional)"
+AWS - SNS,xsoar,Amazon,AWS_AUTH | CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(AWS_AUTH),"roleArn[AWS_AUTH](type0,optional); roleSessionName[AWS_AUTH](type0,optional); credentials[CREDENTIALS](type9,required); sessionDuration[AWS_AUTH](type0,optional)"
+AWS - SQS,xsoar,Amazon,AWS_AUTH | CREDENTIALS,"OPTIONAL(AWS_AUTH, CREDENTIALS)","roleArn[AWS_AUTH](type0,optional); roleSessionName[AWS_AUTH](type0,optional); credentials[CREDENTIALS](type9,optional); access_key[AWS_AUTH](type0,optional); secret_key[AWS_AUTH](type4,optional); sessionDuration[AWS_AUTH](type0,optional)"
+AWS - System Manager,xsoar,Amazon,AWS_AUTH | CREDENTIALS,"OPTIONAL(AWS_AUTH, CREDENTIALS)","roleArn[AWS_AUTH](type0,optional); roleSessionName[AWS_AUTH](type0,optional); sessionDuration[AWS_AUTH](type0,optional); credentials[CREDENTIALS](type9,optional)"
+AWS Feed,xsoar,Amazon,NONE,NONE,
+AWS Network Firewall,xsoar,Amazon,AWS_AUTH | CREDENTIALS,"OPTIONAL(AWS_AUTH, CREDENTIALS)","roleArn[AWS_AUTH](type0,optional); roleSessionName[AWS_AUTH](type0,optional); sessionDuration[AWS_AUTH](type0,optional); credentials[CREDENTIALS](type9,optional); access_key[AWS_AUTH](type0,optional); secret_key[AWS_AUTH](type4,optional)"
+AWS Sagemaker,xsoar,Amazon,AWS_AUTH | CREDENTIALS,"OPTIONAL(AWS_AUTH, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); AWSSecretKey[AWS_AUTH](type4,optional)"
+AWS Security Hub Event Collector,xsoar,Amazon,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+AWS Security Lake,xsoar,Amazon,AWS_AUTH | CREDENTIALS,"OPTIONAL(AWS_AUTH, CREDENTIALS)","roleArn[AWS_AUTH](type0,optional); roleSessionName[AWS_AUTH](type0,optional); sessionDuration[AWS_AUTH](type0,optional); credentials[CREDENTIALS](type9,optional)"
+AWS-EKS,xsoar,Amazon,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+AWS-ILM,xsoar,Amazon,BEARER_TOKEN | CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","credentials[CREDENTIALS](type9,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); authentication_token[BEARER_TOKEN](type4,optional)"
+AWS-SNS-Listener,xsoar,Amazon,API_KEY | CERTIFICATE | CREDENTIALS,"OPTIONAL(API_KEY, CERTIFICATE, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); certificate[CERTIFICATE](type12,optional); key[API_KEY](type14,optional)"
+AWS-WAF,xsoar,Amazon,AWS_AUTH,OPTIONAL(AWS_AUTH),"roleArn[AWS_AUTH](type0,optional); roleSessionName[AWS_AUTH](type0,optional); sessionDuration[AWS_AUTH](type0,optional); access_key[AWS_AUTH](type9,optional); secret_key[AWS_AUTH](type9,optional)"
+AwsSecretsManager,xsoar,Amazon,AWS_AUTH | CREDENTIALS,"OPTIONAL(AWS_AUTH, CREDENTIALS)","roleArn[AWS_AUTH](type0,optional); roleSessionName[AWS_AUTH](type0,optional); sessionDuration[AWS_AUTH](type0,optional); credentials[CREDENTIALS](type9,optional)"
+Axonius,partner,Axonius,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Azure,xsoar,Microsoft,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","app_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); subscription_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); credentials[CREDENTIALS](type9,optional)"
+Azure AD Connect Health Feed,xsoar,Microsoft,NONE,NONE,
+Azure Compute v2,xsoar,Microsoft,API_KEY | BEARER_TOKEN | CERTIFICATE | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(API_KEY, BEARER_TOKEN, CERTIFICATE, OAUTH_CLIENT_CREDENTIALS)","auth_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); enc_key[API_KEY](type4,optional); certificate_thumbprint[CERTIFICATE](type4,optional); cred_auth_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); cred_token[BEARER_TOKEN](type9,optional); cred_enc_key[API_KEY](type9,optional); cred_certificate_thumbprint[CERTIFICATE](type9,optional); private_key[CERTIFICATE](type14,optional); subscription_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); cred_subscription_id[OAUTH_CLIENT_CREDENTIALS](type9,optional)"
+Azure Firewall,xsoar,Microsoft,CERTIFICATE | MANAGED_IDENTITY | OAUTH_CLIENT_CREDENTIALS,"CHOICE(CERTIFICATE, MANAGED_IDENTITY, OAUTH_CLIENT_CREDENTIALS)","client_id[OAUTH_CLIENT_CREDENTIALS](type14,optional); subscription_id[OAUTH_CLIENT_CREDENTIALS](type9,required); tenant_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); client_secret[OAUTH_CLIENT_CREDENTIALS](type9,optional); certificate_thumbprint[CERTIFICATE](type14,optional); private_key[CERTIFICATE](type14,optional); use_managed_identities[MANAGED_IDENTITY](type8,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+Azure Kubernetes Services,xsoar,Microsoft,CREDENTIALS | MANAGED_IDENTITY | OAUTH_AUTH_CODE | OAUTH_CLIENT_CREDENTIALS,"CHOICE(CREDENTIALS, MANAGED_IDENTITY, OAUTH_AUTH_CODE, OAUTH_CLIENT_CREDENTIALS)","app_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); auth_type[OAUTH_CLIENT_CREDENTIALS](type15,required); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); credentials[CREDENTIALS](type9,optional); redirect_uri[OAUTH_AUTH_CODE](type0,optional); auth_code[OAUTH_AUTH_CODE](type9,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional); subscription_id[OAUTH_CLIENT_CREDENTIALS](type0,required)"
+Azure Log Analytics,xsoar,Microsoft,BEARER_TOKEN | CERTIFICATE | CREDENTIALS | MANAGED_IDENTITY | OAUTH_AUTH_CODE | OAUTH_CLIENT_CREDENTIALS,"CHOICE(BEARER_TOKEN, CERTIFICATE, CREDENTIALS, MANAGED_IDENTITY, OAUTH_AUTH_CODE, OAUTH_CLIENT_CREDENTIALS)","refresh_token[BEARER_TOKEN](type4,optional); credentials_refresh_token[BEARER_TOKEN](type9,optional); creds_client_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); credentials[CREDENTIALS](type9,optional); certificate_thumbprint[CERTIFICATE](type4,optional); credentials_certificate_thumbprint[CERTIFICATE](type9,optional); private_key[CERTIFICATE](type14,optional); redirect_uri[OAUTH_AUTH_CODE](type0,optional); auth_code[OAUTH_AUTH_CODE](type4,optional); credentials_auth_code[OAUTH_AUTH_CODE](type9,optional); use_managed_identities[MANAGED_IDENTITY](type8,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+Azure Network Security Groups,xsoar,Microsoft,CREDENTIALS | MANAGED_IDENTITY | OAUTH_AUTH_CODE | OAUTH_CLIENT_CREDENTIALS,"CHOICE(CREDENTIALS, MANAGED_IDENTITY, OAUTH_AUTH_CODE, OAUTH_CLIENT_CREDENTIALS)","app_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); subscription_id[OAUTH_CLIENT_CREDENTIALS](type0,required); auth_type[OAUTH_CLIENT_CREDENTIALS](type15,required); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); credentials[CREDENTIALS](type9,optional); redirect_uri[OAUTH_AUTH_CODE](type0,optional); auth_code[OAUTH_AUTH_CODE](type9,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+Azure Resource Graph,xsoar,Microsoft,API_KEY | BEARER_TOKEN | CERTIFICATE | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(API_KEY, BEARER_TOKEN, CERTIFICATE, OAUTH_CLIENT_CREDENTIALS)","cred_auth_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); cred_token[BEARER_TOKEN](type9,optional); cred_enc_key[API_KEY](type9,optional); cred_certificate_thumbprint[CERTIFICATE](type9,optional); private_key[CERTIFICATE](type14,optional)"
+Azure Security Center v2,xsoar,Microsoft,API_KEY | CERTIFICATE | MANAGED_IDENTITY | OAUTH_CLIENT_CREDENTIALS,"CHOICE(API_KEY, CERTIFICATE, MANAGED_IDENTITY, OAUTH_CLIENT_CREDENTIALS)","auth_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials_auth_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials_tenant_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); enc_key[API_KEY](type4,optional); credentials_enc_key[API_KEY](type9,optional); certificate_thumbprint[CERTIFICATE](type4,optional); credentials_certificate_thumbprint[CERTIFICATE](type9,optional); private_key[CERTIFICATE](type14,optional); default_sub_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials_default_sub_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); use_managed_identities[MANAGED_IDENTITY](type8,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+Azure Sentinel,xsoar,Microsoft,CERTIFICATE | CREDENTIALS | MANAGED_IDENTITY | OAUTH_CLIENT_CREDENTIALS,"CHOICE(CERTIFICATE, CREDENTIALS, MANAGED_IDENTITY, OAUTH_CLIENT_CREDENTIALS)","creds_tenant_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); creds_client_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); credentials[CREDENTIALS](type9,optional); creds_certificate[CERTIFICATE](type9,optional); certificate_thumbprint[CERTIFICATE](type4,optional); private_key[CERTIFICATE](type14,optional); use_managed_identities[MANAGED_IDENTITY](type8,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+Azure SQL Management,xsoar,Microsoft,CREDENTIALS | MANAGED_IDENTITY | OAUTH_AUTH_CODE | OAUTH_CLIENT_CREDENTIALS,"CHOICE(CREDENTIALS, MANAGED_IDENTITY, OAUTH_AUTH_CODE, OAUTH_CLIENT_CREDENTIALS)","app_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); subscription_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); auth_type[OAUTH_CLIENT_CREDENTIALS](type15,required); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); credentials[CREDENTIALS](type9,optional); redirect_uri[OAUTH_AUTH_CODE](type0,optional); auth_code[OAUTH_AUTH_CODE](type9,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+Azure Storage,xsoar,Microsoft,CREDENTIALS | MANAGED_IDENTITY | OAUTH_AUTH_CODE | OAUTH_CLIENT_CREDENTIALS,"CHOICE(CREDENTIALS, MANAGED_IDENTITY, OAUTH_AUTH_CODE, OAUTH_CLIENT_CREDENTIALS)","app_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); subscription_id[OAUTH_CLIENT_CREDENTIALS](type0,required); auth_type[OAUTH_CLIENT_CREDENTIALS](type15,required); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); credentials[CREDENTIALS](type9,optional); redirect_uri[OAUTH_AUTH_CODE](type0,optional); auth_code[OAUTH_AUTH_CODE](type9,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+Azure Storage Container,xsoar,Microsoft,API_KEY | CREDENTIALS | MANAGED_IDENTITY,"CHOICE(API_KEY, CREDENTIALS, MANAGED_IDENTITY)","credentials[CREDENTIALS](type9,optional); use_managed_identities[MANAGED_IDENTITY](type8,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional); shared_key[API_KEY](type9,optional)"
+Azure Storage FileShare,xsoar,Microsoft,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Azure Storage Queue,xsoar,Microsoft,CREDENTIALS | MANAGED_IDENTITY,"CHOICE(CREDENTIALS, MANAGED_IDENTITY)","credentials[CREDENTIALS](type9,optional); use_managed_identities[MANAGED_IDENTITY](type8,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+Azure Storage Table,xsoar,Microsoft,CREDENTIALS | MANAGED_IDENTITY,"CHOICE(CREDENTIALS, MANAGED_IDENTITY)","credentials[CREDENTIALS](type9,optional); use_managed_identities[MANAGED_IDENTITY](type8,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+AzureDataExplorer,xsoar,Microsoft,CREDENTIALS | OAUTH_AUTH_CODE | OAUTH_CLIENT_CREDENTIALS,"CHOICE(CREDENTIALS, OAUTH_AUTH_CODE, OAUTH_CLIENT_CREDENTIALS)","client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); authentication_type[OAUTH_CLIENT_CREDENTIALS](type15,required); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); credentials[CREDENTIALS](type9,optional); redirect_uri[OAUTH_AUTH_CODE](type0,optional); auth_code[OAUTH_AUTH_CODE](type9,optional)"
+AzureDevOps,xsoar,Microsoft,CREDENTIALS | OAUTH_AUTH_CODE | OAUTH_CLIENT_CREDENTIALS,"CHOICE(CREDENTIALS, OAUTH_AUTH_CODE, OAUTH_CLIENT_CREDENTIALS)","client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); auth_type[OAUTH_CLIENT_CREDENTIALS](type15,required); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); credentials[CREDENTIALS](type9,optional); redirect_uri[OAUTH_AUTH_CODE](type0,optional); auth_code[OAUTH_AUTH_CODE](type9,optional)"
+AzureFeed,xsoar,Microsoft,NONE,NONE,
+AzureKeyVault,xsoar,Microsoft,CERTIFICATE | CREDENTIALS | MANAGED_IDENTITY | OAUTH_CLIENT_CREDENTIALS,"CHOICE(CERTIFICATE, CREDENTIALS, MANAGED_IDENTITY, OAUTH_CLIENT_CREDENTIALS)","client_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); credentials[CREDENTIALS](type9,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,required); certificate_thumbprint[CERTIFICATE](type4,optional); credentials_certificate_thumbprint[CERTIFICATE](type9,optional); private_key[CERTIFICATE](type14,optional); use_managed_identities[MANAGED_IDENTITY](type8,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional); subscription_id[OAUTH_CLIENT_CREDENTIALS](type0,required)"
+AzureRiskyUsers,xsoar,Microsoft,MANAGED_IDENTITY | OAUTH_CLIENT_CREDENTIALS,"CHOICE(MANAGED_IDENTITY, OAUTH_CLIENT_CREDENTIALS)","client_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); authentication_type[OAUTH_CLIENT_CREDENTIALS](type15,required); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); client_secret[OAUTH_CLIENT_CREDENTIALS](type9,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+AzureWAF,xsoar,Microsoft,CREDENTIALS | MANAGED_IDENTITY | OAUTH_AUTH_CODE | OAUTH_CLIENT_CREDENTIALS,"CHOICE(CREDENTIALS, MANAGED_IDENTITY, OAUTH_AUTH_CODE, OAUTH_CLIENT_CREDENTIALS)","app_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); subscription_id[OAUTH_CLIENT_CREDENTIALS](type0,required); auth_type[OAUTH_CLIENT_CREDENTIALS](type15,required); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); credentials[CREDENTIALS](type9,optional); redirect_uri[OAUTH_AUTH_CODE](type0,optional); auth_code[OAUTH_AUTH_CODE](type9,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+Bambenek Consulting Feed,partner,Netenrich,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+Bastille Networks,partner,Bastille Networks,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type4,required)"
+BeyondTrust Password Safe,xsoar,BeyondTrust,API_KEY | CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(API_KEY),"credentials[CREDENTIALS](type9,required); key[API_KEY](type4,optional); credentials_key[API_KEY](type9,optional)"
+BeyondTrust Privilege Management Cloud,xsoar,,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+BigFix,xsoar,HCL Technologies,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Binalyze AIR,partner,Binalyze,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type4,required)"
+Bitbucket,xsoar,Atlassian,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+BitSight Event Collector,partner,BitSight,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+BitSight for Security Performance Management,partner,BitSight,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+Bitwarden Password Manager,xsoar,Bitwarden,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Blocklist_de Feed,xsoar,Open Source,NONE,NONE,
+BloodHoundEnterprise,partner,Specter Ops Inc,OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS),"client[OAUTH_CLIENT_CREDENTIALS](type9,required)"
+BluecatAddressManager,xsoar,BlueCat Networks,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+BMC Discovery,partner,BMC Software Inc,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"api_token[BEARER_TOKEN](type9,required)"
+BMCHelixRemedyforce,xsoar,BMC Software,BASIC_AUTH | CREDENTIALS,"OPTIONAL(BASIC_AUTH, CREDENTIALS)","username[BASIC_AUTH](type0,optional); password[BASIC_AUTH](type4,optional); username_creds[CREDENTIALS](type9,optional)"
+BmcITSM,xsoar,BMC Software,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+BotDefender,partner,HUMAN,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type9,required)"
+Box v2,xsoar,Box,API_KEY,OPTIONAL(API_KEY),"credentials_json[API_KEY](type4,optional); cred_json[API_KEY](type9,optional)"
+BoxEventsCollector,xsoar,Box,API_KEY,REQUIRED(API_KEY),"credentials_json[API_KEY](type9,required)"
+BreachRx,partner,BreachRx,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+BruteForceBlocker Feed,xsoar,Open Source,NONE,NONE,
+C2sec irisk,xsoar,C2Sec,API_KEY,OPTIONAL(API_KEY),"apikey[API_KEY](type4,optional); apikey_creds[API_KEY](type9,optional)"
+CadoResponse,partner,Darktrace,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+CapeSandbox,xsoar,Open Source,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","token_credentials[BEARER_TOKEN](type9,optional); credentials[CREDENTIALS](type9,optional)"
+Carbon Black Defense,xsoar,VMware,API_KEY,REQUIRED(API_KEY),"key[API_KEY](type4,required); siemKey[API_KEY](type4,optional)"
+Carbon Black Endpoint Standard v3,xsoar,Broadcom,CREDENTIALS,OPTIONAL(CREDENTIALS),"custom_credentials[CREDENTIALS](type9,optional); live_response_credentials[CREDENTIALS](type9,optional)"
+Carbon Black Enterprise EDR,xsoar,Broadcom,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","custom_key[API_KEY](type4,optional); credentials_custom[CREDENTIALS](type9,optional)"
+carbonblack-v2,xsoar,Broadcom,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"apitoken[BEARER_TOKEN](type4,required)"
+CarbonBlackEndpointStandardEventCollector,xsoar,Broadcom,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+carbonblackliveresponse,xsoar,Broadcom,API_KEY | BEARER_TOKEN,"OPTIONAL(API_KEY, BEARER_TOKEN)","apitoken[BEARER_TOKEN](type4,optional); credentials_api_token[BEARER_TOKEN](type9,optional); apikey[API_KEY](type4,optional); credentials_api_key[API_KEY](type9,optional)"
+CarbonBlackLiveResponseCloud,xsoar,Broadcom,API_KEY | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(API_KEY, OAUTH_CLIENT_CREDENTIALS)","custom_key[API_KEY](type4,optional); custom_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials_custom_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); org_key[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials_org_key[OAUTH_CLIENT_CREDENTIALS](type9,optional)"
+CarbonBlackProtectionV2,xsoar,Broadcom,BEARER_TOKEN,OPTIONAL(BEARER_TOKEN),"api_token[BEARER_TOKEN](type9,optional); token[BEARER_TOKEN](type4,optional)"
+CelonisEventCollector,xsoar,Celonis,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CensysV2,xsoar,Censys,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"api_token[BEARER_TOKEN](type9,required)"
+Centreon,xsoar,Centreon,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Check Point,xsoar,CheckPoint Software Technologies,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CheckPhish,xsoar,BolsterAI,BEARER_TOKEN,OPTIONAL(BEARER_TOKEN),"token[BEARER_TOKEN](type4,optional); credentials_api_token[BEARER_TOKEN](type9,optional)"
+checkpointdome9,xsoar,CheckPoint Software Technologies,API_KEY,OPTIONAL(API_KEY),"api_key_id_cred[API_KEY](type9,optional); api_key_secret_cred[API_KEY](type9,optional)"
+CheckPointFirewall_v2,xsoar,CheckPoint Software Technologies,CREDENTIALS,REQUIRED(CREDENTIALS),"username[CREDENTIALS](type9,required)"
+CheckPointHarmonyEndpoint,xsoar,CheckPoint Software Technologies,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CheckPointHEC,partner,CheckPoint Software Technologies Ltd.,OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type9,required); client_secret[OAUTH_CLIENT_CREDENTIALS](type9,required)"
+CheckPointNDR,partner,CheckPoint Software Technologies,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CheckPointSandBlast,xsoar,CheckPoint Software Technologies,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+CheckPointXDR,partner,CheckPoint Software Technologies,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Cherwell,xsoar,Ivanti,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","credentials[CREDENTIALS](type9,required); client_id[OAUTH_CLIENT_CREDENTIALS](type0,required)"
+CimTrak,partner,Cimcor Inc,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+CipherTrust,xsoar,Thales,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CIRCL,xsoar,LHC,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CIRCL CVE Search,xsoar,Open Source,NONE,NONE,
+CircleCI,xsoar,CircleCI,API_KEY,OPTIONAL(API_KEY),"api_key[API_KEY](type4,optional); api_key_creds[API_KEY](type9,optional)"
+Cisco AppDynamics,xsoar,Cisco Systems,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","credentials[CREDENTIALS](type9,required); application_id[OAUTH_CLIENT_CREDENTIALS](type0,required)"
+Cisco ASA,xsoar,Cisco Systems,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Cisco CloudLock,xsoar,Cisco Systems,BEARER_TOKEN,OPTIONAL(BEARER_TOKEN),"token[BEARER_TOKEN](type4,optional); token_creds[BEARER_TOKEN](type9,optional)"
+Cisco Email Security Appliance (IronPort),xsoar,Cisco Systems,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Cisco Firepower,xsoar,Cisco Systems,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Cisco ISE,xsoar,Cisco Systems,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Cisco Meraki v2,xsoar,Cisco Systems,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type9,required)"
+Cisco Secure Malware Analytics,xsoar,Cisco Systems,API_KEY,OPTIONAL(API_KEY),"api_key[API_KEY](type9,optional)"
+Cisco Spark,xsoar,Cisco Systems,API_KEY,OPTIONAL(API_KEY),"apiKey[API_KEY](type4,optional); apikey_creds[API_KEY](type9,optional)"
+Cisco Stealthwatch,xsoar,Cisco Systems,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Cisco Umbrella Cloud Security v2,xsoar,Cisco Systems,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Cisco Umbrella Enforcement,xsoar,Cisco Systems,API_KEY,OPTIONAL(API_KEY),"api_key[API_KEY](type4,optional); cred_api_key[API_KEY](type9,optional)"
+Cisco Umbrella Investigate,xsoar,Cisco Systems,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"apitoken_creds[BEARER_TOKEN](type9,required)"
+Cisco Umbrella Reporting,xsoar,Cisco Systems,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Cisco WebEx Feed,xsoar,Cisco Systems,NONE,NONE,
+CiscoAMPEventCollector,xsoar,Cisco Systems,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CiscoESA,xsoar,Cisco Systems,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CiscoSMA,xsoar,Cisco Systems,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CiscoThousandEyes,xsoar,Cisco Systems,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"api_token[BEARER_TOKEN](type9,required)"
+CiscoWebexEventCollector,xsoar,Cisco Systems,CREDENTIALS,REQUIRED(CREDENTIALS),"admin_credentials[CREDENTIALS](type9,required); compliance_officer_credentials[CREDENTIALS](type9,required)"
+CiscoWSAv2,xsoar,Cisco Systems,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CitrixCloud,xsoar,Cloud Software Group,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); credentials[CREDENTIALS](type9,required)"
+CitrixDaas,xsoar,Cloud Software Group,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); credentials[CREDENTIALS](type9,required)"
+Clarizen IAM,xsoar,Planview,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Claroty,partner,Claroty,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Cloaken,xsoar,Cloaken,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CloudConvert,xsoar,Lunaweb GmbH,API_KEY,OPTIONAL(API_KEY),"apikey[API_KEY](type4,optional); apikey_creds[API_KEY](type9,optional)"
+Cloudflare Feed,xsoar,Cloudflare,NONE,NONE,
+Cloudflare MCP,xsoar,Cloudflare,OAUTH_AUTH_CODE,OPTIONAL(OAUTH_AUTH_CODE),"auth_code[OAUTH_AUTH_CODE](type9,optional); redirect_uri[OAUTH_AUTH_CODE](type0,optional)"
+Cloudflare Zero Trust,xsoar,Cloudflare,BEARER_TOKEN | CREDENTIALS,"CHOICE(BEARER_TOKEN, CREDENTIALS)","auth_type[OAUTH_CLIENT_CREDENTIALS](type15,required); credentials[CREDENTIALS](type9,optional); token_credentials[BEARER_TOKEN](type9,optional)"
+CloudflareWAF,xsoar,Cloudflare,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); global_api_key[API_KEY](type9,optional)"
+CloudShark,partner,QA Cafe LLC,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+Code42,partner,Permira,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Code42 Event Collector,partner,Permira,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Cofense Feed,partner,Cofense,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+Cofense Triage v3,partner,Cofense,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Cofense Vision,partner,Cofense,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CofenseIntelligenceV2,partner,Cofense,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Cognni,partner,Cognni,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+Cohesity Helios Event Collector,partner,Cohesity,API_KEY,OPTIONAL(API_KEY),"api_key[API_KEY](type9,optional)"
+CohesityHelios,partner,Cohesity,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+CommvaultSecurityIQ,partner,Commvault,API_KEY | CERTIFICATE | CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(API_KEY) + OPTIONAL(CERTIFICATE, CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","CommvaultAPIToken[API_KEY](type9,required); AzureKeyVaultUrl[CREDENTIALS](type9,optional); AzureKeyVaultTenantId[OAUTH_CLIENT_CREDENTIALS](type9,optional); AzureKeyVaultClientSecret[OAUTH_CLIENT_CREDENTIALS](type9,optional); creds_certificate[CERTIFICATE](type9,optional)"
+ConcentricAI,partner,Concentric AI,OAUTH_CLIENT_CREDENTIALS,OPTIONAL(OAUTH_CLIENT_CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,optional)"
+Confluera,partner,XM Cyber,CREDENTIALS,REQUIRED(CREDENTIALS),"username[CREDENTIALS](type9,required)"
+Coralogix,partner,Coralogix,CERTIFICATE,REQUIRED(CERTIFICATE),"privatekey[CERTIFICATE](type4,required)"
+Core Lock,xsoar,Palo Alto Networks,NONE,NONE,
+Core REST API,xsoar,Palo Alto Networks,API_KEY,OPTIONAL(API_KEY),"creds_apikey[API_KEY](type9,optional)"
+Cortex Attack Surface Management,xsoar,Palo Alto Networks,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Cortex Core - IOC,xsoar,Open Source,API_KEY,OPTIONAL(API_KEY),"apikey_id[API_KEY](type4,optional); apikey[API_KEY](type4,optional)"
+Cortex Core - IR,xsoar,Palo Alto Networks,API_KEY,OPTIONAL(API_KEY),"apikey_id[API_KEY](type4,optional); apikey[API_KEY](type4,optional)"
+Cortex Core - Platform,xsoar,Palo Alto Networks,NONE,NONE,
+Cortex Data Lake,xsoar,Palo Alto Networks,API_KEY | BEARER_TOKEN | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(API_KEY, BEARER_TOKEN, OAUTH_CLIENT_CREDENTIALS)","refresh_token[BEARER_TOKEN](type4,optional); reg_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); auth_key[API_KEY](type4,optional); credentials_auth_key[API_KEY](type9,optional); credentials_refresh_token[BEARER_TOKEN](type9,optional); credentials_reg_id[OAUTH_CLIENT_CREDENTIALS](type9,optional)"
+Cortex XDR - IOC,xsoar,Palo Alto Networks,API_KEY,OPTIONAL(API_KEY),"apikey_id_creds[API_KEY](type9,optional); apikey_creds[API_KEY](type9,optional); apikey_id[API_KEY](type4,optional); apikey[API_KEY](type4,optional)"
+Cortex XDR - IR,xsoar,Palo Alto Networks,API_KEY,OPTIONAL(API_KEY),"apikey_id_creds[API_KEY](type9,optional); apikey_creds[API_KEY](type9,optional); apikey_id[API_KEY](type4,optional); apikey[API_KEY](type4,optional)"
+Cortex XDR - IR CTF,xsoar,Palo Alto Networks,NONE,NONE,
+Cortex XDR - XQL Query Engine,xsoar,Palo Alto Networks,API_KEY,REQUIRED(API_KEY),"apikey_id[API_KEY](type9,required); apikey[API_KEY](type9,required)"
+Cortex Xpanse,xsoar,Palo Alto Networks,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CounterCraft Deception Director,partner,CounterCraft,API_KEY | AWS_AUTH,"REQUIRED(API_KEY, AWS_AUTH)","api_key[API_KEY](type4,required); secret_key[AWS_AUTH](type4,required)"
+CounterTack,xsoar,SparkCognition,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Covalence For Security Providers,partner,Cobalt Strike,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Covalence Managed Security,partner,Field Effect Software Inc,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CriminalIP,partner,AI Spera,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+CrowdSec,partner,CrowdSec,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+Crowdstrike Falcon Intel Feed,xsoar,CrowdStrike,OAUTH_CLIENT_CREDENTIALS,OPTIONAL(OAUTH_CLIENT_CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials_client[OAUTH_CLIENT_CREDENTIALS](type9,optional)"
+CrowdStrike Falcon Intel v2,xsoar,CrowdStrike,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CrowdStrike Falcon Sandbox V2,xsoar,CrowdStrike,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CrowdStrike Falcon Streaming v2,xsoar,CrowdStrike,OAUTH_CLIENT_CREDENTIALS,OPTIONAL(OAUTH_CLIENT_CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials_client[OAUTH_CLIENT_CREDENTIALS](type9,optional); app_id[OAUTH_CLIENT_CREDENTIALS](type0,optional)"
+CrowdStrike Falcon X,xsoar,CrowdStrike,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CrowdStrike Indicator Feed,xsoar,CrowdStrike,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CrowdStrike OpenAPI,xsoar,CrowdStrike,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CrowdstrikeFalcon,xsoar,CrowdStrike,API_KEY | CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","credentials[CREDENTIALS](type9,optional); client_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); secret[API_KEY](type4,optional)"
+CrowdStrikeMalquery,xsoar,CrowdStrike,OAUTH_CLIENT_CREDENTIALS,OPTIONAL(OAUTH_CLIENT_CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials_client[OAUTH_CLIENT_CREDENTIALS](type9,optional)"
+Cryptocurrency,xsoar,Open Source,NONE,NONE,
+Cryptosim,partner,CRYPTTECH,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CSCDomainManager,partner,WMB Holdings Inc,BEARER_TOKEN | CREDENTIALS,"REQUIRED(BEARER_TOKEN, CREDENTIALS)","token[BEARER_TOKEN](type9,required); credentials[CREDENTIALS](type9,required)"
+CSVFeed,xsoar,Open Source,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+CTIX v3,partner,EclecticIQ,API_KEY | AWS_AUTH,"REQUIRED(API_KEY, AWS_AUTH)","access_id[API_KEY](type4,required); secret_key[AWS_AUTH](type4,required)"
+CTM360_CyberBlindspot,partner,CTM360,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type9,required)"
+CTM360_HackerView,partner,CTM360,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type9,required)"
+Cuckoo Sandbox,xsoar,Open Source,CREDENTIALS,OPTIONAL(CREDENTIALS),"authentication[CREDENTIALS](type9,optional)"
+CybelAngel,partner,CybelAngel,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CybelAngel Event Collector,partner,CybelAngel,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Cyber Triage,xsoar,Basis Technology,API_KEY | CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(API_KEY),"api_key[API_KEY](type9,optional); credentials[CREDENTIALS](type9,required)"
+CyberArk Identity Event Collector,xsoar,CyberArk,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","app_id[OAUTH_CLIENT_CREDENTIALS](type0,required); credentials[CREDENTIALS](type9,required)"
+CyberArkAIM v2,partner,Palo Alto Networks,API_KEY | BEARER_TOKEN | CERTIFICATE | CREDENTIALS | CUSTOM_CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(API_KEY, BEARER_TOKEN, CERTIFICATE, CREDENTIALS, CUSTOM_CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","app_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); credential_names[CUSTOM_CREDENTIALS](type12,optional); credentials[CREDENTIALS](type9,optional); cert_text[CERTIFICATE](type12,optional); key_text[API_KEY](type4,optional); key_text_creds[BEARER_TOKEN](type9,optional)"
+CyberArkEPMEventCollector,xsoar,CyberArk,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(OAUTH_CLIENT_CREDENTIALS),"credentials[CREDENTIALS](type9,required); application_id[OAUTH_CLIENT_CREDENTIALS](type0,optional)"
+CyberArkEPMSOCResponse,xsoar,CyberArk,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(OAUTH_CLIENT_CREDENTIALS),"credentials[CREDENTIALS](type9,required); application_id[OAUTH_CLIENT_CREDENTIALS](type0,optional)"
+CyberArkISP,partner,CyberArk,API_KEY | CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(API_KEY, CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","api_key[API_KEY](type14,required); client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); credentials[CREDENTIALS](type9,required)"
+CyberArkPAS,partner,CyberArk,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Cybereason,partner,LevelBlue,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+cyberint,partner,Check Point Software Technologies,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"access_token[BEARER_TOKEN](type4,required)"
+Cyberint Feed,partner,Check Point Software Technologies,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"access_token[BEARER_TOKEN](type9,required)"
+Cyberint Takedowns,partner,Check Point Software Technologies,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"access_token[BEARER_TOKEN](type9,required)"
+Cyberpion,partner,IONIX,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+Cybersixgill_Actionable_Alerts,partner,Bitsight,OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,required)"
+Cybersixgill_DVE_Enrichment,partner,BitSight,OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,required)"
+CyberTotal,partner,CyCraft Technology,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"token[BEARER_TOKEN](type4,required)"
+Cyberwatch,partner,Framatome,API_KEY,REQUIRED(API_KEY),"api_secret_key[API_KEY](type4,required)"
+cybleeventsv2,partner,Cyble,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+CybleThreatIntel,partner,Cyble,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+CyCognito,partner,CyCognito,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type4,required)"
+Cyjax Feed,partner,Cyjax,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+Cylance Protect v2,xsoar,Arctic Wolf,API_KEY | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(API_KEY, OAUTH_CLIENT_CREDENTIALS)","app_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); app_secret[OAUTH_CLIENT_CREDENTIALS](type4,optional); tid[OAUTH_CLIENT_CREDENTIALS](type4,optional); app_creds[OAUTH_CLIENT_CREDENTIALS](type9,optional); api_key[API_KEY](type9,optional)"
+Cymptom,partner,Tenable,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type4,required)"
+Cymulate,partner,Cymulate,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"x-token[BEARER_TOKEN](type4,required)"
+cymulate_v3,partner,Cymulate,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Cyren Inbox Security,partner,Data443,OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,required)"
+Darktrace,partner,Thoma Bravo,API_KEY | BEARER_TOKEN,"OPTIONAL(API_KEY, BEARER_TOKEN)","public_creds[API_KEY](type9,optional); private_creds[API_KEY](type9,optional); public_api_token[BEARER_TOKEN](type4,optional); private_api_token[BEARER_TOKEN](type4,optional)"
+Darktrace ASM,partner,Darktrace,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+Darktrace Event Collector,partner,Thoma Bravo,API_KEY,REQUIRED(API_KEY),"public_creds[API_KEY](type9,required); private_creds[API_KEY](type9,required)"
+DarktraceAdmin,partner,Thoma Bravo,API_KEY,REQUIRED(API_KEY),"publicApiKey[API_KEY](type4,required); privateApiKey[API_KEY](type4,required)"
+DarktraceAIA,partner,Thoma Bravo,API_KEY,REQUIRED(API_KEY),"publicApiKey[API_KEY](type4,required); privateApiKey[API_KEY](type4,required)"
+DarktraceEmail,partner,Thoma Bravo,API_KEY,REQUIRED(API_KEY),"publicApiKey[API_KEY](type4,required); privateApiKey[API_KEY](type4,required)"
+DarktraceMBs,partner,Darktrace,API_KEY,REQUIRED(API_KEY),"publicApiKey[API_KEY](type4,required); privateApiKey[API_KEY](type4,required)"
+DataBee,partner,Comcast Corporation,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+DatadogCloudSIEMV2,partner,Datadog,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type9,required); app_key[API_KEY](type9,required)"
+Dataminr Pulse,partner,Dataminr,OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type4,required); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,required)"
+Dataminr Pulse ReGenAI,partner,Dataminr,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+DBot Truth Bombs,xsoar,Open Source,NONE,NONE,
+decyfir,partner,CYFIRMA,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type9,required)"
+DeCYFIR Feed,partner,CYFIRMA,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type9,required)"
+DecyfirEventCollector,partner,CYFIRMA,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Deep Instinct,partner,Deep Instinct,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+DeepInstinct v3,partner,Deep Instinct,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+DeHashed,xsoar,DeHashed,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+DelineaDSV,partner,Delinea,OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,required)"
+DelineaSS,partner,Delinea,API_KEY | CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(API_KEY),"credentials[CREDENTIALS](type9,required); secrets[API_KEY](type12,optional)"
+Dell Secureworks,partner,Sophos,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Demisto Lock,xsoar,Palo Alto Networks,NONE,NONE,
+Demisto REST API,xsoar,Palo Alto Networks,API_KEY,OPTIONAL(API_KEY),"creds_apikey[API_KEY](type9,optional); apikey[API_KEY](type4,optional)"
+Devo_v2,partner,Devo Technology,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"reader_oauth_token[BEARER_TOKEN](type4,required); writer_credentials[BEARER_TOKEN](type4,optional)"
+DHS Feed v2,xsoar,DHS,API_KEY | CERTIFICATE,"REQUIRED(API_KEY, CERTIFICATE)","key[API_KEY](type9,required); certificate[CERTIFICATE](type12,required)"
+Digital Defense FrontlineVM,partner,Fortra,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"apiToken[BEARER_TOKEN](type4,required)"
+Digital Guardian,partner,Fortra,OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,required)"
+Digital Shadows,partner,ReliaQuest,API_KEY,REQUIRED(API_KEY),"secret[API_KEY](type4,required)"
+DigitalGuardianARCEventCollector,partner,Fortra,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+DNSDB_v2,partner,DomainTools,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+dnstwist,xsoar,Open Source,NONE,NONE,
+Docusign,xsoar,Docusign,CREDENTIALS | OAUTH_AUTH_CODE,"REQUIRED(CREDENTIALS, OAUTH_AUTH_CODE)","redirect_url[OAUTH_AUTH_CODE](type0,required); credentials[CREDENTIALS](type9,required)"
+DomainTools Iris,partner,DomainTools,API_KEY | BASIC_AUTH | CREDENTIALS,"OPTIONAL(API_KEY, BASIC_AUTH, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); username[BASIC_AUTH](type0,optional); apikey[API_KEY](type4,optional)"
+DomainToolsIrisDetect,partner,DomainTools,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Doppel,partner,Doppel,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required); user_credentials[CREDENTIALS](type9,optional)"
+DropboxEventsCollector,xsoar,Dropbox,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Druva Ransomware Response,partner,DruvaInc,AWS_AUTH | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(AWS_AUTH, OAUTH_CLIENT_CREDENTIALS)","clientId[OAUTH_CLIENT_CREDENTIALS](type4,required); secretKey[AWS_AUTH](type4,required)"
+DruvaEventCollector,partner,Druva,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+DShield Feed,xsoar,Open Source,NONE,NONE,
+DSPM,xsoar,Palo Alto Networks,CREDENTIALS,REQUIRED(CREDENTIALS),"dspmApiKey[CREDENTIALS](type9,required)"
+DUO Admin,xsoar,Cisco Systems,API_KEY | AWS_AUTH,"OPTIONAL(API_KEY, AWS_AUTH)","secret_key[AWS_AUTH](type4,optional); credentials_key[API_KEY](type9,optional)"
+Duo Event Collector,xsoar,Cisco Systems,AWS_AUTH,REQUIRED(AWS_AUTH),"secret_key[AWS_AUTH](type9,required)"
+EasyVista,xsoar,EasyVista,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+EclecticIQ Intelligence Center v3,partner,EclecticIQ,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"eiq_token[BEARER_TOKEN](type4,required)"
+EclecticIQ Platform v2,partner,EclecticIQ,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type9,required)"
+EDL,xsoar,Palo Alto Networks,API_KEY | CERTIFICATE | CREDENTIALS,"OPTIONAL(API_KEY, CERTIFICATE, CREDENTIALS)","certificate[CERTIFICATE](type12,optional); key[API_KEY](type14,optional); credentials[CREDENTIALS](type9,optional)"
+Elasticsearch v2,xsoar,Elastic,API_KEY | CREDENTIALS,"CHOICE(API_KEY, CREDENTIALS)","auth_type[OAUTH_CLIENT_CREDENTIALS](type15,required); api_key_auth_credentials[API_KEY](type9,optional); credentials[CREDENTIALS](type9,optional)"
+ElasticsearchEventCollector,xsoar,Elastic,API_KEY | CREDENTIALS,"CHOICE(API_KEY, CREDENTIALS)","auth_type[OAUTH_CLIENT_CREDENTIALS](type15,required); api_key_auth_credentials[API_KEY](type9,optional); credentials[CREDENTIALS](type9,optional)"
+ElasticsearchFeed,xsoar,ElasticNV,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+Email Hippo,xsoar,EmailHippo,CREDENTIALS,REQUIRED(CREDENTIALS),"more_credentials[CREDENTIALS](type9,required); whois_credentials[CREDENTIALS](type9,required)"
+EmailRepIO,xsoar,Sublime Security,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","apikey[API_KEY](type4,optional); credentials[CREDENTIALS](type9,optional)"
+Endace,partner,Endace,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Endgame,xsoar,Elastic,CREDENTIALS,REQUIRED(CREDENTIALS),"username[CREDENTIALS](type9,required)"
+Envoy IAM,xsoar,BeyondTrust,API_KEY,OPTIONAL(API_KEY),"api_key[API_KEY](type4,optional); credentials_api_key[API_KEY](type9,optional)"
+epo,xsoar,Trellix,CREDENTIALS,REQUIRED(CREDENTIALS),"authentication[CREDENTIALS](type9,required)"
+EWS Extension Online Powershell v3,xsoar,Microsoft,CERTIFICATE | CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CERTIFICATE, CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","certificate[CERTIFICATE](type9,required); password[CREDENTIALS](type9,required); app_id[OAUTH_CLIENT_CREDENTIALS](type0,required)"
+EWS Mail Sender,xsoar,Microsoft,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+EWS v2,xsoar,Microsoft,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+EwsExtension,xsoar,Microsoft,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+EWSO365,xsoar,Microsoft,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","credentials[CREDENTIALS](type9,optional); client_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,optional)"
+Exabeam,xsoar,Exabeam,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); api_token[BEARER_TOKEN](type9,optional)"
+Exabeam Data Lake,xsoar,Exabeam,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+ExabeamSecOpsPlatform,xsoar,Exabeam,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+ExceedLMS IAM,xsoar,Intellum,API_KEY,OPTIONAL(API_KEY),"api_key[API_KEY](type4,optional); credentials_api_key[API_KEY](type9,optional)"
+Exodus Intelligence Vulnerabilities,partner,Exodus Intelligence,BASIC_AUTH | OAUTH_CLIENT_CREDENTIALS,REQUIRED(BASIC_AUTH) + OPTIONAL(OAUTH_CLIENT_CREDENTIALS),"password[BASIC_AUTH](type4,required); client_encryption_key[OAUTH_CLIENT_CREDENTIALS](type4,optional)"
+Exterro FTK,partner,Exterro,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+ExtraHop v2,partner,Bain Capital Private Equity,API_KEY | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(API_KEY, OAUTH_CLIENT_CREDENTIALS)","apikey[API_KEY](type4,optional); client_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,optional)"
+ExtrahopRevealXEventCollector,partner,Bain Capital Private Equity,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+F5 ASM,xsoar,F5,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+F5 firewall,xsoar,F5,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+F5Silverline,xsoar,F5,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"token[BEARER_TOKEN](type9,required)"
+FalconIntel,xsoar,CrowdStrike,API_KEY,REQUIRED(API_KEY),"key[API_KEY](type4,required)"
+Farsight DNSDB,partner,DomainTools,API_KEY,OPTIONAL(API_KEY),"apiKey[API_KEY](type4,optional); apikey_creds[API_KEY](type9,optional)"
+Fastly Feed,xsoar,Fastly,NONE,NONE,
+FeedCyCognito,partner,CyCognito,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type4,required)"
+FeedDomainTools,partner,Battery Ventures,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Feedly Feed,partner,Feedly Inc,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+FeedMandiantThreatIntelligence,partner,Google,AWS_AUTH,REQUIRED(AWS_AUTH),"secret_key[AWS_AUTH](type4,required)"
+FeedMISPThreatActors,xsoar,Open Source,NONE,NONE,
+FeedNVDv2,xsoar,NIST,API_KEY,OPTIONAL(API_KEY),"apiKey[API_KEY](type9,optional)"
+FeedSOCRadarThreatFeed,partner,SOCRadar,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+FeedURLhaus,xsoar,Open Source,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+FeedUstaThreatStream,partner,Anomali,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type4,required)"
+Feodo Tracker Hashes Feed,xsoar,Open Source,NONE,NONE,
+Feodo Tracker IP Blocklist Feed,xsoar,Abusech,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+Fidelis EDR,xsoar,Skyview Capital,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Fidelis Elevate Network,xsoar,Skyview Capital,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+FileOrbis,partner,FileOrbis,OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,required)"
+fireeye,xsoar,Trellix,BEARER_TOKEN | CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","credentials[CREDENTIALS](type9,optional); clientToken[BEARER_TOKEN](type4,optional); credentials_client_token[OAUTH_CLIENT_CREDENTIALS](type9,optional)"
+FireEye Central Management,xsoar,Trellix,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+FireEye Detection on Demand,partner,Trellix,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+FireEye Email Security,xsoar,Trellix,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+FireEye ETP,xsoar,Trellix,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); api_key[API_KEY](type4,optional); credentials_api_key[API_KEY](type9,optional)"
+FireEye ETP Event Collector,xsoar,Trellix,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","oauth_credentials[OAUTH_CLIENT_CREDENTIALS](type9,optional); credentials[CREDENTIALS](type9,optional)"
+FireEye HX,xsoar,Trellix,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+FireEye HX Event Collector,xsoar,Trellix,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+FireEye iSIGHT,xsoar,Google,CERTIFICATE,OPTIONAL(CERTIFICATE),"privateKey[CERTIFICATE](type4,optional); credentials_private_key[CERTIFICATE](type9,optional)"
+FireEyeFeed,xsoar,Google,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+FireEyeHelix,xsoar,Trellix,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","token[BEARER_TOKEN](type4,optional); h_id_creds[CREDENTIALS](type9,optional)"
+FireEyeHX v2,xsoar,Trellix,CREDENTIALS,REQUIRED(CREDENTIALS),"userName[CREDENTIALS](type9,required)"
+FireEyeNX,xsoar,Trellix,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Flashpoint,partner,Flashpoint,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type4,required)"
+FlashpointFeed,partner,Flashpoint,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type4,required)"
+Forcepoint,xsoar,Francisco Partners,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Forcepoint DLP Event Collector,xsoar,Francisco Partners,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Forcepoint Security Management Center,xsoar,Francisco Partners,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Forescout,xsoar,Advent International,API_KEY,OPTIONAL(API_KEY),"web_api_credentials[API_KEY](type9,optional); dex_credentials[API_KEY](type9,optional)"
+ForescoutEyeInspect,xsoar,Advent International,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Fortanix DSM,partner,Fortanix,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); token[BEARER_TOKEN](type4,optional)"
+FortiGate,xsoar,Fortinet,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); api_key[API_KEY](type9,optional)"
+fortimail,xsoar,Fortinet,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+FortiManager,xsoar,Fortinet,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+FortiSandboxv2,xsoar,Fortinet,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+FortiSIEMV2,xsoar,Fortinet,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+fortiweb_vm,xsoar,Fortinet,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+FraudWatch,xsoar,Netcraft,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+Freshdesk,xsoar,Freshworks Inc.,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","token[BEARER_TOKEN](type4,optional); token_creds[BEARER_TOKEN](type9,optional); credentials[CREDENTIALS](type9,optional)"
+FreshworksFreshservice,xsoar,Freshworks Inc.,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+G Suite Security Alert Center,xsoar,Google,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","user_service_account_json[API_KEY](type4,optional); admin_email_creds[CREDENTIALS](type9,optional)"
+Gamma,xsoar,Gamma,API_KEY,OPTIONAL(API_KEY),"api_key[API_KEY](type4,optional); credentials_api_key[API_KEY](type9,optional)"
+GCenter,partner,Gatewatcher,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","token[BEARER_TOKEN](type4,optional); credentials[CREDENTIALS](type9,optional)"
+GCenter 103,partner,Gatewatcher,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","token[BEARER_TOKEN](type9,optional); credentials[CREDENTIALS](type9,optional)"
+GCP,xsoar,Google,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+GCP Whitelist Feed,xsoar,Google,NONE,NONE,
+GCP-IAM,xsoar,Google,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Gem,partner,Wiz,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Generic MCP,xsoar,Open Source,BEARER_TOKEN | CREDENTIALS | OAUTH_AUTH_CODE | OAUTH_CLIENT_CREDENTIALS,"CHOICE(BEARER_TOKEN, CREDENTIALS, OAUTH_AUTH_CODE, OAUTH_CLIENT_CREDENTIALS)","auth_type[OAUTH_CLIENT_CREDENTIALS](type15,required); oauth_credentials[OAUTH_CLIENT_CREDENTIALS](type9,optional); auth_code[OAUTH_AUTH_CODE](type9,optional); redirect_uri[OAUTH_AUTH_CODE](type0,optional); token[BEARER_TOKEN](type9,optional); credentials[CREDENTIALS](type9,optional)"
+Generic SQL,xsoar,Microsoft,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Generic Webhook,xsoar,Open Source,API_KEY | CERTIFICATE | CREDENTIALS,"OPTIONAL(API_KEY, CERTIFICATE, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); certificate[CERTIFICATE](type12,optional); key[API_KEY](type14,optional)"
+GenericAPIEventCollector,xsoar,Open Source,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","token[BEARER_TOKEN](type9,optional); credentials[CREDENTIALS](type9,optional)"
+GenesysCloud,xsoar,Genesys,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Genetec Security Center Event Collector,xsoar,Genetec,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","credentials[CREDENTIALS](type9,required); app_id[OAUTH_CLIENT_CREDENTIALS](type0,required)"
+Genians,partner,Genians,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+Giphy,xsoar,Shutterstock,API_KEY,OPTIONAL(API_KEY),"apikey[API_KEY](type4,optional); apikey_creds[API_KEY](type9,optional)"
+GitGuardianEventCollector,xsoar,GitGuardian,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type9,required)"
+GitHub,xsoar,Microsoft,BASIC_AUTH | BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BASIC_AUTH, BEARER_TOKEN, CREDENTIALS)","api_token[BEARER_TOKEN](type9,optional); credentials[CREDENTIALS](type9,optional); user[BASIC_AUTH](type0,optional); token[BEARER_TOKEN](type4,optional)"
+Github Event Collector,xsoar,Microsoft,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"auth_credendtials[BEARER_TOKEN](type9,required)"
+Github Feed,xsoar,Microsoft,BEARER_TOKEN,OPTIONAL(BEARER_TOKEN),"api_token[BEARER_TOKEN](type9,optional)"
+GitHub IAM,xsoar,Microsoft,BEARER_TOKEN,OPTIONAL(BEARER_TOKEN),"creds_token[BEARER_TOKEN](type9,optional); token[BEARER_TOKEN](type4,optional)"
+GitHub MCP,xsoar,Microsoft,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"token[BEARER_TOKEN](type9,required)"
+GitLab Event Collector,xsoar,GitLab Inc,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type9,required)"
+GitLabv2,xsoar,GitLab Inc.,BEARER_TOKEN | CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(BEARER_TOKEN),"credentials[CREDENTIALS](type9,required); trigger_token[BEARER_TOKEN](type9,optional)"
+GLIMPS_Detect,partner,GLIMPS Detect Technologies,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"api_token[BEARER_TOKEN](type4,required)"
+GLPI,partner,Open Source,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"app_token[BEARER_TOKEN](type4,required); user_token[BEARER_TOKEN](type4,required)"
+Gmail,xsoar,Google,CREDENTIALS,REQUIRED(CREDENTIALS),"adminEmail[CREDENTIALS](type9,required)"
+Gmail Single User,xsoar,Google,CREDENTIALS | OAUTH_AUTH_CODE | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(CREDENTIALS, OAUTH_AUTH_CODE, OAUTH_CLIENT_CREDENTIALS)","credentials[CREDENTIALS](type9,optional); client_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,optional); redirect_uri[OAUTH_AUTH_CODE](type0,optional); auth_code_creds[OAUTH_AUTH_CODE](type9,optional); code[OAUTH_AUTH_CODE](type4,optional)"
+Google Apigee,xsoar,Google,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Google BigQuery,xsoar,Google,API_KEY,OPTIONAL(API_KEY),"google_service_creds[API_KEY](type4,optional); credentials_google_service[API_KEY](type9,optional)"
+Google Chronicle Backstory,partner,Google,API_KEY,REQUIRED(API_KEY),"service_account_credential[API_KEY](type4,required)"
+Google Chronicle Backstory Streaming API,partner,Google,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Google Cloud Compute,xsoar,Google,API_KEY,OPTIONAL(API_KEY),"credentials_service_account_json[API_KEY](type9,optional)"
+Google Cloud Functions,xsoar,Google,API_KEY,OPTIONAL(API_KEY),"credentials_json[API_KEY](type4,optional); project_id_creds[API_KEY](type9,optional)"
+Google Cloud Storage,xsoar,Google,API_KEY,OPTIONAL(API_KEY),"service_account_json[API_KEY](type4,optional); credentials_service_account_json[API_KEY](type9,optional)"
+Google IP Ranges Feed,xsoar,Google,NONE,NONE,
+Google Key Management Service,xsoar,Google,API_KEY,OPTIONAL(API_KEY),"service_account[API_KEY](type4,optional); credentials_service_account[API_KEY](type9,optional)"
+Google Resource Manager,xsoar,Google,API_KEY | CERTIFICATE | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(API_KEY, CERTIFICATE, OAUTH_CLIENT_CREDENTIALS)","private_key_id[CERTIFICATE](type4,optional); private_key_id_creds[CERTIFICATE](type9,optional); private_key[CERTIFICATE](type4,optional); private_key_creds[CERTIFICATE](type9,optional); client_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); client_email_creds[API_KEY](type9,optional)"
+Google Safe Browsing v2,xsoar,Google,API_KEY | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(API_KEY, OAUTH_CLIENT_CREDENTIALS)","client_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); api_key[API_KEY](type4,optional); api_creds[API_KEY](type9,optional)"
+Google Threat Intelligence IoC Stream Feed,partner,Google,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Google Threat Intelligence Threat Lists,partner,Google,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Google Vision AI,xsoar,Google,API_KEY,OPTIONAL(API_KEY),"auth_json[API_KEY](type4,optional); auth_json_creds[API_KEY](type9,optional)"
+google-vault,xsoar,Google,API_KEY,REQUIRED(API_KEY),"gsuite_credentials[API_KEY](type9,required); auth_json[API_KEY](type4,optional); auth_json_creds[API_KEY](type9,optional)"
+GoogleCalendar,xsoar,Google,API_KEY,OPTIONAL(API_KEY),"user_service_account_json[API_KEY](type4,optional); user_service_account_json_creds[API_KEY](type9,optional)"
+GoogleCloudLogging,xsoar,Google,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+GoogleCloudSCC,partner,Google,API_KEY | OAUTH_CLIENT_CREDENTIALS,REQUIRED(API_KEY) + OPTIONAL(OAUTH_CLIENT_CREDENTIALS),"service_account_json[API_KEY](type4,required); subscription_id[OAUTH_CLIENT_CREDENTIALS](type0,optional)"
+GoogleCloudTranslate,xsoar,Google,API_KEY,OPTIONAL(API_KEY),"service_account_json[API_KEY](type4,optional); project_creds[API_KEY](type9,optional)"
+GoogleDocs,xsoar,Google,API_KEY,OPTIONAL(API_KEY),"service_account_credentials[API_KEY](type4,optional); credentials_service_account[API_KEY](type9,optional)"
+GoogleDrive,xsoar,Google,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","user_service_account_json[API_KEY](type4,optional); user_creds[CREDENTIALS](type9,optional)"
+GoogleGemini,xsoar,Google,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type9,required)"
+GoogleKubernetesEngine,xsoar,Google,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","credentials_json[API_KEY](type4,optional); credentials[CREDENTIALS](type9,optional)"
+GoogleMaps,xsoar,Google,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type9,required)"
+GooglePubSub,xsoar,Google,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","service_account_json[API_KEY](type4,optional); credentials[CREDENTIALS](type9,optional)"
+GoogleSafeBrowsing,xsoar,Google,API_KEY | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(API_KEY, OAUTH_CLIENT_CREDENTIALS)","apiKey[API_KEY](type4,required); clientId[OAUTH_CLIENT_CREDENTIALS](type0,required)"
+GoogleSecOps,partner,Google,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+GoogleSheets,xsoar,Google,API_KEY,REQUIRED(API_KEY),"service_account_credentials[API_KEY](type9,required)"
+GoogleThreatIntelligence,partner,Google,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+GoogleThreatIntelligenceASMIssues,partner,Google,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+GoogleThreatIntelligenceDTMAlerts,partner,Google,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Grafana,xsoar,Grafana Labs,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+GraphQL,xsoar,Open Source,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+GravityZone,partner,,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+GreatHorn,partner,SF2 GH Holdings,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+GreyNoise,partner,GreyNoise,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","apikey[API_KEY](type4,optional); credentials[CREDENTIALS](type9,optional)"
+GreyNoise Community,partner,GreyNoise,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","api_key[API_KEY](type4,optional); credentials[CREDENTIALS](type9,optional)"
+GreyNoise Indicator Feed,partner,GreyNoise,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+Group-IB Digital Risk Protection,partner,,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Group-IB TDS Polygon,partner,Polygon Labs,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type4,required)"
+Group-IB Threat Intelligence & Attribution,partner,Group IB,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Group-IB Threat Intelligence & Attribution Feed,partner,Group IB,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+GRR,xsoar,Open Source,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+GSuiteAdmin,xsoar,Google,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","user_service_account_json[API_KEY](type4,optional); admin_email_creds[CREDENTIALS](type9,optional)"
+GSuiteAuditor,xsoar,Google,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+GuardiCore v2,xsoar,Akamai Technologies,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Guidance Encase Endpoint,xsoar,OpenText,NONE,NONE,
+Gurucul-GRA,partner,Gurucul,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+HackerOne,partner,HackerOne,CREDENTIALS,REQUIRED(CREDENTIALS),"username[CREDENTIALS](type9,required)"
+Hackuity,partner,Hackuity,CREDENTIALS,REQUIRED(CREDENTIALS),"login[CREDENTIALS](type9,required)"
+Halcyon,xsoar,Halcyon,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","credentials[CREDENTIALS](type9,required); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,required)"
+HashiCorp Vault,xsoar,IBM,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); token[BEARER_TOKEN](type4,optional); credentials_token[BEARER_TOKEN](type9,optional)"
+HashicorpTerraform,xsoar,IBM,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Hatching Triage,partner,Recorded Future,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","API Key[API_KEY](type4,optional); credentials[CREDENTIALS](type9,optional)"
+Have I Been Pwned? V2,xsoar,Troy Hunt,API_KEY,OPTIONAL(API_KEY),"api_key[API_KEY](type4,optional); credentials_api_key[API_KEY](type9,optional)"
+Hello IAM World,xsoar,Open Source,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+HostIo,xsoar,Access2IT Group BV,BEARER_TOKEN,OPTIONAL(BEARER_TOKEN),"token[BEARER_TOKEN](type4,optional); credentials_token[BEARER_TOKEN](type9,optional)"
+Hoxhunt v2,partner,Hoxhunt,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type4,required)"
+HPEArubaCentralEventCollector,xsoar,HPE,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","credentials[CREDENTIALS](type9,required); customer_id[OAUTH_CLIENT_CREDENTIALS](type9,required); user[CREDENTIALS](type9,required)"
+HPEArubaClearPass,xsoar,HPE,OAUTH_CLIENT_CREDENTIALS,OPTIONAL(OAUTH_CLIENT_CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,optional); client_id_creds[OAUTH_CLIENT_CREDENTIALS](type9,optional)"
+Humio,partner,CrowdStrike,API_KEY,REQUIRED(API_KEY),"API-key[API_KEY](type4,required)"
+Hurukai,partner,HarfangLab,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+HYAS Insight,partner,Silent Push,API_KEY,REQUIRED(API_KEY),"X-API-Key[API_KEY](type4,required)"
+HYAS Protect,partner,threatER,API_KEY,REQUIRED(API_KEY),"X-API-Key[API_KEY](type4,required)"
+IBM Resilient Systems,xsoar,IBM,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","api_key_id[API_KEY](type4,optional); api_key_secret[API_KEY](type4,optional); credentials_api_key[API_KEY](type9,optional); credentials[CREDENTIALS](type9,optional)"
+IBM Storage Scale,xsoar,IBM,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+IBMMaaS360Security,xsoar,IBM,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","credentials[CREDENTIALS](type9,required); app_id[OAUTH_CLIENT_CREDENTIALS](type0,required); app_access_key[OAUTH_CLIENT_CREDENTIALS](type9,required); billing_id[OAUTH_CLIENT_CREDENTIALS](type9,required)"
+IBMSecurityGuardium,xsoar,IBM,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+IBMSecurityVerify,xsoar,IBM,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+iboss,partner,Iboss,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"auth[BEARER_TOKEN](type9,required)"
+icebrg,xsoar,Gigamon,NONE,NONE,
+Ignite,partner,Flashpoint,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+IgniteFeedV2,partner,,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+iLert,partner,Ilert GmbH,API_KEY,REQUIRED(API_KEY),"integrationKey[API_KEY](type4,required)"
+illuminate,partner,Renaissance Learning,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+IllumioCore,partner,Illumio,API_KEY,REQUIRED(API_KEY),"api_user[API_KEY](type4,required); api_key[API_KEY](type4,required)"
+IllusiveNetworks,partner,Proofpoint Inc,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"api_token[BEARER_TOKEN](type4,required)"
+Image OCR,xsoar,Open Source,NONE,NONE,
+iManageThreatManager,xsoar,iManage,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","credentials_user[CREDENTIALS](type9,optional); credentials_token[BEARER_TOKEN](type9,optional)"
+Imperva Skyfence,xsoar,Forcepoint,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","clientId[OAUTH_CLIENT_CREDENTIALS](type4,optional); clientSecret[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials[CREDENTIALS](type9,optional)"
+Imperva WAF,xsoar,Thales Group,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Incapsula,xsoar,Imperva,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","apikey[API_KEY](type4,optional); creds[CREDENTIALS](type9,optional)"
+Inception,partner,Stairwell,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type9,required)"
+Indeni,partner,BlueCat Networks,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+Infinipoint,partner,Infinipoint,AWS_AUTH | CERTIFICATE,"REQUIRED(AWS_AUTH, CERTIFICATE)","access_key[AWS_AUTH](type4,required); private_key[CERTIFICATE](type4,required)"
+InfoArmor VigilanteATI,xsoar,Allstate Identity Protection,API_KEY,OPTIONAL(API_KEY),"apikey_new[API_KEY](type9,optional); apisecret_new[API_KEY](type9,optional); apikey[API_KEY](type4,optional); apisecret[API_KEY](type4,optional)"
+Infoblox,partner,Infoblox,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+Infoblox BloxOne Threat Defense Event Collector,partner,Infoblox,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+InfobloxBloxOneThreatDefense,partner,Infoblox,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+InfobloxThreatIntelligenceFeed,partner,Infoblox,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type9,required)"
+Infocyte,partner,Kaseya,API_KEY,REQUIRED(API_KEY),"APIKey[API_KEY](type4,required)"
+Intel471 Actors Feed,partner,Intel 471,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Intel471 Malware Feed,partner,Intel 471,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+Intel471 Malware Indicator Feed,partner,Thoma Bravo,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+Intel471 Watcher Alerts,partner,Intel 471,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+Intezer v2,partner,Symphony Talent Group,API_KEY,REQUIRED(API_KEY),"APIKey[API_KEY](type4,required)"
+IntSights,partner,Rapid7,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Inventa,partner,InventaCapitalPLC,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+ipinfo_v2,xsoar,IPinfo,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+IPQualityScore,partner,IPQualityScore,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+Ipstack,xsoar,Idera Inc.,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","apikey[API_KEY](type4,optional); credentials[CREDENTIALS](type9,optional)"
+IronDefense,partner,IronNet Cybersecurity,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Ironscales,partner,PSG Equity,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+Ironscales Event Collector,xsoar,Ironscales,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type9,required)"
+IsItPhishing,xsoar,Open Source,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+Ivanti Heat,xsoar,Ivanti,BEARER_TOKEN,OPTIONAL(BEARER_TOKEN),"token[BEARER_TOKEN](type4,optional); token_creds[BEARER_TOKEN](type9,optional)"
+Jamf Protect Event Collector,xsoar,Jamf,OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS),"client[OAUTH_CLIENT_CREDENTIALS](type9,required)"
+jamf v2,xsoar,Jamf,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","credentials[CREDENTIALS](type9,optional); client_credentials[OAUTH_CLIENT_CREDENTIALS](type9,optional)"
+Jira Event Collector,xsoar,Atlassian,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","credentials[CREDENTIALS](type9,optional); client_credentials[OAUTH_CLIENT_CREDENTIALS](type9,optional)"
+Jira V3,xsoar,Atlassian,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","basic_credentials[CREDENTIALS](type9,optional); credentials[CREDENTIALS](type9,optional); pat_credential[BEARER_TOKEN](type9,optional)"
+jira-v2,xsoar,Atlassian,BASIC_AUTH | BEARER_TOKEN | CERTIFICATE | CREDENTIALS,"OPTIONAL(BASIC_AUTH, BEARER_TOKEN, CERTIFICATE, CREDENTIALS)","username[BASIC_AUTH](type0,optional); password[BASIC_AUTH](type4,optional); credentials[CREDENTIALS](type9,optional); privateKey[CERTIFICATE](type14,optional); APItoken[BEARER_TOKEN](type4,optional)"
+JizoM,partner,CYBERDYNE inc,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Joe Security,xsoar,Joe Security LLC,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type4,required)"
+JoeSecurityV2,xsoar,Joe Security GmbH,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+JSON Feed,xsoar,Open Source,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+JsonWhoIs,xsoar,JsonWhois,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); token[BEARER_TOKEN](type4,optional)"
+KafkaV3,xsoar,Open Source,CERTIFICATE | CREDENTIALS,"OPTIONAL(CERTIFICATE, CREDENTIALS)","ca_cert[CERTIFICATE](type12,optional); client_cert[CERTIFICATE](type12,optional); client_cert_key[CERTIFICATE](type14,optional); additional_password[CREDENTIALS](type9,optional); credentials[CREDENTIALS](type9,optional); schema_registry_credentials[CREDENTIALS](type9,optional)"
+Kaspersky Security Center,xsoar,Kaspersky Lab,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+KeeperSecretsManager,partner,Keeper Security Inc.,API_KEY | CUSTOM_CREDENTIALS,REQUIRED(API_KEY) + OPTIONAL(CUSTOM_CREDENTIALS),"credentials[API_KEY](type14,required); credential_names[CUSTOM_CREDENTIALS](type12,optional)"
+KeeperSecurity,xsoar,Keeper Security Inc.,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Kennav2,xsoar,Cisco Systems,API_KEY,OPTIONAL(API_KEY),"key[API_KEY](type4,optional); credentials_key[API_KEY](type9,optional)"
+KnowBe4 KMSAT Event Collector,partner,Vista Equity Partners,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+KnowBe4_KMSAT,partner,Vista Equity Partners,API_KEY | CREDENTIALS,"REQUIRED(API_KEY, CREDENTIALS)","apikey[API_KEY](type9,required); userEventsApiKey[CREDENTIALS](type9,required)"
+Koodous,xsoar,VirusTotal,API_KEY,OPTIONAL(API_KEY),"APIKey[API_KEY](type4,optional); apikey_creds[API_KEY](type9,optional)"
+Lansweeper,partner,Insight Partners,OAUTH_AUTH_CODE,REQUIRED(OAUTH_AUTH_CODE),"identity_code[OAUTH_AUTH_CODE](type4,required)"
+LastInfoSec,partner,Gatewatcher,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"token[BEARER_TOKEN](type4,required)"
+Lastline v2,xsoar,Broadcom,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","creds_key_and_token[BEARER_TOKEN](type9,optional); credentials[CREDENTIALS](type9,optional); api_token[BEARER_TOKEN](type4,optional)"
+Linkshadow,partner,LinkShadow,API_KEY,REQUIRED(API_KEY),"apiKey[API_KEY](type4,required)"
+Lockpath KeyLight v2,xsoar,Navex Global,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+LogPoint SIEM Integration,partner,Logpoint,API_KEY | BASIC_AUTH,"REQUIRED(API_KEY, BASIC_AUTH)","username[BASIC_AUTH](type0,required); apikey[API_KEY](type4,required)"
+LogRhythmRest V2,xsoar,Exabeam,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+LogsignSiem,partner,Logsign,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+Logz.io,partner,Logz.io,BEARER_TOKEN,OPTIONAL(BEARER_TOKEN),"security_api_token[BEARER_TOKEN](type4,optional); operational_api_token[BEARER_TOKEN](type4,optional)"
+LOLBAS Feed,xsoar,Open Source,NONE,NONE,
+Looker,xsoar,Google,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS) + OPTIONAL(CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials_api3_client[CREDENTIALS](type9,optional)"
+LookoutMobileEndpointSecurity,xsoar,Lookout Inc.,API_KEY,OPTIONAL(API_KEY),"app_key[API_KEY](type9,optional)"
+Luminar_IOCs_and_leaked_credentials,partner,Cognyte,OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS),"luminar_client_secret[OAUTH_CLIENT_CREDENTIALS](type4,required)"
+Lumu,partner,Lumu,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type4,required)"
+Mail Listener v2,xsoar,Open Source,CERTIFICATE | CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(CERTIFICATE),"credentials[CREDENTIALS](type9,required); clientCertAndKey[CERTIFICATE](type9,optional)"
+Mail Sender (New),xsoar,Open Source,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+MailListener - POP3,xsoar,Open Source,BASIC_AUTH | CREDENTIALS,"OPTIONAL(BASIC_AUTH, CREDENTIALS)","password[BASIC_AUTH](type4,optional); credentials_password[CREDENTIALS](type9,optional)"
+Majestic Million,xsoar,Majestic-12 Limited,NONE,NONE,
+Maltiverse,xsoar,Maltiverse,API_KEY,OPTIONAL(API_KEY),"api_key[API_KEY](type4,optional); credentials_api_key[API_KEY](type9,optional)"
+MalwareBazaar,xsoar,Open Source,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+MalwareBazaar Feed,xsoar,AbuseCh,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+Malwarebytes,partner,Malwarebytes,OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS),"clientid[OAUTH_CLIENT_CREDENTIALS](type0,required); clientsecret[OAUTH_CLIENT_CREDENTIALS](type4,required)"
+ManageEngine,xsoar,Zoho Corporation,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","credentials[CREDENTIALS](type9,required); client_code[OAUTH_CLIENT_CREDENTIALS](type9,required)"
+ManageEngine PAM360,partner,Zoho Corporation,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Mandiant,partner,Google,AWS_AUTH,REQUIRED(AWS_AUTH),"secret_key[AWS_AUTH](type4,required)"
+Mandiant Advantage Threat Intelligence,partner,Google,AWS_AUTH,REQUIRED(AWS_AUTH),"secret_key[AWS_AUTH](type4,required)"
+MattermostV2,xsoar,Mattermost Inc,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"bot_access_token[BEARER_TOKEN](type9,required); personal_access_token[BEARER_TOKEN](type9,required)"
+MaxMind GeoIP2,xsoar,MaxMind Inc,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","apikey[API_KEY](type4,optional); credentials[CREDENTIALS](type9,optional)"
+McAfee Active Response,xsoar,Trellix,CERTIFICATE,REQUIRED(CERTIFICATE),"cert_file[CERTIFICATE](type12,required); private_key[CERTIFICATE](type14,required)"
+McAfee Advanced Threat Defense,xsoar,Trellix,BASIC_AUTH | CREDENTIALS,"OPTIONAL(BASIC_AUTH, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); username[BASIC_AUTH](type0,optional); password[BASIC_AUTH](type4,optional)"
+McAfee DXL,xsoar,Trellix,CERTIFICATE,REQUIRED(CERTIFICATE),"cert_file[CERTIFICATE](type12,required); private_key[CERTIFICATE](type14,required)"
+McAfee ePO v2,xsoar,Trellix,CREDENTIALS,REQUIRED(CREDENTIALS),"authentication[CREDENTIALS](type9,required)"
+McAfee ESM v2,xsoar,Trellix,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+McAfee NSM,xsoar,Trellix,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+McAfee Threat Intelligence Exchange V2,xsoar,Trellix,CERTIFICATE,REQUIRED(CERTIFICATE),"cert_file[CERTIFICATE](type12,required); private_key[CERTIFICATE](type14,required)"
+McAfee Web Gateway,xsoar,Skyhigh Security,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+McAfeeDAM,xsoar,STG,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+McAfeeNSMv2,xsoar,Trellix,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+MetaDefender Sandbox,partner,OPSWAT,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type9,required)"
+Microsoft 365 Defender,xsoar,Microsoft,API_KEY | CERTIFICATE | CREDENTIALS | MANAGED_IDENTITY | OAUTH_CLIENT_CREDENTIALS,"CHOICE(API_KEY, CERTIFICATE, CREDENTIALS, MANAGED_IDENTITY, OAUTH_CLIENT_CREDENTIALS)","creds_client_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); creds_tenant_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); credentials[CREDENTIALS](type9,optional); creds_certificate[CERTIFICATE](type9,optional); certificate_thumbprint[CERTIFICATE](type4,optional); private_key[CERTIFICATE](type14,optional); use_managed_identities[MANAGED_IDENTITY](type8,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional); app_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); enc_key[API_KEY](type4,optional)"
+Microsoft 365 Defender Event Collector,xsoar,Microsoft,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,required); client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); credentials[CREDENTIALS](type9,required)"
+Microsoft Advanced Threat Analytics,xsoar,Microsoft,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Microsoft Defender Advanced Threat Protection,xsoar,Microsoft,API_KEY | CERTIFICATE | CREDENTIALS | MANAGED_IDENTITY | OAUTH_AUTH_CODE | OAUTH_CLIENT_CREDENTIALS,"CHOICE(API_KEY, CERTIFICATE, CREDENTIALS, MANAGED_IDENTITY, OAUTH_AUTH_CODE, OAUTH_CLIENT_CREDENTIALS)","_auth_id_encrypted[OAUTH_CLIENT_CREDENTIALS](type9,optional); _tenant_id_encrypted[OAUTH_CLIENT_CREDENTIALS](type9,optional); credentials[CREDENTIALS](type9,optional); creds_certificate[CERTIFICATE](type9,optional); certificate_thumbprint[CERTIFICATE](type4,optional); private_key[CERTIFICATE](type14,optional); auth_type[OAUTH_CLIENT_CREDENTIALS](type15,optional); redirect_uri[OAUTH_AUTH_CODE](type0,optional); auth_code[OAUTH_AUTH_CODE](type9,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional); auth_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); enc_key[API_KEY](type4,optional)"
+Microsoft Defender for Cloud Apps Event Collector,xsoar,Microsoft,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); credentials[CREDENTIALS](type9,required); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,required)"
+Microsoft Defender for Cloud Event Collector,xsoar,Microsoft,API_KEY | CERTIFICATE | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(API_KEY, OAUTH_CLIENT_CREDENTIALS) + OPTIONAL(CERTIFICATE)","client_id[OAUTH_CLIENT_CREDENTIALS](type9,required); tenant_id[OAUTH_CLIENT_CREDENTIALS](type9,required); enc_key[API_KEY](type9,required); certificate_thumbprint[CERTIFICATE](type9,optional); private_key[CERTIFICATE](type14,optional); sub_id[OAUTH_CLIENT_CREDENTIALS](type9,required)"
+Microsoft Endpoint Configuration Manager,xsoar,Microsoft,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Microsoft Graph,xsoar,Microsoft,API_KEY | CERTIFICATE | MANAGED_IDENTITY | OAUTH_AUTH_CODE | OAUTH_CLIENT_CREDENTIALS,"CHOICE(API_KEY, CERTIFICATE, MANAGED_IDENTITY, OAUTH_AUTH_CODE, OAUTH_CLIENT_CREDENTIALS)","creds_auth_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); creds_tenant_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); creds_enc_key[API_KEY](type9,optional); auth_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); enc_key[API_KEY](type4,optional); creds_certificate[CERTIFICATE](type9,optional); certificate_thumbprint[CERTIFICATE](type4,optional); private_key[CERTIFICATE](type14,optional); redirect_uri[OAUTH_AUTH_CODE](type0,optional); auth_code[OAUTH_AUTH_CODE](type9,optional); use_managed_identities[MANAGED_IDENTITY](type8,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+Microsoft Graph API,xsoar,Microsoft,CERTIFICATE | CREDENTIALS | MANAGED_IDENTITY | OAUTH_AUTH_CODE | OAUTH_CLIENT_CREDENTIALS,"CHOICE(CERTIFICATE, CREDENTIALS, MANAGED_IDENTITY, OAUTH_AUTH_CODE, OAUTH_CLIENT_CREDENTIALS)","app_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); credentials[CREDENTIALS](type9,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); redirect_uri[OAUTH_AUTH_CODE](type0,optional); auth_code[OAUTH_AUTH_CODE](type9,optional); creds_certificate[CERTIFICATE](type9,optional); certificate_thumbprint[CERTIFICATE](type4,optional); private_key[CERTIFICATE](type14,optional); use_managed_identities[MANAGED_IDENTITY](type8,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional); scope[OAUTH_CLIENT_CREDENTIALS](type12,optional); app_secret[OAUTH_CLIENT_CREDENTIALS](type4,optional)"
+Microsoft Graph Calendar,xsoar,Microsoft,API_KEY | CERTIFICATE | MANAGED_IDENTITY | OAUTH_CLIENT_CREDENTIALS,"CHOICE(API_KEY, CERTIFICATE, MANAGED_IDENTITY, OAUTH_CLIENT_CREDENTIALS)","auth_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials_auth_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials_tenant_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); enc_key[API_KEY](type4,optional); credentials_enc_key[API_KEY](type9,optional); certificate_thumbprint[CERTIFICATE](type4,optional); credentials_certificate_thumbprint[CERTIFICATE](type9,optional); private_key[CERTIFICATE](type14,optional); use_managed_identities[MANAGED_IDENTITY](type8,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+Microsoft Graph Device Management,xsoar,Microsoft,API_KEY | CERTIFICATE | MANAGED_IDENTITY | OAUTH_CLIENT_CREDENTIALS,"CHOICE(API_KEY, CERTIFICATE, MANAGED_IDENTITY, OAUTH_CLIENT_CREDENTIALS)","auth_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials_auth_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials_tenant_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); enc_key[API_KEY](type4,optional); credentials_enc_key[API_KEY](type9,optional); certificate_thumbprint[CERTIFICATE](type4,optional); credentials_certificate_thumbprint[CERTIFICATE](type9,optional); private_key[CERTIFICATE](type14,optional); use_managed_identities[MANAGED_IDENTITY](type8,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+Microsoft Graph Groups,xsoar,Microsoft,API_KEY | CERTIFICATE | CREDENTIALS | MANAGED_IDENTITY | OAUTH_AUTH_CODE | OAUTH_CLIENT_CREDENTIALS,"CHOICE(API_KEY, CERTIFICATE, CREDENTIALS, MANAGED_IDENTITY, OAUTH_AUTH_CODE, OAUTH_CLIENT_CREDENTIALS)","creds_auth_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); creds_tenant_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); credentials[CREDENTIALS](type9,optional); certificate_thumbprint[CERTIFICATE](type4,optional); credentials_certificate_thumbprint[CERTIFICATE](type9,optional); private_key[CERTIFICATE](type14,optional); use_managed_identities[MANAGED_IDENTITY](type8,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional); enc_key[API_KEY](type4,optional); auth_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); redirect_uri[OAUTH_AUTH_CODE](type0,optional); creds_auth_code[OAUTH_AUTH_CODE](type9,optional); auth_code[OAUTH_AUTH_CODE](type4,optional)"
+Microsoft Graph Mail Single User,xsoar,Microsoft,API_KEY | BEARER_TOKEN | CERTIFICATE | MANAGED_IDENTITY | OAUTH_AUTH_CODE | OAUTH_CLIENT_CREDENTIALS,"CHOICE(API_KEY, BEARER_TOKEN, CERTIFICATE, MANAGED_IDENTITY, OAUTH_AUTH_CODE, OAUTH_CLIENT_CREDENTIALS)","creds_auth_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); creds_refresh_token[BEARER_TOKEN](type9,optional); creds_enc_key[API_KEY](type9,optional); auth_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); refresh_token[BEARER_TOKEN](type4,optional); enc_key[API_KEY](type4,optional); creds_certificate[CERTIFICATE](type9,optional); certificate_thumbprint[CERTIFICATE](type4,optional); private_key[CERTIFICATE](type14,optional); creds_auth_code[OAUTH_AUTH_CODE](type9,optional); auth_code[OAUTH_AUTH_CODE](type4,optional); redirect_uri[OAUTH_AUTH_CODE](type0,optional); use_managed_identities[MANAGED_IDENTITY](type8,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+Microsoft Graph User,xsoar,Microsoft,API_KEY | CERTIFICATE | MANAGED_IDENTITY | OAUTH_AUTH_CODE | OAUTH_CLIENT_CREDENTIALS,"CHOICE(API_KEY, CERTIFICATE, MANAGED_IDENTITY, OAUTH_AUTH_CODE, OAUTH_CLIENT_CREDENTIALS)","creds_auth_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); creds_tenant_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); creds_enc_key[API_KEY](type9,optional); auth_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); enc_key[API_KEY](type4,optional); creds_certificate[CERTIFICATE](type9,optional); certificate_thumbprint[CERTIFICATE](type4,optional); private_key[CERTIFICATE](type14,optional); redirect_uri[OAUTH_AUTH_CODE](type0,optional); creds_auth_code[OAUTH_AUTH_CODE](type9,optional); auth_code[OAUTH_AUTH_CODE](type4,optional); use_managed_identities[MANAGED_IDENTITY](type8,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+Microsoft Intune Feed,xsoar,Microsoft,NONE,NONE,
+Microsoft Management Activity API (O365 Azure Events),xsoar,Microsoft,API_KEY | BEARER_TOKEN | CERTIFICATE | MANAGED_IDENTITY | OAUTH_AUTH_CODE | OAUTH_CLIENT_CREDENTIALS,"CHOICE(API_KEY, BEARER_TOKEN, CERTIFICATE, MANAGED_IDENTITY, OAUTH_AUTH_CODE, OAUTH_CLIENT_CREDENTIALS)","auth_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials_auth_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); refresh_token[BEARER_TOKEN](type4,optional); credentials_refresh_token[BEARER_TOKEN](type9,optional); enc_key[API_KEY](type4,optional); credentials_enc_key[API_KEY](type9,optional); certificate_thumbprint[CERTIFICATE](type4,optional); credentials_certificate_thumbprint[CERTIFICATE](type9,optional); private_key[CERTIFICATE](type14,optional); redirect_uri[OAUTH_AUTH_CODE](type0,optional); auth_code[OAUTH_AUTH_CODE](type4,optional); credentials_auth_code[OAUTH_AUTH_CODE](type9,optional); use_managed_identities[MANAGED_IDENTITY](type8,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+Microsoft Teams,xsoar,Microsoft,API_KEY | BEARER_TOKEN | CERTIFICATE | CREDENTIALS | OAUTH_AUTH_CODE,"CHOICE(API_KEY, BEARER_TOKEN, CERTIFICATE, CREDENTIALS, OAUTH_AUTH_CODE)","credentials[CREDENTIALS](type9,optional); bot_password[BEARER_TOKEN](type4,optional); auth_type[OAUTH_CLIENT_CREDENTIALS](type15,optional); redirect_uri[OAUTH_AUTH_CODE](type0,optional); auth_code_creds[OAUTH_AUTH_CODE](type9,optional); creds_certificate[CERTIFICATE](type9,optional); certificate[CERTIFICATE](type12,optional); key[API_KEY](type14,optional)"
+Microsoft Teams Management,xsoar,Microsoft,CREDENTIALS | MANAGED_IDENTITY | OAUTH_CLIENT_CREDENTIALS,"CHOICE(CREDENTIALS, MANAGED_IDENTITY, OAUTH_CLIENT_CREDENTIALS)","app_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); authentication_type[OAUTH_CLIENT_CREDENTIALS](type15,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); credentials[CREDENTIALS](type9,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+Microsoft Teams via Webhook,xsoar,Microsoft,NONE,NONE,
+Microsoft_Graph_Files,xsoar,Microsoft,API_KEY | CERTIFICATE | MANAGED_IDENTITY | OAUTH_AUTH_CODE | OAUTH_CLIENT_CREDENTIALS,"CHOICE(API_KEY, CERTIFICATE, MANAGED_IDENTITY, OAUTH_AUTH_CODE, OAUTH_CLIENT_CREDENTIALS)","auth_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials_auth_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials_tenant_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); enc_key[API_KEY](type4,optional); credentials_enc_key[API_KEY](type9,optional); redirect_uri[OAUTH_AUTH_CODE](type0,optional); auth_code_creds[OAUTH_AUTH_CODE](type9,optional); certificate_thumbprint[CERTIFICATE](type4,optional); credentials_certificate_thumbprint[CERTIFICATE](type9,optional); private_key[CERTIFICATE](type14,optional); use_managed_identities[MANAGED_IDENTITY](type8,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+MicrosoftCloudAppSecurity,xsoar,Microsoft,BEARER_TOKEN | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(BEARER_TOKEN, OAUTH_CLIENT_CREDENTIALS)","creds_token[BEARER_TOKEN](type9,optional); token[BEARER_TOKEN](type4,optional); app_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); client_id[OAUTH_CLIENT_CREDENTIALS](type9,optional)"
+MicrosoftDefenderThreatIntelligence,xsoar,Microsoft,CERTIFICATE | CREDENTIALS | MANAGED_IDENTITY | OAUTH_CLIENT_CREDENTIALS,"CHOICE(CERTIFICATE, CREDENTIALS, MANAGED_IDENTITY, OAUTH_CLIENT_CREDENTIALS)","app_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); credentials[CREDENTIALS](type9,optional); creds_certificate[CERTIFICATE](type9,optional); use_managed_identities[MANAGED_IDENTITY](type8,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+MicrosoftGraphApplications,xsoar,Microsoft,CREDENTIALS | MANAGED_IDENTITY | OAUTH_CLIENT_CREDENTIALS,"CHOICE(CREDENTIALS, MANAGED_IDENTITY, OAUTH_CLIENT_CREDENTIALS)","app_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); authentication_type[OAUTH_CLIENT_CREDENTIALS](type15,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); credentials[CREDENTIALS](type9,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+MicrosoftGraphIdentityandAccess,xsoar,Microsoft,CERTIFICATE | CREDENTIALS | MANAGED_IDENTITY | OAUTH_CLIENT_CREDENTIALS,"CHOICE(CERTIFICATE, CREDENTIALS, MANAGED_IDENTITY, OAUTH_CLIENT_CREDENTIALS)","app_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); credentials[CREDENTIALS](type9,optional); creds_certificate[CERTIFICATE](type9,optional); use_managed_identities[MANAGED_IDENTITY](type8,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional)"
+MicrosoftGraphMail,xsoar,Microsoft,API_KEY | CERTIFICATE | CREDENTIALS | MANAGED_IDENTITY | OAUTH_CLIENT_CREDENTIALS,"CHOICE(API_KEY, CERTIFICATE, CREDENTIALS, MANAGED_IDENTITY, OAUTH_CLIENT_CREDENTIALS)","creds_auth_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); creds_tenant_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); credentials[CREDENTIALS](type9,optional); creds_certificate[CERTIFICATE](type9,optional); certificate_thumbprint[CERTIFICATE](type4,optional); private_key[CERTIFICATE](type14,optional); use_managed_identities[MANAGED_IDENTITY](type8,optional); managed_identities_client_id[MANAGED_IDENTITY](type9,optional); enc_key[API_KEY](type4,optional); auth_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type4,optional)"
+MicrosoftPolicyAndComplianceAuditLog,xsoar,Microsoft,CERTIFICATE | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CERTIFICATE, OAUTH_CLIENT_CREDENTIALS)","certificate[CERTIFICATE](type9,required); app_id[OAUTH_CLIENT_CREDENTIALS](type0,required)"
+Mimecast Event Collector v2,xsoar,Permira,OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS),"client_credentials[OAUTH_CLIENT_CREDENTIALS](type9,required)"
+MimecastV2,xsoar,Permira,API_KEY | AWS_AUTH | BASIC_AUTH | CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(API_KEY, AWS_AUTH, BASIC_AUTH, CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","client_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); client_secret[OAUTH_CLIENT_CREDENTIALS](type9,optional); credentials[CREDENTIALS](type9,optional); password[BASIC_AUTH](type4,optional); appKey_creds[API_KEY](type9,optional); appKey[API_KEY](type4,optional); secretKey_creds[API_KEY](type9,optional); secretKey[AWS_AUTH](type4,optional)"
+MISP Feed,xsoar,OpenSource,CERTIFICATE | CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(CERTIFICATE),"credentials[CREDENTIALS](type9,required); certificate[CERTIFICATE](type9,optional)"
+MISP V3,xsoar,Open Source,CERTIFICATE | CREDENTIALS,"OPTIONAL(CERTIFICATE, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); certificate[CERTIFICATE](type9,optional)"
+MITRE ATT&CK v2,xsoar,MITRE Corporation,NONE,NONE,
+MobileIronCLOUD,partner,Ivanti,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+MobileIronCORE,partner,Ivanti,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+MondayEventCollector,xsoar,Monday.com,BEARER_TOKEN | CREDENTIALS | OAUTH_AUTH_CODE,"OPTIONAL(BEARER_TOKEN, CREDENTIALS, OAUTH_AUTH_CODE)","credentials[CREDENTIALS](type9,optional); auth_code[OAUTH_AUTH_CODE](type9,optional); audit_token[BEARER_TOKEN](type9,optional)"
+MongoDB,xsoar,MongoDB Inc.,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+MongoDB Key Value Store,xsoar,MongoDB Inc.,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+MongoDB Log,xsoar,MongoDB Inc.,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+MongoDBAtlasEventCollector,xsoar,MongoDB Inc.,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+MxToolBox,xsoar,ZiffDavis,API_KEY,OPTIONAL(API_KEY),"apiKey[API_KEY](type4,optional); credentials_api_key[API_KEY](type9,optional)"
+Ncurion,partner,Ncurion,BASIC_AUTH,OPTIONAL(BASIC_AUTH),"username[BASIC_AUTH](type0,optional); password[BASIC_AUTH](type4,optional)"
+Neosec,partner,Akamai Technologies,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Nessus,xsoar,Tenable,BASIC_AUTH | CREDENTIALS,"OPTIONAL(BASIC_AUTH, CREDENTIALS)","username[BASIC_AUTH](type0,optional); password[BASIC_AUTH](type4,optional); credentials[CREDENTIALS](type9,optional)"
+NetBox Event Collector,xsoar,NetBoxLabs,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Netcraft V2,xsoar,Netcraft,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Netmiko,xsoar,Open Source,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+NetQuestOMX,xsoar,NetQuest Corporation,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+NetscoutAED,partner,Netscout Systems,CREDENTIALS,OPTIONAL(CREDENTIALS),"User[CREDENTIALS](type9,optional)"
+NetscoutArborSightline,partner,Netscout Systems,CREDENTIALS,OPTIONAL(CREDENTIALS),"User[CREDENTIALS](type9,optional)"
+Netskope,xsoar,Netskope,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"token[BEARER_TOKEN](type4,required)"
+netskope_api_v2,xsoar,Netskope,API_KEY,OPTIONAL(API_KEY),"api_key[API_KEY](type4,optional); api_key_credentials[API_KEY](type9,optional)"
+NetskopeAPIv1,xsoar,Netskope,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+NetskopeEventCollector_v2,xsoar,Netskope,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+nmap,xsoar,Open Source,NONE,NONE,
+Nozomi Networks,partner,Mitsubishi Electric,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+NucleonCyberFeed,partner,NucleonCyber,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","credentials[CREDENTIALS](type9,required); clientid[OAUTH_CLIENT_CREDENTIALS](type0,required)"
+Nutanix Hypervisor,xsoar,Nutanix,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+O365 Defender SafeLinks,xsoar,Microsoft,CERTIFICATE | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CERTIFICATE, OAUTH_CLIENT_CREDENTIALS)","certificate[CERTIFICATE](type9,required); app_id[OAUTH_CLIENT_CREDENTIALS](type0,required)"
+O365 Defender SafeLinks - Single User,xsoar,Microsoft,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+OctoxLabs,partner,OctoXLabs,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"octox_token[BEARER_TOKEN](type9,required)"
+Office 365 Feed,xsoar,Microsoft,NONE,NONE,
+OHMYVT_CTF,xsoar,Open Source,NONE,NONE,
+okta,xsoar,Okta,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"apitoken[BEARER_TOKEN](type4,required)"
+Okta Event Collector,xsoar,Okta,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type9,required)"
+Okta IAM,xsoar,Okta,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); apitoken[BEARER_TOKEN](type4,optional)"
+Okta v2,xsoar,Okta,BEARER_TOKEN | CERTIFICATE | CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CERTIFICATE, CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","credentials[CREDENTIALS](type9,optional); apitoken[BEARER_TOKEN](type4,optional); client_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); private_key[CERTIFICATE](type14,optional)"
+OktaASA,xsoar,Okta,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+OktaAuth0EventCollector,xsoar,Okta,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+OnboardingIntegration,xsoar,Open Source,NONE,NONE,
+OneLogin Event Collector,xsoar,OneIdentity,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+OnePassword,xsoar,1Password Inc.,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+OpenAI,xsoar,OpenAI,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+OpenAi ChatGPT v3,xsoar,OpenAI,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type9,required)"
+OpenCTI,xsoar,Filigran,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+OpenCTI Feed,xsoar,Filigran,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+OpenCTI Feed 4.X,xsoar,Filigran,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+OpenCVE,xsoar,Amber Security SAS,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+OpenLDAP,xsoar,Open Source,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+OpenPhish_v2,xsoar,OpenPhish,NONE,NONE,
+OPNSense,partner,Deciso B.V.,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required); apisecret[API_KEY](type4,required)"
+OpsGenieV3,xsoar,Atlassian,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+OPSWAT-Metadefender V2,xsoar,OPSWAT Inc,API_KEY,OPTIONAL(API_KEY),"api_key[API_KEY](type4,optional); api_key_creds[API_KEY](type9,optional)"
+OracleCloudInfrastructureEventCollector,xsoar,Oracle,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+OracleIAM,xsoar,Oracle,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Orca,partner,Orca Security,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"api_token[BEARER_TOKEN](type9,required)"
+Orca Event Collector,partner,Orca Security,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+OTRS,partner,EasyVista,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+PacketMail,xsoar,Wireless Innovation,API_KEY,OPTIONAL(API_KEY),"apikey[API_KEY](type4,optional); apikey_creds[API_KEY](type9,optional)"
+Packetsled,xsoar,Mixmode,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+PagerDuty v2,xsoar,PagerDuty,API_KEY,OPTIONAL(API_KEY),"APIKey[API_KEY](type4,optional); credentials_api_key[API_KEY](type9,optional)"
+Palo Alto Networks - Prisma SASE,xsoar,Palo Alto Networks,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Palo Alto Networks AIOps,xsoar,Palo Alto Networks,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required); credentials-aiops[CREDENTIALS](type9,required)"
+Palo Alto Networks Enterprise DLP,xsoar,Palo Alto Networks,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Palo Alto Networks IoT,xsoar,Palo Alto Networks,AWS_AUTH | CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(OAUTH_CLIENT_CREDENTIALS) + OPTIONAL(AWS_AUTH, CREDENTIALS)","tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,required); credentials[CREDENTIALS](type9,optional); secret_access_key[AWS_AUTH](type4,optional)"
+Palo Alto Networks Security Advisories,xsoar,Palo Alto Networks,NONE,NONE,
+Palo Alto Networks Threat Vault v2,xsoar,Palo Alto Networks,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Palo Alto Networks Threat Vault v2 Feed,xsoar,Palo Alto Networks,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+PaloAltoNetworks_PrismaCloudCompute,xsoar,Palo Alto Networks,CERTIFICATE | CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(CERTIFICATE),"credentials[CREDENTIALS](type9,required); certificate[CERTIFICATE](type12,optional)"
+Panorama,xsoar,Palo Alto Networks,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); key[API_KEY](type4,optional)"
+PATHelpdeskAdvanced,xsoar,PATServicesLTD,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Penfield,partner,PenfieldAI,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+Pentera,partner,Pentera,OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS),"clientId[OAUTH_CLIENT_CREDENTIALS](type0,required)"
+PerceptionPoint,partner,Fortinet,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"pp_token[BEARER_TOKEN](type4,required)"
+Perch,xsoar,Razor Group,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","api-key[API_KEY](type4,optional); api-key_creds[API_KEY](type9,optional); credentials[CREDENTIALS](type9,optional)"
+Phisher,partner,Vista Equity Partners,API_KEY,OPTIONAL(API_KEY),"apikey[API_KEY](type9,optional)"
+PhishLabs IOC,xsoar,Fortra,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+PhishLabs IOC DRP,xsoar,Fortra,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+PhishLabs IOC EIR,xsoar,Fortra,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+PhishTank V2,xsoar,Open Source,BASIC_AUTH,OPTIONAL(BASIC_AUTH),"username[BASIC_AUTH](type0,optional)"
+Picus,partner,Picus Security,API_KEY,REQUIRED(API_KEY),"picus_apikey[API_KEY](type4,required)"
+PicusNG,partner,Picus Security,API_KEY,REQUIRED(API_KEY),"picus_apikey[API_KEY](type4,required)"
+PingOne,partner,Thoma Bravo,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Pipl,xsoar,Pipl,API_KEY,OPTIONAL(API_KEY),"key[API_KEY](type4,optional); credentials_api_key[API_KEY](type9,optional)"
+Plain Text Feed,xsoar,Open Source,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+PolySwarmV2,partner,PolySwarm,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type4,required)"
+PowerShell Remoting,xsoar,Microsoft,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Prisma Access,xsoar,Palo Alto Networks,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","key[API_KEY](type4,optional); credentials_key[API_KEY](type9,optional); Username[CREDENTIALS](type9,optional)"
+Prisma Access Egress IP feed,xsoar,Palo Alto Networks,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); api_key[API_KEY](type4,optional)"
+PrismaCloud IAM,xsoar,Palo Alto Networks,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+PrismaCloud v2,xsoar,Palo Alto Networks,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Proofpoint Email Security Event Collector,xsoar,Thoma Bravo,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type9,required)"
+Proofpoint Protection Server v2,xsoar,Thoma Bravo,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Proofpoint Server Protection,xsoar,Thoma Bravo,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Proofpoint TAP v2,xsoar,Thoma Bravo,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Proofpoint Threat Protection,xsoar,Thoma Bravo,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Proofpoint Threat Response,xsoar,Thoma Bravo,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); apikey[API_KEY](type4,optional)"
+ProofpointFeed,xsoar,Thoma Bravo,OAUTH_AUTH_CODE,OPTIONAL(OAUTH_AUTH_CODE),"auth_code[OAUTH_AUTH_CODE](type4,optional); credentials_auth_code[OAUTH_AUTH_CODE](type9,optional)"
+ProofpointIsolationEventCollector,xsoar,Thoma Bravo,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+ProofpointThreatResponseEventCollector,xsoar,Thoma Bravo,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+ProtectWise,xsoar,Verizon Communications,BASIC_AUTH | BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BASIC_AUTH, BEARER_TOKEN, CREDENTIALS)","password[BASIC_AUTH](type4,optional); credentials_login[CREDENTIALS](type9,optional); token[BEARER_TOKEN](type4,optional); credentials_api_token[BEARER_TOKEN](type9,optional)"
+Public DNS Feed,xsoar,Open Source,NONE,NONE,
+QintelPMI,partner,Qintel,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+QintelQSentry,partner,Qintel,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"token[BEARER_TOKEN](type4,required)"
+QintelQWatch,partner,Qintel,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+QRadar v3,xsoar,Palo Alto Networks,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+QSS,partner,Open Source,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+qualys_fim,xsoar,Qualys,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+QualysV2,xsoar,Qualys,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Query.AI,partner,QueryAI Inc.,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"api_token[BEARER_TOKEN](type4,required)"
+QuestKace,xsoar,Quest Software,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+QutteraWebsiteMalwareScanner,partner,Quttera,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+RaDark,partner,KELA,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type4,required)"
+Radware Cloud DDoS Protection Services,xsoar,Radware,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Rapid7 InsightIDR,xsoar,Rapid7,API_KEY,OPTIONAL(API_KEY),"apiKey[API_KEY](type4,optional); apikey_creds[API_KEY](type9,optional)"
+Rapid7 Nexpose,xsoar,Rapid7,BEARER_TOKEN | CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(BEARER_TOKEN),"credentials[CREDENTIALS](type9,required); token[BEARER_TOKEN](type9,optional)"
+rapid7_threat_command,partner,Rapid7,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+rapid7appsec,xsoar,Rapid7,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type9,required)"
+Rasterize,xsoar,Open Source,NONE,NONE,
+RDAP,xsoar,Open Source,NONE,NONE,
+Reco,partner,Reco AI,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"api_token[BEARER_TOKEN](type4,required)"
+Recorded Future Feed,xsoar,Mastercard,BEARER_TOKEN,OPTIONAL(BEARER_TOKEN),"api_token[BEARER_TOKEN](type4,optional); credentials_api_token[BEARER_TOKEN](type9,optional)"
+Recorded Future Identity,partner,Mastercard,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","token[BEARER_TOKEN](type4,optional); credential[CREDENTIALS](type9,optional)"
+Recorded Future v2,partner,Mastercard,BEARER_TOKEN,OPTIONAL(BEARER_TOKEN),"token[BEARER_TOKEN](type4,optional); token_credential[BEARER_TOKEN](type9,optional)"
+RecordedFutureAlerts,partner,Mastercard,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+RecordedFutureASI,partner,Mastercard,API_KEY | BEARER_TOKEN | CREDENTIALS,"REQUIRED(BEARER_TOKEN) + OPTIONAL(API_KEY, CREDENTIALS)","apikey[API_KEY](type4,optional); credentials[CREDENTIALS](type9,optional); project_id[BEARER_TOKEN](type4,required)"
+RecordedFutureEventCollector,partner,Mastercard,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+RecordedFutureLists,partner,Mastercard,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"token[BEARER_TOKEN](type9,required)"
+RecordedFuturePlaybookAlerts,partner,Mastercard,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"token[BEARER_TOKEN](type9,required)"
+RedCanary,xsoar,Zscaler,API_KEY,OPTIONAL(API_KEY),"api_key[API_KEY](type4,optional); api_key_creds[API_KEY](type9,optional)"
+RedLock,xsoar,Palo Alto Networks,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Redmine,xsoar,Open Source,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+ReliaQuest GreyMatter DRP Event Collector,partner,ReliaQuest,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+ReliaQuest GreyMatter DRP Incidents,partner,ReliaQuest,API_KEY,REQUIRED(API_KEY),"apiKey[API_KEY](type9,required); apiSecret[API_KEY](type9,required)"
+ReliaquestTakedown,partner,ReliaQuest,API_KEY,REQUIRED(API_KEY),"apiKey[API_KEY](type9,required); apiSecret[API_KEY](type9,required)"
+Remedy AR,xsoar,BMC Software,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+RemoteAccess v2,xsoar,Axis Communications,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional); additional_password[CREDENTIALS](type9,optional)"
+ResecurityMonitoring,partner,Resecurity,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Respond_Analyst,partner,Google,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"token[BEARER_TOKEN](type4,required)"
+Retarus Secure Email Gateway,xsoar,Retarus GmbH,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+ReversingLabs A1000 v2,partner,ReversingLabs,BEARER_TOKEN | CREDENTIALS,REQUIRED(BEARER_TOKEN) + OPTIONAL(CREDENTIALS),"token[BEARER_TOKEN](type4,required); http_credentials[CREDENTIALS](type9,optional); https_credentials[CREDENTIALS](type9,optional)"
+ReversingLabs Ransomware and Related Tools Feed,partner,ReversingLabs,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+ReversingLabs Titanium Cloud,partner,ReversingLabs,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+ReversingLabs TitaniumCloud v2,partner,ReversingLabs,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required); http_credentials[CREDENTIALS](type9,optional); https_credentials[CREDENTIALS](type9,optional)"
+ReversingLabs TitaniumScale,partner,ReversingLabs,BEARER_TOKEN | CREDENTIALS,REQUIRED(BEARER_TOKEN) + OPTIONAL(CREDENTIALS),"token[BEARER_TOKEN](type4,required); http_credentials[CREDENTIALS](type9,optional); https_credentials[CREDENTIALS](type9,optional)"
+RiskSense,partner,Ivanti,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type4,required)"
+RSA Archer v2,xsoar,RSAsecurity,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+RSA NetWitness Endpoint,xsoar,PartnerOne,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+RSA NetWitness Packets and Logs,partner,PartnerOne,BASIC_AUTH | CREDENTIALS,"OPTIONAL(BASIC_AUTH, CREDENTIALS)","username[BASIC_AUTH](type0,optional); password[BASIC_AUTH](type4,optional); user_creds[CREDENTIALS](type9,optional)"
+RSA NetWitness Security Analytics,xsoar,PartnerOne,BASIC_AUTH | CREDENTIALS,"OPTIONAL(BASIC_AUTH, CREDENTIALS)","username[BASIC_AUTH](type0,optional); password[BASIC_AUTH](type4,optional); credentials[CREDENTIALS](type9,optional)"
+RSA NetWitness v11.1,partner,PartnerOne,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+RSANetWitnessv115,partner,PartnerOne,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+RSS Feed,xsoar,Open Source,NONE,NONE,
+RST Cloud - Threat Feed API,partner,RSTCloud,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+RTIR,xsoar,Open Source,BEARER_TOKEN | CERTIFICATE | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CERTIFICATE, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); token[BEARER_TOKEN](type9,optional); certificate[CERTIFICATE](type9,optional)"
+RubrikPolaris,partner,Rubrik,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","service_account_json[API_KEY](type4,optional); email[CREDENTIALS](type9,optional)"
+Rundeck,xsoar,PagerDuty,BEARER_TOKEN,OPTIONAL(BEARER_TOKEN),"token[BEARER_TOKEN](type4,optional); token_creds[BEARER_TOKEN](type9,optional)"
+RunZero,xsoar,runZero,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type9,required)"
+RunZero Event Collector,xsoar,runZero,OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); client_secret[OAUTH_CLIENT_CREDENTIALS](type9,required)"
+SaaS Security Event Collector,xsoar,Palo Alto Networks,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+SaasSecurity,xsoar,Palo Alto Networks,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Safebreach,partner,SafeBreach,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+SafeBreach v2,partner,SafeBreach,API_KEY,REQUIRED(API_KEY),"apiKey[API_KEY](type4,required)"
+SafeNet Trusted Access,partner,Thales,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type4,required)"
+SafeNetTrustedAccessEventCollector,partner,Thales,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+SafewalkManagement,partner,InWebo Group,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+SafewalkReports,partner,Protectimus,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+SailPointIdentityIQ,partner,SailPoint Technologies,OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type4,required); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,required)"
+SailPointIdentityNow,partner,SailPoint Technologies,OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,required)"
+SailPointIdentityNowEventCollector,partner,SailPoint Technologies,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Salesforce,xsoar,Salesforce,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(OAUTH_CLIENT_CREDENTIALS),"credentials[CREDENTIALS](type9,required); clientSecret[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials_client_secret[OAUTH_CLIENT_CREDENTIALS](type9,optional)"
+Salesforce Event Collector,xsoar,Salesforce,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","client_id[OAUTH_CLIENT_CREDENTIALS](type9,required); client_secret[OAUTH_CLIENT_CREDENTIALS](type9,required); credentials[CREDENTIALS](type9,required)"
+Salesforce Fusion IAM,xsoar,Salesforce,BEARER_TOKEN | CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CREDENTIALS) + OPTIONAL(BEARER_TOKEN, OAUTH_CLIENT_CREDENTIALS)","credentials[CREDENTIALS](type9,required); client_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,optional); client_id_creds[OAUTH_CLIENT_CREDENTIALS](type9,optional); secret_token[BEARER_TOKEN](type4,optional); secret_token_creds[BEARER_TOKEN](type9,optional)"
+Salesforce IAM,xsoar,Salesforce,API_KEY | CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(API_KEY),"credentials[CREDENTIALS](type9,required); consumer_key[API_KEY](type4,optional); consumer_secret[API_KEY](type4,optional); credentials_consumer[CREDENTIALS](type9,optional)"
+Sample Incident Generator,xsoar,Open Source,NONE,NONE,
+SAP-IAM,xsoar,SAP,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+SAPBTP,xsoar,SAP,CERTIFICATE | OAUTH_CLIENT_CREDENTIALS,"CHOICE(CERTIFICATE, OAUTH_CLIENT_CREDENTIALS)","auth_type[OAUTH_CLIENT_CREDENTIALS](type15,required); client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); certificate[CERTIFICATE](type12,optional); private_key[CERTIFICATE](type14,optional); client_secret[OAUTH_CLIENT_CREDENTIALS](type9,optional)"
+SAPCloudForCustomerC4C,xsoar,SAP,CREDENTIALS,REQUIRED(CREDENTIALS),"username[CREDENTIALS](type9,required)"
+SaviyntEICEventCollector,xsoar,Saviynt,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+SCADAfence CNM,partner,Rapid7,API_KEY,REQUIRED(API_KEY),"APISecret[API_KEY](type4,required); APIKey[API_KEY](type4,required)"
+SecBI,partner,LogPoint,API_KEY,REQUIRED(API_KEY),"API_KEY[API_KEY](type4,required)"
+Secneurx Analysis,partner,SecneurX,API_KEY,REQUIRED(API_KEY),"apiKey[API_KEY](type4,required)"
+Secneurx Threat Feeds,partner,SecneurX,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+SecurityAndComplianceV2,xsoar,Microsoft,BEARER_TOKEN | CERTIFICATE | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(BEARER_TOKEN) + OPTIONAL(CERTIFICATE, OAUTH_CLIENT_CREDENTIALS)","certificate_password[CERTIFICATE](type4,optional); certificate[CERTIFICATE](type4,optional); delegated_auth[BEARER_TOKEN](type9,required); credentials_app_secret[OAUTH_CLIENT_CREDENTIALS](type9,optional); app_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); credentials_app_id[OAUTH_CLIENT_CREDENTIALS](type9,optional); app_secret[OAUTH_CLIENT_CREDENTIALS](type4,optional); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); credentials_tenant_id[OAUTH_CLIENT_CREDENTIALS](type9,optional)"
+SecurityScorecard,partner,SecurityScorecard,CREDENTIALS,REQUIRED(CREDENTIALS),"username[CREDENTIALS](type9,required)"
+Securonix,partner,Securonix,BASIC_AUTH,REQUIRED(BASIC_AUTH),"username[BASIC_AUTH](type0,required); password[BASIC_AUTH](type4,required)"
+Sekoia XDR,partner,Sekoia,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+SEKOIAIntelligenceCenter,partner,Sekoia,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+SentinelOne V2,partner,SentinelOne,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); token[BEARER_TOKEN](type4,optional)"
+SentinelOneEventCollector,partner,SentinelOne,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Sepio,partner,Sepio,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Serenety,partner,XM Cyber,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type9,required)"
+Server Message Block (SMB) v2,xsoar,Microsoft,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+Service Manager,xsoar,OpenText,CREDENTIALS,REQUIRED(CREDENTIALS),"username[CREDENTIALS](type9,required)"
+ServiceDeskPlus,xsoar,Zoho Corporation,API_KEY | BEARER_TOKEN | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(API_KEY, BEARER_TOKEN, OAUTH_CLIENT_CREDENTIALS)","credentials_technician_key[API_KEY](type9,optional); client_id[OAUTH_CLIENT_CREDENTIALS](type4,optional); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials_client[OAUTH_CLIENT_CREDENTIALS](type9,optional); refresh_token[BEARER_TOKEN](type4,optional); credentials_refresh_token[BEARER_TOKEN](type9,optional)"
+ServiceNow CMDB,xsoar,ServiceNow,CERTIFICATE | CREDENTIALS,"OPTIONAL(CERTIFICATE, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); basic_credentials[CREDENTIALS](type9,optional); private_key[CERTIFICATE](type9,optional)"
+ServiceNow Event Collector,xsoar,ServiceNow,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(OAUTH_CLIENT_CREDENTIALS),"credentials[CREDENTIALS](type9,required); client_credentials[OAUTH_CLIENT_CREDENTIALS](type9,optional)"
+ServiceNow IAM,xsoar,ServiceNow,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+ServiceNow v2,xsoar,ServiceNow,CERTIFICATE | CREDENTIALS,"OPTIONAL(CERTIFICATE, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); basic_credentials[CREDENTIALS](type9,optional); private_key[CERTIFICATE](type9,optional)"
+ShiftLeft CORE,partner,QwietAI,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"access_token[BEARER_TOKEN](type4,required)"
+Shodan_v2,xsoar,Shodan,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); api_key[API_KEY](type4,optional)"
+Signal Sciences WAF,xsoar,Fastly,BEARER_TOKEN,OPTIONAL(BEARER_TOKEN),"Token[BEARER_TOKEN](type4,optional); cred_token[BEARER_TOKEN](type9,optional)"
+SIGNL4,partner,Derdack GmbH,API_KEY,REQUIRED(API_KEY),"secret[API_KEY](type9,required)"
+SilentPush,partner,Silent Push Inc.,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Silverfort,partner,Silverfort,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required); operationalApiKey[API_KEY](type4,optional); externalApiKey[API_KEY](type4,optional)"
+SingleConnect,partner,Vectra AI,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Sixgill_Darkfeed,partner,Bitsight,OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,required)"
+Sixgill_Darkfeed_Enrichment,partner,Bitsight,OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,required)"
+Sixgill_DVE_Feed v2,partner,BitSight,OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,required)"
+Skyhigh Secure Web Gateway (On Prem),xsoar,Skyhigh Security,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Skyhigh Security,xsoar,STG,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Slack Event Collector,xsoar,Slack,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"user_token[BEARER_TOKEN](type9,required)"
+Slack IAM,xsoar,Slack,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); access_token[BEARER_TOKEN](type4,optional)"
+SlackV3,xsoar,Slack,BEARER_TOKEN,OPTIONAL(BEARER_TOKEN),"bot_token[BEARER_TOKEN](type9,optional); user_token[BEARER_TOKEN](type9,optional); app_token[BEARER_TOKEN](type9,optional); demisto_api_key[BEARER_TOKEN](type9,optional)"
+SMIME Messaging,xsoar,Open Source,CERTIFICATE,REQUIRED(CERTIFICATE),"public_key[CERTIFICATE](type12,required); private_key[CERTIFICATE](type14,required)"
+Smokescreen IllusionBLACK,partner,Zscaler,BEARER_TOKEN | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(BEARER_TOKEN, OAUTH_CLIENT_CREDENTIALS)","client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); token[BEARER_TOKEN](type4,required)"
+Snowflake,xsoar,Snowflake,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+SOCRadarIncidentsMultiTenant,partner,SOCRadar,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+SOCRadarIncidentsV4,partner,SOCRadar,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+SOCRadarThreatFusion,partner,SOCRadar,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+SolarWinds,xsoar,SolarWinds Corporation,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Sophos Central,xsoar,Thoma Bravo,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(OAUTH_CLIENT_CREDENTIALS),"credentials[CREDENTIALS](type9,required); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,optional)"
+sophos_firewall,xsoar,Thoma Bravo,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+SpamhausFeed,xsoar,Spamhaus Project,NONE,NONE,
+SplunkPy v2,xsoar,Cisco Systems,BEARER_TOKEN | CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(BEARER_TOKEN),"authentication[CREDENTIALS](type9,required); cred_hec_token[BEARER_TOKEN](type9,optional)"
+SpurContextAPI,partner,GoAhead Inc,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+SpyCloudEnterpriseProtectionEnrichment,partner,SpyCloud,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+SpyCloudEnterpriseProtectionFeed,partner,SpyCloud,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+Stamus,partner,Stamus Networks,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Stealthwatch Cloud,xsoar,Cisco Systems,API_KEY,OPTIONAL(API_KEY),"APIKey[API_KEY](type4,optional); credentials_api_key[API_KEY](type9,optional)"
+StellarCyber,partner,Stellar Cyber,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(OAUTH_CLIENT_CREDENTIALS),"credentials[CREDENTIALS](type9,required); tenantid[OAUTH_CLIENT_CREDENTIALS](type0,optional)"
+SumoLogic,xsoar,Francisco Partners,AWS_AUTH | BEARER_TOKEN,"OPTIONAL(AWS_AUTH, BEARER_TOKEN)","accessKey[AWS_AUTH](type4,optional); credentialsAccess[BEARER_TOKEN](type9,optional)"
+SumoLogicSEC,partner,Francisco Partners,AWS_AUTH,REQUIRED(AWS_AUTH),"access_key[AWS_AUTH](type4,required)"
+Symantec Blue Coat Content and Malware Analysis,xsoar,Broadcom,API_KEY,OPTIONAL(API_KEY),"api_key[API_KEY](type4,optional); api_key_creds[API_KEY](type9,optional)"
+Symantec Cloud Secure Web Gateway Event Collector,xsoar,Broadcom,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Symantec Data Loss Prevention v2,xsoar,Broadcom,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Symantec Email Security Cloud,xsoar,Broadcom,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional); quarantine_credentials[CREDENTIALS](type9,optional)"
+Symantec Endpoint Protection V2,xsoar,Broadcom,CREDENTIALS,REQUIRED(CREDENTIALS),"authentication[CREDENTIALS](type9,required)"
+Symantec Endpoint Security,xsoar,Broadcom,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"token[BEARER_TOKEN](type9,required)"
+Symantec Management Center,xsoar,Broadcom,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Symantec Messaging Gateway,xsoar,Broadcom,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Symantec MSS,xsoar,Broadcom,BASIC_AUTH | CERTIFICATE | CREDENTIALS,"REQUIRED(CERTIFICATE) + OPTIONAL(BASIC_AUTH, CREDENTIALS)","certificate[CERTIFICATE](type12,required); passphrase[BASIC_AUTH](type4,optional); passphrase_creds[CREDENTIALS](type9,optional)"
+SymantecCloudSOCEventCollector,xsoar,Broadcom,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+SymantecEDR,xsoar,Broadcom,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+SysAid,xsoar,SysAid Technologies,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+SysdigResponseActions,partner,Sysdig,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Syslog Sender,xsoar,Open Source,CERTIFICATE,OPTIONAL(CERTIFICATE),"certificate[CERTIFICATE](type9,optional)"
+Syslog v2,xsoar,Open Source,CERTIFICATE,OPTIONAL(CERTIFICATE),"creds_certificate[CERTIFICATE](type9,optional); certificate[CERTIFICATE](type12,optional); private_key[CERTIFICATE](type14,optional)"
+TaegisXDRv2,partner,Sophos,OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS),"client_id[OAUTH_CLIENT_CREDENTIALS](type4,required); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,required)"
+Tanium Threat Response v2,xsoar,Tanium,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+Tanium v2,xsoar,Tanium,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); api_token[BEARER_TOKEN](type4,optional); credentials_api_token[BEARER_TOKEN](type9,optional)"
+TAXII 2 Feed,xsoar,Open Source,API_KEY | CERTIFICATE | CREDENTIALS,"OPTIONAL(API_KEY, CERTIFICATE, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); creds_certificate[CERTIFICATE](type9,optional); certificate[CERTIFICATE](type12,optional); key[API_KEY](type4,optional)"
+TAXII Server,xsoar,Open Source,API_KEY | CERTIFICATE | CREDENTIALS,"OPTIONAL(API_KEY, CERTIFICATE, CREDENTIALS)","certificate[CERTIFICATE](type12,optional); key[API_KEY](type14,optional); credentials[CREDENTIALS](type9,optional)"
+TAXII2 Server,xsoar,Open Source,API_KEY | CERTIFICATE | CREDENTIALS,"OPTIONAL(API_KEY, CERTIFICATE, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); certificate[CERTIFICATE](type12,optional); key[API_KEY](type14,optional)"
+TAXIIFeed,xsoar,Open Source,API_KEY | CERTIFICATE | CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(API_KEY, CERTIFICATE, CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","subscription_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); credentials[CREDENTIALS](type9,optional); creds_certificate[CERTIFICATE](type9,optional); cert_text[CERTIFICATE](type12,optional); key_text[API_KEY](type4,optional)"
+Team Cymru Scout,partner,Audax Private Equity,API_KEY | CREDENTIALS,"CHOICE(API_KEY, CREDENTIALS)","authentication_type[OAUTH_CLIENT_CREDENTIALS](type15,required); api_key[API_KEY](type9,optional); basic_auth[CREDENTIALS](type9,optional)"
+TeamCymru,partner,Audax Private Equity,NONE,NONE,
+TeamViewer Event Collector,xsoar,TeamViewer,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Telegram_Beta,xsoar,Telegram FZ-LLC,BEARER_TOKEN,OPTIONAL(BEARER_TOKEN),"token[BEARER_TOKEN](type4,optional); credentials_api_token[BEARER_TOKEN](type9,optional)"
+Tenable.io,xsoar,Tenable,AWS_AUTH,REQUIRED(AWS_AUTH),"access-key[AWS_AUTH](type4,optional); credentials_access_key[AWS_AUTH](type9,required); secret-key[AWS_AUTH](type4,optional); credentials_secret_key[AWS_AUTH](type9,required)"
+Tenable.sc,xsoar,Tenable,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","creds_keys[API_KEY](type9,optional); credentials[CREDENTIALS](type9,optional)"
+Tessian,partner,Proofpoint,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type9,required)"
+TheHive Project,xsoar,StrangeBee,API_KEY,OPTIONAL(API_KEY),"apiKey[API_KEY](type4,optional); credentials_api_key[API_KEY](type9,optional)"
+Thinkst Canary,xsoar,Thinkst Canary,BEARER_TOKEN,OPTIONAL(BEARER_TOKEN),"auth_token[BEARER_TOKEN](type4,optional); authentication_token[BEARER_TOKEN](type9,optional)"
+Threat Grid,xsoar,Cisco Systems,BEARER_TOKEN,REQUIRED(BEARER_TOKEN),"token[BEARER_TOKEN](type4,required)"
+ThreatConnect Feed,xsoar,Dataminr,API_KEY,REQUIRED(API_KEY),"api_credentials[API_KEY](type9,required); api_access_id[API_KEY](type4,optional); api_secret_key[API_KEY](type4,optional)"
+ThreatConnect v3,xsoar,Dataminr,API_KEY,REQUIRED(API_KEY),"api_secret_key[API_KEY](type9,required)"
+ThreatExchange v2,xsoar,Meta,CREDENTIALS,REQUIRED(CREDENTIALS),"app_id[CREDENTIALS](type9,required)"
+ThreatFox Feed,xsoar,AbuseCh,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+ThreatGridv2,xsoar,Cisco Systems,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+ThreatMiner,xsoar,ThreatConnect,NONE,NONE,
+ThreatQ v2,xsoar,Securonix,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); credentials[CREDENTIALS](type9,required)"
+ThreatQ_Beta,xsoar,Securonix,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); credentials[CREDENTIALS](type9,required)"
+ThreatX,xsoar,A10 Networks,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","api_key[API_KEY](type4,optional); credentials[CREDENTIALS](type9,optional)"
+ThreatZone,partner,MCT,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+Tidy,xsoar,Tidy Building Services,BASIC_AUTH | CERTIFICATE | CREDENTIALS,"OPTIONAL(BASIC_AUTH, CERTIFICATE, CREDENTIALS)","user[BASIC_AUTH](type0,optional); password[BASIC_AUTH](type4,optional); user_creds[CREDENTIALS](type9,optional); ssh_key[CERTIFICATE](type14,optional)"
+TOPdesk,xsoar,TOPdesk,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Tor Exit Addresses Feed,xsoar,Open Source,NONE,NONE,
+Traceable,partner,Harness,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Trend Micro Apex,xsoar,Trend Micro,BEARER_TOKEN | OAUTH_CLIENT_CREDENTIALS,REQUIRED(OAUTH_CLIENT_CREDENTIALS) + OPTIONAL(BEARER_TOKEN),"application_id[OAUTH_CLIENT_CREDENTIALS](type0,required); token[BEARER_TOKEN](type4,optional); credentials_api_token[BEARER_TOKEN](type9,optional)"
+Trend Micro Deep Discovery Analyzer,xsoar,Trend Micro,API_KEY,OPTIONAL(API_KEY),"apiKey[API_KEY](type4,optional); credentials_api_key[API_KEY](type9,optional)"
+Trend Micro Deep Security,xsoar,Trend Micro,API_KEY,OPTIONAL(API_KEY),"api_secret[API_KEY](type4,optional); credentials_api_secret[API_KEY](type9,optional)"
+Trend Micro Email Security Event Collector,xsoar,Trend Micro,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Trend Micro Vision One V3,partner,TrendAI™,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type9,required)"
+TrendMicro Cloud App Security,xsoar,Trend Micro,BEARER_TOKEN,OPTIONAL(BEARER_TOKEN),"token[BEARER_TOKEN](type4,optional); credentials_token[BEARER_TOKEN](type9,optional)"
+TrendMicroVisionOneEventCollector,partner,Trend Micro,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Tripwire,xsoar,Fortra,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+trustwave secure email gateway,xsoar,LevelBlue,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+TrustwaveFusion,partner,LevelBlue,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+Tufin,partner,Turn River Capital,CREDENTIALS,REQUIRED(CREDENTIALS),"SecureTrack-User[CREDENTIALS](type9,required); SecureChange-User[CREDENTIALS](type9,optional); SecureApp-User[CREDENTIALS](type9,optional)"
+Twilio,xsoar,Twilio,BEARER_TOKEN,OPTIONAL(BEARER_TOKEN),"token[BEARER_TOKEN](type4,optional); credentials_token[BEARER_TOKEN](type9,optional)"
+Twilio SendGrid,xsoar,Twilio,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type9,required)"
+Twinwave,partner,CrowdStrike,API_KEY | BASIC_AUTH,REQUIRED(API_KEY) + OPTIONAL(BASIC_AUTH),"api-token[API_KEY](type4,required); username[BASIC_AUTH](type0,optional)"
+Twitter v2,xsoar,X Corp,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+UBIRCH,partner,UBIRCH GmbH,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","credentials[CREDENTIALS](type9,required); tenant_id[OAUTH_CLIENT_CREDENTIALS](type0,required)"
+Unit 42 Feed,xsoar,Palo Alto Networks,NONE,NONE,
+Unit 42 Intelligence,xsoar,Palo Alto Networks,NONE,NONE,
+Uptycs,partner,Uptycs,API_KEY | BEARER_TOKEN,"REQUIRED(API_KEY, BEARER_TOKEN)","key[API_KEY](type4,required); secret[API_KEY](type4,required); customer_id[BEARER_TOKEN](type4,required)"
+URLhaus,xsoar,Open Source,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+urlscan.io,partner,Urlscan io,API_KEY,OPTIONAL(API_KEY),"creds_apikey[API_KEY](type9,optional); apikey[API_KEY](type4,optional)"
+USTA Account Takeover Prevention,partner,PRODAFT,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type4,required)"
+USTA Stolen Credit Cards,partner,PRODAFT,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type4,required)"
+VaronisDataSecurityPlatform,partner,Varonis,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+VaronisSaaS,partner,Varonis,API_KEY,REQUIRED(API_KEY),"apiKey[API_KEY](type9,required)"
+VBR REST API,partner,Veeam,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Vectra_Detect,partner,Vectra AI,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"CHOICE(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","authentication_type[OAUTH_CLIENT_CREDENTIALS](type15,optional); credentials[CREDENTIALS](type9,optional); oauth_credentials[OAUTH_CLIENT_CREDENTIALS](type9,optional)"
+VectraAIEventCollector,partner,Vectra AI,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+VectraXDR,partner,Vectra AI,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Veeam ONE REST API,partner,Veeam,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Venafi,xsoar,CyberArk,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+VenafiTLSProtect,xsoar,CyberArk,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","credentials[CREDENTIALS](type9,required); client_id[OAUTH_CLIENT_CREDENTIALS](type0,required)"
+VercaraUltraDNS,xsoar,DigiCert,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Verodin,xsoar,Trellix,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+VersaDirector,xsoar,Versa Networks,BEARER_TOKEN | CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","credentials[CREDENTIALS](type9,optional); client_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials_client[OAUTH_CLIENT_CREDENTIALS](type9,optional); access_token[BEARER_TOKEN](type4,optional); credentials_access_token[CREDENTIALS](type9,optional)"
+Vertica,xsoar,OpenText,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+VirusTotal,partner,Google,API_KEY,REQUIRED(API_KEY),"APIKey[API_KEY](type4,required)"
+VirusTotal (API v3),partner,Google,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+VirusTotal - Premium (API v3),partner,Google,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+VirusTotal Livehunt Feed,partner,Google,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+VirusTotal Retrohunt Feed,partner,Google,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+vmray,partner,VMRay,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); api_key[API_KEY](type4,optional)"
+VMware,xsoar,Broadcom,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+VMware Carbon Black EDR v2,xsoar,Broadcom,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+VMware Workspace ONE UEM (AirWatch MDM),xsoar,Omnissa,BEARER_TOKEN | CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(BEARER_TOKEN),"aw_tenant_code[BEARER_TOKEN](type4,optional); aw_tenant_code_creds[CREDENTIALS](type9,optional); credentials[CREDENTIALS](type9,required)"
+VulnDB,xsoar,Cyberint,CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"OPTIONAL(CREDENTIALS, OAUTH_CLIENT_CREDENTIALS)","client_id[OAUTH_CLIENT_CREDENTIALS](type0,optional); client_secret[OAUTH_CLIENT_CREDENTIALS](type4,optional); credentials[CREDENTIALS](type9,optional)"
+VxStream,xsoar,CrowdStrike,API_KEY | AWS_AUTH,REQUIRED(API_KEY) + OPTIONAL(AWS_AUTH),"apiKey[API_KEY](type4,required); secretKey[AWS_AUTH](type4,optional)"
+WALLIX Bastion,partner,WALLIX Group,API_KEY,OPTIONAL(API_KEY),"auth_key[API_KEY](type4,optional)"
+WhatsMyBrowser,xsoar,WhatIsMyBrowserLimited,API_KEY,OPTIONAL(API_KEY),"api_key[API_KEY](type4,optional); credentials_api_key[API_KEY](type9,optional)"
+Whois,xsoar,Open Source,NONE,NONE,
+WildFire-Reports,xsoar,Palo Alto Networks,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); token[BEARER_TOKEN](type4,optional)"
+WildFire-v2,xsoar,Palo Alto Networks,BEARER_TOKEN | CREDENTIALS,"OPTIONAL(BEARER_TOKEN, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); token[BEARER_TOKEN](type4,optional)"
+Windows Remote Management,xsoar,Microsoft,CREDENTIALS,CHOICE(CREDENTIALS),"credentials[CREDENTIALS](type9,required); auth_type[OAUTH_CLIENT_CREDENTIALS](type15,required)"
+WithSecureEventCollector,xsoar,WithSecure Corporation,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Wiz,partner,Google,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+WizDefend,partner,Google,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+WootCloud,partner,Netskope,AWS_AUTH | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(AWS_AUTH, OAUTH_CLIENT_CREDENTIALS)","client_id[OAUTH_CLIENT_CREDENTIALS](type0,required); secret_key[AWS_AUTH](type4,required)"
+Workday,xsoar,Workday,BEARER_TOKEN | CREDENTIALS | OAUTH_CLIENT_CREDENTIALS,"REQUIRED(CREDENTIALS) + OPTIONAL(BEARER_TOKEN, OAUTH_CLIENT_CREDENTIALS)","credentials[CREDENTIALS](type9,required); tenant_name[BEARER_TOKEN](type4,optional); cred_tenant_name[OAUTH_CLIENT_CREDENTIALS](type9,optional); token[BEARER_TOKEN](type4,optional); cred_token[BEARER_TOKEN](type9,optional)"
+Workday Event Collector,xsoar,Workday,BEARER_TOKEN | CREDENTIALS,"REQUIRED(BEARER_TOKEN, CREDENTIALS)","credentials[CREDENTIALS](type9,required); token[BEARER_TOKEN](type9,required)"
+Workday IAM,xsoar,Workday,CREDENTIALS,OPTIONAL(CREDENTIALS),"credentials[CREDENTIALS](type9,optional)"
+Workday Sign On Event Collector,xsoar,Workday,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Workday_IAM_Event_Generator,xsoar,Workday,NONE,NONE,
+WorkdaySignonEventGenerator,xsoar,Workday,NONE,NONE,
+XDome,partner,Claroty,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+XFE_v2,xsoar,IBM,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+xMatters,partner,Thoma Bravo,BASIC_AUTH,REQUIRED(BASIC_AUTH),"username[BASIC_AUTH](type0,required); password[BASIC_AUTH](type4,required)"
+XMCyber,partner,Schwarz Group,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+Xpanse Feed,xsoar,Palo Alto Networks,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+XQL Query Engine,xsoar,Palo Alto Networks,API_KEY,OPTIONAL(API_KEY),"apikey_id[API_KEY](type4,optional); apikey[API_KEY](type4,optional)"
+XSOAR Mirroring,xsoar,Palo Alto Networks,API_KEY,OPTIONAL(API_KEY),"apikey[API_KEY](type4,optional); credentials_api_key[API_KEY](type9,optional)"
+Zafran API,partner,Zafran Security,API_KEY,REQUIRED(API_KEY),"api_key[API_KEY](type4,required)"
+Zendesk v2,xsoar,Zendesk,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+ZeroFox,partner,Haveli Investments,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+ZeroFoxKeyIncidents,partner,Haveli Investments,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Zerohack XDR,partner,Zerohack,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+ZeroNetworksSegmentEventCollector,xsoar,Zero Networks,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+ZeroTrustAnalyticsPlatform,partner,Zscaler,API_KEY,REQUIRED(API_KEY),"apikey[API_KEY](type4,required)"
+Zimperium v2,xsoar,Liberty Strategic Capital,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Zoom,xsoar,Zoom,API_KEY | BEARER_TOKEN | CERTIFICATE | CREDENTIALS,"REQUIRED(CREDENTIALS) + OPTIONAL(API_KEY, BEARER_TOKEN, CERTIFICATE)","credentials[CREDENTIALS](type9,required); bot_credentials[CREDENTIALS](type9,optional); secret_token[BEARER_TOKEN](type9,optional); verification_token[BEARER_TOKEN](type9,optional); certificate[CERTIFICATE](type12,optional); key[API_KEY](type14,optional)"
+Zoom Feed,xsoar,ZoomInfo,NONE,NONE,
+Zoom Mail,xsoar,Zoom,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Zoom_IAM,xsoar,Zoom,API_KEY | CREDENTIALS,"OPTIONAL(API_KEY, CREDENTIALS)","credentials[CREDENTIALS](type9,optional); creds_api_key[API_KEY](type9,optional); creds_api_secret[API_KEY](type9,optional); api_key[API_KEY](type4,optional); api_secret[API_KEY](type4,optional)"
+ZoomEventCollector,xsoar,Zoom,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
+Zscaler,xsoar,Zscaler,API_KEY | CREDENTIALS,REQUIRED(CREDENTIALS) + OPTIONAL(API_KEY),"credentials[CREDENTIALS](type9,required); creds_key[API_KEY](type9,optional); key[API_KEY](type4,optional)"
+ZscalerZIdentity,xsoar,Zscaler,CREDENTIALS,REQUIRED(CREDENTIALS),"credentials[CREDENTIALS](type9,required)"
