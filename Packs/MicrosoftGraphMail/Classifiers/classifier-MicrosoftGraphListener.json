@@ -16,7 +16,6 @@
         "agentix",
         "xsiam",
         "edr",
-        "cloud",
         "cloud_runtime_security"
     ]
 }

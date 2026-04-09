@@ -116,5 +116,11 @@
     "marketplaces": [
         "xsoar"
     ],
-	"version": -1
+	"version": -1,
+    "supportedModules": [
+        "agentix",
+        "xsiam",
+        "edr",
+        "cloud_runtime_security"
+    ]
 }

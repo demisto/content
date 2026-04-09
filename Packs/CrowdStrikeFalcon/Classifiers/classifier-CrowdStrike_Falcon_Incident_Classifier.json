@@ -44,6 +44,12 @@
 		}
 	},
     "fromVersion": "6.0.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam",
+        "edr",
+        "cloud_runtime_security"
+    ],
     "marketplaces": [
         "xsoar"
     ]
