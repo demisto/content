@@ -123,10 +123,7 @@ class MagnetAutomateClient(ContentClient):
         Returns:
             dict[str, Any]: The created case.
         """
-        json_data: dict[str, Any] = assign_params(
-            caseNumber=case_number,
-            customFieldValues=custom_field_values
-        )
+        json_data: dict[str, Any] = assign_params(caseNumber=case_number, customFieldValues=custom_field_values)
 
         demisto.debug(f"Sending a POST Request to /cases with {json_data=}.")
 
@@ -220,7 +217,7 @@ class MagnetAutomateClient(ContentClient):
             platform=platform,
             decryption=decryption,
             customFieldValues=custom_field_values,
-            assignedNodeName=assigned_node_name
+            assignedNodeName=assigned_node_name,
         )
 
         json_data = {"evidenceSources": [evidence_source]}
@@ -323,10 +320,7 @@ class MagnetAutomateClient(ContentClient):
             dict[str, Any]: The started merge workflow run.
         """
         json_data: dict[str, Any] = assign_params(
-            runIds=run_ids,
-            workflowId=workflow_id,
-            outputPath=output_path,
-            assignedNodeName=assigned_node_name
+            runIds=run_ids, workflowId=workflow_id, outputPath=output_path, assignedNodeName=assigned_node_name
         )
 
         demisto.debug(f"Sending a POST Request to /cases/{case_id}/merge with {json_data=}.")
@@ -399,10 +393,7 @@ class MagnetAutomateClient(ContentClient):
             dict[str, Any]: The created node.
         """
         json_data: dict[str, Any] = assign_params(
-            name=name,
-            address=address,
-            workingDirectory=working_directory,
-            applications=applications
+            name=name, address=address, workingDirectory=working_directory, applications=applications
         )
 
         demisto.debug(f"Sending a POST Request to /nodes with {json_data=}.")
@@ -444,11 +435,7 @@ class MagnetAutomateClient(ContentClient):
         Returns:
             dict[str, Any]: The updated node.
         """
-        json_data: dict[str, Any] = assign_params(
-            address=address,
-            workingDirectory=working_directory,
-            applications=applications
-        )
+        json_data: dict[str, Any] = assign_params(address=address, workingDirectory=working_directory, applications=applications)
 
         demisto.debug(f"Sending a PUT Request to /nodes/{node_id} with {json_data=}.")
 
