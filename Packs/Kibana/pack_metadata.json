@@ -1,5 +1,5 @@
 {
-    "name": "Kibana",
+    "name": "CommunityElasticSearch",
     "description": "This pack allows for using Elastic Security for SIEM for security operations management. It also allows for searching Elastic logs.",
     "support": "community",
     "currentVersion": "1.0.0",
