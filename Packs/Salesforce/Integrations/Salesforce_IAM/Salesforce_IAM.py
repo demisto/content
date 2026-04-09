@@ -426,7 +426,7 @@ def main():
         demisto.debug(
             "Salesforce IAM: Client created. _ucp_enabled={}, _ucp_method_unique_id={}, "
             "_ucp_creds_cache={}, _ucp_creds_expiry={}".format(
-                client._ucp_enabled,
+                client._is_ucp_enabled(),
                 getattr(client, '_ucp_method_unique_id', 'N/A'),
                 type(client._ucp_creds_cache).__name__ if client._ucp_creds_cache else 'None',
                 getattr(client, '_ucp_creds_expiry', 'N/A'),
@@ -436,7 +436,7 @@ def main():
         # Legacy mode: extract credentials and perform token exchange.
         # In UCP mode, BaseClient handles auth transparently —
         # skip credential extraction entirely.
-        if not client._ucp_enabled:
+        if not client._is_ucp_enabled():
             demisto.info(
                 "Salesforce IAM: UCP not enabled — running in legacy auth mode."
             )

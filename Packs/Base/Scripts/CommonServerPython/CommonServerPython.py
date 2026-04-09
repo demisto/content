@@ -9709,6 +9709,11 @@ if 'requests' in sys.modules:
 
         REQUESTS_TIMEOUT = 60
         TIME_SENSITIVE_TOTAL_TIMEOUT = 15
+        
+
+    
+      
+            
 
         def __init__(
             self,
@@ -9759,7 +9764,6 @@ if 'requests' in sys.modules:
             self.execution_metrics = ExecutionMetrics()
 
             # ── UCP: Detection + Profile Resolution (once) ──
-            self._ucp_enabled = False
             self._ucp_method_unique_id = None
             self._ucp_creds_cache = None       # cached credentials dict
             self._ucp_creds_expiry = 0         # epoch timestamp
@@ -9772,7 +9776,6 @@ if 'requests' in sys.modules:
                 ))
 
                 if connector_info:
-                    self._ucp_enabled = True
                     self._ucp_info = connector_info
                     demisto.debug(
                         'UCP: __init__: Connector detected. connectorId={}, instanceId={}, '
@@ -9820,6 +9823,19 @@ if 'requests' in sys.modules:
             'fetch-incidents': 'collection',
         }
 
+        def _is_ucp_enabled(self):
+            """Detect if running in UCP mode by checking for the presence of unifiedConnectorMetadata.
+            Note: This method is not used for profile resolution, which relies on the presence of self._ucp_method_unique_id
+            set in __init__. This is a utility method that can be used by subclasses if needed
+            Returns:
+                bool: True if unifiedConnectorMetadata returns valid connector info, False otherwise.
+            """
+            connector_info = demisto.unifiedConnectorMetadata()
+            demisto.debug('UCP: _is_ucp_enabled: unifiedConnectorMetadata() returned: {}'.format(connector_info))
+            if connector_info:
+                return True
+            return False
+        
         def _resolve_ucp_profile(self):
             """Resolve which connection profile's method_unique_id to use for the current command.
 
@@ -9948,8 +9964,19 @@ if 'requests' in sys.modules:
             creds = demisto.getUCPCredentials(self._ucp_method_unique_id, from_cache=False)
             demisto.debug(f"UCP: _get_ucp_credentials: getUCPCredentials() returned {creds}")
 
-            # Determine cache expiry
-            expires_at = creds.get('expires_at')
+            # Determine cache expiry.
+            # expires_at may be at the top level or nested inside the type-specific
+            # sub-dict (e.g. creds['oauth2']['expires_at']).
+            cred_type = creds.get('type', '')
+            demisto.debug("new version is here")
+            demisto.debug(
+                'UCP: _get_ucp_credentials: Determining expiry. cred_type="{}", '
+                'top_level_expires_at="{}", refresh_threshold={}s'.format(
+                    cred_type, creds.get('expires_at'), self._UCP_REFRESH_THRESHOLD_SECONDS,
+                )
+            )
+            type_data = creds.get(cred_type, {}) if cred_type else {}
+            expires_at = creds.get('expires_at') or (type_data.get('expires_at') if isinstance(type_data, dict) else None)
             if expires_at:
                 try:
                     dt = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
@@ -10006,7 +10033,7 @@ if 'requests' in sys.modules:
             if ctx.headers is None:
                 ctx.headers = {}
 
-            if cred_type == 'oauth2_client_credentials' or cred_type == 'oauth2_authorization_code':
+            if cred_type == 'oauth2_client_credentials' or cred_type == 'oauth2_authorization_code' or cred_type == 'oauth2':
                 demisto.debug('UCP: _apply_ucp_credentials: Dispatching to _apply_ucp_oauth2()')
                 self._apply_ucp_oauth2(credentials, ctx)
             elif cred_type == 'api_key':
@@ -10026,12 +10053,21 @@ if 'requests' in sys.modules:
 
             Default: sets Authorization header to '{token_type} {access_token}'.
 
+            The credentials dict from getUCPCredentials() nests OAuth2 fields
+            inside a 'oauth2' sub-dict, e.g.:
+                {'oauth2': {'access_token': '...', 'token_type': 'Bearer', ...}, 'type': 'oauth2'}
+            This method reads from the nested sub-dict, falling back to top-level
+            keys for backward compatibility.
+
             Args:
-                credentials: dict with 'access_token', 'token_type' keys.
+                credentials: dict from getUCPCredentials().
                 ctx: UcpRequestContext to mutate.
             """
-            token_type = credentials.get('token_type', 'Bearer')
-            access_token = credentials.get('access_token', '')
+            # OAuth2 fields are nested inside credentials['oauth2'];
+            # fall back to top-level for backward compatibility.
+            oauth2_data = credentials.get('oauth2', credentials)
+            token_type = oauth2_data.get('token_type', 'Bearer')
+            access_token = oauth2_data.get('access_token', '')
             token_preview = access_token[:10] + '...' if access_token else '<empty>'
             demisto.debug(
                 'UCP: _apply_ucp_oauth2: Setting Authorization header. '
@@ -10047,10 +10083,13 @@ if 'requests' in sys.modules:
             Default: sets Authorization header to 'Bearer {key}'.
 
             Args:
-                credentials: dict with 'key' field.
+                credentials: dict from getUCPCredentials().
                 ctx: UcpRequestContext to mutate.
             """
-            key = credentials.get('key', '')
+            # API key fields may be nested inside credentials['api_key'];
+            # fall back to top-level for backward compatibility.
+            api_key_data = credentials.get('api_key', credentials)
+            key = api_key_data.get('key', '')
             key_preview = key[:6] + '...' if key else '<empty>'
             demisto.debug(
                 'UCP: _apply_ucp_api_key: Setting Authorization header. '
@@ -10064,11 +10103,14 @@ if 'requests' in sys.modules:
             Default: sets ctx.auth tuple for requests basic auth.
 
             Args:
-                credentials: dict with 'username', 'password' fields.
+                credentials: dict from getUCPCredentials().
                 ctx: UcpRequestContext to mutate.
             """
-            username = credentials.get('username', '')
-            password = credentials.get('password', '')
+            # Plain fields may be nested inside credentials['plain'];
+            # fall back to top-level for backward compatibility.
+            plain_data = credentials.get('plain', credentials)
+            username = plain_data.get('username', '')
+            password = plain_data.get('password', '')
             demisto.debug(
                 'UCP: _apply_ucp_plain: Setting basic auth. '
                 'username="{}", has_password={}'.format(
@@ -10399,7 +10441,7 @@ if 'requests' in sys.modules:
                     params = urllib.parse.urlencode(params, quote_via=params_parser)
 
                 # ── UCP: Inject credentials and execute ──
-                if self._ucp_enabled:
+                if self._is_ucp_enabled():
                     demisto.debug(
                         'UCP: _http_request: UCP path. method={}, address={}, '
                         'url_suffix="{}"'.format(method, address, url_suffix)

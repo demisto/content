@@ -2186,30 +2186,64 @@ function getUcpCredentials() {
         if (creds) {
             // Log credential metadata without exposing secrets
             var credKeys = Object.keys(creds);
-            console.log('UCP: getUcpCredentials: Credential keys=' + credKeys.join(',')
-                + ', num_keys=' + credKeys.length);
-            var tokenPreview = '';
-            if ((creds.type === 'oauth2_client_credentials' || creds.type === 'oauth2_authorization_code'
-                || creds.type === 'oauth2_client_credentials') && creds.access_token) {
-                tokenPreview = creds.access_token.substring(0, 10) + '...';
-                console.log('UCP: getUcpCredentials: OAuth2 token details — '
-                    + 'token_length=' + creds.access_token.length
-                    + ', token_type=' + (creds.token_type || 'N/A')
-                    + ', expires_at=' + (creds.expires_at || 'static'));
-            } else if (creds.type === 'api_key' && creds.key) {
-                tokenPreview = creds.key.substring(0, 6) + '...';
-                console.log('UCP: getUcpCredentials: API key details — '
-                    + 'key_length=' + creds.key.length);
-            } else if (creds.type === 'plain' && creds.username) {
-                tokenPreview = 'username=' + creds.username;
-                console.log('UCP: getUcpCredentials: Plain auth details — '
-                    + 'username=' + creds.username
-                    + ', has_password=' + (creds.password ? 'yes' : 'no'));
+            console.log('UCP: getUcpCredentials: Raw credential keys=' + credKeys.join(',')
+                + ', num_keys=' + credKeys.length + ', type=' + (creds.type || 'N/A'));
+
+            // ── Flatten nested credentials ──
+            // getUCPCredentials() returns a nested structure, e.g.:
+            //   {oauth2: {access_token: '...', token_type: 'Bearer', expires_at: '...'}, type: 'oauth2'}
+            //   {api_key: {key: '...'}, type: 'api_key'}
+            //   {plain: {username: '...', password: '...'}, type: 'plain'}
+            // Callers expect a flat structure with fields at the top level.
+            var credType = creds.type || '';
+            var flatCreds = creds;
+
+            if (credType === 'oauth2' || credType === 'oauth2_client_credentials' || credType === 'oauth2_authorization_code') {
+                var oauth2Data = creds.oauth2 || creds;
+                flatCreds = {
+                    type: credType,
+                    access_token: oauth2Data.access_token || creds.access_token || '',
+                    token_type: oauth2Data.token_type || creds.token_type || 'Bearer',
+                    expires_at: oauth2Data.expires_at || creds.expires_at || ''
+                };
+            } else if (credType === 'api_key') {
+                var apiKeyData = creds.api_key || creds;
+                flatCreds = {
+                    type: credType,
+                    key: apiKeyData.key || creds.key || ''
+                };
+            } else if (credType === 'plain') {
+                var plainData = creds.plain || creds;
+                flatCreds = {
+                    type: credType,
+                    username: plainData.username || creds.username || '',
+                    password: plainData.password || creds.password || ''
+                };
             }
-            console.log('UCP: getUcpCredentials: SUCCESS. type=' + creds.type
-                + ', token_type=' + (creds.token_type || 'N/A')
-                + ', expires_at=' + (creds.expires_at || 'static')
+
+            var tokenPreview = '';
+            if ((flatCreds.type === 'oauth2_client_credentials' || flatCreds.type === 'oauth2_authorization_code'
+                || flatCreds.type === 'oauth2') && flatCreds.access_token) {
+                tokenPreview = flatCreds.access_token.substring(0, 10) + '...';
+                console.log('UCP: getUcpCredentials: OAuth2 token details — '
+                    + 'token_length=' + flatCreds.access_token.length
+                    + ', token_type=' + (flatCreds.token_type || 'N/A')
+                    + ', expires_at=' + (flatCreds.expires_at || 'static'));
+            } else if (flatCreds.type === 'api_key' && flatCreds.key) {
+                tokenPreview = flatCreds.key.substring(0, 6) + '...';
+                console.log('UCP: getUcpCredentials: API key details — '
+                    + 'key_length=' + flatCreds.key.length);
+            } else if (flatCreds.type === 'plain' && flatCreds.username) {
+                tokenPreview = 'username=' + flatCreds.username;
+                console.log('UCP: getUcpCredentials: Plain auth details — '
+                    + 'username=' + flatCreds.username
+                    + ', has_password=' + (flatCreds.password ? 'yes' : 'no'));
+            }
+            console.log('UCP: getUcpCredentials: SUCCESS. type=' + flatCreds.type
+                + ', token_type=' + (flatCreds.token_type || 'N/A')
+                + ', expires_at=' + (flatCreds.expires_at || 'static')
                 + ', preview=' + tokenPreview);
+            return flatCreds;
         } else {
             console.log('UCP: getUcpCredentials: getUCPCredentials() returned null/undefined — '
                 + 'this should not happen in UCP mode. Check BE connector configuration.');
