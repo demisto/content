@@ -10,6 +10,7 @@ import json
 from collections.abc import Sequence
 from datetime import datetime, timedelta
 import concurrent.futures
+import time
 from dateutil.parser import parse as parse_date
 
 
@@ -22,13 +23,15 @@ urllib3.disable_warnings()
 
 MAX_ALERTS = None
 LIMIT_EVENT_ITEMS = 200
-MAX_RETRIES = 3
+# Fetch-incidents: backoff after each failed services or alerts API attempt (1 try + 5 retries).
+FETCH_INCIDENT_RETRY_BACKOFF_SECONDS = (5, 10, 20, 20, 20)
+GET_RESPONSE_MAX_RETRIES = 3
 MAX_THREADS = 1
 MIN_MINUTES_TO_FETCH = 10
 DEFAULT_REQUEST_TIMEOUT = 600
 DEFAULT_TAKE_LIMIT = 5
 DEFAULT_STATUSES = ["VIEWED", "UNREVIEWED", "CONFIRMED_INCIDENT", "UNDER_REVIEW", "INFORMATIONAL"]
-SAMPLE_ALERTS = 10
+SAMPLE_ALERTS = 1000
 INCIDENT_SEVERITY = {"unknown": 0, "informational": 0.5, "low": 1, "medium": 2, "high": 3, "critical": 4}
 INCIDENT_STATUS = {
     "Unreviewed": "UNREVIEWED",
@@ -81,6 +84,7 @@ def get_event_format(event):
     return {
         "name": event.get("name"),
         "severity": event.get("severity"),
+        "occurred": event.get("created_at"),
         "rawJSON": json.dumps(event),
         "event_id": event.get("event_id"),
         "keyword": event.get("keyword"),
@@ -250,7 +254,7 @@ class Client(BaseClient):
         :param method: Contains the request method
         :param payload: Contains the request body
         """
-        for _ in range(MAX_RETRIES):
+        for _ in range(GET_RESPONSE_MAX_RETRIES):
             try:
                 if method == "POST" or method == "PUT":
                     response = requests.request(method, url, headers=headers, json=payload)
@@ -307,25 +311,37 @@ class Client(BaseClient):
 
         if not url or not alerts_api_key:
             raise ValueError("Missing required URL or API key in input_params.")
-        try:
-            demisto.debug(f"[get_data] final payload is: {payload_json}")
-            response = self.make_request(url, alerts_api_key, "POST", payload_json)
+
+        backoffs = FETCH_INCIDENT_RETRY_BACKOFF_SECONDS
+        for attempt in range(len(backoffs) + 1):
+            try:
+                demisto.debug(f"[get_data] final payload is: {payload_json}")
+                response = self.make_request(url, alerts_api_key, "POST", payload_json)
+            except Exception as request_error:
+                if attempt < len(backoffs):
+                    time.sleep(backoffs[attempt])
+                    continue
+                raise Exception(f"HTTP request failed for service '{service}': {str(request_error)}") from request_error
+
             demisto.debug(f"[get_data] Response status code: {response.status_code}")
+            if response.status_code != 200:
+                if attempt < len(backoffs):
+                    time.sleep(backoffs[attempt])
+                    continue
+                raise Exception(
+                    f"Failed to fetch data from {service}. Status code: {response.status_code}, Response text: {response.text}"
+                )
 
-        except Exception as request_error:
-            raise Exception(f"HTTP request failed for service '{service}': {str(request_error)}")
+            try:
+                json_response = response.json()
+            except ValueError as json_error:
+                if attempt < len(backoffs):
+                    time.sleep(backoffs[attempt])
+                    continue
+                raise Exception(f"Invalid JSON response from {service}: {str(json_error)}") from json_error
 
-        if response.status_code != 200:
-            raise Exception(
-                f"Failed to fetch data from {service}. Status code: {response.status_code}, Response text: {response.text}"
-            )
-
-        try:
-            json_response = response.json()
             demisto.debug(f"[get_data] JSON response received with keys: {list(json_response.keys())}")
             return json_response
-        except ValueError as json_error:
-            raise Exception(f"Invalid JSON response from {service}: {str(json_error)}")
 
     def get_all_services(self, api_key, url):
         """
@@ -335,23 +351,41 @@ class Client(BaseClient):
         :param ew: An event writer object for logging
         :return: A list of service dictionaries, or an empty list if the request fails
         """
-        try:
-            url = url + "/services"
-            demisto.debug(f"[get_all_services] url: {url}")
-            response = self.make_request(url, api_key)
+        services_url = url + "/services"
+        backoffs = FETCH_INCIDENT_RETRY_BACKOFF_SECONDS
+        for attempt in range(len(backoffs) + 1):
+            try:
+                demisto.debug(f"[get_all_services] url: {services_url}")
+                response = self.make_request(services_url, api_key)
+            except Exception as e:
+                if attempt < len(backoffs):
+                    time.sleep(backoffs[attempt])
+                    continue
+                raise Exception(f"Failed to get services: {str(e)}") from e
+
             demisto.debug(f"[get_all_services] status code: {response.status_code}")
             if response.status_code != 200:
-                raise Exception(f"Wrong status code: {response.status_code}")
-            response = response.json()
+                if attempt < len(backoffs):
+                    time.sleep(backoffs[attempt])
+                    continue
+                raise Exception(f"Failed to get services: Wrong status code: {response.status_code}")
 
-            if "data" in response and isinstance(response["data"], Sequence):
-                demisto.debug(f"Received services: {json.dumps(response['data'], indent=2)}")
-                return response["data"]
+            try:
+                parsed = response.json()
+            except Exception as e:
+                if attempt < len(backoffs):
+                    time.sleep(backoffs[attempt])
+                    continue
+                raise Exception(f"Failed to get services: {str(e)}") from e
 
-            else:
-                raise Exception("Wrong Format for services response")
-        except Exception as e:
-            raise Exception(f"Failed to get services: {str(e)}")
+            if "data" in parsed and isinstance(parsed["data"], Sequence):
+                demisto.debug(f"Received services: {json.dumps(parsed['data'], indent=2)}")
+                return parsed["data"]
+
+            if attempt < len(backoffs):
+                time.sleep(backoffs[attempt])
+                continue
+            raise Exception("Failed to get services: Wrong Format for services response")
 
     def insert_data_in_cortex(self, service, input_params, is_update):
         """
@@ -1436,19 +1470,71 @@ def main():
             command_results = cyble_fetch_iocs(client, "GET", token, args, url)
             return_results(command_results)
 
+
+
         elif demisto.command() == "cyble-vision-fetch-alerts":
-            url = base_url + str(ROUTES[COMMAND[demisto.command()]])
-            lst_alerts = cyble_events(
-                client, "POST", token, url, args, {}, hide_cvv_expiry, incident_collections, incident_severity, True
+
+            url = base_url + str(ROUTES[COMMAND["cyble-vision-fetch-alerts"]])
+
+            alerts = manual_fetch(
+
+                client,
+
+                args,
+
+                token,
+
+                url,
+
+                incident_collections,
+
+                incident_severity,
+
             )
-            return_results(
-                CommandResults(
-                    readable_output="Fetched alerts successfully.",
-                    outputs_prefix="CybleEvents.Alerts",
-                    raw_response=lst_alerts,
-                    outputs=lst_alerts,
+
+            incidents = []
+
+            for alert in alerts:
+                occurred_time = (
+
+                    alert.get("occurred")
+
+                    or alert.get("created_at")
+
+                    or alert.get("created")
+
+                    or datetime.utcnow().astimezone(pytz.UTC).isoformat()
+
                 )
+
+                incidents.append({
+
+                    "name": alert.get("name", "Cyble Vision Alert (Manual)"),
+
+                    "type": "Cyble Vision Alert Manual",  # ✅ NEW TYPE
+
+                    "occurred": occurred_time,  # ✅ EXPLICIT
+
+                    "severity": alert.get("severity", 2),
+
+                    "rawJSON": json.dumps(alert),
+
+                })
+
+            demisto.incidents(incidents)
+
+            return_results(
+
+                CommandResults(
+
+                    readable_output=f"Inserted {len(incidents)} manual Cyble Vision alerts."
+
+                )
+
             )
+
+
+
 
         elif demisto.command() == "get-modified-remote-data":
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
