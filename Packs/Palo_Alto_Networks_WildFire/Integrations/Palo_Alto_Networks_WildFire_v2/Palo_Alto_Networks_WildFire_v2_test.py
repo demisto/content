@@ -720,17 +720,23 @@ def test_wildfire_get_pending_file_report(mocker):
         ("xdr", False, False, "a" * 33, "xdr", "happy_path_xdr"),
         ("pcc", False, False, "a" * 33, "pcc", "happy_path_pcc"),
         ("prismaaccessapi", False, False, "a" * 33, "prismaaccessapi", "happy_path_prismaaccessapi"),
-        # Edge case: token length exactly 32 always returns "" regardless of other params
-        ("", True, True, "a" * 32, "", "edge_case_token_length_32"),
-        ("xsoartim", True, True, "a" * 32, "", "edge_case_token_length_32_with_known_source"),
+        # Explicit api_key_source takes priority even with 32-char tokens
+        ("xsoartim", True, True, "a" * 32, "xsoartim", "explicit_source_with_32_char_token"),
+        ("xdr", True, True, "a" * 32, "xdr", "explicit_xdr_with_32_char_token"),
+        # XSIAM/v8+ auto-detection returns "xdr" even with 32-char license tokens (XSUP-64888)
+        ("", True, True, "a" * 32, "xdr", "xsiam_platform_32_char_license_token"),
         # Edge case: empty api_key_source on XSIAM (x2 platform) returns "xdr"
         ("", True, False, "a" * 33, "xdr", "edge_case_xsiam_platform"),
+        # Edge case: empty api_key_source on non-XSIAM, non-v8 platform with 32-char token returns ""
+        ("", False, False, "a" * 32, "", "edge_case_non_xsiam_32_char_token"),
         # Edge case: empty api_key_source on non-XSIAM, non-v8 platform returns ""
         ("", False, False, "a" * 33, "", "edge_case_non_xsiam_non_v8"),
         # Version-specific: empty api_key_source on XSOAR >= 8 (non-XSIAM) returns "xdr"
         ("", False, True, "a" * 33, "xdr", "version_case_xsoar_ge_8"),
         # Version-specific: empty api_key_source on XSIAM with version >= 8 also returns "xdr"
         ("", True, True, "a" * 33, "xdr", "version_case_xsiam_and_ge_8"),
+        # Version-specific: empty api_key_source on XSOAR >= 8 with 32-char token returns "xdr"
+        ("", False, True, "a" * 32, "xdr", "version_case_xsoar_ge_8_32_char_token"),
         # Error case: unknown api_key_source (not in known list) returns ""
         ("unknown", True, False, "a" * 33, "", "error_case_unknown_api_key_source"),
         # Error case: empty token with known api_key_source still returns the source (token length 0 != 32)
