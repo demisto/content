@@ -342,6 +342,8 @@ class Client(BaseClient):
             demisto.debug(f"[get_data] JSON response received with keys: {list(json_response.keys())}")
             return json_response
 
+        return {}  # pragma: no cover
+
     def get_all_services(self, api_key, url):
         """
         Requests the list of all services from the Cyble API with the given API key and logs errors if the request fails.
@@ -385,6 +387,8 @@ class Client(BaseClient):
                 time.sleep(backoffs[attempt])
                 continue
             raise Exception("Failed to get services: Wrong Format for services response")
+
+        return []  # pragma: no cover
 
     def insert_data_in_cortex(self, service, input_params, is_update):
         """
