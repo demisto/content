@@ -23,15 +23,15 @@ urllib3.disable_warnings()
 
 MAX_ALERTS = None
 LIMIT_EVENT_ITEMS = 200
+MAX_RETRIES = 3
 # Fetch-incidents: backoff after each failed services or alerts API attempt (1 try + 5 retries).
 FETCH_INCIDENT_RETRY_BACKOFF_SECONDS = (5, 10, 20, 20, 20)
-GET_RESPONSE_MAX_RETRIES = 3
 MAX_THREADS = 1
 MIN_MINUTES_TO_FETCH = 10
 DEFAULT_REQUEST_TIMEOUT = 600
 DEFAULT_TAKE_LIMIT = 5
 DEFAULT_STATUSES = ["VIEWED", "UNREVIEWED", "CONFIRMED_INCIDENT", "UNDER_REVIEW", "INFORMATIONAL"]
-SAMPLE_ALERTS = 1000
+SAMPLE_ALERTS = 10
 INCIDENT_SEVERITY = {"unknown": 0, "informational": 0.5, "low": 1, "medium": 2, "high": 3, "critical": 4}
 INCIDENT_STATUS = {
     "Unreviewed": "UNREVIEWED",
@@ -84,7 +84,6 @@ def get_event_format(event):
     return {
         "name": event.get("name"),
         "severity": event.get("severity"),
-        "occurred": event.get("created_at"),
         "rawJSON": json.dumps(event),
         "event_id": event.get("event_id"),
         "keyword": event.get("keyword"),
@@ -254,7 +253,7 @@ class Client(BaseClient):
         :param method: Contains the request method
         :param payload: Contains the request body
         """
-        for _ in range(GET_RESPONSE_MAX_RETRIES):
+        for _ in range(MAX_RETRIES):
             try:
                 if method == "POST" or method == "PUT":
                     response = requests.request(method, url, headers=headers, json=payload)
@@ -1470,71 +1469,19 @@ def main():
             command_results = cyble_fetch_iocs(client, "GET", token, args, url)
             return_results(command_results)
 
-
-
         elif demisto.command() == "cyble-vision-fetch-alerts":
-
-            url = base_url + str(ROUTES[COMMAND["cyble-vision-fetch-alerts"]])
-
-            alerts = manual_fetch(
-
-                client,
-
-                args,
-
-                token,
-
-                url,
-
-                incident_collections,
-
-                incident_severity,
-
+            url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+            lst_alerts = cyble_events(
+                client, "POST", token, url, args, {}, hide_cvv_expiry, incident_collections, incident_severity, True
             )
-
-            incidents = []
-
-            for alert in alerts:
-                occurred_time = (
-
-                    alert.get("occurred")
-
-                    or alert.get("created_at")
-
-                    or alert.get("created")
-
-                    or datetime.utcnow().astimezone(pytz.UTC).isoformat()
-
-                )
-
-                incidents.append({
-
-                    "name": alert.get("name", "Cyble Vision Alert (Manual)"),
-
-                    "type": "Cyble Vision Alert Manual",  # ✅ NEW TYPE
-
-                    "occurred": occurred_time,  # ✅ EXPLICIT
-
-                    "severity": alert.get("severity", 2),
-
-                    "rawJSON": json.dumps(alert),
-
-                })
-
-            demisto.incidents(incidents)
-
             return_results(
-
                 CommandResults(
-
-                    readable_output=f"Inserted {len(incidents)} manual Cyble Vision alerts."
-
+                    readable_output="Fetched alerts successfully.",
+                    outputs_prefix="CybleEvents.Alerts",
+                    raw_response=lst_alerts,
+                    outputs=lst_alerts,
                 )
-
             )
-
-
-
 
         elif demisto.command() == "get-modified-remote-data":
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
