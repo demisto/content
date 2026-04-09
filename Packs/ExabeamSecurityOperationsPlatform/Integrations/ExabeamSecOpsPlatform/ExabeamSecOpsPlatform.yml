@@ -37,9 +37,6 @@ configuration:
   hidden:
   - marketplacev2
   - platform
-  supportedModules:
-  - "agentix"
-  - "xsiam"
 - display: Fetch events
   name: isFetchEvents
   type: 8
@@ -68,6 +65,8 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  supportedModules:
+  - "xsiam"
 - display: Maximum Incidents Per Fetch
   additionalinfo: This value should not exceed 3,000 due to product's API limitations.
   name: max_fetch  # for fetch-incidents on XSOAR
@@ -84,6 +83,8 @@ configuration:
   section: Collect
   hidden:
     - xsoar
+  supportedModules:
+  - "xsiam"
 - display: Fetch query
   additionalinfo: 'In the `key:value` format. For example: `NOT stage:"CLOSED"`.'
   name: fetch_query

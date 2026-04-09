@@ -175,25 +175,19 @@ configuration:
   hidden:
   - marketplacev2
   - platform
-  supportedModules:
-  - "agentix"
-  - "xsiam"
-  - "edr"
-  - "cloud"
-  - "cloud_runtime_security"
 - display: Fetch events
   name: isFetchEvents
-  supportedModules:
-  - "xsiam"
-  - "edr"
-  - "cloud"
-  - "cloud_runtime_security"
   type: 8
   section: Collect
   required: false
   defaultvalue: 'true'
   hidden:
   - xsoar
+  supportedModules:
+  - "xsiam"
+  - "edr"
+  - "cloud"
+  - "cloud_runtime_security"
 - display: Incident type
   name: incidentType
   type: 13
@@ -294,6 +288,11 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+  supportedModules:
+  - "xsiam"
+  - "edr"
+  - "cloud"
+  - "cloud_runtime_security"
 - display: 'Fetch Asset types'
   name: fetch_assets_type
   defaultvalue: 'Spotlight,CNAPP Alerts'
@@ -347,6 +346,11 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+  supportedModules:
+  - "xsiam"
+  - "edr"
+  - "cloud"
+  - "cloud_runtime_security"
 - display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
   additionalinfo: Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created.
   defaultvalue: 2
@@ -369,6 +373,11 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+  supportedModules:
+  - "xsiam"
+  - "edr"
+  - "cloud"
+  - "cloud_runtime_security"
 - additionalinfo: The fetch interval for assets and vulnerabilities. It is recommended to set it to 1 hour.
   defaultvalue: 60
   display: Assets Fetch Interval

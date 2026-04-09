@@ -87,9 +87,6 @@ configuration:
   hidden:
     - marketplacev2
     - platform
-  supportedModules:
-  - "agentix"
-  - "xsiam"
 - display: Incident type
   name: incidentType
   type: 13
@@ -126,6 +123,8 @@ configuration:
   section: Collect
   hidden:
     - xsoar
+  supportedModules:
+  - "xsiam"
   # Fetch Assets (and Vulnerabilities)
   # Not supported in Cortex XSOAR
 - display: Fetch assets and vulnerabilities
