@@ -10,3 +10,5 @@ readme
 [file:FireEyeHXModelingRules.yml]
 ignore=MR108
 
+[file:FireEyeHXv2.yml]
+ignore=BA129

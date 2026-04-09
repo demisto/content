@@ -1525,12 +1525,17 @@ def assert_upload_argument(args: dict):
 def get_agent(api_key_source: str, token: str) -> str:
     # Auto API expect the agent header to be 'xdr' when running from within XSIAM and 'xsoartim' when running from
     # within XSOAR (both on-prem and cloud).
-    if len(token) == 32:
-        return ""
+    # Explicit source selection always takes priority.
     if api_key_source in ["pcc", "prismaaccessapi", "xsoartim", "xdr"]:
         return api_key_source
+    # Auto-detect on XSIAM / XSOAR 8+ platforms — XDR license tokens may be 32 chars
+    # but still require agent=xdr.
     if (is_xsiam() or is_demisto_version_ge("8")) and not api_key_source:
         return "xdr"
+    # NGFW / WF portal keys are 32 chars and need no agent header.
+    # This check is intentionally after platform detection to avoid masking XDR license tokens.
+    if len(token) == 32:
+        return ""
     # we have an 'other' api key that requires no additional api key headers for agent
     return ""
 

@@ -1,0 +1,133 @@
+{
+    "raw_response": [
+        {
+            "id": "activeDirectoryUser-0000000000000000001",
+            "affectedUniqueEntities": 0,
+            "chokePointScore": 29,
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "displayName": "test.com\\user_1",
+            "domainName": "test.com",
+            "isEnabled": true,
+            "lastLogon": "2025-12-03T10:30:00.000Z",
+            "name": "user_1",
+            "pwdLastSet": "2025-11-15T08:20:00.000Z",
+            "riskScore": 88,
+            "sid": "S-1-5-21-1234567890-1234567890-1234567890-1001",
+            "type": "activeDirectoryUser",
+            "importedLabels": [
+                "lable1",
+                "lable2"
+            ],
+            "xmLabels": [
+                {
+                    "id": "AD Admins And DCs"
+                },
+                {
+                    "id": "AD Tier0"
+                }
+            ]
+        },
+        {
+            "id": "0000000000000000002",
+            "affectedUniqueEntities": 5,
+            "chokePointScore": 75,
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "name": "hostname_1",
+            "os": {
+                "name": "Windows Server 2019 (DC)"
+            },
+            "osType": "Windows",
+            "riskScore": 92,
+            "type": "agent",
+            "importedLabels": [
+                "lable1",
+                "lable2"
+            ],
+            "xmLabels": [
+                {
+                    "id": "Windows Server"
+                },
+                {
+                    "id": "Domain Controller"
+                },
+                {
+                    "id": "Public IP"
+                }
+            ]
+        },
+        {
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "name": "hostname_2",
+            "os": {
+                "name": "Windows Server 2016"
+            },
+            "osType": "Windows",
+            "type": "agent",
+            "xmLabels": [
+                {
+                    "id": "Windows Server"
+                },
+                {
+                    "id": "Domain Controller"
+                }
+            ]
+        }
+    ],
+    "outputs": [
+        {
+            "id": "activeDirectoryUser-0000000000000000001",
+            "affectedUniqueEntities": 0,
+            "chokePointScore": 29,
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "displayName": "test.com\\user_1",
+            "domainName": "test.com",
+            "isEnabled": true,
+            "lastLogon": "2025-12-03T10:30:00.000Z",
+            "name": "user_1",
+            "pwdLastSet": "2025-11-15T08:20:00.000Z",
+            "riskScore": 88,
+            "sid": "S-1-5-21-1234567890-1234567890-1234567890-1001",
+            "type": "activeDirectoryUser",
+            "importedLabels": [
+                "lable1",
+                "lable2"
+            ],
+            "xmLabels": [
+                {
+                    "id": "AD Admins And DCs"
+                },
+                {
+                    "id": "AD Tier0"
+                }
+            ]
+        },
+        {
+            "id": "0000000000000000002",
+            "affectedUniqueEntities": 5,
+            "chokePointScore": 75,
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "name": "hostname_1",
+            "os": {
+                "name": "Windows Server 2019 (DC)"
+            },
+            "osType": "Windows",
+            "riskScore": 92,
+            "type": "agent",
+            "importedLabels": [
+                "lable1",
+                "lable2"
+            ],
+            "xmLabels": [
+                {
+                    "id": "Windows Server"
+                },
+                {
+                    "id": "Domain Controller"
+                },
+                {
+                    "id": "Public IP"
+                }
+            ]
+        }
+    ]
+}

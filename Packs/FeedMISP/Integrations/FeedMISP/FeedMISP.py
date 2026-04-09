@@ -501,7 +501,7 @@ def test_module(client: Client) -> str:
     Returns:
         ok if feed is accessible
     """
-    client.search_query(body={"limit": 1})
+    client.search_query(body={"returnFormat": "json", "limit": 1})
     return "ok"
 
 

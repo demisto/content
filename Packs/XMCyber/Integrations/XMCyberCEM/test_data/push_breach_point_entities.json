@@ -1,0 +1,144 @@
+{
+    "raw_response": [
+        {
+            "id": "0000000000000000001",
+            "affectedUniqueEntities": 2,
+            "chokePointScore": 29,
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "displayName": "test.com\\user_1",
+            "domainName": "test.com",
+            "isEnabled": true,
+            "lastLogon": "2025-12-01T00:00:00.000Z",
+            "pwdLastSet": "2025-11-01T00:00:00.000Z",
+            "name": "user_1",
+            "riskScore": 88,
+            "type": "activeDirectoryUser",
+            "importedLabels": [
+                "importedLable1"
+            ],
+            "xmLabels": [
+                {
+                    "id": "AD Admins And DCs"
+                },
+                {
+                    "id": "AD Tier0"
+                },
+                {
+                    "id": "Label1"
+                }
+            ]
+        },
+        {
+            "id": "0000000000000000002",
+            "affectedUniqueEntities": 2,
+            "chokePointScore": 75,
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "name": "hostname_1",
+            "os": {
+                "name": "Windows Server 2019"
+            },
+            "osType": "Windows",
+            "riskScore": 92,
+            "type": "agent",
+            "isEnabled": true,
+            "lastLogon": "2025-12-01T00:00:00.000Z",
+            "pwdLastSet": "2025-11-01T00:00:00.000Z",
+            "importedLabels": [
+                "importedLable1"
+            ],
+            "xmLabels": [
+                {
+                    "id": "Windows Server"
+                },
+                {
+                    "id": "Domain Controller"
+                },
+                {
+                    "id": "Label1"
+                }
+            ]
+        },
+        {
+            "id": "0000000000000000003",
+            "affectedUniqueEntities": 0,
+            "chokePointScore": "invalid_value",
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "displayName": "test.com\\user_3",
+            "domainName": "test.com",
+            "lastLogon": "invalid_date",
+            "name": "user_3",
+            "riskScore": 5,
+            "type": "activeDirectoryUser",
+            "xmLabels": [
+                {
+                    "id": "Label3"
+                }
+            ]
+        },
+        {
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "name": "hostname_4",
+            "os": {
+                "name": "Windows Server 2016"
+            },
+            "osType": "Windows",
+            "type": "agent",
+            "xmLabels": [
+                {
+                    "id": "Windows Server"
+                },
+                {
+                    "id": "Domain Controller"
+                }
+            ]
+        },
+        {
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "name": "hostname_5",
+            "os": {
+                "name": "Windows Server 2012"
+            },
+            "osType": "Windows",
+            "type": "agent",
+            "xmLabels": [
+                {
+                    "id": "Windows Server"
+                },
+                {
+                    "id": "Domain Controller"
+                }
+            ]
+        }
+    ],
+    "outputs": [
+        [
+            {
+                "attributeName": "XSOAR_Test",
+                "userSuppliedEntities": "hostname_1, not_exist_user_id, user_1, user_3",
+                "matchedEntities": "user_1",
+                "notMatchedEntities": "hostname_1, user_3",
+                "parameter": "Enabled",
+                "operator": "Equals",
+                "value": "True"
+            }
+        ]
+    ],
+    "outputs_entity_id": {
+        "attributeName": "XSOAR_Test",
+        "userSuppliedEntities": "hostname_1, user_1, user_3",
+        "matchedEntities": "user_1",
+        "notMatchedEntities": "hostname_1, user_3",
+        "parameter": "Entity ID",
+        "operator": "Equals",
+        "value": "0000000000000000001"
+    },
+    "outputs_all": {
+        "attributeName": "XSOAR_BP",
+        "userSuppliedEntities": "hostname_1, user_1, user_3",
+        "matchedEntities": "hostname_1, user_1, user_3",
+        "notMatchedEntities": "",
+        "parameter": "All",
+        "operator": "Equals",
+        "value": "True"
+    }
+}

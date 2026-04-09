@@ -1,0 +1,118 @@
+{
+    "raw_response": [
+        {
+            "id": "user-critical-high",
+            "name": "user_critical",
+            "displayName": "User Critical",
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "type": "activeDirectoryUser",
+            "chokePointScore": 85,
+            "chokePointScoreLevel": "CRITICAL",
+            "riskScore": 95,
+            "riskScoreLevel": "CRITICAL"
+        },
+        {
+            "id": "asset-high-medium",
+            "name": "hostname_high",
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "type": "agent",
+            "osType": "Windows",
+            "chokePointScore": 45,
+            "chokePointScoreLevel": "MEDIUM",
+            "riskScore": 65,
+            "riskScoreLevel": "HIGH"
+        },
+        {
+            "id": "user-medium-low",
+            "name": "user_medium",
+            "displayName": "User Medium",
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "type": "activeDirectoryUser",
+            "chokePointScore": 25,
+            "chokePointScoreLevel": "LOW",
+            "riskScore": 40,
+            "riskScoreLevel": "MEDIUM"
+        },
+        {
+            "id": "asset-low",
+            "name": "hostname_low",
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "type": "agent",
+            "osType": "Windows",
+            "chokePointScore": 15,
+            "chokePointScoreLevel": "LOW",
+            "riskScore": 20,
+            "riskScoreLevel": "LOW"
+        },
+        {
+            "id": "user-zero-1",
+            "name": "user_zero",
+            "displayName": "User Zero",
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "type": "activeDirectoryUser",
+            "chokePointScore": 15,
+            "chokePointScoreLevel": "LOW",
+            "riskScore": 25,
+            "riskScoreLevel": "LOW"
+        },
+        {
+            "id": "user-zero-2",
+            "name": "user_zero",
+            "displayName": "User Zero",
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "type": "activeDirectoryUser",
+            "chokePointScore": 0,
+            "chokePointScoreLevel": "INFORMATIVE",
+            "riskScore": 0,
+            "riskScoreLevel": "INFORMATIVE"
+        },
+        {
+            "name": "hostname_no_id",
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "type": "agent",
+            "osType": "Windows",
+            "xmLabels": [
+                {
+                    "id": "Windows Server"
+                },
+                {
+                    "id": "Domain Controller"
+                }
+            ]
+        },
+        {
+            "id": "user-invalid-scores",
+            "name": "user_zero",
+            "displayName": "User Zero",
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "type": "activeDirectoryUser",
+            "chokePointScore": "invalid_score",
+            "chokePointScoreLevel": "invalid_score_level",
+            "riskScore": "invalid_score",
+            "riskScoreLevel": "invalid_score_level"
+        },
+        {
+            "id": "asset-missing-scores",
+            "name": "hostname_missing",
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "type": "agent",
+            "osType": "Windows"
+        }
+    ],
+    "outputs": {
+        "entities": "hostname_1, user_1, user_2",
+        "compromisedRiskScore": 95,
+        "compromisedRiskScoreLevel": "CRITICAL",
+        "compromisedChokePointScore": 85,
+        "compromisedChokePointScoreLevel": "CRITICAL",
+        "calculatedRiskScore": 100
+    },
+    "output_with_defaults": {
+        "entities": "hostname_1, hostname_2, user_1, user_2",
+        "compromisedRiskScore": 95,
+        "compromisedRiskScoreLevel": "CRITICAL",
+        "compromisedChokePointScore": 85,
+        "compromisedChokePointScoreLevel": "CRITICAL",
+        "calculatedRiskScore": 90.0
+    }
+}

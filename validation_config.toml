@@ -53,9 +53,9 @@ select = [
     "TR100",
     "VC100", "VC101",
     "AS101", "AS102", "AS103", "AS104", "AS105",
-    "MC100", "MC101"
+    "MC100"
 ]
-warning = ["PB130", "PB131", "RN116", "BC117", "GR101","PA133", "AS106"]
+warning = ["PB130", "PB131", "RN116", "BC117", "GR101","PA133", "AS106","MC101"]
 
 
 [path_based_validations]
@@ -89,9 +89,9 @@ select = [
     "TR100",
     "VC100", "VC101",
     "AS101", "AS102", "AS103", "AS104", "AS105",
-    "MC100", "MC101"
+    "MC100"
 ]
-warning = ["RM108", "PB130", "PB131", "GR107", "GR109", "GR110", "GR101","PA133", "AS106"]
+warning = ["RM108", "PB130", "PB131", "GR107", "GR109", "GR110", "GR101","PA133", "AS106", "MC101"]
 
 
 [Custom_Categories]
