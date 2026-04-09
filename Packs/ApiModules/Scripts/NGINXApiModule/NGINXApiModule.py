@@ -53,6 +53,12 @@ server {
     proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
     $proxy_set_range_header
     $extra_headers
+
+    proxy_cache_lock on;
+    proxy_cache_lock_timeout $timeout;
+    proxy_cache_lock_age $timeout;
+    proxy_cache_valid 200 302 $cache_refresh_rate;
+
     # Static test file
     location = /nginx-test {
         alias /var/lib/nginx/html/index.html;
@@ -93,6 +99,11 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
     certificate: str = params.get("certificate", "")
     private_key: str = params.get("key", "")
     timeout: str = params.get("timeout") or "3600"
+    if timeout.isdigit():
+        timeout = f"{timeout}s"
+    cache_refresh_rate: str = params.get("cache_refresh_rate") or "300"
+    if cache_refresh_rate.isdigit():
+        cache_refresh_rate = f"{cache_refresh_rate}s"
     ssl, extra_headers, sslcerts, proxy_set_range_header = "", "", "", ""
     serverport = port + 1
     extra_cache_keys = []
@@ -126,6 +137,7 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
         extra_cache_key=extra_cache_keys_str,
         proxy_set_range_header=proxy_set_range_header,
         timeout=timeout,
+        cache_refresh_rate=cache_refresh_rate,
         extra_headers=extra_headers,
     )
     with open(file_path, mode="w+") as f:
