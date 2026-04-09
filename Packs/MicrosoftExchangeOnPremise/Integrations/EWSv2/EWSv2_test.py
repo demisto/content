@@ -1234,7 +1234,7 @@ def test_get_item_as_eml(mocker):
     )
     client = TestNormalCommands.MockClient()
 
-    get_item_as_eml(client, "Inbox", "test@gmail.com")
+    get_item_as_eml(client, {"item_id": "Inbox", "target_mailbox": "test@gmail.com"})
     mock_file_result.assert_called_once_with("demisto_untitled_eml.eml", expected_data)
 
 

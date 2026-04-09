@@ -1,5 +1,7 @@
 category: Network Security
 provider: Thoma Bravo
+sectionorder:
+- Connect
 commonfields:
   id: Proofpoint Protection Server v2
   version: -1
@@ -8,18 +10,32 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
+- display: Request Timeout
+  name: timeout
+  type: 0
+  required: false
+  section: Connect
+  advanced: true
+  defaultvalue: '60'
+  additionalinfo: The timeout for HTTP(S) requests (in seconds) to the Proofpoint server.
 description: Proofpoint email security appliance.
 display: Proofpoint Protection Server v2
 name: Proofpoint Protection Server v2
@@ -481,7 +497,7 @@ script:
       name: uid
     description: Delete a user profile.
     name: proofpoint-pps-delete-user
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.7090913
   runonce: false
   script: ''
   subtype: python3
