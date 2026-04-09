@@ -1,0 +1,990 @@
+Integration Name,Support Level,Provider
+6437c006-1d86-4cdc-89d5-23305f207e3a,partner,Proofpoint
+Abnormal Security,partner,Abnormal Security
+Abnormal Security Event Collector,partner,Abnormal Security
+Absolute,xsoar,Absolute Software
+abuse.ch SSL Blacklist Feed,xsoar,SANS Institute
+AbuseIPDB,xsoar,AbuseDB
+Acalvio ShadowPlex,partner,Acalvio
+ACTI Indicator Feed,partner,Accenture
+ACTI Indicator Query,partner,Accenture
+ACTI Vulnerability Query,partner,Accenture
+Active Directory Query v2,xsoar,Microsoft
+ActiveMQ,xsoar,Open Source
+AdminByRequest,xsoar,Admin By Request
+Agari Phishing Defense,partner,Fortra
+Aha,xsoar,Aha Labs Inc.
+Akamai WAF,xsoar,Akamai Technologies
+Akamai WAF SIEM,xsoar,Akamai Technologies
+AlgoSec,xsoar,AlgoSec
+Alibaba Action Trail Event Collector,xsoar,Alibaba Group
+AlienVault OTX TAXII Feed,xsoar,AT&T Cybersecurity
+AlienVault OTX v2,xsoar,AT&T Cybersecurity
+AlienVault Reputation Feed,xsoar,AT&T Cybersecurity
+AlienVault USM Anywhere,xsoar,AT&T Cybersecurity
+AlphaSOC Network Behavior Analytics,partner,AlphaSOC
+AlphaSOC Wisdom,partner,AlphaSOC
+Amazon DynamoDB,xsoar,Amazon
+AMPv2,xsoar,Cisco Systems
+Analyst1,partner,Analyst1
+Anomali Enterprise,xsoar,Anomali
+Anomali ThreatStream Feed,xsoar,Anomali
+Anomali ThreatStream v3,xsoar,Anomali
+AnomaliSecurityAnalyticsAlerts,partner,Anomali
+AnsibleACME,xsoar,IBM
+AnsibleAlibabaCloud,xsoar,Alibaba Group
+AnsibleAzure,xsoar,IBM
+AnsibleCiscoIOS,xsoar,IBM
+AnsibleCiscoNXOS,xsoar,IBM
+AnsibleDNS,xsoar,IBM
+AnsibleHCloud,xsoar,IBM
+AnsibleKubernetes,xsoar,IBM
+AnsibleLinux,xsoar,IBM
+AnsibleMicrosoftWindows,xsoar,IBM
+AnsibleOpenSSL,xsoar,Open Source
+AnsibleTower,xsoar,IBM
+AnsibleVMware,xsoar,IBM
+ANY.RUN Cloud Sandbox,partner,AnyRun
+ANY.RUN TI Feed,partner,AnyRun
+ANY.RUN TI Lookup,partner,AnyRun
+ANYRUN,partner,AnyRun
+APIVoid,xsoar,APIVoid
+appNovi,partner,Fenix24
+AppSentinels.ai,xsoar,AppSentinels Ai
+Arcanna.AI,partner,Arcanna.ai INC
+ArcSight ESM v2,xsoar,OpenText
+ArcSight Logger,xsoar,OpenText
+ArcusTeam,partner,ArcusTeam
+ArgusManagedDefence,partner,mnemonic
+ARIA Packet Intelligence,partner,AriaNetworks
+Arkime,xsoar,Open Source
+Armis,partner,Insight Partners
+ArmisEventCollector,partner,Armis
+Armorblox,partner,Cisco Systems
+Asimily Insight,partner,Asimily
+Ataya Harmony,partner,Atayalan Inc
+Atlassian Cloud MCP,xsoar,Atlassian
+Atlassian Confluence Cloud,xsoar,Atlassian
+Atlassian Confluence Server,xsoar,Atlassian
+Atlassian IAM,xsoar,Atlassian
+AtlassianJiraServiceManagement,xsoar,Atlassian
+AttackIQFireDrill,xsoar,AttackIQ
+AttackSurfaceManagement,partner,Google
+Attivo Botsink,partner,SentinelOne
+Autofocus,xsoar,Palo Alto Networks
+AutoFocus Daily Feed,xsoar,Palo Alto Networks
+AutoFocus Feed,xsoar,Palo Alto Networks
+AutoFocus V2,xsoar,Palo Alto Networks
+AutoFocusTagsFeed,xsoar,Palo Alto Networks
+Automox,partner,Automox Inc
+Awake Security,xsoar,Arista Networks
+AWS,xsoar,Amazon
+AWS - AccessAnalyzer,xsoar,Amazon
+AWS - ACM,xsoar,Amazon
+AWS - Athena - Beta,xsoar,Amazon
+AWS - CloudTrail,xsoar,Amazon
+AWS - CloudWatchLogs,xsoar,Amazon
+AWS - EC2,xsoar,Amazon
+AWS - GuardDuty,xsoar,Amazon
+AWS - GuardDuty Event Collector,xsoar,Amazon
+AWS - IAM,xsoar,Amazon
+AWS - IAM Identity Center,xsoar,Amazon
+AWS - Lambda,xsoar,Amazon
+AWS - Organizations,xsoar,Amazon
+AWS - Route53,xsoar,Amazon
+AWS - S3,xsoar,Amazon
+AWS - Security Hub,xsoar,Amazon
+AWS - SNS,xsoar,Amazon
+AWS - SQS,xsoar,Amazon
+AWS - System Manager,xsoar,Amazon
+AWS Feed,xsoar,Amazon
+AWS Network Firewall,xsoar,Amazon
+AWS Sagemaker,xsoar,Amazon
+AWS Security Hub Event Collector,xsoar,Amazon
+AWS Security Lake,xsoar,Amazon
+AWS-EKS,xsoar,Amazon
+AWS-ILM,xsoar,Amazon
+AWS-SNS-Listener,xsoar,Amazon
+AWS-WAF,xsoar,Amazon
+AwsSecretsManager,xsoar,Amazon
+Axonius,partner,Axonius
+Azure,xsoar,Microsoft
+Azure AD Connect Health Feed,xsoar,Microsoft
+Azure Compute v2,xsoar,Microsoft
+Azure Firewall,xsoar,Microsoft
+Azure Kubernetes Services,xsoar,Microsoft
+Azure Log Analytics,xsoar,Microsoft
+Azure Network Security Groups,xsoar,Microsoft
+Azure Resource Graph,xsoar,Microsoft
+Azure Security Center v2,xsoar,Microsoft
+Azure Sentinel,xsoar,Microsoft
+Azure SQL Management,xsoar,Microsoft
+Azure Storage,xsoar,Microsoft
+Azure Storage Container,xsoar,Microsoft
+Azure Storage FileShare,xsoar,Microsoft
+Azure Storage Queue,xsoar,Microsoft
+Azure Storage Table,xsoar,Microsoft
+AzureDataExplorer,xsoar,Microsoft
+AzureDevOps,xsoar,Microsoft
+AzureFeed,xsoar,Microsoft
+AzureKeyVault,xsoar,Microsoft
+AzureRiskyUsers,xsoar,Microsoft
+AzureWAF,xsoar,Microsoft
+Bambenek Consulting Feed,partner,Netenrich
+Bastille Networks,partner,Bastille Networks
+BeyondTrust Password Safe,xsoar,BeyondTrust
+BeyondTrust Privilege Management Cloud,xsoar,
+BigFix,xsoar,HCL Technologies
+Binalyze AIR,partner,Binalyze
+Bitbucket,xsoar,Atlassian
+BitSight Event Collector,partner,BitSight
+BitSight for Security Performance Management,partner,BitSight
+Bitwarden Password Manager,xsoar,Bitwarden
+Blocklist_de Feed,xsoar,Open Source
+BloodHoundEnterprise,partner,Specter Ops Inc
+BluecatAddressManager,xsoar,BlueCat Networks
+BMC Discovery,partner,BMC Software Inc
+BMCHelixRemedyforce,xsoar,BMC Software
+BmcITSM,xsoar,BMC Software
+BotDefender,partner,HUMAN
+Box v2,xsoar,Box
+BoxEventsCollector,xsoar,Box
+BreachRx,partner,BreachRx
+BruteForceBlocker Feed,xsoar,Open Source
+C2sec irisk,xsoar,C2Sec
+CadoResponse,partner,Darktrace
+CapeSandbox,xsoar,Open Source
+Carbon Black Defense,xsoar,VMware
+Carbon Black Endpoint Standard v3,xsoar,Broadcom
+Carbon Black Enterprise EDR,xsoar,Broadcom
+carbonblack-v2,xsoar,Broadcom
+CarbonBlackEndpointStandardEventCollector,xsoar,Broadcom
+carbonblackliveresponse,xsoar,Broadcom
+CarbonBlackLiveResponseCloud,xsoar,Broadcom
+CarbonBlackProtectionV2,xsoar,Broadcom
+CelonisEventCollector,xsoar,Celonis
+CensysV2,xsoar,Censys
+Centreon,xsoar,Centreon
+Check Point,xsoar,CheckPoint Software Technologies
+CheckPhish,xsoar,BolsterAI
+checkpointdome9,xsoar,CheckPoint Software Technologies
+CheckPointFirewall_v2,xsoar,CheckPoint Software Technologies
+CheckPointHarmonyEndpoint,xsoar,CheckPoint Software Technologies
+CheckPointHEC,partner,CheckPoint Software Technologies Ltd.
+CheckPointNDR,partner,CheckPoint Software Technologies
+CheckPointSandBlast,xsoar,CheckPoint Software Technologies
+CheckPointXDR,partner,CheckPoint Software Technologies
+Cherwell,xsoar,Ivanti
+CimTrak,partner,Cimcor Inc
+CipherTrust,xsoar,Thales
+CIRCL,xsoar,LHC
+CIRCL CVE Search,xsoar,Open Source
+CircleCI,xsoar,CircleCI
+Cisco AppDynamics,xsoar,Cisco Systems
+Cisco ASA,xsoar,Cisco Systems
+Cisco CloudLock,xsoar,Cisco Systems
+Cisco Email Security Appliance (IronPort),xsoar,Cisco Systems
+Cisco Firepower,xsoar,Cisco Systems
+Cisco ISE,xsoar,Cisco Systems
+Cisco Meraki v2,xsoar,Cisco Systems
+Cisco Secure Malware Analytics,xsoar,Cisco Systems
+Cisco Spark,xsoar,Cisco Systems
+Cisco Stealthwatch,xsoar,Cisco Systems
+Cisco Umbrella Cloud Security v2,xsoar,Cisco Systems
+Cisco Umbrella Enforcement,xsoar,Cisco Systems
+Cisco Umbrella Investigate,xsoar,Cisco Systems
+Cisco Umbrella Reporting,xsoar,Cisco Systems
+Cisco WebEx Feed,xsoar,Cisco Systems
+CiscoAMPEventCollector,xsoar,Cisco Systems
+CiscoESA,xsoar,Cisco Systems
+CiscoSMA,xsoar,Cisco Systems
+CiscoThousandEyes,xsoar,Cisco Systems
+CiscoWebexEventCollector,xsoar,Cisco Systems
+CiscoWSAv2,xsoar,Cisco Systems
+CitrixCloud,xsoar,Cloud Software Group
+CitrixDaas,xsoar,Cloud Software Group
+Clarizen IAM,xsoar,Planview
+Claroty,partner,Claroty
+Cloaken,xsoar,Cloaken
+CloudConvert,xsoar,Lunaweb GmbH
+Cloudflare Feed,xsoar,Cloudflare
+Cloudflare MCP,xsoar,Cloudflare
+Cloudflare Zero Trust,xsoar,Cloudflare
+CloudflareWAF,xsoar,Cloudflare
+CloudShark,partner,QA Cafe LLC
+Code42,partner,Permira
+Code42 Event Collector,partner,Permira
+Cofense Feed,partner,Cofense
+Cofense Triage v3,partner,Cofense
+Cofense Vision,partner,Cofense
+CofenseIntelligenceV2,partner,Cofense
+Cognni,partner,Cognni
+Cohesity Helios Event Collector,partner,Cohesity
+CohesityHelios,partner,Cohesity
+CommvaultSecurityIQ,partner,Commvault
+ConcentricAI,partner,Concentric AI
+Confluera,partner,XM Cyber
+Coralogix,partner,Coralogix
+Core Lock,xsoar,Palo Alto Networks
+Core REST API,xsoar,Palo Alto Networks
+Cortex Attack Surface Management,xsoar,Palo Alto Networks
+Cortex Core - IOC,xsoar,Open Source
+Cortex Core - IR,xsoar,Palo Alto Networks
+Cortex Core - Platform,xsoar,Palo Alto Networks
+Cortex Data Lake,xsoar,Palo Alto Networks
+Cortex XDR - IOC,xsoar,Palo Alto Networks
+Cortex XDR - IR,xsoar,Palo Alto Networks
+Cortex XDR - IR CTF,xsoar,Palo Alto Networks
+Cortex XDR - XQL Query Engine,xsoar,Palo Alto Networks
+Cortex Xpanse,xsoar,Palo Alto Networks
+CounterCraft Deception Director,partner,CounterCraft
+CounterTack,xsoar,SparkCognition
+Covalence For Security Providers,partner,Cobalt Strike
+Covalence Managed Security,partner,Field Effect Software Inc
+CriminalIP,partner,AI Spera
+CrowdSec,partner,CrowdSec
+Crowdstrike Falcon Intel Feed,xsoar,CrowdStrike
+CrowdStrike Falcon Intel v2,xsoar,CrowdStrike
+CrowdStrike Falcon Sandbox V2,xsoar,CrowdStrike
+CrowdStrike Falcon Streaming v2,xsoar,CrowdStrike
+CrowdStrike Falcon X,xsoar,CrowdStrike
+CrowdStrike Indicator Feed,xsoar,CrowdStrike
+CrowdStrike OpenAPI,xsoar,CrowdStrike
+CrowdstrikeFalcon,xsoar,CrowdStrike
+CrowdStrikeMalquery,xsoar,CrowdStrike
+Cryptocurrency,xsoar,Open Source
+Cryptosim,partner,CRYPTTECH
+CSCDomainManager,partner,WMB Holdings Inc
+CSVFeed,xsoar,Open Source
+CTIX v3,partner,EclecticIQ
+CTM360_CyberBlindspot,partner,CTM360
+CTM360_HackerView,partner,CTM360
+Cuckoo Sandbox,xsoar,Open Source
+CybelAngel,partner,CybelAngel
+CybelAngel Event Collector,partner,CybelAngel
+Cyber Triage,xsoar,Basis Technology
+CyberArk Identity Event Collector,xsoar,CyberArk
+CyberArkAIM v2,partner,Palo Alto Networks
+CyberArkEPMEventCollector,xsoar,CyberArk
+CyberArkEPMSOCResponse,xsoar,CyberArk
+CyberArkISP,partner,CyberArk
+CyberArkPAS,partner,CyberArk
+Cybereason,partner,LevelBlue
+cyberint,partner,Check Point Software Technologies
+Cyberint Feed,partner,Check Point Software Technologies
+Cyberint Takedowns,partner,Check Point Software Technologies
+Cyberpion,partner,IONIX
+Cybersixgill_Actionable_Alerts,partner,Bitsight
+Cybersixgill_DVE_Enrichment,partner,BitSight
+CyberTotal,partner,CyCraft Technology
+Cyberwatch,partner,Framatome
+cybleeventsv2,partner,Cyble
+CybleThreatIntel,partner,Cyble
+CyCognito,partner,CyCognito
+Cyjax Feed,partner,Cyjax
+Cylance Protect v2,xsoar,Arctic Wolf
+Cymptom,partner,Tenable
+Cymulate,partner,Cymulate
+cymulate_v3,partner,Cymulate
+Cyren Inbox Security,partner,Data443
+Darktrace,partner,Thoma Bravo
+Darktrace ASM,partner,Darktrace
+Darktrace Event Collector,partner,Thoma Bravo
+DarktraceAdmin,partner,Thoma Bravo
+DarktraceAIA,partner,Thoma Bravo
+DarktraceEmail,partner,Thoma Bravo
+DarktraceMBs,partner,Darktrace
+DataBee,partner,Comcast Corporation
+DatadogCloudSIEMV2,partner,Datadog
+Dataminr Pulse,partner,Dataminr
+Dataminr Pulse ReGenAI,partner,Dataminr
+DBot Truth Bombs,xsoar,Open Source
+decyfir,partner,CYFIRMA
+DeCYFIR Feed,partner,CYFIRMA
+DecyfirEventCollector,partner,CYFIRMA
+Deep Instinct,partner,Deep Instinct
+DeepInstinct v3,partner,Deep Instinct
+DeHashed,xsoar,DeHashed
+DelineaDSV,partner,Delinea
+DelineaSS,partner,Delinea
+Dell Secureworks,partner,Sophos
+Demisto Lock,xsoar,Palo Alto Networks
+Demisto REST API,xsoar,Palo Alto Networks
+Devo_v2,partner,Devo Technology
+DHS Feed v2,xsoar,DHS
+Digital Defense FrontlineVM,partner,Fortra
+Digital Guardian,partner,Fortra
+Digital Shadows,partner,ReliaQuest
+DigitalGuardianARCEventCollector,partner,Fortra
+DNSDB_v2,partner,DomainTools
+dnstwist,xsoar,Open Source
+Docusign,xsoar,Docusign
+DomainTools Iris,partner,DomainTools
+DomainToolsIrisDetect,partner,DomainTools
+Doppel,partner,Doppel
+DropboxEventsCollector,xsoar,Dropbox
+Druva Ransomware Response,partner,DruvaInc
+DruvaEventCollector,partner,Druva
+DShield Feed,xsoar,Open Source
+DSPM,xsoar,Palo Alto Networks
+DUO Admin,xsoar,Cisco Systems
+Duo Event Collector,xsoar,Cisco Systems
+EasyVista,xsoar,EasyVista
+EclecticIQ Intelligence Center v3,partner,EclecticIQ
+EclecticIQ Platform v2,partner,EclecticIQ
+EDL,xsoar,Palo Alto Networks
+Elasticsearch v2,xsoar,Elastic
+ElasticsearchEventCollector,xsoar,Elastic
+ElasticsearchFeed,xsoar,ElasticNV
+Email Hippo,xsoar,EmailHippo
+EmailRepIO,xsoar,Sublime Security
+Endace,partner,Endace
+Endgame,xsoar,Elastic
+Envoy IAM,xsoar,BeyondTrust
+epo,xsoar,Trellix
+EWS Extension Online Powershell v3,xsoar,Microsoft
+EWS Mail Sender,xsoar,Microsoft
+EWS v2,xsoar,Microsoft
+EwsExtension,xsoar,Microsoft
+EWSO365,xsoar,Microsoft
+Exabeam,xsoar,Exabeam
+Exabeam Data Lake,xsoar,Exabeam
+ExabeamSecOpsPlatform,xsoar,Exabeam
+ExceedLMS IAM,xsoar,Intellum
+Exodus Intelligence Vulnerabilities,partner,Exodus Intelligence
+Exterro FTK,partner,Exterro
+ExtraHop v2,partner,Bain Capital Private Equity
+ExtrahopRevealXEventCollector,partner,Bain Capital Private Equity
+F5 ASM,xsoar,F5
+F5 firewall,xsoar,F5
+F5Silverline,xsoar,F5
+FalconIntel,xsoar,CrowdStrike
+Farsight DNSDB,partner,DomainTools
+Fastly Feed,xsoar,Fastly
+FeedCyCognito,partner,CyCognito
+FeedDomainTools,partner,Battery Ventures
+Feedly Feed,partner,Feedly Inc
+FeedMandiantThreatIntelligence,partner,Google
+FeedMISPThreatActors,xsoar,Open Source
+FeedNVDv2,xsoar,NIST
+FeedSOCRadarThreatFeed,partner,SOCRadar
+FeedURLhaus,xsoar,Open Source
+FeedUstaThreatStream,partner,Anomali
+Feodo Tracker Hashes Feed,xsoar,Open Source
+Feodo Tracker IP Blocklist Feed,xsoar,Abusech
+Fidelis EDR,xsoar,Skyview Capital
+Fidelis Elevate Network,xsoar,Skyview Capital
+FileOrbis,partner,FileOrbis
+fireeye,xsoar,Trellix
+FireEye Central Management,xsoar,Trellix
+FireEye Detection on Demand,partner,Trellix
+FireEye Email Security,xsoar,Trellix
+FireEye ETP,xsoar,Trellix
+FireEye ETP Event Collector,xsoar,Trellix
+FireEye HX,xsoar,Trellix
+FireEye HX Event Collector,xsoar,Trellix
+FireEye iSIGHT,xsoar,Google
+FireEyeFeed,xsoar,Google
+FireEyeHelix,xsoar,Trellix
+FireEyeHX v2,xsoar,Trellix
+FireEyeNX,xsoar,Trellix
+Flashpoint,partner,Flashpoint
+FlashpointFeed,partner,Flashpoint
+Forcepoint,xsoar,Francisco Partners
+Forcepoint DLP Event Collector,xsoar,Francisco Partners
+Forcepoint Security Management Center,xsoar,Francisco Partners
+Forescout,xsoar,Advent International
+ForescoutEyeInspect,xsoar,Advent International
+Fortanix DSM,partner,Fortanix
+FortiGate,xsoar,Fortinet
+fortimail,xsoar,Fortinet
+FortiManager,xsoar,Fortinet
+FortiSandboxv2,xsoar,Fortinet
+FortiSIEMV2,xsoar,Fortinet
+fortiweb_vm,xsoar,Fortinet
+FraudWatch,xsoar,Netcraft
+Freshdesk,xsoar,Freshworks Inc.
+FreshworksFreshservice,xsoar,Freshworks Inc.
+G Suite Security Alert Center,xsoar,Google
+Gamma,xsoar,Gamma
+GCenter,partner,Gatewatcher
+GCenter 103,partner,Gatewatcher
+GCP,xsoar,Google
+GCP Whitelist Feed,xsoar,Google
+GCP-IAM,xsoar,Google
+Gem,partner,Wiz
+Generic MCP,xsoar,Open Source
+Generic SQL,xsoar,Microsoft
+Generic Webhook,xsoar,Open Source
+GenericAPIEventCollector,xsoar,Open Source
+GenesysCloud,xsoar,Genesys
+Genetec Security Center Event Collector,xsoar,Genetec
+Genians,partner,Genians
+Giphy,xsoar,Shutterstock
+GitGuardianEventCollector,xsoar,GitGuardian
+GitHub,xsoar,Microsoft
+Github Event Collector,xsoar,Microsoft
+Github Feed,xsoar,Microsoft
+GitHub IAM,xsoar,Microsoft
+GitHub MCP,xsoar,Microsoft
+GitLab Event Collector,xsoar,GitLab Inc
+GitLabv2,xsoar,GitLab Inc.
+GLIMPS_Detect,partner,GLIMPS Detect Technologies
+GLPI,partner,Open Source
+Gmail,xsoar,Google
+Gmail Single User,xsoar,Google
+Google Apigee,xsoar,Google
+Google BigQuery,xsoar,Google
+Google Chronicle Backstory,partner,Google
+Google Chronicle Backstory Streaming API,partner,Google
+Google Cloud Compute,xsoar,Google
+Google Cloud Functions,xsoar,Google
+Google Cloud Storage,xsoar,Google
+Google IP Ranges Feed,xsoar,Google
+Google Key Management Service,xsoar,Google
+Google Resource Manager,xsoar,Google
+Google Safe Browsing v2,xsoar,Google
+Google Threat Intelligence IoC Stream Feed,partner,Google
+Google Threat Intelligence Threat Lists,partner,Google
+Google Vision AI,xsoar,Google
+google-vault,xsoar,Google
+GoogleCalendar,xsoar,Google
+GoogleCloudLogging,xsoar,Google
+GoogleCloudSCC,partner,Google
+GoogleCloudTranslate,xsoar,Google
+GoogleDocs,xsoar,Google
+GoogleDrive,xsoar,Google
+GoogleGemini,xsoar,Google
+GoogleKubernetesEngine,xsoar,Google
+GoogleMaps,xsoar,Google
+GooglePubSub,xsoar,Google
+GoogleSafeBrowsing,xsoar,Google
+GoogleSecOps,partner,Google
+GoogleSheets,xsoar,Google
+GoogleThreatIntelligence,partner,Google
+GoogleThreatIntelligenceASMIssues,partner,Google
+GoogleThreatIntelligenceDTMAlerts,partner,Google
+Grafana,xsoar,Grafana Labs
+GraphQL,xsoar,Open Source
+GravityZone,partner,
+GreatHorn,partner,SF2 GH Holdings
+GreyNoise,partner,GreyNoise
+GreyNoise Community,partner,GreyNoise
+GreyNoise Indicator Feed,partner,GreyNoise
+Group-IB Digital Risk Protection,partner,
+Group-IB TDS Polygon,partner,Polygon Labs
+Group-IB Threat Intelligence & Attribution,partner,Group IB
+Group-IB Threat Intelligence & Attribution Feed,partner,Group IB
+GRR,xsoar,Open Source
+GSuiteAdmin,xsoar,Google
+GSuiteAuditor,xsoar,Google
+GuardiCore v2,xsoar,Akamai Technologies
+Guidance Encase Endpoint,xsoar,OpenText
+Gurucul-GRA,partner,Gurucul
+HackerOne,partner,HackerOne
+Hackuity,partner,Hackuity
+Halcyon,xsoar,Halcyon
+HashiCorp Vault,xsoar,IBM
+HashicorpTerraform,xsoar,IBM
+Hatching Triage,partner,Recorded Future
+Have I Been Pwned? V2,xsoar,Troy Hunt
+Hello IAM World,xsoar,Open Source
+HostIo,xsoar,Access2IT Group BV
+Hoxhunt v2,partner,Hoxhunt
+HPEArubaCentralEventCollector,xsoar,HPE
+HPEArubaClearPass,xsoar,HPE
+Humio,partner,CrowdStrike
+Hurukai,partner,HarfangLab
+HYAS Insight,partner,Silent Push
+HYAS Protect,partner,threatER
+IBM Resilient Systems,xsoar,IBM
+IBM Storage Scale,xsoar,IBM
+IBMMaaS360Security,xsoar,IBM
+IBMSecurityGuardium,xsoar,IBM
+IBMSecurityVerify,xsoar,IBM
+iboss,partner,Iboss
+icebrg,xsoar,Gigamon
+Ignite,partner,Flashpoint
+IgniteFeedV2,partner,
+iLert,partner,Ilert GmbH
+illuminate,partner,Renaissance Learning
+IllumioCore,partner,Illumio
+IllusiveNetworks,partner,Proofpoint Inc
+Image OCR,xsoar,Open Source
+iManageThreatManager,xsoar,iManage
+Imperva Skyfence,xsoar,Forcepoint
+Imperva WAF,xsoar,Thales Group
+Incapsula,xsoar,Imperva
+Inception,partner,Stairwell
+Indeni,partner,BlueCat Networks
+Infinipoint,partner,Infinipoint
+InfoArmor VigilanteATI,xsoar,Allstate Identity Protection
+Infoblox,partner,Infoblox
+Infoblox BloxOne Threat Defense Event Collector,partner,Infoblox
+InfobloxBloxOneThreatDefense,partner,Infoblox
+InfobloxThreatIntelligenceFeed,partner,Infoblox
+Infocyte,partner,Kaseya
+Intel471 Actors Feed,partner,Intel 471
+Intel471 Malware Feed,partner,Intel 471
+Intel471 Malware Indicator Feed,partner,Thoma Bravo
+Intel471 Watcher Alerts,partner,Intel 471
+Intezer v2,partner,Symphony Talent Group
+IntSights,partner,Rapid7
+Inventa,partner,InventaCapitalPLC
+ipinfo_v2,xsoar,IPinfo
+IPQualityScore,partner,IPQualityScore
+Ipstack,xsoar,Idera Inc.
+IronDefense,partner,IronNet Cybersecurity
+Ironscales,partner,PSG Equity
+Ironscales Event Collector,xsoar,Ironscales
+IsItPhishing,xsoar,Open Source
+Ivanti Heat,xsoar,Ivanti
+Jamf Protect Event Collector,xsoar,Jamf
+jamf v2,xsoar,Jamf
+Jira Event Collector,xsoar,Atlassian
+Jira V3,xsoar,Atlassian
+jira-v2,xsoar,Atlassian
+JizoM,partner,CYBERDYNE inc
+Joe Security,xsoar,Joe Security LLC
+JoeSecurityV2,xsoar,Joe Security GmbH
+JSON Feed,xsoar,Open Source
+JsonWhoIs,xsoar,JsonWhois
+KafkaV3,xsoar,Open Source
+Kaspersky Security Center,xsoar,Kaspersky Lab
+KeeperSecretsManager,partner,Keeper Security Inc.
+KeeperSecurity,xsoar,Keeper Security Inc.
+Kennav2,xsoar,Cisco Systems
+KnowBe4 KMSAT Event Collector,partner,Vista Equity Partners
+KnowBe4_KMSAT,partner,Vista Equity Partners
+Koodous,xsoar,VirusTotal
+Lansweeper,partner,Insight Partners
+LastInfoSec,partner,Gatewatcher
+Lastline v2,xsoar,Broadcom
+Linkshadow,partner,LinkShadow
+Lockpath KeyLight v2,xsoar,Navex Global
+LogPoint SIEM Integration,partner,Logpoint
+LogRhythmRest V2,xsoar,Exabeam
+LogsignSiem,partner,Logsign
+Logz.io,partner,Logz.io
+LOLBAS Feed,xsoar,Open Source
+Looker,xsoar,Google
+LookoutMobileEndpointSecurity,xsoar,Lookout Inc.
+Luminar_IOCs_and_leaked_credentials,partner,Cognyte
+Lumu,partner,Lumu
+Mail Listener v2,xsoar,Open Source
+Mail Sender (New),xsoar,Open Source
+MailListener - POP3,xsoar,Open Source
+Majestic Million,xsoar,Majestic-12 Limited
+Maltiverse,xsoar,Maltiverse
+MalwareBazaar,xsoar,Open Source
+MalwareBazaar Feed,xsoar,AbuseCh
+Malwarebytes,partner,Malwarebytes
+ManageEngine,xsoar,Zoho Corporation
+ManageEngine PAM360,partner,Zoho Corporation
+Mandiant,partner,Google
+Mandiant Advantage Threat Intelligence,partner,Google
+MattermostV2,xsoar,Mattermost Inc
+MaxMind GeoIP2,xsoar,MaxMind Inc
+McAfee Active Response,xsoar,Trellix
+McAfee Advanced Threat Defense,xsoar,Trellix
+McAfee DXL,xsoar,Trellix
+McAfee ePO v2,xsoar,Trellix
+McAfee ESM v2,xsoar,Trellix
+McAfee NSM,xsoar,Trellix
+McAfee Threat Intelligence Exchange V2,xsoar,Trellix
+McAfee Web Gateway,xsoar,Skyhigh Security
+McAfeeDAM,xsoar,STG
+McAfeeNSMv2,xsoar,Trellix
+MetaDefender Sandbox,partner,OPSWAT
+Microsoft 365 Defender,xsoar,Microsoft
+Microsoft 365 Defender Event Collector,xsoar,Microsoft
+Microsoft Advanced Threat Analytics,xsoar,Microsoft
+Microsoft Defender Advanced Threat Protection,xsoar,Microsoft
+Microsoft Defender for Cloud Apps Event Collector,xsoar,Microsoft
+Microsoft Defender for Cloud Event Collector,xsoar,Microsoft
+Microsoft Endpoint Configuration Manager,xsoar,Microsoft
+Microsoft Graph,xsoar,Microsoft
+Microsoft Graph API,xsoar,Microsoft
+Microsoft Graph Calendar,xsoar,Microsoft
+Microsoft Graph Device Management,xsoar,Microsoft
+Microsoft Graph Groups,xsoar,Microsoft
+Microsoft Graph Mail Single User,xsoar,Microsoft
+Microsoft Graph User,xsoar,Microsoft
+Microsoft Intune Feed,xsoar,Microsoft
+Microsoft Management Activity API (O365 Azure Events),xsoar,Microsoft
+Microsoft Teams,xsoar,Microsoft
+Microsoft Teams Management,xsoar,Microsoft
+Microsoft Teams via Webhook,xsoar,Microsoft
+Microsoft_Graph_Files,xsoar,Microsoft
+MicrosoftCloudAppSecurity,xsoar,Microsoft
+MicrosoftDefenderThreatIntelligence,xsoar,Microsoft
+MicrosoftGraphApplications,xsoar,Microsoft
+MicrosoftGraphIdentityandAccess,xsoar,Microsoft
+MicrosoftGraphMail,xsoar,Microsoft
+MicrosoftPolicyAndComplianceAuditLog,xsoar,Microsoft
+Mimecast Event Collector v2,xsoar,Permira
+MimecastV2,xsoar,Permira
+MISP Feed,xsoar,OpenSource
+MISP V3,xsoar,Open Source
+MITRE ATT&CK v2,xsoar,MITRE Corporation
+MobileIronCLOUD,partner,Ivanti
+MobileIronCORE,partner,Ivanti
+MondayEventCollector,xsoar,Monday.com
+MongoDB,xsoar,MongoDB Inc.
+MongoDB Key Value Store,xsoar,MongoDB Inc.
+MongoDB Log,xsoar,MongoDB Inc.
+MongoDBAtlasEventCollector,xsoar,MongoDB Inc.
+MxToolBox,xsoar,ZiffDavis
+Ncurion,partner,Ncurion
+Neosec,partner,Akamai Technologies
+Nessus,xsoar,Tenable
+NetBox Event Collector,xsoar,NetBoxLabs
+Netcraft V2,xsoar,Netcraft
+Netmiko,xsoar,Open Source
+NetQuestOMX,xsoar,NetQuest Corporation
+NetscoutAED,partner,Netscout Systems
+NetscoutArborSightline,partner,Netscout Systems
+Netskope,xsoar,Netskope
+netskope_api_v2,xsoar,Netskope
+NetskopeAPIv1,xsoar,Netskope
+NetskopeEventCollector_v2,xsoar,Netskope
+nmap,xsoar,Open Source
+Nozomi Networks,partner,Mitsubishi Electric
+NucleonCyberFeed,partner,NucleonCyber
+Nutanix Hypervisor,xsoar,Nutanix
+O365 Defender SafeLinks,xsoar,Microsoft
+O365 Defender SafeLinks - Single User,xsoar,Microsoft
+OctoxLabs,partner,OctoXLabs
+Office 365 Feed,xsoar,Microsoft
+OHMYVT_CTF,xsoar,Open Source
+okta,xsoar,Okta
+Okta Event Collector,xsoar,Okta
+Okta IAM,xsoar,Okta
+Okta v2,xsoar,Okta
+OktaASA,xsoar,Okta
+OktaAuth0EventCollector,xsoar,Okta
+OnboardingIntegration,xsoar,Open Source
+OneLogin Event Collector,xsoar,OneIdentity
+OnePassword,xsoar,1Password Inc.
+OpenAI,xsoar,OpenAI
+OpenAi ChatGPT v3,xsoar,OpenAI
+OpenCTI,xsoar,Filigran
+OpenCTI Feed,xsoar,Filigran
+OpenCTI Feed 4.X,xsoar,Filigran
+OpenCVE,xsoar,Amber Security SAS
+OpenLDAP,xsoar,Open Source
+OpenPhish_v2,xsoar,OpenPhish
+OPNSense,partner,Deciso B.V.
+OpsGenieV3,xsoar,Atlassian
+OPSWAT-Metadefender V2,xsoar,OPSWAT Inc
+OracleCloudInfrastructureEventCollector,xsoar,Oracle
+OracleIAM,xsoar,Oracle
+Orca,partner,Orca Security
+Orca Event Collector,partner,Orca Security
+OTRS,partner,EasyVista
+PacketMail,xsoar,Wireless Innovation
+Packetsled,xsoar,Mixmode
+PagerDuty v2,xsoar,PagerDuty
+Palo Alto Networks - Prisma SASE,xsoar,Palo Alto Networks
+Palo Alto Networks AIOps,xsoar,Palo Alto Networks
+Palo Alto Networks Enterprise DLP,xsoar,Palo Alto Networks
+Palo Alto Networks IoT,xsoar,Palo Alto Networks
+Palo Alto Networks Security Advisories,xsoar,Palo Alto Networks
+Palo Alto Networks Threat Vault v2,xsoar,Palo Alto Networks
+Palo Alto Networks Threat Vault v2 Feed,xsoar,Palo Alto Networks
+PaloAltoNetworks_PrismaCloudCompute,xsoar,Palo Alto Networks
+Panorama,xsoar,Palo Alto Networks
+PATHelpdeskAdvanced,xsoar,PATServicesLTD
+Penfield,partner,PenfieldAI
+Pentera,partner,Pentera
+PerceptionPoint,partner,Fortinet
+Perch,xsoar,Razor Group
+Phisher,partner,Vista Equity Partners
+PhishLabs IOC,xsoar,Fortra
+PhishLabs IOC DRP,xsoar,Fortra
+PhishLabs IOC EIR,xsoar,Fortra
+PhishTank V2,xsoar,Open Source
+Picus,partner,Picus Security
+PicusNG,partner,Picus Security
+PingOne,partner,Thoma Bravo
+Pipl,xsoar,Pipl
+Plain Text Feed,xsoar,Open Source
+PolySwarmV2,partner,PolySwarm
+PowerShell Remoting,xsoar,Microsoft
+Prisma Access,xsoar,Palo Alto Networks
+Prisma Access Egress IP feed,xsoar,Palo Alto Networks
+PrismaCloud IAM,xsoar,Palo Alto Networks
+PrismaCloud v2,xsoar,Palo Alto Networks
+Proofpoint Email Security Event Collector,xsoar,Thoma Bravo
+Proofpoint Protection Server v2,xsoar,Thoma Bravo
+Proofpoint Server Protection,xsoar,Thoma Bravo
+Proofpoint TAP v2,xsoar,Thoma Bravo
+Proofpoint Threat Protection,xsoar,Thoma Bravo
+Proofpoint Threat Response,xsoar,Thoma Bravo
+ProofpointFeed,xsoar,Thoma Bravo
+ProofpointIsolationEventCollector,xsoar,Thoma Bravo
+ProofpointThreatResponseEventCollector,xsoar,Thoma Bravo
+ProtectWise,xsoar,Verizon Communications
+Public DNS Feed,xsoar,Open Source
+QintelPMI,partner,Qintel
+QintelQSentry,partner,Qintel
+QintelQWatch,partner,Qintel
+QRadar v3,xsoar,Palo Alto Networks
+QSS,partner,Open Source
+qualys_fim,xsoar,Qualys
+QualysV2,xsoar,Qualys
+Query.AI,partner,QueryAI Inc.
+QuestKace,xsoar,Quest Software
+QutteraWebsiteMalwareScanner,partner,Quttera
+RaDark,partner,KELA
+Radware Cloud DDoS Protection Services,xsoar,Radware
+Rapid7 InsightIDR,xsoar,Rapid7
+Rapid7 Nexpose,xsoar,Rapid7
+rapid7_threat_command,partner,Rapid7
+rapid7appsec,xsoar,Rapid7
+Rasterize,xsoar,Open Source
+RDAP,xsoar,Open Source
+Reco,partner,Reco AI
+Recorded Future Feed,xsoar,Mastercard
+Recorded Future Identity,partner,Mastercard
+Recorded Future v2,partner,Mastercard
+RecordedFutureAlerts,partner,Mastercard
+RecordedFutureASI,partner,Mastercard
+RecordedFutureEventCollector,partner,Mastercard
+RecordedFutureLists,partner,Mastercard
+RecordedFuturePlaybookAlerts,partner,Mastercard
+RedCanary,xsoar,Zscaler
+RedLock,xsoar,Palo Alto Networks
+Redmine,xsoar,Open Source
+ReliaQuest GreyMatter DRP Event Collector,partner,ReliaQuest
+ReliaQuest GreyMatter DRP Incidents,partner,ReliaQuest
+ReliaquestTakedown,partner,ReliaQuest
+Remedy AR,xsoar,BMC Software
+RemoteAccess v2,xsoar,Axis Communications
+ResecurityMonitoring,partner,Resecurity
+Respond_Analyst,partner,Google
+Retarus Secure Email Gateway,xsoar,Retarus GmbH
+ReversingLabs A1000 v2,partner,ReversingLabs
+ReversingLabs Ransomware and Related Tools Feed,partner,ReversingLabs
+ReversingLabs Titanium Cloud,partner,ReversingLabs
+ReversingLabs TitaniumCloud v2,partner,ReversingLabs
+ReversingLabs TitaniumScale,partner,ReversingLabs
+RiskSense,partner,Ivanti
+RSA Archer v2,xsoar,RSAsecurity
+RSA NetWitness Endpoint,xsoar,PartnerOne
+RSA NetWitness Packets and Logs,partner,PartnerOne
+RSA NetWitness Security Analytics,xsoar,PartnerOne
+RSA NetWitness v11.1,partner,PartnerOne
+RSANetWitnessv115,partner,PartnerOne
+RSS Feed,xsoar,Open Source
+RST Cloud - Threat Feed API,partner,RSTCloud
+RTIR,xsoar,Open Source
+RubrikPolaris,partner,Rubrik
+Rundeck,xsoar,PagerDuty
+RunZero,xsoar,runZero
+RunZero Event Collector,xsoar,runZero
+SaaS Security Event Collector,xsoar,Palo Alto Networks
+SaasSecurity,xsoar,Palo Alto Networks
+Safebreach,partner,SafeBreach
+SafeBreach v2,partner,SafeBreach
+SafeNet Trusted Access,partner,Thales
+SafeNetTrustedAccessEventCollector,partner,Thales
+SafewalkManagement,partner,InWebo Group
+SafewalkReports,partner,Protectimus
+SailPointIdentityIQ,partner,SailPoint Technologies
+SailPointIdentityNow,partner,SailPoint Technologies
+SailPointIdentityNowEventCollector,partner,SailPoint Technologies
+Salesforce,xsoar,Salesforce
+Salesforce Event Collector,xsoar,Salesforce
+Salesforce Fusion IAM,xsoar,Salesforce
+Salesforce IAM,xsoar,Salesforce
+Sample Incident Generator,xsoar,Open Source
+SAP-IAM,xsoar,SAP
+SAPBTP,xsoar,SAP
+SAPCloudForCustomerC4C,xsoar,SAP
+SaviyntEICEventCollector,xsoar,Saviynt
+SCADAfence CNM,partner,Rapid7
+SecBI,partner,LogPoint
+Secneurx Analysis,partner,SecneurX
+Secneurx Threat Feeds,partner,SecneurX
+SecurityAndComplianceV2,xsoar,Microsoft
+SecurityScorecard,partner,SecurityScorecard
+Securonix,partner,Securonix
+Sekoia XDR,partner,Sekoia
+SEKOIAIntelligenceCenter,partner,Sekoia
+SentinelOne V2,partner,SentinelOne
+SentinelOneEventCollector,partner,SentinelOne
+Sepio,partner,Sepio
+Serenety,partner,XM Cyber
+Server Message Block (SMB) v2,xsoar,Microsoft
+Service Manager,xsoar,OpenText
+ServiceDeskPlus,xsoar,Zoho Corporation
+ServiceNow CMDB,xsoar,ServiceNow
+ServiceNow Event Collector,xsoar,ServiceNow
+ServiceNow IAM,xsoar,ServiceNow
+ServiceNow v2,xsoar,ServiceNow
+ShiftLeft CORE,partner,QwietAI
+Shodan_v2,xsoar,Shodan
+Signal Sciences WAF,xsoar,Fastly
+SIGNL4,partner,Derdack GmbH
+SilentPush,partner,Silent Push Inc.
+Silverfort,partner,Silverfort
+SingleConnect,partner,Vectra AI
+Sixgill_Darkfeed,partner,Bitsight
+Sixgill_Darkfeed_Enrichment,partner,Bitsight
+Sixgill_DVE_Feed v2,partner,BitSight
+Skyhigh Secure Web Gateway (On Prem),xsoar,Skyhigh Security
+Skyhigh Security,xsoar,STG
+Slack Event Collector,xsoar,Slack
+Slack IAM,xsoar,Slack
+SlackV3,xsoar,Slack
+SMIME Messaging,xsoar,Open Source
+Smokescreen IllusionBLACK,partner,Zscaler
+Snowflake,xsoar,Snowflake
+SOCRadarIncidentsMultiTenant,partner,SOCRadar
+SOCRadarIncidentsV4,partner,SOCRadar
+SOCRadarThreatFusion,partner,SOCRadar
+SolarWinds,xsoar,SolarWinds Corporation
+Sophos Central,xsoar,Thoma Bravo
+sophos_firewall,xsoar,Thoma Bravo
+SpamhausFeed,xsoar,Spamhaus Project
+SplunkPy v2,xsoar,Cisco Systems
+SpurContextAPI,partner,GoAhead Inc
+SpyCloudEnterpriseProtectionEnrichment,partner,SpyCloud
+SpyCloudEnterpriseProtectionFeed,partner,SpyCloud
+Stamus,partner,Stamus Networks
+Stealthwatch Cloud,xsoar,Cisco Systems
+StellarCyber,partner,Stellar Cyber
+SumoLogic,xsoar,Francisco Partners
+SumoLogicSEC,partner,Francisco Partners
+Symantec Blue Coat Content and Malware Analysis,xsoar,Broadcom
+Symantec Cloud Secure Web Gateway Event Collector,xsoar,Broadcom
+Symantec Data Loss Prevention v2,xsoar,Broadcom
+Symantec Email Security Cloud,xsoar,Broadcom
+Symantec Endpoint Protection V2,xsoar,Broadcom
+Symantec Endpoint Security,xsoar,Broadcom
+Symantec Management Center,xsoar,Broadcom
+Symantec Messaging Gateway,xsoar,Broadcom
+Symantec MSS,xsoar,Broadcom
+SymantecCloudSOCEventCollector,xsoar,Broadcom
+SymantecEDR,xsoar,Broadcom
+SysAid,xsoar,SysAid Technologies
+SysdigResponseActions,partner,Sysdig
+Syslog Sender,xsoar,Open Source
+Syslog v2,xsoar,Open Source
+TaegisXDRv2,partner,Sophos
+Tanium Threat Response v2,xsoar,Tanium
+Tanium v2,xsoar,Tanium
+TAXII 2 Feed,xsoar,Open Source
+TAXII Server,xsoar,Open Source
+TAXII2 Server,xsoar,Open Source
+TAXIIFeed,xsoar,Open Source
+Team Cymru Scout,partner,Audax Private Equity
+TeamCymru,partner,Audax Private Equity
+TeamViewer Event Collector,xsoar,TeamViewer
+Telegram_Beta,xsoar,Telegram FZ-LLC
+Tenable.io,xsoar,Tenable
+Tenable.sc,xsoar,Tenable
+Tessian,partner,Proofpoint
+TheHive Project,xsoar,StrangeBee
+Thinkst Canary,xsoar,Thinkst Canary
+Threat Grid,xsoar,Cisco Systems
+ThreatConnect Feed,xsoar,Dataminr
+ThreatConnect v3,xsoar,Dataminr
+ThreatExchange v2,xsoar,Meta
+ThreatFox Feed,xsoar,AbuseCh
+ThreatGridv2,xsoar,Cisco Systems
+ThreatMiner,xsoar,ThreatConnect
+ThreatQ v2,xsoar,Securonix
+ThreatQ_Beta,xsoar,Securonix
+ThreatX,xsoar,A10 Networks
+ThreatZone,partner,MCT
+Tidy,xsoar,Tidy Building Services
+TOPdesk,xsoar,TOPdesk
+Tor Exit Addresses Feed,xsoar,Open Source
+Traceable,partner,Harness
+Trend Micro Apex,xsoar,Trend Micro
+Trend Micro Deep Discovery Analyzer,xsoar,Trend Micro
+Trend Micro Deep Security,xsoar,Trend Micro
+Trend Micro Email Security Event Collector,xsoar,Trend Micro
+Trend Micro Vision One V3,partner,TrendAI™
+TrendMicro Cloud App Security,xsoar,Trend Micro
+TrendMicroVisionOneEventCollector,partner,Trend Micro
+Tripwire,xsoar,Fortra
+trustwave secure email gateway,xsoar,LevelBlue
+TrustwaveFusion,partner,LevelBlue
+Tufin,partner,Turn River Capital
+Twilio,xsoar,Twilio
+Twilio SendGrid,xsoar,Twilio
+Twinwave,partner,CrowdStrike
+Twitter v2,xsoar,X Corp
+UBIRCH,partner,UBIRCH GmbH
+Unit 42 Feed,xsoar,Palo Alto Networks
+Unit 42 Intelligence,xsoar,Palo Alto Networks
+Uptycs,partner,Uptycs
+URLhaus,xsoar,Open Source
+urlscan.io,partner,Urlscan io
+USTA Account Takeover Prevention,partner,PRODAFT
+USTA Stolen Credit Cards,partner,PRODAFT
+VaronisDataSecurityPlatform,partner,Varonis
+VaronisSaaS,partner,Varonis
+VBR REST API,partner,Veeam
+Vectra_Detect,partner,Vectra AI
+VectraAIEventCollector,partner,Vectra AI
+VectraXDR,partner,Vectra AI
+Veeam ONE REST API,partner,Veeam
+Venafi,xsoar,CyberArk
+VenafiTLSProtect,xsoar,CyberArk
+VercaraUltraDNS,xsoar,DigiCert
+Verodin,xsoar,Trellix
+VersaDirector,xsoar,Versa Networks
+Vertica,xsoar,OpenText
+VirusTotal,partner,Google
+VirusTotal (API v3),partner,Google
+VirusTotal - Premium (API v3),partner,Google
+VirusTotal Livehunt Feed,partner,Google
+VirusTotal Retrohunt Feed,partner,Google
+vmray,partner,VMRay
+VMware,xsoar,Broadcom
+VMware Carbon Black EDR v2,xsoar,Broadcom
+VMware Workspace ONE UEM (AirWatch MDM),xsoar,Omnissa
+VulnDB,xsoar,Cyberint
+VxStream,xsoar,CrowdStrike
+WALLIX Bastion,partner,WALLIX Group
+WhatsMyBrowser,xsoar,WhatIsMyBrowserLimited
+Whois,xsoar,Open Source
+WildFire-Reports,xsoar,Palo Alto Networks
+WildFire-v2,xsoar,Palo Alto Networks
+Windows Remote Management,xsoar,Microsoft
+WithSecureEventCollector,xsoar,WithSecure Corporation
+Wiz,partner,Google
+WizDefend,partner,Google
+WootCloud,partner,Netskope
+Workday,xsoar,Workday
+Workday Event Collector,xsoar,Workday
+Workday IAM,xsoar,Workday
+Workday Sign On Event Collector,xsoar,Workday
+Workday_IAM_Event_Generator,xsoar,Workday
+WorkdaySignonEventGenerator,xsoar,Workday
+XDome,partner,Claroty
+XFE_v2,xsoar,IBM
+xMatters,partner,Thoma Bravo
+XMCyber,partner,Schwarz Group
+Xpanse Feed,xsoar,Palo Alto Networks
+XQL Query Engine,xsoar,Palo Alto Networks
+XSOAR Mirroring,xsoar,Palo Alto Networks
+Zafran API,partner,Zafran Security
+Zendesk v2,xsoar,Zendesk
+ZeroFox,partner,Haveli Investments
+ZeroFoxKeyIncidents,partner,Haveli Investments
+Zerohack XDR,partner,Zerohack
+ZeroNetworksSegmentEventCollector,xsoar,Zero Networks
+ZeroTrustAnalyticsPlatform,partner,Zscaler
+Zimperium v2,xsoar,Liberty Strategic Capital
+Zoom,xsoar,Zoom
+Zoom Feed,xsoar,ZoomInfo
+Zoom Mail,xsoar,Zoom
+Zoom_IAM,xsoar,Zoom
+ZoomEventCollector,xsoar,Zoom
+Zscaler,xsoar,Zscaler
+ZscalerZIdentity,xsoar,Zscaler
