@@ -106,6 +106,23 @@ In addition, the playbook can create and update external ticketing systems for e
 If any alerts are missing in Cortex XSIAM, check the status of the integration:
 
 ![image](doc_files/prisma_instance.png)
+
+### Fewer Alerts in Cortex XSIAM Than in Prisma Cloud Compute
+
+Prisma Cloud Compute groups alerts that occur close together into a single aggregated alert before sending them to Cortex XSIAM. Each aggregated alert creates one case, even if it contains multiple individual alerts. Your alerts are not lost — they are stored inside each case in the `aggregatedAlerts` field and can be viewed with this XQL query:
+
+```xql
+dataset = prisma_cloud_compute_raw
+| fields aggregatedAlerts
+```
+
+To receive each alert as a separate case, reduce the aggregation window in your Prisma Cloud alert profile:
+
+1. Open a case with **Prisma Cloud Support** and request enabling `SAAS_ADDITIONAL_ALERT_AGGREGATION_OPTIONS_ENABLED = true` on your tenant. This unlocks the 1-second aggregation option (the default minimum is 10 minutes).
+2. In the Prisma Cloud Console, go to **Manage → Alerts → [Alert Profile] → Aggregation Period** and set it to **1 second**.
+3. Click **Save**. Each alert will now be forwarded individually to Cortex XSIAM.
+
+> **Note:** Reducing the aggregation period increases the volume of alerts ingested into Cortex XSIAM.
 </~XSIAM>
 
 <~XSOAR>
@@ -211,4 +228,16 @@ In addition, the playbook can create and update external ticketing systems for e
 If any alerts are missing in Cortex XSOAR, check the status of the integration:
 
 ![image](doc_files/prisma_instance.png)
+
+### Fewer Incidents in Cortex XSOAR Than in Prisma Cloud Compute
+
+Prisma Cloud Compute groups alerts that occur close together into a single aggregated alert before sending them to Cortex XSOAR. Each aggregated alert creates one incident, even if it contains multiple individual alerts. The individual alerts are preserved in the `aggregatedAlerts` field of each incident.
+
+To receive each alert as a separate incident, reduce the aggregation window in your Prisma Cloud alert profile:
+
+1. Open a case with **Prisma Cloud Support** and request enabling `SAAS_ADDITIONAL_ALERT_AGGREGATION_OPTIONS_ENABLED = true` on your tenant. This unlocks the 1-second aggregation option (the default minimum is 10 minutes).
+2. In the Prisma Cloud Console, go to **Manage → Alerts → [Alert Profile] → Aggregation Period** and set it to **1 second**.
+3. Click **Save**. Each alert will now be forwarded individually to Cortex XSOAR.
+
+> **Note:** Reducing the aggregation period increases the volume of alerts ingested into Cortex XSOAR.
 </~XSOAR>

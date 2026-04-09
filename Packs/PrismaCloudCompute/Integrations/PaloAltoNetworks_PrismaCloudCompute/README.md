@@ -149,86 +149,86 @@ devSecOps
 {
     "PrismaCloudCompute": {
         "ProfileHost": {
-            "hash": 1, 
-            "created": "2020-11-10T09:37:30.314Z", 
+            "hash": 1,
+            "created": "2020-11-10T09:37:30.314Z",
             "geoip": {
-                "modified": "2021-12-10T11:06:03.206Z", 
+                "modified": "2021-12-10T11:06:03.206Z",
                 "countries": [
                     {
-                        "ip": "1.1.1.1", 
-                        "code": "US", 
+                        "ip": "1.1.1.1",
+                        "code": "US",
                         "modified": "2021-12-10T11:06:03.206Z"
-                    }, 
+                    },
                     {
-                        "ip": "2.2.2.2", 
-                        "code": "IE", 
+                        "ip": "2.2.2.2",
+                        "code": "IE",
                         "modified": "2021-12-10T05:22:01.858Z"
                     }
                 ]
-            }, 
+            },
             "labels": [
-                "osDistro:amzn", 
+                "osDistro:amzn",
                 "osVersion:2"
-            ], 
+            ],
             "apps": [
                 {
                     "processes": [
                         {
-                            "ppath": "/usr/lib/systemd/systemd", 
-                            "command": "/usr/sbin/auditd", 
-                            "user": "root", 
-                            "time": "2020-11-10T09:37:30.415Z", 
-                            "path": "/usr/sbin/auditd", 
+                            "ppath": "/usr/lib/systemd/systemd",
+                            "command": "/usr/sbin/auditd",
+                            "user": "root",
+                            "time": "2020-11-10T09:37:30.415Z",
+                            "path": "/usr/sbin/auditd",
                             "md5": ""
                         }
-                    ], 
+                    ],
                     "startupProcess": {
-                        "ppath": "/usr/lib/systemd/systemd", 
-                        "command": "/usr/sbin/auditd", 
-                        "user": "root", 
-                        "time": "2020-11-10T09:37:30.415Z", 
-                        "path": "/usr/sbin/auditd", 
+                        "ppath": "/usr/lib/systemd/systemd",
+                        "command": "/usr/sbin/auditd",
+                        "user": "root",
+                        "time": "2020-11-10T09:37:30.415Z",
+                        "path": "/usr/sbin/auditd",
                         "md5": ""
-                    }, 
+                    },
                     "name": "auditd"
-                }, 
+                },
                 {
                     "processes": [
                         {
-                            "ppath": "/usr/lib/systemd/systemd", 
-                            "command": "/usr/sbin/atd -f", 
-                            "user": "root", 
-                            "time": "2020-11-10T09:37:30.415Z", 
-                            "path": "/usr/sbin/atd", 
+                            "ppath": "/usr/lib/systemd/systemd",
+                            "command": "/usr/sbin/atd -f",
+                            "user": "root",
+                            "time": "2020-11-10T09:37:30.415Z",
+                            "path": "/usr/sbin/atd",
                             "md5": ""
                         }
-                    ], 
+                    ],
                     "startupProcess": {
-                        "ppath": "/usr/lib/systemd/systemd", 
-                        "command": "/usr/sbin/atd -f", 
-                        "user": "root", 
-                        "time": "2020-11-10T09:37:30.415Z", 
-                        "path": "/usr/sbin/atd", 
+                        "ppath": "/usr/lib/systemd/systemd",
+                        "command": "/usr/sbin/atd -f",
+                        "user": "root",
+                        "time": "2020-11-10T09:37:30.415Z",
+                        "path": "/usr/sbin/atd",
                         "md5": ""
-                    }, 
+                    },
                     "name": "atd"
                 }
-            ], 
+            ],
             "collections": [
-                "All", 
+                "All",
                 "123"
-            ], 
-            "time": "2021-12-10T11:06:03.206Z", 
+            ],
+            "time": "2021-12-10T11:06:03.206Z",
             "sshEvents": [
                 {
-                    "ppath": "/usr/bin/bash", 
-                    "country": "IL", 
-                    "time": "December 10, 2021 11:06:03 AM", 
-                    "command": "grep twistlock_data - High rate of events, throttling started", 
-                    "user": "user123", 
-                    "ip": "1.2.3.4", 
-                    "path": "/usr/bin/grep", 
-                    "loginTime": "September 02, 2021 09:27:41 AM", 
+                    "ppath": "/usr/bin/bash",
+                    "country": "IL",
+                    "time": "December 10, 2021 11:06:03 AM",
+                    "command": "grep twistlock_data - High rate of events, throttling started",
+                    "user": "user123",
+                    "ip": "1.2.3.4",
+                    "path": "/usr/bin/grep",
+                    "loginTime": "September 02, 2021 09:27:41 AM",
                     "md5": ""
                 },
                {
@@ -242,8 +242,8 @@ devSecOps
                   "loginTime": "September 02, 2021 09:27:41 AM",
                   "md5": ""
                }
-            ], 
-            "_id": "host163", 
+            ],
+            "_id": "host163",
             "accountID": "1234"
         }
     }
@@ -406,125 +406,125 @@ devSecOps
 {
     "PrismaCloudCompute": {
         "ProfileContainer": {
-            "image": "twistlock/private:defender_21_04_439", 
-            "hostNetwork": true, 
-            "learnedStartup": true, 
-            "k8s": {}, 
-            "archived": false, 
+            "image": "twistlock/private:defender_21_04_439",
+            "hostNetwork": true,
+            "learnedStartup": true,
+            "k8s": {},
+            "archived": false,
             "network": {
                 "geoip": {
-                    "modified": "2021-12-10T13:31:42.924Z", 
+                    "modified": "2021-12-10T13:31:42.924Z",
                     "countries": [
                         {
-                            "ip": "1.1.1.1", 
-                            "code": "IE", 
+                            "ip": "1.1.1.1",
+                            "code": "IE",
                             "modified": "2021-12-10T13:31:42.922Z"
                         },
                         {
-                            "ip": "2.2.2.2", 
-                            "code": "US", 
+                            "ip": "2.2.2.2",
+                            "code": "US",
                             "modified": "2021-12-09T13:30:42.148Z"
                         }
                     ]
-                }, 
+                },
                 "static": {
                     "listeningPorts": []
-                }, 
+                },
                 "behavioral": {
                     "outboundPorts": {
                         "ports": [
                             {
-                                "port": 80, 
+                                "port": 80,
                                 "time": "2021-09-02T11:05:16.836Z"
                             }
                         ]
                     }
                 }
-            }, 
+            },
             "capabilities": {
                 "ci": true
-            }, 
-            "label": "twistlock", 
-            "state": "active", 
+            },
+            "label": "twistlock",
+            "state": "active",
             "collections": [
-                "All", 
-                "123", 
+                "All",
+                "123",
                 "Prisma Cloud resources"
-            ], 
-            "entrypoint": "/usr/local/bin/defender", 
-            "events": null, 
-            "lastUpdate": "2021-09-02T11:05:10.935Z", 
-            "hash": 3, 
-            "infra": false, 
+            ],
+            "entrypoint": "/usr/local/bin/defender",
+            "events": null,
+            "lastUpdate": "2021-09-02T11:05:10.935Z",
+            "hash": 3,
+            "infra": false,
             "accountIDs": [
                 "123"
-            ], 
+            ],
             "processes": {
                 "static": [
                     {
-                        "ppath": "", 
-                        "path": "/usr/bin/mongodump", 
-                        "time": "0001-01-01T00:00:00Z", 
+                        "ppath": "",
+                        "path": "/usr/bin/mongodump",
+                        "time": "0001-01-01T00:00:00Z",
                         "md5": ""
-                    }, 
+                    },
                     {
-                        "ppath": "", 
-                        "path": "/usr/bin/mongorestore", 
-                        "time": "0001-01-01T00:00:00Z", 
+                        "ppath": "",
+                        "path": "/usr/bin/mongorestore",
+                        "time": "0001-01-01T00:00:00Z",
                         "md5": ""
                     }
-                ], 
+                ],
                 "behavioral": [
                     {
-                        "ppath": "/usr/local/bin/defender", 
-                        "path": "/usr/local/bin/fsmon", 
-                        "time": "2021-09-02T11:05:08.931Z", 
+                        "ppath": "/usr/local/bin/defender",
+                        "path": "/usr/local/bin/fsmon",
+                        "time": "2021-09-02T11:05:08.931Z",
                         "md5": ""
-                    }, 
+                    },
                     {
-                        "ppath": "/usr/bin/apt-get", 
-                        "path": "/usr/lib/apt/methods/gpgv", 
-                        "time": "2021-11-24T15:12:28.502Z", 
-                        "command": "gpgv", 
+                        "ppath": "/usr/bin/apt-get",
+                        "path": "/usr/lib/apt/methods/gpgv",
+                        "time": "2021-11-24T15:12:28.502Z",
+                        "command": "gpgv",
                         "md5": ""
                     }
                 ]
-            }, 
-            "created": "2020-09-02T11:05:08.931Z", 
-            "imageID": "sha256:8d82e2c21c33e1ffb37ea901d18df15c08123258609e6d7c4aecc7fb4a5a8738", 
+            },
+            "created": "2020-09-02T11:05:08.931Z",
+            "imageID": "sha256:8d82e2c21c33e1ffb37ea901d18df15c08123258609e6d7c4aecc7fb4a5a8738",
             "filesystem": {
                 "static": [
                     {
-                        "process": "*", 
-                        "path": "/var/log/audit", 
-                        "mount": true, 
+                        "process": "*",
+                        "path": "/var/log/audit",
+                        "mount": true,
                         "time": "2021-09-02T11:05:08.931Z"
-                    }, 
+                    },
                     {
-                        "process": "*", 
-                        "path": "/var/lib/twistlock", 
-                        "mount": true, 
+                        "process": "*",
+                        "path": "/var/lib/twistlock",
+                        "mount": true,
                         "time": "2021-09-02T11:05:08.931Z"
                     }
-                ], 
+                ],
                 "behavioral": [
                     {
-                        "process": "/usr/local/bin/defender", 
-                        "path": "/prisma-static-data", 
-                        "mount": true, 
+                        "process": "/usr/local/bin/defender",
+                        "path": "/prisma-static-data",
+                        "mount": true,
                         "time": "2021-09-02T11:05:10.935Z"
-                    }, 
+                    },
                     {
-                        "process": "/usr/local/bin/defender", 
-                        "path": "/tmp", 
-                        "mount": false, 
+                        "process": "/usr/local/bin/defender",
+                        "path": "/tmp",
+                        "mount": false,
                         "time": "2021-09-02T11:05:16.784Z"
                     }
                 ]
-            }, 
-            "_id": "container123", 
-            "os": "Red Hat Enterprise Linux 8.4 (Ootpa)", 
-            "remainingLearningDurationSec": -1, 
+            },
+            "_id": "container123",
+            "os": "Red Hat Enterprise Linux 8.4 (Ootpa)",
+            "remainingLearningDurationSec": -1,
             "hostPid": true
         }
     }
@@ -595,9 +595,9 @@ devSecOps
 {
     "PrismaCloudCompute": {
         "ProfileContainerHost": {
-            "containerID": "container123", 
+            "containerID": "container123",
             "hostsIDs": [
-                "host1", 
+                "host1",
                 "host2"
             ]
         }
@@ -676,29 +676,29 @@ Get runtime forensics data for a specific container on a specific host.
         "ContainerForensic": {
             "Forensics": [
                 {
-                    "containerId": "a6f769dd", 
-                    "timestamp": "December 10, 2021 11:49:50 AM", 
-                    "pid": 1341, 
-                    "listeningStartTime": "January 01, 0001 00:00:00 AM", 
-                    "command": "mongodump --out=/var/lib/twistlock-backup/dump", 
-                    "user": "twistlock", 
-                    "path": "/usr/bin/mongodump", 
-                    "ppid": 15816, 
+                    "containerId": "a6f769dd",
+                    "timestamp": "December 10, 2021 11:49:50 AM",
+                    "pid": 1341,
+                    "listeningStartTime": "January 01, 0001 00:00:00 AM",
+                    "command": "mongodump --out=/var/lib/twistlock-backup/dump",
+                    "user": "twistlock",
+                    "path": "/usr/bin/mongodump",
+                    "ppid": 15816,
                     "type": "Process spawned"
-                }, 
+                },
                 {
-                    "containerId": "a6f769dd", 
-                    "timestamp": "December 09, 2021 11:49:22 AM", 
-                    "pid": 20891, 
-                    "listeningStartTime": "January 01, 0001 00:00:00 AM", 
-                    "command": "mongodump --out=/var/lib/twistlock-backup/dump", 
-                    "user": "twistlock", 
-                    "path": "/usr/bin/mongodump", 
-                    "ppid": 15816, 
+                    "containerId": "a6f769dd",
+                    "timestamp": "December 09, 2021 11:49:22 AM",
+                    "pid": 20891,
+                    "listeningStartTime": "January 01, 0001 00:00:00 AM",
+                    "command": "mongodump --out=/var/lib/twistlock-backup/dump",
+                    "user": "twistlock",
+                    "path": "/usr/bin/mongodump",
+                    "ppid": 15816,
                     "type": "Process spawned"
                 }
-            ], 
-            "containerID": "container123", 
+            ],
+            "containerID": "container123",
             "hostname": "host123"
         }
     }
@@ -774,45 +774,45 @@ devSecOps
         "HostForensic": {
             "Forensics": [
                 {
-                    "ppath": "/bin/bash", 
-                    "timestamp": "December 10, 2021 21:36:03 PM", 
-                    "app": "cron", 
-                    "pid": 17478, 
-                    "listeningStartTime": "January 01, 0001 00:00:00 AM", 
-                    "command": "awk { printf  $3 \"|\" $2 \"|\" $1 \":\"}", 
-                    "user": "cakeagent", 
-                    "path": "/usr/bin/gawk", 
-                    "ppid": 17475, 
-                    "type": "Process spawned", 
+                    "ppath": "/bin/bash",
+                    "timestamp": "December 10, 2021 21:36:03 PM",
+                    "app": "cron",
+                    "pid": 17478,
+                    "listeningStartTime": "January 01, 0001 00:00:00 AM",
+                    "command": "awk { printf  $3 \"|\" $2 \"|\" $1 \":\"}",
+                    "user": "cakeagent",
+                    "path": "/usr/bin/gawk",
+                    "ppid": 17475,
+                    "type": "Process spawned",
                     "interactive": true
-                }, 
+                },
                 {
-                    "ppath": "/bin/bash", 
-                    "timestamp": "December 10, 2021 21:36:03 PM", 
-                    "app": "cron", 
-                    "pid": 17477, 
-                    "listeningStartTime": "January 01, 0001 00:00:00 AM", 
-                    "command": "grep -vE ^Filesystem|tmpfs|cdrom", 
-                    "user": "cakeagent", 
-                    "path": "/bin/grep", 
-                    "ppid": 17475, 
-                    "type": "Process spawned", 
+                    "ppath": "/bin/bash",
+                    "timestamp": "December 10, 2021 21:36:03 PM",
+                    "app": "cron",
+                    "pid": 17477,
+                    "listeningStartTime": "January 01, 0001 00:00:00 AM",
+                    "command": "grep -vE ^Filesystem|tmpfs|cdrom",
+                    "user": "cakeagent",
+                    "path": "/bin/grep",
+                    "ppid": 17475,
+                    "type": "Process spawned",
                     "interactive": true
-                }, 
+                },
                 {
-                    "ppath": "/bin/bash", 
-                    "timestamp": "December 10, 2021 21:36:03 PM", 
-                    "app": "cron", 
-                    "pid": 17476, 
-                    "listeningStartTime": "January 01, 0001 00:00:00 AM", 
-                    "command": "df -H -P -B G", 
-                    "user": "cakeagent", 
-                    "path": "/bin/df", 
-                    "ppid": 17475, 
-                    "type": "Process spawned", 
+                    "ppath": "/bin/bash",
+                    "timestamp": "December 10, 2021 21:36:03 PM",
+                    "app": "cron",
+                    "pid": 17476,
+                    "listeningStartTime": "January 01, 0001 00:00:00 AM",
+                    "command": "df -H -P -B G",
+                    "user": "cakeagent",
+                    "path": "/bin/df",
+                    "ppid": 17475,
+                    "type": "Process spawned",
                     "interactive": true
                 }
-            ], 
+            ],
             "hostID": "hostname123"
         }
     }
@@ -914,10 +914,10 @@ auditor
     "PrismaCloudCompute": {
         "CustomFeedIP": {
             "feed": [
-                "2.2.2.2", 
+                "2.2.2.2",
                 "1.1.1.1"
-            ], 
-            "modified": "December 10, 2021 21:12:32 PM", 
+            ],
+            "modified": "December 10, 2021 21:12:32 PM",
             "digest": "12345"
         }
     }
@@ -1032,17 +1032,17 @@ auditor
         "CustomFeedMalware": {
             "feed": [
                 {
-                    "md5": "md5_hash1", 
-                    "name": "first_md5_hash", 
+                    "md5": "md5_hash1",
+                    "name": "first_md5_hash",
                     "allowed": false
-                }, 
+                },
                 {
-                    "md5": "md5_hash2", 
-                    "name": "second_md5_hash", 
+                    "md5": "md5_hash2",
+                    "name": "second_md5_hash",
                     "allowed": false
                 }
-            ], 
-            "modified": "December 09, 2021 13:31:38 PM", 
+            ],
+            "modified": "December 09, 2021 13:31:38 PM",
             "digest": "1234"
         }
     }
@@ -1133,29 +1133,29 @@ devOps
 {
     "DBotScore": [
         {
-            "Vendor": "PaloAltoNetworks_PrismaCloudCompute", 
-            "Indicator": "CVE-2021-43332", 
-            "Score": 0, 
+            "Vendor": "PaloAltoNetworks_PrismaCloudCompute",
+            "Indicator": "CVE-2021-43332",
+            "Score": 0,
             "Type": "cve"
         },
         {
-            "Vendor": "PaloAltoNetworks_PrismaCloudCompute", 
-            "Indicator": "CVE-2021-43337", 
-            "Score": 0, 
+            "Vendor": "PaloAltoNetworks_PrismaCloudCompute",
+            "Indicator": "CVE-2021-43337",
+            "Score": 0,
             "Type": "cve"
         }
-    ], 
+    ],
     "CVE": [
         {
-            "ID": "CVE-2021-43331", 
-            "CVSS": 6.1, 
-            "Modified": "November 17, 2021 16:40:14 PM", 
+            "ID": "CVE-2021-43331",
+            "CVSS": 6.1,
+            "Modified": "November 17, 2021 16:40:14 PM",
             "Description": "In GNU Mailman before 2.1.36, a crafted URL to the Cgi/options.py user options page can execute arbitrary JavaScript for XSS."
-        }, 
+        },
         {
-            "ID": "CVE-2021-43337", 
-            "CVSS": 6.5, 
-            "Modified": "November 18, 2021 08:40:01 AM", 
+            "ID": "CVE-2021-43337",
+            "CVSS": 6.5,
+            "Modified": "November 18, 2021 08:40:01 AM",
             "Description": "SchedMD Slurm 21.08.* before 21.08.4 has Incorrect Access Control. On sites using the new AccountingStoreFlags=job_script and/or job_env options, the access control rules in SlurmDBD may permit users to request job scripts and environment files to which they should not have access."
         }
     ]
@@ -1236,97 +1236,97 @@ vulnerabilityManager
 {
     "PrismaCloudCompute": {
         "DefenderDetails": {
-            "category": "container", 
+            "category": "container",
             "cloudMetadata": {
-                "resourceID": "123", 
-                "image": "image name", 
-                "provider": "aws", 
-                "type": "c5.xlarge", 
-                "region": "aws region", 
+                "resourceID": "123",
+                "image": "image name",
+                "provider": "aws",
+                "type": "c5.xlarge",
+                "region": "aws region",
                 "accountID": "1234"
-            }, 
-            "hostname": "host1", 
+            },
+            "hostname": "host1",
             "features": {
                 "proxyListenerType": "none"
-            }, 
-            "compatibleVersion": true, 
-            "lastModified": "September 02, 2021 11:05:08 AM", 
+            },
+            "compatibleVersion": true,
+            "lastModified": "September 02, 2021 11:05:08 AM",
             "firewallProtection": {
-                "supported": false, 
+                "supported": false,
                 "enabled": false
-            }, 
-            "fqdn": "host1.lab.com", 
-            "remoteMgmtSupported": true, 
+            },
+            "fqdn": "host1.lab.com",
+            "remoteMgmtSupported": true,
             "status": {
                 "container": {
-                    "scanTime": "2021-12-13T11:05:14.178Z", 
+                    "scanTime": "2021-12-13T11:05:14.178Z",
                     "completed": true
-                }, 
+                },
                 "features": {
                     "err": ""
-                }, 
+                },
                 "process": {
-                    "enabled": true, 
+                    "enabled": true,
                     "err": ""
-                }, 
-                "lastModified": "0001-01-01T00:00:00Z", 
+                },
+                "lastModified": "0001-01-01T00:00:00Z",
                 "appFirewall": {
-                    "enabled": true, 
+                    "enabled": true,
                     "err": ""
-                }, 
+                },
                 "hostNetworkFirewall": {
-                    "enabled": true, 
+                    "enabled": true,
                     "err": ""
-                }, 
+                },
                 "hostCustomCompliance": {
                     "err": ""
-                }, 
+                },
                 "filesystem": {
-                    "enabled": true, 
+                    "enabled": true,
                     "err": ""
-                }, 
+                },
                 "runtime": {
-                    "enabled": true, 
+                    "enabled": true,
                     "err": ""
-                }, 
+                },
                 "image": {
-                    "scanTime": "2021-12-13T14:19:36.09Z", 
+                    "scanTime": "2021-12-13T14:19:36.09Z",
                     "completed": true
-                }, 
+                },
                 "containerNetworkFirewall": {
-                    "enabled": true, 
+                    "enabled": true,
                     "err": ""
-                }, 
+                },
                 "network": {
-                    "enabled": true, 
+                    "enabled": true,
                     "err": ""
                 }
-            }, 
-            "version": "21.04.439", 
+            },
+            "version": "21.04.439",
             "collections": [
-                "All", 
+                "All",
                 "123"
-            ], 
+            ],
             "proxy": {
-                "httpProxy": "", 
-                "ca": "", 
+                "httpProxy": "",
+                "ca": "",
                 "password": {
                     "encrypted": ""
-                }, 
-                "noProxy": "", 
+                },
+                "noProxy": "",
                 "user": ""
-            }, 
+            },
             "systemInfo": {
-                "kernelVersion": "4.14.123-111.109.amzn2.x86_64", 
-                "totalDiskSpaceGB": 199, 
-                "cpuCount": 4, 
-                "freeDiskSpaceGB": 180, 
+                "kernelVersion": "4.14.123-111.109.amzn2.x86_64",
+                "totalDiskSpaceGB": 199,
+                "cpuCount": 4,
+                "freeDiskSpaceGB": 180,
                 "memoryGB": 7.446006774902344
-            }, 
-            "connected": true, 
-            "remoteLoggingSupported": true, 
-            "type": "docker", 
-            "port": 8084, 
+            },
+            "connected": true,
+            "remoteLoggingSupported": true,
+            "type": "docker",
+            "port": 8084,
             "certificateExpiration": "2024-09-01T11:00:00Z"
         }
     }
@@ -1393,40 +1393,40 @@ auditor
         "Collection": {
             "functions": [
                 "*"
-            ], 
+            ],
             "appIDs": [
                 "*"
-            ], 
-            "description": "System - all resources collection", 
-            "color": "#602DFB", 
-            "prisma": false, 
+            ],
+            "description": "System - all resources collection",
+            "color": "#602DFB",
+            "prisma": false,
             "labels": [
                 "*"
-            ], 
-            "modified": "September 02, 2021 11:05:06 AM", 
-            "system": true, 
-            "owner": "system", 
+            ],
+            "modified": "September 02, 2021 11:05:06 AM",
+            "system": true,
+            "owner": "system",
             "hosts": [
                 "*"
-            ], 
+            ],
             "namespaces": [
                 "*"
-            ], 
+            ],
             "codeRepos": [
                 "*"
-            ], 
+            ],
             "images": [
                 "*"
-            ], 
+            ],
             "clusters": [
                 "*"
-            ], 
+            ],
             "accountIDs": [
                 "*"
-            ], 
+            ],
             "containers": [
                 "*"
-            ], 
+            ],
             "name": "All"
         }
     }
@@ -1478,8 +1478,8 @@ devSecOps
 {
     "PrismaCloudCompute": {
         "RadarContainerNamespace": [
-            "namespace1", 
-            "namespace2", 
+            "namespace1",
+            "namespace2",
             "namespace3"
         ]
     }
@@ -1602,314 +1602,314 @@ vulnerabilityManager
     "PrismaCloudCompute": {
         "ReportsImagesScan": {
             "cloudMetadata": {
-                "resourceID": "i-123", 
-                "image": "ami-123", 
-                "provider": "aws", 
-                "type": "t2.large", 
-                "region": "eu-west-123", 
+                "resourceID": "i-123",
+                "image": "ami-123",
+                "provider": "aws",
+                "type": "t2.large",
+                "region": "eu-west-123",
                 "accountID": "123"
-            }, 
-            "hostname": "", 
+            },
+            "hostname": "",
             "vulnerabilityDistribution": {
-                "high": 28, 
-                "total": 60, 
-                "medium": 20, 
-                "critical": 12, 
+                "high": 28,
+                "total": 60,
+                "medium": 20,
+                "critical": 12,
                 "low": 0
-            }, 
+            },
             "image": {
                 "created": "2018-05-10T10:32:49.309Z"
-            }, 
+            },
             "instances": [
                 {
-                    "image": "demisto/python:1.3-alpine", 
-                    "modified": "2021-12-14T14:19:36.091Z", 
-                    "repo": "demisto/python", 
-                    "host": "host123", 
-                    "tag": "1.3-alpine", 
+                    "image": "demisto/python:1.3-alpine",
+                    "modified": "2021-12-14T14:19:36.091Z",
+                    "repo": "demisto/python",
+                    "host": "host123",
+                    "tag": "1.3-alpine",
                     "registry": ""
                 }
-            ], 
+            ],
             "complianceIssues": [
                 {
                     "templates": [
-                        "PCI", 
+                        "PCI",
                         "DISA STIG"
-                    ], 
-                    "vecStr": "", 
-                    "text": "", 
-                    "discovered": "0001-01-01T00:00:00Z", 
-                    "exploit": "", 
-                    "layerTime": 0, 
-                    "id": 41, 
-                    "severity": "high", 
-                    "title": "(CIS_Docker_v1.2.0 - 4.1) Image should be created with a non-root user", 
-                    "packageVersion": "", 
-                    "cause": "", 
-                    "cvss": 0, 
-                    "status": "", 
-                    "twistlock": false, 
-                    "fixDate": "", 
-                    "description": "It is a good practice to run the container as a non-root user, if possible. Though user\nnamespace mapping is now available, if a user is already defined in the container image, the\ncontainer is run as that user by default and specific user namespace remapping is not\nrequired", 
-                    "link": "", 
-                    "cri": false, 
-                    "riskFactors": null, 
-                    "type": "image", 
-                    "packageName": "", 
-                    "functionLayer": "", 
-                    "published": 0, 
+                    ],
+                    "vecStr": "",
+                    "text": "",
+                    "discovered": "0001-01-01T00:00:00Z",
+                    "exploit": "",
+                    "layerTime": 0,
+                    "id": 41,
+                    "severity": "high",
+                    "title": "(CIS_Docker_v1.2.0 - 4.1) Image should be created with a non-root user",
+                    "packageVersion": "",
+                    "cause": "",
+                    "cvss": 0,
+                    "status": "",
+                    "twistlock": false,
+                    "fixDate": "",
+                    "description": "It is a good practice to run the container as a non-root user, if possible. Though user\nnamespace mapping is now available, if a user is already defined in the container image, the\ncontainer is run as that user by default and specific user namespace remapping is not\nrequired",
+                    "link": "",
+                    "cri": false,
+                    "riskFactors": null,
+                    "type": "image",
+                    "packageName": "",
+                    "functionLayer": "",
+                    "published": 0,
                     "cve": ""
                 }
-            ], 
+            ],
             "repoTag": {
-                "repo": "demisto/python", 
-                "tag": "1.3-alpine", 
+                "repo": "demisto/python",
+                "tag": "1.3-alpine",
                 "registry": ""
-            }, 
-            "packageManager": true, 
+            },
+            "packageManager": true,
             "repoDigests": [
                 "demisto/python@sha256:0bfa24a116efb99c51076ee3801ee8de80e5998a0f85522599c7036dea8a67f1"
-            ], 
-            "id": "image123", 
+            ],
+            "id": "image123",
             "layers": [
-                "sha256:04a094fe844e055828cb2d64ead6bd3eb4257e7c7b5d1e2af0da89fa20472cf4", 
-                "sha256:b901e62fe587b147e801712b7833942a540492af8f67cc683ac5a3b7bcbf7eda", 
-                "sha256:240070abd5cc482cbe83e70710e9c161105bf1b69fc4551ceedac541aec1e552", 
-                "sha256:08ed7077578e63f32e98ec38644705d67aec68661663cfa43e7e771f37ac781b", 
-                "sha256:25f89c88aa30915565de42481044fdc3edcde2edcd88c32098b16adbe09c65ec", 
-                "sha256:607e311316ef7ea1437fe4b8f7a6f04f9a61b0f21e2d4ee0611c05bd1d245ff7", 
-                "sha256:21511d4e2cf5964090236c3db6aa38c23f8937aab18226dd1898ef4346fa9a3c", 
-                "sha256:9ec31cab0619e95e88291cd611370e4d0f61d540862496b89eed00845d48a3a8", 
-                "sha256:ce388cb57837216290c2ec5c33ee70ff50ee70a479fdc401f9170f278e68c15d", 
-                "sha256:887b26e25244256638869a154e4b7427f124a1ef64723ea7082096025e7f1520", 
-                "sha256:40c6aaccab9bea3953dfa459e3426d0f8a23fda23ec5495404ae21afa94af475", 
-                "sha256:082ca23ed20f62157e6b3958ed4899fccd6de2501468f668874d746f0af1bc69", 
-                "sha256:e252153001780e97deed131418ef8ed0ad8176f55e14916a338120cc8a464af8", 
-                "sha256:11f9d19047c7dfc84742694c7c7db04ceb346bf60e44a8a28947937aa3408ba2", 
-                "sha256:1945710968a74b7692f635829f9dac189df097b8f7d135aa51f6726dccb2a2be", 
+                "sha256:04a094fe844e055828cb2d64ead6bd3eb4257e7c7b5d1e2af0da89fa20472cf4",
+                "sha256:b901e62fe587b147e801712b7833942a540492af8f67cc683ac5a3b7bcbf7eda",
+                "sha256:240070abd5cc482cbe83e70710e9c161105bf1b69fc4551ceedac541aec1e552",
+                "sha256:08ed7077578e63f32e98ec38644705d67aec68661663cfa43e7e771f37ac781b",
+                "sha256:25f89c88aa30915565de42481044fdc3edcde2edcd88c32098b16adbe09c65ec",
+                "sha256:607e311316ef7ea1437fe4b8f7a6f04f9a61b0f21e2d4ee0611c05bd1d245ff7",
+                "sha256:21511d4e2cf5964090236c3db6aa38c23f8937aab18226dd1898ef4346fa9a3c",
+                "sha256:9ec31cab0619e95e88291cd611370e4d0f61d540862496b89eed00845d48a3a8",
+                "sha256:ce388cb57837216290c2ec5c33ee70ff50ee70a479fdc401f9170f278e68c15d",
+                "sha256:887b26e25244256638869a154e4b7427f124a1ef64723ea7082096025e7f1520",
+                "sha256:40c6aaccab9bea3953dfa459e3426d0f8a23fda23ec5495404ae21afa94af475",
+                "sha256:082ca23ed20f62157e6b3958ed4899fccd6de2501468f668874d746f0af1bc69",
+                "sha256:e252153001780e97deed131418ef8ed0ad8176f55e14916a338120cc8a464af8",
+                "sha256:11f9d19047c7dfc84742694c7c7db04ceb346bf60e44a8a28947937aa3408ba2",
+                "sha256:1945710968a74b7692f635829f9dac189df097b8f7d135aa51f6726dccb2a2be",
                 "sha256:9dfc2f79a6a83bd3791f4b6c621850b49db37ff729cdc17fd0a7b0ec373338c6"
-            ], 
+            ],
             "packages": [
                 {
-                    "pkgsType": "package", 
+                    "pkgsType": "package",
                     "pkgs": [
                         {
-                            "name": "busybox", 
-                            "version": "1.27.2-r8", 
-                            "cveCount": 450, 
-                            "license": "GPL2", 
+                            "name": "busybox",
+                            "version": "1.27.2-r8",
+                            "cveCount": 450,
+                            "license": "GPL2",
                             "layerTime": 1525948365
-                        }, 
+                        },
                         {
-                            "name": "apk-tools", 
-                            "version": "2.9.1-r2", 
-                            "cveCount": 25, 
-                            "license": "GPL2", 
+                            "name": "apk-tools",
+                            "version": "2.9.1-r2",
+                            "cveCount": 25,
+                            "license": "GPL2",
                             "layerTime": 1512154128
                         }
                     ]
-                }, 
+                },
                 {
-                    "pkgsType": "python", 
+                    "pkgsType": "python",
                     "pkgs": [
                         {
-                            "name": "python", 
-                            "version": "2.7.14", 
-                            "cveCount": 65, 
-                            "license": "PSF license", 
+                            "name": "python",
+                            "version": "2.7.14",
+                            "cveCount": 65,
+                            "license": "PSF license",
                             "layerTime": 1513722622
-                        }, 
+                        },
                         {
-                            "name": "certifi", 
-                            "version": "2017.11.5", 
-                            "cveCount": 0, 
-                            "license": "MPL-2.0", 
+                            "name": "certifi",
+                            "version": "2017.11.5",
+                            "cveCount": 0,
+                            "license": "MPL-2.0",
                             "layerTime": 1515337812
                         }
                     ]
                 }
-            ], 
+            ],
             "complianceDistribution": {
-                "high": 1, 
-                "total": 1, 
-                "medium": 0, 
-                "critical": 0, 
+                "high": 1,
+                "total": 1,
+                "medium": 0,
+                "critical": 0,
                 "low": 0
-            }, 
+            },
             "firewallProtection": {
-                "supported": false, 
+                "supported": false,
                 "enabled": false
-            }, 
-            "allCompliance": {}, 
-            "appEmbedded": false, 
+            },
+            "allCompliance": {},
+            "appEmbedded": false,
             "installedProducts": {
-                "docker": "17.06.0-ce", 
-                "osDistro": "Alpine Linux v3.7", 
+                "docker": "17.06.0-ce",
+                "osDistro": "Alpine Linux v3.7",
                 "hasPackageManager": true
-            }, 
+            },
             "collections": [
-                "All", 
-                "123", 
+                "All",
+                "123",
                 "Test Collection"
-            ], 
+            ],
             "startupBinaries": [
                 {
-                    "path": "/usr/local/bin/python2.7", 
-                    "cveCount": 0, 
-                    "name": "python", 
+                    "path": "/usr/local/bin/python2.7",
+                    "cveCount": 0,
+                    "name": "python",
                     "md5": "dc8c57a9674d54da18637ffea29eeaba"
                 }
-            ], 
-            "scanVersion": "21.04.439", 
-            "type": "image", 
-            "distro": "Alpine Linux v3.7", 
-            "files": [], 
-            "scanID": 0, 
-            "osDistro": "alpine", 
+            ],
+            "scanVersion": "21.04.439",
+            "type": "image",
+            "distro": "Alpine Linux v3.7",
+            "files": [],
+            "scanID": 0,
+            "osDistro": "alpine",
             "tags": [
                 {
-                    "repo": "demisto/python", 
-                    "tag": "1.3-alpine", 
+                    "repo": "demisto/python",
+                    "tag": "1.3-alpine",
                     "registry": ""
                 }
-            ], 
-            "Secrets": [], 
+            ],
+            "Secrets": [],
             "applications": [
                 {
-                    "knownVulnerabilities": 26, 
-                    "path": "/bin/busybox", 
-                    "version": "1.27.2", 
-                    "layerTime": 1525948355, 
+                    "knownVulnerabilities": 26,
+                    "path": "/bin/busybox",
+                    "version": "1.27.2",
+                    "layerTime": 1525948355,
                     "name": "busybox"
                 }
-            ], 
-            "osDistroRelease": "3.7.0", 
-            "topLayer": "sha256:9dfc2f79a6a83bd3791f4b6c621850b49db37ff729cdc17fd0a7b0ec373338c6", 
-            "osDistroVersion": "3.7.0", 
-            "trustStatus": "trusted", 
-            "firstScanTime": "2021-09-02T11:05:27.439Z", 
-            "_id": "image123", 
+            ],
+            "osDistroRelease": "3.7.0",
+            "topLayer": "sha256:9dfc2f79a6a83bd3791f4b6c621850b49db37ff729cdc17fd0a7b0ec373338c6",
+            "osDistroVersion": "3.7.0",
+            "trustStatus": "trusted",
+            "firstScanTime": "2021-09-02T11:05:27.439Z",
+            "_id": "image123",
             "riskFactors": {
-                "Remote execution": {}, 
-                "High severity": {}, 
-                "Has fix": {}, 
-                "Attack complexity: low": {}, 
-                "Recent vulnerability": {}, 
-                "Attack vector: network": {}, 
-                "Critical severity": {}, 
-                "Medium severity": {}, 
+                "Remote execution": {},
+                "High severity": {},
+                "Has fix": {},
+                "Attack complexity: low": {},
+                "Recent vulnerability": {},
+                "Attack vector: network": {},
+                "Critical severity": {},
+                "Medium severity": {},
                 "DoS": {}
-            }, 
-            "err": "", 
-            "vulnerabilitiesCount": 60, 
-            "scanTime": "2021-12-14T14:19:36.091Z", 
-            "complianceIssuesCount": 1, 
-            "creationTime": "2018-05-10T10:32:49.309Z", 
+            },
+            "err": "",
+            "vulnerabilitiesCount": 60,
+            "scanTime": "2021-12-14T14:19:36.091Z",
+            "complianceIssuesCount": 1,
+            "creationTime": "2018-05-10T10:32:49.309Z",
             "vulnerabilities": [
                 {
-                    "templates": null, 
-                    "vecStr": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N", 
-                    "text": "", 
-                    "discovered": "2021-09-02T11:05:27Z", 
-                    "exploit": "", 
-                    "layerTime": 1525948365, 
-                    "id": 46, 
+                    "templates": null,
+                    "vecStr": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+                    "text": "",
+                    "discovered": "2021-09-02T11:05:27Z",
+                    "exploit": "",
+                    "layerTime": 1525948365,
+                    "id": 46,
                     "applicableRules": [
                         "<1.30.0"
-                    ], 
-                    "severity": "high", 
-                    "title": "", 
-                    "packageVersion": "1.27.2-r8", 
-                    "cause": "", 
-                    "cvss": 7.5, 
-                    "status": "fixed in 1.30.1-r5", 
-                    "twistlock": false, 
-                    "fixDate": "January 09, 2019 16:29:00 PM", 
-                    "description": "An issue was discovered in BusyBox before 1.30.0. An out of bounds read in udhcp components (consumed by the DHCP server, client, and relay) allows a remote attacker to leak sensitive information from the stack by sending a crafted DHCP message. This is related to verification in udhcp_get_option() in networking/udhcp/common.c that 4-byte options are indeed 4 bytes.", 
-                    "link": "https://nvd.nist.gov/vuln/detail/CVE-2018-20679", 
-                    "cri": false, 
+                    ],
+                    "severity": "high",
+                    "title": "",
+                    "packageVersion": "1.27.2-r8",
+                    "cause": "",
+                    "cvss": 7.5,
+                    "status": "fixed in 1.30.1-r5",
+                    "twistlock": false,
+                    "fixDate": "January 09, 2019 16:29:00 PM",
+                    "description": "An issue was discovered in BusyBox before 1.30.0. An out of bounds read in udhcp components (consumed by the DHCP server, client, and relay) allows a remote attacker to leak sensitive information from the stack by sending a crafted DHCP message. This is related to verification in udhcp_get_option() in networking/udhcp/common.c that 4-byte options are indeed 4 bytes.",
+                    "link": "https://nvd.nist.gov/vuln/detail/CVE-2018-20679",
+                    "cri": false,
                     "riskFactors": {
-                        "Attack complexity: low": {}, 
-                        "High severity": {}, 
-                        "Attack vector: network": {}, 
+                        "Attack complexity: low": {},
+                        "High severity": {},
+                        "Attack vector: network": {},
                         "Has fix": {}
-                    }, 
-                    "type": "image", 
-                    "packageName": "busybox", 
-                    "functionLayer": "", 
-                    "published": 1547051340, 
+                    },
+                    "type": "image",
+                    "packageName": "busybox",
+                    "functionLayer": "",
+                    "published": 1547051340,
                     "cve": "CVE-2018-20679"
-                }, 
+                },
                 {
-                    "templates": null, 
-                    "vecStr": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H", 
-                    "text": "", 
-                    "discovered": "2021-09-02T11:05:27Z", 
-                    "exploit": "", 
-                    "layerTime": 1525948365, 
-                    "id": 46, 
+                    "templates": null,
+                    "vecStr": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                    "text": "",
+                    "discovered": "2021-09-02T11:05:27Z",
+                    "exploit": "",
+                    "layerTime": 1525948365,
+                    "id": 46,
                     "applicableRules": [
                         "<1.29.0"
-                    ], 
-                    "severity": "critical", 
-                    "title": "", 
-                    "packageVersion": "1.27.2-r8", 
-                    "cause": "", 
-                    "cvss": 9.8, 
-                    "status": "fixed in 1.29.3-r10", 
-                    "twistlock": false, 
-                    "fixDate": "June 26, 2018 16:29:00 PM", 
-                    "description": "BusyBox project BusyBox wget version prior to commit 8e2174e9bd836e53c8b9c6e00d1bc6e2a718686e contains a Buffer Overflow vulnerability in Busybox wget that can result in heap buffer overflow. This attack appear to be exploitable via network connectivity. This vulnerability appears to have been fixed in after commit 8e2174e9bd836e53c8b9c6e00d1bc6e2a718686e.", 
-                    "link": "https://nvd.nist.gov/vuln/detail/CVE-2018-1000517", 
-                    "cri": false, 
+                    ],
+                    "severity": "critical",
+                    "title": "",
+                    "packageVersion": "1.27.2-r8",
+                    "cause": "",
+                    "cvss": 9.8,
+                    "status": "fixed in 1.29.3-r10",
+                    "twistlock": false,
+                    "fixDate": "June 26, 2018 16:29:00 PM",
+                    "description": "BusyBox project BusyBox wget version prior to commit 8e2174e9bd836e53c8b9c6e00d1bc6e2a718686e contains a Buffer Overflow vulnerability in Busybox wget that can result in heap buffer overflow. This attack appear to be exploitable via network connectivity. This vulnerability appears to have been fixed in after commit 8e2174e9bd836e53c8b9c6e00d1bc6e2a718686e.",
+                    "link": "https://nvd.nist.gov/vuln/detail/CVE-2018-1000517",
+                    "cri": false,
                     "riskFactors": {
-                        "Attack complexity: low": {}, 
-                        "Attack vector: network": {}, 
-                        "Has fix": {}, 
+                        "Attack complexity: low": {},
+                        "Attack vector: network": {},
+                        "Has fix": {},
                         "Critical severity": {}
-                    }, 
-                    "type": "image", 
-                    "packageName": "busybox", 
-                    "functionLayer": "", 
-                    "published": 1530030540, 
+                    },
+                    "type": "image",
+                    "packageName": "busybox",
+                    "functionLayer": "",
+                    "published": 1530030540,
                     "cve": "CVE-2018-1000517"
                 }
-            ], 
+            ],
             "hosts": {
                 "host123": {
                     "modified": "2021-12-14T14:19:36.091Z"
                 }
-            }, 
-            "complianceRiskScore": 10000, 
-            "wildFireUsage": null, 
+            },
+            "complianceRiskScore": 10000,
+            "wildFireUsage": null,
             "binaries": [
                 {
-                    "path": "/bin/busybox", 
-                    "version": "1.27.2", 
-                    "cveCount": 0, 
-                    "name": "busybox", 
+                    "path": "/bin/busybox",
+                    "version": "1.27.2",
+                    "cveCount": 0,
+                    "name": "busybox",
                     "md5": "17890907c72a9aa14c5580faf4f6a30a"
-                }, 
+                },
                 {
-                    "path": "/sbin/apk", 
-                    "cveCount": 0, 
-                    "name": "apk", 
+                    "path": "/sbin/apk",
+                    "cveCount": 0,
+                    "name": "apk",
                     "md5": "8f77c14fa2ab4f668f6af4bfa3e12587"
                 }
-            ], 
-            "vulnerabilityRiskScore": 12282000, 
+            ],
+            "vulnerabilityRiskScore": 12282000,
             "history": [
                 {
-                    "sizeBytes": 4143684, 
-                    "instruction": "ADD file:2b00f26f6004576e2f8faeb3fb0517a14f79ea89a059fe096b54cbecf5da512e in / ", 
-                    "emptyLayer": false, 
-                    "id": "<missing>", 
+                    "sizeBytes": 4143684,
+                    "instruction": "ADD file:2b00f26f6004576e2f8faeb3fb0517a14f79ea89a059fe096b54cbecf5da512e in / ",
+                    "emptyLayer": false,
+                    "id": "<missing>",
                     "created": 1512154128
-                }, 
+                },
                 {
-                    "instruction": "CMD [\"/bin/sh\"]", 
-                    "emptyLayer": true, 
-                    "id": "<missing>", 
+                    "instruction": "CMD [\"/bin/sh\"]",
+                    "emptyLayer": true,
+                    "id": "<missing>",
                     "created": 1512154128
                 }
             ]
@@ -1950,116 +1950,116 @@ vulnerabilityManager
     "PrismaCloudCompute": {
         "ReportsImagesScan": {
             "cloudMetadata": {
-                "resourceID": "i-123", 
-                "image": "ami-123", 
-                "provider": "aws", 
-                "type": "t2.large", 
-                "region": "eu-west-123", 
+                "resourceID": "i-123",
+                "image": "ami-123",
+                "provider": "aws",
+                "type": "t2.large",
+                "region": "eu-west-123",
                 "accountID": "123"
-            }, 
-            "hostname": "", 
+            },
+            "hostname": "",
             "vulnerabilityDistribution": {
-                "high": 28, 
-                "total": 60, 
-                "medium": 20, 
-                "critical": 12, 
+                "high": 28,
+                "total": 60,
+                "medium": 20,
+                "critical": 12,
                 "low": 0
-            }, 
+            },
             "image": {
                 "created": "2018-05-10T10:32:49.309Z"
-            }, 
+            },
             "instances": [
                 {
-                    "image": "demisto/python:1.3-alpine", 
-                    "modified": "2021-12-14T14:19:36.091Z", 
-                    "repo": "demisto/python", 
-                    "host": "host123", 
-                    "tag": "1.3-alpine", 
+                    "image": "demisto/python:1.3-alpine",
+                    "modified": "2021-12-14T14:19:36.091Z",
+                    "repo": "demisto/python",
+                    "host": "host123",
+                    "tag": "1.3-alpine",
                     "registry": ""
                 }
-            ], 
-            "complianceIssues": null, 
+            ],
+            "complianceIssues": null,
             "repoTag": {
-                "repo": "demisto/python", 
-                "tag": "1.3-alpine", 
+                "repo": "demisto/python",
+                "tag": "1.3-alpine",
                 "registry": ""
-            }, 
-            "packageManager": false, 
+            },
+            "packageManager": false,
             "repoDigests": [
                 "123"
-            ], 
-            "id": "image123", 
-            "packages": null, 
+            ],
+            "id": "image123",
+            "packages": null,
             "complianceDistribution": {
-                "high": 1, 
-                "total": 1, 
-                "medium": 0, 
-                "critical": 0, 
+                "high": 1,
+                "total": 1,
+                "medium": 0,
+                "critical": 0,
                 "low": 0
-            }, 
+            },
             "firewallProtection": {
-                "supported": false, 
+                "supported": false,
                 "enabled": false
-            }, 
-            "allCompliance": {}, 
-            "appEmbedded": false, 
+            },
+            "allCompliance": {},
+            "appEmbedded": false,
             "installedProducts": {
-                "docker": "17.06.0-ce", 
-                "osDistro": "Alpine Linux v3.7", 
+                "docker": "17.06.0-ce",
+                "osDistro": "Alpine Linux v3.7",
                 "hasPackageManager": true
-            }, 
+            },
             "collections": [
-                "All", 
-                "123", 
+                "All",
+                "123",
                 "Test Collection"
-            ], 
-            "startupBinaries": null, 
-            "scanVersion": "21.04.439", 
-            "type": "image", 
-            "distro": "Alpine Linux v3.7", 
-            "files": null, 
-            "scanID": 0, 
-            "osDistro": "alpine", 
+            ],
+            "startupBinaries": null,
+            "scanVersion": "21.04.439",
+            "type": "image",
+            "distro": "Alpine Linux v3.7",
+            "files": null,
+            "scanID": 0,
+            "osDistro": "alpine",
             "tags": [
                 {
-                    "repo": "demisto/python", 
-                    "tag": "1.3-alpine", 
+                    "repo": "demisto/python",
+                    "tag": "1.3-alpine",
                     "registry": ""
                 }
-            ], 
-            "Secrets": null, 
-            "osDistroRelease": "3.7.0", 
-            "topLayer": "sha256:9dfc2f79a6a83bd3791f4b6c621850b49db37ff729cdc17fd0a7b0ec373338c6", 
-            "osDistroVersion": "", 
-            "trustStatus": "trusted", 
-            "firstScanTime": "2021-09-02T11:05:27.439Z", 
-            "_id": "image123", 
+            ],
+            "Secrets": null,
+            "osDistroRelease": "3.7.0",
+            "topLayer": "sha256:9dfc2f79a6a83bd3791f4b6c621850b49db37ff729cdc17fd0a7b0ec373338c6",
+            "osDistroVersion": "",
+            "trustStatus": "trusted",
+            "firstScanTime": "2021-09-02T11:05:27.439Z",
+            "_id": "image123",
             "riskFactors": {
-                "Remote execution": {}, 
-                "High severity": {}, 
-                "Has fix": {}, 
-                "Attack complexity: low": {}, 
-                "Recent vulnerability": {}, 
-                "Attack vector: network": {}, 
-                "Critical severity": {}, 
-                "Medium severity": {}, 
+                "Remote execution": {},
+                "High severity": {},
+                "Has fix": {},
+                "Attack complexity: low": {},
+                "Recent vulnerability": {},
+                "Attack vector: network": {},
+                "Critical severity": {},
+                "Medium severity": {},
                 "DoS": {}
-            }, 
-            "err": "", 
-            "vulnerabilitiesCount": 60, 
-            "scanTime": "2021-12-14T14:19:36.091Z", 
-            "complianceIssuesCount": 1, 
-            "creationTime": "2018-05-10T10:32:49.309Z", 
-            "vulnerabilities": null, 
+            },
+            "err": "",
+            "vulnerabilitiesCount": 60,
+            "scanTime": "2021-12-14T14:19:36.091Z",
+            "complianceIssuesCount": 1,
+            "creationTime": "2018-05-10T10:32:49.309Z",
+            "vulnerabilities": null,
             "hosts": {
                 "host123": {
                     "modified": "2021-12-14T14:19:36.091Z"
                 }
-            }, 
-            "complianceRiskScore": 10000, 
-            "wildFireUsage": null, 
-            "binaries": null, 
-            "vulnerabilityRiskScore": 12282000, 
+            },
+            "complianceRiskScore": 10000,
+            "wildFireUsage": null,
+            "binaries": null,
+            "vulnerabilityRiskScore": 12282000,
             "history": null
         }
     }
@@ -2180,273 +2180,273 @@ vulnerabilityManager
     "PrismaCloudCompute": {
         "ReportHostScan": {
             "cloudMetadata": {
-                "resourceID": "i-123", 
-                "image": "ami-123", 
-                "provider": "aws", 
-                "type": "t2.large", 
-                "region": "eu-west-123", 
+                "resourceID": "i-123",
+                "image": "ami-123",
+                "provider": "aws",
+                "type": "t2.large",
+                "region": "eu-west-123",
                 "accountID": "123"
-            }, 
-            "hostname": "host123", 
+            },
+            "hostname": "host123",
             "vulnerabilityDistribution": {
-                "high": 4, 
-                "total": 191, 
-                "medium": 78, 
-                "critical": 0, 
+                "high": 4,
+                "total": 191,
+                "medium": 78,
+                "critical": 0,
                 "low": 109
-            }, 
-            "creationTime": "0001-01-01T00:00:00Z", 
+            },
+            "creationTime": "0001-01-01T00:00:00Z",
             "image": {
                 "created": "0001-01-01T00:00:00Z"
-            }, 
+            },
             "labels": [
-                "osDistro:ubuntu", 
+                "osDistro:ubuntu",
                 "osVersion:16.04"
-            ], 
-            "instances": [], 
+            ],
+            "instances": [],
             "complianceIssues": [
                 {
                     "templates": [
                         "GDPR"
-                    ], 
-                    "vecStr": "", 
-                    "text": "", 
-                    "discovered": "0001-01-01T00:00:00Z", 
-                    "exploit": "", 
-                    "layerTime": 0, 
-                    "id": 16, 
-                    "severity": "high", 
-                    "title": "(CIS_Docker_CE_v1.1.0 - 1.4) Only allow trusted users to control Docker daemon", 
-                    "packageVersion": "", 
-                    "cause": "1 users in docker group: demisto", 
-                    "cvss": 0, 
-                    "status": "", 
-                    "twistlock": false, 
-                    "fixDate": "", 
-                    "description": "Docker allows you to share a directory between the Docker host and a guest container\nwithout limiting the access rights of the container. This means that you can start a\ncontainer and map the / directory on your host to the container. The container will then be\nable to alter your host file system without any restrictions. In simple terms, it means that\nyou can attain elevated privileges with just being a member of the docker group and then\nstarting a container with mapped / directory on the host", 
-                    "link": "", 
-                    "cri": false, 
-                    "riskFactors": null, 
-                    "type": "host_config", 
-                    "packageName": "", 
-                    "functionLayer": "", 
-                    "published": 0, 
+                    ],
+                    "vecStr": "",
+                    "text": "",
+                    "discovered": "0001-01-01T00:00:00Z",
+                    "exploit": "",
+                    "layerTime": 0,
+                    "id": 16,
+                    "severity": "high",
+                    "title": "(CIS_Docker_CE_v1.1.0 - 1.4) Only allow trusted users to control Docker daemon",
+                    "packageVersion": "",
+                    "cause": "1 users in docker group: demisto",
+                    "cvss": 0,
+                    "status": "",
+                    "twistlock": false,
+                    "fixDate": "",
+                    "description": "Docker allows you to share a directory between the Docker host and a guest container\nwithout limiting the access rights of the container. This means that you can start a\ncontainer and map the / directory on your host to the container. The container will then be\nable to alter your host file system without any restrictions. In simple terms, it means that\nyou can attain elevated privileges with just being a member of the docker group and then\nstarting a container with mapped / directory on the host",
+                    "link": "",
+                    "cri": false,
+                    "riskFactors": null,
+                    "type": "host_config",
+                    "packageName": "",
+                    "functionLayer": "",
+                    "published": 0,
                     "cve": ""
-                }, 
+                },
                 {
                     "templates": [
-                        "PCI", 
+                        "PCI",
                         "HIPAA"
-                    ], 
-                    "vecStr": "", 
-                    "text": "", 
-                    "discovered": "0001-01-01T00:00:00Z", 
-                    "exploit": "", 
-                    "layerTime": 0, 
-                    "id": 21, 
-                    "severity": "high", 
-                    "title": "(CIS_Docker_v1.2.0 - 2.1) Restrict network traffic between containers", 
-                    "packageVersion": "", 
-                    "cause": "", 
-                    "cvss": 0, 
-                    "status": "", 
-                    "twistlock": false, 
-                    "fixDate": "", 
-                    "description": "By default, all network traffic is allowed between containers on the same host on the\ndefault network bridge. If not desired, restrict all the inter-container communication. Link\nspecific containers together that require communication. Alternatively, you can create\ncustom network and only join containers that need to communicate to that custom\nnetwork", 
-                    "link": "", 
-                    "cri": false, 
-                    "riskFactors": null, 
-                    "type": "daemon_config", 
-                    "packageName": "", 
-                    "functionLayer": "", 
-                    "published": 0, 
+                    ],
+                    "vecStr": "",
+                    "text": "",
+                    "discovered": "0001-01-01T00:00:00Z",
+                    "exploit": "",
+                    "layerTime": 0,
+                    "id": 21,
+                    "severity": "high",
+                    "title": "(CIS_Docker_v1.2.0 - 2.1) Restrict network traffic between containers",
+                    "packageVersion": "",
+                    "cause": "",
+                    "cvss": 0,
+                    "status": "",
+                    "twistlock": false,
+                    "fixDate": "",
+                    "description": "By default, all network traffic is allowed between containers on the same host on the\ndefault network bridge. If not desired, restrict all the inter-container communication. Link\nspecific containers together that require communication. Alternatively, you can create\ncustom network and only join containers that need to communicate to that custom\nnetwork",
+                    "link": "",
+                    "cri": false,
+                    "riskFactors": null,
+                    "type": "daemon_config",
+                    "packageName": "",
+                    "functionLayer": "",
+                    "published": 0,
                     "cve": ""
                 }
-            ], 
-            "repoTag": null, 
-            "packageManager": true, 
-            "repoDigests": [], 
-            "allCompliance": {}, 
+            ],
+            "repoTag": null,
+            "packageManager": true,
+            "repoDigests": [],
+            "allCompliance": {},
             "packages": [
                 {
-                    "pkgsType": "package", 
+                    "pkgsType": "package",
                     "pkgs": [
                         {
-                            "name": "kbd", 
-                            "version": "1.15.5-1ubuntu5", 
-                            "cveCount": 5, 
-                            "license": "GPL-2+", 
+                            "name": "kbd",
+                            "version": "1.15.5-1ubuntu5",
+                            "cveCount": 5,
+                            "license": "GPL-2+",
                             "layerTime": 0
-                        }, 
+                        },
                         {
-                            "name": "xdg-utils", 
-                            "version": "1.1.1-1ubuntu1.16.04.5", 
-                            "cveCount": 50, 
-                            "license": "", 
+                            "name": "xdg-utils",
+                            "version": "1.1.1-1ubuntu1.16.04.5",
+                            "cveCount": 50,
+                            "license": "",
                             "layerTime": 0
                         }
                     ]
                 }
-            ], 
+            ],
             "complianceDistribution": {
-                "high": 16, 
-                "total": 17, 
-                "medium": 0, 
-                "critical": 1, 
+                "high": 16,
+                "total": 17,
+                "medium": 0,
+                "critical": 1,
                 "low": 0
-            }, 
+            },
             "firewallProtection": {
-                "supported": false, 
+                "supported": false,
                 "enabled": false
-            }, 
-            "appEmbedded": false, 
+            },
+            "appEmbedded": false,
             "installedProducts": {
-                "docker": "17.06.0-ce", 
-                "osDistro": "xenial", 
+                "docker": "17.06.0-ce",
+                "osDistro": "xenial",
                 "hasPackageManager": true
-            }, 
+            },
             "collections": [
-                "All", 
-                "123", 
+                "All",
+                "123",
                 "Test Collection"
-            ], 
-            "startupBinaries": [], 
-            "type": "host", 
-            "distro": "Ubuntu 16.04.2 LTS", 
-            "files": [], 
-            "scanID": 0, 
-            "osDistro": "ubuntu", 
-            "tags": [], 
-            "Secrets": [], 
+            ],
+            "startupBinaries": [],
+            "type": "host",
+            "distro": "Ubuntu 16.04.2 LTS",
+            "files": [],
+            "scanID": 0,
+            "osDistro": "ubuntu",
+            "tags": [],
+            "Secrets": [],
             "applications": [
                 {
-                    "knownVulnerabilities": 20, 
-                    "path": "", 
-                    "version": "17.06.0-ce", 
-                    "layerTime": 0, 
+                    "knownVulnerabilities": 20,
+                    "path": "",
+                    "version": "17.06.0-ce",
+                    "layerTime": 0,
                     "name": "docker"
                 }
-            ], 
-            "osDistroRelease": "xenial", 
-            "osDistroVersion": "16.04", 
-            "trustStatus": "", 
-            "firstScanTime": "0001-01-01T00:00:00Z", 
-            "_id": "host123", 
+            ],
+            "osDistroRelease": "xenial",
+            "osDistroVersion": "16.04",
+            "trustStatus": "",
+            "firstScanTime": "0001-01-01T00:00:00Z",
+            "_id": "host123",
             "riskFactors": {
-                "Remote execution": {}, 
-                "High severity": {}, 
-                "Has fix": {}, 
-                "Exploit exists": {}, 
-                "Attack complexity: low": {}, 
-                "Recent vulnerability": {}, 
-                "Attack vector: network": {}, 
-                "Medium severity": {}, 
-                "DoS": {}, 
+                "Remote execution": {},
+                "High severity": {},
+                "Has fix": {},
+                "Exploit exists": {},
+                "Attack complexity: low": {},
+                "Recent vulnerability": {},
+                "Attack vector: network": {},
+                "Medium severity": {},
+                "DoS": {},
                 "Package in use": {}
-            }, 
-            "err": "", 
-            "vulnerabilitiesCount": 191, 
-            "scanTime": "2021-12-15T14:19:48.792Z", 
-            "complianceIssuesCount": 17, 
+            },
+            "err": "",
+            "vulnerabilitiesCount": 191,
+            "scanTime": "2021-12-15T14:19:48.792Z",
+            "complianceIssuesCount": 17,
             "hostDevices": [
                 {
-                    "ip": "1.1.1.1", 
+                    "ip": "1.1.1.1",
                     "name": "eth0"
                 }
-            ], 
+            ],
             "vulnerabilities": [
                 {
-                    "templates": null, 
-                    "vecStr": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H", 
-                    "text": "", 
-                    "discovered": "2020-11-04T18:15:00Z", 
-                    "exploit": "", 
-                    "layerTime": 0, 
-                    "id": 46, 
+                    "templates": null,
+                    "vecStr": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                    "text": "",
+                    "discovered": "2020-11-04T18:15:00Z",
+                    "exploit": "",
+                    "layerTime": 0,
+                    "id": 46,
                     "applicableRules": [
                         "*"
-                    ], 
-                    "severity": "low", 
-                    "title": "", 
-                    "packageVersion": "4.9.3-0ubuntu0.16.04.1", 
-                    "cause": "", 
-                    "cvss": 7.5, 
-                    "status": "needed", 
-                    "twistlock": false, 
-                    "fixDate": "", 
-                    "description": "The ppp decapsulator in tcpdump 4.9.3 can be convinced to allocate a large amount of memory.", 
-                    "link": "https://people.canonical.com/~ubuntu-security/cve/2020/CVE-2020-8037", 
-                    "cri": false, 
+                    ],
+                    "severity": "low",
+                    "title": "",
+                    "packageVersion": "4.9.3-0ubuntu0.16.04.1",
+                    "cause": "",
+                    "cvss": 7.5,
+                    "status": "needed",
+                    "twistlock": false,
+                    "fixDate": "",
+                    "description": "The ppp decapsulator in tcpdump 4.9.3 can be convinced to allocate a large amount of memory.",
+                    "link": "https://people.canonical.com/~ubuntu-security/cve/2020/CVE-2020-8037",
+                    "cri": false,
                     "riskFactors": {
-                        "Attack complexity: low": {}, 
-                        "Recent vulnerability": {}, 
+                        "Attack complexity: low": {},
+                        "Recent vulnerability": {},
                         "Attack vector: network": {}
-                    }, 
-                    "type": "image", 
-                    "packageName": "tcpdump", 
-                    "functionLayer": "", 
-                    "published": 1604513700, 
+                    },
+                    "type": "image",
+                    "packageName": "tcpdump",
+                    "functionLayer": "",
+                    "published": 1604513700,
                     "cve": "CVE-2020-8037"
-                }, 
+                },
                 {
-                    "templates": null, 
-                    "vecStr": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N", 
-                    "text": "", 
-                    "discovered": "2021-04-29T05:15:00Z", 
-                    "exploit": "", 
-                    "layerTime": 0, 
-                    "id": 46, 
+                    "templates": null,
+                    "vecStr": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+                    "text": "",
+                    "discovered": "2021-04-29T05:15:00Z",
+                    "exploit": "",
+                    "layerTime": 0,
+                    "id": 46,
                     "applicableRules": [
                         "*"
-                    ], 
-                    "severity": "medium", 
-                    "title": "", 
-                    "packageVersion": "1.17.1-1ubuntu1.5", 
-                    "cause": "", 
-                    "cvss": 6.1, 
-                    "status": "deferred", 
-                    "twistlock": false, 
-                    "fixDate": "", 
-                    "description": "GNU Wget through 1.21.1 does not omit the Authorization header upon a redirect to a different origin, a related issue to CVE-2018-1000007.", 
-                    "link": "https://people.canonical.com/~ubuntu-security/cve/2021/CVE-2021-31879", 
-                    "cri": false, 
+                    ],
+                    "severity": "medium",
+                    "title": "",
+                    "packageVersion": "1.17.1-1ubuntu1.5",
+                    "cause": "",
+                    "cvss": 6.1,
+                    "status": "deferred",
+                    "twistlock": false,
+                    "fixDate": "",
+                    "description": "GNU Wget through 1.21.1 does not omit the Authorization header upon a redirect to a different origin, a related issue to CVE-2018-1000007.",
+                    "link": "https://people.canonical.com/~ubuntu-security/cve/2021/CVE-2021-31879",
+                    "cri": false,
                     "riskFactors": {
-                        "Medium severity": {}, 
-                        "Attack complexity: low": {}, 
-                        "Recent vulnerability": {}, 
+                        "Medium severity": {},
+                        "Attack complexity: low": {},
+                        "Recent vulnerability": {},
                         "Attack vector: network": {}
-                    }, 
-                    "type": "image", 
-                    "packageName": "wget", 
-                    "functionLayer": "", 
-                    "published": 1619673300, 
+                    },
+                    "type": "image",
+                    "packageName": "wget",
+                    "functionLayer": "",
+                    "published": 1619673300,
                     "cve": "CVE-2021-31879"
                 }
-            ], 
-            "hosts": {}, 
-            "complianceRiskScore": 1160000, 
-            "wildFireUsage": null, 
+            ],
+            "hosts": {},
+            "complianceRiskScore": 1160000,
+            "wildFireUsage": null,
             "binaries": [
                 {
                     "services": [
                         "lxcfs"
-                    ], 
-                    "path": "/usr/bin/lxcfs", 
-                    "cveCount": 0, 
-                    "name": "lxcfs", 
+                    ],
+                    "path": "/usr/bin/lxcfs",
+                    "cveCount": 0,
+                    "name": "lxcfs",
                     "md5": ""
-                }, 
+                },
                 {
                     "services": [
                         "systemd-udevd"
-                    ], 
-                    "path": "/lib/systemd/systemd-udevd", 
-                    "cveCount": 0, 
-                    "name": "systemd-udevd", 
+                    ],
+                    "path": "/lib/systemd/systemd-udevd",
+                    "cveCount": 0,
+                    "name": "systemd-udevd",
                     "md5": ""
                 }
-            ], 
-            "vulnerabilityRiskScore": 47909, 
+            ],
+            "vulnerabilityRiskScore": 47909,
             "history": []
         }
     }
@@ -2486,99 +2486,99 @@ vulnerabilityManager
     "PrismaCloudCompute": {
         "ReportHostScan": {
             "cloudMetadata": {
-                "resourceID": "i-123", 
-                "image": "ami-123", 
-                "provider": "aws", 
-                "type": "t2.large", 
-                "region": "eu-west-123", 
+                "resourceID": "i-123",
+                "image": "ami-123",
+                "provider": "aws",
+                "type": "t2.large",
+                "region": "eu-west-123",
                 "accountID": "123"
-            }, 
-            "hostname": "host123", 
+            },
+            "hostname": "host123",
             "vulnerabilityDistribution": {
-                "high": 4, 
-                "total": 191, 
-                "medium": 78, 
-                "critical": 0, 
+                "high": 4,
+                "total": 191,
+                "medium": 78,
+                "critical": 0,
                 "low": 109
-            }, 
-            "creationTime": "0001-01-01T00:00:00Z", 
+            },
+            "creationTime": "0001-01-01T00:00:00Z",
             "image": {
                 "created": "0001-01-01T00:00:00Z"
-            }, 
+            },
             "labels": [
-                "osDistro:ubuntu", 
+                "osDistro:ubuntu",
                 "osVersion:16.04"
-            ], 
-            "instances": [], 
-            "complianceIssues": null, 
-            "repoTag": null, 
-            "packageManager": false, 
-            "repoDigests": [], 
-            "allCompliance": {}, 
-            "packages": null, 
+            ],
+            "instances": [],
+            "complianceIssues": null,
+            "repoTag": null,
+            "packageManager": false,
+            "repoDigests": [],
+            "allCompliance": {},
+            "packages": null,
             "complianceDistribution": {
-                "high": 16, 
-                "total": 17, 
-                "medium": 0, 
-                "critical": 1, 
+                "high": 16,
+                "total": 17,
+                "medium": 0,
+                "critical": 1,
                 "low": 0
-            }, 
+            },
             "firewallProtection": {
-                "supported": false, 
+                "supported": false,
                 "enabled": false
-            }, 
-            "appEmbedded": false, 
+            },
+            "appEmbedded": false,
             "installedProducts": {
-                "docker": "17.06.0-ce", 
-                "osDistro": "xenial", 
+                "docker": "17.06.0-ce",
+                "osDistro": "xenial",
                 "hasPackageManager": true
-            }, 
+            },
             "collections": [
-                "All", 
-                "123", 
+                "All",
+                "123",
                 "Test Collection"
-            ], 
-            "startupBinaries": null, 
-            "type": "host", 
-            "distro": "Ubuntu 16.04.2 LTS", 
-            "files": null, 
-            "scanID": 0, 
-            "osDistro": "ubuntu", 
-            "tags": [], 
-            "Secrets": null, 
-            "osDistroRelease": "xenial", 
-            "osDistroVersion": "", 
-            "trustStatus": "", 
-            "firstScanTime": "0001-01-01T00:00:00Z", 
-            "_id": "host123", 
+            ],
+            "startupBinaries": null,
+            "type": "host",
+            "distro": "Ubuntu 16.04.2 LTS",
+            "files": null,
+            "scanID": 0,
+            "osDistro": "ubuntu",
+            "tags": [],
+            "Secrets": null,
+            "osDistroRelease": "xenial",
+            "osDistroVersion": "",
+            "trustStatus": "",
+            "firstScanTime": "0001-01-01T00:00:00Z",
+            "_id": "host123",
             "riskFactors": {
-                "Remote execution": {}, 
-                "High severity": {}, 
-                "Has fix": {}, 
-                "Exploit exists": {}, 
-                "Attack complexity: low": {}, 
-                "Recent vulnerability": {}, 
-                "Attack vector: network": {}, 
-                "Medium severity": {}, 
-                "DoS": {}, 
+                "Remote execution": {},
+                "High severity": {},
+                "Has fix": {},
+                "Exploit exists": {},
+                "Attack complexity: low": {},
+                "Recent vulnerability": {},
+                "Attack vector: network": {},
+                "Medium severity": {},
+                "DoS": {},
                 "Package in use": {}
-            }, 
-            "err": "", 
-            "vulnerabilitiesCount": 191, 
-            "scanTime": "2021-12-15T14:19:48.792Z", 
-            "complianceIssuesCount": 17, 
+            },
+            "err": "",
+            "vulnerabilitiesCount": 191,
+            "scanTime": "2021-12-15T14:19:48.792Z",
+            "complianceIssuesCount": 17,
             "hostDevices": [
                 {
-                    "ip": "1.1.1.1", 
+                    "ip": "1.1.1.1",
                     "name": "eth0"
                 }
-            ], 
-            "vulnerabilities": null, 
-            "hosts": {}, 
-            "complianceRiskScore": 1160000, 
-            "wildFireUsage": null, 
-            "binaries": null, 
-            "vulnerabilityRiskScore": 47909, 
+            ],
+            "vulnerabilities": null,
+            "hosts": {},
+            "complianceRiskScore": 1160000,
+            "wildFireUsage": null,
+            "binaries": null,
+            "vulnerabilityRiskScore": 47909,
             "history": null
         }
     }
@@ -2653,37 +2653,37 @@ vulnerabilityManager
     "PrismaCloudCompute": {
         "VulnerabilitiesImpactedResource": [
             {
-                "_id": "CVE-2021-31535", 
+                "_id": "CVE-2021-31535",
                 "hosts": [
                     "host1"
-                ], 
+                ],
                 "riskTree": {
                     "sha256:c24dea8ef267038c3c1d64b66c7cd660df85563146af841c1b452b291093abdf": [
                         {
-                            "image": "image1", 
+                            "image": "image1",
                             "factors": {}
                         }
-                    ], 
+                    ],
                     "sha256:dccfc7e8628161ff6f859cb74aa9de07f1b2650554532b6103658d8831e6991f": [
                         {
-                            "image": "image2", 
+                            "image": "image2",
                             "factors": {}
                         }
                     ]
                 }
-            }, 
+            },
             {
-                "_id": "CVE-2018-14600", 
+                "_id": "CVE-2018-14600",
                 "riskTree": {
                     "sha256:c24dea8ef267038c3c1d64b66c7cd660df85563146af841c1b452b291093abdf": [
                         {
-                            "image": "image3", 
+                            "image": "image3",
                             "factors": {}
                         }
-                    ], 
+                    ],
                     "sha256:dccfc7e8628161ff6f859cb74aa9de07f1b2650554532b6103658d8831e6991f": [
                         {
-                            "image": "image4", 
+                            "image": "image4",
                             "factors": {}
                         }
                     ]
@@ -2840,6 +2840,8 @@ There is no context output for this command.
 
 When fetching an incident from the Prisma Cloud Compute platform, the platform will delete the fetched incident.
 Therefore, it is recommended to configure only one instance per user to fetch incidents.
+
+Prisma Cloud Compute groups alerts that occur within a configured time window into a single aggregated alert before sending them to Cortex XSOAR/XSIAM. This may result in fewer incidents being created than the total number of individual alerts visible in the Prisma Cloud Compute console. The individual alerts are preserved in the `aggregatedAlerts` field of each incident. To receive each alert separately, reduce the Aggregation Period in your Prisma Cloud alert profile to the minimum value. If the 1-second option is not available, contact Prisma Cloud Support to enable `SAAS_ADDITIONAL_ALERT_AGGREGATION_OPTIONS_ENABLED` on your tenant.
 
 ### prisma-cloud-compute-get-alert-profiles
 
