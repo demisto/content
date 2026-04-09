@@ -1,7 +1,9 @@
 import json
+from datetime import UTC
 
 import demistomock as demisto
 import pytest
+from freezegun import freeze_time
 from Palo_Alto_Networks_Enterprise_DLP import (
     DEFAULT_BASE_URL as DLP_URL,
     DEFAULT_AUTH_URL as AUTH_URL,
@@ -15,6 +17,13 @@ from Palo_Alto_Networks_Enterprise_DLP import (
     update_incident_command,
     create_incident,
     arg_to_datetime,
+    get_last_run_from_context,
+    update_context_with_last_run,
+    compute_next_run,
+    get_start_end_time_intervals,
+    START_TIMESTAMP_KEY,
+    LAST_IDS_KEY,
+    LAST_RUN_KEY,
 )
 
 
@@ -201,18 +210,27 @@ def test_get_dlp_incidents(requests_mock):
     assert status_code == 200
 
 
+@freeze_time("2022-04-01 20:25:00 UTC")
 def test_fetch_notifications(requests_mock, mocker):
-    # Mock with regex to handle dynamic end_timestamp
+    """
+    Given:
+        - A client and basic parameters with first_fetch_timestamp close to frozen time.
+    When:
+        - Calling fetch_notifications with no incidents returned.
+    Then:
+        - Ensure createIncidents is called with empty list.
+    """
     import re
 
     requests_mock.get(re.compile(f"{DLP_URL}public/incident-notifications.*"), json={"us": []})
     mocker.patch.object(demisto, "getIntegrationContext", return_value={"access_token": "abc"})
-    mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "setIntegrationContext")
     incident_mock = mocker.patch.object(demisto, "createIncidents")
 
     client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
-    fetch_notifications(client, "us", first_fetch_timestamp=0)
+    # Use timestamp close to frozen time (5 minutes before)
+    first_fetch_timestamp = int(arg_to_datetime("2022-04-01 20:20:00 UTC").timestamp())  # type: ignore
+    fetch_notifications(client, "us", first_fetch_timestamp=first_fetch_timestamp)
     assert incident_mock.call_args[0][0] == []
 
 
@@ -409,3 +427,209 @@ def test_create_incident(incident_type_input, expected_type):
     assert result["occurred"] == occurred_time
     assert result["rawJSON"] == json.dumps(raw_data)
     assert result["details"] == json.dumps(raw_data)
+
+
+@pytest.mark.parametrize(
+    "local_last_run, integration_context, expected_result",
+    [
+        pytest.param(
+            {START_TIMESTAMP_KEY: 1234567890, LAST_IDS_KEY: ["id1", "id2"]},
+            {LAST_RUN_KEY: {START_TIMESTAMP_KEY: 9999999999, LAST_IDS_KEY: ["old_id"]}},
+            {START_TIMESTAMP_KEY: 1234567890, LAST_IDS_KEY: ["id1", "id2"]},
+            id="local_last_run_populated",
+        ),
+        pytest.param(
+            {},
+            {LAST_RUN_KEY: {START_TIMESTAMP_KEY: 1234567890, LAST_IDS_KEY: ["id1", "id2"]}},
+            {START_TIMESTAMP_KEY: 1234567890, LAST_IDS_KEY: ["id1", "id2"]},
+            id="integration_context_only",
+        ),
+        pytest.param(
+            {},
+            {},
+            {},
+            id="both_empty",
+        ),
+    ],
+)
+def test_get_last_run_from_context(local_last_run, integration_context, expected_result):
+    """
+    Given:
+        - Various states of LOCAL_LAST_RUN and integration context.
+    When:
+        - Calling get_last_run_from_context.
+    Then:
+        - Ensure it returns the correct last_run based on priority.
+    """
+    from Palo_Alto_Networks_Enterprise_DLP import LOCAL_LAST_RUN
+
+    LOCAL_LAST_RUN.clear()
+    LOCAL_LAST_RUN.update(local_last_run)
+
+    result = get_last_run_from_context(integration_context)
+
+    assert result == expected_result
+    LOCAL_LAST_RUN.clear()
+
+
+def test_update_context_with_last_run():
+    """
+    Given:
+        - A last_run dictionary and integration context.
+    When:
+        - Calling update_context_with_last_run.
+    Then:
+        - Ensure LOCAL_LAST_RUN is updated.
+        - Ensure integration context is updated with last_run.
+    """
+    from Palo_Alto_Networks_Enterprise_DLP import LOCAL_LAST_RUN
+
+    LOCAL_LAST_RUN.clear()
+
+    test_last_run = {START_TIMESTAMP_KEY: 1234567890, LAST_IDS_KEY: ["id1", "id2"]}
+    integration_context = {"some_key": "some_value"}
+
+    result = update_context_with_last_run(test_last_run, integration_context)
+
+    assert result[LAST_RUN_KEY] == test_last_run
+    assert result["some_key"] == "some_value"
+    LOCAL_LAST_RUN.clear()
+
+
+@pytest.mark.parametrize(
+    "incident_ids_timestamps, last_run, expected_timestamp, expected_ids",
+    [
+        pytest.param(
+            {"id1": 1000, "id2": 2000, "id3": 2000, "id4": 1500},
+            {START_TIMESTAMP_KEY: 500, LAST_IDS_KEY: ["old_id"]},
+            2000,
+            {"id2", "id3"},
+            id="multiple_incidents_different_timestamps",
+        ),
+        pytest.param(
+            {},
+            {START_TIMESTAMP_KEY: 1234567890, LAST_IDS_KEY: ["id1"]},
+            1234567890,
+            {"id1"},
+            id="empty_incidents_returns_previous",
+        ),
+        pytest.param(
+            {"id1": 1000},
+            {START_TIMESTAMP_KEY: 500, LAST_IDS_KEY: []},
+            1000,
+            {"id1"},
+            id="single_incident",
+        ),
+    ],
+)
+def test_compute_next_run(incident_ids_timestamps, last_run, expected_timestamp, expected_ids):
+    """
+    Given:
+        - A dictionary of incident IDs mapped to their committed timestamps.
+    When:
+        - Calling compute_next_run.
+    Then:
+        - Ensure it returns the correct timestamp and IDs.
+    """
+    result = compute_next_run(incident_ids_timestamps, last_run)
+
+    assert result[START_TIMESTAMP_KEY] == expected_timestamp
+    assert set(result[LAST_IDS_KEY]) == expected_ids
+
+
+@pytest.mark.parametrize(
+    "start, end, delta, expected_intervals",
+    [
+        pytest.param(
+            0,
+            900,
+            300,
+            [(0, 300), (300, 600), (600, 900)],
+            id="even_intervals",
+        ),
+        pytest.param(
+            0,
+            1000,
+            300,
+            [(0, 300), (300, 600), (600, 900), (900, 1000)],
+            id="uneven_intervals_capped_at_end",
+        ),
+        pytest.param(
+            0,
+            100,
+            300,
+            [(0, 100)],
+            id="single_interval_delta_exceeds_range",
+        ),
+        pytest.param(
+            100,
+            100,
+            300,
+            [],
+            id="empty_range",
+        ),
+    ],
+)
+def test_get_start_end_time_intervals(start, end, delta, expected_intervals):
+    """
+    Given:
+        - Start and end timestamps with a delta.
+    When:
+        - Calling get_start_end_time_intervals.
+    Then:
+        - Ensure it returns the correct time intervals.
+    """
+    result = get_start_end_time_intervals(start, end, delta)
+
+    assert result == expected_intervals
+
+
+@freeze_time("2022-04-01 20:25:00 UTC")
+def test_fetch_notifications_basic(requests_mock, mocker):
+    """
+    Given:
+        - A client and basic parameters with frozen time.
+    When:
+        - Calling fetch_notifications with no previous last_run.
+    Then:
+        - Ensure incidents are created and last_run is updated.
+    """
+    import re
+    from datetime import datetime
+    from Palo_Alto_Networks_Enterprise_DLP import LOCAL_LAST_RUN
+
+    LOCAL_LAST_RUN.clear()
+
+    # Mock API response
+    mock_notification = {
+        "incident": {
+            "incidentId": "test-id-1",
+            "committedAt": "2022-Apr-01 20:21:50 UTC",
+            "createdAt": "2022-Apr-01 20:21:50 UTC",
+            "incidentDetails": INCIDENT_JSON["incidentDetails"],
+            "tenantId": "1128505801991063552",
+            "reportId": "2573778324",
+        },
+        "previous_notifications": [],
+    }
+
+    requests_mock.get(re.compile(f"{DLP_URL}public/incident-notifications.*"), json={"us": [mock_notification]})
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "createIncidents")
+    set_context_mock = mocker.patch.object(demisto, "setIntegrationContext")
+
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
+    # Use timestamp very close to frozen time (just 2 minutes before to minimize intervals)
+    first_fetch_timestamp = int(datetime(2022, 4, 1, 20, 23, 0, tzinfo=UTC).timestamp())
+
+    fetch_notifications(client, "us", first_fetch_timestamp)
+
+    # Verify createIncidents was called
+    assert demisto.createIncidents.called
+    incidents = demisto.createIncidents.call_args[0][0]
+    assert len(incidents) == 1
+    assert "test-id-1" in incidents[0]["name"]
+
+    # Verify setIntegrationContext was called
+    assert set_context_mock.called
