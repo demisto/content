@@ -663,7 +663,6 @@ def long_running_execution_command(client: Client, params: dict) -> None:
         client (Client): DLP API client instance.
         params (dict): Integration instance configuration parameters.
     """
-    demisto.setIntegrationContext({ACCESS_TOKEN: ""})
     regions = params.get("dlp_regions", "")
     incident_type = params.get("incidentType", "Data Loss Prevention")
     sleep_time = FETCH_SLEEP
