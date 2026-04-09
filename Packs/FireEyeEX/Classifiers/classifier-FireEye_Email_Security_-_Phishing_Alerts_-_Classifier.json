@@ -11,5 +11,11 @@
     },
     "type": "classification",
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam",
+        "edr",
+        "cloud"
+    ]
 }
