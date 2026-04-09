@@ -1075,8 +1075,6 @@ class BaseSimilarEntityFinder:
         max_entities = int(self.max_objects_to_display or 100)
         aggregate = self.aggregate_objects_different_date or "False"
         limit = int(self.limit or 1500)
-        if self.entity_name == "issue":
-            limit += 1
 
         show_actual_entity = self.show_current_object
         entity_id = self.object_id
@@ -1612,6 +1610,7 @@ class SimilarIssueFinder(BaseSimilarEntityFinder):
             args = {**base_args, "page": page, "page_size": page_size}
             commands.append({"core-get-issues": args})
 
+        print(commands)
         demisto.debug(f"Calling core-get-issues in batch with {len(commands)} commands.")
         batch_results = demisto.executeCommandBatch(commands)
 
@@ -1641,7 +1640,7 @@ class SimilarIssueFinder(BaseSimilarEntityFinder):
             return None, msg
 
         if len(all_issues) >= limit:
-            all_issues = all_issues[: limit - 2]
+            all_issues = all_issues[: limit - 1]
 
         return all_issues, msg
 
