@@ -4180,6 +4180,18 @@ script:
       name: updated_after
     - description: "Get vulnerabilities that were updated before the specified date or relative timestamp.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ."
       name: updated_before
+    - description: "Get vulnerabilities that were disclosed after the specified date or relative timestamp.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ."
+      name: disclosed_after
+    - description: "Get vulnerabilities that were disclosed before the specified date or relative timestamp.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ."
+      name: disclosed_before
+    - description: "Get vulnerabilities that were published after the specified date or relative timestamp.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ."
+      name: published_after
+    - description: "Get vulnerabilities that were published before the specified date or relative timestamp.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ."
+      name: published_before
+    - description: "Get vulnerabilities that were last touched after the specified date or relative timestamp.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ."
+      name: last_touched_after
+    - description: "Get vulnerabilities that were last touched before the specified date or relative timestamp.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ."
+      name: last_touched_before
     - description: Filter by Ransomware score.
       name: ransomware_scores
       isArray: true

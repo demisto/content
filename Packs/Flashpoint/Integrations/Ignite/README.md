@@ -3958,6 +3958,12 @@ List Vulnerabilities using provided filters.
 | --- | --- | --- |
 | updated_after | Get vulnerabilities that were updated after the specified date or relative timestamp.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ. | Optional |
 | updated_before | Get vulnerabilities that were updated before the specified date or relative timestamp.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ. | Optional |
+| disclosed_after | Get vulnerabilities that were disclosed after the specified date or relative timestamp.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ. | Optional |
+| disclosed_before | Get vulnerabilities that were disclosed before the specified date or relative timestamp.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ. | Optional |
+| published_after | Get vulnerabilities that were published after the specified date or relative timestamp.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ. | Optional |
+| published_before | Get vulnerabilities that were published before the specified date or relative timestamp.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ. | Optional |
+| last_touched_after | Get vulnerabilities that were last touched after the specified date or relative timestamp.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ. | Optional |
+| last_touched_before | Get vulnerabilities that were last touched before the specified date or relative timestamp.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ. | Optional |
 | ransomware_scores | Filter by Ransomware score. Possible values are: Critical, High, Medium, Low. | Optional |
 | attack_types | Filter by Attack type classification. Possible values are: Authentication Management, Cryptographic, Infrastructure, Input Manipulation, Misconfiguration, Man-In-The-Middle (MITM), Other, Race Condition, Attack Type Unknown. | Optional |
 | severities | Filter by severity, which is calculated based on CVSS values. Possible values are: Critical, High, Medium, Low, Informational. | Optional |

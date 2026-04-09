@@ -2648,6 +2648,24 @@ def test_vulnerability_list_command_when_empty_response(mock_client, requests_mo
             ),
         ),
         (
+            {"disclosed_after": "2024-06-01T00:00:00Z", "disclosed_before": "2024-05-01T00:00:00Z"},
+            MESSAGES["INVALID_TIME_INTERVAL"].format(
+                "disclosed_after", "disclosed_before", "2024-06-01T00:00:00Z", "2024-05-01T00:00:00Z"
+            ),
+        ),
+        (
+            {"published_after": "2024-06-01T00:00:00Z", "published_before": "2024-05-01T00:00:00Z"},
+            MESSAGES["INVALID_TIME_INTERVAL"].format(
+                "published_after", "published_before", "2024-06-01T00:00:00Z", "2024-05-01T00:00:00Z"
+            ),
+        ),
+        (
+            {"last_touched_after": "2024-06-01T00:00:00Z", "last_touched_before": "2024-05-01T00:00:00Z"},
+            MESSAGES["INVALID_TIME_INTERVAL"].format(
+                "last_touched_after", "last_touched_before", "2024-06-01T00:00:00Z", "2024-05-01T00:00:00Z"
+            ),
+        ),
+        (
             {"min_cvssv3_score": "-1"},
             MESSAGES["INVALID_CVSS_SCORE"].format("Minimum CVSS v3 Score"),
         ),

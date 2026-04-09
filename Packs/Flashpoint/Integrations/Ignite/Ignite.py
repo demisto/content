@@ -336,7 +336,7 @@ MESSAGES = {
     "MISSING_REQUIRED_ARGS": "{} is a required field. Please provide correct input.",
     "INVALID_IP_ADDRESS": "Invalid IP - {}",
     "INVALID_SINGLE_SELECT_PARAM": "{} is an invalid value for {}. Possible values are: {}.",
-    "INVALID_TIME_INTERVAL": "{} parameter must be less than {} parameter.({} - {})",
+    "INVALID_TIME_INTERVAL": "{} parameter must be before {} parameter.({} - {})",
     "INVALID_PASSWORD_LENGTH": "Minimum length of password must be greater than zero.",
     "INVALID_FROM_PROVIDED": "{} is an invalid value for from. From must be greater than or equal to 0.",
     "INVALID_INTEGER_IDS": "The following {} IDs are not valid integers and will be ignored: {}",
@@ -1379,6 +1379,25 @@ def validate_epss_score(min_epss: Optional[str], min_epss_label: str, max_epss: 
         raise DemistoException(MESSAGES["INVALID_SCORE_RANGE"].format(min_epss_label, max_epss_label))
 
 
+def validate_time_range(
+    after_time: Optional[datetime], before_time: Optional[datetime], after_arg_name: str, before_arg_name: str
+) -> None:
+    """
+    Validate that the 'after' timestamp is earlier than the 'before' timestamp.
+
+    Args:
+        after_time (Optional[datetime]): The 'after' timestamp.
+        before_time (Optional[datetime]): The 'before' timestamp.
+        after_arg_name (str): The name of the 'after' argument for error messages.
+        before_arg_name (str): The name of the 'before' argument for error messages.
+
+    Raises:
+        DemistoException: If after_time is not earlier than before_time.
+    """
+    if after_time and before_time and after_time >= before_time:
+        raise DemistoException(MESSAGES["INVALID_TIME_INTERVAL"].format(after_arg_name, before_arg_name, after_time, before_time))
+
+
 def validate_vulnerabilities_args(args: dict) -> tuple[dict, dict]:
     """
     Validate the parameter list for vulnerability list command.
@@ -1403,6 +1422,12 @@ def validate_vulnerabilities_args(args: dict) -> tuple[dict, dict]:
     sort_order = args.get("sort_order", DEFAULT_VULNERABILITIES_SORT_ORDER)
     updated_after = arg_to_datetime(args.get("updated_after"))
     updated_before = arg_to_datetime(args.get("updated_before"))
+    disclosed_after = arg_to_datetime(args.get("disclosed_after"))
+    disclosed_before = arg_to_datetime(args.get("disclosed_before"))
+    published_after = arg_to_datetime(args.get("published_after"))
+    published_before = arg_to_datetime(args.get("published_before"))
+    last_touched_after = arg_to_datetime(args.get("last_touched_after"))
+    last_touched_before = arg_to_datetime(args.get("last_touched_before"))
     min_epss_score = args.get("min_epss_score")
     max_epss_score = args.get("max_epss_score")
     min_cvssv2_score = args.get("min_cvssv2_score")
@@ -1527,14 +1552,23 @@ def validate_vulnerabilities_args(args: dict) -> tuple[dict, dict]:
         attack_type=",".join(valid_attack_types),
         updated_after=updated_after.strftime(DATE_FORMAT) if updated_after else None,  # type: ignore
         updated_before=updated_before.strftime(DATE_FORMAT) if updated_before else None,  # type: ignore
+        disclosed_after=disclosed_after.strftime(DATE_FORMAT) if disclosed_after else None,  # type: ignore
+        disclosed_before=disclosed_before.strftime(DATE_FORMAT) if disclosed_before else None,  # type: ignore
+        published_after=published_after.strftime(DATE_FORMAT) if published_after else None,  # type: ignore
+        published_before=published_before.strftime(DATE_FORMAT) if published_before else None,  # type: ignore
+        last_touched_after=last_touched_after.strftime(DATE_FORMAT) if last_touched_after else None,  # type: ignore
+        last_touched_before=last_touched_before.strftime(DATE_FORMAT) if last_touched_before else None,  # type: ignore
     )
 
-    if updated_after and updated_before and updated_after >= updated_before:
-        raise DemistoException(
-            MESSAGES["INVALID_TIME_INTERVAL"].format(
-                "updated_after", "updated_before", payload["updated_after"], payload["updated_before"]
-            )
-        )
+    validate_time_range(payload.get("updated_after"), payload.get("updated_before"), "updated_after", "updated_before")
+    validate_time_range(payload.get("disclosed_after"), payload.get("disclosed_before"), "disclosed_after", "disclosed_before")
+    validate_time_range(payload.get("published_after"), payload.get("published_before"), "published_after", "published_before")
+    validate_time_range(
+        payload.get("last_touched_after"),
+        payload.get("last_touched_before"),
+        "last_touched_after",
+        "last_touched_before",
+    )
 
     remove_nulls_from_dictionary(query_params)
     remove_nulls_from_dictionary(payload)
