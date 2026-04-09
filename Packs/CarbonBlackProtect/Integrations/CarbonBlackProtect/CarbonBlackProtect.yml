@@ -1490,7 +1490,6 @@ script:
     description: Retrieve all user account data.
     name: cbp-user-data-retrieve
   dockerimage: demisto/python3:3.12.13.7444307
-  dockerimage: demisto/python3:3.12.12.5490952
   subtype: python3
   isfetch: true
   script: ''
