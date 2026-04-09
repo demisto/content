@@ -7334,7 +7334,7 @@ script:
       name: credentials
       required: true
       secret: true
-    description: Revoke exposed GitHub credentials (tokens) via the GitHub credential revocation API. This endpoint is unauthenticated by design and does not use the configured token. Rate-limited to 60 unauthenticated requests per hour.
+    description: Revoke exposed GitHub credentials (tokens) via the GitHub credential revocation API. This endpoint is unauthenticated by design and does not use the configured token. Limited to 60 unauthenticated requests per hour.
     name: github-revoke-credentials
   dockerimage: demisto/auth-utils:1.0.0.7837600
   isfetch: true
