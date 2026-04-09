@@ -4279,6 +4279,9 @@ script:
         - contextPath: Core.EmailInvestigationSummary.internet_message_id
           description: The unique identifier of the email message.
           type: String
+        - contextPath: Core.EmailInvestigationSummary.subject
+          description: The subject line of the email message.
+          type: String
         - contextPath: Core.EmailInvestigationSummary.sender
           description: The source email address of the campaign.
           type: String
@@ -4358,6 +4361,9 @@ script:
         - contextPath: Core.EmailCampaignForensics.internet_message_id
           description: The Internet Message ID that serves as the primary identifier for the email campaign.
           type: String
+        - contextPath: Core.EmailCampaignForensics.available_actions
+          description: The list of available actions for the email campaign.
+          type: Array
         - contextPath: Core.EmailCampaignForensics.identification.lcaas_id
           description: The LCaaS (Log Collection as a Service) identifier for the email.
           type: String
