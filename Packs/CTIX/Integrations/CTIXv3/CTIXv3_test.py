@@ -8,7 +8,6 @@ from urllib.parse import parse_qs, urlparse
 from CTIXv3 import (
     Client,
     DemistoException,
-    _epoch_to_iso,
     add_analyst_score_command,
     add_analyst_tlp_command,
     add_indicator_as_false_positive_command,
@@ -65,6 +64,12 @@ SECRET_KEY = "secret_key"
 def util_load_json(path):
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
+
+
+def _register_fetch_incidents_bulk_mock(requests_mock):
+    """Mock bulk IOC lookup (report) used by fetch_incidents for relations."""
+    bulk = util_load_json("test_data/fetch_incidents_bulk_lookup.json")
+    requests_mock.post(re.compile(re.escape(BASE_URL) + r"ingestion/openapi/bulk-lookup/report/"), json=bulk)
 
 
 def test_create_tag(requests_mock):
@@ -1406,23 +1411,6 @@ class TestNormalizeIndicatorType:
         assert normalize_indicator_type(None) == "Custom Indicator"
 
 
-class TestEpochToIso:
-    """Test _epoch_to_iso helper."""
-
-    def test_valid_epoch(self):
-        result = _epoch_to_iso(1700000000)
-        assert result == "2023-11-14T22:13:20Z"
-
-    def test_none_returns_none(self):
-        assert _epoch_to_iso(None) is None
-
-    def test_zero_returns_none(self):
-        assert _epoch_to_iso(0) is None
-
-    def test_string_returns_none(self):
-        assert _epoch_to_iso("not-a-number") is None
-
-
 class TestMapReportSeverity:
     """Test map_report_severity helper."""
 
@@ -1712,6 +1700,7 @@ class TestFetchIncidents:
     def test_first_run(self, requests_mock):
         mock_response = util_load_json("test_data/fetch_incidents_reports.json")
         requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
+        _register_fetch_incidents_bulk_mock(requests_mock)
 
         client = Client(
             base_url=BASE_URL,
@@ -1741,6 +1730,7 @@ class TestFetchIncidents:
         """Empty LastRun: CQL lower bound is now - first_fetch minutes, not epoch 0."""
         mock_response = util_load_json("test_data/fetch_incidents_reports.json")
         requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
+        _register_fetch_incidents_bulk_mock(requests_mock)
 
         client = Client(
             base_url=BASE_URL,
@@ -1769,6 +1759,7 @@ class TestFetchIncidents:
     def test_no_legacy_deduplication(self, requests_mock):
         mock_response = util_load_json("test_data/fetch_incidents_reports.json")
         requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
+        _register_fetch_incidents_bulk_mock(requests_mock)
 
         client = Client(
             base_url=BASE_URL,
@@ -1819,6 +1810,7 @@ class TestFetchIncidents:
     def test_max_fetch_limits_incidents_and_page_size(self, requests_mock):
         mock_response = util_load_json("test_data/fetch_incidents_reports.json")
         requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
+        _register_fetch_incidents_bulk_mock(requests_mock)
 
         client = Client(
             base_url=BASE_URL,
@@ -1848,6 +1840,7 @@ class TestFetchIncidents:
             "next": "https://example.com/ctixapi/ingestion/threat-data/list/?page=2&page_size=100",
         }
         requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=page1)
+        _register_fetch_incidents_bulk_mock(requests_mock)
 
         client = Client(
             base_url=BASE_URL,
@@ -1869,6 +1862,7 @@ class TestFetchIncidents:
         full = util_load_json("test_data/fetch_incidents_reports.json")
         page2 = {**full, "results": full["results"][1:2], "next": None}
         requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=page2)
+        _register_fetch_incidents_bulk_mock(requests_mock)
 
         client = Client(
             base_url=BASE_URL,
@@ -1916,6 +1910,7 @@ class TestFetchIncidents:
         """incident_fetch_query replaces the default base query; time-window is appended."""
         mock_response = util_load_json("test_data/fetch_incidents_reports.json")
         requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
+        _register_fetch_incidents_bulk_mock(requests_mock)
 
         client = Client(
             base_url=BASE_URL,
@@ -1939,6 +1934,7 @@ class TestFetchIncidents:
         """When incident_fetch_query is absent the default 'type = \"report\"' query is sent."""
         mock_response = util_load_json("test_data/fetch_incidents_reports.json")
         requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
+        _register_fetch_incidents_bulk_mock(requests_mock)
 
         client = Client(
             base_url=BASE_URL,
@@ -1958,6 +1954,7 @@ class TestFetchIncidents:
         """Custom query on first run: time-window derived from first_fetch is still appended."""
         mock_response = util_load_json("test_data/fetch_incidents_reports.json")
         requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
+        _register_fetch_incidents_bulk_mock(requests_mock)
 
         client = Client(
             base_url=BASE_URL,
@@ -1983,6 +1980,7 @@ class TestFetchIncidents:
         """End-to-end: custom query fetches incidents and advances last_fetch_time."""
         mock_response = util_load_json("test_data/fetch_incidents_reports.json")
         requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
+        _register_fetch_incidents_bulk_mock(requests_mock)
 
         client = Client(
             base_url=BASE_URL,
@@ -2045,6 +2043,57 @@ class TestFetchIndicators:
         assert indicators[2]["type"] == "URL"
         assert indicators[2]["score"] == 1  # severity LOW -> GOOD (1)
         assert next_run["last_indicator_time"] is not None
+
+    def test_saved_result_set_pagination_uses_explicit_page_params(self, requests_mock):
+        page1 = util_load_json("test_data/fetch_indicators_result_set.json")
+        page2 = util_load_json("test_data/fetch_indicators_result_set.json")
+        page1["next"] = "https://example.com/ctixapi/ingestion/rules/save_result_set/?page=2&page_size=100"
+        page2["next"] = None
+
+        requests_mock.get(
+            f"{BASE_URL}ingestion/rules/save_result_set/",
+            [{"json": page1}, {"json": page2}],
+        )
+
+        client = Client(
+            base_url=BASE_URL,
+            access_id=ACCESS_ID,
+            secret_key=SECRET_KEY,
+            verify=False,
+            timeout=15,
+            proxies={},
+        )
+
+        params = {
+            "first_fetch": "4320",
+            "retrieve_enriched_data": False,
+            "integrationReliability": "C - Fairly reliable",
+            "saved_result_set_label": "UnitTestLabel",
+            "saved_result_set_version": "v3",
+            "feedFetchInterval": "12 hours",
+        }
+        last_run = {"page_number": 1, "last_run_date": 1700000000}
+
+        next_run, indicators = fetch_indicators(client, params, last_run)
+
+        assert len(indicators) == 8
+        assert next_run.get("page_number") == 0
+
+        first_req = requests_mock.request_history[0]
+        second_req = requests_mock.request_history[1]
+        first_qs = parse_qs(urlparse(first_req.url).query)
+        second_qs = parse_qs(urlparse(second_req.url).query)
+
+        assert first_qs.get("page") == ["1"]
+        assert second_qs.get("page") == ["2"]
+        assert first_qs.get("page_size") == ["100"]
+        assert second_qs.get("page_size") == ["100"]
+        assert first_qs.get("label_name") == ["UnitTestLabel"]
+        assert second_qs.get("label_name") == ["UnitTestLabel"]
+        assert first_qs.get("version") == ["v3"]
+        assert second_qs.get("version") == ["v3"]
+        assert first_qs.get("from_timestamp") == ["1700000000"]
+        assert second_qs.get("from_timestamp") == ["1700000000"]
 
     def test_first_run_passes_from_timestamp_from_first_fetch(self, requests_mock):
         """Empty LastRun: saved_result_set gets from_timestamp = now - first_fetch minutes."""
@@ -2183,15 +2232,83 @@ class TestEnrichIndicatorsBulk:
         )
 
         indicators = [
-            {"name": "1.2.3.4", "sdo_type": "indicator"},
-            {"name": "evil.example.com", "sdo_type": "indicator"},
+            {"id": "ind-001-aaaa-bbbb-cccc-ddddeeee0001", "name": "1.2.3.4", "sdo_type": "indicator"},
+            {"id": "ind-002-aaaa-bbbb-cccc-ddddeeee0002", "name": "evil.example.com", "sdo_type": "indicator"},
         ]
 
         enrichment_map = enrich_indicators_bulk(client, indicators)
 
-        assert "1.2.3.4" in enrichment_map
-        assert enrichment_map["evil.example.com"]["name"] == "evil.example.com"
-        assert enrichment_map["1.2.3.4"]["confidence_score"] == 90
+        assert "ind-001-aaaa-bbbb-cccc-ddddeeee0001" in enrichment_map
+        assert enrichment_map["ind-002-aaaa-bbbb-cccc-ddddeeee0002"]["name"] == "evil.example.com"
+        assert enrichment_map["ind-001-aaaa-bbbb-cccc-ddddeeee0001"]["confidence_score"] == 90
+
+    def test_enrichment_paginates_second_page(self, requests_mock):
+        """Bulk IOC lookup follows ``data.next`` (POST) and merges all result pages."""
+        page1 = {
+            "next": "ingestion/openapi/bulk-lookup/indicator/?page=2&page_size=100",
+            "previous": None,
+            "total": 2,
+            "results": [
+                {
+                    "id": "ind-001-aaaa-bbbb-cccc-ddddeeee0001",
+                    "name": "1.2.3.4",
+                    "object_type": "indicator",
+                    "confidence_score": 90,
+                    "relations": {},
+                }
+            ],
+        }
+        page2 = {
+            "next": None,
+            "previous": None,
+            "total": 2,
+            "results": [
+                {
+                    "id": "ind-002-aaaa-bbbb-cccc-ddddeeee0002",
+                    "name": "evil.example.com",
+                    "object_type": "indicator",
+                    "confidence_score": 60,
+                    "relations": {},
+                }
+            ],
+        }
+        requests_mock.post(
+            re.compile(re.escape(BASE_URL) + r"ingestion/openapi/bulk-lookup/indicator/"),
+            [{"json": page1}, {"json": page2}],
+        )
+
+        client = Client(
+            base_url=BASE_URL,
+            access_id=ACCESS_ID,
+            secret_key=SECRET_KEY,
+            verify=False,
+            timeout=15,
+            proxies={},
+        )
+
+        indicators = [
+            {"id": "ind-001-aaaa-bbbb-cccc-ddddeeee0001", "name": "1.2.3.4", "sdo_type": "indicator"},
+            {"id": "ind-002-aaaa-bbbb-cccc-ddddeeee0002", "name": "evil.example.com", "sdo_type": "indicator"},
+        ]
+
+        enrichment_map = enrich_indicators_bulk(client, indicators)
+
+        assert len(enrichment_map) == 2
+        assert enrichment_map["ind-001-aaaa-bbbb-cccc-ddddeeee0001"]["confidence_score"] == 90
+        assert enrichment_map["ind-002-aaaa-bbbb-cccc-ddddeeee0002"]["confidence_score"] == 60
+
+        first_req = requests_mock.request_history[0]
+        second_req = requests_mock.request_history[1]
+        first_qs = parse_qs(urlparse(first_req.url).query)
+        second_qs = parse_qs(urlparse(second_req.url).query)
+        assert first_qs.get("page") == ["1"]
+        assert second_qs.get("page") == ["2"]
+        assert first_qs.get("page_size") == ["100"]
+        assert second_qs.get("page_size") == ["100"]
+
+        first_body = json.loads(first_req.body.decode() if isinstance(first_req.body, bytes) else first_req.body)
+        assert "object_id" in first_body
+        assert "value" not in first_body
 
     @patch("CTIXv3.time.sleep", return_value=None)
     @patch("CTIXv3.demisto.error")
@@ -2207,7 +2324,7 @@ class TestEnrichIndicatorsBulk:
         )
 
         indicators = [
-            {"name": "1.2.3.4", "sdo_type": "indicator"},
+            {"id": "ind-001-aaaa-bbbb-cccc-ddddeeee0001", "name": "1.2.3.4", "sdo_type": "indicator"},
         ]
 
         # Mock at the client method level to avoid SystemExit from return_error
@@ -2325,19 +2442,21 @@ class TestFetchIncidentsRateLimit:
     @patch("CTIXv3.demisto.error")
     @patch("CTIXv3.time.sleep", return_value=None)
     def test_fetch_incidents_rate_limit_during_loop(self, mock_sleep, mock_demisto_error, requests_mock):
-        """Test that fetch_incidents returns partial results if rate limit hit during relations fetch."""
-        mock_response = util_load_json("test_data/fetch_incidents_reports.json")
+        """Rate limit on relation enrichment: still return incidents from base fetch; partial LastRun if next page exists."""
+        full = util_load_json("test_data/fetch_incidents_reports.json")
+        mock_response = {
+            **full,
+            "results": full["results"][:1],
+            "next": "https://example.com/ctixapi/ingestion/threat-data/list/?page=2&page_size=100",
+        }
         requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
 
-        # Mock relations call to fail with 429
-        # First call to get_threat_data succeeds (via requests_mock)
-        # We need to mock execute_with_retry to fail for get_indicator_relations
         client = Client(BASE_URL, ACCESS_ID, SECRET_KEY, 15, False, {})
 
         from CTIXv3 import execute_with_retry as real_execute_with_retry
 
         def side_effect(func, *args, **kwargs):
-            if func.__name__ == "get_indicator_relations":
+            if func.__name__ == "bulk_ioc_lookup_advanced":
                 raise DemistoException("status-> 429")
             return real_execute_with_retry(func, *args, **kwargs)
 
@@ -2345,6 +2464,12 @@ class TestFetchIncidentsRateLimit:
             params = {"first_fetch": "4320"}
             next_run, incidents = fetch_incidents(client, params, {})
 
-        # Should have stopped after first report failure
-        assert len(incidents) == 0  # It breaks before appending the incident if it fails
-        assert "Rate limit hit again" in mock_demisto_error.call_args[0][0]
+        assert len(incidents) == 1
+        assert incidents[0]["name"] == "CTIX Intel: APT29 Campaign Analysis"
+        assert next_run.get("page_number") == 2
+        # Partial checkpoint preserves sweep lower bound, not completion time.time() watermark
+        assert next_run.get("last_fetch_time") == next_run.get("last_run_date")
+        assert abs(next_run["last_fetch_time"] - int(datetime.now(UTC).timestamp())) > 60
+        error_messages = [str(call[0][0]) for call in mock_demisto_error.call_args_list]
+        assert any("Rate limit hit again" in m for m in error_messages)
+        assert any("Relation enrichment failed" in m for m in error_messages)

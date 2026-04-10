@@ -224,6 +224,9 @@ _STIX_SDO_TO_XSOAR_ENTITY_TYPE: dict[str, str] = {
 }
 
 ENRICHMENT_BATCH_SIZE = 100
+BULK_LOOKUP_PAGE_SIZE = 100
+# Max ``next`` pages to follow per bulk IOC lookup batch (safety cap)
+BULK_LOOKUP_MAX_PAGES = 100
 FETCH_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DELTA_TIME_DIFF = 2
 FIRST_FETCH_DEFAULT_MINUTES = 4320
@@ -231,7 +234,6 @@ FIRST_FETCH_DEFAULT_MINUTES = 4320
 # API page-size limits (per CTIX API documentation)
 PAGE_SIZE = 100
 PAGE_SIZE_THREAT_DATA = 2000
-PAGE_SIZE_BULK_LOOKUP = 100
 
 # LastRun state keys (instance namespaced)
 FETCH_INCIDENTS_STATE_PREFIX = "fetch_incidents"
@@ -876,6 +878,8 @@ class Client(BaseClient):
         relation_data: bool,
         enrichment_tools: str | None = None,
         fields: str | None = None,
+        page: int | None = None,
+        page_size: int | None = None,
     ):
         """
         Bulk IOC Lookup (Advanced)
@@ -887,6 +891,8 @@ class Client(BaseClient):
         :param bool relation_data: pass True to include the latest relation details
         :param str enrichment_tools: optional comma-separated enrichment tool names
         :param str fields: optional comma-separated field names to retrieve
+        :param int page: optional page number for paginated bulk lookups
+        :param int page_size: optional page size for paginated bulk lookups
         :return: response dict
         """
         payload: dict[str, Any] = {}
@@ -900,6 +906,10 @@ class Client(BaseClient):
             params["enrichment_tools"] = enrichment_tools
         if fields:
             params["fields"] = fields
+        if page is not None:
+            params["page"] = page
+        if page_size is not None:
+            params["page_size"] = page_size
         if values:
             payload.update({"value": values})
         elif object_ids:
@@ -1151,13 +1161,6 @@ def iter_dbot_score(
                 )
             )
     return final_data
-
-
-def _epoch_to_iso(epoch_ts: Any) -> str | None:
-    """Convert epoch timestamp to ISO format string."""
-    if epoch_ts and isinstance(epoch_ts, int | float) and epoch_ts > 0:
-        return datetime.fromtimestamp(epoch_ts, tz=UTC).strftime(FETCH_DATE_FORMAT)
-    return None
 
 
 def _normalize_timestamp_to_iso(ts: Any) -> str | None:
@@ -1461,7 +1464,7 @@ def parse_cyware_indicator(
         relations                -> relationships (via EntityRelationship.to_indicator())
         rawJSON                  -> combined raw dict (base + enrichment)
     """
-    indicator_value: str = cyware_data.get("name") or cyware_data.get("sdo_name", "")
+    indicator_value: str = cyware_data.get("name") or cyware_data.get("sdo_name") or ""
     raw_type = cyware_data.get("ioc_type") or cyware_data.get("indicator_type", "")
     if isinstance(raw_type, dict):
         raw_type = raw_type.get("type", "")
@@ -1616,24 +1619,6 @@ def _derive_iteration_threshold(interval_minutes: int) -> int:
     return 25
 
 
-def build_next_page_url(next_url: str) -> str:
-    """Normalize API-provided next links to the relative path expected by client.follow_next_page."""
-    if not next_url:
-        return ""
-
-    parsed = urllib.parse.urlparse(next_url)
-    if parsed.scheme and parsed.netloc:
-        query = f"?{parsed.query}" if parsed.query else ""
-        return f"{parsed.path.lstrip('/')}{query}"
-
-    normalized = next_url.lstrip("/")
-    if normalized.startswith("openapi/"):
-        normalized = normalized[len("openapi/") :]
-    if not normalized.startswith("ingestion/"):
-        normalized = f"ingestion/{normalized}"
-    return normalized
-
-
 def _resolve_initial_fetch_from_timestamp(from_timestamp: int, page_number: int, params: dict) -> int:
     """When LastRun has no watermark (0) and we start at page 1, use first_fetch minutes from params."""
     if from_timestamp != 0 or page_number != 1:
@@ -1735,30 +1720,68 @@ def fetch_incidents(client: Client, params: dict, last_run: dict) -> tuple[dict,
     results = data.get("results", []) or []
     results = results[:max_fetch]
     next_page_val: str | None = data.get("next") if isinstance(data.get("next"), str) else None
+    relation_enrichment_rate_limit_failure = False
 
-    if not results:
-        demisto.debug("CTIX fetch_incidents: No results on this page")
-    else:
+    relations_by_id: dict[str, dict] = {}
+    if results:
+        type_groups: dict[str, list[str]] = {}
+        for report in results:
+            rid = report.get("id") or ""
+            sdo_type = report.get("type")
+            if rid and sdo_type:
+                type_groups.setdefault(sdo_type, []).append(rid)
+
+        try:
+            for object_type, ids_list in type_groups.items():
+                for i in range(0, len(ids_list), ENRICHMENT_BATCH_SIZE):
+                    chunk = ids_list[i : i + ENRICHMENT_BATCH_SIZE]
+                    enriched_rows = _bulk_ioc_lookup_advanced_collect_all_pages(
+                        client,
+                        object_type=object_type,
+                        values=[],
+                        object_ids=chunk,
+                        enrichment_data=False,
+                        relation_data=True,
+                        enrichment_tools=None,
+                        fields=None,
+                    )
+                    for row in enriched_rows:
+                        oid = row.get("id", "")
+                        if oid:
+                            relations_by_id[oid] = row.get("relations") or {}
+        except DemistoException as e:
+            if RATE_LIMIT_STATUS_ERR in str(e):
+                relation_enrichment_rate_limit_failure = True
+                demisto.error(
+                    f"CTIX fetch_incidents: Rate limit hit again after retry during relation enrichment: {e}. "
+                    "Continuing with base threat-data results; incidents will be mapped without full relations."
+                )
+            else:
+                demisto.debug(f"CTIX fetch_incidents: Bulk relations lookup failed: {e}")
+        except Exception as e:
+            demisto.debug(f"CTIX fetch_incidents: Bulk relations lookup failed: {e}")
+
         for report in results:
             report_id = report.get("id", "")
-            # Fetch relations for this report via the get-relations-of-threat-data endpoint
-            relations_data: dict = {}
-            if report_id:
-                sdo_type = report.get("type")
-                try:
-                    relations_resp = execute_with_retry(
-                        client.get_indicator_relations, sdo_type, report_id, {"page": 1, "page_size": PAGE_SIZE}
-                    )
-                    if relations_resp:
-                        relations_data = relations_resp.get("data", {}).get("results", {}) or {}
-                except Exception as e:
-                    if RATE_LIMIT_STATUS_ERR in str(e):
-                        demisto.error(f"CTIX fetch_incidents: Rate limit hit again after retry: {e}")
-                        return _store_partial_fetch_state(last_run, state_keys, page_number, from_timestamp), incidents
-                    demisto.debug(f"CTIX fetch_incidents: Could not fetch relations for report {report_id}: {e}")
-
+            relations_data = relations_by_id.get(report_id, {}) if report_id else {}
             incident = map_report_to_incident(report, relations=relations_data, source_reliability=source_reliability)
             incidents.append(incident)
+    else:
+        demisto.debug("CTIX fetch_incidents: No results on this page")
+
+    if relation_enrichment_rate_limit_failure:
+        if next_page_val:
+            demisto.error(
+                f"CTIX fetch_incidents: Relation enrichment failed (rate limit after retries). "
+                f"Returning {len(incidents)} incident(s) from base fetch without full relations. "
+                f"Checkpoint: threat-data page_number={page_number}, next run will use page_number={page_number + 1}."
+            )
+        else:
+            demisto.error(
+                f"CTIX fetch_incidents: Relation enrichment failed (rate limit after retries). "
+                f"Returning {len(incidents)} incident(s) from base fetch without full relations. "
+                f"Checkpoint: completing sweep for this interval (no further threat-data pages); LastRun will advance."
+            )
 
     if next_page_val:
         return _store_partial_fetch_state(last_run, state_keys, page_number + 1, from_timestamp), incidents
@@ -1816,7 +1839,7 @@ def _collect_saved_result_set_indicators(
             for ind in indicators_data:
                 all_indicators.append(ind)
 
-        # Follow the next URL for pagination
+        # Move to the next page for pagination
         next_url = data.get("next")
         pages_processed += 1
         if not next_url:
@@ -1831,7 +1854,15 @@ def _collect_saved_result_set_indicators(
             return all_indicators, current_page_number, False
 
         try:
-            response = execute_with_retry(client.follow_next_page, build_next_page_url(next_url), method="GET")
+            response = execute_with_retry(
+                client.saved_result_set,
+                page=current_page_number,
+                page_size=page_size,
+                label_name=label_name,
+                version=version,
+                from_timestamp=from_timestamp,
+                to_timestamp=to_timestamp,
+            )
         except DemistoException as e:
             if RATE_LIMIT_STATUS_ERR in str(e):
                 demisto.error(f"CTIX fetch_indicators: Rate limit hit again during pagination: {e}")
@@ -1852,8 +1883,8 @@ def _merge_enrichment_into_indicators(
     """
     merged: list[dict] = []
     for ind in base_indicators:
-        ind_value = ind.get("name") or ind.get("sdo_name", "")
-        enrich = enrichment_map.get(ind_value)
+        ind_id = ind.get("id") or ""
+        enrich = enrichment_map.get(ind_id)
         if enrich:
             combined = dict(ind)
             # Merge keys from enrichment that add new information
@@ -1953,54 +1984,86 @@ def fetch_indicators(client: Client, params: dict, last_run: dict) -> tuple[dict
     return next_run, xsoar_indicators
 
 
+def _bulk_ioc_lookup_advanced_collect_all_pages(
+    client: Client,
+    object_type: str,
+    values: list[str],
+    object_ids: list[str],
+    enrichment_data: bool,
+    relation_data: bool,
+    enrichment_tools: str | None = None,
+    fields: str | None = None,
+) -> list[dict]:
+    """Call bulk IOC lookup advanced and increment page params until exhausted or max pages reached."""
+    all_rows: list[dict] = []
+    current_page = 1
+    while current_page <= BULK_LOOKUP_MAX_PAGES:
+        response = execute_with_retry(
+            client.bulk_ioc_lookup_advanced,
+            object_type=object_type,
+            values=values,
+            object_ids=object_ids,
+            enrichment_data=enrichment_data,
+            relation_data=relation_data,
+            enrichment_tools=enrichment_tools,
+            fields=fields,
+            page=current_page,
+            page_size=BULK_LOOKUP_PAGE_SIZE,
+        )
+        if not response:
+            break
+        data = response.get("data")
+        if not isinstance(data, dict):
+            break
+        rows = data.get("results", [])
+        if isinstance(rows, list):
+            all_rows.extend(rows)
+        next_url = data.get("next")
+        if not next_url:
+            break
+        current_page += 1
+    return all_rows
+
+
 def enrich_indicators_bulk(client: Client, indicators: list[dict]) -> dict[str, dict]:
     """Enrich indicators via bulk IOC lookup advanced.
 
     Groups indicators by SDO type, batches up to ENRICHMENT_BATCH_SIZE per request,
-    and returns a mapping of indicator_value -> enrichment_data.
+    and returns a mapping of indicator_id -> enrichment_data.
 
     :param Client client: CTIX API client
     :param list indicators: List of raw indicator dicts
-    :return dict: Mapping of indicator value to enrichment response
+    :return dict: Mapping of indicator id to enrichment response
     """
     enrichment_map: dict[str, dict] = {}
 
     # Group by SDO object type
     type_groups: dict[str, list[str]] = {}
     for ind in indicators:
-        ind_value = ind.get("name") or ind.get("sdo_name", "")
-        sdo_type = ind.get("sdo_type") or ind.get("type", "indicator")
-        if ind_value:
-            type_groups.setdefault(sdo_type, []).append(ind_value)
+        ind_id = ind.get("id") or ""
+        sdo_type = ind.get("sdo_type") or ind.get("type") or "indicator"
+        if ind_id:
+            type_groups.setdefault(sdo_type, []).append(ind_id)
 
-    for object_type, values in type_groups.items():
+    for object_type, object_ids in type_groups.items():
         # Batch into chunks of ENRICHMENT_BATCH_SIZE (100)
-        for i in range(0, len(values), ENRICHMENT_BATCH_SIZE):
-            batch_values = values[i : i + ENRICHMENT_BATCH_SIZE]
+        for i in range(0, len(object_ids), ENRICHMENT_BATCH_SIZE):
+            batch_object_ids = object_ids[i : i + ENRICHMENT_BATCH_SIZE]
             try:
-                response = execute_with_retry(
-                    client.bulk_ioc_lookup_advanced,
+                enriched_list = _bulk_ioc_lookup_advanced_collect_all_pages(
+                    client,
                     object_type=object_type,
-                    values=batch_values,
-                    object_ids=[],
+                    values=[],
+                    object_ids=batch_object_ids,
                     enrichment_data=True,
                     relation_data=True,
+                    enrichment_tools=None,
+                    fields=None,
                 )
-                if not response:
-                    continue
-
-                data = response.get("data")
-                if not data:
-                    continue
-                if isinstance(data, dict):
-                    enriched_list = data.get("results", [])
-                else:
-                    continue
-
                 for enriched in enriched_list:
-                    name = enriched.get("name", "")
-                    if name:
-                        enrichment_map[name] = enriched
+                    enriched_id = enriched.get("id") or ""
+                    if enriched_id:
+                        enrichment_map[enriched_id] = enriched
             except DemistoException as e:
                 if RATE_LIMIT_STATUS_ERR in str(e):
                     demisto.error(
@@ -2795,6 +2858,8 @@ def bulk_ioc_lookup_advanced_command(client: Client, args: dict[str, Any]) -> Co
     relation_data: bool = argToBoolean(args.get("relation_data", "false"))
     enrichment_tools: str | None = args.get("enrichment_tools") or None
     fields: str | None = args.get("fields") or None
+    page_size = arg_to_number(args.get("page_size", 10))
+    page = arg_to_number(args.get("page", 1))
 
     response = client.bulk_ioc_lookup_advanced(
         object_type=object_type,
@@ -2804,6 +2869,8 @@ def bulk_ioc_lookup_advanced_command(client: Client, args: dict[str, Any]) -> Co
         relation_data=relation_data,
         enrichment_tools=enrichment_tools,
         fields=fields,
+        page_size=page_size,
+        page=page,
     )
 
     response_data = response.get("data")

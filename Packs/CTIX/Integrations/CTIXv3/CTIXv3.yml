@@ -2040,6 +2040,10 @@ script:
       description: Comma-separated list of up to five enrichment tool names to filter enrichment data.
     - name: fields
       description: Comma-separated list of field names to retrieve specific details. By default all fields are retrieved.
+    - name: page
+      description: Enter the Page number for pagination.
+    - name: page_size
+      description: Enter the Page Size for pagination.
     outputs:
     - contextPath: CTIX.BulkIOCLookupAdvanced.id
       description: ID of the threat data object.
