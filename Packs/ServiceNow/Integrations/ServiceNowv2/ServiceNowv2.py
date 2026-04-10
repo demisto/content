@@ -737,6 +737,10 @@ class Client(BaseClient):
         if get_attachments:
             url = url.replace("/v2", "/v1")
 
+        # The Service Catalog order_now endpoint does not support v2 api version
+        if sc_api and path.endswith("/order_now"):
+            url = url.replace("/v2", "/v1")
+
         return url
 
     def _send_file_request(self, url: str, method: str, headers: dict, body: dict, params: dict, file: dict) -> requests.Response:
@@ -1218,18 +1222,23 @@ class Client(BaseClient):
         """
         return self.send_request(f"servicecatalog/items/{id_}", "GET", sc_api=True)
 
-    def create_item_order(self, id_: str, quantity: str, variables: dict = {}) -> dict:
+    def create_item_order(self, id_: str, quantity: str, variables: dict = {}, no_validation: bool = False) -> dict:
         """Create item order in the service catalog by sending a POST request to the Service Catalog API.
 
         Args:
         id_: item id
         quantity: order quantity
         variables: order variables
+        no_validation: if True, sets sysparm_no_validation=true to bypass ServiceNow form validation.
+            Useful when catalog items have required attachments or custom validation that cannot be
+            satisfied at order-creation time. The attachment can be uploaded separately afterwards.
 
         Returns:
             Response from API.
         """
-        body = {"sysparm_quantity": quantity, "variables": variables}
+        body: dict = {"sysparm_quantity": quantity, "variables": variables}
+        if no_validation:
+            body["sysparm_no_validation"] = "true"
         return self.send_request(f"servicecatalog/items/{id_}/order_now", "POST", body=body, sc_api=True)
 
     def document_route_to_table_request(self, queue_id: str, document_table: str, document_id: str) -> dict:
@@ -2467,8 +2476,9 @@ def create_order_item_command(client: Client, args: dict) -> tuple[Any, dict[Any
     id_ = str(args.get("id", ""))
     quantity = str(args.get("quantity", "1"))
     variables = split_fields(str(args.get("variables", "")))
+    no_validation = argToBoolean(args.get("no_validation", False))
 
-    result = client.create_item_order(id_, quantity, variables)
+    result = client.create_item_order(id_, quantity, variables, no_validation)
     if not result or "result" not in result:
         return "Order item was not created.", {}, {}, True
     order_item = result.get("result", {})
