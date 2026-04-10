@@ -1140,7 +1140,7 @@
                         {
                             "strength": 0.1,
                             "isStrictlyBasedOnInputData": true,
-                            "signalReadable": "HTML document showed a soft 404 page at URL: \"https://www.gartner.com/reprints/?id=1-2LVTG7RP\&ct=250915\&st=sb\"",
+                            "signalReadable": "HTML document showed a soft 404 page at URL",
                             "originPath": "file.extendedData.isSoft404",
                             "originType": "DOWNLOADED_FILE",
                             "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",

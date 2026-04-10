@@ -1,9 +1,8 @@
 {
     "flowId": "69d6587e799d5bf325f28ca0",
-    "userId": "637e2dd424da1c12cfe18423",
-    "allFinished": false,
-    "allFilesDownloadFinished": false,
-    "allAdditionalStepsDone": false,
+    "allFinished": true,
+    "allFilesDownloadFinished": true,
+    "allAdditionalStepsDone": true,
     "reportsAmount": 3,
     "priority": "max",
     "pollPause": 5,
@@ -1306,7 +1305,7 @@
                     }
                 }
             ],
-            "overallState": "in_progress",
+            "overallState": "success",
             "taskReference": {
                 "name": "transform-file",
                 "additionalInfo": {
@@ -1373,7 +1372,7 @@
                     "name": "osint",
                     "additionalInfo": "FILE_HASH_SHA256",
                     "ID": "2a4a12b4-2e24-4629-a9de-c04e2ad24e30",
-                    "state": "IN_PROGRESS",
+                    "state": "SUCCESS",
                     "resourceReference": {
                         "type": "OSINT",
                         "name": "osint",

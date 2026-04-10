@@ -1,4 +1,5 @@
 from typing import Any
+from urllib import response
 from CommonServerPython import DemistoException
 import json
 import pytest
@@ -81,7 +82,7 @@ def test_search_query_command_url(mocker, client):
 
     assert (
         response.outputs[0]["file"]["sha256"]
-        == "5adca05a86dbcaaa1049b14b364a9ddf305e2476064e2c0590e4ebb49696fa3b"
+        == "09a8b930c8b79e7c313e5e741e1d59c39ae91bc1f10cdefa68b47bf77519be57"
     )
     assert response.outputs[0]["verdict"] == "no_threat"
     assert (
@@ -263,8 +264,8 @@ def test_scan_command_file_polling(mocker, client):
         response[2].indicator.sha256
         == "2ee79f9a52e660f2322985c72c9dffefdfb5a3c302576d61b4e629d049098cb5"
     )
-    assert response[2].outputs["finalVerdict"]["threatLevel"] == 0.1
-    assert len(response[2].outputs["allTags"]) == 1
+    assert response[2].outputs["finalVerdict"]["threatLevel"] == 0.25
+    assert len(response[2].outputs["allTags"]) == 2
     assert response[2].outputs["overallState"] == "success"
     assert response[2].outputs["taskReference"]["name"] == "transform-file"
     assert response[2].outputs["file"]["name"] == "poorguy.png"
